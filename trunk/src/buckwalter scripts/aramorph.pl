@@ -332,6 +332,12 @@ sub load_dict { # loads a dict into a hash table where the key is $entry and its
          # (1) explicitly, by extracting it from the gloss field:
          if ($glossPOS =~ m!<pos>(.+?)</pos>!) {
             $POS = $1; # extract $POS from $glossPOS
+	    #if  ($POS =~ m/ADJ/)    
+		#{
+			#$voc =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/; 
+			#$entry =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/; 
+			#print $voc ."\t". $entry . "\n";
+		#}
             $gloss = $glossPOS; # we clean up the $gloss later (see below)
          }
          # (2) by deduction: use the $cat (and sometimes the $voc and $gloss) to deduce the appropriate POS
@@ -342,8 +348,11 @@ sub load_dict { # loads a dict into a hash table where the key is $entry and its
             elsif  ($cat  =~ m/^IV/)         {$POS = "$voc/VERB_IMPERFECT"}
             elsif  ($cat  =~ m/^PV/)         {$POS = "$voc/VERB_PERFECT"}
             elsif  ($cat  =~ m/^CV/)         {$POS = "$voc/VERB_IMPERATIVE"}
+	    elsif  ($cat  =~ m/Numb/)	     {$voc =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/; print $voc . "\n";}
             elsif (($cat  =~ m/^N/)
-              and ($gloss =~ m/^[A-Z]/))     {$POS = "$voc/NOUN_PROP"} # educated guess (99% correct)
+              and ($gloss =~ m/^[A-Z]/))     {$POS = "$voc/NOUN_PROP"; 
+         					#$voc =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/; print $voc . "\n";
+					      } # educated guess (99% correct)
             elsif (($cat  =~ m/^N/)
               and  ($voc  =~ m/iy~$/))       {$POS = "$voc/NOUN"} # (was NOUN_ADJ: some of these are really ADJ's and need to be tagged manually)
             elsif  ($cat  =~ m/^N/)          {$POS = "$voc/NOUN"}
