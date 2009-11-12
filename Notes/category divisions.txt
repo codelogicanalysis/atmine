@@ -108,12 +108,3 @@ better division:
 	war
 	...
 -numbers
-
-ideas:
-------
-
-problem in the GUI due to 2 words being of 2 differnt categories: eg: ahmad as a verb and ahmad as a proper noun, in this case what color is it tagged the next time? statistical or last?
-
-
-
-

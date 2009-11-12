@@ -1,0 +1,12 @@
+-script to get national adjectives from country names (eg: understand that loubnaniy is an adjective relating to a proper name of place "lebanon")
+	first step for countries then for other cities if possible
+-problem in the GUI due to 2 words being of 2 differnt categories: eg: ahmad as a verb and ahmad as a proper noun, in this case what color is it tagged the next time? statistical or last?
+-the mappings are much 'many-to-many' i.e. not much reflective of what we want; but can be used in certain circumstances:
+	eg: make buckwalter said it is not noun and we have mach to it as a propernoun we trust buckwalter since it uses prefixes
+	also: if buckwalter says it is a verb we can disagree and say it is "af3al nakesa"
+	also: if it says it is a noun or adjective we can disagree and say it is a number
+-we propose having each dictionary seperately and make them both analyze then choose which is the bes result on bases of the 2 factors
+-what about general nouns and general verbs (i.e. not proper nouns) for what are they useful to us? to we divide them into categories: science, family, work, technology... maybe in this way it might be useful
+-there may be other categories that are best deduced than saved into dictionary and vise versa. so we can create some nlp tools in some cases other than nationality adjectives...
+-for the tagger what degree of categorization would we make it, do we make it a general one, then on the second run we specialize it more or just from the start make it very detailed
+-hunspell not more useful than buckwalter, both use similar ways of working relative to prefixes and stems; and buckwalter can be made to hunspell form without loosing any rules and buckwlater has its own conversion tools
