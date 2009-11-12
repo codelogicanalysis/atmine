@@ -1,0 +1,119 @@
+our divisions:
+--------------
+problems in low divisions: eg: af3al nakisa
+
+	-----> Verbs
+		1- "kan"
+			;--- kwn
+			;; kAn_1
+			kAn	kAn	PV_V	was;were
+			kn	kun	PV_Cn	was;were
+		2- "asbah"
+			;; >aSobaH_1
+			>SbH	>aSobaH	PV	become;begin;start
+			ASbH	>aSobaH	PV	become;begin;start
+			SbH	SobiH	IV_yu	become;begin;start
+		3- "adha"
+			;; >aDoHaY_1
+			>DHY	>aDoHaY	PV_0	bring to light
+			ADHY	>aDoHaY	PV_0	bring to light
+			>DHA	>aDoHA	PV_h	bring to light
+			ADHA	>aDoHA	PV_h	bring to light
+			>DHy	>aDoHay	PV_Atn	bring to light
+			ADHy	>aDoHay	PV_Atn	bring to light
+			>DH	>aDoH	PV_ttAw	bring to light
+			ADH	>aDoH	PV_ttAw	bring to light
+			DHy	DoHiy	IV_0hAnn_yu	bring to light
+			DH	DoH	IV_0hwnyn_yu	bring to light
+			DHY	DoHaY	IV_0_Pass_yu	be brought to light
+			DHy	DoHay	IV_Ann_Pass_yu	be brought to light
+		4-5-6-7-amsa,bata, zalla, sara...
+		8-dama
+			;; dAm_1
+			dAm	dAm	PV_V_intr	last;persevere;continue
+			dm	dum	PV_C_intr	last;persevere;continue
+			dwm	duwm	IV_V	last;persevere;continue
+			dm	dum	IV_C	last;persevere;continue
+	-----> Function words
+		9-laysa
+			;; layosa_1
+			lys	layosa	FW-Wa	not + he/it (he/it is not)            <pos>layos/NEG_PART+a/PVSUFF_SUBJ:3MS</pos>
+			lysA	layosA	FW-Wa	not + they [masc.du.] (they are not)  <pos>layos/NEG_PART+A/PVSUFF_SUBJ:3MD</pos>
+			lyswA	layosuwA	FW-Wa	not + they (they are not)             <pos>layos/NEG_PART+uwA/PVSUFF_SUBJ:3MP</pos>
+			;
+			lyst	layosat	FW-Wa	not + it/she/they (it/she is not, they are not)    <pos>layos/NEG_PART+at/PVSUFF_SUBJ:3FS</pos>
+			lystA	layosatA	FW-Wa	not + they [fem.du.] (they are not)                <pos>layos/NEG_PART+atA/PVSUFF_SUBJ:3FD</pos>
+			lsn	lasona	FW-Wa	not + they [fem.] (they are not)                   <pos>laso/NEG_PART+na/PVSUFF_SUBJ:3FP</pos>
+			;
+			lst	lasota	FW-Wa	not + you [masc.sg.] (you are not)   <pos>laso/NEG_PART+ta/PVSUFF_SUBJ:2MS</pos>
+			lstmA	lasotumA	FW-Wa	not + you [masc.du.] (you are not)   <pos>laso/NEG_PART+tumA/PVSUFF_SUBJ:2MD</pos>
+			lstm	lasotum	FW-Wa	not + you [masc.pl.] (you are not)   <pos>laso/NEG_PART+tum/PVSUFF_SUBJ:2MP</pos>
+			;
+			lst	lasoti	FW-Wa	not + you [fem.sg.] (you are not)    <pos>laso/NEG_PART+ti/PVSUFF_SUBJ:2FS</pos>
+			lstmA	lasotumA	FW-Wa	not + you [fem.du.] (you are not)    <pos>laso/NEG_PART+tumA/PVSUFF_SUBJ:2FD</pos>
+			lstn	lasotun~a	FW-Wa	not + you [fem.pl.] (you are not)    <pos>laso/NEG_PART+tun~a/PVSUFF_SUBJ:2FP</pos>
+			;
+			lst	lasotu	FW-Wa	not + I (I am not)                   <pos>laso/NEG_PART+tu/PVSUFF_SUBJ:1S</pos>
+			lsnA	lasonA	FW-Wa	not + we (we are not)                <pos>laso/NEG_PART+nA/PVSUFF_SUBJ:1P</pos>
+		10-ma zal
+			;; mAzAla_1
+			mAzAl	mAzAla	FW-Wa	not + stop/cease + he/it (he/it continues)                <pos>mA/NEG_PART+zAl/VERB_PERFECT+a/PVSUFF_SUBJ:3MS</pos>
+			mAzAlA	mAzAlA	FW-Wa	not + stop/cease + they (they both continue)              <pos>mA/NEG_PART+zAl/VERB_PERFECT+A/PVSUFF_SUBJ:3MD</pos>
+			mAzAlwA	mAzAluwA	FW-Wa	not + stop/cease + they (they continue)                   <pos>mA/NEG_PART+zAl/VERB_PERFECT+uwA/PVSUFF_SUBJ:3MP</pos>
+			;
+			mAzAlt	mAzAlat	FW-Wa	not + stop/cease + it/she/they (it/she/they continue(s))  <pos>mA/NEG_PART+zAl/VERB_PERFECT+at/PVSUFF_SUBJ:3FS</pos>
+			mAzAltA	mAzAlatA	FW-Wa	not + stop/cease + they (they both continue)              <pos>mA/NEG_PART+zAl/VERB_PERFECT+atA/PVSUFF_SUBJ:3FD</pos>
+			mAzln	mAzilona	FW-Wa	not + stop/cease + they (they continue)                   <pos>mA/NEG_PART+zil/VERB_PERFECT+na/PVSUFF_SUBJ:3FP</pos>
+			;
+			mAzlt	mAzilota	FW-Wa	not + stop/cease + you (you continue)                     <pos>mA/NEG_PART+zil/VERB_PERFECT+ta/PVSUFF_SUBJ:2MS</pos>
+			mAzltmA	mAzilotumA	FW-Wa	not + stop/cease + you (you both continue)                <pos>mA/NEG_PART+zil/VERB_PERFECT+tumA/PVSUFF_SUBJ:2MD</pos>
+			; mAzltmA	mAzilotumA	FW-Wa	not + stop/cease + you [masc.du.] (you both continue)     <pos>mA/NEG_PART+zil/VERB_PERFECT+tumA/PVSUFF_SUBJ:2MD</pos>
+			mAzltm	mAzilotum	FW-Wa	not + stop/cease + you (you continue)                     <pos>mA/NEG_PART+zil/VERB_PERFECT+tum/PVSUFF_SUBJ:2MP</pos>
+			;
+			mAzlt	mAziloti	FW-Wa	not + stop/cease + you (you continue)                     <pos>mA/NEG_PART+zil/VERB_PERFECT+ti/PVSUFF_SUBJ:2FS</pos>
+			; mAzltmA	mAzilotumA	FW-Wa	not + stop/cease + you [fem.du.] (you both continue)      <pos>mA/NEG_PART+zil/VERB_PERFECT+tumA/PVSUFF_SUBJ:2FD</pos>
+			mAzltn	mAzilotun~a	FW-Wa	not + stop/cease + you (you continue)                     <pos>mA/NEG_PART+zil/VERB_PERFECT+tun~a/PVSUFF_SUBJ:2FP</pos>
+			;
+			mAzlt	mAzilotu	FW-Wa	not + stop/cease + I (I continue)                         <pos>mA/NEG_PART+zil/VERB_PERFECT+tu/PVSUFF_SUBJ:1S</pos>
+			mAzlnA	mAzilonA	FW-Wa	not + stop/cease + we (we continue)                       <pos>mA/NEG_PART+zil/VERB_PERFECT+nA/PVSUFF_SUBJ:1P</pos>
+		11-ma bareha, ma fate2a, ma infakka
+
+better division:
+----------------
+-ahrouf and others (Function words)
+-adjectives
+	positive
+	negative
+	none
+-adverbs
+-general nouns
+	education
+	technology
+	family
+	war
+	religion
+	...
+- proper nouns
+	names
+		feminine names
+		masculine names
+		arabic names
+		non-arabic names
+	places
+		cities and vilages
+		countries (what about adjectives that describe nationalities)
+-verbs
+	education
+	technology
+	war
+	...
+-numbers
+
+ideas:
+------
+
+problem in the GUI due to 2 words being of 2 differnt categories: eg: ahmad as a verb and ahmad as a proper noun, in this case what color is it tagged the next time? statistical or last?
+
+
+
+
