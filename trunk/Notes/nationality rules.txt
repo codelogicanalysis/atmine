@@ -1,0 +1,20 @@
+Here are the rules to convert from city, country to nationality, from city or from town or so on
+
+we cannot just added loubnan and have the suffixes added as -iy or -iyan and so on... since saydawey saydaweyan will never be captured and in fact there is no suffix -wey
+so it is better to have 2 categories: city-names which are like N-prop and nationality which are like Nall (asma2 el nisba)
+
+To reach this we have to pass our proper nouns into a script that generates from them asma2 el nisba according to some NLP understanding then afterwards we can add the to dictionary
+
+The general rules we came up with are the following:
+
+ends				additional					rule					eg:
+----------------------------------------------------------------------------------------------------------------------------------------
+alef 				+consonant before			-wey					sayda --> saydawey		or		7alba --> 7albawey
+alef				+waw or ya2 before			-y instead of alef		souriya--> souriyy		or		nikaragwa -->nikaragwiy
+consonant or waw								-ya2					lubna -> lubnaniy		or		hunululo  -->	hunululoy (???)
+ta2	marbouta		+consonant before			-ya2 instead of ta2		makka --> makkiy
+ya2												-add a shadde on ya2	jibouti --> jiboutiy
+
+Notes:
+-remove ta3reef if it is there, except for almanya, albanya, ... 
+-asma2 el mourakaba according to last word
