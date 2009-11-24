@@ -1,0 +1,44 @@
+#summary meeting nov 24 2009
+
+Build an interface for Dictionary and Analyser
+
+= Dictionary =
+ check word:  search
+ iterate (begin, end, next previous)
+ size, insert, delete
+
+= Analyser =
+ stemIt - returns an iteration mechanism to all possible stems of a word
+          - the stems are not necessarily dictionary correct (useful for sugestions)
+ buildIt - all possible words produced from the input word
+
+
+= Analyser =
+ stemIt - returns an iteration mechanism to all possible stems of a word
+          - the stems are not necessarily dictionary correct (useful for sugestions)
+ buildIt - all possible words produced from the input word
+
+= Arabic books =
+  mabadi2 al 3arabiya - shirtawni
+  al jadiri
+
+= Rules = 
+  prefix category
+  prefix prefix
+  category suffix
+  suffix suffix
+
+  Consider a prefix and a suffix as a category
+
+
+= Adaptors/bridges = 
+  readers from external data sources to our format 
+  (buckwalter, HS, names, places, ...)
+
+= Readers = 
+  input is utf-8
+  use antlr 
+
+= Readers = 
+  input is utf-8
+  use antlr 
