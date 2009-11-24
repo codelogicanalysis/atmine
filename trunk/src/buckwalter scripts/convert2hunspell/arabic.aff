@@ -1,0 +1,3514 @@
+SET UTF-8
+FLAG num
+NEEDAFFIX 1
+CIRCUMFIX 2
+PFX 1013 Y 6
+PFX 1013 0 y/2 . IVPref-hmA-yu+
+PFX 1013 0 wy/2 . IVPref-hmA-yu+
+PFX 1013 0 fy/2 . IVPref-hmA-yu+
+PFX 1013 0 sy/2 . IVPref-hmA-yu+
+PFX 1013 0 wsy/2 . IVPref-hmA-yu+
+PFX 1013 0 fsy/2 . IVPref-hmA-yu+
+PFX 1056 Y 12
+PFX 1056 0 |/2 . IVPref-AnA-|+
+PFX 1056 0 w|/2 . IVPref-AnA-|+
+PFX 1056 0 f|/2 . IVPref-AnA-|+
+PFX 1056 0 s|/2 . IVPref-AnA-|+
+PFX 1056 0 ws|/2 . IVPref-AnA-|+
+PFX 1056 0 fs|/2 . IVPref-AnA-|+
+PFX 1056 0 A/2 . IVPref-AnA-|+
+PFX 1056 0 wA/2 . IVPref-AnA-|+
+PFX 1056 0 fA/2 . IVPref-AnA-|+
+PFX 1056 0 sA/2 . IVPref-AnA-|+
+PFX 1056 0 wsA/2 . IVPref-AnA-|+
+PFX 1056 0 fsA/2 . IVPref-AnA-|+
+PFX 1041 Y 3
+PFX 1041 0 lt/2 . IVPref-hy-litu+
+PFX 1041 0 wlt/2 . IVPref-hy-litu+
+PFX 1041 0 flt/2 . IVPref-hy-litu+
+PFX 1004 Y 1
+PFX 1004 0 l/2 . NPref-La+
+PFX 1018 Y 3
+PFX 1018 0 ly/2 . IVPref-hw-liya+
+PFX 1018 0 wly/2 . IVPref-hw-liya+
+PFX 1018 0 fly/2 . IVPref-hw-liya+
+PFX 1025 Y 3
+PFX 1025 0 ly/2 . IVPref-hn-liyu+
+PFX 1025 0 wly/2 . IVPref-hn-liyu+
+PFX 1025 0 fly/2 . IVPref-hn-liyu+
+PFX 1008 Y 3
+PFX 1008 0 ll/2 . NPref-Lil+
+PFX 1008 0 wll/2 . NPref-Lil+
+PFX 1008 0 fll/2 . NPref-Lil+
+PFX 1044 Y 3
+PFX 1044 0 lt/2 . IVPref-AntmA-lita+
+PFX 1044 0 wlt/2 . IVPref-AntmA-lita+
+PFX 1044 0 flt/2 . IVPref-AntmA-lita+
+PFX 1058 Y 6
+PFX 1058 0 l>/2 . IVPref-AnA-li>u+
+PFX 1058 0 wl>/2 . IVPref-AnA-li>u+
+PFX 1058 0 fl>/2 . IVPref-AnA-li>u+
+PFX 1058 0 lA/2 . IVPref-AnA-li>u+
+PFX 1058 0 wlA/2 . IVPref-AnA-li>u+
+PFX 1058 0 flA/2 . IVPref-AnA-li>u+
+PFX 1022 Y 3
+PFX 1022 0 ly/2 . IVPref-hm-liya+
+PFX 1022 0 wly/2 . IVPref-hm-liya+
+PFX 1022 0 fly/2 . IVPref-hm-liya+
+PFX 1003 Y 3
+PFX 1003 0 l/2 . NPref-Li+
+PFX 1003 0 wl/2 . NPref-Li+
+PFX 1003 0 fl/2 . NPref-Li+
+PFX 1020 Y 3
+PFX 1020 0 ly/2 . IVPref-hmA-liya+
+PFX 1020 0 wly/2 . IVPref-hmA-liya+
+PFX 1020 0 fly/2 . IVPref-hmA-liya+
+PFX 1005 Y 1
+PFX 1005 0 l/2 . PVPref-La+
+PFX 1032 Y 6
+PFX 1032 0 t/2 . IVPref-hmA-ta+
+PFX 1032 0 wt/2 . IVPref-hmA-ta+
+PFX 1032 0 ft/2 . IVPref-hmA-ta+
+PFX 1032 0 st/2 . IVPref-hmA-ta+
+PFX 1032 0 wst/2 . IVPref-hmA-ta+
+PFX 1032 0 fst/2 . IVPref-hmA-ta+
+PFX 1054 Y 12
+PFX 1054 0 >/2 . IVPref-AnA->a+
+PFX 1054 0 w>/2 . IVPref-AnA->a+
+PFX 1054 0 f>/2 . IVPref-AnA->a+
+PFX 1054 0 s>/2 . IVPref-AnA->a+
+PFX 1054 0 ws>/2 . IVPref-AnA->a+
+PFX 1054 0 fs>/2 . IVPref-AnA->a+
+PFX 1054 0 A/2 . IVPref-AnA->a+
+PFX 1054 0 wA/2 . IVPref-AnA->a+
+PFX 1054 0 fA/2 . IVPref-AnA->a+
+PFX 1054 0 sA/2 . IVPref-AnA->a+
+PFX 1054 0 wsA/2 . IVPref-AnA->a+
+PFX 1054 0 fsA/2 . IVPref-AnA->a+
+PFX 1010 Y 6
+PFX 1010 0 y/2 . IVPref-hw-ya+
+PFX 1010 0 wy/2 . IVPref-hw-ya+
+PFX 1010 0 fy/2 . IVPref-hw-ya+
+PFX 1010 0 sy/2 . IVPref-hw-ya+
+PFX 1010 0 wsy/2 . IVPref-hw-ya+
+PFX 1010 0 fsy/2 . IVPref-hw-ya+
+PFX 1019 Y 3
+PFX 1019 0 ly/2 . IVPref-hw-liyu+
+PFX 1019 0 wly/2 . IVPref-hw-liyu+
+PFX 1019 0 fly/2 . IVPref-hw-liyu+
+PFX 1045 Y 3
+PFX 1045 0 lt/2 . IVPref-AntmA-litu+
+PFX 1045 0 wlt/2 . IVPref-AntmA-litu+
+PFX 1045 0 flt/2 . IVPref-AntmA-litu+
+PFX 1028 Y 6
+PFX 1028 0 t/2 . IVPref-Anta-ta+
+PFX 1028 0 wt/2 . IVPref-Anta-ta+
+PFX 1028 0 ft/2 . IVPref-Anta-ta+
+PFX 1028 0 st/2 . IVPref-Anta-ta+
+PFX 1028 0 wst/2 . IVPref-Anta-ta+
+PFX 1028 0 fst/2 . IVPref-Anta-ta+
+PFX 1023 Y 3
+PFX 1023 0 ly/2 . IVPref-hm-liyu+
+PFX 1023 0 wly/2 . IVPref-hm-liyu+
+PFX 1023 0 fly/2 . IVPref-hm-liyu+
+PFX 1034 Y 6
+PFX 1034 0 t/2 . IVPref-Anti-ta+
+PFX 1034 0 wt/2 . IVPref-Anti-ta+
+PFX 1034 0 ft/2 . IVPref-Anti-ta+
+PFX 1034 0 st/2 . IVPref-Anti-ta+
+PFX 1034 0 wst/2 . IVPref-Anti-ta+
+PFX 1034 0 fst/2 . IVPref-Anti-ta+
+PFX 1021 Y 3
+PFX 1021 0 ly/2 . IVPref-hmA-liyu+
+PFX 1021 0 wly/2 . IVPref-hmA-liyu+
+PFX 1021 0 fly/2 . IVPref-hmA-liyu+
+PFX 1033 Y 6
+PFX 1033 0 t/2 . IVPref-hmA-tu+
+PFX 1033 0 wt/2 . IVPref-hmA-tu+
+PFX 1033 0 ft/2 . IVPref-hmA-tu+
+PFX 1033 0 st/2 . IVPref-hmA-tu+
+PFX 1033 0 wst/2 . IVPref-hmA-tu+
+PFX 1033 0 fst/2 . IVPref-hmA-tu+
+PFX 1006 Y 3
+PFX 1006 0 Al/2 . NPref-Al+
+PFX 1006 0 wAl/2 . NPref-Al+
+PFX 1006 0 fAl/2 . NPref-Al+
+PFX 1055 Y 12
+PFX 1055 0 >/2 . IVPref-AnA->u+
+PFX 1055 0 w>/2 . IVPref-AnA->u+
+PFX 1055 0 f>/2 . IVPref-AnA->u+
+PFX 1055 0 s>/2 . IVPref-AnA->u+
+PFX 1055 0 ws>/2 . IVPref-AnA->u+
+PFX 1055 0 fs>/2 . IVPref-AnA->u+
+PFX 1055 0 A/2 . IVPref-AnA->u+
+PFX 1055 0 wA/2 . IVPref-AnA->u+
+PFX 1055 0 fA/2 . IVPref-AnA->u+
+PFX 1055 0 sA/2 . IVPref-AnA->u+
+PFX 1055 0 wsA/2 . IVPref-AnA->u+
+PFX 1055 0 fsA/2 . IVPref-AnA->u+
+PFX 1011 Y 6
+PFX 1011 0 y/2 . IVPref-hw-yu+
+PFX 1011 0 wy/2 . IVPref-hw-yu+
+PFX 1011 0 fy/2 . IVPref-hw-yu+
+PFX 1011 0 sy/2 . IVPref-hw-yu+
+PFX 1011 0 wsy/2 . IVPref-hw-yu+
+PFX 1011 0 fsy/2 . IVPref-hw-yu+
+PFX 1026 Y 6
+PFX 1026 0 t/2 . IVPref-hy-ta+
+PFX 1026 0 wt/2 . IVPref-hy-ta+
+PFX 1026 0 ft/2 . IVPref-hy-ta+
+PFX 1026 0 st/2 . IVPref-hy-ta+
+PFX 1026 0 wst/2 . IVPref-hy-ta+
+PFX 1026 0 fst/2 . IVPref-hy-ta+
+PFX 1016 Y 6
+PFX 1016 0 y/2 . IVPref-hn-ya+
+PFX 1016 0 wy/2 . IVPref-hn-ya+
+PFX 1016 0 fy/2 . IVPref-hn-ya+
+PFX 1016 0 sy/2 . IVPref-hn-ya+
+PFX 1016 0 wsy/2 . IVPref-hn-ya+
+PFX 1016 0 fsy/2 . IVPref-hn-ya+
+PFX 1042 Y 3
+PFX 1042 0 lt/2 . IVPref-Anta-lita+
+PFX 1042 0 wlt/2 . IVPref-Anta-lita+
+PFX 1042 0 flt/2 . IVPref-Anta-lita+
+PFX 1029 Y 6
+PFX 1029 0 t/2 . IVPref-Anta-tu+
+PFX 1029 0 wt/2 . IVPref-Anta-tu+
+PFX 1029 0 ft/2 . IVPref-Anta-tu+
+PFX 1029 0 st/2 . IVPref-Anta-tu+
+PFX 1029 0 wst/2 . IVPref-Anta-tu+
+PFX 1029 0 fst/2 . IVPref-Anta-tu+
+PFX 1060 Y 6
+PFX 1060 0 n/2 . IVPref-nHn-na+
+PFX 1060 0 wn/2 . IVPref-nHn-na+
+PFX 1060 0 fn/2 . IVPref-nHn-na+
+PFX 1060 0 sn/2 . IVPref-nHn-na+
+PFX 1060 0 wsn/2 . IVPref-nHn-na+
+PFX 1060 0 fsn/2 . IVPref-nHn-na+
+PFX 1035 Y 6
+PFX 1035 0 t/2 . IVPref-Anti-tu+
+PFX 1035 0 wt/2 . IVPref-Anti-tu+
+PFX 1035 0 ft/2 . IVPref-Anti-tu+
+PFX 1035 0 st/2 . IVPref-Anti-tu+
+PFX 1035 0 wst/2 . IVPref-Anti-tu+
+PFX 1035 0 fst/2 . IVPref-Anti-tu+
+PFX 1014 Y 6
+PFX 1014 0 y/2 . IVPref-hm-ya+
+PFX 1014 0 wy/2 . IVPref-hm-ya+
+PFX 1014 0 fy/2 . IVPref-hm-ya+
+PFX 1014 0 sy/2 . IVPref-hm-ya+
+PFX 1014 0 wsy/2 . IVPref-hm-ya+
+PFX 1014 0 fsy/2 . IVPref-hm-ya+
+PFX 1046 Y 3
+PFX 1046 0 lt/2 . IVPref-hmA-lita+
+PFX 1046 0 wlt/2 . IVPref-hmA-lita+
+PFX 1046 0 flt/2 . IVPref-hmA-lita+
+PFX 1027 Y 6
+PFX 1027 0 t/2 . IVPref-hy-tu+
+PFX 1027 0 wt/2 . IVPref-hy-tu+
+PFX 1027 0 ft/2 . IVPref-hy-tu+
+PFX 1027 0 st/2 . IVPref-hy-tu+
+PFX 1027 0 wst/2 . IVPref-hy-tu+
+PFX 1027 0 fst/2 . IVPref-hy-tu+
+PFX 1017 Y 6
+PFX 1017 0 y/2 . IVPref-hn-yu+
+PFX 1017 0 wy/2 . IVPref-hn-yu+
+PFX 1017 0 fy/2 . IVPref-hn-yu+
+PFX 1017 0 sy/2 . IVPref-hn-yu+
+PFX 1017 0 wsy/2 . IVPref-hn-yu+
+PFX 1017 0 fsy/2 . IVPref-hn-yu+
+PFX 1043 Y 3
+PFX 1043 0 lt/2 . IVPref-Anta-litu+
+PFX 1043 0 wlt/2 . IVPref-Anta-litu+
+PFX 1043 0 flt/2 . IVPref-Anta-litu+
+PFX 1052 Y 3
+PFX 1052 0 lt/2 . IVPref-Antn-lita+
+PFX 1052 0 wlt/2 . IVPref-Antn-lita+
+PFX 1052 0 flt/2 . IVPref-Antn-lita+
+PFX 1030 Y 6
+PFX 1030 0 t/2 . IVPref-AntmA-ta+
+PFX 1030 0 wt/2 . IVPref-AntmA-ta+
+PFX 1030 0 ft/2 . IVPref-AntmA-ta+
+PFX 1030 0 st/2 . IVPref-AntmA-ta+
+PFX 1030 0 wst/2 . IVPref-AntmA-ta+
+PFX 1030 0 fst/2 . IVPref-AntmA-ta+
+PFX 1048 Y 3
+PFX 1048 0 lt/2 . IVPref-Anti-lita+
+PFX 1048 0 wlt/2 . IVPref-Anti-lita+
+PFX 1048 0 flt/2 . IVPref-Anti-lita+
+PFX 1062 Y 3
+PFX 1062 0 ln/2 . IVPref-nHn-lina+
+PFX 1062 0 wln/2 . IVPref-nHn-lina+
+PFX 1062 0 fln/2 . IVPref-nHn-lina+
+PFX 1061 Y 6
+PFX 1061 0 n/2 . IVPref-nHn-nu+
+PFX 1061 0 wn/2 . IVPref-nHn-nu+
+PFX 1061 0 fn/2 . IVPref-nHn-nu+
+PFX 1061 0 sn/2 . IVPref-nHn-nu+
+PFX 1061 0 wsn/2 . IVPref-nHn-nu+
+PFX 1061 0 fsn/2 . IVPref-nHn-nu+
+PFX 1015 Y 6
+PFX 1015 0 y/2 . IVPref-hm-yu+
+PFX 1015 0 wy/2 . IVPref-hm-yu+
+PFX 1015 0 fy/2 . IVPref-hm-yu+
+PFX 1015 0 sy/2 . IVPref-hm-yu+
+PFX 1015 0 wsy/2 . IVPref-hm-yu+
+PFX 1015 0 fsy/2 . IVPref-hm-yu+
+PFX 1001 Y 2
+PFX 1001 0 w/2 . Pref-Wa+
+PFX 1001 0 f/2 . Pref-Wa+
+PFX 1047 Y 3
+PFX 1047 0 lt/2 . IVPref-hmA-litu+
+PFX 1047 0 wlt/2 . IVPref-hmA-litu+
+PFX 1047 0 flt/2 . IVPref-hmA-litu+
+PFX 1038 Y 6
+PFX 1038 0 t/2 . IVPref-Antn-ta+
+PFX 1038 0 wt/2 . IVPref-Antn-ta+
+PFX 1038 0 ft/2 . IVPref-Antn-ta+
+PFX 1038 0 st/2 . IVPref-Antn-ta+
+PFX 1038 0 wst/2 . IVPref-Antn-ta+
+PFX 1038 0 fst/2 . IVPref-Antn-ta+
+PFX 1059 Y 6
+PFX 1059 0 l|/2 . IVPref-AnA-li|+
+PFX 1059 0 wl|/2 . IVPref-AnA-li|+
+PFX 1059 0 fl|/2 . IVPref-AnA-li|+
+PFX 1059 0 lA/2 . IVPref-AnA-li|+
+PFX 1059 0 wlA/2 . IVPref-AnA-li|+
+PFX 1059 0 flA/2 . IVPref-AnA-li|+
+PFX 1053 Y 3
+PFX 1053 0 lt/2 . IVPref-Antn-litu+
+PFX 1053 0 wlt/2 . IVPref-Antn-litu+
+PFX 1053 0 flt/2 . IVPref-Antn-litu+
+PFX 1031 Y 6
+PFX 1031 0 t/2 . IVPref-AntmA-tu+
+PFX 1031 0 wt/2 . IVPref-AntmA-tu+
+PFX 1031 0 ft/2 . IVPref-AntmA-tu+
+PFX 1031 0 st/2 . IVPref-AntmA-tu+
+PFX 1031 0 wst/2 . IVPref-AntmA-tu+
+PFX 1031 0 fst/2 . IVPref-AntmA-tu+
+PFX 1009 Y 3
+PFX 1009 0 l/2 . NPref-LiAl+
+PFX 1009 0 wl/2 . NPref-LiAl+
+PFX 1009 0 fl/2 . NPref-LiAl+
+PFX 1049 Y 3
+PFX 1049 0 lt/2 . IVPref-Anti-litu+
+PFX 1049 0 wlt/2 . IVPref-Anti-litu+
+PFX 1049 0 flt/2 . IVPref-Anti-litu+
+PFX 1036 Y 6
+PFX 1036 0 t/2 . IVPref-Antm-ta+
+PFX 1036 0 wt/2 . IVPref-Antm-ta+
+PFX 1036 0 ft/2 . IVPref-Antm-ta+
+PFX 1036 0 st/2 . IVPref-Antm-ta+
+PFX 1036 0 wst/2 . IVPref-Antm-ta+
+PFX 1036 0 fst/2 . IVPref-Antm-ta+
+PFX 1063 Y 3
+PFX 1063 0 ln/2 . IVPref-nHn-linu+
+PFX 1063 0 wln/2 . IVPref-nHn-linu+
+PFX 1063 0 fln/2 . IVPref-nHn-linu+
+PFX 1050 Y 3
+PFX 1050 0 lt/2 . IVPref-Antm-lita+
+PFX 1050 0 wlt/2 . IVPref-Antm-lita+
+PFX 1050 0 flt/2 . IVPref-Antm-lita+
+PFX 1012 Y 6
+PFX 1012 0 y/2 . IVPref-hmA-ya+
+PFX 1012 0 wy/2 . IVPref-hmA-ya+
+PFX 1012 0 fy/2 . IVPref-hmA-ya+
+PFX 1012 0 sy/2 . IVPref-hmA-ya+
+PFX 1012 0 wsy/2 . IVPref-hmA-ya+
+PFX 1012 0 fsy/2 . IVPref-hmA-ya+
+PFX 1039 Y 6
+PFX 1039 0 t/2 . IVPref-Antn-tu+
+PFX 1039 0 wt/2 . IVPref-Antn-tu+
+PFX 1039 0 ft/2 . IVPref-Antn-tu+
+PFX 1039 0 st/2 . IVPref-Antn-tu+
+PFX 1039 0 wst/2 . IVPref-Antn-tu+
+PFX 1039 0 fst/2 . IVPref-Antn-tu+
+PFX 1002 Y 6
+PFX 1002 0 b/2 . NPref-Bi+
+PFX 1002 0 k/2 . NPref-Bi+
+PFX 1002 0 wb/2 . NPref-Bi+
+PFX 1002 0 fb/2 . NPref-Bi+
+PFX 1002 0 wk/2 . NPref-Bi+
+PFX 1002 0 fk/2 . NPref-Bi+
+PFX 1000 Y 1
+PFX 1000 0 0/2 . Pref-0+
+PFX 1040 Y 3
+PFX 1040 0 lt/2 . IVPref-hy-lita+
+PFX 1040 0 wlt/2 . IVPref-hy-lita+
+PFX 1040 0 flt/2 . IVPref-hy-lita+
+PFX 1024 Y 3
+PFX 1024 0 ly/2 . IVPref-hn-liya+
+PFX 1024 0 wly/2 . IVPref-hn-liya+
+PFX 1024 0 fly/2 . IVPref-hn-liya+
+PFX 1007 Y 6
+PFX 1007 0 bAl/2 . NPref-BiAl+
+PFX 1007 0 kAl/2 . NPref-BiAl+
+PFX 1007 0 wbAl/2 . NPref-BiAl+
+PFX 1007 0 fbAl/2 . NPref-BiAl+
+PFX 1007 0 wkAl/2 . NPref-BiAl+
+PFX 1007 0 fkAl/2 . NPref-BiAl+
+PFX 1057 Y 6
+PFX 1057 0 l>/2 . IVPref-AnA-li>a+
+PFX 1057 0 wl>/2 . IVPref-AnA-li>a+
+PFX 1057 0 fl>/2 . IVPref-AnA-li>a+
+PFX 1057 0 lA/2 . IVPref-AnA-li>a+
+PFX 1057 0 wlA/2 . IVPref-AnA-li>a+
+PFX 1057 0 flA/2 . IVPref-AnA-li>a+
+PFX 1037 Y 6
+PFX 1037 0 t/2 . IVPref-Antm-tu+
+PFX 1037 0 wt/2 . IVPref-Antm-tu+
+PFX 1037 0 ft/2 . IVPref-Antm-tu+
+PFX 1037 0 st/2 . IVPref-Antm-tu+
+PFX 1037 0 wst/2 . IVPref-Antm-tu+
+PFX 1037 0 fst/2 . IVPref-Antm-tu+
+PFX 1051 Y 3
+PFX 1051 0 lt/2 . IVPref-Antm-litu+
+PFX 1051 0 wlt/2 . IVPref-Antm-litu+
+PFX 1051 0 flt/2 . IVPref-Antm-litu+
+SFX 497 Y 5
+SFX 497 0 k/2,1012 . +IVSuff-|k
+SFX 497 0 k/2,1012 . +IVSuff-|k
+SFX 497 0 kmA/2,1012 . +IVSuff-|k
+SFX 497 0 km/2,1012 . +IVSuff-|k
+SFX 497 0 kn/2,1012 . +IVSuff-|k
+SFX 147 Y 45
+SFX 147 0 h/2,1001 . +PVSuff-~th
+SFX 147 0 hmA/2,1001 . +PVSuff-~th
+SFX 147 0 hm/2,1001 . +PVSuff-~th
+SFX 147 0 hA/2,1001 . +PVSuff-~th
+SFX 147 0 hn/2,1001 . +PVSuff-~th
+SFX 147 0 h/2,1001 . +PVSuff-~th
+SFX 147 0 hmA/2,1001 . +PVSuff-~th
+SFX 147 0 hm/2,1001 . +PVSuff-~th
+SFX 147 0 hA/2,1001 . +PVSuff-~th
+SFX 147 0 hn/2,1001 . +PVSuff-~th
+SFX 147 0 h/2,1001 . +PVSuff-~th
+SFX 147 0 hmA/2,1001 . +PVSuff-~th
+SFX 147 0 hm/2,1001 . +PVSuff-~th
+SFX 147 0 hA/2,1001 . +PVSuff-~th
+SFX 147 0 hn/2,1001 . +PVSuff-~th
+SFX 147 0 k/2,1001 . +PVSuff-~th
+SFX 147 0 k/2,1001 . +PVSuff-~th
+SFX 147 0 kmA/2,1001 . +PVSuff-~th
+SFX 147 0 km/2,1001 . +PVSuff-~th
+SFX 147 0 kn/2,1001 . +PVSuff-~th
+SFX 147 0 ny/2,1001 . +PVSuff-~th
+SFX 147 0 nA/2,1001 . +PVSuff-~th
+SFX 147 0 ny/2,1001 . +PVSuff-~th
+SFX 147 0 nA/2,1001 . +PVSuff-~th
+SFX 147 0 mAh/2,1001 . +PVSuff-~th
+SFX 147 0 mAhmA/2,1001 . +PVSuff-~th
+SFX 147 0 mAhm/2,1001 . +PVSuff-~th
+SFX 147 0 mAhA/2,1001 . +PVSuff-~th
+SFX 147 0 mAhn/2,1001 . +PVSuff-~th
+SFX 147 0 mAny/2,1001 . +PVSuff-~th
+SFX 147 0 mAnA/2,1001 . +PVSuff-~th
+SFX 147 0 mwh/2,1001 . +PVSuff-~th
+SFX 147 0 mwhmA/2,1001 . +PVSuff-~th
+SFX 147 0 mwhm/2,1001 . +PVSuff-~th
+SFX 147 0 mwhA/2,1001 . +PVSuff-~th
+SFX 147 0 mwhn/2,1001 . +PVSuff-~th
+SFX 147 0 mwny/2,1001 . +PVSuff-~th
+SFX 147 0 mwnA/2,1001 . +PVSuff-~th
+SFX 147 0 nh/2,1001 . +PVSuff-~th
+SFX 147 0 nhmA/2,1001 . +PVSuff-~th
+SFX 147 0 nhm/2,1001 . +PVSuff-~th
+SFX 147 0 nhA/2,1001 . +PVSuff-~th
+SFX 147 0 nhn/2,1001 . +PVSuff-~th
+SFX 147 0 nny/2,1001 . +PVSuff-~th
+SFX 147 0 nnA/2,1001 . +PVSuff-~th
+SFX 498 Y 1
+SFX 498 0 n/2,1012 . +IVSuff-|n
+SFX 182 Y 1
+SFX 182 0 wn/2,1006 . +NSuff-wn
+SFX 344 Y 1
+SFX 344 0 0/2,1043 . +Suff-0
+SFX 189 Y 1
+SFX 189 0 tAn/2,1006 . +NSuff-atAn
+SFX 563 Y 2
+SFX 563 0 ny/2,1011 . +IVSuff-ny-nA
+SFX 563 0 nA/2,1011 . +IVSuff-ny-nA
+SFX 357 Y 1
+SFX 357 0 wA/2,1036 . +IVSuff-wA
+SFX 174 Y 1
+SFX 174 0 A/2,1001 . +FWSuff-~A
+SFX 398 Y 7
+SFX 398 0 Ah/2,1031 . +IVSuff-Ah
+SFX 398 0 AhmA/2,1031 . +IVSuff-Ah
+SFX 398 0 Ahm/2,1031 . +IVSuff-Ah
+SFX 398 0 AhA/2,1031 . +IVSuff-Ah
+SFX 398 0 Ahn/2,1031 . +IVSuff-Ah
+SFX 398 0 Any/2,1031 . +IVSuff-Ah
+SFX 398 0 AnA/2,1031 . +IVSuff-Ah
+SFX 594 Y 1
+SFX 594 0 0/2,1061 . +Suff-0
+SFX 592 Y 5
+SFX 592 0 h/2,1061 . +IVSuff-h
+SFX 592 0 hmA/2,1061 . +IVSuff-h
+SFX 592 0 hm/2,1061 . +IVSuff-h
+SFX 592 0 hA/2,1061 . +IVSuff-h
+SFX 592 0 hn/2,1061 . +IVSuff-h
+SFX 422 Y 7
+SFX 422 0 nh/2,1052 . +IVSuff-nh
+SFX 422 0 nhmA/2,1052 . +IVSuff-nh
+SFX 422 0 nhm/2,1052 . +IVSuff-nh
+SFX 422 0 nhA/2,1052 . +IVSuff-nh
+SFX 422 0 nhn/2,1052 . +IVSuff-nh
+SFX 422 0 nny/2,1052 . +IVSuff-nh
+SFX 422 0 nnA/2,1052 . +IVSuff-nh
+SFX 593 Y 5
+SFX 593 0 k/2,1061 . +IVSuff-k
+SFX 593 0 k/2,1061 . +IVSuff-k
+SFX 593 0 kmA/2,1061 . +IVSuff-k
+SFX 593 0 km/2,1061 . +IVSuff-k
+SFX 593 0 kn/2,1061 . +IVSuff-k
+SFX 399 Y 1
+SFX 399 0 An/2,1031 . +IVSuff-An
+SFX 423 Y 1
+SFX 423 0 0/2,1052 . +IVSuff-~n
+SFX 501 Y 1
+SFX 501 0 A/2,1013 . +IVSuff-A
+SFX 196 Y 1
+SFX 196 0 0/2,1007 . +Suff-0
+SFX 552 Y 7
+SFX 552 0 nh/2,1025 . +IVSuff-nh
+SFX 552 0 nhmA/2,1025 . +IVSuff-nh
+SFX 552 0 nhm/2,1025 . +IVSuff-nh
+SFX 552 0 nhA/2,1025 . +IVSuff-nh
+SFX 552 0 nhn/2,1025 . +IVSuff-nh
+SFX 552 0 nny/2,1025 . +IVSuff-nh
+SFX 552 0 nnA/2,1025 . +IVSuff-nh
+SFX 554 Y 1
+SFX 554 0 0/2,1025 . +IVSuff-~n
+SFX 553 Y 5
+SFX 553 0 nk/2,1025 . +IVSuff-nk
+SFX 553 0 nk/2,1025 . +IVSuff-nk
+SFX 553 0 nkmA/2,1025 . +IVSuff-nk
+SFX 553 0 nkm/2,1025 . +IVSuff-nk
+SFX 553 0 nkn/2,1025 . +IVSuff-nk
+SFX 232 Y 13
+SFX 232 0 A/2,1004 . +NSuff-Ah
+SFX 232 0 Ah/2,1004 . +NSuff-Ah
+SFX 232 0 AhmA/2,1004 . +NSuff-Ah
+SFX 232 0 Ahm/2,1004 . +NSuff-Ah
+SFX 232 0 AhA/2,1004 . +NSuff-Ah
+SFX 232 0 Ahn/2,1004 . +NSuff-Ah
+SFX 232 0 Ak/2,1004 . +NSuff-Ah
+SFX 232 0 Ak/2,1004 . +NSuff-Ah
+SFX 232 0 AkmA/2,1004 . +NSuff-Ah
+SFX 232 0 Akm/2,1004 . +NSuff-Ah
+SFX 232 0 Akn/2,1004 . +NSuff-Ah
+SFX 232 0 Ay/2,1004 . +NSuff-Ah
+SFX 232 0 AnA/2,1004 . +NSuff-Ah
+SFX 240 Y 1
+SFX 240 0 p/2,1004 . +NSuff-ap
+SFX 311 Y 1
+SFX 311 0 wA/2,1005 . +PVSuff-awA
+SFX 379 Y 7
+SFX 379 0 wnh/2,1037 . +IVSuff-awnh
+SFX 379 0 wnhmA/2,1037 . +IVSuff-awnh
+SFX 379 0 wnhm/2,1037 . +IVSuff-awnh
+SFX 379 0 wnhA/2,1037 . +IVSuff-awnh
+SFX 379 0 wnhn/2,1037 . +IVSuff-awnh
+SFX 379 0 wnny/2,1037 . +IVSuff-awnh
+SFX 379 0 wnnA/2,1037 . +IVSuff-awnh
+SFX 233 Y 1
+SFX 233 0 An/2,1004 . +NSuff-An
+SFX 164 Y 1
+SFX 164 0 0/2,1001 . +FWSuff-~a
+SFX 267 Y 13
+SFX 267 0 y/2,1003 . +NSuff-iyh
+SFX 267 0 yh/2,1003 . +NSuff-iyh
+SFX 267 0 yhmA/2,1003 . +NSuff-iyh
+SFX 267 0 yhm/2,1003 . +NSuff-iyh
+SFX 267 0 yhA/2,1003 . +NSuff-iyh
+SFX 267 0 yhn/2,1003 . +NSuff-iyh
+SFX 267 0 yk/2,1003 . +NSuff-iyh
+SFX 267 0 yk/2,1003 . +NSuff-iyh
+SFX 267 0 ykmA/2,1003 . +NSuff-iyh
+SFX 267 0 ykm/2,1003 . +NSuff-iyh
+SFX 267 0 ykn/2,1003 . +NSuff-iyh
+SFX 267 0 y/2,1003 . +NSuff-iyh
+SFX 267 0 ynA/2,1003 . +NSuff-iyh
+SFX 380 Y 5
+SFX 380 0 wnk/2,1037 . +IVSuff-awnk
+SFX 380 0 wnk/2,1037 . +IVSuff-awnk
+SFX 380 0 wnkmA/2,1037 . +IVSuff-awnk
+SFX 380 0 wnkm/2,1037 . +IVSuff-awnk
+SFX 380 0 wnkn/2,1037 . +IVSuff-awnk
+SFX 358 Y 7
+SFX 358 0 wh/2,1036 . +IVSuff-wh
+SFX 358 0 whmA/2,1036 . +IVSuff-wh
+SFX 358 0 whm/2,1036 . +IVSuff-wh
+SFX 358 0 whA/2,1036 . +IVSuff-wh
+SFX 358 0 whn/2,1036 . +IVSuff-wh
+SFX 358 0 wny/2,1036 . +IVSuff-wh
+SFX 358 0 wnA/2,1036 . +IVSuff-wh
+SFX 359 Y 5
+SFX 359 0 wk/2,1036 . +IVSuff-wk
+SFX 359 0 wk/2,1036 . +IVSuff-wk
+SFX 359 0 wkmA/2,1036 . +IVSuff-wk
+SFX 359 0 wkm/2,1036 . +IVSuff-wk
+SFX 359 0 wkn/2,1036 . +IVSuff-wk
+SFX 234 Y 1
+SFX 234 0 At/2,1004 . +NSuff-At
+SFX 462 Y 1
+SFX 462 0 wA/2,1023 . +IVSuff-awA
+SFX 25 Y 12
+SFX 25 0 |th/2,1000 . +NSuff-|th
+SFX 25 0 |thmA/2,1000 . +NSuff-|th
+SFX 25 0 |thm/2,1000 . +NSuff-|th
+SFX 25 0 |thA/2,1000 . +NSuff-|th
+SFX 25 0 |thn/2,1000 . +NSuff-|th
+SFX 25 0 |tk/2,1000 . +NSuff-|th
+SFX 25 0 |tk/2,1000 . +NSuff-|th
+SFX 25 0 |tkmA/2,1000 . +NSuff-|th
+SFX 25 0 |tkm/2,1000 . +NSuff-|th
+SFX 25 0 |tkn/2,1000 . +NSuff-|th
+SFX 25 0 |ty/2,1000 . +NSuff-|th
+SFX 25 0 |tnA/2,1000 . +NSuff-|th
+SFX 456 Y 1
+SFX 456 0 wA/2,1022 . +IVSuff-awA
+SFX 360 Y 1
+SFX 360 0 wn/2,1036 . +IVSuff-wn
+SFX 12 Y 1
+SFX 12 0 n/2,1000 . +NSuff-|-ni
+SFX 157 Y 7
+SFX 157 0 yh/2,1001 . +CVSuff-yh
+SFX 157 0 yhmA/2,1001 . +CVSuff-yh
+SFX 157 0 yhm/2,1001 . +CVSuff-yh
+SFX 157 0 yhA/2,1001 . +CVSuff-yh
+SFX 157 0 yhn/2,1001 . +CVSuff-yh
+SFX 157 0 yny/2,1001 . +CVSuff-yh
+SFX 157 0 ynA/2,1001 . +CVSuff-yh
+SFX 508 Y 7
+SFX 508 0 h/2,1013 . +IVSuff-|h
+SFX 508 0 hmA/2,1013 . +IVSuff-|h
+SFX 508 0 hm/2,1013 . +IVSuff-|h
+SFX 508 0 hA/2,1013 . +IVSuff-|h
+SFX 508 0 hn/2,1013 . +IVSuff-|h
+SFX 508 0 ny/2,1013 . +IVSuff-|h
+SFX 508 0 nA/2,1013 . +IVSuff-|h
+SFX 513 Y 1
+SFX 513 0 A/2,1046 . +IVSuff-A
+SFX 509 Y 5
+SFX 509 0 k/2,1013 . +IVSuff-|k
+SFX 509 0 k/2,1013 . +IVSuff-|k
+SFX 509 0 kmA/2,1013 . +IVSuff-|k
+SFX 509 0 km/2,1013 . +IVSuff-|k
+SFX 509 0 kn/2,1013 . +IVSuff-|k
+SFX 429 Y 1
+SFX 429 0 wA/2,1014 . +IVSuff-wA
+SFX 314 Y 12
+SFX 314 0 h/2,1005 . +PVSuff-0ah
+SFX 314 0 hmA/2,1005 . +PVSuff-0ah
+SFX 314 0 hm/2,1005 . +PVSuff-0ah
+SFX 314 0 hA/2,1005 . +PVSuff-0ah
+SFX 314 0 hn/2,1005 . +PVSuff-0ah
+SFX 314 0 k/2,1005 . +PVSuff-0ah
+SFX 314 0 k/2,1005 . +PVSuff-0ah
+SFX 314 0 kmA/2,1005 . +PVSuff-0ah
+SFX 314 0 km/2,1005 . +PVSuff-0ah
+SFX 314 0 kn/2,1005 . +PVSuff-0ah
+SFX 314 0 ny/2,1005 . +PVSuff-0ah
+SFX 314 0 nA/2,1005 . +PVSuff-0ah
+SFX 598 Y 5
+SFX 598 0 h/2,1063 . +IVSuff-h
+SFX 598 0 hmA/2,1063 . +IVSuff-h
+SFX 598 0 hm/2,1063 . +IVSuff-h
+SFX 598 0 hA/2,1063 . +IVSuff-h
+SFX 598 0 hn/2,1063 . +IVSuff-h
+SFX 510 Y 1
+SFX 510 0 n/2,1013 . +IVSuff-|n
+SFX 312 Y 12
+SFX 312 0 wh/2,1005 . +PVSuff-awh
+SFX 312 0 whmA/2,1005 . +PVSuff-awh
+SFX 312 0 whm/2,1005 . +PVSuff-awh
+SFX 312 0 whA/2,1005 . +PVSuff-awh
+SFX 312 0 whn/2,1005 . +PVSuff-awh
+SFX 312 0 wk/2,1005 . +PVSuff-awh
+SFX 312 0 wk/2,1005 . +PVSuff-awh
+SFX 312 0 wkmA/2,1005 . +PVSuff-awh
+SFX 312 0 wkm/2,1005 . +PVSuff-awh
+SFX 312 0 wkn/2,1005 . +PVSuff-awh
+SFX 312 0 wny/2,1005 . +PVSuff-awh
+SFX 312 0 wnA/2,1005 . +PVSuff-awh
+SFX 599 Y 5
+SFX 599 0 k/2,1063 . +IVSuff-k
+SFX 599 0 k/2,1063 . +IVSuff-k
+SFX 599 0 kmA/2,1063 . +IVSuff-k
+SFX 599 0 km/2,1063 . +IVSuff-k
+SFX 599 0 kn/2,1063 . +IVSuff-k
+SFX 41 Y 1
+SFX 41 0 yn/2,1000 . +NSuff-iyna
+SFX 463 Y 7
+SFX 463 0 wh/2,1023 . +IVSuff-awh
+SFX 463 0 whmA/2,1023 . +IVSuff-awh
+SFX 463 0 whm/2,1023 . +IVSuff-awh
+SFX 463 0 whA/2,1023 . +IVSuff-awh
+SFX 463 0 whn/2,1023 . +IVSuff-awh
+SFX 463 0 wny/2,1023 . +IVSuff-awh
+SFX 463 0 wnA/2,1023 . +IVSuff-awh
+SFX 375 Y 1
+SFX 375 0 wA/2,1037 . +IVSuff-awA
+SFX 507 Y 1
+SFX 507 0 0/2,1013 . +IVSuff-|
+SFX 457 Y 7
+SFX 457 0 wh/2,1022 . +IVSuff-awh
+SFX 457 0 whmA/2,1022 . +IVSuff-awh
+SFX 457 0 whm/2,1022 . +IVSuff-awh
+SFX 457 0 whA/2,1022 . +IVSuff-awh
+SFX 457 0 whn/2,1022 . +IVSuff-awh
+SFX 457 0 wny/2,1022 . +IVSuff-awh
+SFX 457 0 wnA/2,1022 . +IVSuff-awh
+SFX 363 Y 1
+SFX 363 0 wA/2,1036 . +IVSuff-awA
+SFX 464 Y 5
+SFX 464 0 wk/2,1023 . +IVSuff-awk
+SFX 464 0 wk/2,1023 . +IVSuff-awk
+SFX 464 0 wkmA/2,1023 . +IVSuff-awk
+SFX 464 0 wkm/2,1023 . +IVSuff-awk
+SFX 464 0 wkn/2,1023 . +IVSuff-awk
+SFX 458 Y 5
+SFX 458 0 wk/2,1022 . +IVSuff-awk
+SFX 458 0 wk/2,1022 . +IVSuff-awk
+SFX 458 0 wkmA/2,1022 . +IVSuff-awk
+SFX 458 0 wkm/2,1022 . +IVSuff-awk
+SFX 458 0 wkn/2,1022 . +IVSuff-awk
+SFX 369 Y 1
+SFX 369 0 wA/2,1037 . +IVSuff-wA
+SFX 528 Y 7
+SFX 528 0 h/2,1020 . +IVSuff-|h
+SFX 528 0 hmA/2,1020 . +IVSuff-|h
+SFX 528 0 hm/2,1020 . +IVSuff-|h
+SFX 528 0 hA/2,1020 . +IVSuff-|h
+SFX 528 0 hn/2,1020 . +IVSuff-|h
+SFX 528 0 ny/2,1020 . +IVSuff-|h
+SFX 528 0 nA/2,1020 . +IVSuff-|h
+SFX 226 Y 13
+SFX 226 0 y/2,1002 . +NSuff-iyh
+SFX 226 0 yh/2,1002 . +NSuff-iyh
+SFX 226 0 yhmA/2,1002 . +NSuff-iyh
+SFX 226 0 yhm/2,1002 . +NSuff-iyh
+SFX 226 0 yhA/2,1002 . +NSuff-iyh
+SFX 226 0 yhn/2,1002 . +NSuff-iyh
+SFX 226 0 yk/2,1002 . +NSuff-iyh
+SFX 226 0 yk/2,1002 . +NSuff-iyh
+SFX 226 0 ykmA/2,1002 . +NSuff-iyh
+SFX 226 0 ykm/2,1002 . +NSuff-iyh
+SFX 226 0 ykn/2,1002 . +NSuff-iyh
+SFX 226 0 y/2,1002 . +NSuff-iyh
+SFX 226 0 ynA/2,1002 . +NSuff-iyh
+SFX 130 Y 13
+SFX 130 0 w/2,1001 . +NSuff-wh
+SFX 130 0 wh/2,1001 . +NSuff-wh
+SFX 130 0 whmA/2,1001 . +NSuff-wh
+SFX 130 0 whm/2,1001 . +NSuff-wh
+SFX 130 0 whA/2,1001 . +NSuff-wh
+SFX 130 0 whn/2,1001 . +NSuff-wh
+SFX 130 0 wk/2,1001 . +NSuff-wh
+SFX 130 0 wk/2,1001 . +NSuff-wh
+SFX 130 0 wkmA/2,1001 . +NSuff-wh
+SFX 130 0 wkm/2,1001 . +NSuff-wh
+SFX 130 0 wkn/2,1001 . +NSuff-wh
+SFX 130 0 y/2,1001 . +NSuff-wh
+SFX 130 0 wnA/2,1001 . +NSuff-wh
+SFX 409 Y 1
+SFX 409 0 A/2,1045 . +IVSuff-A
+SFX 430 Y 7
+SFX 430 0 wh/2,1014 . +IVSuff-wh
+SFX 430 0 whmA/2,1014 . +IVSuff-wh
+SFX 430 0 whm/2,1014 . +IVSuff-wh
+SFX 430 0 whA/2,1014 . +IVSuff-wh
+SFX 430 0 whn/2,1014 . +IVSuff-wh
+SFX 430 0 wny/2,1014 . +IVSuff-wh
+SFX 430 0 wnA/2,1014 . +IVSuff-wh
+SFX 131 Y 1
+SFX 131 0 wn/2,1001 . +NSuff-wn
+SFX 426 Y 7
+SFX 426 0 nh/2,1053 . +IVSuff-nh
+SFX 426 0 nhmA/2,1053 . +IVSuff-nh
+SFX 426 0 nhm/2,1053 . +IVSuff-nh
+SFX 426 0 nhA/2,1053 . +IVSuff-nh
+SFX 426 0 nhn/2,1053 . +IVSuff-nh
+SFX 426 0 nny/2,1053 . +IVSuff-nh
+SFX 426 0 nnA/2,1053 . +IVSuff-nh
+SFX 431 Y 5
+SFX 431 0 wk/2,1014 . +IVSuff-wk
+SFX 431 0 wk/2,1014 . +IVSuff-wk
+SFX 431 0 wkmA/2,1014 . +IVSuff-wk
+SFX 431 0 wkm/2,1014 . +IVSuff-wk
+SFX 431 0 wkn/2,1014 . +IVSuff-wk
+SFX 427 Y 1
+SFX 427 0 0/2,1053 . +IVSuff-~n
+SFX 352 Y 7
+SFX 352 0 ynh/2,1035 . +IVSuff-ynh
+SFX 352 0 ynhmA/2,1035 . +IVSuff-ynh
+SFX 352 0 ynhm/2,1035 . +IVSuff-ynh
+SFX 352 0 ynhA/2,1035 . +IVSuff-ynh
+SFX 352 0 ynhn/2,1035 . +IVSuff-ynh
+SFX 352 0 ynny/2,1035 . +IVSuff-ynh
+SFX 352 0 ynnA/2,1035 . +IVSuff-ynh
+SFX 139 Y 24
+SFX 139 0 th/2,1001 . +PVSuff-ath
+SFX 139 0 thmA/2,1001 . +PVSuff-ath
+SFX 139 0 thm/2,1001 . +PVSuff-ath
+SFX 139 0 thA/2,1001 . +PVSuff-ath
+SFX 139 0 thn/2,1001 . +PVSuff-ath
+SFX 139 0 tk/2,1001 . +PVSuff-ath
+SFX 139 0 tk/2,1001 . +PVSuff-ath
+SFX 139 0 tkmA/2,1001 . +PVSuff-ath
+SFX 139 0 tkm/2,1001 . +PVSuff-ath
+SFX 139 0 tkn/2,1001 . +PVSuff-ath
+SFX 139 0 tny/2,1001 . +PVSuff-ath
+SFX 139 0 tnA/2,1001 . +PVSuff-ath
+SFX 139 0 tAh/2,1001 . +PVSuff-ath
+SFX 139 0 tAhmA/2,1001 . +PVSuff-ath
+SFX 139 0 tAhm/2,1001 . +PVSuff-ath
+SFX 139 0 tAhA/2,1001 . +PVSuff-ath
+SFX 139 0 tAhn/2,1001 . +PVSuff-ath
+SFX 139 0 tAk/2,1001 . +PVSuff-ath
+SFX 139 0 tAk/2,1001 . +PVSuff-ath
+SFX 139 0 tAkmA/2,1001 . +PVSuff-ath
+SFX 139 0 tAkm/2,1001 . +PVSuff-ath
+SFX 139 0 tAkn/2,1001 . +PVSuff-ath
+SFX 139 0 tAny/2,1001 . +PVSuff-ath
+SFX 139 0 tAnA/2,1001 . +PVSuff-ath
+SFX 539 Y 1
+SFX 539 0 n/2,1017 . +IVSuff-n
+SFX 432 Y 1
+SFX 432 0 wn/2,1014 . +IVSuff-wn
+SFX 188 Y 1
+SFX 188 0 tyn/2,1006 . +NSuff-tayn
+SFX 348 Y 7
+SFX 348 0 ynh/2,1034 . +IVSuff-ynh
+SFX 348 0 ynhmA/2,1034 . +IVSuff-ynh
+SFX 348 0 ynhm/2,1034 . +IVSuff-ynh
+SFX 348 0 ynhA/2,1034 . +IVSuff-ynh
+SFX 348 0 ynhn/2,1034 . +IVSuff-ynh
+SFX 348 0 ynny/2,1034 . +IVSuff-ynh
+SFX 348 0 ynnA/2,1034 . +IVSuff-ynh
+SFX 413 Y 1
+SFX 413 0 n/2,1038 . +IVSuff-n
+SFX 333 Y 5
+SFX 333 0 h/2,1028 . +IVSuff-h
+SFX 333 0 hmA/2,1028 . +IVSuff-h
+SFX 333 0 hm/2,1028 . +IVSuff-h
+SFX 333 0 hA/2,1028 . +IVSuff-h
+SFX 333 0 hn/2,1028 . +IVSuff-h
+SFX 376 Y 7
+SFX 376 0 wh/2,1037 . +IVSuff-awh
+SFX 376 0 whmA/2,1037 . +IVSuff-awh
+SFX 376 0 whm/2,1037 . +IVSuff-awh
+SFX 376 0 whA/2,1037 . +IVSuff-awh
+SFX 376 0 whn/2,1037 . +IVSuff-awh
+SFX 376 0 wny/2,1037 . +IVSuff-awh
+SFX 376 0 wnA/2,1037 . +IVSuff-awh
+SFX 516 Y 1
+SFX 516 0 0/2,1046 . +IVSuff-|
+SFX 364 Y 7
+SFX 364 0 wh/2,1036 . +IVSuff-awh
+SFX 364 0 whmA/2,1036 . +IVSuff-awh
+SFX 364 0 whm/2,1036 . +IVSuff-awh
+SFX 364 0 whA/2,1036 . +IVSuff-awh
+SFX 364 0 whn/2,1036 . +IVSuff-awh
+SFX 364 0 wny/2,1036 . +IVSuff-awh
+SFX 364 0 wnA/2,1036 . +IVSuff-awh
+SFX 180 Y 1
+SFX 180 0 yn/2,1006 . +NSuff-ayn
+SFX 377 Y 5
+SFX 377 0 wk/2,1037 . +IVSuff-awk
+SFX 377 0 wk/2,1037 . +IVSuff-awk
+SFX 377 0 wkmA/2,1037 . +IVSuff-awk
+SFX 377 0 wkm/2,1037 . +IVSuff-awk
+SFX 377 0 wkn/2,1037 . +IVSuff-awk
+SFX 370 Y 7
+SFX 370 0 wh/2,1037 . +IVSuff-wh
+SFX 370 0 whmA/2,1037 . +IVSuff-wh
+SFX 370 0 whm/2,1037 . +IVSuff-wh
+SFX 370 0 whA/2,1037 . +IVSuff-wh
+SFX 370 0 whn/2,1037 . +IVSuff-wh
+SFX 370 0 wny/2,1037 . +IVSuff-wh
+SFX 370 0 wnA/2,1037 . +IVSuff-wh
+SFX 365 Y 5
+SFX 365 0 wk/2,1036 . +IVSuff-awk
+SFX 365 0 wk/2,1036 . +IVSuff-awk
+SFX 365 0 wkmA/2,1036 . +IVSuff-awk
+SFX 365 0 wkm/2,1036 . +IVSuff-awk
+SFX 365 0 wkn/2,1036 . +IVSuff-awk
+SFX 378 Y 1
+SFX 378 0 wn/2,1037 . +IVSuff-awn
+SFX 371 Y 5
+SFX 371 0 wk/2,1037 . +IVSuff-wk
+SFX 371 0 wk/2,1037 . +IVSuff-wk
+SFX 371 0 wkmA/2,1037 . +IVSuff-wk
+SFX 371 0 wkm/2,1037 . +IVSuff-wk
+SFX 371 0 wkn/2,1037 . +IVSuff-wk
+SFX 366 Y 1
+SFX 366 0 wn/2,1036 . +IVSuff-awn
+SFX 445 Y 7
+SFX 445 0 wnh/2,1015 . +IVSuff-wnh
+SFX 445 0 wnhmA/2,1015 . +IVSuff-wnh
+SFX 445 0 wnhm/2,1015 . +IVSuff-wnh
+SFX 445 0 wnhA/2,1015 . +IVSuff-wnh
+SFX 445 0 wnhn/2,1015 . +IVSuff-wnh
+SFX 445 0 wnny/2,1015 . +IVSuff-wnh
+SFX 445 0 wnnA/2,1015 . +IVSuff-wnh
+SFX 372 Y 1
+SFX 372 0 wn/2,1037 . +IVSuff-wn
+SFX 587 Y 2
+SFX 587 0 ny/2,1041 . +IVSuff-ny-nA
+SFX 587 0 nA/2,1041 . +IVSuff-ny-nA
+SFX 433 Y 7
+SFX 433 0 wnh/2,1014 . +IVSuff-wnh
+SFX 433 0 wnhmA/2,1014 . +IVSuff-wnh
+SFX 433 0 wnhm/2,1014 . +IVSuff-wnh
+SFX 433 0 wnhA/2,1014 . +IVSuff-wnh
+SFX 433 0 wnhn/2,1014 . +IVSuff-wnh
+SFX 433 0 wnny/2,1014 . +IVSuff-wnh
+SFX 433 0 wnnA/2,1014 . +IVSuff-wnh
+SFX 446 Y 5
+SFX 446 0 wnk/2,1015 . +IVSuff-wnk
+SFX 446 0 wnk/2,1015 . +IVSuff-wnk
+SFX 446 0 wnkmA/2,1015 . +IVSuff-wnk
+SFX 446 0 wnkm/2,1015 . +IVSuff-wnk
+SFX 446 0 wnkn/2,1015 . +IVSuff-wnk
+SFX 119 Y 13
+SFX 119 0 tA/2,1001 . +NSuff-atAh
+SFX 119 0 tAh/2,1001 . +NSuff-atAh
+SFX 119 0 tAhmA/2,1001 . +NSuff-atAh
+SFX 119 0 tAhm/2,1001 . +NSuff-atAh
+SFX 119 0 tAhA/2,1001 . +NSuff-atAh
+SFX 119 0 tAhn/2,1001 . +NSuff-atAh
+SFX 119 0 tAk/2,1001 . +NSuff-atAh
+SFX 119 0 tAk/2,1001 . +NSuff-atAh
+SFX 119 0 tAkmA/2,1001 . +NSuff-atAh
+SFX 119 0 tAkm/2,1001 . +NSuff-atAh
+SFX 119 0 tAkn/2,1001 . +NSuff-atAh
+SFX 119 0 tAy/2,1001 . +NSuff-atAh
+SFX 119 0 tAnA/2,1001 . +NSuff-atAh
+SFX 321 Y 5
+SFX 321 0 h/2,1057 . +IVSuff-h
+SFX 321 0 hmA/2,1057 . +IVSuff-h
+SFX 321 0 hm/2,1057 . +IVSuff-h
+SFX 321 0 hA/2,1057 . +IVSuff-h
+SFX 321 0 hn/2,1057 . +IVSuff-h
+SFX 434 Y 5
+SFX 434 0 wnk/2,1014 . +IVSuff-wnk
+SFX 434 0 wnk/2,1014 . +IVSuff-wnk
+SFX 434 0 wnkmA/2,1014 . +IVSuff-wnk
+SFX 434 0 wnkm/2,1014 . +IVSuff-wnk
+SFX 434 0 wnkn/2,1014 . +IVSuff-wnk
+SFX 277 Y 1
+SFX 277 0 p/2,1008 . +NSuff-ap
+SFX 262 Y 12
+SFX 262 0 th/2,1003 . +NSuff-ath
+SFX 262 0 thmA/2,1003 . +NSuff-ath
+SFX 262 0 thm/2,1003 . +NSuff-ath
+SFX 262 0 thA/2,1003 . +NSuff-ath
+SFX 262 0 thn/2,1003 . +NSuff-ath
+SFX 262 0 tk/2,1003 . +NSuff-ath
+SFX 262 0 tk/2,1003 . +NSuff-ath
+SFX 262 0 tkmA/2,1003 . +NSuff-ath
+SFX 262 0 tkm/2,1003 . +NSuff-ath
+SFX 262 0 tkn/2,1003 . +NSuff-ath
+SFX 262 0 ty/2,1003 . +NSuff-ath
+SFX 262 0 tnA/2,1003 . +NSuff-ath
+SFX 322 Y 5
+SFX 322 0 k/2,1057 . +IVSuff-k
+SFX 322 0 k/2,1057 . +IVSuff-k
+SFX 322 0 kmA/2,1057 . +IVSuff-k
+SFX 322 0 km/2,1057 . +IVSuff-k
+SFX 322 0 kn/2,1057 . +IVSuff-k
+SFX 271 Y 1
+SFX 271 0 0/2,1008 . +Suff-0
+SFX 120 Y 1
+SFX 120 0 tAn/2,1001 . +NSuff-atAn
+SFX 332 Y 1
+SFX 332 0 0/2,1056 . +Suff-0
+SFX 111 Y 12
+SFX 111 0 |th/2,1001 . +NSuff-|th
+SFX 111 0 |thmA/2,1001 . +NSuff-|th
+SFX 111 0 |thm/2,1001 . +NSuff-|th
+SFX 111 0 |thA/2,1001 . +NSuff-|th
+SFX 111 0 |thn/2,1001 . +NSuff-|th
+SFX 111 0 |tk/2,1001 . +NSuff-|th
+SFX 111 0 |tk/2,1001 . +NSuff-|th
+SFX 111 0 |tkmA/2,1001 . +NSuff-|th
+SFX 111 0 |tkm/2,1001 . +NSuff-|th
+SFX 111 0 |tkn/2,1001 . +NSuff-|th
+SFX 111 0 |ty/2,1001 . +NSuff-|th
+SFX 111 0 |tnA/2,1001 . +NSuff-|th
+SFX 273 Y 1
+SFX 273 0 At/2,1008 . +NSuff-At
+SFX 62 Y 1
+SFX 62 0 wA/2,1000 . +PVSuff-uwA
+SFX 451 Y 7
+SFX 451 0 wnh/2,1015 . +IVSuff-awnh
+SFX 451 0 wnhmA/2,1015 . +IVSuff-awnh
+SFX 451 0 wnhm/2,1015 . +IVSuff-awnh
+SFX 451 0 wnhA/2,1015 . +IVSuff-awnh
+SFX 451 0 wnhn/2,1015 . +IVSuff-awnh
+SFX 451 0 wnny/2,1015 . +IVSuff-awnh
+SFX 451 0 wnnA/2,1015 . +IVSuff-awnh
+SFX 441 Y 1
+SFX 441 0 wA/2,1015 . +IVSuff-wA
+SFX 600 Y 1
+SFX 600 0 0/2,1063 . +Suff-0
+SFX 452 Y 5
+SFX 452 0 wnk/2,1015 . +IVSuff-awnk
+SFX 452 0 wnk/2,1015 . +IVSuff-awnk
+SFX 452 0 wnkmA/2,1015 . +IVSuff-awnk
+SFX 452 0 wnkm/2,1015 . +IVSuff-awnk
+SFX 452 0 wnkn/2,1015 . +IVSuff-awnk
+SFX 411 Y 1
+SFX 411 0 0/2,1045 . +IVSuff-|
+SFX 543 Y 7
+SFX 543 0 h/2,1017 . +IVSuff-~nh
+SFX 543 0 hmA/2,1017 . +IVSuff-~nh
+SFX 543 0 hm/2,1017 . +IVSuff-~nh
+SFX 543 0 hA/2,1017 . +IVSuff-~nh
+SFX 543 0 hn/2,1017 . +IVSuff-~nh
+SFX 543 0 ny/2,1017 . +IVSuff-~nh
+SFX 543 0 nA/2,1017 . +IVSuff-~nh
+SFX 537 Y 7
+SFX 537 0 h/2,1016 . +IVSuff-~nh
+SFX 537 0 hmA/2,1016 . +IVSuff-~nh
+SFX 537 0 hm/2,1016 . +IVSuff-~nh
+SFX 537 0 hA/2,1016 . +IVSuff-~nh
+SFX 537 0 hn/2,1016 . +IVSuff-~nh
+SFX 537 0 ny/2,1016 . +IVSuff-~nh
+SFX 537 0 nA/2,1016 . +IVSuff-~nh
+SFX 343 Y 2
+SFX 343 0 ny/2,1043 . +IVSuff-ny-nA
+SFX 343 0 nA/2,1043 . +IVSuff-ny-nA
+SFX 355 Y 1
+SFX 355 0 y/2,1049 . +IVSuff-y
+SFX 544 Y 5
+SFX 544 0 k/2,1017 . +IVSuff-~nk
+SFX 544 0 k/2,1017 . +IVSuff-~nk
+SFX 544 0 kmA/2,1017 . +IVSuff-~nk
+SFX 544 0 km/2,1017 . +IVSuff-~nk
+SFX 544 0 kn/2,1017 . +IVSuff-~nk
+SFX 538 Y 5
+SFX 538 0 k/2,1016 . +IVSuff-~nk
+SFX 538 0 k/2,1016 . +IVSuff-~nk
+SFX 538 0 kmA/2,1016 . +IVSuff-~nk
+SFX 538 0 km/2,1016 . +IVSuff-~nk
+SFX 538 0 kn/2,1016 . +IVSuff-~nk
+SFX 532 Y 7
+SFX 532 0 h/2,1021 . +IVSuff-|h
+SFX 532 0 hmA/2,1021 . +IVSuff-|h
+SFX 532 0 hm/2,1021 . +IVSuff-|h
+SFX 532 0 hA/2,1021 . +IVSuff-|h
+SFX 532 0 hn/2,1021 . +IVSuff-|h
+SFX 532 0 ny/2,1021 . +IVSuff-|h
+SFX 532 0 nA/2,1021 . +IVSuff-|h
+SFX 57 Y 22
+SFX 57 0 h/2,1000 . +PVSuff-~nh
+SFX 57 0 hmA/2,1000 . +PVSuff-~nh
+SFX 57 0 hm/2,1000 . +PVSuff-~nh
+SFX 57 0 hA/2,1000 . +PVSuff-~nh
+SFX 57 0 hn/2,1000 . +PVSuff-~nh
+SFX 57 0 k/2,1000 . +PVSuff-~nh
+SFX 57 0 k/2,1000 . +PVSuff-~nh
+SFX 57 0 kmA/2,1000 . +PVSuff-~nh
+SFX 57 0 km/2,1000 . +PVSuff-~nh
+SFX 57 0 kn/2,1000 . +PVSuff-~nh
+SFX 57 0 ny/2,1000 . +PVSuff-~nh
+SFX 57 0 nA/2,1000 . +PVSuff-~nh
+SFX 57 0 Ah/2,1000 . +PVSuff-~nh
+SFX 57 0 AhmA/2,1000 . +PVSuff-~nh
+SFX 57 0 Ahm/2,1000 . +PVSuff-~nh
+SFX 57 0 AhA/2,1000 . +PVSuff-~nh
+SFX 57 0 Ahn/2,1000 . +PVSuff-~nh
+SFX 57 0 Ak/2,1000 . +PVSuff-~nh
+SFX 57 0 Ak/2,1000 . +PVSuff-~nh
+SFX 57 0 AkmA/2,1000 . +PVSuff-~nh
+SFX 57 0 Akm/2,1000 . +PVSuff-~nh
+SFX 57 0 Akn/2,1000 . +PVSuff-~nh
+SFX 555 Y 7
+SFX 555 0 h/2,1025 . +IVSuff-~nh
+SFX 555 0 hmA/2,1025 . +IVSuff-~nh
+SFX 555 0 hm/2,1025 . +IVSuff-~nh
+SFX 555 0 hA/2,1025 . +IVSuff-~nh
+SFX 555 0 hn/2,1025 . +IVSuff-~nh
+SFX 555 0 ny/2,1025 . +IVSuff-~nh
+SFX 555 0 nA/2,1025 . +IVSuff-~nh
+SFX 549 Y 7
+SFX 549 0 h/2,1024 . +IVSuff-~nh
+SFX 549 0 hmA/2,1024 . +IVSuff-~nh
+SFX 549 0 hm/2,1024 . +IVSuff-~nh
+SFX 549 0 hA/2,1024 . +IVSuff-~nh
+SFX 549 0 hn/2,1024 . +IVSuff-~nh
+SFX 549 0 ny/2,1024 . +IVSuff-~nh
+SFX 549 0 nA/2,1024 . +IVSuff-~nh
+SFX 556 Y 5
+SFX 556 0 k/2,1025 . +IVSuff-~nk
+SFX 556 0 k/2,1025 . +IVSuff-~nk
+SFX 556 0 kmA/2,1025 . +IVSuff-~nk
+SFX 556 0 km/2,1025 . +IVSuff-~nk
+SFX 556 0 kn/2,1025 . +IVSuff-~nk
+SFX 550 Y 5
+SFX 550 0 k/2,1024 . +IVSuff-~nk
+SFX 550 0 k/2,1024 . +IVSuff-~nk
+SFX 550 0 kmA/2,1024 . +IVSuff-~nk
+SFX 550 0 km/2,1024 . +IVSuff-~nk
+SFX 550 0 kn/2,1024 . +IVSuff-~nk
+SFX 63 Y 12
+SFX 63 0 wh/2,1000 . +PVSuff-uwh
+SFX 63 0 whmA/2,1000 . +PVSuff-uwh
+SFX 63 0 whm/2,1000 . +PVSuff-uwh
+SFX 63 0 whA/2,1000 . +PVSuff-uwh
+SFX 63 0 whn/2,1000 . +PVSuff-uwh
+SFX 63 0 wk/2,1000 . +PVSuff-uwh
+SFX 63 0 wk/2,1000 . +PVSuff-uwh
+SFX 63 0 wkmA/2,1000 . +PVSuff-uwh
+SFX 63 0 wkm/2,1000 . +PVSuff-uwh
+SFX 63 0 wkn/2,1000 . +PVSuff-uwh
+SFX 63 0 wny/2,1000 . +PVSuff-uwh
+SFX 63 0 wnA/2,1000 . +PVSuff-uwh
+SFX 572 Y 1
+SFX 572 0 0/2,1019 . +Suff-0
+SFX 239 Y 12
+SFX 239 0 |th/2,1004 . +NSuff-|th
+SFX 239 0 |thmA/2,1004 . +NSuff-|th
+SFX 239 0 |thm/2,1004 . +NSuff-|th
+SFX 239 0 |thA/2,1004 . +NSuff-|th
+SFX 239 0 |thn/2,1004 . +NSuff-|th
+SFX 239 0 |tk/2,1004 . +NSuff-|th
+SFX 239 0 |tk/2,1004 . +NSuff-|th
+SFX 239 0 |tkmA/2,1004 . +NSuff-|th
+SFX 239 0 |tkm/2,1004 . +NSuff-|th
+SFX 239 0 |tkn/2,1004 . +NSuff-|th
+SFX 239 0 |ty/2,1004 . +NSuff-|th
+SFX 239 0 |tnA/2,1004 . +NSuff-|th
+SFX 442 Y 7
+SFX 442 0 wh/2,1015 . +IVSuff-wh
+SFX 442 0 whmA/2,1015 . +IVSuff-wh
+SFX 442 0 whm/2,1015 . +IVSuff-wh
+SFX 442 0 whA/2,1015 . +IVSuff-wh
+SFX 442 0 whn/2,1015 . +IVSuff-wh
+SFX 442 0 wny/2,1015 . +IVSuff-wh
+SFX 442 0 wnA/2,1015 . +IVSuff-wh
+SFX 221 Y 12
+SFX 221 0 th/2,1002 . +NSuff-ath
+SFX 221 0 thmA/2,1002 . +NSuff-ath
+SFX 221 0 thm/2,1002 . +NSuff-ath
+SFX 221 0 thA/2,1002 . +NSuff-ath
+SFX 221 0 thn/2,1002 . +NSuff-ath
+SFX 221 0 tk/2,1002 . +NSuff-ath
+SFX 221 0 tk/2,1002 . +NSuff-ath
+SFX 221 0 tkmA/2,1002 . +NSuff-ath
+SFX 221 0 tkm/2,1002 . +NSuff-ath
+SFX 221 0 tkn/2,1002 . +NSuff-ath
+SFX 221 0 ty/2,1002 . +NSuff-ath
+SFX 221 0 tnA/2,1002 . +NSuff-ath
+SFX 202 Y 1
+SFX 202 0 p/2,1007 . +NSuff-ap
+SFX 569 Y 5
+SFX 569 0 h/2,1019 . +IVSuff-h
+SFX 569 0 hmA/2,1019 . +IVSuff-h
+SFX 569 0 hm/2,1019 . +IVSuff-h
+SFX 569 0 hA/2,1019 . +IVSuff-h
+SFX 569 0 hn/2,1019 . +IVSuff-h
+SFX 443 Y 5
+SFX 443 0 wk/2,1015 . +IVSuff-wk
+SFX 443 0 wk/2,1015 . +IVSuff-wk
+SFX 443 0 wkmA/2,1015 . +IVSuff-wk
+SFX 443 0 wkm/2,1015 . +IVSuff-wk
+SFX 443 0 wkn/2,1015 . +IVSuff-wk
+SFX 308 Y 45
+SFX 308 0 h/2,1005 . +PVSuff-~th
+SFX 308 0 hmA/2,1005 . +PVSuff-~th
+SFX 308 0 hm/2,1005 . +PVSuff-~th
+SFX 308 0 hA/2,1005 . +PVSuff-~th
+SFX 308 0 hn/2,1005 . +PVSuff-~th
+SFX 308 0 h/2,1005 . +PVSuff-~th
+SFX 308 0 hmA/2,1005 . +PVSuff-~th
+SFX 308 0 hm/2,1005 . +PVSuff-~th
+SFX 308 0 hA/2,1005 . +PVSuff-~th
+SFX 308 0 hn/2,1005 . +PVSuff-~th
+SFX 308 0 h/2,1005 . +PVSuff-~th
+SFX 308 0 hmA/2,1005 . +PVSuff-~th
+SFX 308 0 hm/2,1005 . +PVSuff-~th
+SFX 308 0 hA/2,1005 . +PVSuff-~th
+SFX 308 0 hn/2,1005 . +PVSuff-~th
+SFX 308 0 k/2,1005 . +PVSuff-~th
+SFX 308 0 k/2,1005 . +PVSuff-~th
+SFX 308 0 kmA/2,1005 . +PVSuff-~th
+SFX 308 0 km/2,1005 . +PVSuff-~th
+SFX 308 0 kn/2,1005 . +PVSuff-~th
+SFX 308 0 ny/2,1005 . +PVSuff-~th
+SFX 308 0 nA/2,1005 . +PVSuff-~th
+SFX 308 0 ny/2,1005 . +PVSuff-~th
+SFX 308 0 nA/2,1005 . +PVSuff-~th
+SFX 308 0 mAh/2,1005 . +PVSuff-~th
+SFX 308 0 mAhmA/2,1005 . +PVSuff-~th
+SFX 308 0 mAhm/2,1005 . +PVSuff-~th
+SFX 308 0 mAhA/2,1005 . +PVSuff-~th
+SFX 308 0 mAhn/2,1005 . +PVSuff-~th
+SFX 308 0 mAny/2,1005 . +PVSuff-~th
+SFX 308 0 mAnA/2,1005 . +PVSuff-~th
+SFX 308 0 mwh/2,1005 . +PVSuff-~th
+SFX 308 0 mwhmA/2,1005 . +PVSuff-~th
+SFX 308 0 mwhm/2,1005 . +PVSuff-~th
+SFX 308 0 mwhA/2,1005 . +PVSuff-~th
+SFX 308 0 mwhn/2,1005 . +PVSuff-~th
+SFX 308 0 mwny/2,1005 . +PVSuff-~th
+SFX 308 0 mwnA/2,1005 . +PVSuff-~th
+SFX 308 0 nh/2,1005 . +PVSuff-~th
+SFX 308 0 nhmA/2,1005 . +PVSuff-~th
+SFX 308 0 nhm/2,1005 . +PVSuff-~th
+SFX 308 0 nhA/2,1005 . +PVSuff-~th
+SFX 308 0 nhn/2,1005 . +PVSuff-~th
+SFX 308 0 nny/2,1005 . +PVSuff-~th
+SFX 308 0 nnA/2,1005 . +PVSuff-~th
+SFX 242 Y 13
+SFX 242 0 tA/2,1004 . +NSuff-atAh
+SFX 242 0 tAh/2,1004 . +NSuff-atAh
+SFX 242 0 tAhmA/2,1004 . +NSuff-atAh
+SFX 242 0 tAhm/2,1004 . +NSuff-atAh
+SFX 242 0 tAhA/2,1004 . +NSuff-atAh
+SFX 242 0 tAhn/2,1004 . +NSuff-atAh
+SFX 242 0 tAk/2,1004 . +NSuff-atAh
+SFX 242 0 tAk/2,1004 . +NSuff-atAh
+SFX 242 0 tAkmA/2,1004 . +NSuff-atAh
+SFX 242 0 tAkm/2,1004 . +NSuff-atAh
+SFX 242 0 tAkn/2,1004 . +NSuff-atAh
+SFX 242 0 tAy/2,1004 . +NSuff-atAh
+SFX 242 0 tAnA/2,1004 . +NSuff-atAh
+SFX 570 Y 5
+SFX 570 0 k/2,1019 . +IVSuff-k
+SFX 570 0 k/2,1019 . +IVSuff-k
+SFX 570 0 kmA/2,1019 . +IVSuff-k
+SFX 570 0 km/2,1019 . +IVSuff-k
+SFX 570 0 kn/2,1019 . +IVSuff-k
+SFX 444 Y 1
+SFX 444 0 wn/2,1015 . +IVSuff-wn
+SFX 243 Y 1
+SFX 243 0 tAn/2,1004 . +NSuff-atAn
+SFX 341 Y 1
+SFX 341 0 0/2,1042 . +Suff-0
+SFX 198 Y 1
+SFX 198 0 At/2,1007 . +NSuff-At
+SFX 318 Y 5
+SFX 318 0 h/2,1055 . +IVSuff-h
+SFX 318 0 hmA/2,1055 . +IVSuff-h
+SFX 318 0 hm/2,1055 . +IVSuff-h
+SFX 318 0 hA/2,1055 . +IVSuff-h
+SFX 318 0 hn/2,1055 . +IVSuff-h
+SFX 319 Y 5
+SFX 319 0 k/2,1055 . +IVSuff-k
+SFX 319 0 k/2,1055 . +IVSuff-k
+SFX 319 0 kmA/2,1055 . +IVSuff-k
+SFX 319 0 km/2,1055 . +IVSuff-k
+SFX 319 0 kn/2,1055 . +IVSuff-k
+SFX 181 Y 1
+SFX 181 0 n/2,1006 . +NSuff-|-ni
+SFX 133 Y 12
+SFX 133 0 h/2,1001 . +PVSuff-ah
+SFX 133 0 hmA/2,1001 . +PVSuff-ah
+SFX 133 0 hm/2,1001 . +PVSuff-ah
+SFX 133 0 hA/2,1001 . +PVSuff-ah
+SFX 133 0 hn/2,1001 . +PVSuff-ah
+SFX 133 0 k/2,1001 . +PVSuff-ah
+SFX 133 0 k/2,1001 . +PVSuff-ah
+SFX 133 0 kmA/2,1001 . +PVSuff-ah
+SFX 133 0 km/2,1001 . +PVSuff-ah
+SFX 133 0 kn/2,1001 . +PVSuff-ah
+SFX 133 0 ny/2,1001 . +PVSuff-ah
+SFX 133 0 nA/2,1001 . +PVSuff-ah
+SFX 397 Y 1
+SFX 397 0 A/2,1031 . +IVSuff-A
+SFX 47 Y 12
+SFX 47 0 h/2,1000 . +PVSuff-ah
+SFX 47 0 hmA/2,1000 . +PVSuff-ah
+SFX 47 0 hm/2,1000 . +PVSuff-ah
+SFX 47 0 hA/2,1000 . +PVSuff-ah
+SFX 47 0 hn/2,1000 . +PVSuff-ah
+SFX 47 0 k/2,1000 . +PVSuff-ah
+SFX 47 0 k/2,1000 . +PVSuff-ah
+SFX 47 0 kmA/2,1000 . +PVSuff-ah
+SFX 47 0 km/2,1000 . +PVSuff-ah
+SFX 47 0 kn/2,1000 . +PVSuff-ah
+SFX 47 0 ny/2,1000 . +PVSuff-ah
+SFX 47 0 nA/2,1000 . +PVSuff-ah
+SFX 135 Y 12
+SFX 135 0 Ah/2,1001 . +PVSuff-Ah
+SFX 135 0 AhmA/2,1001 . +PVSuff-Ah
+SFX 135 0 Ahm/2,1001 . +PVSuff-Ah
+SFX 135 0 AhA/2,1001 . +PVSuff-Ah
+SFX 135 0 Ahn/2,1001 . +PVSuff-Ah
+SFX 135 0 Ak/2,1001 . +PVSuff-Ah
+SFX 135 0 Ak/2,1001 . +PVSuff-Ah
+SFX 135 0 AkmA/2,1001 . +PVSuff-Ah
+SFX 135 0 Akm/2,1001 . +PVSuff-Ah
+SFX 135 0 Akn/2,1001 . +PVSuff-Ah
+SFX 135 0 Any/2,1001 . +PVSuff-Ah
+SFX 135 0 AnA/2,1001 . +PVSuff-Ah
+SFX 559 Y 2
+SFX 559 0 ny/2,1010 . +IVSuff-ny-nA
+SFX 559 0 nA/2,1010 . +IVSuff-ny-nA
+SFX 138 Y 2
+SFX 138 0 t/2,1001 . +PVSuff-at
+SFX 138 0 tA/2,1001 . +PVSuff-at
+SFX 49 Y 12
+SFX 49 0 Ah/2,1000 . +PVSuff-Ah
+SFX 49 0 AhmA/2,1000 . +PVSuff-Ah
+SFX 49 0 Ahm/2,1000 . +PVSuff-Ah
+SFX 49 0 AhA/2,1000 . +PVSuff-Ah
+SFX 49 0 Ahn/2,1000 . +PVSuff-Ah
+SFX 49 0 Ak/2,1000 . +PVSuff-Ah
+SFX 49 0 Ak/2,1000 . +PVSuff-Ah
+SFX 49 0 AkmA/2,1000 . +PVSuff-Ah
+SFX 49 0 Akm/2,1000 . +PVSuff-Ah
+SFX 49 0 Akn/2,1000 . +PVSuff-Ah
+SFX 49 0 Any/2,1000 . +PVSuff-Ah
+SFX 49 0 AnA/2,1000 . +PVSuff-Ah
+SFX 259 Y 1
+SFX 259 0 p/2,1003 . +NSuff-ap
+SFX 52 Y 2
+SFX 52 0 t/2,1000 . +PVSuff-at
+SFX 52 0 tA/2,1000 . +PVSuff-at
+SFX 266 Y 1
+SFX 266 0 y/2,1003 . +NSuff-iy
+SFX 183 Y 1
+SFX 183 0 yn/2,1006 . +NSuff-iyna
+SFX 251 Y 1
+SFX 251 0 At/2,1003 . +NSuff-At
+SFX 588 Y 1
+SFX 588 0 0/2,1041 . +Suff-0
+SFX 40 Y 13
+SFX 40 0 y/2,1000 . +NSuff-iyh
+SFX 40 0 yh/2,1000 . +NSuff-iyh
+SFX 40 0 yhmA/2,1000 . +NSuff-iyh
+SFX 40 0 yhm/2,1000 . +NSuff-iyh
+SFX 40 0 yhA/2,1000 . +NSuff-iyh
+SFX 40 0 yhn/2,1000 . +NSuff-iyh
+SFX 40 0 yk/2,1000 . +NSuff-iyh
+SFX 40 0 yk/2,1000 . +NSuff-iyh
+SFX 40 0 ykmA/2,1000 . +NSuff-iyh
+SFX 40 0 ykm/2,1000 . +NSuff-iyh
+SFX 40 0 ykn/2,1000 . +NSuff-iyh
+SFX 40 0 y/2,1000 . +NSuff-iyh
+SFX 40 0 ynA/2,1000 . +NSuff-iyh
+SFX 490 Y 7
+SFX 490 0 Ah/2,1012 . +IVSuff-Ah
+SFX 490 0 AhmA/2,1012 . +IVSuff-Ah
+SFX 490 0 Ahm/2,1012 . +IVSuff-Ah
+SFX 490 0 AhA/2,1012 . +IVSuff-Ah
+SFX 490 0 Ahn/2,1012 . +IVSuff-Ah
+SFX 490 0 Any/2,1012 . +IVSuff-Ah
+SFX 490 0 AnA/2,1012 . +IVSuff-Ah
+SFX 193 Y 1
+SFX 193 0 |t/2,1006 . +NSuff-|t
+SFX 487 Y 7
+SFX 487 0 nh/2,1033 . +IVSuff-|nh
+SFX 487 0 nhmA/2,1033 . +IVSuff-|nh
+SFX 487 0 nhm/2,1033 . +IVSuff-|nh
+SFX 487 0 nhA/2,1033 . +IVSuff-|nh
+SFX 487 0 nhn/2,1033 . +IVSuff-|nh
+SFX 487 0 nny/2,1033 . +IVSuff-|nh
+SFX 487 0 nnA/2,1033 . +IVSuff-|nh
+SFX 491 Y 5
+SFX 491 0 Ak/2,1012 . +IVSuff-Ak
+SFX 491 0 Ak/2,1012 . +IVSuff-Ak
+SFX 491 0 AkmA/2,1012 . +IVSuff-Ak
+SFX 491 0 Akm/2,1012 . +IVSuff-Ak
+SFX 491 0 Akn/2,1012 . +IVSuff-Ak
+SFX 475 Y 7
+SFX 475 0 nh/2,1032 . +IVSuff-|nh
+SFX 475 0 nhmA/2,1032 . +IVSuff-|nh
+SFX 475 0 nhm/2,1032 . +IVSuff-|nh
+SFX 475 0 nhA/2,1032 . +IVSuff-|nh
+SFX 475 0 nhn/2,1032 . +IVSuff-|nh
+SFX 475 0 nny/2,1032 . +IVSuff-|nh
+SFX 475 0 nnA/2,1032 . +IVSuff-|nh
+SFX 488 Y 5
+SFX 488 0 nk/2,1033 . +IVSuff-|nk
+SFX 488 0 nk/2,1033 . +IVSuff-|nk
+SFX 488 0 nkmA/2,1033 . +IVSuff-|nk
+SFX 488 0 nkm/2,1033 . +IVSuff-|nk
+SFX 488 0 nkn/2,1033 . +IVSuff-|nk
+SFX 492 Y 1
+SFX 492 0 An/2,1012 . +IVSuff-An
+SFX 476 Y 5
+SFX 476 0 nk/2,1032 . +IVSuff-|nk
+SFX 476 0 nk/2,1032 . +IVSuff-|nk
+SFX 476 0 nkmA/2,1032 . +IVSuff-|nk
+SFX 476 0 nkm/2,1032 . +IVSuff-|nk
+SFX 476 0 nkn/2,1032 . +IVSuff-|nk
+SFX 98 Y 1
+SFX 98 0 n/2,1001 . +NSuff-|-ni
+SFX 327 Y 5
+SFX 327 0 h/2,1059 . +IVSuff-h
+SFX 327 0 hmA/2,1059 . +IVSuff-h
+SFX 327 0 hm/2,1059 . +IVSuff-h
+SFX 327 0 hA/2,1059 . +IVSuff-h
+SFX 327 0 hn/2,1059 . +IVSuff-h
+SFX 129 Y 1
+SFX 129 0 tyn/2,1001 . +NSuff-tayn
+SFX 328 Y 5
+SFX 328 0 k/2,1059 . +IVSuff-k
+SFX 328 0 k/2,1059 . +IVSuff-k
+SFX 328 0 kmA/2,1059 . +IVSuff-k
+SFX 328 0 km/2,1059 . +IVSuff-k
+SFX 328 0 kn/2,1059 . +IVSuff-k
+SFX 173 Y 1
+SFX 173 0 A/2,1001 . +FWSuff-A
+SFX 85 Y 1
+SFX 85 0 nA/2,1000 . +FWSuff-nA-us
+SFX 401 Y 1
+SFX 401 0 0/2,1031 . +IVSuff-|
+SFX 82 Y 1
+SFX 82 0 y/2,1000 . +FWSuff-~iy
+SFX 134 Y 1
+SFX 134 0 A/2,1001 . +PVSuff-A
+SFX 286 Y 1
+SFX 286 0 |t/2,1009 . +NSuff-|t
+SFX 340 Y 2
+SFX 340 0 ny/2,1042 . +IVSuff-ny-nA
+SFX 340 0 nA/2,1042 . +IVSuff-ny-nA
+SFX 207 Y 1
+SFX 207 0 0/2,1002 . +Suff-0
+SFX 163 Y 5
+SFX 163 0 k/2,1001 . +FWSuff-k
+SFX 163 0 k/2,1001 . +FWSuff-k
+SFX 163 0 kmA/2,1001 . +FWSuff-k
+SFX 163 0 km/2,1001 . +FWSuff-k
+SFX 163 0 kn/2,1001 . +FWSuff-k
+SFX 224 Y 11
+SFX 224 0 h/2,1002 . +NSuff-h
+SFX 224 0 hmA/2,1002 . +NSuff-h
+SFX 224 0 hm/2,1002 . +NSuff-h
+SFX 224 0 hA/2,1002 . +NSuff-h
+SFX 224 0 hn/2,1002 . +NSuff-h
+SFX 224 0 k/2,1002 . +NSuff-h
+SFX 224 0 k/2,1002 . +NSuff-h
+SFX 224 0 kmA/2,1002 . +NSuff-h
+SFX 224 0 km/2,1002 . +NSuff-h
+SFX 224 0 kn/2,1002 . +NSuff-h
+SFX 224 0 nA/2,1002 . +NSuff-h
+SFX 132 Y 1
+SFX 132 0 0/2,1001 . +PVSuff-a
+SFX 140 Y 2
+SFX 140 0 n/2,1001 . +PVSuff-n
+SFX 140 0 nA/2,1001 . +PVSuff-n
+SFX 300 Y 24
+SFX 300 0 th/2,1005 . +PVSuff-ath
+SFX 300 0 thmA/2,1005 . +PVSuff-ath
+SFX 300 0 thm/2,1005 . +PVSuff-ath
+SFX 300 0 thA/2,1005 . +PVSuff-ath
+SFX 300 0 thn/2,1005 . +PVSuff-ath
+SFX 300 0 tk/2,1005 . +PVSuff-ath
+SFX 300 0 tk/2,1005 . +PVSuff-ath
+SFX 300 0 tkmA/2,1005 . +PVSuff-ath
+SFX 300 0 tkm/2,1005 . +PVSuff-ath
+SFX 300 0 tkn/2,1005 . +PVSuff-ath
+SFX 300 0 tny/2,1005 . +PVSuff-ath
+SFX 300 0 tnA/2,1005 . +PVSuff-ath
+SFX 300 0 tAh/2,1005 . +PVSuff-ath
+SFX 300 0 tAhmA/2,1005 . +PVSuff-ath
+SFX 300 0 tAhm/2,1005 . +PVSuff-ath
+SFX 300 0 tAhA/2,1005 . +PVSuff-ath
+SFX 300 0 tAhn/2,1005 . +PVSuff-ath
+SFX 300 0 tAk/2,1005 . +PVSuff-ath
+SFX 300 0 tAk/2,1005 . +PVSuff-ath
+SFX 300 0 tAkmA/2,1005 . +PVSuff-ath
+SFX 300 0 tAkm/2,1005 . +PVSuff-ath
+SFX 300 0 tAkn/2,1005 . +PVSuff-ath
+SFX 300 0 tAny/2,1005 . +PVSuff-ath
+SFX 300 0 tAnA/2,1005 . +PVSuff-ath
+SFX 580 Y 1
+SFX 580 0 0/2,1027 . +Suff-0
+SFX 144 Y 6
+SFX 144 0 t/2,1001 . +PVSuff-t
+SFX 144 0 t/2,1001 . +PVSuff-t
+SFX 144 0 t/2,1001 . +PVSuff-t
+SFX 144 0 tmA/2,1001 . +PVSuff-t
+SFX 144 0 tm/2,1001 . +PVSuff-t
+SFX 144 0 tn/2,1001 . +PVSuff-t
+SFX 502 Y 7
+SFX 502 0 Ah/2,1013 . +IVSuff-Ah
+SFX 502 0 AhmA/2,1013 . +IVSuff-Ah
+SFX 502 0 Ahm/2,1013 . +IVSuff-Ah
+SFX 502 0 AhA/2,1013 . +IVSuff-Ah
+SFX 502 0 Ahn/2,1013 . +IVSuff-Ah
+SFX 502 0 Any/2,1013 . +IVSuff-Ah
+SFX 502 0 AnA/2,1013 . +IVSuff-Ah
+SFX 387 Y 1
+SFX 387 0 wA/2,1051 . +IVSuff-awA
+SFX 330 Y 5
+SFX 330 0 h/2,1056 . +IVSuff-h
+SFX 330 0 hmA/2,1056 . +IVSuff-h
+SFX 330 0 hm/2,1056 . +IVSuff-h
+SFX 330 0 hA/2,1056 . +IVSuff-h
+SFX 330 0 hn/2,1056 . +IVSuff-h
+SFX 591 Y 1
+SFX 591 0 0/2,1060 . +Suff-0
+SFX 383 Y 1
+SFX 383 0 wA/2,1050 . +IVSuff-awA
+SFX 503 Y 5
+SFX 503 0 Ak/2,1013 . +IVSuff-Ak
+SFX 503 0 Ak/2,1013 . +IVSuff-Ak
+SFX 503 0 AkmA/2,1013 . +IVSuff-Ak
+SFX 503 0 Akm/2,1013 . +IVSuff-Ak
+SFX 503 0 Akn/2,1013 . +IVSuff-Ak
+SFX 331 Y 5
+SFX 331 0 k/2,1056 . +IVSuff-k
+SFX 331 0 k/2,1056 . +IVSuff-k
+SFX 331 0 kmA/2,1056 . +IVSuff-k
+SFX 331 0 km/2,1056 . +IVSuff-k
+SFX 331 0 kn/2,1056 . +IVSuff-k
+SFX 504 Y 1
+SFX 504 0 An/2,1013 . +IVSuff-An
+SFX 136 Y 1
+SFX 136 0 0/2,1001 . +PVSuff-|
+SFX 525 Y 1
+SFX 525 0 A/2,1020 . +IVSuff-A
+SFX 35 Y 12
+SFX 35 0 th/2,1000 . +NSuff-ath
+SFX 35 0 thmA/2,1000 . +NSuff-ath
+SFX 35 0 thm/2,1000 . +NSuff-ath
+SFX 35 0 thA/2,1000 . +NSuff-ath
+SFX 35 0 thn/2,1000 . +NSuff-ath
+SFX 35 0 tk/2,1000 . +NSuff-ath
+SFX 35 0 tk/2,1000 . +NSuff-ath
+SFX 35 0 tkmA/2,1000 . +NSuff-ath
+SFX 35 0 tkm/2,1000 . +NSuff-ath
+SFX 35 0 tkn/2,1000 . +NSuff-ath
+SFX 35 0 ty/2,1000 . +NSuff-ath
+SFX 35 0 tnA/2,1000 . +NSuff-ath
+SFX 126 Y 13
+SFX 126 0 y/2,1001 . +NSuff-iyh
+SFX 126 0 yh/2,1001 . +NSuff-iyh
+SFX 126 0 yhmA/2,1001 . +NSuff-iyh
+SFX 126 0 yhm/2,1001 . +NSuff-iyh
+SFX 126 0 yhA/2,1001 . +NSuff-iyh
+SFX 126 0 yhn/2,1001 . +NSuff-iyh
+SFX 126 0 yk/2,1001 . +NSuff-iyh
+SFX 126 0 yk/2,1001 . +NSuff-iyh
+SFX 126 0 ykmA/2,1001 . +NSuff-iyh
+SFX 126 0 ykm/2,1001 . +NSuff-iyh
+SFX 126 0 ykn/2,1001 . +NSuff-iyh
+SFX 126 0 y/2,1001 . +NSuff-iyh
+SFX 126 0 ynA/2,1001 . +NSuff-iyh
+SFX 279 Y 1
+SFX 279 0 yn/2,1008 . +NSuff-ayn
+SFX 338 Y 1
+SFX 338 0 0/2,1029 . +Suff-0
+SFX 354 Y 7
+SFX 354 0 yh/2,1048 . +IVSuff-yh
+SFX 354 0 yhmA/2,1048 . +IVSuff-yh
+SFX 354 0 yhm/2,1048 . +IVSuff-yh
+SFX 354 0 yhA/2,1048 . +IVSuff-yh
+SFX 354 0 yhn/2,1048 . +IVSuff-yh
+SFX 354 0 yny/2,1048 . +IVSuff-yh
+SFX 354 0 ynA/2,1048 . +IVSuff-yh
+SFX 175 Y 1
+SFX 175 0 0/2,1006 . +Suff-0
+SFX 99 Y 13
+SFX 99 0 0/2,1001 . +NSuff-|h
+SFX 99 0 h/2,1001 . +NSuff-|h
+SFX 99 0 hmA/2,1001 . +NSuff-|h
+SFX 99 0 hm/2,1001 . +NSuff-|h
+SFX 99 0 hA/2,1001 . +NSuff-|h
+SFX 99 0 hn/2,1001 . +NSuff-|h
+SFX 99 0 k/2,1001 . +NSuff-|h
+SFX 99 0 k/2,1001 . +NSuff-|h
+SFX 99 0 kmA/2,1001 . +NSuff-|h
+SFX 99 0 km/2,1001 . +NSuff-|h
+SFX 99 0 kn/2,1001 . +NSuff-|h
+SFX 99 0 y/2,1001 . +NSuff-|h
+SFX 99 0 nA/2,1001 . +NSuff-|h
+SFX 367 Y 7
+SFX 367 0 wnh/2,1036 . +IVSuff-awnh
+SFX 367 0 wnhmA/2,1036 . +IVSuff-awnh
+SFX 367 0 wnhm/2,1036 . +IVSuff-awnh
+SFX 367 0 wnhA/2,1036 . +IVSuff-awnh
+SFX 367 0 wnhn/2,1036 . +IVSuff-awnh
+SFX 367 0 wnny/2,1036 . +IVSuff-awnh
+SFX 367 0 wnnA/2,1036 . +IVSuff-awnh
+SFX 368 Y 5
+SFX 368 0 wnk/2,1036 . +IVSuff-awnk
+SFX 368 0 wnk/2,1036 . +IVSuff-awnk
+SFX 368 0 wnkmA/2,1036 . +IVSuff-awnk
+SFX 368 0 wnkm/2,1036 . +IVSuff-awnk
+SFX 368 0 wnkn/2,1036 . +IVSuff-awnk
+SFX 526 Y 7
+SFX 526 0 Ah/2,1020 . +IVSuff-Ah
+SFX 526 0 AhmA/2,1020 . +IVSuff-Ah
+SFX 526 0 Ahm/2,1020 . +IVSuff-Ah
+SFX 526 0 AhA/2,1020 . +IVSuff-Ah
+SFX 526 0 Ahn/2,1020 . +IVSuff-Ah
+SFX 526 0 Any/2,1020 . +IVSuff-Ah
+SFX 526 0 AnA/2,1020 . +IVSuff-Ah
+SFX 597 Y 1
+SFX 597 0 0/2,1062 . +Suff-0
+SFX 583 Y 2
+SFX 583 0 ny/2,1040 . +IVSuff-ny-nA
+SFX 583 0 nA/2,1040 . +IVSuff-ny-nA
+SFX 166 Y 1
+SFX 166 0 y/2,1001 . +FWSuff-iy-I
+SFX 106 Y 1
+SFX 106 0 |t/2,1001 . +NSuff-|t
+SFX 573 Y 5
+SFX 573 0 h/2,1026 . +IVSuff-h
+SFX 573 0 hmA/2,1026 . +IVSuff-h
+SFX 573 0 hm/2,1026 . +IVSuff-h
+SFX 573 0 hA/2,1026 . +IVSuff-h
+SFX 573 0 hn/2,1026 . +IVSuff-h
+SFX 388 Y 7
+SFX 388 0 wh/2,1051 . +IVSuff-awh
+SFX 388 0 whmA/2,1051 . +IVSuff-awh
+SFX 388 0 whm/2,1051 . +IVSuff-awh
+SFX 388 0 whA/2,1051 . +IVSuff-awh
+SFX 388 0 whn/2,1051 . +IVSuff-awh
+SFX 388 0 wny/2,1051 . +IVSuff-awh
+SFX 388 0 wnA/2,1051 . +IVSuff-awh
+SFX 574 Y 5
+SFX 574 0 k/2,1026 . +IVSuff-k
+SFX 574 0 k/2,1026 . +IVSuff-k
+SFX 574 0 kmA/2,1026 . +IVSuff-k
+SFX 574 0 km/2,1026 . +IVSuff-k
+SFX 574 0 kn/2,1026 . +IVSuff-k
+SFX 384 Y 7
+SFX 384 0 wh/2,1050 . +IVSuff-awh
+SFX 384 0 whmA/2,1050 . +IVSuff-awh
+SFX 384 0 whm/2,1050 . +IVSuff-awh
+SFX 384 0 whA/2,1050 . +IVSuff-awh
+SFX 384 0 whn/2,1050 . +IVSuff-awh
+SFX 384 0 wny/2,1050 . +IVSuff-awh
+SFX 384 0 wnA/2,1050 . +IVSuff-awh
+SFX 339 Y 5
+SFX 339 0 h/2,1042 . +IVSuff-h
+SFX 339 0 hmA/2,1042 . +IVSuff-h
+SFX 339 0 hm/2,1042 . +IVSuff-h
+SFX 339 0 hA/2,1042 . +IVSuff-h
+SFX 339 0 hn/2,1042 . +IVSuff-h
+SFX 206 Y 1
+SFX 206 0 tyn/2,1007 . +NSuff-tayn
+SFX 127 Y 1
+SFX 127 0 yn/2,1001 . +NSuff-iyna
+SFX 171 Y 1
+SFX 171 0 nA/2,1001 . +FWSuff-nA-us
+SFX 263 Y 13
+SFX 263 0 y/2,1003 . +NSuff-ayh
+SFX 263 0 yh/2,1003 . +NSuff-ayh
+SFX 263 0 yhmA/2,1003 . +NSuff-ayh
+SFX 263 0 yhm/2,1003 . +NSuff-ayh
+SFX 263 0 yhA/2,1003 . +NSuff-ayh
+SFX 263 0 yhn/2,1003 . +NSuff-ayh
+SFX 263 0 yk/2,1003 . +NSuff-ayh
+SFX 263 0 yk/2,1003 . +NSuff-ayh
+SFX 263 0 ykmA/2,1003 . +NSuff-ayh
+SFX 263 0 ykm/2,1003 . +NSuff-ayh
+SFX 263 0 ykn/2,1003 . +NSuff-ayh
+SFX 263 0 y/2,1003 . +NSuff-ayh
+SFX 263 0 ynA/2,1003 . +NSuff-ayh
+SFX 264 Y 1
+SFX 264 0 yn/2,1003 . +NSuff-ayn
+SFX 527 Y 1
+SFX 527 0 0/2,1020 . +IVSuff-|
+SFX 44 Y 13
+SFX 44 0 w/2,1000 . +NSuff-wh
+SFX 44 0 wh/2,1000 . +NSuff-wh
+SFX 44 0 whmA/2,1000 . +NSuff-wh
+SFX 44 0 whm/2,1000 . +NSuff-wh
+SFX 44 0 whA/2,1000 . +NSuff-wh
+SFX 44 0 whn/2,1000 . +NSuff-wh
+SFX 44 0 wk/2,1000 . +NSuff-wh
+SFX 44 0 wk/2,1000 . +NSuff-wh
+SFX 44 0 wkmA/2,1000 . +NSuff-wh
+SFX 44 0 wkm/2,1000 . +NSuff-wh
+SFX 44 0 wkn/2,1000 . +NSuff-wh
+SFX 44 0 y/2,1000 . +NSuff-wh
+SFX 44 0 wnA/2,1000 . +NSuff-wh
+SFX 581 Y 5
+SFX 581 0 h/2,1040 . +IVSuff-h
+SFX 581 0 hmA/2,1040 . +IVSuff-h
+SFX 581 0 hm/2,1040 . +IVSuff-h
+SFX 581 0 hA/2,1040 . +IVSuff-h
+SFX 581 0 hn/2,1040 . +IVSuff-h
+SFX 421 Y 1
+SFX 421 0 n/2,1052 . +IVSuff-n
+SFX 45 Y 1
+SFX 45 0 wn/2,1000 . +NSuff-wn
+SFX 582 Y 5
+SFX 582 0 k/2,1040 . +IVSuff-k
+SFX 582 0 k/2,1040 . +IVSuff-k
+SFX 582 0 kmA/2,1040 . +IVSuff-k
+SFX 582 0 km/2,1040 . +IVSuff-k
+SFX 582 0 kn/2,1040 . +IVSuff-k
+SFX 564 Y 1
+SFX 564 0 0/2,1011 . +Suff-0
+SFX 72 Y 1
+SFX 72 0 wA/2,1000 . +CVSuff-wA
+SFX 337 Y 2
+SFX 337 0 ny/2,1029 . +IVSuff-ny-nA
+SFX 337 0 nA/2,1029 . +IVSuff-ny-nA
+SFX 465 Y 1
+SFX 465 0 A/2,1032 . +IVSuff-A
+SFX 356 Y 7
+SFX 356 0 yh/2,1049 . +IVSuff-yh
+SFX 356 0 yhmA/2,1049 . +IVSuff-yh
+SFX 356 0 yhm/2,1049 . +IVSuff-yh
+SFX 356 0 yhA/2,1049 . +IVSuff-yh
+SFX 356 0 yhn/2,1049 . +IVSuff-yh
+SFX 356 0 yny/2,1049 . +IVSuff-yh
+SFX 356 0 ynA/2,1049 . +IVSuff-yh
+SFX 214 Y 1
+SFX 214 0 |t/2,1002 . +NSuff-|t
+SFX 298 Y 12
+SFX 298 0 h/2,1005 . +PVSuff-|h
+SFX 298 0 hmA/2,1005 . +PVSuff-|h
+SFX 298 0 hm/2,1005 . +PVSuff-|h
+SFX 298 0 hA/2,1005 . +PVSuff-|h
+SFX 298 0 hn/2,1005 . +PVSuff-|h
+SFX 298 0 k/2,1005 . +PVSuff-|h
+SFX 298 0 k/2,1005 . +PVSuff-|h
+SFX 298 0 kmA/2,1005 . +PVSuff-|h
+SFX 298 0 km/2,1005 . +PVSuff-|h
+SFX 298 0 kn/2,1005 . +PVSuff-|h
+SFX 298 0 ny/2,1005 . +PVSuff-|h
+SFX 298 0 nA/2,1005 . +PVSuff-|h
+SFX 307 Y 45
+SFX 307 0 th/2,1005 . +PVSuff-th
+SFX 307 0 thmA/2,1005 . +PVSuff-th
+SFX 307 0 thm/2,1005 . +PVSuff-th
+SFX 307 0 thA/2,1005 . +PVSuff-th
+SFX 307 0 thn/2,1005 . +PVSuff-th
+SFX 307 0 th/2,1005 . +PVSuff-th
+SFX 307 0 thmA/2,1005 . +PVSuff-th
+SFX 307 0 thm/2,1005 . +PVSuff-th
+SFX 307 0 thA/2,1005 . +PVSuff-th
+SFX 307 0 thn/2,1005 . +PVSuff-th
+SFX 307 0 th/2,1005 . +PVSuff-th
+SFX 307 0 thmA/2,1005 . +PVSuff-th
+SFX 307 0 thm/2,1005 . +PVSuff-th
+SFX 307 0 thA/2,1005 . +PVSuff-th
+SFX 307 0 thn/2,1005 . +PVSuff-th
+SFX 307 0 tk/2,1005 . +PVSuff-th
+SFX 307 0 tk/2,1005 . +PVSuff-th
+SFX 307 0 tkmA/2,1005 . +PVSuff-th
+SFX 307 0 tkm/2,1005 . +PVSuff-th
+SFX 307 0 tkn/2,1005 . +PVSuff-th
+SFX 307 0 tny/2,1005 . +PVSuff-th
+SFX 307 0 tnA/2,1005 . +PVSuff-th
+SFX 307 0 tny/2,1005 . +PVSuff-th
+SFX 307 0 tnA/2,1005 . +PVSuff-th
+SFX 307 0 tmAh/2,1005 . +PVSuff-th
+SFX 307 0 tmAhmA/2,1005 . +PVSuff-th
+SFX 307 0 tmAhm/2,1005 . +PVSuff-th
+SFX 307 0 tmAhA/2,1005 . +PVSuff-th
+SFX 307 0 tmAhn/2,1005 . +PVSuff-th
+SFX 307 0 tmAny/2,1005 . +PVSuff-th
+SFX 307 0 tmAnA/2,1005 . +PVSuff-th
+SFX 307 0 tmwh/2,1005 . +PVSuff-th
+SFX 307 0 tmwhmA/2,1005 . +PVSuff-th
+SFX 307 0 tmwhm/2,1005 . +PVSuff-th
+SFX 307 0 tmwhA/2,1005 . +PVSuff-th
+SFX 307 0 tmwhn/2,1005 . +PVSuff-th
+SFX 307 0 tmwny/2,1005 . +PVSuff-th
+SFX 307 0 tmwnA/2,1005 . +PVSuff-th
+SFX 307 0 tnh/2,1005 . +PVSuff-th
+SFX 307 0 tnhmA/2,1005 . +PVSuff-th
+SFX 307 0 tnhm/2,1005 . +PVSuff-th
+SFX 307 0 tnhA/2,1005 . +PVSuff-th
+SFX 307 0 tnhn/2,1005 . +PVSuff-th
+SFX 307 0 tnny/2,1005 . +PVSuff-th
+SFX 307 0 tnnA/2,1005 . +PVSuff-th
+SFX 121 Y 12
+SFX 121 0 th/2,1001 . +NSuff-ath
+SFX 121 0 thmA/2,1001 . +NSuff-ath
+SFX 121 0 thm/2,1001 . +NSuff-ath
+SFX 121 0 thA/2,1001 . +NSuff-ath
+SFX 121 0 thn/2,1001 . +NSuff-ath
+SFX 121 0 tk/2,1001 . +NSuff-ath
+SFX 121 0 tk/2,1001 . +NSuff-ath
+SFX 121 0 tkmA/2,1001 . +NSuff-ath
+SFX 121 0 tkm/2,1001 . +NSuff-ath
+SFX 121 0 tkn/2,1001 . +NSuff-ath
+SFX 121 0 ty/2,1001 . +NSuff-ath
+SFX 121 0 tnA/2,1001 . +NSuff-ath
+SFX 530 Y 7
+SFX 530 0 Ah/2,1021 . +IVSuff-Ah
+SFX 530 0 AhmA/2,1021 . +IVSuff-Ah
+SFX 530 0 Ahm/2,1021 . +IVSuff-Ah
+SFX 530 0 AhA/2,1021 . +IVSuff-Ah
+SFX 530 0 Ahn/2,1021 . +IVSuff-Ah
+SFX 530 0 Any/2,1021 . +IVSuff-Ah
+SFX 530 0 AnA/2,1021 . +IVSuff-Ah
+SFX 222 Y 13
+SFX 222 0 y/2,1002 . +NSuff-ayh
+SFX 222 0 yh/2,1002 . +NSuff-ayh
+SFX 222 0 yhmA/2,1002 . +NSuff-ayh
+SFX 222 0 yhm/2,1002 . +NSuff-ayh
+SFX 222 0 yhA/2,1002 . +NSuff-ayh
+SFX 222 0 yhn/2,1002 . +NSuff-ayh
+SFX 222 0 yk/2,1002 . +NSuff-ayh
+SFX 222 0 yk/2,1002 . +NSuff-ayh
+SFX 222 0 ykmA/2,1002 . +NSuff-ayh
+SFX 222 0 ykm/2,1002 . +NSuff-ayh
+SFX 222 0 ykn/2,1002 . +NSuff-ayh
+SFX 222 0 y/2,1002 . +NSuff-ayh
+SFX 222 0 ynA/2,1002 . +NSuff-ayh
+SFX 417 Y 1
+SFX 417 0 n/2,1039 . +IVSuff-n
+SFX 313 Y 1
+SFX 313 0 0/2,1005 . +PVSuff-0a
+SFX 584 Y 1
+SFX 584 0 0/2,1040 . +Suff-0
+SFX 336 Y 5
+SFX 336 0 h/2,1029 . +IVSuff-h
+SFX 336 0 hmA/2,1029 . +IVSuff-h
+SFX 336 0 hm/2,1029 . +IVSuff-h
+SFX 336 0 hA/2,1029 . +IVSuff-h
+SFX 336 0 hn/2,1029 . +IVSuff-h
+SFX 223 Y 1
+SFX 223 0 yn/2,1002 . +NSuff-ayn
+SFX 326 Y 1
+SFX 326 0 0/2,1058 . +Suff-0
+SFX 74 Y 5
+SFX 74 0 h/2,1000 . +FWSuff-hi
+SFX 74 0 hmA/2,1000 . +FWSuff-hi
+SFX 74 0 hm/2,1000 . +FWSuff-hi
+SFX 74 0 hA/2,1000 . +FWSuff-hi
+SFX 74 0 hn/2,1000 . +FWSuff-hi
+SFX 472 Y 7
+SFX 472 0 h/2,1032 . +IVSuff-|h
+SFX 472 0 hmA/2,1032 . +IVSuff-|h
+SFX 472 0 hm/2,1032 . +IVSuff-|h
+SFX 472 0 hA/2,1032 . +IVSuff-|h
+SFX 472 0 hn/2,1032 . +IVSuff-|h
+SFX 472 0 ny/2,1032 . +IVSuff-|h
+SFX 472 0 nA/2,1032 . +IVSuff-|h
+SFX 345 Y 1
+SFX 345 0 y/2,1034 . +IVSuff-y
+SFX 248 Y 1
+SFX 248 0 0/2,1003 . +Suff-0
+SFX 473 Y 5
+SFX 473 0 k/2,1032 . +IVSuff-|k
+SFX 473 0 k/2,1032 . +IVSuff-|k
+SFX 473 0 kmA/2,1032 . +IVSuff-|k
+SFX 473 0 km/2,1032 . +IVSuff-|k
+SFX 473 0 kn/2,1032 . +IVSuff-|k
+SFX 148 Y 1
+SFX 148 0 wA/2,1001 . +PVSuff-uwA
+SFX 474 Y 1
+SFX 474 0 n/2,1032 . +IVSuff-|n
+SFX 73 Y 7
+SFX 73 0 wh/2,1000 . +CVSuff-wh
+SFX 73 0 whmA/2,1000 . +CVSuff-wh
+SFX 73 0 whm/2,1000 . +CVSuff-wh
+SFX 73 0 whA/2,1000 . +CVSuff-wh
+SFX 73 0 whn/2,1000 . +CVSuff-wh
+SFX 73 0 wny/2,1000 . +CVSuff-wh
+SFX 73 0 wnA/2,1000 . +CVSuff-wh
+SFX 142 Y 22
+SFX 142 0 nh/2,1001 . +PVSuff-nh
+SFX 142 0 nhmA/2,1001 . +PVSuff-nh
+SFX 142 0 nhm/2,1001 . +PVSuff-nh
+SFX 142 0 nhA/2,1001 . +PVSuff-nh
+SFX 142 0 nhn/2,1001 . +PVSuff-nh
+SFX 142 0 nk/2,1001 . +PVSuff-nh
+SFX 142 0 nk/2,1001 . +PVSuff-nh
+SFX 142 0 nkmA/2,1001 . +PVSuff-nh
+SFX 142 0 nkm/2,1001 . +PVSuff-nh
+SFX 142 0 nkn/2,1001 . +PVSuff-nh
+SFX 142 0 nny/2,1001 . +PVSuff-nh
+SFX 142 0 nnA/2,1001 . +PVSuff-nh
+SFX 142 0 nAh/2,1001 . +PVSuff-nh
+SFX 142 0 nAhmA/2,1001 . +PVSuff-nh
+SFX 142 0 nAhm/2,1001 . +PVSuff-nh
+SFX 142 0 nAhA/2,1001 . +PVSuff-nh
+SFX 142 0 nAhn/2,1001 . +PVSuff-nh
+SFX 142 0 nAk/2,1001 . +PVSuff-nh
+SFX 142 0 nAk/2,1001 . +PVSuff-nh
+SFX 142 0 nAkmA/2,1001 . +PVSuff-nh
+SFX 142 0 nAkm/2,1001 . +PVSuff-nh
+SFX 142 0 nAkn/2,1001 . +PVSuff-nh
+SFX 324 Y 5
+SFX 324 0 h/2,1058 . +IVSuff-h
+SFX 324 0 hmA/2,1058 . +IVSuff-h
+SFX 324 0 hm/2,1058 . +IVSuff-h
+SFX 324 0 hA/2,1058 . +IVSuff-h
+SFX 324 0 hn/2,1058 . +IVSuff-h
+SFX 69 Y 7
+SFX 69 0 h/2,1000 . +CVSuff-oh
+SFX 69 0 hmA/2,1000 . +CVSuff-oh
+SFX 69 0 hm/2,1000 . +CVSuff-oh
+SFX 69 0 hA/2,1000 . +CVSuff-oh
+SFX 69 0 hn/2,1000 . +CVSuff-oh
+SFX 69 0 ny/2,1000 . +CVSuff-oh
+SFX 69 0 nA/2,1000 . +CVSuff-oh
+SFX 545 Y 1
+SFX 545 0 n/2,1024 . +IVSuff-n
+SFX 141 Y 2
+SFX 141 0 0/2,1001 . +PVSuff-~n
+SFX 141 0 A/2,1001 . +PVSuff-~n
+SFX 269 Y 13
+SFX 269 0 ty/2,1003 . +NSuff-tay
+SFX 269 0 tyh/2,1003 . +NSuff-tay
+SFX 269 0 tyhmA/2,1003 . +NSuff-tay
+SFX 269 0 tyhm/2,1003 . +NSuff-tay
+SFX 269 0 tyhA/2,1003 . +NSuff-tay
+SFX 269 0 tyhn/2,1003 . +NSuff-tay
+SFX 269 0 tyk/2,1003 . +NSuff-tay
+SFX 269 0 tyk/2,1003 . +NSuff-tay
+SFX 269 0 tykmA/2,1003 . +NSuff-tay
+SFX 269 0 tykm/2,1003 . +NSuff-tay
+SFX 269 0 tykn/2,1003 . +NSuff-tay
+SFX 269 0 ty/2,1003 . +NSuff-tay
+SFX 269 0 tynA/2,1003 . +NSuff-tay
+SFX 439 Y 7
+SFX 439 0 wnh/2,1014 . +IVSuff-awnh
+SFX 439 0 wnhmA/2,1014 . +IVSuff-awnh
+SFX 439 0 wnhm/2,1014 . +IVSuff-awnh
+SFX 439 0 wnhA/2,1014 . +IVSuff-awnh
+SFX 439 0 wnhn/2,1014 . +IVSuff-awnh
+SFX 439 0 wnny/2,1014 . +IVSuff-awnh
+SFX 439 0 wnnA/2,1014 . +IVSuff-awnh
+SFX 325 Y 5
+SFX 325 0 k/2,1058 . +IVSuff-k
+SFX 325 0 k/2,1058 . +IVSuff-k
+SFX 325 0 kmA/2,1058 . +IVSuff-k
+SFX 325 0 km/2,1058 . +IVSuff-k
+SFX 325 0 kn/2,1058 . +IVSuff-k
+SFX 56 Y 22
+SFX 56 0 nh/2,1000 . +PVSuff-nh
+SFX 56 0 nhmA/2,1000 . +PVSuff-nh
+SFX 56 0 nhm/2,1000 . +PVSuff-nh
+SFX 56 0 nhA/2,1000 . +PVSuff-nh
+SFX 56 0 nhn/2,1000 . +PVSuff-nh
+SFX 56 0 nk/2,1000 . +PVSuff-nh
+SFX 56 0 nk/2,1000 . +PVSuff-nh
+SFX 56 0 nkmA/2,1000 . +PVSuff-nh
+SFX 56 0 nkm/2,1000 . +PVSuff-nh
+SFX 56 0 nkn/2,1000 . +PVSuff-nh
+SFX 56 0 nny/2,1000 . +PVSuff-nh
+SFX 56 0 nnA/2,1000 . +PVSuff-nh
+SFX 56 0 nAh/2,1000 . +PVSuff-nh
+SFX 56 0 nAhmA/2,1000 . +PVSuff-nh
+SFX 56 0 nAhm/2,1000 . +PVSuff-nh
+SFX 56 0 nAhA/2,1000 . +PVSuff-nh
+SFX 56 0 nAhn/2,1000 . +PVSuff-nh
+SFX 56 0 nAk/2,1000 . +PVSuff-nh
+SFX 56 0 nAk/2,1000 . +PVSuff-nh
+SFX 56 0 nAkmA/2,1000 . +PVSuff-nh
+SFX 56 0 nAkm/2,1000 . +PVSuff-nh
+SFX 56 0 nAkn/2,1000 . +PVSuff-nh
+SFX 440 Y 5
+SFX 440 0 wnk/2,1014 . +IVSuff-awnk
+SFX 440 0 wnk/2,1014 . +IVSuff-awnk
+SFX 440 0 wnkmA/2,1014 . +IVSuff-awnk
+SFX 440 0 wnkm/2,1014 . +IVSuff-awnk
+SFX 440 0 wnkn/2,1014 . +IVSuff-awnk
+SFX 55 Y 2
+SFX 55 0 0/2,1000 . +PVSuff-~n
+SFX 55 0 A/2,1000 . +PVSuff-~n
+SFX 145 Y 6
+SFX 145 0 0/2,1001 . +PVSuff-~t
+SFX 145 0 0/2,1001 . +PVSuff-~t
+SFX 145 0 0/2,1001 . +PVSuff-~t
+SFX 145 0 mA/2,1001 . +PVSuff-~t
+SFX 145 0 m/2,1001 . +PVSuff-~t
+SFX 145 0 n/2,1001 . +PVSuff-~t
+SFX 579 Y 2
+SFX 579 0 ny/2,1027 . +IVSuff-ny-nA
+SFX 579 0 nA/2,1027 . +IVSuff-ny-nA
+SFX 59 Y 6
+SFX 59 0 0/2,1000 . +PVSuff-~t
+SFX 59 0 0/2,1000 . +PVSuff-~t
+SFX 59 0 0/2,1000 . +PVSuff-~t
+SFX 59 0 mA/2,1000 . +PVSuff-~t
+SFX 59 0 m/2,1000 . +PVSuff-~t
+SFX 59 0 n/2,1000 . +PVSuff-~t
+SFX 124 Y 11
+SFX 124 0 h/2,1001 . +NSuff-h
+SFX 124 0 hmA/2,1001 . +NSuff-h
+SFX 124 0 hm/2,1001 . +NSuff-h
+SFX 124 0 hA/2,1001 . +NSuff-h
+SFX 124 0 hn/2,1001 . +NSuff-h
+SFX 124 0 k/2,1001 . +NSuff-h
+SFX 124 0 k/2,1001 . +NSuff-h
+SFX 124 0 kmA/2,1001 . +NSuff-h
+SFX 124 0 km/2,1001 . +NSuff-h
+SFX 124 0 kn/2,1001 . +NSuff-h
+SFX 124 0 nA/2,1001 . +NSuff-h
+SFX 244 Y 12
+SFX 244 0 th/2,1004 . +NSuff-ath
+SFX 244 0 thmA/2,1004 . +NSuff-ath
+SFX 244 0 thm/2,1004 . +NSuff-ath
+SFX 244 0 thA/2,1004 . +NSuff-ath
+SFX 244 0 thn/2,1004 . +NSuff-ath
+SFX 244 0 tk/2,1004 . +NSuff-ath
+SFX 244 0 tk/2,1004 . +NSuff-ath
+SFX 244 0 tkmA/2,1004 . +NSuff-ath
+SFX 244 0 tkm/2,1004 . +NSuff-ath
+SFX 244 0 tkn/2,1004 . +NSuff-ath
+SFX 244 0 ty/2,1004 . +NSuff-ath
+SFX 244 0 tnA/2,1004 . +NSuff-ath
+SFX 154 Y 1
+SFX 154 0 0/2,1001 . +CVSuff-o
+SFX 143 Y 22
+SFX 143 0 h/2,1001 . +PVSuff-~nh
+SFX 143 0 hmA/2,1001 . +PVSuff-~nh
+SFX 143 0 hm/2,1001 . +PVSuff-~nh
+SFX 143 0 hA/2,1001 . +PVSuff-~nh
+SFX 143 0 hn/2,1001 . +PVSuff-~nh
+SFX 143 0 k/2,1001 . +PVSuff-~nh
+SFX 143 0 k/2,1001 . +PVSuff-~nh
+SFX 143 0 kmA/2,1001 . +PVSuff-~nh
+SFX 143 0 km/2,1001 . +PVSuff-~nh
+SFX 143 0 kn/2,1001 . +PVSuff-~nh
+SFX 143 0 ny/2,1001 . +PVSuff-~nh
+SFX 143 0 nA/2,1001 . +PVSuff-~nh
+SFX 143 0 Ah/2,1001 . +PVSuff-~nh
+SFX 143 0 AhmA/2,1001 . +PVSuff-~nh
+SFX 143 0 Ahm/2,1001 . +PVSuff-~nh
+SFX 143 0 AhA/2,1001 . +PVSuff-~nh
+SFX 143 0 Ahn/2,1001 . +PVSuff-~nh
+SFX 143 0 Ak/2,1001 . +PVSuff-~nh
+SFX 143 0 Ak/2,1001 . +PVSuff-~nh
+SFX 143 0 AkmA/2,1001 . +PVSuff-~nh
+SFX 143 0 Akm/2,1001 . +PVSuff-~nh
+SFX 143 0 Akn/2,1001 . +PVSuff-~nh
+SFX 471 Y 1
+SFX 471 0 0/2,1032 . +IVSuff-|
+SFX 156 Y 1
+SFX 156 0 y/2,1001 . +CVSuff-y
+SFX 205 Y 1
+SFX 205 0 yn/2,1007 . +NSuff-iyna
+SFX 149 Y 12
+SFX 149 0 wh/2,1001 . +PVSuff-uwh
+SFX 149 0 whmA/2,1001 . +PVSuff-uwh
+SFX 149 0 whm/2,1001 . +PVSuff-uwh
+SFX 149 0 whA/2,1001 . +PVSuff-uwh
+SFX 149 0 whn/2,1001 . +PVSuff-uwh
+SFX 149 0 wk/2,1001 . +PVSuff-uwh
+SFX 149 0 wk/2,1001 . +PVSuff-uwh
+SFX 149 0 wkmA/2,1001 . +PVSuff-uwh
+SFX 149 0 wkm/2,1001 . +PVSuff-uwh
+SFX 149 0 wkn/2,1001 . +PVSuff-uwh
+SFX 149 0 wny/2,1001 . +PVSuff-uwh
+SFX 149 0 wnA/2,1001 . +PVSuff-uwh
+SFX 184 Y 1
+SFX 184 0 p/2,1006 . +NSuff-ap
+SFX 519 Y 1
+SFX 519 0 A/2,1047 . +IVSuff-A
+SFX 568 Y 1
+SFX 568 0 0/2,1018 . +Suff-0
+SFX 179 Y 1
+SFX 179 0 An/2,1006 . +NSuff-An
+SFX 320 Y 1
+SFX 320 0 0/2,1055 . +Suff-0
+SFX 190 Y 1
+SFX 190 0 At/2,1006 . +NSuff-At
+SFX 453 Y 1
+SFX 453 0 wA/2,1022 . +IVSuff-wA
+SFX 229 Y 1
+SFX 229 0 tyn/2,1002 . +NSuff-tayn
+SFX 64 Y 1
+SFX 64 0 wA/2,1000 . +PVSuff-awA
+SFX 228 Y 13
+SFX 228 0 ty/2,1002 . +NSuff-tay
+SFX 228 0 tyh/2,1002 . +NSuff-tay
+SFX 228 0 tyhmA/2,1002 . +NSuff-tay
+SFX 228 0 tyhm/2,1002 . +NSuff-tay
+SFX 228 0 tyhA/2,1002 . +NSuff-tay
+SFX 228 0 tyhn/2,1002 . +NSuff-tay
+SFX 228 0 tyk/2,1002 . +NSuff-tay
+SFX 228 0 tyk/2,1002 . +NSuff-tay
+SFX 228 0 tykmA/2,1002 . +NSuff-tay
+SFX 228 0 tykm/2,1002 . +NSuff-tay
+SFX 228 0 tykn/2,1002 . +NSuff-tay
+SFX 228 0 ty/2,1002 . +NSuff-tay
+SFX 228 0 tynA/2,1002 . +NSuff-tay
+SFX 246 Y 13
+SFX 246 0 w/2,1004 . +NSuff-wh
+SFX 246 0 wh/2,1004 . +NSuff-wh
+SFX 246 0 whmA/2,1004 . +NSuff-wh
+SFX 246 0 whm/2,1004 . +NSuff-wh
+SFX 246 0 whA/2,1004 . +NSuff-wh
+SFX 246 0 whn/2,1004 . +NSuff-wh
+SFX 246 0 wk/2,1004 . +NSuff-wh
+SFX 246 0 wk/2,1004 . +NSuff-wh
+SFX 246 0 wkmA/2,1004 . +NSuff-wh
+SFX 246 0 wkm/2,1004 . +NSuff-wh
+SFX 246 0 wkn/2,1004 . +NSuff-wh
+SFX 246 0 y/2,1004 . +NSuff-wh
+SFX 246 0 wnA/2,1004 . +NSuff-wh
+SFX 408 Y 7
+SFX 408 0 h/2,1044 . +IVSuff-|h
+SFX 408 0 hmA/2,1044 . +IVSuff-|h
+SFX 408 0 hm/2,1044 . +IVSuff-|h
+SFX 408 0 hA/2,1044 . +IVSuff-|h
+SFX 408 0 hn/2,1044 . +IVSuff-|h
+SFX 408 0 ny/2,1044 . +IVSuff-|h
+SFX 408 0 nA/2,1044 . +IVSuff-|h
+SFX 254 Y 12
+SFX 254 0 Ath/2,1003 . +NSuff-Ath
+SFX 254 0 AthmA/2,1003 . +NSuff-Ath
+SFX 254 0 Athm/2,1003 . +NSuff-Ath
+SFX 254 0 AthA/2,1003 . +NSuff-Ath
+SFX 254 0 Athn/2,1003 . +NSuff-Ath
+SFX 254 0 Atk/2,1003 . +NSuff-Ath
+SFX 254 0 Atk/2,1003 . +NSuff-Ath
+SFX 254 0 AtkmA/2,1003 . +NSuff-Ath
+SFX 254 0 Atkm/2,1003 . +NSuff-Ath
+SFX 254 0 Atkn/2,1003 . +NSuff-Ath
+SFX 254 0 Aty/2,1003 . +NSuff-Ath
+SFX 254 0 AtnA/2,1003 . +NSuff-Ath
+SFX 158 Y 1
+SFX 158 0 wA/2,1001 . +CVSuff-wA
+SFX 400 Y 7
+SFX 400 0 Anh/2,1031 . +IVSuff-Anh
+SFX 400 0 AnhmA/2,1031 . +IVSuff-Anh
+SFX 400 0 Anhm/2,1031 . +IVSuff-Anh
+SFX 400 0 AnhA/2,1031 . +IVSuff-Anh
+SFX 400 0 Anhn/2,1031 . +IVSuff-Anh
+SFX 400 0 Anny/2,1031 . +IVSuff-Anh
+SFX 400 0 AnnA/2,1031 . +IVSuff-Anh
+SFX 247 Y 1
+SFX 247 0 wn/2,1004 . +NSuff-wn
+SFX 392 Y 7
+SFX 392 0 Anh/2,1030 . +IVSuff-Anh
+SFX 392 0 AnhmA/2,1030 . +IVSuff-Anh
+SFX 392 0 Anhm/2,1030 . +IVSuff-Anh
+SFX 392 0 AnhA/2,1030 . +IVSuff-Anh
+SFX 392 0 Anhn/2,1030 . +IVSuff-Anh
+SFX 392 0 Anny/2,1030 . +IVSuff-Anh
+SFX 392 0 AnnA/2,1030 . +IVSuff-Anh
+SFX 81 Y 1
+SFX 81 0 y/2,1000 . +FWSuff-iy-me
+SFX 576 Y 1
+SFX 576 0 0/2,1026 . +Suff-0
+SFX 288 Y 1
+SFX 288 0 p/2,1009 . +NSuff-ap
+SFX 484 Y 7
+SFX 484 0 h/2,1033 . +IVSuff-|h
+SFX 484 0 hmA/2,1033 . +IVSuff-|h
+SFX 484 0 hm/2,1033 . +IVSuff-|h
+SFX 484 0 hA/2,1033 . +IVSuff-|h
+SFX 484 0 hn/2,1033 . +IVSuff-|h
+SFX 484 0 ny/2,1033 . +IVSuff-|h
+SFX 484 0 nA/2,1033 . +IVSuff-|h
+SFX 485 Y 5
+SFX 485 0 k/2,1033 . +IVSuff-|k
+SFX 485 0 k/2,1033 . +IVSuff-|k
+SFX 485 0 kmA/2,1033 . +IVSuff-|k
+SFX 485 0 km/2,1033 . +IVSuff-|k
+SFX 485 0 kn/2,1033 . +IVSuff-|k
+SFX 447 Y 1
+SFX 447 0 wA/2,1015 . +IVSuff-awA
+SFX 435 Y 1
+SFX 435 0 wA/2,1014 . +IVSuff-awA
+SFX 486 Y 1
+SFX 486 0 n/2,1033 . +IVSuff-|n
+SFX 284 Y 1
+SFX 284 0 At/2,1009 . +NSuff-At
+SFX 454 Y 7
+SFX 454 0 wh/2,1022 . +IVSuff-wh
+SFX 454 0 whmA/2,1022 . +IVSuff-wh
+SFX 454 0 whm/2,1022 . +IVSuff-wh
+SFX 454 0 whA/2,1022 . +IVSuff-wh
+SFX 454 0 whn/2,1022 . +IVSuff-wh
+SFX 454 0 wny/2,1022 . +IVSuff-wh
+SFX 454 0 wnA/2,1022 . +IVSuff-wh
+SFX 67 Y 12
+SFX 67 0 h/2,1000 . +PVSuff-0ah
+SFX 67 0 hmA/2,1000 . +PVSuff-0ah
+SFX 67 0 hm/2,1000 . +PVSuff-0ah
+SFX 67 0 hA/2,1000 . +PVSuff-0ah
+SFX 67 0 hn/2,1000 . +PVSuff-0ah
+SFX 67 0 k/2,1000 . +PVSuff-0ah
+SFX 67 0 k/2,1000 . +PVSuff-0ah
+SFX 67 0 kmA/2,1000 . +PVSuff-0ah
+SFX 67 0 km/2,1000 . +PVSuff-0ah
+SFX 67 0 kn/2,1000 . +PVSuff-0ah
+SFX 67 0 ny/2,1000 . +PVSuff-0ah
+SFX 67 0 nA/2,1000 . +PVSuff-0ah
+SFX 455 Y 5
+SFX 455 0 wk/2,1022 . +IVSuff-wk
+SFX 455 0 wk/2,1022 . +IVSuff-wk
+SFX 455 0 wkmA/2,1022 . +IVSuff-wk
+SFX 455 0 wkm/2,1022 . +IVSuff-wk
+SFX 455 0 wkn/2,1022 . +IVSuff-wk
+SFX 65 Y 12
+SFX 65 0 wh/2,1000 . +PVSuff-awh
+SFX 65 0 whmA/2,1000 . +PVSuff-awh
+SFX 65 0 whm/2,1000 . +PVSuff-awh
+SFX 65 0 whA/2,1000 . +PVSuff-awh
+SFX 65 0 whn/2,1000 . +PVSuff-awh
+SFX 65 0 wk/2,1000 . +PVSuff-awh
+SFX 65 0 wk/2,1000 . +PVSuff-awh
+SFX 65 0 wkmA/2,1000 . +PVSuff-awh
+SFX 65 0 wkm/2,1000 . +PVSuff-awh
+SFX 65 0 wkn/2,1000 . +PVSuff-awh
+SFX 65 0 wny/2,1000 . +PVSuff-awh
+SFX 65 0 wnA/2,1000 . +PVSuff-awh
+SFX 160 Y 5
+SFX 160 0 h/2,1001 . +FWSuff-hi
+SFX 160 0 hmA/2,1001 . +FWSuff-hi
+SFX 160 0 hm/2,1001 . +FWSuff-hi
+SFX 160 0 hA/2,1001 . +FWSuff-hi
+SFX 160 0 hn/2,1001 . +FWSuff-hi
+SFX 522 Y 1
+SFX 522 0 0/2,1047 . +IVSuff-|
+SFX 159 Y 7
+SFX 159 0 wh/2,1001 . +CVSuff-wh
+SFX 159 0 whmA/2,1001 . +CVSuff-wh
+SFX 159 0 whm/2,1001 . +CVSuff-wh
+SFX 159 0 whA/2,1001 . +CVSuff-wh
+SFX 159 0 whn/2,1001 . +CVSuff-wh
+SFX 159 0 wny/2,1001 . +CVSuff-wh
+SFX 159 0 wnA/2,1001 . +CVSuff-wh
+SFX 155 Y 7
+SFX 155 0 h/2,1001 . +CVSuff-oh
+SFX 155 0 hmA/2,1001 . +CVSuff-oh
+SFX 155 0 hm/2,1001 . +CVSuff-oh
+SFX 155 0 hA/2,1001 . +CVSuff-oh
+SFX 155 0 hn/2,1001 . +CVSuff-oh
+SFX 155 0 ny/2,1001 . +CVSuff-oh
+SFX 155 0 nA/2,1001 . +CVSuff-oh
+SFX 87 Y 1
+SFX 87 0 A/2,1000 . +FWSuff-A
+SFX 517 Y 7
+SFX 517 0 h/2,1046 . +IVSuff-|h
+SFX 517 0 hmA/2,1046 . +IVSuff-|h
+SFX 517 0 hm/2,1046 . +IVSuff-|h
+SFX 517 0 hA/2,1046 . +IVSuff-|h
+SFX 517 0 hn/2,1046 . +IVSuff-|h
+SFX 517 0 ny/2,1046 . +IVSuff-|h
+SFX 517 0 nA/2,1046 . +IVSuff-|h
+SFX 518 Y 5
+SFX 518 0 k/2,1046 . +IVSuff-|k
+SFX 518 0 k/2,1046 . +IVSuff-|k
+SFX 518 0 kmA/2,1046 . +IVSuff-|k
+SFX 518 0 km/2,1046 . +IVSuff-|k
+SFX 518 0 kn/2,1046 . +IVSuff-|k
+SFX 428 Y 7
+SFX 428 0 h/2,1053 . +IVSuff-~nh
+SFX 428 0 hmA/2,1053 . +IVSuff-~nh
+SFX 428 0 hm/2,1053 . +IVSuff-~nh
+SFX 428 0 hA/2,1053 . +IVSuff-~nh
+SFX 428 0 hn/2,1053 . +IVSuff-~nh
+SFX 428 0 ny/2,1053 . +IVSuff-~nh
+SFX 428 0 nA/2,1053 . +IVSuff-~nh
+SFX 282 Y 1
+SFX 282 0 0/2,1009 . +Suff-0
+SFX 424 Y 7
+SFX 424 0 h/2,1052 . +IVSuff-~nh
+SFX 424 0 hmA/2,1052 . +IVSuff-~nh
+SFX 424 0 hm/2,1052 . +IVSuff-~nh
+SFX 424 0 hA/2,1052 . +IVSuff-~nh
+SFX 424 0 hn/2,1052 . +IVSuff-~nh
+SFX 424 0 ny/2,1052 . +IVSuff-~nh
+SFX 424 0 nA/2,1052 . +IVSuff-~nh
+SFX 213 Y 12
+SFX 213 0 Ath/2,1002 . +NSuff-Ath
+SFX 213 0 AthmA/2,1002 . +NSuff-Ath
+SFX 213 0 Athm/2,1002 . +NSuff-Ath
+SFX 213 0 AthA/2,1002 . +NSuff-Ath
+SFX 213 0 Athn/2,1002 . +NSuff-Ath
+SFX 213 0 Atk/2,1002 . +NSuff-Ath
+SFX 213 0 Atk/2,1002 . +NSuff-Ath
+SFX 213 0 AtkmA/2,1002 . +NSuff-Ath
+SFX 213 0 Atkm/2,1002 . +NSuff-Ath
+SFX 213 0 Atkn/2,1002 . +NSuff-Ath
+SFX 213 0 Aty/2,1002 . +NSuff-Ath
+SFX 213 0 AtnA/2,1002 . +NSuff-Ath
+SFX 48 Y 1
+SFX 48 0 A/2,1000 . +PVSuff-A
+SFX 204 Y 1
+SFX 204 0 yn/2,1007 . +NSuff-ayn
+SFX 448 Y 7
+SFX 448 0 wh/2,1015 . +IVSuff-awh
+SFX 448 0 whmA/2,1015 . +IVSuff-awh
+SFX 448 0 whm/2,1015 . +IVSuff-awh
+SFX 448 0 whA/2,1015 . +IVSuff-awh
+SFX 448 0 whn/2,1015 . +IVSuff-awh
+SFX 448 0 wny/2,1015 . +IVSuff-awh
+SFX 448 0 wnA/2,1015 . +IVSuff-awh
+SFX 95 Y 1
+SFX 95 0 A/2,1001 . +NSuff-AF
+SFX 436 Y 7
+SFX 436 0 wh/2,1014 . +IVSuff-awh
+SFX 436 0 whmA/2,1014 . +IVSuff-awh
+SFX 436 0 whm/2,1014 . +IVSuff-awh
+SFX 436 0 whA/2,1014 . +IVSuff-awh
+SFX 436 0 whn/2,1014 . +IVSuff-awh
+SFX 436 0 wny/2,1014 . +IVSuff-awh
+SFX 436 0 wnA/2,1014 . +IVSuff-awh
+SFX 449 Y 5
+SFX 449 0 wk/2,1015 . +IVSuff-awk
+SFX 449 0 wk/2,1015 . +IVSuff-awk
+SFX 449 0 wkmA/2,1015 . +IVSuff-awk
+SFX 449 0 wkm/2,1015 . +IVSuff-awk
+SFX 449 0 wkn/2,1015 . +IVSuff-awk
+SFX 168 Y 1
+SFX 168 0 y/2,1001 . +FWSuff-~iy
+SFX 437 Y 5
+SFX 437 0 wk/2,1014 . +IVSuff-awk
+SFX 437 0 wk/2,1014 . +IVSuff-awk
+SFX 437 0 wkmA/2,1014 . +IVSuff-awk
+SFX 437 0 wkm/2,1014 . +IVSuff-awk
+SFX 437 0 wkn/2,1014 . +IVSuff-awk
+SFX 450 Y 1
+SFX 450 0 wn/2,1015 . +IVSuff-awn
+SFX 36 Y 13
+SFX 36 0 y/2,1000 . +NSuff-ayh
+SFX 36 0 yh/2,1000 . +NSuff-ayh
+SFX 36 0 yhmA/2,1000 . +NSuff-ayh
+SFX 36 0 yhm/2,1000 . +NSuff-ayh
+SFX 36 0 yhA/2,1000 . +NSuff-ayh
+SFX 36 0 yhn/2,1000 . +NSuff-ayh
+SFX 36 0 yk/2,1000 . +NSuff-ayh
+SFX 36 0 yk/2,1000 . +NSuff-ayh
+SFX 36 0 ykmA/2,1000 . +NSuff-ayh
+SFX 36 0 ykm/2,1000 . +NSuff-ayh
+SFX 36 0 ykn/2,1000 . +NSuff-ayh
+SFX 36 0 y/2,1000 . +NSuff-ayh
+SFX 36 0 ynA/2,1000 . +NSuff-ayh
+SFX 589 Y 5
+SFX 589 0 h/2,1060 . +IVSuff-h
+SFX 589 0 hmA/2,1060 . +IVSuff-h
+SFX 589 0 hm/2,1060 . +IVSuff-h
+SFX 589 0 hA/2,1060 . +IVSuff-h
+SFX 589 0 hn/2,1060 . +IVSuff-h
+SFX 438 Y 1
+SFX 438 0 wn/2,1014 . +IVSuff-awn
+SFX 381 Y 1
+SFX 381 0 wA/2,1050 . +IVSuff-wA
+SFX 590 Y 5
+SFX 590 0 k/2,1060 . +IVSuff-k
+SFX 590 0 k/2,1060 . +IVSuff-k
+SFX 590 0 kmA/2,1060 . +IVSuff-k
+SFX 590 0 km/2,1060 . +IVSuff-k
+SFX 590 0 kn/2,1060 . +IVSuff-k
+SFX 505 Y 7
+SFX 505 0 Anh/2,1013 . +IVSuff-Anh
+SFX 505 0 AnhmA/2,1013 . +IVSuff-Anh
+SFX 505 0 Anhm/2,1013 . +IVSuff-Anh
+SFX 505 0 AnhA/2,1013 . +IVSuff-Anh
+SFX 505 0 Anhn/2,1013 . +IVSuff-Anh
+SFX 505 0 Anny/2,1013 . +IVSuff-Anh
+SFX 505 0 AnnA/2,1013 . +IVSuff-Anh
+SFX 37 Y 1
+SFX 37 0 yn/2,1000 . +NSuff-ayn
+SFX 493 Y 7
+SFX 493 0 Anh/2,1012 . +IVSuff-Anh
+SFX 493 0 AnhmA/2,1012 . +IVSuff-Anh
+SFX 493 0 Anhm/2,1012 . +IVSuff-Anh
+SFX 493 0 AnhA/2,1012 . +IVSuff-Anh
+SFX 493 0 Anhn/2,1012 . +IVSuff-Anh
+SFX 493 0 Anny/2,1012 . +IVSuff-Anh
+SFX 493 0 AnnA/2,1012 . +IVSuff-Anh
+SFX 506 Y 5
+SFX 506 0 Ank/2,1013 . +IVSuff-Ank
+SFX 506 0 Ank/2,1013 . +IVSuff-Ank
+SFX 506 0 AnkmA/2,1013 . +IVSuff-Ank
+SFX 506 0 Ankm/2,1013 . +IVSuff-Ank
+SFX 506 0 Ankn/2,1013 . +IVSuff-Ank
+SFX 459 Y 1
+SFX 459 0 wA/2,1023 . +IVSuff-wA
+SFX 494 Y 5
+SFX 494 0 Ank/2,1012 . +IVSuff-Ank
+SFX 494 0 Ank/2,1012 . +IVSuff-Ank
+SFX 494 0 AnkmA/2,1012 . +IVSuff-Ank
+SFX 494 0 Ankm/2,1012 . +IVSuff-Ank
+SFX 494 0 Ankn/2,1012 . +IVSuff-Ank
+SFX 420 Y 7
+SFX 420 0 h/2,1039 . +IVSuff-~nh
+SFX 420 0 hmA/2,1039 . +IVSuff-~nh
+SFX 420 0 hm/2,1039 . +IVSuff-~nh
+SFX 420 0 hA/2,1039 . +IVSuff-~nh
+SFX 420 0 hn/2,1039 . +IVSuff-~nh
+SFX 420 0 ny/2,1039 . +IVSuff-~nh
+SFX 420 0 nA/2,1039 . +IVSuff-~nh
+SFX 416 Y 7
+SFX 416 0 h/2,1038 . +IVSuff-~nh
+SFX 416 0 hmA/2,1038 . +IVSuff-~nh
+SFX 416 0 hm/2,1038 . +IVSuff-~nh
+SFX 416 0 hA/2,1038 . +IVSuff-~nh
+SFX 416 0 hn/2,1038 . +IVSuff-~nh
+SFX 416 0 ny/2,1038 . +IVSuff-~nh
+SFX 416 0 nA/2,1038 . +IVSuff-~nh
+SFX 77 Y 5
+SFX 77 0 k/2,1000 . +FWSuff-k
+SFX 77 0 k/2,1000 . +FWSuff-k
+SFX 77 0 kmA/2,1000 . +FWSuff-k
+SFX 77 0 km/2,1000 . +FWSuff-k
+SFX 77 0 kn/2,1000 . +FWSuff-k
+SFX 412 Y 7
+SFX 412 0 h/2,1045 . +IVSuff-|h
+SFX 412 0 hmA/2,1045 . +IVSuff-|h
+SFX 412 0 hm/2,1045 . +IVSuff-|h
+SFX 412 0 hA/2,1045 . +IVSuff-|h
+SFX 412 0 hn/2,1045 . +IVSuff-|h
+SFX 412 0 ny/2,1045 . +IVSuff-|h
+SFX 412 0 nA/2,1045 . +IVSuff-|h
+SFX 46 Y 1
+SFX 46 0 0/2,1000 . +PVSuff-a
+SFX 557 Y 5
+SFX 557 0 h/2,1010 . +IVSuff-h
+SFX 557 0 hmA/2,1010 . +IVSuff-h
+SFX 557 0 hm/2,1010 . +IVSuff-h
+SFX 557 0 hA/2,1010 . +IVSuff-h
+SFX 557 0 hn/2,1010 . +IVSuff-h
+SFX 558 Y 5
+SFX 558 0 k/2,1010 . +IVSuff-k
+SFX 558 0 k/2,1010 . +IVSuff-k
+SFX 558 0 kmA/2,1010 . +IVSuff-k
+SFX 558 0 km/2,1010 . +IVSuff-k
+SFX 558 0 kn/2,1010 . +IVSuff-k
+SFX 97 Y 13
+SFX 97 0 A/2,1001 . +NSuff-Ah
+SFX 97 0 Ah/2,1001 . +NSuff-Ah
+SFX 97 0 AhmA/2,1001 . +NSuff-Ah
+SFX 97 0 Ahm/2,1001 . +NSuff-Ah
+SFX 97 0 AhA/2,1001 . +NSuff-Ah
+SFX 97 0 Ahn/2,1001 . +NSuff-Ah
+SFX 97 0 Ak/2,1001 . +NSuff-Ah
+SFX 97 0 Ak/2,1001 . +NSuff-Ah
+SFX 97 0 AkmA/2,1001 . +NSuff-Ah
+SFX 97 0 Akm/2,1001 . +NSuff-Ah
+SFX 97 0 Akn/2,1001 . +NSuff-Ah
+SFX 97 0 Ay/2,1001 . +NSuff-Ah
+SFX 97 0 AnA/2,1001 . +NSuff-Ah
+SFX 112 Y 1
+SFX 112 0 p/2,1001 . +NSuff-ap
+SFX 96 Y 1
+SFX 96 0 An/2,1001 . +NSuff-An
+SFX 125 Y 1
+SFX 125 0 y/2,1001 . +NSuff-iy
+SFX 54 Y 2
+SFX 54 0 n/2,1000 . +PVSuff-n
+SFX 54 0 nA/2,1000 . +PVSuff-n
+SFX 100 Y 1
+SFX 100 0 At/2,1001 . +NSuff-At
+SFX 382 Y 7
+SFX 382 0 wh/2,1050 . +IVSuff-wh
+SFX 382 0 whmA/2,1050 . +IVSuff-wh
+SFX 382 0 whm/2,1050 . +IVSuff-wh
+SFX 382 0 whA/2,1050 . +IVSuff-wh
+SFX 382 0 whn/2,1050 . +IVSuff-wh
+SFX 382 0 wny/2,1050 . +IVSuff-wh
+SFX 382 0 wnA/2,1050 . +IVSuff-wh
+SFX 58 Y 6
+SFX 58 0 t/2,1000 . +PVSuff-t
+SFX 58 0 t/2,1000 . +PVSuff-t
+SFX 58 0 t/2,1000 . +PVSuff-t
+SFX 58 0 tmA/2,1000 . +PVSuff-t
+SFX 58 0 tm/2,1000 . +PVSuff-t
+SFX 58 0 tn/2,1000 . +PVSuff-t
+SFX 75 Y 5
+SFX 75 0 h/2,1000 . +FWSuff-hu-he
+SFX 75 0 hmA/2,1000 . +FWSuff-hu-he
+SFX 75 0 hm/2,1000 . +FWSuff-hu-he
+SFX 75 0 hA/2,1000 . +FWSuff-hu-he
+SFX 75 0 hn/2,1000 . +FWSuff-hu-he
+SFX 76 Y 5
+SFX 76 0 h/2,1000 . +FWSuff-hu-him
+SFX 76 0 hmA/2,1000 . +FWSuff-hu-him
+SFX 76 0 hm/2,1000 . +FWSuff-hu-him
+SFX 76 0 hA/2,1000 . +FWSuff-hu-him
+SFX 76 0 hn/2,1000 . +FWSuff-hu-him
+SFX 292 Y 1
+SFX 292 0 tyn/2,1009 . +NSuff-tayn
+SFX 460 Y 7
+SFX 460 0 wh/2,1023 . +IVSuff-wh
+SFX 460 0 whmA/2,1023 . +IVSuff-wh
+SFX 460 0 whm/2,1023 . +IVSuff-wh
+SFX 460 0 whA/2,1023 . +IVSuff-wh
+SFX 460 0 whn/2,1023 . +IVSuff-wh
+SFX 460 0 wny/2,1023 . +IVSuff-wh
+SFX 460 0 wnA/2,1023 . +IVSuff-wh
+SFX 227 Y 1
+SFX 227 0 yn/2,1002 . +NSuff-iyna
+SFX 461 Y 5
+SFX 461 0 wk/2,1023 . +IVSuff-wk
+SFX 461 0 wk/2,1023 . +IVSuff-wk
+SFX 461 0 wkmA/2,1023 . +IVSuff-wk
+SFX 461 0 wkm/2,1023 . +IVSuff-wk
+SFX 461 0 wkn/2,1023 . +IVSuff-wk
+SFX 50 Y 1
+SFX 50 0 0/2,1000 . +PVSuff-|
+SFX 281 Y 1
+SFX 281 0 tyn/2,1008 . +NSuff-tayn
+SFX 571 Y 2
+SFX 571 0 ny/2,1019 . +IVSuff-ny-nA
+SFX 571 0 nA/2,1019 . +IVSuff-ny-nA
+SFX 523 Y 7
+SFX 523 0 h/2,1047 . +IVSuff-|h
+SFX 523 0 hmA/2,1047 . +IVSuff-|h
+SFX 523 0 hm/2,1047 . +IVSuff-|h
+SFX 523 0 hA/2,1047 . +IVSuff-|h
+SFX 523 0 hn/2,1047 . +IVSuff-|h
+SFX 523 0 ny/2,1047 . +IVSuff-|h
+SFX 523 0 nA/2,1047 . +IVSuff-|h
+SFX 13 Y 13
+SFX 13 0 0/2,1000 . +NSuff-|h
+SFX 13 0 h/2,1000 . +NSuff-|h
+SFX 13 0 hmA/2,1000 . +NSuff-|h
+SFX 13 0 hm/2,1000 . +NSuff-|h
+SFX 13 0 hA/2,1000 . +NSuff-|h
+SFX 13 0 hn/2,1000 . +NSuff-|h
+SFX 13 0 k/2,1000 . +NSuff-|h
+SFX 13 0 k/2,1000 . +NSuff-|h
+SFX 13 0 kmA/2,1000 . +NSuff-|h
+SFX 13 0 km/2,1000 . +NSuff-|h
+SFX 13 0 kn/2,1000 . +NSuff-|h
+SFX 13 0 y/2,1000 . +NSuff-|h
+SFX 13 0 nA/2,1000 . +NSuff-|h
+SFX 524 Y 5
+SFX 524 0 k/2,1047 . +IVSuff-|k
+SFX 524 0 k/2,1047 . +IVSuff-|k
+SFX 524 0 kmA/2,1047 . +IVSuff-|k
+SFX 524 0 km/2,1047 . +IVSuff-|k
+SFX 524 0 kn/2,1047 . +IVSuff-|k
+SFX 334 Y 2
+SFX 334 0 ny/2,1028 . +IVSuff-ny-nA
+SFX 334 0 nA/2,1028 . +IVSuff-ny-nA
+SFX 335 Y 1
+SFX 335 0 0/2,1028 . +Suff-0
+SFX 20 Y 1
+SFX 20 0 |t/2,1000 . +NSuff-|t
+SFX 42 Y 13
+SFX 42 0 ty/2,1000 . +NSuff-tay
+SFX 42 0 tyh/2,1000 . +NSuff-tay
+SFX 42 0 tyhmA/2,1000 . +NSuff-tay
+SFX 42 0 tyhm/2,1000 . +NSuff-tay
+SFX 42 0 tyhA/2,1000 . +NSuff-tay
+SFX 42 0 tyhn/2,1000 . +NSuff-tay
+SFX 42 0 tyk/2,1000 . +NSuff-tay
+SFX 42 0 tyk/2,1000 . +NSuff-tay
+SFX 42 0 tykmA/2,1000 . +NSuff-tay
+SFX 42 0 tykm/2,1000 . +NSuff-tay
+SFX 42 0 tykn/2,1000 . +NSuff-tay
+SFX 42 0 ty/2,1000 . +NSuff-tay
+SFX 42 0 tynA/2,1000 . +NSuff-tay
+SFX 394 Y 7
+SFX 394 0 h/2,1030 . +IVSuff-|h
+SFX 394 0 hmA/2,1030 . +IVSuff-|h
+SFX 394 0 hm/2,1030 . +IVSuff-|h
+SFX 394 0 hA/2,1030 . +IVSuff-|h
+SFX 394 0 hn/2,1030 . +IVSuff-|h
+SFX 394 0 ny/2,1030 . +IVSuff-|h
+SFX 394 0 nA/2,1030 . +IVSuff-|h
+SFX 309 Y 1
+SFX 309 0 wA/2,1005 . +PVSuff-uwA
+SFX 405 Y 1
+SFX 405 0 A/2,1044 . +IVSuff-A
+SFX 395 Y 1
+SFX 395 0 n/2,1030 . +IVSuff-|n
+SFX 373 Y 7
+SFX 373 0 wnh/2,1037 . +IVSuff-wnh
+SFX 373 0 wnhmA/2,1037 . +IVSuff-wnh
+SFX 373 0 wnhm/2,1037 . +IVSuff-wnh
+SFX 373 0 wnhA/2,1037 . +IVSuff-wnh
+SFX 373 0 wnhn/2,1037 . +IVSuff-wnh
+SFX 373 0 wnny/2,1037 . +IVSuff-wnh
+SFX 373 0 wnnA/2,1037 . +IVSuff-wnh
+SFX 414 Y 7
+SFX 414 0 nh/2,1038 . +IVSuff-nh
+SFX 414 0 nhmA/2,1038 . +IVSuff-nh
+SFX 414 0 nhm/2,1038 . +IVSuff-nh
+SFX 414 0 nhA/2,1038 . +IVSuff-nh
+SFX 414 0 nhn/2,1038 . +IVSuff-nh
+SFX 414 0 nny/2,1038 . +IVSuff-nh
+SFX 414 0 nnA/2,1038 . +IVSuff-nh
+SFX 385 Y 1
+SFX 385 0 wA/2,1051 . +IVSuff-wA
+SFX 61 Y 45
+SFX 61 0 h/2,1000 . +PVSuff-~th
+SFX 61 0 hmA/2,1000 . +PVSuff-~th
+SFX 61 0 hm/2,1000 . +PVSuff-~th
+SFX 61 0 hA/2,1000 . +PVSuff-~th
+SFX 61 0 hn/2,1000 . +PVSuff-~th
+SFX 61 0 h/2,1000 . +PVSuff-~th
+SFX 61 0 hmA/2,1000 . +PVSuff-~th
+SFX 61 0 hm/2,1000 . +PVSuff-~th
+SFX 61 0 hA/2,1000 . +PVSuff-~th
+SFX 61 0 hn/2,1000 . +PVSuff-~th
+SFX 61 0 h/2,1000 . +PVSuff-~th
+SFX 61 0 hmA/2,1000 . +PVSuff-~th
+SFX 61 0 hm/2,1000 . +PVSuff-~th
+SFX 61 0 hA/2,1000 . +PVSuff-~th
+SFX 61 0 hn/2,1000 . +PVSuff-~th
+SFX 61 0 k/2,1000 . +PVSuff-~th
+SFX 61 0 k/2,1000 . +PVSuff-~th
+SFX 61 0 kmA/2,1000 . +PVSuff-~th
+SFX 61 0 km/2,1000 . +PVSuff-~th
+SFX 61 0 kn/2,1000 . +PVSuff-~th
+SFX 61 0 ny/2,1000 . +PVSuff-~th
+SFX 61 0 nA/2,1000 . +PVSuff-~th
+SFX 61 0 ny/2,1000 . +PVSuff-~th
+SFX 61 0 nA/2,1000 . +PVSuff-~th
+SFX 61 0 mAh/2,1000 . +PVSuff-~th
+SFX 61 0 mAhmA/2,1000 . +PVSuff-~th
+SFX 61 0 mAhm/2,1000 . +PVSuff-~th
+SFX 61 0 mAhA/2,1000 . +PVSuff-~th
+SFX 61 0 mAhn/2,1000 . +PVSuff-~th
+SFX 61 0 mAny/2,1000 . +PVSuff-~th
+SFX 61 0 mAnA/2,1000 . +PVSuff-~th
+SFX 61 0 mwh/2,1000 . +PVSuff-~th
+SFX 61 0 mwhmA/2,1000 . +PVSuff-~th
+SFX 61 0 mwhm/2,1000 . +PVSuff-~th
+SFX 61 0 mwhA/2,1000 . +PVSuff-~th
+SFX 61 0 mwhn/2,1000 . +PVSuff-~th
+SFX 61 0 mwny/2,1000 . +PVSuff-~th
+SFX 61 0 mwnA/2,1000 . +PVSuff-~th
+SFX 61 0 nh/2,1000 . +PVSuff-~th
+SFX 61 0 nhmA/2,1000 . +PVSuff-~th
+SFX 61 0 nhm/2,1000 . +PVSuff-~th
+SFX 61 0 nhA/2,1000 . +PVSuff-~th
+SFX 61 0 nhn/2,1000 . +PVSuff-~th
+SFX 61 0 nny/2,1000 . +PVSuff-~th
+SFX 61 0 nnA/2,1000 . +PVSuff-~th
+SFX 361 Y 7
+SFX 361 0 wnh/2,1036 . +IVSuff-wnh
+SFX 361 0 wnhmA/2,1036 . +IVSuff-wnh
+SFX 361 0 wnhm/2,1036 . +IVSuff-wnh
+SFX 361 0 wnhA/2,1036 . +IVSuff-wnh
+SFX 361 0 wnhn/2,1036 . +IVSuff-wnh
+SFX 361 0 wnny/2,1036 . +IVSuff-wnh
+SFX 361 0 wnnA/2,1036 . +IVSuff-wnh
+SFX 415 Y 1
+SFX 415 0 0/2,1038 . +IVSuff-~n
+SFX 374 Y 5
+SFX 374 0 wnk/2,1037 . +IVSuff-wnk
+SFX 374 0 wnk/2,1037 . +IVSuff-wnk
+SFX 374 0 wnkmA/2,1037 . +IVSuff-wnk
+SFX 374 0 wnkm/2,1037 . +IVSuff-wnk
+SFX 374 0 wnkn/2,1037 . +IVSuff-wnk
+SFX 68 Y 1
+SFX 68 0 0/2,1000 . +CVSuff-o
+SFX 362 Y 5
+SFX 362 0 wnk/2,1036 . +IVSuff-wnk
+SFX 362 0 wnk/2,1036 . +IVSuff-wnk
+SFX 362 0 wnkmA/2,1036 . +IVSuff-wnk
+SFX 362 0 wnkm/2,1036 . +IVSuff-wnk
+SFX 362 0 wnkn/2,1036 . +IVSuff-wnk
+SFX 218 Y 1
+SFX 218 0 p/2,1002 . +NSuff-ap
+SFX 122 Y 13
+SFX 122 0 y/2,1001 . +NSuff-ayh
+SFX 122 0 yh/2,1001 . +NSuff-ayh
+SFX 122 0 yhmA/2,1001 . +NSuff-ayh
+SFX 122 0 yhm/2,1001 . +NSuff-ayh
+SFX 122 0 yhA/2,1001 . +NSuff-ayh
+SFX 122 0 yhn/2,1001 . +NSuff-ayh
+SFX 122 0 yk/2,1001 . +NSuff-ayh
+SFX 122 0 yk/2,1001 . +NSuff-ayh
+SFX 122 0 ykmA/2,1001 . +NSuff-ayh
+SFX 122 0 ykm/2,1001 . +NSuff-ayh
+SFX 122 0 ykn/2,1001 . +NSuff-ayh
+SFX 122 0 y/2,1001 . +NSuff-ayh
+SFX 122 0 ynA/2,1001 . +NSuff-ayh
+SFX 70 Y 1
+SFX 70 0 y/2,1000 . +CVSuff-y
+SFX 294 Y 12
+SFX 294 0 h/2,1005 . +PVSuff-ah
+SFX 294 0 hmA/2,1005 . +PVSuff-ah
+SFX 294 0 hm/2,1005 . +PVSuff-ah
+SFX 294 0 hA/2,1005 . +PVSuff-ah
+SFX 294 0 hn/2,1005 . +PVSuff-ah
+SFX 294 0 k/2,1005 . +PVSuff-ah
+SFX 294 0 k/2,1005 . +PVSuff-ah
+SFX 294 0 kmA/2,1005 . +PVSuff-ah
+SFX 294 0 km/2,1005 . +PVSuff-ah
+SFX 294 0 kn/2,1005 . +PVSuff-ah
+SFX 294 0 ny/2,1005 . +PVSuff-ah
+SFX 294 0 nA/2,1005 . +PVSuff-ah
+SFX 162 Y 5
+SFX 162 0 h/2,1001 . +FWSuff-hu-him
+SFX 162 0 hmA/2,1001 . +FWSuff-hu-him
+SFX 162 0 hm/2,1001 . +FWSuff-hu-him
+SFX 162 0 hA/2,1001 . +FWSuff-hu-him
+SFX 162 0 hn/2,1001 . +FWSuff-hu-him
+SFX 79 Y 1
+SFX 79 0 y/2,1000 . +FWSuff-ya
+SFX 225 Y 1
+SFX 225 0 y/2,1002 . +NSuff-iy
+SFX 577 Y 5
+SFX 577 0 h/2,1027 . +IVSuff-h
+SFX 577 0 hmA/2,1027 . +IVSuff-h
+SFX 577 0 hm/2,1027 . +IVSuff-h
+SFX 577 0 hA/2,1027 . +IVSuff-h
+SFX 577 0 hn/2,1027 . +IVSuff-h
+SFX 123 Y 1
+SFX 123 0 yn/2,1001 . +NSuff-ayn
+SFX 578 Y 5
+SFX 578 0 k/2,1027 . +IVSuff-k
+SFX 578 0 k/2,1027 . +IVSuff-k
+SFX 578 0 kmA/2,1027 . +IVSuff-k
+SFX 578 0 km/2,1027 . +IVSuff-k
+SFX 578 0 kn/2,1027 . +IVSuff-k
+SFX 575 Y 2
+SFX 575 0 ny/2,1026 . +IVSuff-ny-nA
+SFX 575 0 nA/2,1026 . +IVSuff-ny-nA
+SFX 304 Y 22
+SFX 304 0 h/2,1005 . +PVSuff-~nh
+SFX 304 0 hmA/2,1005 . +PVSuff-~nh
+SFX 304 0 hm/2,1005 . +PVSuff-~nh
+SFX 304 0 hA/2,1005 . +PVSuff-~nh
+SFX 304 0 hn/2,1005 . +PVSuff-~nh
+SFX 304 0 k/2,1005 . +PVSuff-~nh
+SFX 304 0 k/2,1005 . +PVSuff-~nh
+SFX 304 0 kmA/2,1005 . +PVSuff-~nh
+SFX 304 0 km/2,1005 . +PVSuff-~nh
+SFX 304 0 kn/2,1005 . +PVSuff-~nh
+SFX 304 0 ny/2,1005 . +PVSuff-~nh
+SFX 304 0 nA/2,1005 . +PVSuff-~nh
+SFX 304 0 Ah/2,1005 . +PVSuff-~nh
+SFX 304 0 AhmA/2,1005 . +PVSuff-~nh
+SFX 304 0 Ahm/2,1005 . +PVSuff-~nh
+SFX 304 0 AhA/2,1005 . +PVSuff-~nh
+SFX 304 0 Ahn/2,1005 . +PVSuff-~nh
+SFX 304 0 Ak/2,1005 . +PVSuff-~nh
+SFX 304 0 Ak/2,1005 . +PVSuff-~nh
+SFX 304 0 AkmA/2,1005 . +PVSuff-~nh
+SFX 304 0 Akm/2,1005 . +PVSuff-~nh
+SFX 304 0 Akn/2,1005 . +PVSuff-~nh
+SFX 210 Y 1
+SFX 210 0 At/2,1002 . +NSuff-At
+SFX 342 Y 5
+SFX 342 0 h/2,1043 . +IVSuff-h
+SFX 342 0 hmA/2,1043 . +IVSuff-h
+SFX 342 0 hm/2,1043 . +IVSuff-h
+SFX 342 0 hA/2,1043 . +IVSuff-h
+SFX 342 0 hn/2,1043 . +IVSuff-h
+SFX 296 Y 12
+SFX 296 0 Ah/2,1005 . +PVSuff-Ah
+SFX 296 0 AhmA/2,1005 . +PVSuff-Ah
+SFX 296 0 Ahm/2,1005 . +PVSuff-Ah
+SFX 296 0 AhA/2,1005 . +PVSuff-Ah
+SFX 296 0 Ahn/2,1005 . +PVSuff-Ah
+SFX 296 0 Ak/2,1005 . +PVSuff-Ah
+SFX 296 0 Ak/2,1005 . +PVSuff-Ah
+SFX 296 0 AkmA/2,1005 . +PVSuff-Ah
+SFX 296 0 Akm/2,1005 . +PVSuff-Ah
+SFX 296 0 Akn/2,1005 . +PVSuff-Ah
+SFX 296 0 Any/2,1005 . +PVSuff-Ah
+SFX 296 0 AnA/2,1005 . +PVSuff-Ah
+SFX 489 Y 1
+SFX 489 0 A/2,1012 . +IVSuff-A
+SFX 299 Y 2
+SFX 299 0 t/2,1005 . +PVSuff-at
+SFX 299 0 tA/2,1005 . +PVSuff-at
+SFX 346 Y 7
+SFX 346 0 yh/2,1034 . +IVSuff-yh
+SFX 346 0 yhmA/2,1034 . +IVSuff-yh
+SFX 346 0 yhm/2,1034 . +IVSuff-yh
+SFX 346 0 yhA/2,1034 . +IVSuff-yh
+SFX 346 0 yhn/2,1034 . +IVSuff-yh
+SFX 346 0 yny/2,1034 . +IVSuff-yh
+SFX 346 0 ynA/2,1034 . +IVSuff-yh
+SFX 347 Y 1
+SFX 347 0 yn/2,1034 . +IVSuff-yn
+SFX 310 Y 12
+SFX 310 0 wh/2,1005 . +PVSuff-uwh
+SFX 310 0 whmA/2,1005 . +PVSuff-uwh
+SFX 310 0 whm/2,1005 . +PVSuff-uwh
+SFX 310 0 whA/2,1005 . +PVSuff-uwh
+SFX 310 0 whn/2,1005 . +PVSuff-uwh
+SFX 310 0 wk/2,1005 . +PVSuff-uwh
+SFX 310 0 wk/2,1005 . +PVSuff-uwh
+SFX 310 0 wkmA/2,1005 . +PVSuff-uwh
+SFX 310 0 wkm/2,1005 . +PVSuff-uwh
+SFX 310 0 wkn/2,1005 . +PVSuff-uwh
+SFX 310 0 wny/2,1005 . +PVSuff-uwh
+SFX 310 0 wnA/2,1005 . +PVSuff-uwh
+SFX 317 Y 1
+SFX 317 0 0/2,1054 . +Suff-0
+SFX 295 Y 1
+SFX 295 0 A/2,1005 . +PVSuff-A
+SFX 386 Y 7
+SFX 386 0 wh/2,1051 . +IVSuff-wh
+SFX 386 0 whmA/2,1051 . +IVSuff-wh
+SFX 386 0 whm/2,1051 . +IVSuff-wh
+SFX 386 0 whA/2,1051 . +IVSuff-wh
+SFX 386 0 whn/2,1051 . +IVSuff-wh
+SFX 386 0 wny/2,1051 . +IVSuff-wh
+SFX 386 0 wnA/2,1051 . +IVSuff-wh
+SFX 466 Y 7
+SFX 466 0 Ah/2,1032 . +IVSuff-Ah
+SFX 466 0 AhmA/2,1032 . +IVSuff-Ah
+SFX 466 0 Ahm/2,1032 . +IVSuff-Ah
+SFX 466 0 AhA/2,1032 . +IVSuff-Ah
+SFX 466 0 Ahn/2,1032 . +IVSuff-Ah
+SFX 466 0 Any/2,1032 . +IVSuff-Ah
+SFX 466 0 AnA/2,1032 . +IVSuff-Ah
+SFX 19 Y 12
+SFX 19 0 Ath/2,1000 . +NSuff-Ath
+SFX 19 0 AthmA/2,1000 . +NSuff-Ath
+SFX 19 0 Athm/2,1000 . +NSuff-Ath
+SFX 19 0 AthA/2,1000 . +NSuff-Ath
+SFX 19 0 Athn/2,1000 . +NSuff-Ath
+SFX 19 0 Atk/2,1000 . +NSuff-Ath
+SFX 19 0 Atk/2,1000 . +NSuff-Ath
+SFX 19 0 AtkmA/2,1000 . +NSuff-Ath
+SFX 19 0 Atkm/2,1000 . +NSuff-Ath
+SFX 19 0 Atkn/2,1000 . +NSuff-Ath
+SFX 19 0 Aty/2,1000 . +NSuff-Ath
+SFX 19 0 AtnA/2,1000 . +NSuff-Ath
+SFX 467 Y 5
+SFX 467 0 Ak/2,1032 . +IVSuff-Ak
+SFX 467 0 Ak/2,1032 . +IVSuff-Ak
+SFX 467 0 AkmA/2,1032 . +IVSuff-Ak
+SFX 467 0 Akm/2,1032 . +IVSuff-Ak
+SFX 467 0 Akn/2,1032 . +IVSuff-Ak
+SFX 468 Y 1
+SFX 468 0 An/2,1032 . +IVSuff-An
+SFX 560 Y 1
+SFX 560 0 0/2,1010 . +Suff-0
+SFX 407 Y 1
+SFX 407 0 0/2,1044 . +IVSuff-|
+SFX 585 Y 5
+SFX 585 0 h/2,1041 . +IVSuff-h
+SFX 585 0 hmA/2,1041 . +IVSuff-h
+SFX 585 0 hm/2,1041 . +IVSuff-h
+SFX 585 0 hA/2,1041 . +IVSuff-h
+SFX 585 0 hn/2,1041 . +IVSuff-h
+SFX 425 Y 1
+SFX 425 0 n/2,1053 . +IVSuff-n
+SFX 586 Y 5
+SFX 586 0 k/2,1041 . +IVSuff-k
+SFX 586 0 k/2,1041 . +IVSuff-k
+SFX 586 0 kmA/2,1041 . +IVSuff-k
+SFX 586 0 km/2,1041 . +IVSuff-k
+SFX 586 0 kn/2,1041 . +IVSuff-k
+SFX 293 Y 1
+SFX 293 0 0/2,1005 . +PVSuff-a
+SFX 595 Y 5
+SFX 595 0 h/2,1062 . +IVSuff-h
+SFX 595 0 hmA/2,1062 . +IVSuff-h
+SFX 595 0 hm/2,1062 . +IVSuff-h
+SFX 595 0 hA/2,1062 . +IVSuff-h
+SFX 595 0 hn/2,1062 . +IVSuff-h
+SFX 596 Y 5
+SFX 596 0 k/2,1062 . +IVSuff-k
+SFX 596 0 k/2,1062 . +IVSuff-k
+SFX 596 0 kmA/2,1062 . +IVSuff-k
+SFX 596 0 km/2,1062 . +IVSuff-k
+SFX 596 0 kn/2,1062 . +IVSuff-k
+SFX 86 Y 1
+SFX 86 0 nA/2,1000 . +FWSuff-nA-we
+SFX 402 Y 7
+SFX 402 0 h/2,1031 . +IVSuff-|h
+SFX 402 0 hmA/2,1031 . +IVSuff-|h
+SFX 402 0 hm/2,1031 . +IVSuff-|h
+SFX 402 0 hA/2,1031 . +IVSuff-|h
+SFX 402 0 hn/2,1031 . +IVSuff-|h
+SFX 402 0 ny/2,1031 . +IVSuff-|h
+SFX 402 0 nA/2,1031 . +IVSuff-|h
+SFX 291 Y 1
+SFX 291 0 yn/2,1009 . +NSuff-iyna
+SFX 301 Y 2
+SFX 301 0 n/2,1005 . +PVSuff-n
+SFX 301 0 nA/2,1005 . +PVSuff-n
+SFX 167 Y 1
+SFX 167 0 y/2,1001 . +FWSuff-iy-me
+SFX 495 Y 1
+SFX 495 0 0/2,1012 . +IVSuff-|
+SFX 403 Y 1
+SFX 403 0 n/2,1031 . +IVSuff-|n
+SFX 323 Y 1
+SFX 323 0 0/2,1057 . +Suff-0
+SFX 418 Y 7
+SFX 418 0 nh/2,1039 . +IVSuff-nh
+SFX 418 0 nhmA/2,1039 . +IVSuff-nh
+SFX 418 0 nhm/2,1039 . +IVSuff-nh
+SFX 418 0 nhA/2,1039 . +IVSuff-nh
+SFX 418 0 nhn/2,1039 . +IVSuff-nh
+SFX 418 0 nny/2,1039 . +IVSuff-nh
+SFX 418 0 nnA/2,1039 . +IVSuff-nh
+SFX 565 Y 5
+SFX 565 0 h/2,1018 . +IVSuff-h
+SFX 565 0 hmA/2,1018 . +IVSuff-h
+SFX 565 0 hm/2,1018 . +IVSuff-h
+SFX 565 0 hA/2,1018 . +IVSuff-h
+SFX 565 0 hn/2,1018 . +IVSuff-h
+SFX 419 Y 1
+SFX 419 0 0/2,1039 . +IVSuff-~n
+SFX 305 Y 6
+SFX 305 0 t/2,1005 . +PVSuff-t
+SFX 305 0 t/2,1005 . +PVSuff-t
+SFX 305 0 t/2,1005 . +PVSuff-t
+SFX 305 0 tmA/2,1005 . +PVSuff-t
+SFX 305 0 tm/2,1005 . +PVSuff-t
+SFX 305 0 tn/2,1005 . +PVSuff-t
+SFX 280 Y 1
+SFX 280 0 yn/2,1008 . +NSuff-iyna
+SFX 566 Y 5
+SFX 566 0 k/2,1018 . +IVSuff-k
+SFX 566 0 k/2,1018 . +IVSuff-k
+SFX 566 0 kmA/2,1018 . +IVSuff-k
+SFX 566 0 km/2,1018 . +IVSuff-k
+SFX 566 0 kn/2,1018 . +IVSuff-k
+SFX 128 Y 13
+SFX 128 0 ty/2,1001 . +NSuff-tay
+SFX 128 0 tyh/2,1001 . +NSuff-tay
+SFX 128 0 tyhmA/2,1001 . +NSuff-tay
+SFX 128 0 tyhm/2,1001 . +NSuff-tay
+SFX 128 0 tyhA/2,1001 . +NSuff-tay
+SFX 128 0 tyhn/2,1001 . +NSuff-tay
+SFX 128 0 tyk/2,1001 . +NSuff-tay
+SFX 128 0 tyk/2,1001 . +NSuff-tay
+SFX 128 0 tykmA/2,1001 . +NSuff-tay
+SFX 128 0 tykm/2,1001 . +NSuff-tay
+SFX 128 0 tykn/2,1001 . +NSuff-tay
+SFX 128 0 ty/2,1001 . +NSuff-tay
+SFX 128 0 tynA/2,1001 . +NSuff-tay
+SFX 529 Y 1
+SFX 529 0 A/2,1021 . +IVSuff-A
+SFX 297 Y 1
+SFX 297 0 0/2,1005 . +PVSuff-|
+SFX 83 Y 1
+SFX 83 0 ny/2,1000 . +FWSuff-niy-I
+SFX 237 Y 1
+SFX 237 0 |t/2,1004 . +NSuff-|t
+SFX 349 Y 1
+SFX 349 0 y/2,1035 . +IVSuff-y
+SFX 406 Y 7
+SFX 406 0 Ah/2,1044 . +IVSuff-Ah
+SFX 406 0 AhmA/2,1044 . +IVSuff-Ah
+SFX 406 0 Ahm/2,1044 . +IVSuff-Ah
+SFX 406 0 AhA/2,1044 . +IVSuff-Ah
+SFX 406 0 Ahn/2,1044 . +IVSuff-Ah
+SFX 406 0 Any/2,1044 . +IVSuff-Ah
+SFX 406 0 AnA/2,1044 . +IVSuff-Ah
+SFX 533 Y 1
+SFX 533 0 n/2,1016 . +IVSuff-n
+SFX 350 Y 7
+SFX 350 0 yh/2,1035 . +IVSuff-yh
+SFX 350 0 yhmA/2,1035 . +IVSuff-yh
+SFX 350 0 yhm/2,1035 . +IVSuff-yh
+SFX 350 0 yhA/2,1035 . +IVSuff-yh
+SFX 350 0 yhn/2,1035 . +IVSuff-yh
+SFX 350 0 yny/2,1035 . +IVSuff-yh
+SFX 350 0 ynA/2,1035 . +IVSuff-yh
+SFX 551 Y 1
+SFX 551 0 n/2,1025 . +IVSuff-n
+SFX 165 Y 1
+SFX 165 0 y/2,1001 . +FWSuff-ya
+SFX 351 Y 1
+SFX 351 0 yn/2,1035 . +IVSuff-yn
+SFX 245 Y 11
+SFX 245 0 h/2,1004 . +NSuff-h
+SFX 245 0 hmA/2,1004 . +NSuff-h
+SFX 245 0 hm/2,1004 . +NSuff-h
+SFX 245 0 hA/2,1004 . +NSuff-h
+SFX 245 0 hn/2,1004 . +NSuff-h
+SFX 245 0 k/2,1004 . +NSuff-h
+SFX 245 0 k/2,1004 . +NSuff-h
+SFX 245 0 kmA/2,1004 . +NSuff-h
+SFX 245 0 km/2,1004 . +NSuff-h
+SFX 245 0 kn/2,1004 . +NSuff-h
+SFX 245 0 nA/2,1004 . +NSuff-h
+SFX 53 Y 24
+SFX 53 0 th/2,1000 . +PVSuff-ath
+SFX 53 0 thmA/2,1000 . +PVSuff-ath
+SFX 53 0 thm/2,1000 . +PVSuff-ath
+SFX 53 0 thA/2,1000 . +PVSuff-ath
+SFX 53 0 thn/2,1000 . +PVSuff-ath
+SFX 53 0 tk/2,1000 . +PVSuff-ath
+SFX 53 0 tk/2,1000 . +PVSuff-ath
+SFX 53 0 tkmA/2,1000 . +PVSuff-ath
+SFX 53 0 tkm/2,1000 . +PVSuff-ath
+SFX 53 0 tkn/2,1000 . +PVSuff-ath
+SFX 53 0 tny/2,1000 . +PVSuff-ath
+SFX 53 0 tnA/2,1000 . +PVSuff-ath
+SFX 53 0 tAh/2,1000 . +PVSuff-ath
+SFX 53 0 tAhmA/2,1000 . +PVSuff-ath
+SFX 53 0 tAhm/2,1000 . +PVSuff-ath
+SFX 53 0 tAhA/2,1000 . +PVSuff-ath
+SFX 53 0 tAhn/2,1000 . +PVSuff-ath
+SFX 53 0 tAk/2,1000 . +PVSuff-ath
+SFX 53 0 tAk/2,1000 . +PVSuff-ath
+SFX 53 0 tAkmA/2,1000 . +PVSuff-ath
+SFX 53 0 tAkm/2,1000 . +PVSuff-ath
+SFX 53 0 tAkn/2,1000 . +PVSuff-ath
+SFX 53 0 tAny/2,1000 . +PVSuff-ath
+SFX 53 0 tAnA/2,1000 . +PVSuff-ath
+SFX 478 Y 7
+SFX 478 0 Ah/2,1033 . +IVSuff-Ah
+SFX 478 0 AhmA/2,1033 . +IVSuff-Ah
+SFX 478 0 Ahm/2,1033 . +IVSuff-Ah
+SFX 478 0 AhA/2,1033 . +IVSuff-Ah
+SFX 478 0 Ahn/2,1033 . +IVSuff-Ah
+SFX 478 0 Any/2,1033 . +IVSuff-Ah
+SFX 478 0 AnA/2,1033 . +IVSuff-Ah
+SFX 479 Y 5
+SFX 479 0 Ak/2,1033 . +IVSuff-Ak
+SFX 479 0 Ak/2,1033 . +IVSuff-Ak
+SFX 479 0 AkmA/2,1033 . +IVSuff-Ak
+SFX 479 0 Akm/2,1033 . +IVSuff-Ak
+SFX 479 0 Akn/2,1033 . +IVSuff-Ak
+SFX 480 Y 1
+SFX 480 0 An/2,1033 . +IVSuff-An
+SFX 105 Y 12
+SFX 105 0 Ath/2,1001 . +NSuff-Ath
+SFX 105 0 AthmA/2,1001 . +NSuff-Ath
+SFX 105 0 Athm/2,1001 . +NSuff-Ath
+SFX 105 0 AthA/2,1001 . +NSuff-Ath
+SFX 105 0 Athn/2,1001 . +NSuff-Ath
+SFX 105 0 Atk/2,1001 . +NSuff-Ath
+SFX 105 0 Atk/2,1001 . +NSuff-Ath
+SFX 105 0 AtkmA/2,1001 . +NSuff-Ath
+SFX 105 0 Atkm/2,1001 . +NSuff-Ath
+SFX 105 0 Atkn/2,1001 . +NSuff-Ath
+SFX 105 0 Aty/2,1001 . +NSuff-Ath
+SFX 105 0 AtnA/2,1001 . +NSuff-Ath
+SFX 150 Y 1
+SFX 150 0 wA/2,1001 . +PVSuff-awA
+SFX 531 Y 1
+SFX 531 0 0/2,1021 . +IVSuff-|
+SFX 514 Y 7
+SFX 514 0 Ah/2,1046 . +IVSuff-Ah
+SFX 514 0 AhmA/2,1046 . +IVSuff-Ah
+SFX 514 0 Ahm/2,1046 . +IVSuff-Ah
+SFX 514 0 AhA/2,1046 . +IVSuff-Ah
+SFX 514 0 Ahn/2,1046 . +IVSuff-Ah
+SFX 514 0 Any/2,1046 . +IVSuff-Ah
+SFX 514 0 AnA/2,1046 . +IVSuff-Ah
+SFX 515 Y 5
+SFX 515 0 Ak/2,1046 . +IVSuff-Ak
+SFX 515 0 Ak/2,1046 . +IVSuff-Ak
+SFX 515 0 AkmA/2,1046 . +IVSuff-Ak
+SFX 515 0 Akm/2,1046 . +IVSuff-Ak
+SFX 515 0 Akn/2,1046 . +IVSuff-Ak
+SFX 353 Y 1
+SFX 353 0 y/2,1048 . +IVSuff-y
+SFX 534 Y 7
+SFX 534 0 nh/2,1016 . +IVSuff-nh
+SFX 534 0 nhmA/2,1016 . +IVSuff-nh
+SFX 534 0 nhm/2,1016 . +IVSuff-nh
+SFX 534 0 nhA/2,1016 . +IVSuff-nh
+SFX 534 0 nhn/2,1016 . +IVSuff-nh
+SFX 534 0 nny/2,1016 . +IVSuff-nh
+SFX 534 0 nnA/2,1016 . +IVSuff-nh
+SFX 258 Y 12
+SFX 258 0 |th/2,1003 . +NSuff-|th
+SFX 258 0 |thmA/2,1003 . +NSuff-|th
+SFX 258 0 |thm/2,1003 . +NSuff-|th
+SFX 258 0 |thA/2,1003 . +NSuff-|th
+SFX 258 0 |thn/2,1003 . +NSuff-|th
+SFX 258 0 |tk/2,1003 . +NSuff-|th
+SFX 258 0 |tk/2,1003 . +NSuff-|th
+SFX 258 0 |tkmA/2,1003 . +NSuff-|th
+SFX 258 0 |tkm/2,1003 . +NSuff-|th
+SFX 258 0 |tkn/2,1003 . +NSuff-|th
+SFX 258 0 |ty/2,1003 . +NSuff-|th
+SFX 258 0 |tnA/2,1003 . +NSuff-|th
+SFX 536 Y 1
+SFX 536 0 0/2,1016 . +IVSuff-~n
+SFX 535 Y 5
+SFX 535 0 nk/2,1016 . +IVSuff-nk
+SFX 535 0 nk/2,1016 . +IVSuff-nk
+SFX 535 0 nkmA/2,1016 . +IVSuff-nk
+SFX 535 0 nkm/2,1016 . +IVSuff-nk
+SFX 535 0 nkn/2,1016 . +IVSuff-nk
+SFX 404 Y 7
+SFX 404 0 nh/2,1031 . +IVSuff-|nh
+SFX 404 0 nhmA/2,1031 . +IVSuff-|nh
+SFX 404 0 nhm/2,1031 . +IVSuff-|nh
+SFX 404 0 nhA/2,1031 . +IVSuff-|nh
+SFX 404 0 nhn/2,1031 . +IVSuff-|nh
+SFX 404 0 nny/2,1031 . +IVSuff-|nh
+SFX 404 0 nnA/2,1031 . +IVSuff-|nh
+SFX 396 Y 7
+SFX 396 0 nh/2,1030 . +IVSuff-|nh
+SFX 396 0 nhmA/2,1030 . +IVSuff-|nh
+SFX 396 0 nhm/2,1030 . +IVSuff-|nh
+SFX 396 0 nhA/2,1030 . +IVSuff-|nh
+SFX 396 0 nhn/2,1030 . +IVSuff-|nh
+SFX 396 0 nny/2,1030 . +IVSuff-|nh
+SFX 396 0 nnA/2,1030 . +IVSuff-|nh
+SFX 270 Y 1
+SFX 270 0 tyn/2,1003 . +NSuff-tayn
+SFX 161 Y 5
+SFX 161 0 h/2,1001 . +FWSuff-hu-he
+SFX 161 0 hmA/2,1001 . +FWSuff-hu-he
+SFX 161 0 hm/2,1001 . +FWSuff-hu-he
+SFX 161 0 hA/2,1001 . +FWSuff-hu-he
+SFX 161 0 hn/2,1001 . +FWSuff-hu-he
+SFX 153 Y 12
+SFX 153 0 h/2,1001 . +PVSuff-0ah
+SFX 153 0 hmA/2,1001 . +PVSuff-0ah
+SFX 153 0 hm/2,1001 . +PVSuff-0ah
+SFX 153 0 hA/2,1001 . +PVSuff-0ah
+SFX 153 0 hn/2,1001 . +PVSuff-0ah
+SFX 153 0 k/2,1001 . +PVSuff-0ah
+SFX 153 0 k/2,1001 . +PVSuff-0ah
+SFX 153 0 kmA/2,1001 . +PVSuff-0ah
+SFX 153 0 km/2,1001 . +PVSuff-0ah
+SFX 153 0 kn/2,1001 . +PVSuff-0ah
+SFX 153 0 ny/2,1001 . +PVSuff-0ah
+SFX 153 0 nA/2,1001 . +PVSuff-0ah
+SFX 151 Y 12
+SFX 151 0 wh/2,1001 . +PVSuff-awh
+SFX 151 0 whmA/2,1001 . +PVSuff-awh
+SFX 151 0 whm/2,1001 . +PVSuff-awh
+SFX 151 0 whA/2,1001 . +PVSuff-awh
+SFX 151 0 whn/2,1001 . +PVSuff-awh
+SFX 151 0 wk/2,1001 . +PVSuff-awh
+SFX 151 0 wk/2,1001 . +PVSuff-awh
+SFX 151 0 wkmA/2,1001 . +PVSuff-awh
+SFX 151 0 wkm/2,1001 . +PVSuff-awh
+SFX 151 0 wkn/2,1001 . +PVSuff-awh
+SFX 151 0 wny/2,1001 . +PVSuff-awh
+SFX 151 0 wnA/2,1001 . +PVSuff-awh
+SFX 477 Y 1
+SFX 477 0 A/2,1033 . +IVSuff-A
+SFX 236 Y 12
+SFX 236 0 Ath/2,1004 . +NSuff-Ath
+SFX 236 0 AthmA/2,1004 . +NSuff-Ath
+SFX 236 0 Athm/2,1004 . +NSuff-Ath
+SFX 236 0 AthA/2,1004 . +NSuff-Ath
+SFX 236 0 Athn/2,1004 . +NSuff-Ath
+SFX 236 0 Atk/2,1004 . +NSuff-Ath
+SFX 236 0 Atk/2,1004 . +NSuff-Ath
+SFX 236 0 AtkmA/2,1004 . +NSuff-Ath
+SFX 236 0 Atkm/2,1004 . +NSuff-Ath
+SFX 236 0 Atkn/2,1004 . +NSuff-Ath
+SFX 236 0 Aty/2,1004 . +NSuff-Ath
+SFX 236 0 AtnA/2,1004 . +NSuff-Ath
+SFX 38 Y 11
+SFX 38 0 h/2,1000 . +NSuff-h
+SFX 38 0 hmA/2,1000 . +NSuff-h
+SFX 38 0 hm/2,1000 . +NSuff-h
+SFX 38 0 hA/2,1000 . +NSuff-h
+SFX 38 0 hn/2,1000 . +NSuff-h
+SFX 38 0 k/2,1000 . +NSuff-h
+SFX 38 0 k/2,1000 . +NSuff-h
+SFX 38 0 kmA/2,1000 . +NSuff-h
+SFX 38 0 km/2,1000 . +NSuff-h
+SFX 38 0 kn/2,1000 . +NSuff-h
+SFX 38 0 nA/2,1000 . +NSuff-h
+SFX 410 Y 7
+SFX 410 0 Ah/2,1045 . +IVSuff-Ah
+SFX 410 0 AhmA/2,1045 . +IVSuff-Ah
+SFX 410 0 Ahm/2,1045 . +IVSuff-Ah
+SFX 410 0 AhA/2,1045 . +IVSuff-Ah
+SFX 410 0 Ahn/2,1045 . +IVSuff-Ah
+SFX 410 0 Any/2,1045 . +IVSuff-Ah
+SFX 410 0 AnA/2,1045 . +IVSuff-Ah
+SFX 172 Y 1
+SFX 172 0 nA/2,1001 . +FWSuff-nA-we
+SFX 567 Y 2
+SFX 567 0 ny/2,1018 . +IVSuff-ny-nA
+SFX 567 0 nA/2,1018 . +IVSuff-ny-nA
+SFX 315 Y 5
+SFX 315 0 h/2,1054 . +IVSuff-h
+SFX 315 0 hmA/2,1054 . +IVSuff-h
+SFX 315 0 hm/2,1054 . +IVSuff-h
+SFX 315 0 hA/2,1054 . +IVSuff-h
+SFX 315 0 hn/2,1054 . +IVSuff-h
+SFX 316 Y 5
+SFX 316 0 k/2,1054 . +IVSuff-k
+SFX 316 0 k/2,1054 . +IVSuff-k
+SFX 316 0 kmA/2,1054 . +IVSuff-k
+SFX 316 0 km/2,1054 . +IVSuff-k
+SFX 316 0 kn/2,1054 . +IVSuff-k
+SFX 9 Y 1
+SFX 9 0 A/2,1000 . +NSuff-AF
+SFX 275 Y 1
+SFX 275 0 |t/2,1008 . +NSuff-|t
+SFX 389 Y 1
+SFX 389 0 A/2,1030 . +IVSuff-A
+SFX 169 Y 1
+SFX 169 0 ny/2,1001 . +FWSuff-niy-I
+SFX 84 Y 1
+SFX 84 0 ny/2,1000 . +FWSuff-niy-me
+SFX 217 Y 12
+SFX 217 0 |th/2,1002 . +NSuff-|th
+SFX 217 0 |thmA/2,1002 . +NSuff-|th
+SFX 217 0 |thm/2,1002 . +NSuff-|th
+SFX 217 0 |thA/2,1002 . +NSuff-|th
+SFX 217 0 |thn/2,1002 . +NSuff-|th
+SFX 217 0 |tk/2,1002 . +NSuff-|th
+SFX 217 0 |tk/2,1002 . +NSuff-|th
+SFX 217 0 |tkmA/2,1002 . +NSuff-|th
+SFX 217 0 |tkm/2,1002 . +NSuff-|th
+SFX 217 0 |tkn/2,1002 . +NSuff-|th
+SFX 217 0 |ty/2,1002 . +NSuff-|th
+SFX 217 0 |tnA/2,1002 . +NSuff-|th
+SFX 88 Y 1
+SFX 88 0 A/2,1000 . +FWSuff-~A
+SFX 80 Y 1
+SFX 80 0 y/2,1000 . +FWSuff-iy-I
+SFX 290 Y 1
+SFX 290 0 yn/2,1009 . +NSuff-ayn
+SFX 520 Y 7
+SFX 520 0 Ah/2,1047 . +IVSuff-Ah
+SFX 520 0 AhmA/2,1047 . +IVSuff-Ah
+SFX 520 0 Ahm/2,1047 . +IVSuff-Ah
+SFX 520 0 AhA/2,1047 . +IVSuff-Ah
+SFX 520 0 Ahn/2,1047 . +IVSuff-Ah
+SFX 520 0 Any/2,1047 . +IVSuff-Ah
+SFX 520 0 AnA/2,1047 . +IVSuff-Ah
+SFX 10 Y 13
+SFX 10 0 A/2,1000 . +NSuff-Ah
+SFX 10 0 Ah/2,1000 . +NSuff-Ah
+SFX 10 0 AhmA/2,1000 . +NSuff-Ah
+SFX 10 0 Ahm/2,1000 . +NSuff-Ah
+SFX 10 0 AhA/2,1000 . +NSuff-Ah
+SFX 10 0 Ahn/2,1000 . +NSuff-Ah
+SFX 10 0 Ak/2,1000 . +NSuff-Ah
+SFX 10 0 Ak/2,1000 . +NSuff-Ah
+SFX 10 0 AkmA/2,1000 . +NSuff-Ah
+SFX 10 0 Akm/2,1000 . +NSuff-Ah
+SFX 10 0 Akn/2,1000 . +NSuff-Ah
+SFX 10 0 Ay/2,1000 . +NSuff-Ah
+SFX 10 0 AnA/2,1000 . +NSuff-Ah
+SFX 26 Y 1
+SFX 26 0 p/2,1000 . +NSuff-ap
+SFX 521 Y 5
+SFX 521 0 Ak/2,1047 . +IVSuff-Ak
+SFX 521 0 Ak/2,1047 . +IVSuff-Ak
+SFX 521 0 AkmA/2,1047 . +IVSuff-Ak
+SFX 521 0 Akm/2,1047 . +IVSuff-Ak
+SFX 521 0 Akn/2,1047 . +IVSuff-Ak
+SFX 511 Y 7
+SFX 511 0 nh/2,1013 . +IVSuff-|nh
+SFX 511 0 nhmA/2,1013 . +IVSuff-|nh
+SFX 511 0 nhm/2,1013 . +IVSuff-|nh
+SFX 511 0 nhA/2,1013 . +IVSuff-|nh
+SFX 511 0 nhn/2,1013 . +IVSuff-|nh
+SFX 511 0 nny/2,1013 . +IVSuff-|nh
+SFX 511 0 nnA/2,1013 . +IVSuff-|nh
+SFX 499 Y 7
+SFX 499 0 nh/2,1012 . +IVSuff-|nh
+SFX 499 0 nhmA/2,1012 . +IVSuff-|nh
+SFX 499 0 nhm/2,1012 . +IVSuff-|nh
+SFX 499 0 nhA/2,1012 . +IVSuff-|nh
+SFX 499 0 nhn/2,1012 . +IVSuff-|nh
+SFX 499 0 nny/2,1012 . +IVSuff-|nh
+SFX 499 0 nnA/2,1012 . +IVSuff-|nh
+SFX 483 Y 1
+SFX 483 0 0/2,1033 . +IVSuff-|
+SFX 512 Y 5
+SFX 512 0 nk/2,1013 . +IVSuff-|nk
+SFX 512 0 nk/2,1013 . +IVSuff-|nk
+SFX 512 0 nkmA/2,1013 . +IVSuff-|nk
+SFX 512 0 nkm/2,1013 . +IVSuff-|nk
+SFX 512 0 nkn/2,1013 . +IVSuff-|nk
+SFX 481 Y 7
+SFX 481 0 Anh/2,1033 . +IVSuff-Anh
+SFX 481 0 AnhmA/2,1033 . +IVSuff-Anh
+SFX 481 0 Anhm/2,1033 . +IVSuff-Anh
+SFX 481 0 AnhA/2,1033 . +IVSuff-Anh
+SFX 481 0 Anhn/2,1033 . +IVSuff-Anh
+SFX 481 0 Anny/2,1033 . +IVSuff-Anh
+SFX 481 0 AnnA/2,1033 . +IVSuff-Anh
+SFX 11 Y 1
+SFX 11 0 An/2,1000 . +NSuff-An
+SFX 39 Y 1
+SFX 39 0 y/2,1000 . +NSuff-iy
+SFX 500 Y 5
+SFX 500 0 nk/2,1012 . +IVSuff-|nk
+SFX 500 0 nk/2,1012 . +IVSuff-|nk
+SFX 500 0 nkmA/2,1012 . +IVSuff-|nk
+SFX 500 0 nkm/2,1012 . +IVSuff-|nk
+SFX 500 0 nkn/2,1012 . +IVSuff-|nk
+SFX 469 Y 7
+SFX 469 0 Anh/2,1032 . +IVSuff-Anh
+SFX 469 0 AnhmA/2,1032 . +IVSuff-Anh
+SFX 469 0 Anhm/2,1032 . +IVSuff-Anh
+SFX 469 0 AnhA/2,1032 . +IVSuff-Anh
+SFX 469 0 Anhn/2,1032 . +IVSuff-Anh
+SFX 469 0 Anny/2,1032 . +IVSuff-Anh
+SFX 469 0 AnnA/2,1032 . +IVSuff-Anh
+SFX 482 Y 5
+SFX 482 0 Ank/2,1033 . +IVSuff-Ank
+SFX 482 0 Ank/2,1033 . +IVSuff-Ank
+SFX 482 0 AnkmA/2,1033 . +IVSuff-Ank
+SFX 482 0 Ankm/2,1033 . +IVSuff-Ank
+SFX 482 0 Ankn/2,1033 . +IVSuff-Ank
+SFX 470 Y 5
+SFX 470 0 Ank/2,1032 . +IVSuff-Ank
+SFX 470 0 Ank/2,1032 . +IVSuff-Ank
+SFX 470 0 AnkmA/2,1032 . +IVSuff-Ank
+SFX 470 0 Ankm/2,1032 . +IVSuff-Ank
+SFX 470 0 Ankn/2,1032 . +IVSuff-Ank
+SFX 14 Y 1
+SFX 14 0 At/2,1000 . +NSuff-At
+SFX 540 Y 7
+SFX 540 0 nh/2,1017 . +IVSuff-nh
+SFX 540 0 nhmA/2,1017 . +IVSuff-nh
+SFX 540 0 nhm/2,1017 . +IVSuff-nh
+SFX 540 0 nhA/2,1017 . +IVSuff-nh
+SFX 540 0 nhn/2,1017 . +IVSuff-nh
+SFX 540 0 nny/2,1017 . +IVSuff-nh
+SFX 540 0 nnA/2,1017 . +IVSuff-nh
+SFX 542 Y 1
+SFX 542 0 0/2,1017 . +IVSuff-~n
+SFX 390 Y 7
+SFX 390 0 Ah/2,1030 . +IVSuff-Ah
+SFX 390 0 AhmA/2,1030 . +IVSuff-Ah
+SFX 390 0 Ahm/2,1030 . +IVSuff-Ah
+SFX 390 0 AhA/2,1030 . +IVSuff-Ah
+SFX 390 0 Ahn/2,1030 . +IVSuff-Ah
+SFX 390 0 Any/2,1030 . +IVSuff-Ah
+SFX 390 0 AnA/2,1030 . +IVSuff-Ah
+SFX 541 Y 5
+SFX 541 0 nk/2,1017 . +IVSuff-nk
+SFX 541 0 nk/2,1017 . +IVSuff-nk
+SFX 541 0 nkmA/2,1017 . +IVSuff-nk
+SFX 541 0 nkm/2,1017 . +IVSuff-nk
+SFX 541 0 nkn/2,1017 . +IVSuff-nk
+SFX 33 Y 13
+SFX 33 0 tA/2,1000 . +NSuff-atAh
+SFX 33 0 tAh/2,1000 . +NSuff-atAh
+SFX 33 0 tAhmA/2,1000 . +NSuff-atAh
+SFX 33 0 tAhm/2,1000 . +NSuff-atAh
+SFX 33 0 tAhA/2,1000 . +NSuff-atAh
+SFX 33 0 tAhn/2,1000 . +NSuff-atAh
+SFX 33 0 tAk/2,1000 . +NSuff-atAh
+SFX 33 0 tAk/2,1000 . +NSuff-atAh
+SFX 33 0 tAkmA/2,1000 . +NSuff-atAh
+SFX 33 0 tAkm/2,1000 . +NSuff-atAh
+SFX 33 0 tAkn/2,1000 . +NSuff-atAh
+SFX 33 0 tAy/2,1000 . +NSuff-atAh
+SFX 33 0 tAnA/2,1000 . +NSuff-atAh
+SFX 303 Y 22
+SFX 303 0 nh/2,1005 . +PVSuff-nh
+SFX 303 0 nhmA/2,1005 . +PVSuff-nh
+SFX 303 0 nhm/2,1005 . +PVSuff-nh
+SFX 303 0 nhA/2,1005 . +PVSuff-nh
+SFX 303 0 nhn/2,1005 . +PVSuff-nh
+SFX 303 0 nk/2,1005 . +PVSuff-nh
+SFX 303 0 nk/2,1005 . +PVSuff-nh
+SFX 303 0 nkmA/2,1005 . +PVSuff-nh
+SFX 303 0 nkm/2,1005 . +PVSuff-nh
+SFX 303 0 nkn/2,1005 . +PVSuff-nh
+SFX 303 0 nny/2,1005 . +PVSuff-nh
+SFX 303 0 nnA/2,1005 . +PVSuff-nh
+SFX 303 0 nAh/2,1005 . +PVSuff-nh
+SFX 303 0 nAhmA/2,1005 . +PVSuff-nh
+SFX 303 0 nAhm/2,1005 . +PVSuff-nh
+SFX 303 0 nAhA/2,1005 . +PVSuff-nh
+SFX 303 0 nAhn/2,1005 . +PVSuff-nh
+SFX 303 0 nAk/2,1005 . +PVSuff-nh
+SFX 303 0 nAk/2,1005 . +PVSuff-nh
+SFX 303 0 nAkmA/2,1005 . +PVSuff-nh
+SFX 303 0 nAkm/2,1005 . +PVSuff-nh
+SFX 303 0 nAkn/2,1005 . +PVSuff-nh
+SFX 561 Y 5
+SFX 561 0 h/2,1011 . +IVSuff-h
+SFX 561 0 hmA/2,1011 . +IVSuff-h
+SFX 561 0 hm/2,1011 . +IVSuff-h
+SFX 561 0 hA/2,1011 . +IVSuff-h
+SFX 561 0 hn/2,1011 . +IVSuff-h
+SFX 391 Y 1
+SFX 391 0 An/2,1030 . +IVSuff-An
+SFX 302 Y 2
+SFX 302 0 0/2,1005 . +PVSuff-~n
+SFX 302 0 A/2,1005 . +PVSuff-~n
+SFX 34 Y 1
+SFX 34 0 tAn/2,1000 . +NSuff-atAn
+SFX 200 Y 1
+SFX 200 0 |t/2,1007 . +NSuff-|t
+SFX 562 Y 5
+SFX 562 0 k/2,1011 . +IVSuff-k
+SFX 562 0 k/2,1011 . +IVSuff-k
+SFX 562 0 kmA/2,1011 . +IVSuff-k
+SFX 562 0 km/2,1011 . +IVSuff-k
+SFX 562 0 kn/2,1011 . +IVSuff-k
+SFX 78 Y 1
+SFX 78 0 0/2,1000 . +FWSuff-~a
+SFX 3 Y 1
+SFX 3 0 0/2,1000 . +Suff-0
+SFX 89 Y 1
+SFX 89 0 0/2,1001 . +Suff-0
+SFX 546 Y 7
+SFX 546 0 nh/2,1024 . +IVSuff-nh
+SFX 546 0 nhmA/2,1024 . +IVSuff-nh
+SFX 546 0 nhm/2,1024 . +IVSuff-nh
+SFX 546 0 nhA/2,1024 . +IVSuff-nh
+SFX 546 0 nhn/2,1024 . +IVSuff-nh
+SFX 546 0 nny/2,1024 . +IVSuff-nh
+SFX 546 0 nnA/2,1024 . +IVSuff-nh
+SFX 306 Y 6
+SFX 306 0 0/2,1005 . +PVSuff-~t
+SFX 306 0 0/2,1005 . +PVSuff-~t
+SFX 306 0 0/2,1005 . +PVSuff-~t
+SFX 306 0 mA/2,1005 . +PVSuff-~t
+SFX 306 0 m/2,1005 . +PVSuff-~t
+SFX 306 0 n/2,1005 . +PVSuff-~t
+SFX 548 Y 1
+SFX 548 0 0/2,1024 . +IVSuff-~n
+SFX 547 Y 5
+SFX 547 0 nk/2,1024 . +IVSuff-nk
+SFX 547 0 nk/2,1024 . +IVSuff-nk
+SFX 547 0 nkmA/2,1024 . +IVSuff-nk
+SFX 547 0 nkm/2,1024 . +IVSuff-nk
+SFX 547 0 nkn/2,1024 . +IVSuff-nk
+SFX 393 Y 1
+SFX 393 0 0/2,1030 . +IVSuff-|
+SFX 43 Y 1
+SFX 43 0 tyn/2,1000 . +NSuff-tayn
+SFX 137 Y 12
+SFX 137 0 h/2,1001 . +PVSuff-|h
+SFX 137 0 hmA/2,1001 . +PVSuff-|h
+SFX 137 0 hm/2,1001 . +PVSuff-|h
+SFX 137 0 hA/2,1001 . +PVSuff-|h
+SFX 137 0 hn/2,1001 . +PVSuff-|h
+SFX 137 0 k/2,1001 . +PVSuff-|h
+SFX 137 0 k/2,1001 . +PVSuff-|h
+SFX 137 0 kmA/2,1001 . +PVSuff-|h
+SFX 137 0 km/2,1001 . +PVSuff-|h
+SFX 137 0 kn/2,1001 . +PVSuff-|h
+SFX 137 0 ny/2,1001 . +PVSuff-|h
+SFX 137 0 nA/2,1001 . +PVSuff-|h
+SFX 170 Y 1
+SFX 170 0 ny/2,1001 . +FWSuff-niy-me
+SFX 71 Y 7
+SFX 71 0 yh/2,1000 . +CVSuff-yh
+SFX 71 0 yhmA/2,1000 . +CVSuff-yh
+SFX 71 0 yhm/2,1000 . +CVSuff-yh
+SFX 71 0 yhA/2,1000 . +CVSuff-yh
+SFX 71 0 yhn/2,1000 . +CVSuff-yh
+SFX 71 0 yny/2,1000 . +CVSuff-yh
+SFX 71 0 ynA/2,1000 . +CVSuff-yh
+SFX 230 Y 1
+SFX 230 0 0/2,1004 . +Suff-0
+SFX 146 Y 45
+SFX 146 0 th/2,1001 . +PVSuff-th
+SFX 146 0 thmA/2,1001 . +PVSuff-th
+SFX 146 0 thm/2,1001 . +PVSuff-th
+SFX 146 0 thA/2,1001 . +PVSuff-th
+SFX 146 0 thn/2,1001 . +PVSuff-th
+SFX 146 0 th/2,1001 . +PVSuff-th
+SFX 146 0 thmA/2,1001 . +PVSuff-th
+SFX 146 0 thm/2,1001 . +PVSuff-th
+SFX 146 0 thA/2,1001 . +PVSuff-th
+SFX 146 0 thn/2,1001 . +PVSuff-th
+SFX 146 0 th/2,1001 . +PVSuff-th
+SFX 146 0 thmA/2,1001 . +PVSuff-th
+SFX 146 0 thm/2,1001 . +PVSuff-th
+SFX 146 0 thA/2,1001 . +PVSuff-th
+SFX 146 0 thn/2,1001 . +PVSuff-th
+SFX 146 0 tk/2,1001 . +PVSuff-th
+SFX 146 0 tk/2,1001 . +PVSuff-th
+SFX 146 0 tkmA/2,1001 . +PVSuff-th
+SFX 146 0 tkm/2,1001 . +PVSuff-th
+SFX 146 0 tkn/2,1001 . +PVSuff-th
+SFX 146 0 tny/2,1001 . +PVSuff-th
+SFX 146 0 tnA/2,1001 . +PVSuff-th
+SFX 146 0 tny/2,1001 . +PVSuff-th
+SFX 146 0 tnA/2,1001 . +PVSuff-th
+SFX 146 0 tmAh/2,1001 . +PVSuff-th
+SFX 146 0 tmAhmA/2,1001 . +PVSuff-th
+SFX 146 0 tmAhm/2,1001 . +PVSuff-th
+SFX 146 0 tmAhA/2,1001 . +PVSuff-th
+SFX 146 0 tmAhn/2,1001 . +PVSuff-th
+SFX 146 0 tmAny/2,1001 . +PVSuff-th
+SFX 146 0 tmAnA/2,1001 . +PVSuff-th
+SFX 146 0 tmwh/2,1001 . +PVSuff-th
+SFX 146 0 tmwhmA/2,1001 . +PVSuff-th
+SFX 146 0 tmwhm/2,1001 . +PVSuff-th
+SFX 146 0 tmwhA/2,1001 . +PVSuff-th
+SFX 146 0 tmwhn/2,1001 . +PVSuff-th
+SFX 146 0 tmwny/2,1001 . +PVSuff-th
+SFX 146 0 tmwnA/2,1001 . +PVSuff-th
+SFX 146 0 tnh/2,1001 . +PVSuff-th
+SFX 146 0 tnhmA/2,1001 . +PVSuff-th
+SFX 146 0 tnhm/2,1001 . +PVSuff-th
+SFX 146 0 tnhA/2,1001 . +PVSuff-th
+SFX 146 0 tnhn/2,1001 . +PVSuff-th
+SFX 146 0 tnny/2,1001 . +PVSuff-th
+SFX 146 0 tnnA/2,1001 . +PVSuff-th
+SFX 51 Y 12
+SFX 51 0 h/2,1000 . +PVSuff-|h
+SFX 51 0 hmA/2,1000 . +PVSuff-|h
+SFX 51 0 hm/2,1000 . +PVSuff-|h
+SFX 51 0 hA/2,1000 . +PVSuff-|h
+SFX 51 0 hn/2,1000 . +PVSuff-|h
+SFX 51 0 k/2,1000 . +PVSuff-|h
+SFX 51 0 k/2,1000 . +PVSuff-|h
+SFX 51 0 kmA/2,1000 . +PVSuff-|h
+SFX 51 0 km/2,1000 . +PVSuff-|h
+SFX 51 0 kn/2,1000 . +PVSuff-|h
+SFX 51 0 ny/2,1000 . +PVSuff-|h
+SFX 51 0 nA/2,1000 . +PVSuff-|h
+SFX 60 Y 45
+SFX 60 0 th/2,1000 . +PVSuff-th
+SFX 60 0 thmA/2,1000 . +PVSuff-th
+SFX 60 0 thm/2,1000 . +PVSuff-th
+SFX 60 0 thA/2,1000 . +PVSuff-th
+SFX 60 0 thn/2,1000 . +PVSuff-th
+SFX 60 0 th/2,1000 . +PVSuff-th
+SFX 60 0 thmA/2,1000 . +PVSuff-th
+SFX 60 0 thm/2,1000 . +PVSuff-th
+SFX 60 0 thA/2,1000 . +PVSuff-th
+SFX 60 0 thn/2,1000 . +PVSuff-th
+SFX 60 0 th/2,1000 . +PVSuff-th
+SFX 60 0 thmA/2,1000 . +PVSuff-th
+SFX 60 0 thm/2,1000 . +PVSuff-th
+SFX 60 0 thA/2,1000 . +PVSuff-th
+SFX 60 0 thn/2,1000 . +PVSuff-th
+SFX 60 0 tk/2,1000 . +PVSuff-th
+SFX 60 0 tk/2,1000 . +PVSuff-th
+SFX 60 0 tkmA/2,1000 . +PVSuff-th
+SFX 60 0 tkm/2,1000 . +PVSuff-th
+SFX 60 0 tkn/2,1000 . +PVSuff-th
+SFX 60 0 tny/2,1000 . +PVSuff-th
+SFX 60 0 tnA/2,1000 . +PVSuff-th
+SFX 60 0 tny/2,1000 . +PVSuff-th
+SFX 60 0 tnA/2,1000 . +PVSuff-th
+SFX 60 0 tmAh/2,1000 . +PVSuff-th
+SFX 60 0 tmAhmA/2,1000 . +PVSuff-th
+SFX 60 0 tmAhm/2,1000 . +PVSuff-th
+SFX 60 0 tmAhA/2,1000 . +PVSuff-th
+SFX 60 0 tmAhn/2,1000 . +PVSuff-th
+SFX 60 0 tmAny/2,1000 . +PVSuff-th
+SFX 60 0 tmAnA/2,1000 . +PVSuff-th
+SFX 60 0 tmwh/2,1000 . +PVSuff-th
+SFX 60 0 tmwhmA/2,1000 . +PVSuff-th
+SFX 60 0 tmwhm/2,1000 . +PVSuff-th
+SFX 60 0 tmwhA/2,1000 . +PVSuff-th
+SFX 60 0 tmwhn/2,1000 . +PVSuff-th
+SFX 60 0 tmwny/2,1000 . +PVSuff-th
+SFX 60 0 tmwnA/2,1000 . +PVSuff-th
+SFX 60 0 tnh/2,1000 . +PVSuff-th
+SFX 60 0 tnhmA/2,1000 . +PVSuff-th
+SFX 60 0 tnhm/2,1000 . +PVSuff-th
+SFX 60 0 tnhA/2,1000 . +PVSuff-th
+SFX 60 0 tnhn/2,1000 . +PVSuff-th
+SFX 60 0 tnny/2,1000 . +PVSuff-th
+SFX 60 0 tnnA/2,1000 . +PVSuff-th
+SFX 265 Y 11
+SFX 265 0 h/2,1003 . +NSuff-h
+SFX 265 0 hmA/2,1003 . +NSuff-h
+SFX 265 0 hm/2,1003 . +NSuff-h
+SFX 265 0 hA/2,1003 . +NSuff-h
+SFX 265 0 hn/2,1003 . +NSuff-h
+SFX 265 0 k/2,1003 . +NSuff-h
+SFX 265 0 k/2,1003 . +NSuff-h
+SFX 265 0 kmA/2,1003 . +NSuff-h
+SFX 265 0 km/2,1003 . +NSuff-h
+SFX 265 0 kn/2,1003 . +NSuff-h
+SFX 265 0 nA/2,1003 . +NSuff-h
+SFX 152 Y 1
+SFX 152 0 0/2,1001 . +PVSuff-0a
+SFX 329 Y 1
+SFX 329 0 0/2,1059 . +Suff-0
+SFX 66 Y 1
+SFX 66 0 0/2,1000 . +PVSuff-0a
+SFX 255 Y 1
+SFX 255 0 |t/2,1003 . +NSuff-|t
+SFX 268 Y 1
+SFX 268 0 yn/2,1003 . +NSuff-iyna
+SFX 496 Y 7
+SFX 496 0 h/2,1012 . +IVSuff-|h
+SFX 496 0 hmA/2,1012 . +IVSuff-|h
+SFX 496 0 hm/2,1012 . +IVSuff-|h
+SFX 496 0 hA/2,1012 . +IVSuff-|h
+SFX 496 0 hn/2,1012 . +IVSuff-|h
+SFX 496 0 ny/2,1012 . +IVSuff-|h
+SFX 496 0 nA/2,1012 . +IVSuff-|h
