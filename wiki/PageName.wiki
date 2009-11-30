@@ -18,8 +18,11 @@ Build an interface for Dictionary and Analyser
 
 = Rules = 
   prefix category
+
   prefix prefix
+
   category suffix
+
   suffix suffix
 
   Consider a prefix and a suffix as a category
