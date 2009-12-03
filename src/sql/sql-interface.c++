@@ -7,12 +7,13 @@
 #define max_categories 64
 using namespace std;
 
+
+enum rules { P_P, P_C, C_S, S_S, P_S};
 MYSQL_RES *result;
 MYSQL_ROW row;
 MYSQL *connection, mysql;
 int state;
 const char * col_category="category";
-const char * main_table ="main";
 
 bitset<max_categories> binary_to_bitset(char * val)
 {
@@ -79,6 +80,13 @@ int insert_word(char * ar_key, char * tr_key, char * stem, bitset<max_categories
 		printf("%s\n",mysql_error(connection));
 		return 1;
 	}
+	sprintf(stmt, "UPDATE sources SET date_last = NOW() WHERE id = '%d'", source_id);
+	state = mysql_query(connection, stmt);
+	if (state !=0)
+	{
+		printf("%s\n",mysql_error(connection));
+		return 1;
+	}
 	free(stmt);
 	return 0;
 }
@@ -96,13 +104,13 @@ int display_table(char * table)
 	}
 	result = mysql_store_result(connection);
 
-	int category_column=0;
+	int category_column=-1, col=-1;
 	while ( ( row=mysql_fetch_row(result)) != NULL )
 	{
-		category_column--;
+		col++;
 		printf("%s\t", (row[0] ? row[0] : "NULL"));
 		if (strcmp((char*)row[0],col_category)==0)
-			category_column=(-1)*category_column;
+			category_column=col;
 			
 	}
 	printf("\n");
@@ -124,7 +132,7 @@ int display_table(char * table)
 	{
 		for (int i=0; i< columns;i++)
 		{
-			if (i==4 && category_column>0)
+			if (i==category_column)
 			{
 				bitset<max_categories> b=binary_to_bitset((char*)(row[i]));
 				if (b.count()==0)
@@ -142,6 +150,48 @@ int display_table(char * table)
 		printf("\n");
 	}
 	printf("Rows:%d\n",(int)mysql_num_rows(result));
+	free(stmt);
+	return 0;
+}
+
+int insert_source(char * name, char * normalization_process, char * creator)
+{
+	char * stmt=(char *)malloc(128*sizeof(char));;
+	sprintf(stmt, "INSERT INTO sources(source, normalization_process, creator, date_start,date_last) VALUES('%s', '%s', '%s', NOW(), NOW())", name, normalization_process, creator);
+	state = mysql_query(connection, stmt);
+	if (state !=0)
+	{
+		printf("%s\n",mysql_error(connection));
+		return 1;
+	}
+	free(stmt);
+	return 0;
+}
+
+int insert_affix(char * tr_name, char * ar_name, bool is_prefix)
+{
+	char * stmt=(char *)malloc(128*sizeof(char));
+	sprintf(stmt, "INSERT INTO affixes(tr_affix, ar_affix, is_prefix) VALUES('%s', '%s', '%i')", tr_name, ar_name, is_prefix);
+	state = mysql_query(connection, stmt);
+	if (state !=0)
+	{
+		printf("%s\n",mysql_error(connection));
+		return 1;
+	}
+	free(stmt);
+	return 0;
+}
+
+int insert_rules(rules rule, char * n1, char * n2, int source_id)
+{
+	char * stmt=(char *)malloc(256*sizeof(char));
+	sprintf(stmt, "SELECT id from affixes ", tr_name, ar_name, is_prefix);
+	state = mysql_query(connection, stmt);
+	if (state !=0)
+	{
+		printf("%s\n",mysql_error(connection));
+		return 1;
+	}
 	free(stmt);
 	return 0;
 }
@@ -172,15 +222,17 @@ bool test()
 }
 
 
+
 int main(int a,char **args)
 {
 	start_connection();
 	//insert_category(args[1]);
+	insert_source("hamza","","");
 	display_table("sources");
 	display_table("categories");
-	//bitset<max_categories> cat;
+	bitset<max_categories> cat;
 	//cat.set();
-	//insert_word(args[1], "", "", cat,1,"");
+	insert_word(args[1], "", "", cat,1,"");
 	display_table("main");
 	//test();
 	close_connection();
