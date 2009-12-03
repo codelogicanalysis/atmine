@@ -78,6 +78,7 @@ CREATE TABLE `rules` (
   `prefix` int(11) NOT NULL default '0',
   `stem` int(11) NOT NULL default '0',
   `suffix` int(11) NOT NULL default '0',
+  `sources` bigint(20) unsigned NOT NULL,
   PRIMARY KEY  (`prefix`,`stem`,`suffix`),
   KEY `stem` (`stem`),
   KEY `suffix` (`suffix`)
@@ -213,4 +214,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-12-03 17:35:27
+-- Dump completed on 2009-12-03 17:41:00
