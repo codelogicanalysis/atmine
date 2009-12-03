@@ -1,0 +1,1 @@
+g++ -o test.o $(mysql_config --cflags) sql-interface.c++ $(mysql_config --libs)
