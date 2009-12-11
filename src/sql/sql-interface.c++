@@ -182,7 +182,7 @@ int insert_affix(char * tr_name, char * ar_name, bool is_prefix)
 	return 0;
 }
 
-int insert_rules(rules rule, char * n1, char * n2, int source_id)
+/*int insert_rules(rules rule, char * n1, char * n2, int source_id)
 {
 	char * stmt=(char *)malloc(256*sizeof(char));
 	sprintf(stmt, "SELECT id from affixes ", tr_name, ar_name, is_prefix);
@@ -194,7 +194,7 @@ int insert_rules(rules rule, char * n1, char * n2, int source_id)
 	}
 	free(stmt);
 	return 0;
-}
+}*/
 
 bool test()
 {
@@ -225,6 +225,7 @@ bool test()
 
 int main(int a,char **args)
 {
+	printf("%d %s\n",strlen(args[1]),args[1]);
 	start_connection();
 	//insert_category(args[1]);
 	insert_source("hamza","","");

@@ -1,0 +1,65 @@
+sources are assumed bitvector in case 2 sources have the same categories for or same rules and so on, just no need to give them new names, we can merge them.
+
+suffix:
+id 
+name : content
+\\ categories
+\\sources
+
+prefixes
+id 
+name:content
+\\categories
+\\sources
+
+category:
+id 
+type {stem suffix prefix}
+sources (bitvector)
+name
+
+semantical_categories
+id 
+name
+
+prefix category:
+prefix id
+category id
+sources (bitvector)
+
+suffix category:
+suffix id
+category id
+sources (bitvector)
+
+source:
+id
+name (description)
+normalization
+author
+date start
+date modified
+
+stem category:
+stem id
+syntax category id
+semantical categories (bit vector)
+sources (bitvector)
+raw data
+description
+
+stem:
+id
+content/name
+//categories
+//sources
+grammer stem id
+//raw data
+//description
+
+compatibility rules 
+cat_id1
+cat_id2
+type{aa ab bc ac cc}
+sources (bitvector)
+
