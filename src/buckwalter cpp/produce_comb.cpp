@@ -1,34 +1,65 @@
 #include <Qstring>
 #include <QDebug>
 #include <QStringRef>
+#include <cmath>
+#include <Qdebug>
 
-produce_comb(QString word, int n, QString ***array){
+//prefix_info *array
+int produce_comb(QString word, QString**result){
+    int n=word.length();
+    int max_comb=pow(2,n-1);
 
-    if (word.length()==0)
-    {
-        n++;
-        return;
+    QString splitter;
+    result=new QString*[max_comb];
+
+
+    for (int i=0;i<max_comb;i++){ //loop over all the combinations
+
+        splitter=QString::number(i,2);
+        int k=0;//counter of number of parts in each combination
+        int next_index=0;//start of next partition
+
+        printf(("splitter:"+splitter+"\n").toStdString().data());
+
+        int splitter_length=splitter.length();
+
+        int one_count=0;
+        for (int j=splitter_length-1; j>=0;j--){ //n-1 seperators possible
+            if (splitter[j]=='1'){
+                one_count++;
+            }
+        }
+
+        result[i]=new QString[one_count+1];//allocate memory
+
+        for (int j=splitter_length-1; j>=0;j--) //n-1 seperators possible
+        {
+
+            if (splitter[j]=='1'){
+
+                //printf((splitter+"\n").toStdString().data());
+
+                result[i][k]=word.midRef (next_index, splitter_length-1-j-(next_index-1)).toString();
+
+                //printf(word.midRef (next_index, splitter_length-1-j-(next_index-1)).toString().toStdString().data());
+                printf("%s\n",result[i][k].toStdString().data());
+                //printf("\n%d,%d\n",next_index,splitter_length-1-j-(next_index-1));
+                next_index=splitter_length-j;
+                k++;
+
+            }
+
+        }
+
+            result[i][k]=word.midRef (next_index, n-next_index).toString();
+            printf("%s\n",result[i][k].toStdString().data());
+
     }
-
-    for (i=0;i<word.length();i++){
-
-        QString left_portion=word.leftRef(i).toString();
-        QString right_portion=word.rightRef(i).toString();
-
-        store (left_portion,n,array);
-        produce_comb(right_portion,n);
-
-    }
-
+return max_comb;
 }
 
-store (QString left_portion,int n, QString ***array){
-    int i=0;
-    while (array[n][i][0]!="\0"){
-    i++;
-    }
-    array[n][i][0]=new QString(left_portion);
-    get_and_store_prefix_cats(left_portion,0);
-
+int main(){
+    QString **result;
+    produce_comb("abc",result);
+    return 0;
 }
-
