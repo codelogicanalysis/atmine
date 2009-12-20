@@ -1,7 +1,10 @@
-SOURCES += ../sql-interface.c++
-
-INCLUDEPATH += /usr/include/qt4/QtSql
+SOURCES += mainwindow.cpp
+INCLUDEPATH += /usr/include/qt4/QtSql ../
 CONFIG += qt
-    #debug
+
+# debug
 QT += sql
-OTHER_FILES += Makefile
+# OTHER_FILES += Makefile
+FORMS += mainwindow.ui
+HEADERS +=  mainwindow.h \
+	../sql-interface.h

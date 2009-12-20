@@ -1,3 +1,6 @@
+source_id for category
+
+
 sources are assumed bitvector in case 2 sources have the same categories for or same rules and so on, just no need to give them new names, we can merge them.
 
 suffix:
@@ -18,9 +21,9 @@ type {stem suffix prefix}
 sources (bitvector)
 name
 
-semantical_categories
-id 
-name
+//semantical_categories
+//id 
+//name
 
 prefix category:
 prefix id
