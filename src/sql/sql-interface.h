@@ -15,20 +15,38 @@
 #include <QSqlRecord>
 #include <QVariant>
 
-QTextStream out/*(stdout)*/;
-QTextStream in/*(stdin)*/;
-QTextStream displayed_error;
-
 #define max_sources 64
 using namespace std;
 
 enum rules { AA,AB,AC,BC,CC };
 enum item_types { PREFIX, STEM, SUFFIX};
 
+typedef struct minimal_item_info_
+{
+	long category_id;
+	long semantical_category_id;
+	QString raw_data;
+	QString description;
+	QString POS;
+} minimal_item_info;
+typedef struct all_item_info_
+{
+	unsigned long long id;
+	long category_id;
+	long semantical_category_id;
+	bitset<max_sources> sources;
+	QString raw_data;
+	QString description;
+	QString POS;
+} all_item_info;
+
+QTextStream out/*(stdout)*/;
+QTextStream in/*(stdin)*/;
+QTextStream displayed_error;
+
 bool KEEP_OLD=true;
 bool display_errors=true;
 bool display_warnings=true;
-const char * col_source="sources";
 
 QSqlDatabase db;
 QSqlQuery query;
@@ -43,6 +61,41 @@ QSqlQuery query;
 	if (!execute_query(stmt)) \
 		return -1;
 
+inline QString interpret_type(item_types t)
+{
+	qDebug()<<t;
+	switch(t)
+	{
+	case PREFIX:
+		return "prefix";
+	case STEM:
+		return "stem";
+	case SUFFIX:
+		return "suffix";
+	default:
+		error << "UNDEFINED item_type!\n";
+		return "--";
+	}
+}
+inline QString interpret_type(rules r)
+{
+	switch(r)
+	{
+	case AA:
+		return "AA";
+	case AB:
+		return "AB";
+	case AC:
+		return "AC";
+	case BC:
+		return "BC";
+	case CC:
+		return "CC";
+	default:
+		error << "UNDEFINED compatibility rule!\n";
+		return "--";
+	}
+}
 inline bool execute_query(QString stmt)
 {
 	if (!query.exec(stmt))
@@ -52,7 +105,6 @@ inline bool execute_query(QString stmt)
 	}
 	return true;
 }
-
 bitset<max_sources> binary_to_bitset(unsigned long long ll)
 {
 	unsigned long long mask=0x1;
@@ -64,7 +116,6 @@ bitset<max_sources> binary_to_bitset(unsigned long long ll)
 	}
 	return b;
 }
-
 bitset<max_sources> binary_to_bitset(char * val)
 {
 
@@ -89,7 +140,6 @@ bitset<max_sources> binary_to_bitset(char * val)
 
 	//printf("%s\n",b.to_string().data());*/
 }
-
 bitset<max_sources> binary_to_bitset(QVariant val)
 {
 	bool ok;
@@ -97,34 +147,42 @@ bitset<max_sources> binary_to_bitset(QVariant val)
 		return binary_to_bitset(val.toULongLong(&ok));
 	return binary_to_bitset((char*)val.toString().toStdString().data());
 }
-
 inline bool start_connection()
 {
-	db = QSqlDatabase::addDatabase("QMYSQL");
-	db.setHostName("localhost");
-	db.setDatabaseName("atm");
-	db.setUserName("root");
-	db.setPassword("");
-	bool ok = db.open();
-	if (ok)
+	/*qDebug()<<db.isOpen()<<db.databaseName();
+	if (!db.isOpen())
 	{
-		db.exec("SET NAMES 'utf8'");
-		QSqlQuery temp(db);
-		query=temp;
-		return 0;
-	}
-	else
-	{
-		error <<db.lastError().text()<<"\n";
-		return 1;
-	}
+		if (db.databaseName()!="atm")
+		{*/
+			db = QSqlDatabase::addDatabase("QMYSQL");
+			db.setHostName("localhost");
+			db.setDatabaseName("atm");
+			db.setUserName("root");
+			db.setPassword("");
+		//}
+		bool ok = db.open();
+		if (ok)
+		{
+			db.exec("SET NAMES 'utf8'");
+			QSqlQuery temp(db);
+			query=temp;
+			return 0;
+		}
+		else
+		{
+			error <<db.lastError().text()<<"\n";
+			return 1;
+		}
+	//}
+	return 0;
 }
-
 inline void close_connection()
 {
 		db.close();
-}
+		qDebug()<<db.isOpen();
+		//QSqlDatabase::removeDatabase("atm");
 
+}
 inline bool existsID(char * table,unsigned long long id,QString additional_condition ="")
 {
 	QString stmt( "SELECT * FROM %1 WHERE id ='%2' %3");
@@ -132,7 +190,6 @@ inline bool existsID(char * table,unsigned long long id,QString additional_condi
 	perform_query(stmt);
 	return (query.size()>0);
 }
-
 inline long long getID(char * table, QString name, QString additional_condition="")
 {
 	bool ok;
@@ -144,7 +201,6 @@ inline long long getID(char * table, QString name, QString additional_condition=
 	else
 		return -1;
 }
-
 inline bool existsSOURCE(int source_id)
 {
 	if (source_id<0 || source_id>=max_sources || !existsID("source",source_id))
@@ -155,7 +211,6 @@ inline bool existsSOURCE(int source_id)
 	else
 		return true;
 }
-
 inline bitset<max_sources> getSources(char * table,unsigned long long id=-1, QString additional_condition ="", bool has_id=true)
 {
 	QString stmt( "SELECT sources FROM %1 WHERE %2 %3");
@@ -166,14 +221,12 @@ inline bitset<max_sources> getSources(char * table,unsigned long long id=-1, QSt
 	else
 		return NULL;
 }
-
 inline bool update_dates(int source_id)
 {
 	QString stmt= QString("UPDATE source SET date_last = NOW() WHERE id = '%1'").arg( source_id);
 	perform_query(stmt);
 	return 0;
 }
-
 inline bitset<max_sources> addSource(char * table, int source_id, long long id=-1 , QString additional_condition ="",bool has_id=true)
 {
 	if (!existsSOURCE(source_id))
@@ -185,7 +238,6 @@ inline bitset<max_sources> addSource(char * table, int source_id, long long id=-
 	perform_query(stmt);
 	return getSources(table, id,additional_condition,has_id);
 }
-
 inline long long getGrammarStem_id(char * table,int stem_id)
 {
 	bool ok;
@@ -203,7 +255,6 @@ inline long long getGrammarStem_id(char * table,int stem_id)
 	else
 		return -1;
 }
-
 inline long insert_category(QString name, item_types type, bitset<max_sources> sources)
 {
 	QString stmt( "INSERT INTO category(name,type,sources) VALUES('%1',%2,b'%3')");
@@ -212,7 +263,6 @@ inline long insert_category(QString name, item_types type, bitset<max_sources> s
 	return getID("category",name);//get id of inserted
 	//maybe must update dates, but I think no need here
 }
-
 inline long insert_semantical_category(QString name)
 {
 	QString stmt( "INSERT INTO category(name) VALUES('%1')");
@@ -220,29 +270,12 @@ inline long insert_semantical_category(QString name)
 	perform_query(stmt);
 	return getID("semantical_category",name);//get id of inserted
 }
-
 inline long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, long semantical_category_id=-1,QString grammar_stem="", QString description="", QString POS="")
 {
-	char * table;
-	char * item_category;
-	switch (type)
-	{
-	case PREFIX:
-		table="prefix";
-		item_category="prefix_category";
-		break;
-	case SUFFIX:
-		table="suffix";
-		item_category="suffix_category";
-		break;
-	case STEM:
-		table="stem";
-		item_category="stem_category";
-		break;
-	default:
-		error << "UNDEFINED item_type!\n";
-		return -3;//must not reach here
-	}
+	QString table=interpret_type(type);
+	QString item_category=QString("%1_category").arg(table);
+	if (table=="--")
+		return -3; //must not reach here
 	if (!existsSOURCE(source_id))
 		return -2;
 	if (semantical_category_id!=-1 && !existsID("semantical_category",semantical_category_id))
@@ -252,17 +285,19 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	}
 	QString stmt;
 	bitset<max_sources> cat_sources,sources;
-	long long item_id=getID(table,name);
+	long long item_id=getID((char*)table.toStdString().data(),name);
 	long long grammar_stem_id =-1;
 	if (type==STEM)
-		grammar_stem_id=getID(table,grammar_stem);
+		grammar_stem_id=getID((char*)table.toStdString().data(),grammar_stem);
 	long category_id =getID("category",category, QString("type=%1").arg((int)(type)));
 	//update sources of category or insert it altogether if not there
 	if (category_id==-1)
 	{
 		cat_sources.set(source_id);
 		category_id=insert_category(category,type,cat_sources);
-		warning << QString("New Category Automatically inserted: %1").arg(category)<<"\n";
+		if (category_id==-1)
+			return -1;
+		warning << QString("New Category Automatically inserted: '%1'").arg(category)<<"\n";
 	}
 	else
 		cat_sources=addSource("category",source_id,category_id);
@@ -283,7 +318,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 			stmt=stmt.arg(table).arg(name);
 		}
 		perform_query(stmt);
-		item_id=getID(table,name);
+		item_id=getID((char*)table.toStdString().data(),name);
 		sources.set(source_id);
 		//later would be updated
 	}
@@ -318,7 +353,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 				}
 			}
 		}
-		sources=addSource(item_category,source_id,-1,QString("%1_id = '%2' AND category_id = '%3' AND semantical_category_id ='%4'").arg(table).arg(item_id).arg(category_id).arg(semantical_category_id),false);
+		sources=addSource((char*)item_category.toStdString().data(),source_id,-1,QString("%1_id = '%2' AND category_id = '%3' AND semantical_category_id ='%4'").arg(table).arg(item_id).arg(category_id).arg(semantical_category_id),false);
 		if (sources!=NULL)
 		{
 			update_dates(source_id);
@@ -331,7 +366,6 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	update_dates(source_id);
 	return item_id;
 }
-
 inline long display_table(char * table)
 {
 
@@ -340,15 +374,17 @@ inline long display_table(char * table)
 	stmt=stmt.arg(table);
 	perform_query(stmt);
 
-	int source_column=-1, col=-1;
+	int source_column=-1,type_column=-1, col=-1;
 	int columns=query.size();
 	while ( query.next())
 	{
 		col++;
 		//qDebug()<<query.value(0).toString();
 		out<<(!query.value(0).isNull() ? query.value(0).toString() : "NULL");
-		if (strcmp(query.value(0).toString().toStdString().data(),col_source)==0)
+		if (strcmp(query.value(0).toString().toStdString().data(),"sources")==0)
 			source_column=col;
+		if (strcmp(query.value(0).toString().toStdString().data(),"type")==0)
+			type_column=col;
 		out << "\t";
 	}
 	out<<"\n";
@@ -371,7 +407,14 @@ inline long display_table(char * table)
 						if (b[k]==1)
 							out<<k<<",";
 				out<<"\t";
-				//printf("<%s>\t", (row[i] ? row[i] : "NULL"));
+			}
+			else if(i==type_column)
+			{
+				bool ok;
+				if (strcmp(table,"category")==0)
+					out<<interpret_type((item_types)row.value(i).toInt(&ok)).toUpper()<<"\t";
+				if (strcmp(table,"compatibility_rules")==0)
+					out<<interpret_type((rules)row.value(i).toInt(&ok))<<"\t";
 			}
 			else
 				out<<QString("%1\t").arg(!row.value(i).isNull() ? (!(row.value(i).toString()==QString(""))?row.value(i).toString():QString("    ")) : QString("NULL"));
@@ -381,7 +424,6 @@ inline long display_table(char * table)
 	out<<QString("Rows: %1\n").arg((long)query.size());
 	return 0;
 }
-
 inline int insert_source(QString name, QString normalization_process, QString creator)
 {
 	QString stmt( "SELECT * FROM source WHERE description ='%1'");
@@ -396,7 +438,6 @@ inline int insert_source(QString name, QString normalization_process, QString cr
 	perform_query(stmt);
 	return 0;
 }
-
 inline int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id)
 {
 	QString stmt;
@@ -429,19 +470,19 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 	}
 	if (id1<0 || !existsID("category",id1,QString("type=%1").arg((int)t1)))
 	{
-		error<< QString("INVALID Category ID-1 '%1'\n").arg(id1);
+		error<< QString("INVALID %2 Category ID-1 '%1'\n").arg(id1).arg(interpret_type(t1));
 		return -1;
 	}
 	if (id2<0 || !existsID("category",id2,QString("type=%1").arg((int)t2)))
 	{
-		error<< QString("INVALID Category ID-2 '%1'\n").arg(id2);
+		error<< QString("INVALID %2 Category ID-2 '%1'\n").arg(id2).arg(interpret_type(t2));
 		return -1;
 	}
 	if (t1==t2) //resulting category id is ignored otherwise
 	{
 		if (result_id<0 || !existsID("category",result_id,QString("type=%1").arg((int)t1)))
 		{
-			error<< QString("INVALID resulting Category ID '%1'\n").arg(result_id);
+			error<< QString("INVALID %2 resulting Category ID '%1'\n").arg(result_id).arg(interpret_type(t1));
 			return -1;
 		}
 	}
@@ -478,19 +519,100 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 	{
 		bitset <max_sources> sources;
 		sources.set(source_id);
-		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resultin_category)  VALUES(%1,%2,%3,b'%4',%5)";
+		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resulting_category)  VALUES(%1,%2,%3,b'%4',%5)";
 		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( sources.to_string().data()).arg( (result_id==-1?QString("NULL"):QString("%1").arg(result_id)));
 		perform_query(stmt);
 	}
 	update_dates(source_id);
 	return 0;
 }
+inline int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id)
+{
+	//maybe better later to check for category type, else error will appear later for an id which the user did not enter
+	long id1=getID("category",category1), id2=getID("category",category2),id_r=getID("category",category_result);
+	if (id1==-1)
+	{
+		error << QString("Category 1 Undefined: '%1'").arg(category1);
+		return -1;
+	}
+	if (id2==-1)
+	{
+		error << QString("Category 2 Undefined: '%1'").arg(category2);
+		return -1;
+	}
+	if (id_r==-1)
+	{
+		error << QString("Resulting Category Undefined: '%1'").arg(category_result);
+		return -1;
+	}
+	return insert_compatibility_rules(rule,id1,id2,id_r,source_id);
+}
+inline int insert_compatibility_rules(rules rule,QString category1,QString category2, int source_id)
+{
+	return insert_compatibility_rules(rule, category1,category2,category2,source_id);
+}
+inline int insert_compatibility_rules(rules rule, long id1,long id2, int source_id)
+{
+	return insert_compatibility_rules(rule,id1,id2,id2,source_id);
+}
+inline int search(item_types type,QString name,long category_ids[])
+{
+	QString table = interpret_type(type);
+	long long id=getID((char *)table.toStdString().data(),name,QString("type=%1").arg((int)(type)));
+	return 0;
+}
+inline int search(item_types type,QString name,minimal_item_info info[])
+{
+	return 0;
+}
+inline int search(item_types type,QString name,all_item_info info[])
+{
+	return 0;
+}
+inline int search(QString name,minimal_item_info info[],QString &grammar_stem) //just for stems
+{
+	return 0;
+}
+inline int search(QString name,all_item_info info[],QString grammar_stem,bitset<max_sources> grammar_stem_sources) //just for stems
+{
+	return 0;
+}
+inline bool areCompatible(rules rules,long category1,long category2, long& resulting_category)
+{
+	return true;
+}
 
+inline bool areCompatible(rules rules,long category1,long category2)
+{
+	return true;
+}
+void generate()
+{
+	for (int i = 0;i<32;i++	)
+	{
+		out<<"{";
+		bitset<6> h(i);
+		for (int j=0;j<5;j++)
+		{
+			if (h[j]==1)
+				out<<QString("%1,").arg(j);
+		}
+		out<<"-1},";
+	}
+}
 int start(QString input_str, QString &output_str, QString &error_str)
 {
-
+	out.setString(&output_str);
+	out.setCodec("utf-8");
+	in.setString(&input_str);
+	in.setCodec("utf-8");
+	displayed_error.setString(&error_str);
+	displayed_error.setCodec("utf-8");
+	generate();
+#if 0
 	bitset<max_sources> sources;
 	QString r;
+	long id1,id2;
 	/*QFile input(args[1]);
 	if (!input.open(QIODevice::ReadWrite))
 		return 1;
@@ -502,20 +624,21 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
-	in >> r;
-	out<< r<<"\n";
+	in >> r>>id1>>id2;
 	start_connection();
 	//insert_category(h,SUFFIX,sources);
-	out<< insert_item(STEM,r,"","hh",3,2,"bhe")<<"\n";
-	out << getID ("category","jad")<<"\n";
-	insert_source("hamza","","");
+	out<< insert_item(PREFIX,r,"","PRE-",1,2)<<"\n";
+	out<< insert_compatibility_rules(AA,id1,id2,id2,1)<<"\n";
+	//insert_source("hamza","","");
 	display_table("source");
 	display_table("category");
-	insert_item(STEM,r, "", "",1);
-	display_table("stem");
-	display_table("stem_category");
-	//test();*/
+	//insert_item(PREFIX,r, "", "",1);
+	display_table("prefix");
+	display_table("prefix_category");
+	display_table("compatibility_rules");
 	close_connection();
+#endif
 	return 0;
 }
+
 #endif
