@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "sql-interface.h"
+#include "insert_scripts.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	//m_ui->pushButton->setAutoDefault(false);
-	//connect((QObject*)m_ui->pushButton,SIGNAL(clicked()),(QObject*)m_ui,SLOT(do_it()));
+	//connect((QObject*)m_ui->MainWindow,SIGNAL(destroyed())),(QObject*)m_ui,SLOT(do_it()));
 }
 
 MainWindow::~MainWindow()
@@ -30,17 +30,22 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-	m_ui->output->setText("clicked");
 	QString error_str,output_str;
 	start(m_ui->input->toPlainText(),output_str,error_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 }
 
+void MainWindow::on_destroyed()
+{
+	close_connection();
+}
+
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 	MainWindow mainw;
+	start_connection();
 	mainw.show();
 	return app.exec();
 }

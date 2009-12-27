@@ -22,6 +22,7 @@ private:
 
 private slots:
 	void on_pushButton_clicked();
+	void on_destroyed();
 };
 
 #endif // MAINWINDOW_H

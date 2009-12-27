@@ -1,6 +1,6 @@
 -- MySQL dump 10.11
 --
--- Host: localhost    Database: atm
+-- Host: localhost    Database: atm1
 -- ------------------------------------------------------
 -- Server version	5.0.67-0ubuntu6
 
@@ -27,9 +27,10 @@ CREATE TABLE `category` (
   `name` varchar(40) NOT NULL,
   `type` bit(2) NOT NULL,
   `sources` bigint(20) NOT NULL,
+  `abstract` bit(1) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -38,7 +39,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `category` WRITE;
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
-INSERT INTO `category` VALUES (1,'name','',8126),(2,'jad','',0),(5,'hh','',14),(6,'','',2);
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,7 +54,7 @@ CREATE TABLE `compatibility_rules` (
   `category_id2` int(11) NOT NULL,
   `type` bit(3) NOT NULL,
   `sources` bigint(20) NOT NULL,
-  `resulting_category` int(11) NOT NULL,
+  `resulting_category` int(11) default NULL,
   PRIMARY KEY  (`category_id1`,`category_id2`),
   KEY `category_id2` (`category_id2`),
   KEY `resulting_category` (`resulting_category`)
@@ -68,6 +68,31 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `compatibility_rules` WRITE;
 /*!40000 ALTER TABLE `compatibility_rules` DISABLE KEYS */;
 /*!40000 ALTER TABLE `compatibility_rules` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `description`
+--
+
+DROP TABLE IF EXISTS `description`;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `description` (
+  `id` bigint(20) NOT NULL auto_increment,
+  `name` varchar(250) NOT NULL,
+  `type` bit(2) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping data for table `description`
+--
+
+LOCK TABLES `description` WRITE;
+/*!40000 ALTER TABLE `description` DISABLE KEYS */;
+/*!40000 ALTER TABLE `description` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -105,13 +130,12 @@ CREATE TABLE `prefix_category` (
   `prefix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `sources` bigint(20) NOT NULL,
-  `semantical_category_id` int(11) NOT NULL,
-  `raw_data` varchar(60) default NULL,
-  `description` varchar(200) default NULL,
+  `raw_data` varchar(60) NOT NULL default '',
   `POS` varchar(250) default NULL,
-  PRIMARY KEY  (`prefix_id`,`category_id`,`semantical_category_id`),
+  `description_id` bigint(20) default NULL,
+  PRIMARY KEY  (`prefix_id`,`category_id`,`raw_data`),
   KEY `category_id` (`category_id`),
-  KEY `semantical_category_id` (`semantical_category_id`)
+  KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -122,31 +146,6 @@ SET character_set_client = @saved_cs_client;
 LOCK TABLES `prefix_category` WRITE;
 /*!40000 ALTER TABLE `prefix_category` DISABLE KEYS */;
 /*!40000 ALTER TABLE `prefix_category` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `semantical_category`
---
-
-DROP TABLE IF EXISTS `semantical_category`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `semantical_category` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(256) default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
-
---
--- Dumping data for table `semantical_category`
---
-
-LOCK TABLES `semantical_category` WRITE;
-/*!40000 ALTER TABLE `semantical_category` DISABLE KEYS */;
-INSERT INTO `semantical_category` VALUES (3,'Ø§Ø³Ù…'),(-1,'UNDEFINED'),(4,'verb');
-/*!40000 ALTER TABLE `semantical_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -164,7 +163,7 @@ CREATE TABLE `source` (
   `date_start` date default NULL,
   `date_last` date default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -173,7 +172,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `source` WRITE;
 /*!40000 ALTER TABLE `source` DISABLE KEYS */;
-INSERT INTO `source` VALUES (1,'jad',NULL,NULL,NULL,'2009-12-19'),(21,'hamza','','','2009-12-18','2009-12-18');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -192,7 +190,7 @@ CREATE TABLE `stem` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `grammar_stem_id` (`grammar_stem_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -201,7 +199,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `stem` WRITE;
 /*!40000 ALTER TABLE `stem` DISABLE KEYS */;
-INSERT INTO `stem` VALUES (2,'اسم',NULL,0),(3,'فعل',6,2),(4,'jad',NULL,0),(5,'ولد',NULL,0),(6,'',6,2),(7,'فعلٌ',6,2);
 /*!40000 ALTER TABLE `stem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -215,14 +212,15 @@ SET character_set_client = utf8;
 CREATE TABLE `stem_category` (
   `stem_id` bigint(20) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `semantical_category_id` int(11) NOT NULL,
+  `abstract_categories` bigint(20) NOT NULL,
   `sources` bigint(20) NOT NULL,
-  `raw_data` varchar(60) default NULL,
-  `description` varchar(200) default NULL,
-  `POS` varchar(250) default NULL,
-  PRIMARY KEY  (`stem_id`,`category_id`,`semantical_category_id`),
+  `raw_data` varchar(60) NOT NULL default '',
+  `POS` varchar(250) NOT NULL default '',
+  `lemma_ID` char(15) default NULL,
+  `description_id` bigint(20) NOT NULL,
+  PRIMARY KEY  (`stem_id`,`category_id`,`raw_data`,`description_id`,`POS`),
   KEY `category_id` (`category_id`),
-  KEY `semantical_category_id` (`semantical_category_id`)
+  KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -232,7 +230,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `stem_category` WRITE;
 /*!40000 ALTER TABLE `stem_category` DISABLE KEYS */;
-INSERT INTO `stem_category` VALUES (2,-1,3,2,'','bhe',NULL),(2,4,3,0,'','bhe',NULL),(2,5,3,6,'','bhe',NULL),(2,5,-1,8,'','bhe',''),(2,6,-1,2,'','',''),(3,6,-1,10,'','',''),(4,6,-1,10,'','',''),(5,6,-1,10,'','',''),(6,6,-1,10,'','',''),(7,6,-1,10,'','','');
 /*!40000 ALTER TABLE `stem_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,13 +268,12 @@ CREATE TABLE `suffix_category` (
   `suffix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `sources` bigint(20) NOT NULL,
-  `semantical_category_id` int(11) NOT NULL,
-  `raw_data` varchar(60) default NULL,
-  `description` varchar(200) default NULL,
+  `raw_data` varchar(60) NOT NULL default '',
   `POS` varchar(250) default NULL,
-  PRIMARY KEY  (`suffix_id`,`category_id`,`semantical_category_id`),
+  `description_id` bigint(20) default NULL,
+  PRIMARY KEY  (`suffix_id`,`category_id`,`raw_data`),
   KEY `category_id` (`category_id`),
-  KEY `semantical_category_id` (`semantical_category_id`)
+  KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -299,4 +295,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-12-20 21:59:25
+-- Dump completed on 2009-12-26 23:29:09
