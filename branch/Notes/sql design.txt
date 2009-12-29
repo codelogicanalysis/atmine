@@ -1,0 +1,55 @@
+suffix:
+id 
+name : content
+\\ categories
+\\sources
+
+prefixes
+id 
+name:content
+\\categories
+\\sources
+
+category:
+id 
+type {stem suffix prefix}
+source 
+name
+
+prefix category:
+prefix id
+category id
+source id
+
+suffix category:
+suffix id
+category id
+source id
+
+source:
+id
+name (description)
+normalization
+author
+date start
+date modified
+
+stem category:
+stem id
+category id
+source id
+raw data
+description
+
+stem:
+id
+content/name
+//categories
+//sources
+grammer stem id
+//raw data
+//description
+
+compatibility rules \ type 
+left	right	\
+cat_id 	cat_id	\{aa ab bc ac cc}

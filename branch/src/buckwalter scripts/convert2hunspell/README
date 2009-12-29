@@ -1,0 +1,31 @@
+Convert Buckwalter's Arabic dictionary to Hunspell format
+
+$ make
+
+Result: arabic.aff, arabic.dic
+(Arabic_alias.aff, arabic_alias.dic are the alias compressed Hunspell dictionary files.
+Alias compression is a new feature of Hunspell 1.1.3.)
+
+Usage
+
+hunmorph arabic_alias.aff arabic_alias.dic words
+
+Test
+
+$ echo wSfh | hunmorph arabic_alias.{aff,dic} /dev/stdin
+> wSfh
+Pref-0+wSf[N]+NSuff-h
+Pref-0+wSf[Ndu]+NSuff-h
+Pref-0+wSf[PV]+PVSuff-ah
+Pref-Wa+Sf[Ndu]+NSuff-h
+Pref-Wa+Sf[PV_V]+PVSuff-ah
+
+Reference
+
+Buckwalter Arabic Morphological Analyzer Version 1.0
+Linguistic Data Consortium (LDC) catalog number LDC2002L49 and ISBN 1-58563-257-0.
+
+Hunspell spell checker and morphological analyser: http://hunspell.sourceforge.net
+
+Author: Németh László nemeth (at) OpenOffice.org
+License: GNU GPL

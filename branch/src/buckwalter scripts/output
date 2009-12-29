@@ -1,0 +1,92 @@
+
+INPUT STRING: ’€Ì—
+LOOK-UP WORD: Sgyr
+  SOLUTION 1: (Sagiyr) [Sagiyr_1] Sagiyr/NOUN
+     (GLOSS):  + small/young + 
+
+INPUT STRING: Â‰«·ﬂ
+LOOK-UP WORD: hnAlk
+  SOLUTION 1: (hunAlika) [hunAka_1] hunAlika/ADV
+     (GLOSS):  + there/there (is/are) + 
+
+INPUT STRING: „«
+LOOK-UP WORD: mA
+  SOLUTION 1: (mA) [mA_1] mA/REL_PRON
+     (GLOSS):  + what + 
+  SOLUTION 2: (mA) [mA_2] mA/NEG_PART
+     (GLOSS):  + not + 
+  SOLUTION 3: (mA) [mA_3] mA/INTERROG_PART
+     (GLOSS):  + what/which + 
+  SOLUTION 4: (mA) [mA_4] mA/INTERJ
+     (GLOSS):  + how...! + 
+
+INPUT STRING: Ìﬂ›Ì
+LOOK-UP WORD: ykfy
+  SOLUTION 1: (yakofiy) [kafaY-i_1] ya/IV3MS+kofiy/VERB_IMPERFECT
+     (GLOSS): he/it + be enough/suffice + 
+
+INPUT STRING: „‰
+LOOK-UP WORD: mn
+  SOLUTION 1: (min) [min_1] min/PREP
+     (GLOSS):  + from + 
+  SOLUTION 2: (man) [man_1] man/REL_PRON
+     (GLOSS):  + who/whom + 
+  SOLUTION 3: (man) [man_2] man/INTERROG_PART
+     (GLOSS):  + who/whom + 
+
+INPUT STRING: «·œ—”
+LOOK-UP WORD: Aldrs
+  SOLUTION 1: (Aldaros) [daros_1] Al/DET+daros/NOUN
+     (GLOSS): the + lesson/study + 
+
+INPUT STRING: ·‰œ—”Â
+LOOK-UP WORD: lndrsh
+  SOLUTION 1: (linadorush) [daras-u_1] li/SUBJUNC+na/IV1P+dorus/VERB_IMPERFECT+hu/IVSUFF_DO:3MS
+     (GLOSS): for + us (to) + study/learn + it/him
+  SOLUTION 2: (linudar~ish) [dar~as_1] li/SUBJUNC+nu/IV1P+dar~is/VERB_IMPERFECT+hu/IVSUFF_DO:3MS
+     (GLOSS): for + us (to) + teach/instruct + it/him
+
+INPUT STRING: ”ÊÌ¯«
+LOOK-UP WORD: swyA
+  SOLUTION 1: (sawiyA) [sawiy-a_1] sawiy/VERB_PERFECT+A/PVSUFF_SUBJ:3MD
+     (GLOSS):  + equal/be equivalent to + they (both) <verb>
+  SOLUTION 2: (saw~ayA) [saw~aY_1] saw~ay/VERB_PERFECT+A/PVSUFF_SUBJ:3MD
+     (GLOSS):  + equalize/settle + they (both) <verb>
+  SOLUTION 3: (sawiy~AF) [sawiy~_1] sawiy~/ADJ+AF/NSUFF_MASC_SG_ACC_INDEF
+     (GLOSS):  + straight/correct + [acc.indef.]
+  SOLUTION 4: (sawiy~A) [sawiy~_1] sawiy~/ADJ+A/NSUFF_MASC_DU_NOM_POSS
+     (GLOSS):  + straight/correct + two
+  SOLUTION 5: (sawiy~AF) [sawiy~AF_1] sawiy~/ADV+AF/NSUFF_MASC_SG_ACC_INDEF
+     (GLOSS):  + together/jointly/in common + [acc.indef.]
+
+INPUT STRING: .
+     Comment: Non-Alphabetic Data
+
+INPUT STRING:  ⁄«·
+LOOK-UP WORD: tEAl
+  SOLUTION 1: (tuEAl) [>aEAl_1] tu/IV3FS+EAl/VERB_IMPERFECT
+     (GLOSS): it/they/she + be supported/be provide for/be sustained + 
+  SOLUTION 2: (tuEAl) [>aEAl_1] tu/IV2MS+EAl/VERB_IMPERFECT
+     (GLOSS): you [masc.sg.] + be supported/be provide for/be sustained + 
+
+INPUT STRING: ›‰œ—”
+LOOK-UP WORD: fndrs
+  SOLUTION 1: (fanadorus) [daras-u_1] fa/CONJ+na/IV1P+dorus/VERB_IMPERFECT
+     (GLOSS): and/so + we + study/learn + 
+  SOLUTION 2: (fanudar~is) [dar~as_1] fa/CONJ+nu/IV1P+dar~is/VERB_IMPERFECT
+     (GLOSS): and/so + we + teach/instruct + 
+
+INPUT STRING: «·⁄—»Ì¯…
+LOOK-UP WORD: AlErbyp
+  SOLUTION 1: (AlEarabiy~ap) [Earabiy~_1] Al/DET+Earabiy~/ADJ+ap/NSUFF_FEM_SG
+     (GLOSS): the + Arabic/Arab + [fem.sg.]
+  SOLUTION 2: (AlEarabiy~ap) [Earabiy~_2] Al/DET+Earabiy~/ADJ+ap/NSUFF_FEM_SG
+     (GLOSS): the + Arab + [fem.sg.]
+
+INPUT STRING: .
+     Comment: Non-Alphabetic Data
+
+INPUT STRING: »Ì—Ê 
+LOOK-UP WORD: byrwt
+  SOLUTION 1: (bayoruwt) [bayoruwt_1] bayoruwt/NOUN_PROP
+     (GLOSS):  + Beirut + 
