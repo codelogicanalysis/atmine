@@ -2,6 +2,8 @@
 #define INSERT_SCRIPTS_H
 
 #include "sql-interface.h"
+#include "trie.h"
+
 int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragmant","Jad Makhlouta");
@@ -170,7 +172,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
-	if (insert_buckwalter()<0)
+	if (/*insert_buckwalter()*/generate_all_prefixes()<0)
 		return -1;
 	return 0;
 }

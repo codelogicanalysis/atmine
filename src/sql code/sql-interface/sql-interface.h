@@ -277,6 +277,53 @@ inline bitset<max_sources> getSources(QString table,unsigned long long id=-1, QS
 {
 	return get_bitset_column(table,"sources",id,additional_condition,has_id);
 }
+inline int get_type_of_category(long category_id, item_types & type)
+{
+	bool ok;
+	QString stmt=QString("SELECT cast(type as unsigned) from category WHERE id=%1").arg(category_id);
+	perform_query(stmt);
+	if (query.next())
+	{
+		type=(item_types)query.value(0).toInt(&ok);
+		if (!ok)
+		{
+			error << "Unexpected Error: Non-integer type\n";
+			return -2;
+		}
+		return 0;
+	}
+	return -1;
+}
+inline bool get_types_of_rule(rules rule, item_types &t1, item_types &t2)
+{
+	switch (rule)
+	{
+	case AA:
+		t1=PREFIX;
+		t2=PREFIX;
+		break;
+	case AB:
+		t1=PREFIX;
+		t2=STEM;
+		break;
+	case AC:
+		t1=PREFIX;
+		t2=SUFFIX;
+		break;
+	case BC:
+		t1=STEM;
+		t2=SUFFIX;
+		break;
+	case CC:
+		t1=SUFFIX;
+		t2=SUFFIX;
+		break;
+	default:
+		warning << QString("INVALID compatibility rule type!\n");
+		return false; //must not reach here
+	}
+	return true;
+}
 inline bool update_dates(int source_id)
 {
 	QString stmt= QString("UPDATE source SET date_last = NOW() WHERE id = '%1'").arg( source_id);
@@ -642,32 +689,8 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 {
 	QString stmt;
 	item_types t1,t2;
-	switch (rule)
-	{
-	case AA:
-		t1=PREFIX;
-		t2=PREFIX;
-		break;
-	case AB:
-		t1=PREFIX;
-		t2=STEM;
-		break;
-	case AC:
-		t1=PREFIX;
-		t2=SUFFIX;
-		break;
-	case BC:
-		t1=STEM;
-		t2=SUFFIX;
-		break;
-	case CC:
-		t1=SUFFIX;
-		t2=SUFFIX;
-		break;
-	default:
-		warning << QString("INVALID compatibility rule type!\n");
-		return false; //must not reach here
-	}
+	if (!get_types_of_rule(rule,t1,t2))
+			return -1;;
 	if (id1<0 || !existsID("category",id1,QString("type=%1").arg((int)t1)))
 	{
 		error<< QString("INVALID %2 Category ID-1 '%1'\n").arg(id1).arg(interpret_type(t1));
@@ -755,13 +778,14 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, int source_
 {
 	return insert_compatibility_rules(rule,id1,id2,id2,source_id);
 }
-class Search
+class Search_by_item
 {
 // do I make a new connection with database for each such class??
 private:
 	QSqlQuery query;
 	item_types type;
 	long long id;
+	QString name;
 	inline bool retrieve_internal(long category_id) //returns just a category but can contain redundancy
 	{
 		bool ok;
@@ -825,14 +849,32 @@ private:
 		return true;
 	}*/
 public:
-	Search(item_types type,QString name)
+	Search_by_item(item_types type,long long id)
 	{
 		QSqlQuery temp(db);
 		query=temp;
 		this->type=type;
+		this->id=id;
+		QString table = interpret_type(type);
+		if (id!=-1)
+		{
+			name=getColumn(table,"name",id); //will use the global query
+			//QString stmt( "SELECT DISTINCT category_id FROM %1_category WHERE %1_id ='%2' ORDER BY category_id ASC");
+			QString stmt( "SELECT %1_id, category_id, sources, raw_data, POS, description_id %3 FROM %1_category WHERE %1_id ='%2' ORDER BY category_id ASC");
+			stmt=stmt.arg(table).arg(id).arg((type==STEM?", abstract_categories, lemma_ID":""));
+			if (!execute_query(stmt,query)) //will use the local query
+				id=-1; //not really, but because an error took place
+		}
+	}
+	Search_by_item(item_types type,QString name)
+	{
+		QSqlQuery temp(db);
+		query=temp;
+		this->type=type;
+		this->name=name;
 		QString table = interpret_type(type);
 		//maybe better here get information about GrammarStem, and its sources and save it, but not a problem, or not??
-		id=getID(table,name,QString("type=%1").arg((int)(type))); //will use the global query
+		id=getID(table,name); //will use the global query
 		if (id!=-1)
 		{
 			//QString stmt( "SELECT DISTINCT category_id FROM %1_category WHERE %1_id ='%2' ORDER BY category_id ASC");
@@ -841,6 +883,17 @@ public:
 			if (!execute_query(stmt,query)) //will use the local query
 				id=-1; //not really, but because an error took place
 		}
+	}
+	inline long long ID()
+	{
+		return id;
+	}
+	inline QString Name()
+	{
+		if (id!=-1)
+			return name;
+		else
+			return QString::null;
 	}
 	inline int size() //total size and not what is left
 	{
@@ -929,6 +982,140 @@ public:
 		}
 	}
 };
+class Search_by_category
+{
+private:
+	QSqlQuery query;
+	item_types type;
+	bool err;
+	inline bool retrieve_internal(long long item_id)
+	{
+		bool ok;
+		item_id =query.value(0).toLongLong(&ok);
+		if (!ok)
+		{
+			error << "Unexpected Error: Non-integer item_id's\n";
+			return false;
+		}
+		return true;
+	}
+public:
+	Search_by_category(long category_id)
+	{
+		err=false;
+		QSqlQuery temp(db);
+		query=temp;
+		get_type_of_category(category_id,type);
+		QString table = interpret_type(type);
+		QString stmt( "SELECT %1_id FROM %1_category WHERE category_id ='%2' ORDER BY %1_id ASC");
+		stmt=stmt.arg(interpret_type(type)).arg(category_id);
+		if (!execute_query(stmt,query)) //will use the local query
+			err=true;
+	}
+	inline int size() //total size and not what is left
+	{
+		return query.size();
+	}
+	inline bool retrieve(long long &item_id)
+	{
+		if (!err && query.next())
+			return retrieve_internal(item_id);
+		else
+			return false;
+	}
+	inline int retrieve(long long item_ids[],int size_of_array)
+	{
+		if (size_of_array<=0 || !err)
+			return 0;
+		int i;
+		for (i=0; i<size_of_array && query.next();i++)
+		{
+			if (!retrieve_internal(item_ids[i]))
+				return -1;
+		}
+		return i;
+	}
+};
+class Search_Compatibility
+{
+private:
+	QSqlQuery query;
+	rules rule;
+	bool err;
+	inline bool retrieve_internal(long &category2, long &resulting_category)
+	{
+		bool ok;
+		category2 =query.value(0).toLongLong(&ok);
+		if (!ok)
+		{
+			error << "Unexpected Error: Non-integer category_id's\n";
+			return false;
+		}
+		if (query.value(2).isNull())
+			resulting_category=-1;
+		else
+		{
+			resulting_category=query.value(2).toLongLong(&ok);
+			if (!ok)
+			{
+				error << "Unexpected Error: Non-integer category_id's\n";
+				return false;
+			}
+		}
+		return true;
+	}
+public:
+	Search_Compatibility(rules rule, long category_id1)
+	{
+		err=false;
+		QSqlQuery temp(db);
+		query=temp;
+		this->rule=rule;
+		item_types t1,t2,t_cat;
+		if (!get_types_of_rule(rule,t1,t2))
+			err=true;
+		get_type_of_category(category_id1,t_cat);
+		if (t1!=t_cat)
+			err=true;
+		QString stmt( "SELECT category_id2, resulting_category FROM compatibility_rules WHERE category_id1 ='%1' AND type=%2");
+		stmt=stmt.arg(category_id1).arg((int)rule);
+		if (!execute_query(stmt,query)) //will use the local query
+			err=true;
+	}
+	inline int size() //total size and not what is left
+	{
+		return query.size();
+	}
+	inline bool retrieve(long &category2, long &resulting_category)
+	{
+		if (!err && query.next())
+			return retrieve_internal(category2,resulting_category);
+		else
+			return false;
+	}
+	inline bool retrieve(long &category2)
+	{
+		long resulting_category;
+		return retrieve(category2, resulting_category);
+	}
+	inline int retrieve(long category2_ids[],long resulting_categorys[],int size_of_array)
+	{
+		if (size_of_array<=0 || !err)
+			return 0;
+		int i;
+		for (i=0; i<size_of_array && query.next();i++)
+		{
+			if (!retrieve_internal(category2_ids[i],resulting_categorys[i]))
+				return -1;
+		}
+		return i;
+	}
+	inline int retrieve(long category2_ids[],int size_of_array)
+	{
+		long resulting_categorys[size_of_array];
+		return retrieve(category2_ids,resulting_categorys,size_of_array);
+	}
+};
 inline bool areCompatible(rules rule,long category1,long category2, long& resulting_category)
 {
 	QString resulting=getColumn("compatibility_rules","resulting_category",-1,QString("category_id1=%1 AND category_id2=%2 AND type =%3").arg(category1).arg(category2).arg((int)rule),false);
@@ -962,19 +1149,6 @@ inline bool areCompatible(rules rule,long category1,long category2)
 	long resulting_id;
 	return areCompatible(rule,category1,category2,resulting_id);
 }
-/*void generate_ones_of_binary()
-{
-	for (int i = 0;i<32;i++	)
-	{
-		out<<"{";
-		bitset<6> h(i);
-		for (int j=0;j<5;j++)
-		{
-			if (h[j]==1)
-				out<<QString("%1,").arg(j);
-		}
-		out<<"-1},";
-	}
-}*/
+
 
 #endif

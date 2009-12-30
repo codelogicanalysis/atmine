@@ -8,5 +8,6 @@ QT += sql
 # OTHER_FILES += Makefile
 FORMS += mainwindow.ui
 HEADERS += mainwindow.h \
-	sql-interface.h \
-    insert_scripts.h
+    sql-interface.h \
+    insert_scripts.h \
+    trie.h
