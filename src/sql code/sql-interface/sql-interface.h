@@ -381,6 +381,7 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 	bool isNull=false;
 	QString stmt( "SELECT %1 FROM %2 WHERE %3");
 	stmt=stmt.arg(column_name).arg(table).arg(primary_key_condition);
+	//qDebug() << stmt;
 	perform_query(stmt);
 	//I assume that such an entry exists
 	if (query.size()==0)
@@ -477,8 +478,10 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	bitset<max_sources> cat_sources,sources,abstract_categories;
 	long long item_id=getID(table,name);
 	long long grammar_stem_id =-1;
-	if (type==STEM)
+	if (type==STEM && grammar_stem!="")
 		grammar_stem_id=getID(table,grammar_stem);
+	else if (type==STEM && grammar_stem=="")
+		grammar_stem_id=-1;
 	long category_id =getID("category",category, QString("type=%1").arg((int)(type)));
 	long long description_id=getID("description",description,QString("type=%1").arg((int)(type)));
 	//update sources of category or insert it altogether if not there
@@ -555,7 +558,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 		QString primary_condition=QString("%1_id = '%2' AND category_id = '%3' AND raw_data='%4' AND description_id = %5 AND POS=\"%6\"").arg(table).arg(item_id).arg(category_id).arg(raw_data).arg(description_id).arg(POS);
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
 		if (abstract_category_id!=-1)
-			abstract_categories=addAbstractCategory(item_category,abstract_category_id,-1,QString("%1_id = '%2' AND category_id = '%3' AND raw_data='%4'").arg(table).arg(item_id).arg(category_id).arg(raw_data),false);
+			abstract_categories=addAbstractCategory(item_category,abstract_category_id,-1,primary_condition,false);
 		if (sources!=NULL || abstract_categories!=NULL) //assumed to mean row was modified
 		{
 			//check for conflict in lemmaID only since description_id and POS became now part of the primary key
