@@ -17,7 +17,7 @@ node * add_to_trie(item_types type, QString content, node * current)
 
 int helper(long long prefix_id1, int size,node * current)
 {
-	if (size==0)
+	if (size<=0)
 		return 0;
 	long long prefix_id2,prefix_id_continuation;
 	Search_by_item s1(PREFIX,prefix_id1);
