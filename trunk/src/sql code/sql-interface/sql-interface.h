@@ -213,7 +213,7 @@ inline bool start_connection()
 inline void close_connection()
 {
 		db.close();
-		//qDebug()<<db.isOpen();
+		//TODO: must destroy the db before calling the following
 		//QSqlDatabase::removeDatabase("atm");
 
 }
