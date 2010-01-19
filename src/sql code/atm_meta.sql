@@ -30,7 +30,7 @@ CREATE TABLE `category` (
   `abstract` bit(1) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=366 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -83,7 +83,7 @@ CREATE TABLE `description` (
   `type` bit(2) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`,`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=92523 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -107,7 +107,7 @@ CREATE TABLE `prefix` (
   `name` char(7) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=79 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -163,7 +163,7 @@ CREATE TABLE `source` (
   `date_start` date default NULL,
   `date_last` date default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -190,7 +190,7 @@ CREATE TABLE `stem` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `grammar_stem_id` (`grammar_stem_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=53596 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -245,7 +245,7 @@ CREATE TABLE `suffix` (
   `name` char(7) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=207 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --

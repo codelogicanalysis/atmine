@@ -180,7 +180,7 @@ int insert_propernames()
 		out << "Invalid Folder\n";
 		return -1;
 	}
-	long abstract_Noun_Prop_id=getID("category","NOUN_PROP",QString("abstract=1 AND type=%1").arg((int)STEM));
+	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,bitset<max_sources>(),true); //returns id if already present
 	long abstract_people_names=insert_category("Name of Person",STEM,bitset<max_sources>(),true); //returns id if already present
 	QString file_name;
 	long abstract_category_id;
@@ -256,7 +256,7 @@ int insert_placenames() //not yet complete
 	}
 	int folders_source_id=insert_source("ar.wikipedia.org/","direct copy from html and dividing them into folders and subfiles according to continents and cities/towns","Hamza Harkous");
 
-	long abstract_Noun_Prop_id=getID("category","NOUN_PROP",QString("abstract=1 AND type=%1").arg((int)STEM));
+	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,bitset<max_sources>(),true);////returns id if already present
 	long abstract_place_names=insert_category("Name of Place",STEM,bitset<max_sources>(),true);////returns id if already present
 	long abstract_continent_name=insert_category("Continent",STEM,bitset<max_sources>(),true);////returns id if already present
 	long abstract_country_name=insert_category("Country",STEM,bitset<max_sources>(),true);////returns id if already present
@@ -316,7 +316,7 @@ int insert_placenames() //not yet complete
 				abstract_categories.append(abstract_category_id);
 				abstract_categories.append(abstract_place_names);
 				if (insert_NProp(line, abstract_categories,source_id,file_name.split(".").at(0))<0)
-					return -1;
+					/*return -1*/;
 			}
 			out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 			input.close();
@@ -340,7 +340,7 @@ int insert_placenames() //not yet complete
 				abstract_categories.append(abstract_continent_name);
 				abstract_categories.append(abstract_place_names);
 				if (insert_NProp(continent_arabic, abstract_categories,folders_source_id,continent_english)<0)
-					return -1;
+					/*return -1*/;
 			}
 			bitset<max_sources> sources;
 			sources.reset();
@@ -368,7 +368,7 @@ int insert_placenames() //not yet complete
 					abstract_categories.append(abstract_place_names);
 					abstract_categories.append(continent_id);
 					if (insert_NProp(country_arabic, abstract_categories,folders_source_id,country_english)<0)
-						return -1;
+						/*return -1*/;
 				}
 				long country_id=insert_category(country_english,STEM,folders_source_id,true);
 				while (!file.atEnd())
@@ -394,11 +394,11 @@ int insert_placenames() //not yet complete
 					QStringList city=alltext.split(QRegExp("[.-,]"));
 					if (city.count()>1) //add all the text in addition to the primary part
 						if (insert_NProp(alltext, abstract_categories,folders_source_id,"city/town in "+country_english)<0)
-							return -1;
+							/*return -1*/;
 					if (insert_NProp(city[0], abstract_categories,folders_source_id,"city/town in "+country_english)<0)
-						return -1;
+						/*return -1*/;
 				}
-				out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+				out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name2);
 				input.close();
 			}
 		}
