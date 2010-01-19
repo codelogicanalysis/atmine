@@ -28,6 +28,7 @@ enum item_types { PREFIX, STEM, SUFFIX};
 
 typedef struct minimal_item_info_
 {
+	item_types type;
 	long category_id;
 	bitset<max_sources> abstract_categories; //only for STEMS
 	QString raw_data;
@@ -36,6 +37,7 @@ typedef struct minimal_item_info_
 } minimal_item_info;
 typedef struct all_item_info_
 {
+
 	unsigned long long item_id;
 	long category_id;
 	bitset<max_sources> abstract_categories; //only for STEMS
@@ -52,6 +54,7 @@ QTextStream displayed_error;
 int source_ids[max_sources]={0};
 int abstract_category_ids[max_sources]={0};
 
+bitset<max_sources> INVALID_BITSET;
 bool KEEP_OLD=true;
 bool warn_about_automatic_insertion =false;
 bool display_errors=true;
@@ -69,6 +72,29 @@ QSqlQuery query;
 #define perform_query(stmt)  \
 	if (!execute_query(stmt)) \
 		return -1;
+
+
+#include <stdio.h>
+#include <execinfo.h>
+#include <stdlib.h>
+#include <assert.h>
+
+void backtrace(void)
+{
+	void *addresses[20];
+	char **strings;
+
+	int size = backtrace(addresses, 20);
+	strings = backtrace_symbols(addresses, size);
+	qDebug()<<QString("Stack frames: %1").arg( size);
+	for(int i = 0; i < size; i++)
+	{
+		qDebug()<<QString("%1: %2").arg(i).arg( (int)addresses[i]);
+		qDebug()<< strings[i];
+	}
+	free(strings);
+}
+
 
 
 inline QString interpret_type(item_types t)
@@ -138,9 +164,12 @@ int get_bitindex(int id,int array[max_sources])
 		if (array[i]==id)
 			return i;
 	error<<"Unexpected Error: id is not part of the ids array\n";
-	return -2;
+	qDebug()<<"Requested id="<<id;
+	backtrace();
+	assert(1);
+	return max_sources-1;
 }
-bitset<max_sources> bigint_to_bitset(unsigned long long ll)
+inline bitset<max_sources> bigint_to_bitset(unsigned long long ll)
 {
 	unsigned long long mask=0x1;
 	bitset<max_sources> b;
@@ -151,20 +180,20 @@ bitset<max_sources> bigint_to_bitset(unsigned long long ll)
 	}
 	return b;
 }
-bitset<max_sources> bigint_to_bitset(char * val)
+inline bitset<max_sources> bigint_to_bitset(char * val)
 {
 	unsigned long long ll;
 	sscanf(val,"%llu",&ll);
 	return bigint_to_bitset(ll);
 }
-bitset<max_sources> bigint_to_bitset(QVariant val)
+inline bitset<max_sources> bigint_to_bitset(QVariant val)
 {
 	bool ok;
 	if (val.canConvert(QVariant::ULongLong))
 		return bigint_to_bitset(val.toULongLong(&ok));
 	return bigint_to_bitset((char *)val.toString().toStdString().data());
 }
-bitset<max_sources> string_to_bitset(QString val)
+inline bitset<max_sources> string_to_bitset(QString val)///edit
 {
 	ushort mask=0x1;
 	bitset<max_sources> b;
@@ -178,11 +207,11 @@ bitset<max_sources> string_to_bitset(QString val)
 	}
 	return b;
 }
-bitset<max_sources> string_to_bitset(QVariant val)
+inline bitset<max_sources> string_to_bitset(QVariant val)
 {
 	return string_to_bitset(val.toString());
 }
-QString bitset_to_string(bitset<max_sources> b)
+inline QString bitset_to_string(bitset<max_sources> b)///edit
 {
 	ushort shift=0;
 	QChar val[max_sources>>4];
@@ -197,7 +226,7 @@ QString bitset_to_string(bitset<max_sources> b)
 	}
 	return QString(val,max_sources>>4);
 }
-inline bool start_connection()
+inline bool start_connection() //and do other initializations
 {
 	/*qDebug()<<db.isOpen()<<db.databaseName();
 	if (!db.isOpen())
@@ -216,6 +245,8 @@ inline bool start_connection()
 			db.exec("SET NAMES 'utf8'");
 			QSqlQuery temp(db);
 			query=temp;
+			INVALID_BITSET.reset();
+			INVALID_BITSET.set(max_sources-1);
 			generate_bit_order("source",source_ids);
 			generate_bit_order("category",abstract_category_ids,"abstract");
 			return 0;
@@ -285,11 +316,11 @@ inline bitset<max_sources> get_bitset_column(QString table,QString column,unsign
 	QString stmt( "SELECT %4 FROM %1 WHERE %2 %3");
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):QString(""))).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition)).arg(column);
 	if (!execute_query(stmt))
-		return NULL; //must not reach here
+		return INVALID_BITSET; //must not reach here
 	if (query.next())
 		return string_to_bitset(query.value(0));
 	else
-		return NULL;
+		return INVALID_BITSET;
 }
 inline bitset<max_sources> getSources(QString table,unsigned long long id=-1, QString additional_condition ="", bool has_id=true)
 {
@@ -356,20 +387,35 @@ inline bitset<max_sources> set_index_bitset(QString table,QString column_name, i
 	QString stmt("UPDATE %3 SET %5= %5 | %2 WHERE %1 %4");
 	stmt=stmt.arg((has_id==true?QString("id ='%1'").arg(id):QString(""))).arg(num).arg(table).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition)).arg(column_name);
 	if (!execute_query(stmt))
-		return NULL; //must not reach here
+		return INVALID_BITSET; //must not reach here
 	return get_bitset_column(table,column_name, id,additional_condition,has_id);
 }
 inline bitset<max_sources> addSource(QString table, int source_id, long long id=-1 , QString additional_condition ="",bool has_id=true)
 {
 	if (!existsSOURCE(source_id))
-		return NULL;
-	return set_index_bitset(table,"sources",get_bitindex(source_id,source_ids),id,additional_condition,has_id);
+		return INVALID_BITSET;
+	int bit_index=get_bitindex(source_id,source_ids);
+	if (bit_index>=0 && bit_index<max_sources)
+		return set_index_bitset(table,"sources",bit_index,id,additional_condition,has_id);
+	else
+	{
+		error << "Unexpected Error: source_id ="<<source_id<<"\n";
+		return INVALID_BITSET;
+	}
 }
 inline bitset<max_sources> addAbstractCategory(QString table, int abstract_category_id, long long id=-1 , QString additional_condition ="",bool has_id=true)
 {
 	if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
-		return NULL;
-	return set_index_bitset(table,"abstract_categories",get_bitindex(abstract_category_id,abstract_category_ids),id,additional_condition,has_id);
+		return INVALID_BITSET;
+	int bit_index=get_bitindex(abstract_category_id,abstract_category_ids);
+	if (bit_index>=0 && bit_index<max_sources)
+		return set_index_bitset(table,"abstract_categories",get_bitindex(abstract_category_id,abstract_category_ids),id,additional_condition,has_id);
+	else
+	{
+		error << "Unexpected Error: abstract_category_id ="<<abstract_category_id<<"\n";
+		return INVALID_BITSET;
+	}
+
 }
 /*inline long long getGrammarStem_id(QString table,int stem_id)
 {
@@ -432,14 +478,32 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 			if (!nonvague_sources)
 			{
 				long long num=0x1;
-				num=num<<get_bitindex(source_id,source_ids);
-				additional_SET_condition=QString(",sources= sources | %1").arg(num);
+				int bit_index=get_bitindex(source_id,source_ids);
+				if (bit_index>=0 && bit_index<max_sources)
+				{
+					num=num<<bit_index;
+					additional_SET_condition=QString(",sources= sources | %1").arg(num);
+				}
+				else
+				{
+					error << "Unexpected Error: source_id ="<<source_id<<"\n";
+					return -4;
+				}
 			}
 			else
 			{
 				bitset<max_sources> sources;
-				sources.set(get_bitindex(source_id,source_ids));
-				additional_SET_condition=QString(",sources= '%1'").arg(bitset_to_string(sources));
+				int bit_index=get_bitindex(source_id,source_ids);
+				if (bit_index>=0 && bit_index<max_sources)
+				{
+					sources.set(bit_index);
+					additional_SET_condition=QString(",sources= '%1'").arg(bitset_to_string(sources));
+				}
+				else
+				{
+					error << "Unexpected Error: source_id ="<<source_id<<"\n";
+					return -4;
+				}
 			}
 			/*if (additional_SET_condition!="")
 				additional_SET_condition=QString(",%1").arg(additional_SET_condition);*/
@@ -478,8 +542,17 @@ inline long insert_category(QString name, item_types type, bitset<max_sources> s
 inline long insert_category(QString name, item_types type, int source_id, bool isAbstract=false)//returns its id if already present
 {
 	bitset<max_sources> sources;
-	sources.set(get_bitindex(source_id,source_ids));
-	return insert_category(name,type,sources, isAbstract);
+	int bit_index=get_bitindex(source_id,source_ids);
+	if (bit_index>=0 && bit_index<max_sources)
+	{
+		sources.set(bit_index);
+		return insert_category(name,type,sources, isAbstract);
+	}
+	else
+	{
+		error << "Unexpected Error: source_id ="<<source_id<<"\n";
+		return -4;
+	}
 }
 inline long long insert_description(QString name,item_types type)
 {
@@ -497,9 +570,10 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	if (!existsSOURCE(source_id))
 		return -2;
 	for (int i=0; i<abstract_ids.count();i++)
-		if (abstract_ids[i]!=-1 && !existsID("category",abstract_ids[i],QString("abstract=1 AND type =%1").arg((int)(STEM))))
+		if (abstract_ids[i]==-1 || !existsID("category",abstract_ids[i],QString("abstract=1 AND type =%1").arg((int)(STEM))))
 		{
-			warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids[i]);
+			if (abstract_ids[i]!=-1)
+				warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids[i]);
 			abstract_ids.removeAt(i);
 			i--;
 		}
@@ -516,7 +590,13 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	//update sources of category or insert it altogether if not there
 	if (category_id==-1)
 	{
-		cat_sources.set(get_bitindex(source_id,source_ids));
+		int bit_index=get_bitindex(source_id,source_ids);
+		if (!(bit_index>=0 && bit_index<max_sources))
+		{
+			error << "Unexpected Error: source_id ="<<source_id<<"\n";
+			return -4;
+		}
+		cat_sources.set(bit_index);
 		category_id=insert_category(category,type,cat_sources);
 		if (category_id==-1)
 			return -1;
@@ -526,7 +606,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	else
 	{
 		cat_sources=addSource("category",source_id,category_id);
-		if (cat_sources==NULL)
+		if (cat_sources==INVALID_BITSET)
 		{
 			error << "Unexpected Error: Category must exist but this seems not the case\n";
 		}
@@ -538,7 +618,15 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 		{
 			bitset<max_sources> grammar_stem_sources;
 			if (grammar_stem_id!=-1)
-				grammar_stem_sources.set(get_bitindex(source_id,source_ids));
+			{
+				int bit_index=get_bitindex(source_id,source_ids);
+				if (!(bit_index>=0 && bit_index<max_sources))
+				{
+					error << "Unexpected Error: source_id ="<<source_id<<"\n";
+					return -4;
+				}
+				grammar_stem_sources.set(bit_index);
+			}
 			stmt = "INSERT INTO stem(name, grammar_stem_id,sources)  VALUES('%1',%2, '%3')";
 			stmt=stmt.arg(name).arg((grammar_stem_id==-1?QString("NULL"):QString("'%1'").arg(grammar_stem_id))).arg(bitset_to_string(grammar_stem_sources));
 		}
@@ -546,9 +634,23 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 			stmt = QString("INSERT INTO %1(name)  VALUES('%2')").arg(table).arg(name);
 		perform_query(stmt);
 		item_id=getID(table,name);
-		sources.set(get_bitindex(source_id,source_ids));
+		int bit_index=get_bitindex(source_id,source_ids);
+		if (!(bit_index>=0 && bit_index<max_sources))
+		{
+			error << "Unexpected Error: source_id ="<<source_id<<"\n";
+			return -4;
+		}
+		sources.set(bit_index);
 		for (int i=0; i<abstract_ids.count();i++)
-			abstract_categories.set(get_bitindex(abstract_ids[i],abstract_category_ids));
+		{
+			int bit_index=get_bitindex(abstract_ids[i],abstract_category_ids);
+			if (!(bit_index>=0 && bit_index<max_sources))
+			{
+				error << "Unexpected Error: abstract_id ="<<abstract_ids[i]<<"\n";
+				return -4;
+			}
+			abstract_categories.set(bit_index);
+		}
 		//later would be updated
 	}
 	else
@@ -562,7 +664,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
 		for (int i=0; i<abstract_ids.count();i++)
 			abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
-		if (sources!=NULL || abstract_categories!=NULL) //assumed to mean row was modified
+		if (sources!=INVALID_BITSET || abstract_categories!=INVALID_BITSET) //assumed to mean row was modified
 		{
 			//check for conflict in lemmaID only since description_id and POS became now part of the primary key
 			if (resolve_conflict(item_category,"lemma_ID",lemma_ID,primary_condition,source_id,false)<0)
@@ -573,11 +675,25 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 		else //row does not exist
 		{
 			//check if this works ???
+			int bit_index=get_bitindex(source_id,source_ids);
+			if (!(bit_index>=0 && bit_index<max_sources))
+			{
+				error << "Unexpected Error: source_id ="<<source_id<<"\n";
+				return -4;
+			}
 			sources.reset();
-			sources.set(get_bitindex(source_id,source_ids));
+			sources.set(bit_index);
 			abstract_categories.reset();
 			for (int i=0; i<abstract_ids.count();i++)
-				abstract_categories.set(get_bitindex(abstract_ids[i],abstract_category_ids));
+			{
+				int bit_index=get_bitindex(abstract_ids[i],abstract_category_ids);
+				if (!(bit_index>=0 && bit_index<max_sources))
+				{
+					error << "Unexpected Error: abstract_id ="<<abstract_ids[i]<<"\n";
+					return -4;
+				}
+				abstract_categories.set(bit_index);
+			}
 		}
 	}
 	//add a description entry first
@@ -669,7 +785,7 @@ inline long display_table(QString table)
 }
 inline int insert_source(QString name, QString normalization_process, QString creator) //returns current number of sources
 {
-	QString stmt( "SELECT id FROM source WHERE description ='%1'");
+	QString stmt( "SELECT id FROM source WHERE description =\"%1\"");
 	stmt=stmt.arg(name);
 	perform_query(stmt);
 	if (query.next())
@@ -685,7 +801,7 @@ inline int insert_source(QString name, QString normalization_process, QString cr
 			return -1;
 		}
 	}
-	stmt=QString("INSERT INTO source(description, normalization_process, creator, date_start,date_last) VALUES('%1', '%2', '%3', NOW(), NOW())").arg(name,normalization_process,creator);
+	stmt=QString("INSERT INTO source(description, normalization_process, creator, date_start,date_last) VALUES(\"%1\", \"%2\", \"%3\", NOW(), NOW())").arg(name,normalization_process,creator);
 	perform_query(stmt);
 	if (generate_bit_order("source",source_ids)<1)
 		return -1;
@@ -736,7 +852,13 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 			else
 			{
 				bitset<max_sources> sources;
-				sources.set(get_bitindex(source_id,source_ids));
+				int bit_index=get_bitindex(source_id,source_ids);
+				if (!(bit_index>=0 && bit_index<max_sources))
+				{
+					error << "Unexpected Error: source_id ="<<source_id<<"\n";
+					return -4;
+				}
+				sources.set(bit_index);
 				stmt= QString("UPDATE compatibility_rules SET resulting_category='%1' ,sources='%2' WHERE category_id1 = '%3' AND category_id2 = '%4'").arg(result_id).arg(bitset_to_string(sources)).arg( id1).arg(id2);
 				//qDebug() << stmt;
 				perform_query(stmt);
@@ -746,8 +868,14 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 	}
 	else
 	{
-		bitset <max_sources> sources;
-		sources.set(get_bitindex(source_id,source_ids));
+		bitset<max_sources> sources;
+		int bit_index=get_bitindex(source_id,source_ids);
+		if (!(bit_index>=0 && bit_index<max_sources))
+		{
+			error << "Unexpected Error: source_id ="<<source_id<<"\n";
+			return -4;
+		}
+		sources.set(bit_index);
 		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resulting_category)  VALUES(%1,%2,%3,'%4',%5)";
 		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( bitset_to_string(sources)).arg( (result_id==-1?QString("NULL"):QString("%1").arg(result_id)));
 		perform_query(stmt);
@@ -984,7 +1112,7 @@ public:
 		else
 		{
 			warning << "getGrammarStem_sources() does not work for PREFIX or SUFFIX\n";
-			return NULL;
+			return INVALID_BITSET;
 		}
 	}
 };
