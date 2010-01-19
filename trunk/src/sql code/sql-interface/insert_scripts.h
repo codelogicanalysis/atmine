@@ -2,119 +2,34 @@
 #define INSERT_SCRIPTS_H
 
 #include "sql-interface.h"
+#include "utilities.h"
 #include "trie.h"
-#include <QDir>
-#include <QStringList>
 
-//constantletters
-const QChar ya2=QChar(0x064A);
-const QChar alef=QChar(0x0627);
-const QChar ta2_marbouta=QChar(0x0629);
-const QChar waw=QChar(0x0648);
-const QChar shadde=QChar(0x0651);
-const QChar fatha=QChar(0x064E);
-const QChar damma=QChar(0x064F);
-const QChar kasra=QChar(0x0650);
-const QChar sukun=QChar(0x0652);
-const QChar lam=QChar(0x0644);
-
-//utility functions
-inline bool isConsonant(QChar letter)
+//utility function for insert scripts used in insert_propernames() and insert_placenames()
+int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QString description="Proper noun")
 {
-	if (letter !=ya2 && letter !=waw && letter !=alef) //not a very firm condition to assume consonant but might work here
-		return true;
-	else
-		return false;
-}
-inline bool isDiactric(QChar letter)
-{
-	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun)
-		return true;
-	else
-		return false;
-}
-inline QString removeDiactrics(QString /*&*/text) //in-efficient, change later
-{
-	/*QString changed=*/return text.remove(shadde).remove(fatha).remove(damma).remove(kasra).remove(sukun);
-	/*int letters_removed=text.length()-changed.length();
-	text=changed;
-	return letters_removed;*/
-}
-inline int getLastLetter_index(QString word) //last non-diactrical letter
-{
-	int length=word.length();
-	if (length==0)
-		return -1;
-	int i=length-1;
-	while (i>=0 && isDiactric(word[i]))
-		i--;
-	return i;
-}
-inline QChar getLastLetter(QString word, int pos) //helper function for last non-diactric letter
-{
-	if (pos>=0 && pos < word.length())
-		return word[pos];
-	else
-		return '\0';
-}
-inline QChar getLastLetter(QString word) //last non-diactrical letter
-{
-	int pos=getLastLetter_index(word);
-	return getLastLetter(word,pos);
-}
-inline QString removeLastLetter(QString word) //last non-diactrical letter
-{
-	return word.left(getLastLetter_index(word));
-}
-inline QString removeLastDiactric(QString word) //only one Diactric is removed
-{
-	if (word.length()==0)
-		return word;
-	if (isDiactric(word[word.length()-1]))
-		return word.left(word.length()-1);
-	return word;
-}
-QString get_Possessive_form(QString word)//last letter must be computed without diactrics and when removing an unwanted letter its diactric if there must be removed... best do 2 utility functions: getLastletter, removelastLetter
-{
-	if (word.length()>=2)
+	QString primary_condition;
+	bool hasAL= removeAL(word);
+	//insert word as is
+	int stem_id=insert_item(STEM,removeDiactrics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
+	if (stem_id<0)
 	{
-		int last_index=getLastLetter_index(word);
-		QChar last=getLastLetter(word,last_index);
-		QChar before=getLastLetter(word.left(last_index));
-		if (last==alef && isConsonant(before))
-			return removeLastDiactric(word).append(waw).append(ya2);
-		else if (last==alef && before==waw )
-			return removeLastDiactric(removeLastLetter(word)).append(ya2);
-		else if (last==alef && before==ya2 )
-			return removeLastDiactric(removeLastLetter(word)).append(shadde);
-		else if (last==ta2_marbouta && isConsonant(before))
-			return removeLastDiactric(removeLastLetter(word)).append(ya2);
-		else if (last==ya2)
-			return removeLastDiactric(word).append(shadde);
-		else if (isConsonant(last) || last==waw)
-			return removeLastDiactric(word).append(ya2);
-		else
-		{
-			out << "Unknown Rule for Possessive form\n";
-			return QString::null;
-		}
+		error <<"while adding stem: "<<word<<"'\n";
+		return -1;
 	}
-	else
-		return word.append(ya2);
+	//insert possessive form of the word
+	QString possessive=get_Possessive_form(word);
+	out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
+	stem_id=insert_item(STEM,removeDiactrics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,description,"","","");
+	if (stem_id<0)
+	{
+		error<<"while adding Possessive: "<<word<<"'\n";
+		return -1;
+	}
+	return 0;
 }
-/*
-alef 				+consonant before			-wey					sayda --> saydawey		or		7alba --> 7albawey
-alef				+waw before					-ya2 instead of alef	nikaragwa -->nikaragwiy
-alef				+ya2 before					-shadde instead of alef	souriya--> souriy
-consonant or waw								-ya2					lubnan -> lubnaniy		or		hunululo  -->	hunululoy (???)
-ta2	marbouta		+consonant before			-ya2 instead of ta2		makka --> makkiy
-ya2												-add a shadde on ya2	jibouti --> jiboutiy
 
-Notes:
--remove ta3reef if it is there, except for almanya, albanya, ...
--asma2 el mourakaba according to last word
-  */
-
+//main functions
 int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
@@ -202,7 +117,9 @@ int insert_buckwalter()
 					}
 				}
 			}
-			if ((types[j]==STEM?insert_item(STEM,item,raw_data,category,source_id,abstract_id,description,POS,"",lemmaID)<0:insert_item(types[j],item,raw_data,category,source_id,-1,description,POS,"","")<0))
+			QList<long> abstract_categories;
+			abstract_categories.append(abstract_id);
+			if ((types[j]==STEM?insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:insert_item(types[j],item,raw_data,category,source_id,QList<long>(),description,POS,"","")<0))
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
@@ -264,9 +181,7 @@ int insert_propernames()
 		return -1;
 	}
 	long abstract_Noun_Prop_id=getID("category","NOUN_PROP",QString("abstract=1 AND type=%1").arg((int)STEM));
-	long category_NProp_id=getID("category","Nprop",QString("abstract=0 AND type=%1").arg((int)STEM));
-	long category_Nall_L_id=getID("category","Nall_L",QString("abstract=0 AND type=%1").arg((int)STEM));
-	long category_Nall_id=getID("category","Nall",QString("abstract=0 AND type=%1").arg((int)STEM));
+	long abstract_people_names=insert_category("Name of Person",STEM,bitset<max_sources>(),true); //returns id if already present
 	QString file_name;
 	long abstract_category_id;
 	foreach (file_name,folder.entryList())
@@ -315,33 +230,15 @@ int insert_propernames()
 			}
 			if (line.isEmpty()) //ignore empty lines if they exist
 				continue;
-			//insert word as is
-			int stem_id=insert_item(STEM,line,line,"Nprop",source_id,abstract_category_id,"Proper noun","","","");
-			if (stem_id<0)
+			QList<long> abstract_categories;
+			abstract_categories.append(abstract_Noun_Prop_id);
+			abstract_categories.append(abstract_category_id);
+			abstract_categories.append(abstract_people_names);
+			if (insert_NProp(line, abstract_categories,source_id,"Name of Person")<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}
-			if (addAbstractCategory("stem_category",abstract_Noun_Prop_id,-1,QString("stem_id=%1 AND category_id=%2").arg(stem_id).arg(category_NProp_id),false)==NULL)
-			{
-				out << "Unexpected Error: Unable to add Abstract Category Noun_Prop to stem_id="<<stem_id<<"\n";
-				return -1;
-			}
-			//insert possessive form of the word
-			QString possessive=get_Possessive_form(line);
-			out << QString("Possesive form for '%1' is '%2'\n").arg(line).arg(possessive);
-			stem_id=insert_item(STEM,removeDiactrics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_category_id,"Proper noun","","","");
-			if (stem_id<0)
-			{
-				out<<"Error while adding Possessive at line "<<line_num<<": '"<<line<<"'\n";
-				return -1;
-			}
-			if (addAbstractCategory("stem_category",abstract_Noun_Prop_id,-1,QString("stem_id=%1 AND category_id=%2").arg(stem_id).arg((possessive.startsWith(lam)?category_Nall_L_id:category_Nall_id)),false)==NULL)
-			{
-				out << "Unexpected Error: Unable to add Abstract Category Noun_Prop to stem_id="<<stem_id<<"\n";
-				return -1;
-			}
-
 		}
 		out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 		input.close();
@@ -349,6 +246,167 @@ int insert_propernames()
 	return 0;
 }
 
+int insert_placenames() //not yet complete
+{
+	QDir folder("../../../dic/P");
+	if (!folder.exists())
+	{
+		out << "Invalid Folder\n";
+		return -1;
+	}
+	int folders_source_id=insert_source("ar.wikipedia.org/","direct copy from html and dividing them into folders and subfiles according to continents and cities/towns","Hamza Harkous");
+
+	long abstract_Noun_Prop_id=getID("category","NOUN_PROP",QString("abstract=1 AND type=%1").arg((int)STEM));
+	long abstract_place_names=insert_category("Name of Place",STEM,bitset<max_sources>(),true);////returns id if already present
+	long abstract_continent_name=insert_category("Continent",STEM,bitset<max_sources>(),true);////returns id if already present
+	long abstract_country_name=insert_category("Country",STEM,bitset<max_sources>(),true);////returns id if already present
+	long abstract_city_name=insert_category("City/Town",STEM,bitset<max_sources>(),true);////returns id if already present
+	QString file_name;
+	foreach (file_name,folder.entryList())
+	{
+		if (file_name.endsWith(".txt"))
+		{
+			if (file_name.startsWith("Google"))
+			{
+				out << QString("Ignored %1 file\n").arg(file_name);
+				continue;
+			}
+			long abstract_category_id;
+			QFile input(folder.absolutePath().append(QString("/").append(file_name)));
+			if (!input.open(QIODevice::ReadWrite))
+			{
+				out << "Unexpected Error: File not found\n";
+				return 1;
+			}
+			QTextStream file(&input);
+			file.setCodec("utf-8");
+			int line_num=0;
+			int source_id;
+			QString source;
+			QString normalization_process;
+			while (!file.atEnd())
+			{
+				line_num++;
+				QString line=file.readLine(0);
+				if (line_num==1)
+				{
+					source=line;
+					continue;
+				}
+				else if (line_num==2)
+				{
+					normalization_process=line;
+					continue;
+				}
+				else if (line_num==3)
+				{
+					source_id=insert_source(source,normalization_process,line);
+					abstract_category_id=insert_category(file_name.split(".").at(0),STEM,source_id,true);
+					continue;
+				}
+				if (line.isNull())
+				{
+					line_num--; //finished
+					break;
+				}
+				if (line.isEmpty()) //ignore empty lines if they exist
+					continue;
+				QList<long> abstract_categories;
+				abstract_categories.append(abstract_Noun_Prop_id);
+				abstract_categories.append(abstract_category_id);
+				abstract_categories.append(abstract_place_names);
+				if (insert_NProp(line, abstract_categories,source_id,file_name.split(".").at(0))<0)
+					return -1;
+			}
+			out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+			input.close();
+		}
+		else if (!file_name.contains('.'))//assuming this means folder
+		{
+			QDir folder2(folder.absolutePath().append(QString("/").append(file_name)),"*.txt");
+			if (!folder2.exists())
+			{
+				out << "Unexpected Error: Folder that was assumed to exist does not\n";
+				return -1;
+			}
+			QStringList continent=file_name.split("-");
+			QString continent_english=continent[0];
+			if (continent.count()>1)
+			{
+				QString continent_arabic=continent[1];
+				QList<long> abstract_categories;
+				abstract_categories.clear();
+				abstract_categories.append(abstract_Noun_Prop_id);
+				abstract_categories.append(abstract_continent_name);
+				abstract_categories.append(abstract_place_names);
+				if (insert_NProp(continent_arabic, abstract_categories,folders_source_id,continent_english)<0)
+					return -1;
+			}
+			bitset<max_sources> sources;
+			sources.reset();
+			long continent_id=insert_category(continent_english,STEM,folders_source_id,true);
+			QString file_name2;
+			foreach (file_name2,folder2.entryList())
+			{
+				QFile input(folder2.absolutePath().append(QString("/").append(file_name2)));
+				if (!input.open(QIODevice::ReadWrite))
+				{
+					out << "Unexpected Error: File not found\n";
+					return 1;
+				}
+				QTextStream file(&input);
+				file.setCodec("utf-8");
+				int line_num=0;
+				QStringList country=file_name2.split("-");
+				QString country_english=country[0];
+				if (country.count()>1)
+				{
+					QString country_arabic=country[1].split(".")[0];
+					QList<long> abstract_categories;
+					abstract_categories.append(abstract_Noun_Prop_id);
+					abstract_categories.append(abstract_country_name);
+					abstract_categories.append(abstract_place_names);
+					abstract_categories.append(continent_id);
+					if (insert_NProp(country_arabic, abstract_categories,folders_source_id,country_english)<0)
+						return -1;
+				}
+				long country_id=insert_category(country_english,STEM,folders_source_id,true);
+				while (!file.atEnd())
+				{
+					line_num++;
+					QString line=file.readLine(0);
+					if (line.isNull())
+					{
+						line_num--; //finished
+						break;
+					}
+					if (line.isEmpty()) //ignore empty lines if they exist
+						continue;
+					if (line.split(" ")[0].length()==1) //ignore lines that are just for sorting in alphabatical order
+						continue;
+					QList<long> abstract_categories;
+					abstract_categories.append(abstract_Noun_Prop_id);
+					abstract_categories.append(abstract_city_name);
+					abstract_categories.append(abstract_place_names);
+					abstract_categories.append(continent_id);
+					abstract_categories.append(country_id);
+					QString alltext=line.split('(')[0];
+					QStringList city=alltext.split(QRegExp("[.-,]"));
+					if (city.count()>1) //add all the text in addition to the primary part
+						if (insert_NProp(alltext, abstract_categories,folders_source_id,"city/town in "+country_english)<0)
+							return -1;
+					if (insert_NProp(city[0], abstract_categories,folders_source_id,"city/town in "+country_english)<0)
+						return -1;
+				}
+				out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+				input.close();
+			}
+		}
+	}
+	return 0;
+}
+
+//starting point
 int start(QString input_str, QString &output_str, QString &error_str)
 {
 
@@ -359,12 +417,20 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
 	/*if (insert_buckwalter()<0)//generate_all_prefixes()
-		return -1;*/
+		return -1;
 	if (insert_propernames()<0)
+		return -1;*/
+	if (insert_placenames()<0)
 		return -1;
 	/*QString word;
 	in >>word;
-	out << get_Possessive_form(word);*/
+	out << string_to_bitset(word).to_string().data()<<"\n";
+	for (int i=0;i<word.length();i++)
+		out<<((bitset<16>((int)word[word.length()-i-1].toAscii())).to_string().data());
+	out <<"\n";
+	for (int i=0;i<word.length();i++)
+		out<<(int)word[word.length()-i-1].unicode();
+	out<<"\n"<<bitset_to_string(string_to_bitset(word))<<"\n";*/
 	return 0;
 }
 
