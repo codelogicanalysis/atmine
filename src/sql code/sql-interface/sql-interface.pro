@@ -10,4 +10,5 @@ FORMS += mainwindow.ui
 HEADERS += mainwindow.h \
     sql-interface.h \
     insert_scripts.h \
-    trie.h
+    trie.h \
+    utilities.h
