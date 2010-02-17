@@ -11,7 +11,7 @@ int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QS
 	QString primary_condition;
 	bool hasAL= removeAL(word);
 	//insert word as is
-	int stem_id=insert_item(STEM,removeDiactrics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
+        int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
 	if (stem_id<0)
 	{
 		error <<"while adding stem: "<<word<<"'\n";
@@ -20,7 +20,7 @@ int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QS
 	//insert possessive form of the word
 	QString possessive=get_Possessive_form(word);
 	out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
-	stem_id=insert_item(STEM,removeDiactrics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,description,"","","");
+        stem_id=insert_item(STEM,removeDiacritics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,description,"","","");
 	if (stem_id<0)
 	{
 		error<<"while adding Possessive: "<<word<<"'\n";
@@ -248,7 +248,7 @@ int insert_propernames()
 
 int insert_placenames() //not yet complete
 {
-	QDir folder("../../../dic/P");
+        QDir folder("../../../../dic/P");
 	if (!folder.exists())
 	{
 		out << "Invalid Folder\n";

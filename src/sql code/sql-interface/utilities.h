@@ -23,14 +23,14 @@ inline bool isConsonant(QChar letter)
 	else
 		return false;
 }
-inline bool isDiactric(QChar letter)
+inline bool isDiacritic(QChar letter) //TODO: add the madda
 {
 	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun)
 		return true;
 	else
 		return false;
 }
-inline QString removeDiactrics(QString /*&*/text) //in-efficient, change later
+inline QString removeDiacritics(QString /*&*/text)
 {
 	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+QString("]"));
 	/*QString changed=*/return text.remove(exp);
@@ -38,41 +38,41 @@ inline QString removeDiactrics(QString /*&*/text) //in-efficient, change later
 	text=changed;
 	return letters_removed;*/
 }
-inline int getLastLetter_index(QString word) //last non-diactrical letter
+inline int getLastLetter_index(QString word) //last non-Diacritical letter
 {
 	int length=word.length();
 	if (length==0)
 		return -1;
 	int i=length-1;
-	while (i>=0 && isDiactric(word[i]))
+        while (i>=0 && isDiacritic(word[i]))
 		i--;
 	return i;
 }
-inline QChar getLastLetter(QString word, int pos) //helper function for last non-diactric letter
+inline QChar getLastLetter(QString word, int pos) //helper function for last non-Diacritic letter
 {
 	if (pos>=0 && pos < word.length())
 		return word[pos];
 	else
 		return '\0';
 }
-inline QChar getLastLetter(QString word) //last non-diactrical letter
+inline QChar getLastLetter(QString word) //last non-Diacritical letter
 {
 	int pos=getLastLetter_index(word);
 	return getLastLetter(word,pos);
 }
-inline QString removeLastLetter(QString word) //last non-diactrical letter
+inline QString removeLastLetter(QString word) //last non-Diacritical letter
 {
 	return word.left(getLastLetter_index(word));
 }
-inline QString removeLastDiactric(QString word) //only one Diactric is removed
+inline QString removeLastDiacritic(QString word) //only one Diacritic is removed, TODO: take into account more than one diacritic
 {
 	if (word.length()==0)
 		return word;
-	if (isDiactric(word[word.length()-1]))
+        if (isDiacritic(word[word.length()-1]))
 		return word.left(word.length()-1);
 	return word;
 }
-QString get_Possessive_form(QString word)
+inline QString get_Possessive_form(QString word)
 {
 	if (word.length()>=2)
 	{
@@ -80,17 +80,17 @@ QString get_Possessive_form(QString word)
 		QChar last=getLastLetter(word,last_index);
 		QChar before=getLastLetter(word.left(last_index));
 		if (last==alef && isConsonant(before))
-			return removeLastDiactric(word).append(waw).append(ya2);
+                        return removeLastDiacritic(word).append(waw).append(ya2);
 		else if (last==alef && before==waw )
-			return removeLastDiactric(removeLastLetter(word)).append(ya2);
+                        return removeLastDiacritic(removeLastLetter(word)).append(ya2);
 		else if (last==alef && before==ya2 )
-			return removeLastDiactric(removeLastLetter(word)).append(shadde);
+                        return removeLastDiacritic(removeLastLetter(word)).append(shadde);
 		else if (last==ta2_marbouta && isConsonant(before))
-			return removeLastDiactric(removeLastLetter(word)).append(ya2);
+                        return removeLastDiacritic(removeLastLetter(word)).append(ya2);
 		else if (last==ya2)
-			return removeLastDiactric(word).append(shadde);
+                        return removeLastDiacritic(word).append(shadde);
 		else if (isConsonant(last) || last==waw)
-			return removeLastDiactric(word).append(ya2);
+                        return removeLastDiacritic(word).append(ya2);
 		else
 		{
 			out << "Unknown Rule for Possessive form\n";
@@ -113,7 +113,7 @@ Notes:
 -asma2 el mourakaba according to last word
   */
 
-bool startsWithAL( QString word) //does not take in account cases were diactrics may be present on the alef and lam of "al"
+inline bool startsWithAL( QString word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	if (word.length()<=2)
 		return false;
@@ -121,8 +121,7 @@ bool startsWithAL( QString word) //does not take in account cases were diactrics
 		return true;
 	return false;
 }
-
-bool removeAL( QString &word) //does not take in account cases were diactrics may be present on the alef and lam of "al"
+inline bool removeAL( QString &word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	if (!startsWithAL(word))
 		return false;
