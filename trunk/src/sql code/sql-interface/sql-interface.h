@@ -73,7 +73,7 @@ QSqlQuery query;
 	if (!execute_query(stmt)) \
 		return -1;
 
-
+/*
 #include <stdio.h>
 #include <execinfo.h>
 #include <stdlib.h>
@@ -95,7 +95,7 @@ void backtrace(void)
 	free(strings);
 }
 
-
+*/
 
 inline QString interpret_type(item_types t)
 {
@@ -158,15 +158,15 @@ inline int generate_bit_order(QString table,int array[max_sources],QString filte
 	}
 	return i;
 }
-int get_bitindex(int id,int array[max_sources])
+inline int get_bitindex(int id,int array[max_sources])
 {
 	for (int i=0;i<max_sources;i++)
 		if (array[i]==id)
 			return i;
 	error<<"Unexpected Error: id is not part of the ids array\n";
-	qDebug()<<"Requested id="<<id;
+        /*qDebug()<<"Requested id="<<id;
 	backtrace();
-	assert(1);
+        assert(1);*/
 	return max_sources-1;
 }
 inline bitset<max_sources> bigint_to_bitset(unsigned long long ll)
@@ -453,6 +453,7 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 		error << "Unexpected Error: No conflict is present since row does not even exist\n";
 		return -2;
 	}
+        //TODO: change null condition to include empty
 	if (query.next() && !query.value(0).isNull()) //else null is casted "cleanly" to 0
 	{
 		/*long long val=query.value(0).toULongLong(&longlong);
@@ -471,7 +472,8 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 		if ((KEEP_OLD && !isNull) || (!KEEP_OLD && new_value.isNull()))
 		{
 			warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). KEPT %1 %4 instead of %5\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
-		}
+                        //TODO: change sources if vague sources
+                }
 		else
 		{
 			QString additional_SET_condition;
@@ -522,9 +524,10 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 	}
 	return 0;
 }
-inline long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract=false)//returns its id if already present
+//TODO: in case the category is found sources must be updated, and dont call generate_bit_order always but some other function such as add_to_bit_order
+inline long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract=false)//returns its id if already present and if names are equal but others are not, -1 is returned
 {
-	long id=getID("category",name,QString("abstract=%1 AND type=%2").arg((isAbstract?"1":"0")).arg((int)type));
+        long id=getID("category",name,QString("abstract=%1 AND type=%2").arg((isAbstract?"1":"0")).arg((int)type));
 	if (id>=0)
 		return id;
 	QString stmt( "INSERT INTO category(name,type,sources,abstract) VALUES('%1',%2,'%3',%4)");
@@ -561,6 +564,7 @@ inline long long insert_description(QString name,item_types type)
 	query.exec(stmt);
 	return getID("description",name,QString("type=%1").arg((int)type));//get id of inserted
 }
+//TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
 inline long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> abstract_ids=QList<long>(), QString description="", QString POS="",QString grammar_stem="",QString lemma_ID="")
 {
 	QString table=interpret_type(type);
@@ -712,6 +716,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	update_dates(source_id);
 	return item_id;
 }
+//let dispay table return the number of rows in the table
 inline long display_table(QString table)
 {
 
