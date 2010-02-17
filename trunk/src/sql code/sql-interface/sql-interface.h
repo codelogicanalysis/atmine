@@ -51,8 +51,8 @@ typedef struct all_item_info_
 QTextStream out;
 QTextStream in;
 QTextStream displayed_error;
-int source_ids[max_sources]={0};
-int abstract_category_ids[max_sources]={0};
+int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
+int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 
 bitset<max_sources> INVALID_BITSET;
 bool KEEP_OLD=true;
@@ -140,7 +140,7 @@ inline bool execute_query(QString stmt, QSqlQuery &query=query)
 	}
 	return true;
 }
-inline int generate_bit_order(QString table,int array[max_sources],QString filter_column ="")
+inline int generate_bit_order(QString table,int array[],QString filter_column ="")
 {
 	QString stmt=QString( "SELECT id FROM %1 %2").arg(table).arg((filter_column==""?QString(""):QString("WHERE %1=1").arg(filter_column)));
 	perform_query(stmt);
@@ -156,11 +156,23 @@ inline int generate_bit_order(QString table,int array[max_sources],QString filte
 		}
 		i=i+1;
 	}
+	array[max_sources]=i;
 	return i;
 }
-inline int get_bitindex(int id,int array[max_sources])
+inline int append_to_bit_order(int array[],int id)
 {
-	for (int i=0;i<max_sources;i++)
+	if ((++array[max_sources])>max_sources)
+	{
+		error<< "Unexpected Error: Number of elements in the array has passed the limit!\n";
+		array[max_sources]=max_sources;
+		return max_sources;
+	}
+	array[array[max_sources]-1]=id;
+	return array[max_sources];
+}
+inline int get_bitindex(int id,int array[])
+{
+	for (int i=0;i<max_sources && i<array[max_sources];i++)//array[max_sources] stores by convention the number of filled entries in the array
 		if (array[i]==id)
 			return i;
 	error<<"Unexpected Error: id is not part of the ids array\n";
@@ -193,12 +205,13 @@ inline bitset<max_sources> bigint_to_bitset(QVariant val)
 		return bigint_to_bitset(val.toULongLong(&ok));
 	return bigint_to_bitset((char *)val.toString().toStdString().data());
 }
-inline bitset<max_sources> string_to_bitset(QString val)///edit
+inline bitset<max_sources> string_to_bitset(QString val)
 {
 	ushort mask=0x1;
 	bitset<max_sources> b;
 	b.reset();
-	for (int i=0 ; i<max_sources && i<val.length()<<4; i++)
+	int num_bits=val.length()<<4;
+	for (int i=0 ; i<max_sources && i<num_bits; i++)
 	{
 		b[i]=(mask & (ushort)val[i>>4].unicode())!=0;
 		mask=mask <<1;
@@ -211,11 +224,12 @@ inline bitset<max_sources> string_to_bitset(QVariant val)
 {
 	return string_to_bitset(val.toString());
 }
-inline QString bitset_to_string(bitset<max_sources> b)///edit
+inline QString bitset_to_string(bitset<max_sources> b)
 {
 	ushort shift=0;
-	QChar val[max_sources>>4];
-	for (int i=0 ; i<max_sources>>4; i++)
+	int num_characters=max_sources>>4;
+	QChar val[num_characters];
+	for (int i=0 ; i<num_characters; i++)
 		val[i]=0;
 	for (int i=0 ; i<max_sources; i++)
 	{
@@ -224,7 +238,7 @@ inline QString bitset_to_string(bitset<max_sources> b)///edit
 		if (shift==16)
 			shift=0;
 	}
-	return QString(val,max_sources>>4);
+	return QString(val,num_characters);
 }
 inline bool start_connection() //and do other initializations
 {
@@ -453,7 +467,7 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 		error << "Unexpected Error: No conflict is present since row does not even exist\n";
 		return -2;
 	}
-        //TODO: change null condition to include empty
+	//TODO: change null condition to include empty
 	if (query.next() && !query.value(0).isNull()) //else null is casted "cleanly" to 0
 	{
 		/*long long val=query.value(0).toULongLong(&longlong);
@@ -472,8 +486,8 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 		if ((KEEP_OLD && !isNull) || (!KEEP_OLD && new_value.isNull()))
 		{
 			warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). KEPT %1 %4 instead of %5\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
-                        //TODO: change sources if vague sources
-                }
+			addSource(table,source_id,-1,primary_key_condition,false);
+		}
 		else
 		{
 			QString additional_SET_condition;
@@ -524,22 +538,25 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 	}
 	return 0;
 }
-//TODO: in case the category is found sources must be updated, and dont call generate_bit_order always but some other function such as add_to_bit_order
 inline long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract=false)//returns its id if already present and if names are equal but others are not, -1 is returned
 {
-        long id=getID("category",name,QString("abstract=%1 AND type=%2").arg((isAbstract?"1":"0")).arg((int)type));
+	long id=getID("category",name,QString("abstract=%1 AND type=%2").arg((isAbstract?"1":"0")).arg((int)type));
 	if (id>=0)
+	{
+		//TODO: in case the category is found sources must be updated,but for this to take place there must exist a function that adds groups of sources and not just one
 		return id;
+	}
 	QString stmt( "INSERT INTO category(name,type,sources,abstract) VALUES('%1',%2,'%3',%4)");
 	stmt=stmt.arg(name).arg((int)type).arg(bitset_to_string(sources)).arg((isAbstract?"1":"0"));
 	perform_query(stmt);
+	id=getID("category",name);//get id of inserted
 	if (isAbstract)
-		if (generate_bit_order("category",abstract_category_ids,"abstract")<0)
+		if (append_to_bit_order(abstract_category_ids,id)<0)
 		{
 			error <<"Unexpected Error: Error generating abstract category array\n";
 			return -3;//must not reach here
 		}
-	return getID("category",name);//get id of inserted
+	return id;
 	//maybe must update dates, but I think no need here
 }
 inline long insert_category(QString name, item_types type, int source_id, bool isAbstract=false)//returns its id if already present
@@ -670,9 +687,16 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 			abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
 		if (sources!=INVALID_BITSET || abstract_categories!=INVALID_BITSET) //assumed to mean row was modified
 		{
-			//check for conflict in lemmaID only since description_id and POS became now part of the primary key
-			if (resolve_conflict(item_category,"lemma_ID",lemma_ID,primary_condition,source_id,false)<0)
-				return -1;
+			if (type==STEM)
+			{
+				//check for conflict in lemmaID only since description_id and POS became now part of the primary key
+				if (resolve_conflict(item_category,"lemma_ID",lemma_ID,primary_condition,source_id,false)<0)
+					return -1;
+			}
+			else
+			{//TODO: check if what follows is correct
+				addSource(item_category,source_id,-1,primary_condition,false);
+			}
 			update_dates(source_id);
 			return item_id;
 		}
@@ -717,7 +741,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	return item_id;
 }
 //let dispay table return the number of rows in the table
-inline long display_table(QString table)
+inline long display_table(QString table) //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
 {
 
 	out<<"--------------------------------------------------\n"<<table<<":\n";
@@ -808,9 +832,10 @@ inline int insert_source(QString name, QString normalization_process, QString cr
 	}
 	stmt=QString("INSERT INTO source(description, normalization_process, creator, date_start,date_last) VALUES(\"%1\", \"%2\", \"%3\", NOW(), NOW())").arg(name,normalization_process,creator);
 	perform_query(stmt);
-	if (generate_bit_order("source",source_ids)<1)
+	int id=getID("source",name,"","description");
+	if (append_to_bit_order(source_ids,id)<1)
 		return -1;
-	return getID("source",name,"","description");
+	return id;
 }
 inline int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id)
 {

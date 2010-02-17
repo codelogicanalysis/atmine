@@ -14,6 +14,9 @@ const QChar damma=QChar(0x064F);
 const QChar kasra=QChar(0x0650);
 const QChar sukun=QChar(0x0652);
 const QChar lam=QChar(0x0644);
+const QChar kasratayn=QChar(0x064D);
+const QChar dammatayn=QChar(0x064C);
+const QChar fathatayn=QChar(0x064B);
 
 //utility functions
 inline bool isConsonant(QChar letter)
@@ -25,7 +28,7 @@ inline bool isConsonant(QChar letter)
 }
 inline bool isDiacritic(QChar letter) //TODO: add the madda
 {
-	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun)
+	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn)
 		return true;
 	else
 		return false;
@@ -38,15 +41,15 @@ inline QString removeDiacritics(QString /*&*/text)
 	text=changed;
 	return letters_removed;*/
 }
-inline int getLastLetter_index(QString word) //last non-Diacritical letter
+inline int getLastLetter_index(QString word) //last non-Diacritical letter, -1 means that all letters are diactrics
 {
 	int length=word.length();
 	if (length==0)
 		return -1;
 	int i=length-1;
-        while (i>=0 && isDiacritic(word[i]))
+	while (i>=0 && isDiacritic(word[i]))
 		i--;
-	return i;
+	return i; //even if -1 is returned it shows that all characters are diactrics
 }
 inline QChar getLastLetter(QString word, int pos) //helper function for last non-Diacritic letter
 {
@@ -64,13 +67,15 @@ inline QString removeLastLetter(QString word) //last non-Diacritical letter
 {
 	return word.left(getLastLetter_index(word));
 }
-inline QString removeLastDiacritic(QString word) //only one Diacritic is removed, TODO: take into account more than one diacritic
+inline QString removeLastDiacritic(QString word) //removes last consecutive diactrics until a normal letter is reached
 {
-	if (word.length()==0)
+	/*if (word.length()==0)
 		return word;
-        if (isDiacritic(word[word.length()-1]))
-		return word.left(word.length()-1);
-	return word;
+	int i=0;//number of letters to remove
+	while (isDiacritic(word[word.length()-i-1]))
+		i++;
+	return word.left(word.length()-i);*/
+	return word.left(getLastLetter_index(word)+1);
 }
 inline QString get_Possessive_form(QString word)
 {
@@ -117,7 +122,7 @@ inline bool startsWithAL( QString word) //does not take in account cases were Di
 {
 	if (word.length()<=2)
 		return false;
-	if (word[0]==alef && word[1]==lam)
+	if (word[0]==alef && word[1]==lam)//TODO: whenever it is changed to include diactrics in-between it must notice that only some combinations of diactrics imply AL (definite article) else is part of the word
 		return true;
 	return false;
 }

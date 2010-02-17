@@ -1,0 +1,1732 @@
+# English-Arabic translations created from the Universal dictionary at 2010-02-01T05:09:30-07:00
+# (c) Copyright 2010 by All free dictionaries project
+# ALL FREE DICTIONARIES PROJECT DISCLAIMS ALL
+# WARRANTIES WITH REGARD TO THESE TRANSLATIONS, INCLUDING ALL
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+# EVENT SHALL ALL FREE DICTIONARIES PROJECT OR ANY OF ITS CONTRIBUTORS
+# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES
+# OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+# PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+# OR OTHER ACTION, ARISING OUT OF OR IN CONNECTION
+# WITH THE USE OR PERFORMANCE OF THESE TRANSLATIONS.
+#
+# In other words there may be incorrect translations.
+# If you need to be sure never use these translations!
+#
+# French, German and Czech entries are added manually. The entries for
+# remaining languages are added automatically. Entries for these languages
+# are only experimental.
+#
+# You may not place this file on WWW, ftp and equivalent servers because
+# this file gets outdated very quickly. You may not distribute this file
+# with your dictionary applications without permission. You can contact
+# authors of the Universal dictionary at: http://dicts.info/contact.php
+#
+# This file is for personal use only. You may not distribute this file.
+#
+# New version of this file can be created at: http://www.dicts.info/uddl.php
+#
+
+ April ; Apr 	 نيسان % أبريل 	 time 
+ China ; People's Republic of China ; mainland China ; Communist China ; Red China ; PRC ; Cathay 	 الصين 	 country 
+ Chinese 	 الصينية 	 language 
+ Czech Republic 	 تشيكيا 	 country 
+ December ; Dec 	 كانون الأول % ديسمبر 	 time 
+ Earth ; earth ; world ; globe 	 الأرض 	 nature 
+ English ; English language 	 إنجليزي ؛ إنكليزي 	 language 
+ February ; Feb 	 شباط % فبراير 	 time 
+ France ; French Republic 	 فرنسا 	 country 
+ French 	 الفرنسية 	 language 
+ Friday ; Fri 	 الجمعة 	 time 
+ German ; High German ; German language 	 اللغة الألمانية 	 linguistics 
+ Germany ; Federal Republic of Germany ; Deutschland ; FRG 	 ألمانيا 	 country 
+ Hindi 	 اللغة الهندية 	 language 
+ India ; Republic of India ; Bharat 	 الهند 	 country 
+ Italian 	 الإيطالية 	 language 
+ Italy ; Italian Republic ; Italia 	 إيطاليا 	 country 
+ January ; Jan 	 كانون الثاني % يناير 	 time 
+ Japan ; Nippon ; Nihon 	 اليابان 	 country 
+ Japanese 	 اليابانية 	 language 
+ July 	 تموز % يوليو 	 time 
+ June 	 حزيران % يونيو 	 time 
+ Monday ; Mon 	 الاثنين 	 time 
+ Moon ; moon 	 قمر 	 nature 
+ November ; Nov 	 تشربن الثاني % نوفمبر 	 time 
+ October ; Oct 	 تشرين الأول % أكتوبر 	 time 
+ Russian 	 الروسية 	 language 
+ Saturday ; Sabbatum ; Sat 	 السبت 	 time 
+ Spain ; Kingdom of Spain ; Espana 	 إسبانيا 	 country 
+ Spanish 	 الأسبانية 	 language 
+ Sunday ; Lord's Day ; Dominicus ; Sun 	 الأحد 	 time 
+ Thursday ; Th 	 الخميس 	 time 
+ United Kingdom ; UK ; U.K. ; Britain ; United Kingdom of Great Britain and Northern Ireland ; Great Britain 	 المملكة المتحدة 	 country 
+ United States ; United States of America ; America ; the States ; US ; U.S. ; USA ; U.S.A. 	 الولايات المتحدة الأمريكية 	 country 
+ Wednesday ; Midweek ; Wed 	 الأربعاء 	 time 
+ ability ; power 	 مقدِرة 	 abstract 
+ able 	 قادر 	 adjective 
+ about ; almost ; most ; nearly ; near ; nigh ; virtually ; well-nigh 	 على وشك 	 adverb 
+ about ; around 	 على، حول 	 adverb 
+ above ; higher up ; in a higher place ; to a higher place 	 فوق 	 adverb 
+ abrupt ; precipitous ; sharp 	 مفاجئ 	 adjective 
+ accept ; take ; have 	 وافق 	 verb 
+ accident 	 حادث 	 transport 
+ account ; business relationship 	 حساب 	 business 
+ achieve ; accomplish ; attain ; reach 	 يتِم ، يحقِق، ينجِز 	 verb 
+ acid 	 حامض 	 adjective 
+ acid 	 حامض 	 material 
+ acme ; height ; elevation ; peak ; pinnacle ; summit ; superlative ; meridian ; tiptop ; top 	 قمة 	 abstract 
+ act ; deed ; human action ; human activity 	 تصرف 	 abstract 
+ act ; move 	 تحرك 	 verb 
+ action 	 عمل، إجراء 	 mathematics 
+ action ; activity ; activeness 	 فعل 	 mathematics 
+ actor ; histrion ; player ; thespian ; role player 	 ممثل 	 profession 
+ actress 	 الممثّلة 	 profession 
+ actually ; really 	 فِي الواقِع، فِي الحقِيقة، فِعلاً 	 adverb 
+ acuate ; acute ; sharp ; needlelike 	 حاد 	 adjective 
+ ad ; advertisement ; advertizement ; advertising ; advertizing ; advert 	 إعلان 	 business 
+ addition ; add-on ; improver 	 إضافة 	 abstract 
+ address 	 عنوان 	 abstract 
+ adept ; expert ; good ; practiced ; proficient ; skillful ; skilful 	 خبير 	 adjective 
+ adjective 	 نعت ؛ صفة 	 linguistics 
+ admit ; acknowledge 	 يعترِف بِ 	 verb 
+ advantage ; vantage 	 فائِده 	 abstract 
+ advice 	 نصِيحه 	 communication 
+ afternoon 	 عصر 	 time 
+ again ; once again ; once more ; over again 	 مجدداً 	 adverb 
+ against 	 ضد 	 preposition 
+ age 	 عمر 	 time 
+ ago ; agone 	 ماضِ، فِي الماضِي، منذ زمن 	 adjective 
+ agree ; hold ; concur ; concord 	 يتفِق مع 	 verb 
+ agreement ; understanding 	 موافقة ; اتفاق 	 business 
+ ahead ; in front ; before 	 أمام 	 adverb 
+ aid ; assist ; assistance ; help 	 مساعدة 	 communication 
+ air 	 هواء 	 nature 
+ airplane ; aeroplane ; plane 	 طائرة 	 object 
+ airport ; airdrome ; aerodrome ; drome 	 مطار 	 city 
+ alive ; live 	 حي، غير ميِت 	 adjective 
+ all 	 كل 	 adjective 
+ alone ; lone ; lonely ; solitary 	 منعزل 	 adjective 
+ along 	 بجانب (bijá:nib) 	 adverb 
+ already 	 سابِقاً، قبل الآن، قد، الآن 	 adverb 
+ alternatively ; instead ; or else 	 بدلا من 	 adverb 
+ although 	 رغم 	 conjunction 
+ altitude ; height 	 مِقياس الإرتِفاع 	 abstract 
+ among ; amongst ; amid ; amidst 	 بين 	 preposition 
+ amount 	 مقدار 	 abstract 
+ and 	 و 	 conjunction 
+ angle 	 زاوية 	 mathematics 
+ angry 	 غاضب 	 adjective 
+ animal ; animate being ; beast ; brute ; creature ; fauna 	 حيوان 	 nature 
+ announce ; denote 	 يعلِن حضور شخص 	 verb 
+ announcement ; proclamation ; annunciation ; declaration 	 إعلان 	 communication 
+ another ; some other 	 آخر 	 adjective 
+ answer ; reply ; respond 	 أجاب 	 verb 
+ answer ; reply ; response 	 جواب 	 communication 
+ ant ; emmet ; pismire 	 نملة 	 animal 
+ anteroom ; antechamber ; entrance hall ; hall ; foyer ; lobby ; vestibule 	 صاله، ردهه 	 house 
+ any ; whatever ; whatsoever 	 اختياري 	 adjective 
+ anyone 	 أحد 	 pronoun 
+ anything 	 أي شيء 	 pronoun 
+ apartment ; flat 	 شقة 	 society 
+ apparel ; wearing apparel ; dress ; clothes 	 فستان 	 clothes 
+ apple 	 تفاحة 	 food 
+ approximately ; about ; close to ; just about ; some ; roughly ; more or less ; around ; or so 	 تقريباً 	 adverb 
+ area ; expanse ; surface area 	 مساحه 	 mathematics 
+ argue ; contend ; debate ; fence 	 جدال 	 verb 
+ argue ; reason 	 برهن 	 verb 
+ argument ; statement 	 برهان 	 communication 
+ arm 	 ذراع 	 anatomy 
+ army ; regular army ; ground forces 	 جيش 	 society 
+ arrangement ; organization ; organisation ; system 	 منظمة 	 society 
+ arrive ; make it ; get in ; go far 	 وصل 	 verb 
+ art ; fine art 	 فن 	 art 
+ artist ; creative person 	 فنان، رسام، نحات 	 profession 
+ ask ; inquire ; enquire 	 يسأل 	 verb 
+ aspect 	 هيئة 	 abstract 
+ assail ; assault ; set on ; attack 	 هاجم 	 verb 
+ astute ; sharp ; shrewd 	 فطن 	 adjective 
+ at 	 عند 	 preposition 
+ attack ; onslaught ; onset ; onrush 	 هجوم 	 abstract 
+ attempt ; effort ; endeavor ; endeavour ; try 	 محاولة 	 abstract 
+ attention ; attending 	 انتباه 	 communication 
+ attitude ; mental attitude 	 موقِف 	 abstract 
+ audio ; sound 	 سمعي 	 abstract 
+ aureate ; gilded ; gilt ; gold ; golden 	 ذهبي 	 color 
+ authority ; authorization ; authorisation ; potency ; dominance ; say-so 	 سلطة 	 society 
+ automatic 	 آلي 	 adjective 
+ available 	 متيسِر، متاح، متوفِر 	 adjective 
+ avoid 	 تجنب 	 verb 
+ awake 	 مستيقظ 	 adjective 
+ award ; accolade ; honor ; honour ; laurels 	 جائزة 	 society 
+ baby ; babe ; infant 	 رضيع 	 family 
+ back 	 خلف 	 clothes 
+ back ; dorsum 	 ظهر 	 anatomy 
+ bad 	 سيئ 	 adjective 
+ bag 	 حقيبة 	 object 
+ bag ; handbag ; pocketbook ; purse 	 الحقيبة 	 clothes 
+ bag ; traveling bag ; travelling bag ; grip ; suitcase 	 الحقيبة 	 clothes 
+ balance 	 ميزان 	 physics 
+ ball 	 كرة 	 object 
+ bang-up ; bully ; corking ; cracking ; dandy ; great ; groovy ; keen ; neat ; nifty ; not bad ; peachy ; slap-up ; swell ; smashing 	 عظيم 	 adjective 
+ bank 	 ضفة ضِفة النهر 	 nature 
+ barbarous ; brutal ; cruel ; fell ; roughshod ; savage ; vicious 	 وحشي 	 adjective 
+ bargain ; deal 	 إتفاق على بيع وشِراء 	 business 
+ base ; base of operations 	 قاعدة 	 society 
+ baseball ; baseball game 	 كرة القاعدة ; كرة القاعدة ؛ بيسبول 	 sports 
+ basic 	 قاعدي 	 adjective 
+ basket ; handbasket 	 سلة 	 object 
+ bath 	 حمام 	 house 
+ bathroom ; bath 	 الحمّام 	 house 
+ be 	 كان 	 verb 
+ be ; live 	 يحيا 	 verb 
+ beach 	 شاطئ ; شّاطئ 	 nature 
+ beak ; bill ; neb ; nib ; pecker 	 منقار 	 anatomy 
+ bear 	 دب 	 animal 
+ bear 	 يحمِل 	 verb 
+ beat ; beat out ; crush ; shell ; trounce ; vanquish 	 انتصر 	 verb 
+ beautiful 	 جميل 	 adjective 
+ because 	 لأن 	 conjunction 
+ become ; go ; get 	 أصبح 	 verb 
+ bed 	 سرير 	 house 
+ bedroom ; sleeping room ; sleeping accommodation ; chamber ; bedchamber 	 غرفة نوم 	 house 
+ bee 	 نحلة 	 animal 
+ beer 	 بيرة 	 food 
+ beginning ; commencement ; first ; outset ; get-go ; start ; kickoff ; starting time ; showtime ; offset 	 بداية 	 abstract 
+ beginning ; origin ; root ; rootage ; source 	 مصدر 	 transport 
+ behind 	 خلف، وراء 	 adverb 
+ being ; beingness ; existence 	 وجود 	 society 
+ bell 	 جرس 	 object 
+ beloved ; dear ; dearest ; honey ; love 	 عزيز 	 relations 
+ bend ; curve 	 منحنى 	 transport 
+ benefit ; do good 	 يفيد، ينفع 	 verb 
+ beside 	 بجانب 	 preposition 
+ besides ; too ; also ; likewise ; as well 	 أيضاً 	 adverb 
+ best 	 أفضل ، الأفضل 	 adjective 
+ better 	 أفضل، أحسن 	 adjective 
+ between ; betwixt 	 بين 	 adverb 
+ beverage ; drink ; drinkable ; potable 	 شراب 	 food 
+ bicycle ; bike ; wheel ; cycle 	 دراجة 	 object 
+ bill ; account ; invoice 	 حساب 	 business 
+ bill ; note ; government note ; bank bill ; banker's bill ; bank note ; banknote ; Federal Reserve note ; greenback 	 ورقة نقدية 	 business 
+ biology ; biological science 	 علم الأحياء 	 science 
+ bird 	 طائر 	 animal 
+ birth ; nativity ; nascency ; nascence 	 ولادة 	 nature 
+ birthday 	 يوم ميلاد ; عيد ميلاد 	 family 
+ bit ; chip ; flake ; fleck ; scrap 	 قطعة 	 object 
+ bite 	 عضة 	 medicine 
+ bite ; seize with teeth 	 عض 	 verb 
+ bitter 	 مر 	 adjective 
+ black 	 أسود 	 adjective 
+ blade 	 نصل 	 object 
+ blessing ; approval ; approving 	 استحسان 	 communication 
+ blood 	 دم 	 anatomy 
+ blow 	 ضربة 	 abstract 
+ blue ; bluish ; blueish 	 أزرق 	 color 
+ board 	 لوح 	 object 
+ boat 	 قارب 	 object 
+ bone ; os 	 عظم 	 anatomy 
+ book ; volume 	 كتاب 	 object 
+ boot 	 جزمة 	 clothes 
+ boring ; deadening ; dull ; ho-hum ; irksome ; slow ; tedious ; tiresome ; wearisome 	 ممل 	 adjective 
+ bottle 	 قارورة 	 food 
+ box 	 صندوق 	 object 
+ boyfriend ; fellow ; beau ; swain ; young man 	 صديق، رفيق، خليل 	 family 
+ brain ; encephalon 	 دماغ 	 anatomy 
+ branch 	 فرع 	 nature 
+ brand ; make 	 نمط 	 abstract 
+ bread ; breadstuff ; staff of life 	 خبز 	 food 
+ break 	 كسر 	 verb 
+ breakfast 	 إفطار 	 food 
+ breast ; chest 	 صدر 	 anatomy 
+ breath 	 نفس 	 anatomy 
+ brick 	 قرميد 	 house 
+ bridge ; span 	 جسر 	 object 
+ bright ; brilliant ; vivid 	 لامع 	 adjective 
+ broken 	 مكسور 	 adjective 
+ brother ; blood brother 	 أخ 	 family 
+ brow ; forehead 	 جبهة 	 anatomy 
+ brown ; brownish ; chocolate-brown ; dark-brown 	 بني 	 color 
+ brush 	 فرشاة 	 object 
+ brusque ; brusk ; curt ; short 	 قصير 	 adjective 
+ building ; edifice 	 بناء 	 city 
+ bulk ; mass ; volume 	 حجم 	 physics 
+ burn ; fire ; burn down 	 أشعل 	 verb 
+ bus ; autobus ; coach ; charabanc ; double-decker ; jitney ; motorbus ; motorcoach ; omnibus ; passenger vehicle 	 باص ; حافلة ؛ باص 	 transport 
+ business ; concern ; business concern ; business organization ; business organisation 	 أعمال 	 business 
+ businessman ; man of affairs 	 رجل أعمال 	 profession 
+ butter 	 زبدة 	 food 
+ buy ; purchase 	 اشترى 	 verb 
+ by ; past 	 عبر 	 adverb 
+ by and large ; generally ; more often than not ; mostly 	 بصورة عامه 	 adverb 
+ cake 	 كعك 	 food 
+ calendar month ; month 	 شهر 	 time 
+ call ; phone call ; telephone call 	 مكالمه هاتفيه، إتِصال هاتفي 	 communication 
+ call ; telephone ; call up ; phone ; ring 	 اتصل 	 verb 
+ camera ; photographic camera 	 آلة تصوير 	 object 
+ campaign ; cause ; crusade ; drive ; movement ; effort 	 حملةٌ عسكرِيه 	 abstract 
+ can ; tin ; tin can 	 صفيحة 	 object 
+ capital 	 عاصمة 	 society 
+ capital ; capital letter ; uppercase ; upper-case letter ; majuscule 	 حرفٌ كبير 	 linguistics 
+ capital ; working capital 	 عاصمة 	 business 
+ car ; auto ; automobile ; machine ; motorcar 	 سيارة 	 transport 
+ carbohydrate ; saccharide ; sugar 	 سكر 	 food 
+ card 	 بطاقة 	 object 
+ cardinal ; central ; fundamental ; key ; primal 	 أساسي 	 adjective 
+ care 	 اهتم 	 verb 
+ care ; attention ; aid ; tending 	 انتباه 	 abstract 
+ case ; instance ; example 	 حاله 	 abstract 
+ castle 	 قلعة 	 city 
+ cat ; true cat 	 قط 	 animal 
+ catch ; grab ; take hold of 	 أمسك 	 verb 
+ cause 	 سبب 	 abstract 
+ cell 	 خلية 	 anatomy 
+ cell ; jail cell ; prison cell 	 زنزانة 	 society 
+ cellular telephone ; cellular phone ; cellphone ; cell ; mobile phone 	 هاتف نقال 	 device 
+ center ; centre ; middle ; heart ; eye 	 مركز 	 mathematics 
+ century 	 مِئة سنه 	 time 
+ certain ; sure 	 يقيني 	 adjective 
+ chain 	 سلسلة 	 object 
+ chair 	 كرسي 	 house 
+ championship ; title 	 بطولة 	 sports 
+ change 	 فكة 	 business 
+ change ; alter ; modify 	 غير 	 verb 
+ change ; alteration ; modification 	 تغيير 	 abstract 
+ charge 	 سِعلر، ثمن 	 business 
+ charge ; accuse 	 يتهِم 	 verb 
+ charge ; bill 	 يطلب سِعرا 	 verb 
+ charge ; complaint 	 تهمه، إتِهام 	 society 
+ charge ; electric charge 	 شحنةٌ كهربائِيه 	 nature 
+ cheap ; inexpensive 	 رخيص 	 adjective 
+ check ; bank check ; cheque 	 شيك مصرفي 	 business 
+ cheese 	 جبن 	 food 
+ chemical ; chemic 	 كيميائي 	 adjective 
+ chemical ; chemical substance 	 كيميائي 	 material 
+ chemical element ; element 	 عنصر 	 material 
+ chemistry ; chemical science 	 كيمياء 	 science 
+ chest 	 صندوق 	 object 
+ chief ; main ; primary ; principal ; master 	 رئيسي 	 adjective 
+ child ; kid 	 ولد 	 nature 
+ child ; kid ; youngster ; minor ; shaver ; nipper ; small fry ; tiddler ; tike ; tyke ; fry ; nestling 	 طِفلٌ (صبي أو بِنت) 	 family 
+ chin ; mentum 	 ذقن 	 anatomy 
+ chocolate 	 شوكولا 	 food 
+ choice ; selection ; option ; pick 	 اختيار 	 abstract 
+ choose ; take ; select ; pick out 	 يحدد 	 verb 
+ church ; church building 	 كنيسة 	 city 
+ cinema ; movie theater ; movie theatre ; movie house ; picture palace 	 سينما 	 city 
+ circle 	 دائرة 	 mathematics 
+ city ; metropolis ; urban center 	 مدينة 	 society 
+ claim 	 إدِعاء 	 communication 
+ claim 	 مطالبة 	 society 
+ clandestine ; cloak-and-dagger ; hole-and-corner ; hugger-mugger ; hush-hush ; secret ; surreptitious ; undercover ; underground 	 سري ; مستتر 	 adjective 
+ class ; form ; grade ; course 	 صنف 	 art 
+ classify ; class ; sort ; assort ; sort out ; separate 	 رتب 	 verb 
+ clean 	 نظيف 	 adjective 
+ clean ; make clean 	 نظف 	 verb 
+ clear 	 صافي 	 adjective 
+ clock 	 ساعة 	 device 
+ close ; shut 	 أغلق 	 verb 
+ clothing ; article of clothing ; vesture ; wear ; wearable ; habiliment 	 ملابِس، ألبِسه، أغطِيه 	 clothes 
+ cloud 	 سحاب 	 nature 
+ club 	 النادي 	 object 
+ club ; social club ; society ; guild ; gild ; lodge ; order 	 نادٍ 	 society 
+ coal 	 فحم 	 material 
+ coat 	 معطف 	 clothes 
+ coffee ; java 	 قهوة 	 food 
+ cognition ; knowledge ; noesis 	 معرفة 	 education 
+ coil ; whorl ; roll ; curl ; curlicue ; ringlet ; gyre ; scroll 	 لفافة 	 object 
+ cold 	 بارد 	 adjective 
+ cold ; common cold 	 زكام 	 medicine 
+ coldness ; cold ; low temperature ; frigidity ; frigidness 	 برد 	 nature 
+ collar ; neckband 	 ياقة 	 clothes 
+ color ; colour 	 ملون 	 adjective 
+ color ; colour ; coloring ; colouring 	 لون 	 art 
+ coloring material ; colouring material ; color ; colour 	 لون ; مادة تلوين 	 art 
+ come ; come up 	 جاء 	 verb 
+ committee ; commission 	 مبعوث 	 society 
+ common 	 شائع 	 adjective 
+ common ; mutual 	 مشترك 	 adjective 
+ common ; usual 	 عادي 	 adjective 
+ community 	 مجتمع 	 society 
+ company 	 شركة 	 business 
+ company ; companionship ; fellowship ; society 	 رفقة 	 society 
+ compare 	 يقارِن 	 verb 
+ comparison ; comparing 	 مقارنة 	 abstract 
+ competition 	 منافسة 	 business 
+ complete ; consummate 	 مكتمل 	 adjective 
+ complete ; finish 	 أكمل 	 verb 
+ complimentary ; costless ; free ; gratis ; gratuitous 	 مجاني 	 adjective 
+ component ; constituent ; element ; factor ; ingredient 	 عنصر 	 mathematics 
+ computer ; computing machine ; computing device ; data processor ; electronic computer ; information processing system 	 حاسوب 	 device 
+ concert 	 جوقة موسيقية ; حفلة موسيقية 	 art 
+ concluding ; final ; last ; terminal 	 نِهائي 	 adjective 
+ condition ; status 	 شرط 	 abstract 
+ confront ; face up ; face 	 واجه 	 verb 
+ connection ; connexion ; connectedness 	 اتصال 	 abstract 
+ connection ; connexion ; connector ; connecter ; connective 	 اتصال 	 abstract 
+ conscious ; witting 	 واعي 	 adjective 
+ consequence ; effect ; outcome ; result ; event ; issue ; upshot 	 تأثير 	 medicine 
+ construct ; build ; make 	 يبني 	 verb 
+ contend ; fight ; struggle 	 قاتل 	 verb 
+ contest ; competition 	 منافسة 	 society 
+ continue ; go on ; proceed ; go along ; keep 	 يستمِر 	 verb 
+ contract 	 عقد، إلتِزام، تعهد، إتِفاقِيه 	 business 
+ control 	 سيطرة 	 abstract 
+ control ; command 	 تحكم 	 verb 
+ controversy ; contention ; contestation ; disputation ; disceptation ; tilt ; argument ; arguing 	 حجة 	 mathematics 
+ cook 	 طاهي ; طباخ 	 profession 
+ cook 	 طبخ 	 verb 
+ cope ; get by ; make out ; make do ; contend ; grapple ; deal ; manage 	 يتغلب على المشاكِل 	 verb 
+ copy 	 نسخة 	 object 
+ copy ; re-create 	 نسخ 	 verb 
+ correct ; right 	 صحيح 	 adjective 
+ cotton 	 قطن 	 material 
+ cotton ; cotton fiber ; cotton wool 	 قطن 	 material 
+ cough 	 سعل 	 verb 
+ cough ; coughing 	 سعال 	 medicine 
+ council 	 مجلِـس (استِشاري) 	 society 
+ count ; matter ; weigh 	 يهم 	 verb 
+ country ; state ; land 	 دولة 	 society 
+ court ; tribunal ; judicature 	 محكمة 	 society 
+ cow ; moo-cow 	 بقرة 	 animal 
+ crack ; cleft ; crevice ; fissure ; scissure 	 شق 	 abstract 
+ crime ; offense ; criminal offense ; criminal offence ; offence ; law-breaking 	 جريمة 	 society 
+ crude ; rough 	 خشن 	 adjective 
+ crush 	 حطم 	 verb 
+ crush ; crunch ; compaction 	 سحق 	 abstract 
+ cry ; outcry ; call ; yell ; shout ; vociferation 	 صياح 	 communication 
+ cry ; weep 	 بكى 	 verb 
+ culture ; civilization ; civilisation 	 حضاره 	 society 
+ cup 	 قدح 	 food 
+ cup ; loving cup 	 كأس 	 object 
+ cupboard ; closet 	 خِزانه 	 house 
+ current 	 حالي 	 adjective 
+ current ; electric current 	 تيار كهربائي 	 nature 
+ current ; stream 	 تيار 	 nature 
+ curtain ; drape ; drapery ; mantle ; pall 	 ستارة 	 house 
+ curvature ; curve 	 منحنى 	 mathematics 
+ curve ; curved shape 	 منحنى 	 art 
+ customer ; client 	 زبون 	 business 
+ cut 	 قطع 	 verb 
+ cut ; cutting 	 قطع 	 abstract 
+ damage 	 آذى 	 verb 
+ damage ; harm ; impairment 	 أذية ; ضرر 	 transport 
+ dance ; trip the light fantastic ; trip the light fantastic toe 	 رقص 	 verb 
+ dance band ; band ; dance orchestra 	 فرقة 	 art 
+ danger 	 خطر 	 abstract 
+ dangerous ; unsafe 	 خطِر 	 adjective 
+ dark 	 مظلم 	 adjective 
+ data ; information 	 معطيات، بيانات 	 communication 
+ date ; appointment ; engagement 	 موعد 	 relations 
+ date ; day of the month 	 تاريخ 	 time 
+ daughter ; girl 	 ابنة 	 family 
+ day ; twenty-four hours ; twenty-four hour period ; 24-hour interval ; solar day ; mean solar day 	 يوم 	 nature 
+ daze ; shock ; stupor 	 صدمة 	 abstract 
+ dead 	 ميت 	 adjective 
+ dead 	 ميت 	 society 
+ death 	 موت 	 nature 
+ decide ; make up one's mind ; determine 	 يقرِر 	 verb 
+ decision ; determination ; conclusion 	 قرار 	 communication 
+ decoration ; ornament ; ornamentation 	 زخرفة 	 object 
+ degree 	 درجة 	 linguistics 
+ degree ; grade ; level 	 مستوى 	 linguistics 
+ delicate 	 لذيذ 	 adjective 
+ delicate ; fragile ; frail 	 هش 	 adjective 
+ demeanor ; demeanour ; behavior ; behaviour ; conduct ; deportment 	 سلوك 	 abstract 
+ democracy ; republic ; commonwealth 	 جمهورية 	 society 
+ department ; section 	 قسم 	 society 
+ deplorable ; distressing ; lamentable ; pitiful ; sad ; sorry 	 تعيس 	 adjective 
+ depository financial institution ; bank ; banking concern ; banking company 	 مصرف 	 city 
+ describe ; depict ; draw 	 يصِف 	 verb 
+ design ; designing 	 تصميم 	 abstract 
+ design ; plan 	 صمم 	 verb 
+ desire ; want 	 أراد 	 verb 
+ desk 	 مكتب 	 house 
+ despite 	 بغض النظر عن 	 preposition 
+ destruction ; devastation 	 تدمير 	 abstract 
+ detail ; particular ; item 	 تفصيل 	 logistics 
+ detect ; observe ; find ; discover ; notice 	 يكتشِف 	 verb 
+ development ; evolution 	 تطوير ; تطور 	 nature 
+ dictionary ; lexicon 	 قاموس ; قاموس ؛ معجم 	 linguistics 
+ die ; decease ; perish ; go ; exit ; pass away ; expire ; pass ; kick the bucket ; cash in one's chips ; buy the farm ; conk ; give-up the ghost ; drop dead ; pop off ; choke ; croak ; snuff it 	 يموت 	 verb 
+ difference 	 إختِلاف 	 abstract 
+ different 	 مختلف 	 adjective 
+ difficult ; hard 	 صعب 	 adjective 
+ difficulty 	 صعوبه 	 abstract 
+ direction 	 اتجاه 	 mathematics 
+ directly ; straight ; direct 	 مباشرة 	 adverb 
+ director ; manager ; managing director 	 مدير 	 profession 
+ dirty ; dingy ; muddied ; muddy 	 قاتم ; قذر 	 adjective 
+ dirty ; soiled ; unclean 	 وسخ 	 adjective 
+ discipline ; subject ; subject area ; subject field ; field ; field of study ; study ; bailiwick 	 مجال 	 linguistics 
+ discover ; find 	 يكتشِف 	 verb 
+ discovery ; find ; uncovering 	 اكتشاف 	 society 
+ discussion ; give-and-take ; word 	 مناقشة 	 communication 
+ disease 	 مرض 	 medicine 
+ displace ; fire ; give notice ; can ; dismiss ; give the axe ; send away ; sack ; force out ; give the sack ; terminate 	 طرد 	 verb 
+ distance 	 مسافة 	 mathematics 
+ diverseness ; diversity ; multifariousness ; variety 	 الاختلاف 	 art 
+ divide ; split ; split up ; separate ; dissever ; carve up 	 فصل 	 verb 
+ division ; partition ; partitioning ; segmentation ; sectionalization ; sectionalisation 	 تقسيم 	 mathematics 
+ doctor ; doc ; physician ; MD ; Dr. ; medico 	 طبيب 	 profession 
+ dog ; domestic dog ; Canis familiaris 	 كلب 	 animal 
+ dominance ; ascendance ; ascendence ; ascendancy ; ascendency ; control 	 تحكم 	 abstract 
+ dominion ; rule 	 حكم 	 society 
+ door 	 باب 	 house 
+ doubt 	 شك 	 verb 
+ doubt ; uncertainty ; incertitude ; dubiety ; doubtfulness ; dubiousness 	 شك 	 communication 
+ down 	 أسفل 	 adjective 
+ down ; downwards ; downward ; downwardly 	 أسفل 	 adverb 
+ drawer 	 درج 	 house 
+ drink ; imbibe 	 شرب 	 verb 
+ drive 	 يسوق 	 verb 
+ drop ; drib ; driblet 	 قطرة 	 object 
+ dry 	 جاف 	 adjective 
+ dry ; dry out 	 جف 	 verb 
+ dry ; dry out 	 جفف 	 verb 
+ during 	 خلال 	 preposition 
+ dust 	 غبار 	 material 
+ duty 	 واجب 	 abstract 
+ dwelling ; home ; domicile ; abode ; habitation ; dwelling house 	 منزل 	 house 
+ each 	 كل 	 adjective 
+ ear 	 أذن 	 anatomy 
+ earlier ; before 	 قبل 	 adverb 
+ early 	 مبكر 	 adjective 
+ early on ; early 	 باكراً 	 adverb 
+ earth ; ground 	 أرض 	 material 
+ east 	 شرقي 	 adjective 
+ east ; due east ; eastward ; E 	 شرق 	 logistics 
+ easy 	 سهل 	 adjective 
+ eat 	 أكل 	 verb 
+ economic 	 إقتِصادي 	 adjective 
+ economic ; economical 	 مقتصِد 	 adjective 
+ economy ; economic system 	 إقتِصاد الدوله 	 business 
+ edge ; border 	 حافة 	 mathematics 
+ education 	 تعليم 	 education 
+ education 	 تعليم 	 society 
+ education ; instruction ; teaching ; pedagogy ; didactics ; educational activity 	 تعليم 	 education 
+ effort ; elbow grease ; exertion ; travail ; sweat 	 جهد 	 abstract 
+ egg 	 بيضة 	 food 
+ eight ; 8 ; viii 	 ثمانية 	 number 
+ eighteen ; 18 ; xviii 	 ثمانية عشر 	 number 
+ eighty ; 80 ; lxxx ; fourscore 	 ثمانون 	 number 
+ either 	 في أيٍ مِنهما 	 adverb 
+ electric ; electrical 	 كهربائي 	 adjective 
+ elementary ; simple ; uncomplicated ; unproblematic 	 بسيط 	 adjective 
+ elephant 	 فيل 	 animal 
+ elevator ; lift 	 مصعد 	 device 
+ eleven ; 11 ; xi 	 أحد عشر 	 number 
+ embrace ; encompass ; comprehend ; cover 	 احتوى 	 verb 
+ encourage 	 يشجِع 	 verb 
+ end ; stop ; finish ; terminate ; cease 	 أنهى 	 verb 
+ end ; terminal 	 نهاية 	 abstract 
+ energy ; free energy 	 طاقة 	 nature 
+ engine 	 محرك 	 device 
+ engineering ; engineering science ; applied science ; technology 	 هندسة تطبيقية 	 abstract 
+ enhance ; heighten ; raise 	 يعزِز، يزيد جمال الشيء 	 verb 
+ enjoy ; bask ; relish ; savor ; savour 	 يستمتِع بِ 	 verb 
+ enough ; plenty 	 بشكل كافٍ 	 adverb 
+ enter ; come in ; get into ; get in ; go into ; go in ; move into 	 يدخل 	 verb 
+ entertainment ; amusement 	 استمتاع 	 art 
+ entirely ; exclusively ; solely ; alone ; only 	 وحده ; وحيداً 	 adverb 
+ envelope 	 مغلف 	 object 
+ environment 	 بيئة 	 nature 
+ environment ; environs ; surroundings ; surround 	 بيئة 	 nature 
+ equal 	 مساوي 	 adjective 
+ equally ; as ; every bit 	 مثل 	 adverb 
+ erstwhile ; former ; old ; onetime ; one-time ; quondam ; sometime 	 سابِق 	 adjective 
+ especial ; exceptional ; particular ; special 	 خاص 	 adjective 
+ establish ; found ; plant ; constitute ; institute 	 يؤسِس، يقيم، ينشِئ 	 verb 
+ estimate ; gauge ; approximate ; guess ; judge 	 خمن 	 verb 
+ estrus ; oestrus ; heat ; rut 	 شبق 	 nature 
+ even 	 حتى 	 adverb 
+ even 	 زوجي 	 adjective 
+ even ; fifty-fifty 	 متساوي 	 adjective 
+ evening ; eve ; even ; eventide 	 أمسية 	 time 
+ event 	 حدث 	 abstract 
+ every 	 كل 	 adjective 
+ everybody ; everyone 	 الكل 	 pronoun 
+ everything 	 كل شيء 	 pronoun 
+ evidence 	 برهان 	 abstract 
+ examination ; exam ; test 	 امتحان 	 communication 
+ example ; illustration ; instance ; representative 	 أنموذج 	 communication 
+ exceed ; transcend ; overstep ; pass ; go past ; top 	 جاوز 	 verb 
+ excellent ; first-class ; fantabulous ; splendid 	 ممتاز 	 adjective 
+ exist ; be 	 يوجد 	 verb 
+ exit ; go out ; get out ; leave 	 يغادِر، يسافِر، يترك 	 verb 
+ expect ; look ; await ; wait 	 ينتظِر 	 verb 
+ experience 	 تجربة 	 communication 
+ experience 	 خبرة 	 society 
+ expert 	 خبير 	 profession 
+ explain ; explicate 	 شرح، فسر 	 verb 
+ express ; limited 	 قِطار سريع 	 transport 
+ expression ; look ; aspect ; facial expression ; face 	 منظر ; مظهر 	 communication 
+ eye ; oculus ; optic 	 عين 	 anatomy 
+ fabric ; cloth ; material ; textile 	 ثوب 	 material 
+ face ; human face 	 وجه 	 anatomy 
+ fact 	 حقيقة 	 abstract 
+ factory ; mill ; manufacturing plant ; manufactory 	 مصنع 	 city 
+ fail ; neglect 	 يكف عن أداء وظيفتهِ 	 verb 
+ fake ; false ; faux ; imitation ; simulated 	 خطأ 	 adjective 
+ fall 	 سقط 	 verb 
+ fall ; autumn 	 خريف 	 nature 
+ false 	 خطأ 	 adjective 
+ false ; mistaken 	 خطأ 	 adjective 
+ family ; family unit 	 عائلة 	 family 
+ family ; household ; house ; home ; menage 	 عائلة 	 family 
+ far 	 بعيد 	 adjective 
+ farm 	 مزرعة 	 nature 
+ fast 	 سريع 	 logistics 
+ fat 	 دهن 	 material 
+ fat 	 سمين 	 adjective 
+ father ; male parent ; begetter 	 أب 	 family 
+ fatty ; fat 	 دسم 	 adjective 
+ fear 	 خاف 	 verb 
+ fear ; fearfulness ; fright 	 خوف 	 relations 
+ feather ; plume ; plumage 	 ريش 	 object 
+ feature ; characteristic 	 ميزة 	 abstract 
+ feel ; experience 	 أحس 	 verb 
+ feel ; sense 	 شعر 	 verb 
+ feeling 	 شعور 	 communication 
+ female 	 أنثى 	 adjective 
+ female ; female person 	 أنثى 	 society 
+ few 	 قليل 	 adjective 
+ fiddling ; footling ; lilliputian ; little ; niggling ; piddling ; piffling ; petty ; picayune ; trivial 	 قليل 	 adjective 
+ field 	 حقل 	 nature 
+ fierce ; tearing ; vehement ; violent ; trigger-happy 	 عنيف 	 adjective 
+ fifteen ; 15 ; xv 	 خمسة عشر 	 number 
+ fifty ; 50 ; l 	 خمسون 	 number 
+ fight ; fighting ; combat ; scrap 	 قتال 	 abstract 
+ fill ; fill up ; make full 	 الملء 	 verb 
+ film ; cinema ; celluloid 	 الفيلم 	 object 
+ find ; regain 	 وجد 	 verb 
+ finger 	 إسبع ; إصبع 	 anatomy 
+ finish ; destination ; goal 	 الغاية 	 abstract 
+ fire 	 حريق 	 nature 
+ fire ; flame ; flaming 	 نار 	 nature 
+ firm ; house ; business firm 	 شركة 	 business 
+ firm ; solid 	 صلب 	 adjective 
+ first 	 أول 	 adjective 
+ first ; firstly ; foremost ; first of all ; first off 	 أولاً 	 adverb 
+ fiscal ; financial 	 مالي 	 adjective 
+ fish 	 سمك 	 animal 
+ five ; 5 ; v 	 خمسة 	 number 
+ fix ; prepare ; set up ; ready ; gear up ; set 	 جهز 	 verb 
+ fixed 	 محدد 	 adjective 
+ flag 	 علم 	 object 
+ flat ; level ; plane 	 مسطح 	 adjective 
+ flight ; flying 	 طيران 	 transport 
+ flim-flam ; play a joke on ; play tricks ; trick ; fob ; fox ; pull a fast one on ; play a trick on 	 خدع 	 verb 
+ floor ; flooring 	 أرضية 	 house 
+ floor ; level ; storey ; story 	 طابق 	 house 
+ flower 	 زهرة 	 nature 
+ flush ; level ; even out ; even 	 سوى 	 verb 
+ fly 	 ذبابة 	 animal 
+ fly ; wing 	 طار 	 verb 
+ fold ; crease ; plication ; flexure ; crimp ; bend 	 منحنى 	 object 
+ follow 	 تبع 	 verb 
+ following ; next 	 التالي 	 adjective 
+ food ; nutrient 	 طعام 	 food 
+ foot ; human foot ; pes 	 قدم 	 anatomy 
+ football ; football game 	 لعبة كرة القدم 	 sports 
+ footing ; basis ; ground 	 أساس 	 mathematics 
+ footstep ; pace ; step ; stride 	 خطوة 	 mathematics 
+ for 	 لأجل 	 conjunction 
+ for 	 لـَ 	 preposition 
+ for 	 من أجل 	 preposition 
+ force ; forcefulness ; strength 	 قوة 	 abstract 
+ foreign ; strange 	 غريب 	 adjective 
+ forest ; wood ; woods 	 غابة 	 nature 
+ forget 	 ينسى، لا يتذكر 	 verb 
+ fork 	 شوكة 	 food 
+ form 	 نموذج 	 society 
+ form ; shape ; cast 	 شكل 	 art 
+ forty ; 40 ; xl ; twoscore 	 أربعون 	 number 
+ forward ; forwards ; frontward ; frontwards ; forrad ; forrard 	 نحو الأمام 	 adverb 
+ four ; 4 ; iv 	 أربعة 	 number 
+ fourteen ; 14 ; xiv 	 أربعة عشر 	 number 
+ fourth dimension ; time 	 وقت 	 physics 
+ frame 	 إطار 	 object 
+ free 	 حر 	 adjective 
+ free ; liberate ; release ; unloose ; unloosen ; loose 	 حرر 	 verb 
+ frequent 	 متكرر 	 adjective 
+ frequently ; often ; oftentimes ; oft ; ofttimes 	 تِكراراً 	 adverb 
+ fresh 	 طازج 	 adjective 
+ friend 	 صديق 	 family 
+ friendly 	 ودي 	 adjective 
+ from 	 من 	 preposition 
+ from 	 من 	 preposition 
+ front 	 أمامي 	 adjective 
+ front ; front end ; forepart 	 أمام 	 abstract 
+ fruit 	 فاكهة 	 food 
+ full 	 كامل ; مليء 	 adjective 
+ full ; total 	 كامل 	 adjective 
+ fume ; smoke 	 دخن 	 verb 
+ function ; office ; part ; role 	 وظيفه، عمل 	 mathematics 
+ function ; purpose ; role ; use 	 غاية 	 linguistics 
+ function ; work ; operate ; go ; run 	 عمل 	 verb 
+ furniture ; piece of furniture ; article of furniture 	 أثاث 	 house 
+ future 	 مستقبلي 	 adjective 
+ future ; hereafter ; futurity ; time to come 	 مستقبل 	 time 
+ gamble ; chance ; risk ; hazard ; take chances ; adventure ; run a risk ; take a chance 	 يخاطِر، يجازِف 	 verb 
+ game 	 لعبة 	 sports 
+ game 	 لعبه للإستِمتاع 	 mathematics 
+ garage 	 مرآب 	 transport 
+ garden 	 بستان 	 house 
+ gate 	 بوابة 	 house 
+ gene ; cistron ; factor 	 مورثه 	 anatomy 
+ general 	 عام 	 adjective 
+ general ; full general 	 لواء 	 profession 
+ get ; acquire 	 حصل 	 verb 
+ get down ; begin ; get ; start out ; start ; set about ; set out ; commence 	 بدأ 	 verb 
+ girl ; miss ; missy ; young lady ; young woman ; fille 	 بنت 	 family 
+ give 	 أعطى 	 verb 
+ glass 	 زجاج 	 material 
+ glass ; drinking glass 	 كأس 	 food 
+ glue ; gum ; mucilage 	 صمغ 	 material 
+ glue ; paste 	 ألصق 	 verb 
+ gluey ; glutinous ; gummy ; mucilaginous ; pasty ; sticky ; viscid ; viscous 	 لاصق 	 adjective 
+ goal 	 هدف 	 sports 
+ goat ; caprine animal 	 عنزة 	 animal 
+ gold ; Au ; atomic number 79 	 ذهب 	 material 
+ golf ; golf game 	 غولف 	 travelling 
+ good 	 جيد 	 adjective 
+ good ; goodness 	 جيد 	 abstract 
+ good ; sound 	 سليم 	 adjective 
+ govern ; rule 	 حكم 	 verb 
+ government ; authorities ; regime 	 حكومة 	 society 
+ gradient ; slope 	 منحدر 	 mathematics 
+ grain 	 حبيبة ; بذرة 	 material 
+ grandfather ; gramps ; granddad ; grandad ; granddaddy ; grandpa 	 جد 	 family 
+ grass 	 عشب 	 nature 
+ gray ; grayness ; grey ; greyness 	 رمادي 	 color 
+ great 	 عظيم 	 adjective 
+ green ; greenish ; light-green ; dark-green 	 أخضر 	 color 
+ grey ; gray ; greyish ; grayish 	 رمادي 	 adjective 
+ group ; grouping 	 مجموعة 	 abstract 
+ grow 	 ينمو 	 verb 
+ guest ; invitee 	 ضيف ؛ مدعو 	 travelling 
+ guitar 	 قيثارة 	 object 
+ gun 	 سلاح 	 object 
+ hair 	 شعر 	 anatomy 
+ hair ; pilus 	 وبر 	 anatomy 
+ hammer 	 مطرقة 	 object 
+ hand ; manus ; mitt ; paw 	 يد ; كف 	 anatomy 
+ handle ; grip ; handgrip ; hold 	 مقبض 	 object 
+ hapless ; miserable ; misfortunate ; pathetic ; piteous ; pitiable ; pitiful ; poor ; wretched 	 فقير 	 adjective 
+ happen ; hap ; go on ; pass off ; occur ; pass ; fall out ; come about ; take place 	 يحدث لِ 	 verb 
+ happy 	 سعيد 	 adjective 
+ hash out ; discuss ; talk over 	 يناقِش، يبحث، يتباحث 	 verb 
+ hat ; chapeau ; lid 	 قبعة 	 clothes 
+ hate ; detest 	 كره 	 verb 
+ hate ; hatred 	 كره 	 relations 
+ hateful ; mean 	 خسيس، دنيء 	 adjective 
+ have ; have got ; hold 	 ملك 	 verb 
+ hazard ; jeopardy ; peril ; risk ; endangerment 	 مخاطرة 	 transport 
+ he 	 هو 	 pronoun 
+ head ; caput 	 رأس 	 anatomy 
+ head ; chief ; top dog 	 رئيس 	 society 
+ health 	 عافِيه 	 abstract 
+ health ; wellness 	 صحة 	 medicine 
+ healthy 	 صحي 	 adjective 
+ healthy ; salubrious ; good for you 	 صحي 	 adjective 
+ hear 	 يسمع 	 verb 
+ heart ; pump ; ticker 	 قلب 	 anatomy 
+ heavy 	 ثقيل 	 adjective 
+ heed ; mind ; listen 	 انتبه 	 verb 
+ hello ; hullo ; hi ; howdy ; how-do-you-do 	 مرحبا'مرحبًا (márħaban) 	 linguistics 
+ help ; assist ; aid 	 ساعد 	 verb 
+ her 	 ـها 	 pronoun 
+ here 	 هنا 	 adverb 
+ here ; hither 	 إلى هنا 	 adverb 
+ herself 	 نفسها 	 pronoun 
+ high 	 عالي 	 adjective 
+ hill 	 تل 	 nature 
+ him 	 ـه 	 pronoun 
+ himself 	 نفسه 	 pronoun 
+ his 	 ـه 	 pronoun 
+ historic period ; age 	 عصر 	 time 
+ history 	 تاريخ 	 society 
+ hit ; hitting ; striking 	 ضرب، إصابه 	 abstract 
+ hit ; smash ; smasher ; strike ; bang 	 ضربة ناجِحه، عمل ناجِح 	 art 
+ hog ; pig ; grunter ; squealer ; Sus scrofa 	 خنزير 	 animal 
+ hold ; take hold 	 القبضة 	 verb 
+ hole 	 ثقب ; فجوة 	 abstract 
+ home ; place 	 مسكن 	 house 
+ homo ; man ; human being ; human 	 رجل ; إنسان 	 family 
+ hook ; claw 	 خطاف 	 object 
+ hope 	 رجا 	 verb 
+ horse ; Equus caballus 	 حصان 	 animal 
+ hospital ; infirmary 	 مستشفى 	 city 
+ hot 	 حار 	 adjective 
+ hotel 	 فندق 	 city 
+ hotness ; heat ; high temperature 	 حرارة 	 medicine 
+ hour ; hr ; 60 minutes 	 ساعة 	 time 
+ house 	 بيت 	 house 
+ however ; nevertheless ; withal ; still ; yet ; all the same ; even so ; nonetheless ; notwithstanding 	 رغم 	 adverb 
+ human 	 إنساني 	 adjective 
+ humor ; humour ; sense of humor ; sense of humour 	 دعابة 	 communication 
+ hundred ; one hundred ; 100 ; c 	 مائة 	 number 
+ hungry 	 جائِع ، تواق إلى 	 adjective 
+ hurt ; injure 	 يؤذي، يؤلِم 	 verb 
+ husband ; hubby ; married man 	 زوج 	 family 
+ ice 	 ثلج 	 nature 
+ ice ; water ice 	 جليد 	 material 
+ idea ; thought 	 فكرة 	 communication 
+ identify ; place 	 يتعرف على ، يثبِت هوية 	 verb 
+ if 	 إذا 	 conjunction 
+ ill ; sick 	 مريض 	 adjective 
+ image 	 رأي، فِكره عامه 	 art 
+ imitate ; copy ; simulate 	 قلد 	 verb 
+ immediately ; instantly ; straightaway ; straight off ; directly ; now ; right away ; at once ; forthwith ; like a shot 	 فوراً 	 adverb 
+ impatient 	 غير صبور 	 adjective 
+ imperial ; majestic ; purple ; regal ; royal 	 ملكي 	 adjective 
+ important ; of import 	 مهم 	 adjective 
+ in ; inwards ; inward 	 في 	 adverb 
+ inaugural ; initiative ; initiatory ; first ; maiden 	 افتتاحي 	 adjective 
+ include 	 يشمل، يشتمِل 	 verb 
+ income 	 دخل، إيراد شهري 	 business 
+ incorporate ; contain ; comprise 	 يحتوي 	 verb 
+ incorrect ; wrong 	 خطأ 	 adjective 
+ increase 	 زاد 	 verb 
+ increase ; increment 	 زيادة 	 abstract 
+ increase ; increment ; growth 	 نمو 	 abstract 
+ indeed ; so 	 حقـا: تستعمل للتوكيد 	 adverb 
+ individual 	 فرد 	 society 
+ individual ; private 	 خاص، فردي 	 adjective 
+ induce ; stimulate ; cause ; have ; get ; make 	 دفع 	 verb 
+ industrial 	 صِناعي 	 adjective 
+ industry ; manufacture 	 مصنع 	 society 
+ infinitesimal ; minute 	 دقيق 	 adjective 
+ information 	 معلومات 	 communication 
+ information ; info 	 معلومة 	 communication 
+ injure ; wound 	 جرح 	 verb 
+ ink 	 حبر 	 material 
+ insect 	 حشرة 	 animal 
+ inside ; within 	 داخل 	 adverb 
+ institution ; establishment 	 مؤسسه 	 society 
+ instrument 	 أداة 	 device 
+ insurance 	 تأمين 	 business 
+ intelligent 	 ذكي 	 adjective 
+ intend ; mean ; think 	 ينوي، يعتزِم 	 verb 
+ interest 	 فائدة 	 business 
+ interest ; involvement 	 اهتمام 	 communication 
+ interesting 	 مهِم, * ممتِع 	 adjective 
+ international 	 دولي، اممي 	 adjective 
+ internet ; net ; cyberspace 	 إنترنت 	 mathematics 
+ interview 	 مقابلة 	 communication 
+ into 	 داخل 	 preposition 
+ introduce ; present ; acquaint 	 قدم 	 verb 
+ invention ; innovation ; excogitation ; conception ; design 	 اختراع 	 art 
+ iron ; Fe ; atomic number 26 	 حديد 	 material 
+ island 	 جزيرة 	 nature 
+ issue 	 قضِيه 	 communication 
+ issue ; number 	 عدد 	 mathematics 
+ it 	 هو/هي - لغير العاقل 	 pronoun 
+ its 	 ـه/ـها - لغير العاقل 	 pronoun 
+ itself 	 نفسه/نفسها - لغير العاقل 	 pronoun 
+ jacket 	 السترة 	 clothes 
+ jewel ; gem ; precious stone 	 مجوهرات 	 object 
+ job ; task ; chore 	 عمل 	 business 
+ join ; bring together 	 جمع 	 verb 
+ jolt ; jar ; jounce ; shock 	 ارتجاج 	 transport 
+ journalist 	 صحفي 	 profession 
+ journey ; journeying 	 رحلة 	 transport 
+ judge ; justice ; jurist 	 قاضي 	 profession 
+ jump ; leap ; bound ; spring 	 قفز 	 verb 
+ keep ; maintain ; hold 	 حافظ 	 verb 
+ kernel ; substance ; core ; center ; centre ; essence ; gist ; heart ; heart and soul ; inwardness ; marrow ; meat ; nub ; pith ; sum ; nitty-gritty 	 نواة فكرة 	 abstract 
+ key 	 مفتاح 	 house 
+ key 	 مفتاح 	 object 
+ kick 	 ركل 	 verb 
+ kick ; boot ; kicking 	 ركلة 	 abstract 
+ kill 	 يقتل 	 verb 
+ kind 	 لطيف 	 adjective 
+ kind ; sort ; form ; variety 	 نوع 	 abstract 
+ king ; male monarch ; Rex 	 ملك 	 society 
+ kiss ; buss ; osculation 	 تقبيل 	 relations 
+ kitchen 	 مطبخ 	 house 
+ knee ; knee joint ; human knee ; articulatio genus ; genu 	 ركبة 	 anatomy 
+ knife 	 سكين 	 food 
+ knot 	 عقدة 	 object 
+ laid ; set 	 معين سلفا 	 adjective 
+ lake 	 بحيرة 	 nature 
+ land ; dry land ; earth ; ground ; solid ground ; terra firma 	 أرض 	 nature 
+ land ; ground ; soil 	 أرض 	 material 
+ land ; set down 	 حط 	 verb 
+ language ; linguistic communication 	 لغة 	 communication 
+ large ; big 	 كبير 	 adjective 
+ last 	 أخير 	 adjective 
+ last ; lastly ; in conclusion ; finally 	 آخر واحد 	 adverb 
+ late 	 متأخر 	 adjective 
+ late ; belatedly ; tardily 	 متأخراً 	 adverb 
+ laugh ; express joy ; express mirth 	 ضحك 	 verb 
+ law 	 قانون 	 society 
+ lead ; Pb ; atomic number 82 	 رصاص 	 material 
+ lead ; take ; direct ; conduct ; guide 	 قاد 	 verb 
+ leader 	 زعيم 	 society 
+ leaf ; leafage ; foliage 	 ورق 	 nature 
+ leap ; jump ; saltation 	 قفزة 	 abstract 
+ learn ; larn ; acquire 	 تعلم 	 verb 
+ least ; to the lowest degree 	 الأقل 	 adverb 
+ leather 	 جلد 	 material 
+ leave 	 يترك، يدع 	 verb 
+ leave ; leave of absence 	 في إجازه، في عطله 	 society 
+ left 	 يسار 	 adjective 
+ leg 	 ساق 	 anatomy 
+ legal 	 قانوني 	 adjective 
+ let 	 ترك 	 verb 
+ letter ; letter of the alphabet ; alphabetic character 	 حرف 	 linguistics 
+ letter ; missive 	 رسالة 	 object 
+ library 	 مكتبة 	 city 
+ lie 	 يضطجِع، يتمدد 	 verb 
+ lie ; prevarication 	 بهتان 	 communication 
+ life 	 حياة 	 nature 
+ life 	 حياه 	 time 
+ light 	 خفيف 	 adjective 
+ light ; lite ; low-cal ; calorie-free 	 خفيف 	 adjective 
+ light ; visible light ; visible radiation 	 ضوء 	 nature 
+ like 	 أحب 	 verb 
+ like ; similar 	 مشابه 	 adjective 
+ limit ; bound ; boundary 	 حد 	 mathematics 
+ line 	 خط 	 mathematics 
+ lion ; king of beasts ; Panthera leo 	 أسد 	 animal 
+ lip 	 شفة 	 anatomy 
+ liquid 	 سائل 	 adjective 
+ liquid 	 سائل 	 nature 
+ list ; listing 	 ﻻئحة 	 abstract 
+ listen ; hear ; take heed 	 استمع 	 verb 
+ little 	 قليلاً 	 adverb 
+ load ; charge 	 يشحن ، يحشو سِلاحا نارياً 	 verb 
+ local 	 محلي 	 adjective 
+ lock 	 أقفل 	 verb 
+ lock 	 قفل 	 house 
+ long 	 طويل 	 adjective 
+ long 	 طويل 	 adjective 
+ look 	 رأى 	 verb 
+ look ; appear ; seem 	 بدا 	 verb 
+ lookout ; lookout man ; sentinel ; sentry ; watch ; spotter ; scout ; picket 	 مراقب 	 profession 
+ lose 	 يخسر 	 verb 
+ lose 	 يفقِد، يخسر 	 verb 
+ loss 	 فقدان 	 business 
+ loud 	 مرتفع ; صاخب 	 adjective 
+ love 	 أحب 	 verb 
+ love 	 حب 	 relations 
+ low 	 منخفض 	 adjective 
+ low ; depression 	 منخفض جوي 	 nature 
+ lucky 	 محظوظ 	 adjective 
+ lunch ; luncheon ; tiffin ; dejeuner 	 غداء 	 food 
+ machine 	 آلة 	 device 
+ magazine ; mag 	 مجلة 	 object 
+ mail ; mail service ; postal service ; post 	 بريد 	 communication 
+ mail ; post ; send 	 أرسل 	 verb 
+ major 	 عظيم، كبير، رئيسي 	 adjective 
+ majority ; bulk 	 أغلبية 	 abstract 
+ make ; create 	 تسبب 	 verb 
+ make ; do 	 جعل 	 verb 
+ male 	 ذكر 	 adjective 
+ male ; male person 	 ذكر 	 society 
+ male ; manful ; manlike ; manly ; virile 	 ذكري 	 adjective 
+ male child ; boy 	 ولد ; صبي 	 family 
+ man ; adult male 	 رجل 	 family 
+ manage ; deal ; care ; handle 	 يدير شؤون 	 verb 
+ management 	 الإداره، المديرون 	 business 
+ management ; direction 	 إرشاد، توجيه 	 society 
+ manner ; mode ; style ; way ; fashion 	 سلوك 	 mathematics 
+ many 	 كثير 	 adjective 
+ map 	 خريطة 	 object 
+ mark ; grade ; score 	 علامة 	 education 
+ marker ; marking ; mark 	 رمز 	 abstract 
+ market ; marketplace ; market place 	 سوق 	 business 
+ marriage ; matrimony ; union ; spousal relationship ; wedlock 	 زواج، حياة الزواج 	 society 
+ marriage ; wedding ; marriage ceremony 	 عرس 	 family 
+ married 	 متزوج 	 adjective 
+ marry ; get married ; wed ; conjoin ; hook up with ; get hitched with ; espouse 	 يتزوج 	 verb 
+ mass 	 وزن 	 physics 
+ master ; master copy ; original 	 النسخة الأصلِيه 	 object 
+ match 	 مباراة 	 sports 
+ match ; fit ; correspond ; check ; jibe ; gibe ; tally ; agree 	 طابق 	 verb 
+ match ; lucifer ; friction match 	 عيدان كبريت 	 object 
+ material 	 مادي 	 adjective 
+ material ; stuff 	 مادة 	 material 
+ matter 	 ماده 	 material 
+ matter ; affair ; thing 	 أمر 	 abstract 
+ me 	 ـي 	 pronoun 
+ meal ; repast 	 وجبة 	 food 
+ mean 	 يعني 	 verb 
+ mean ; mean value 	 متوسِط 	 mathematics 
+ meaning ; pregnant ; significant 	 مهِم، هام، خطير 	 adjective 
+ means ; agency ; way 	 وسيلة 	 abstract 
+ measure ; mensurate ; measure out 	 قاسي 	 verb 
+ measure ; step 	 مقياس 	 abstract 
+ measurement ; measuring ; measure ; mensuration 	 قياس 	 art 
+ meat 	 لحم 	 food 
+ medical 	 طبي 	 adjective 
+ meet ; run into ; encounter ; run across ; come across ; see 	 يصادِف، يلتقي صدفةً 	 verb 
+ meeting ; coming together 	 اجتماع 	 communication 
+ member ; fellow member 	 عضو 	 society 
+ memory 	 ذكرى 	 communication 
+ memory ; retention ; retentiveness ; retentivity 	 ذاكرة 	 communication 
+ menstruation ; menses ; menstruum ; catamenia ; period ; flow 	 حيض 	 medicine 
+ mention ; advert ; bring up ; cite ; name ; refer 	 يشير إلى 	 verb 
+ menu ; bill of fare ; card ; carte du jour ; carte 	 قائمة (qā'imâ''' 	 object 
+ merely ; simply ; just ; only ; but 	 فقط 	 adverb 
+ metallic ; metal 	 معدني 	 adjective 
+ metallic element ; metal 	 معدن 	 material 
+ method 	 منهج 	 mathematics 
+ metro ; tube ; underground ; subway system ; subway 	 المترو 	 transport 
+ midnight 	 منتصف الليل 	 time 
+ might ; mightiness ; power 	 قوة 	 abstract 
+ military 	 عسكري 	 adjective 
+ military ; armed forces ; armed services ; military machine ; war machine 	 جيش 	 society 
+ milk 	 حليب 	 food 
+ milkshake ; milk shake ; shake 	 كوكتيل 	 food 
+ million ; 1000000 ; one thousand thousand ; meg 	 مليون 	 number 
+ mind ; head ; brain ; psyche ; nous 	 عقل 	 mathematics 
+ mine 	 منجم 	 object 
+ minister ; government minister 	 وزير 	 profession 
+ minor ; modest ; small ; small-scale ; pocket-size ; pocket-sized 	 متواضع 	 adjective 
+ minute ; min 	 دقيقة 	 time 
+ mirror 	 مرآة 	 house 
+ miss 	 الرمية الخاطئة 	 verb 
+ miss 	 يفوته، لا يلحق 	 verb 
+ mistake ; error ; fault 	 خطأ 	 communication 
+ model 	 طِراز 	 object 
+ moisture ; wet 	 رطوبة 	 nature 
+ moment ; minute ; second ; instant 	 لحظه 	 mathematics 
+ money 	 مال 	 business 
+ monkey 	 قرد 	 animal 
+ month 	 شهر 	 transport 
+ more ; more than 	 أكثر 	 adjective 
+ more ; to a greater extent 	 أكثر (ʔakθar) 	 adverb 
+ morning ; morn ; morning time ; forenoon 	 صباح 	 time 
+ mother ; female parent 	 أم 	 family 
+ motion ; movement ; move ; motility 	 تحرك 	 physics 
+ mountain ; mount 	 جبل 	 nature 
+ mouth ; oral cavity ; oral fissure ; rima oris 	 فم 	 anatomy 
+ move ; displace 	 حرك 	 verb 
+ movement ; motion 	 حركة 	 physics 
+ movie ; film ; picture ; moving picture ; moving-picture show ; motion picture ; motion-picture show ; picture show ; pic ; flick 	 فيلم 	 art 
+ much 	 كثير 	 adjective 
+ muscle ; musculus 	 عضلة 	 anatomy 
+ museum 	 متحف 	 city 
+ music 	 موسيقى 	 art 
+ musician ; instrumentalist ; player 	 موسيقي 	 profession 
+ my 	 ـي 	 pronoun 
+ nail 	 ظفر 	 anatomy 
+ nail 	 مسمار 	 object 
+ name 	 اسم 	 linguistics 
+ name ; call 	 سمى 	 verb 
+ narrow 	 ضيق 	 adjective 
+ nation ; land ; country 	 وطن 	 society 
+ national 	 قومي، وطني 	 adjective 
+ national 	 وطني 	 adjective 
+ natural 	 طبيعي 	 adjective 
+ natural language ; tongue 	 لغه 	 linguistics 
+ nature 	 الطبيعه 	 nature 
+ near ; close ; nigh 	 قريب 	 adjective 
+ necessary 	 ضروري 	 adjective 
+ necessitate ; ask ; postulate ; need ; require ; take ; involve ; call for ; demand 	 احتاج 	 verb 
+ neck ; cervix 	 عنق 	 anatomy 
+ necktie ; tie 	 ربطة عنق 	 clothes 
+ need ; demand 	 حاجة 	 abstract 
+ needle 	 إبرة 	 medicine 
+ neighbor ; neighbour 	 جار 	 family 
+ nerve ; nervus 	 عصب 	 anatomy 
+ net ; network ; mesh ; meshing ; meshwork 	 شبكة 	 material 
+ net income ; net ; net profit ; lucre ; profit ; profits ; earnings 	 صافي 	 business 
+ nether ; under 	 تحت 	 adjective 
+ never 	 ابداً 	 adverb 
+ new 	 جديد 	 adjective 
+ news ; intelligence ; tidings ; word 	 خبر 	 society 
+ newspaper ; paper 	 صحيفة 	 object 
+ nice 	 جميل 	 adjective 
+ night ; nighttime ; dark 	 ليل 	 nature 
+ nine ; 9 ; ix 	 تسعة 	 number 
+ nineteen ; 19 ; xix 	 تسعة عشر 	 number 
+ ninety ; 90 ; xc 	 تسعون 	 number 
+ no 	 غير 	 adjective 
+ no 	 لا 	 abstract 
+ noise ; dissonance ; racket 	 ضجيج 	 society 
+ nor 	 وﻻ 	 conjunction 
+ normal 	 عادي 	 adjective 
+ normally ; usually ; unremarkably ; commonly ; ordinarily 	 عادةً 	 adverb 
+ north 	 شمالي 	 adjective 
+ north ; due north ; northward ; N 	 شمال 	 logistics 
+ nose ; olfactory organ 	 أنف 	 anatomy 
+ not ; non 	 لا 	 adverb 
+ note ; annotation ; notation 	 تعليق 	 communication 
+ note ; musical note ; tone 	 نوتة 	 art 
+ nothing ; nil ; nix ; nada ; null ; aught ; cipher ; cypher ; goose egg ; naught ; zero ; zilch ; zip ; zippo 	 صِفر، لا شيء 	 mathematics 
+ now 	 الآن 	 time 
+ now ; at present 	 حالياً 	 adverb 
+ number 	 رقم 	 verb 
+ number 	 عدد 	 linguistics 
+ nurse 	 ممرض 	 profession 
+ nut 	 جوز 	 food 
+ nut 	 علبة مجوفة 	 object 
+ obtain 	 ينال، يحصل على 	 verb 
+ obviously ; evidently ; manifestly ; patently ; apparently ; plainly ; plain 	 كما يبدو بِوضوح 	 adverb 
+ occupation ; business ; job ; line of work ; line 	 مِهنه، وظيفه 	 business 
+ off 	 مطفأ 	 adjective 
+ offer 	 أهدى 	 verb 
+ offer ; offering 	 تقديم 	 abstract 
+ office ; business office 	 مكتب 	 business 
+ officeholder ; officer 	 ضابِط شرطه 	 profession 
+ oil 	 زيت 	 material 
+ old 	 قديم 	 adjective 
+ olfactory property ; smell ; aroma ; odor ; odour ; scent 	 رائحة 	 nature 
+ on 	 على 	 preposition 
+ on 	 مشغل 	 adjective 
+ one ; 1 ; i ; ane 	 واحد 	 number 
+ one-half ; half 	 نصف 	 mathematics 
+ onto 	 على 	 preposition 
+ open ; open up 	 فتح 	 verb 
+ open ; opened 	 مفتوح 	 adjective 
+ open ; unfastened 	 مفتوح 	 adjective 
+ open fire ; fire 	 أطلق النار 	 verb 
+ operation 	 عملية 	 abstract 
+ operation ; functioning ; performance 	 إجراء 	 mathematics 
+ operation ; surgery ; surgical operation ; surgical procedure ; surgical process 	 عملية ; عملية جراحية 	 medicine 
+ opinion ; sentiment ; persuasion ; view ; thought 	 رأي 	 communication 
+ opportunity ; chance 	 فرصة 	 abstract 
+ opposite 	 مضاد 	 adjective 
+ option ; alternative ; choice 	 خيار بين إثنين 	 abstract 
+ or 	 أو 	 conjunction 
+ orange 	 برتقال 	 food 
+ orange ; orangish 	 برتقالي 	 color 
+ orchestra 	 أوركسترا 	 art 
+ order 	 أمر 	 society 
+ order 	 حكم 	 linguistics 
+ order ; monastic order 	 شريعة 	 society 
+ order ; tell ; enjoin ; say 	 أمر 	 verb 
+ organization ; organisation 	 منظمة 	 society 
+ original 	 أصلي، أولي 	 adjective 
+ other 	 آخر 	 adjective 
+ our 	 ـنا 	 pronoun 
+ outburst ; burst ; flare-up 	 مباغتة 	 abstract 
+ outside 	 خارج 	 adverb 
+ outside ; exterior 	 خارِج، الجِهة الخارجِيه 	 mathematics 
+ oven 	 فرن 	 device 
+ own ; have ; possess 	 ملك 	 verb 
+ owner ; possessor 	 مالك 	 business 
+ package ; bundle ; packet ; parcel 	 حزمة 	 object 
+ page 	 صفحة 	 object 
+ pain ; hurting 	 ألم 	 medicine 
+ paint ; pigment 	 طلاء 	 art 
+ painting ; picture 	 الصورة 	 art 
+ paper 	 ورق 	 material 
+ parallel 	 متوازي 	 adjective 
+ parent 	 أحد الوالِدين 	 family 
+ park ; commons ; common ; green 	 متنزه 	 city 
+ part ; portion ; component part ; component ; constituent 	 جزء 	 abstract 
+ part ; section ; division 	 قسم 	 mathematics 
+ particular 	 خاص 	 adjective 
+ party 	 حفله 	 society 
+ pass ; laissez passer 	 جواز مرور 	 object 
+ passenger ; rider 	 راكب 	 transport 
+ passport 	 جواز سفر 	 object 
+ past 	 ماضي 	 adjective 
+ past ; past times ; yesteryear 	 ماضي 	 time 
+ patient 	 صبور 	 adjective 
+ patient 	 مريض 	 medicine 
+ pause ; intermission ; break ; interruption ; suspension 	 إستِراحه، فترة إستِراحه 	 time 
+ payment 	 دفع 	 business 
+ peace 	 سلام 	 abstract 
+ pen 	 قلم 	 object 
+ pencil 	 قلم رصاص 	 object 
+ people 	 أشخاص 	 society 
+ percentage ; percent ; per centum ; pct 	 نسبة مئوية 	 mathematics 
+ person ; individual ; someone ; somebody ; mortal ; soul 	 شخص 	 family 
+ personal 	 خصوصي 	 adjective 
+ petroleum ; crude oil ; crude ; rock oil ; fossil oil ; oil 	 نفط 	 material 
+ phase ; stage 	 مرحلة 	 time 
+ photographer ; lensman 	 مصور 	 profession 
+ physical 	 جسدي 	 adjective 
+ physical 	 فيزيائي 	 adjective 
+ picture ; image ; icon ; ikon 	 صورة 	 art 
+ piece 	 قِطعه 	 object 
+ pilot ; airplane pilot 	 قبطان 	 profession 
+ pin 	 دبوس 	 object 
+ pink ; pinkish 	 وردي 	 color 
+ pipe ; pipage ; piping 	 أنبوب 	 object 
+ pivot ; pin 	 محور 	 object 
+ plain ; field ; champaign 	 حقل 	 nature 
+ plan 	 يقرِر على ، ينوي، يعتزِم 	 verb 
+ plan ; program ; programme 	 مشروع 	 abstract 
+ plant ; flora ; plant life 	 نبات 	 house 
+ plant ; works ; industrial plant 	 مصنع 	 city 
+ plate 	 صحن 	 food 
+ play 	 لعب 	 verb 
+ player ; participant 	 لاعب 	 sports 
+ please 	 من فضلك (min fáɖlak) 	 adverb 
+ pleasure ; pleasance 	 سرور 	 abstract 
+ plow ; plough ; turn 	 حرث 	 verb 
+ poem ; verse form 	 قصيده 	 art 
+ poetry ; poesy ; verse 	 شعر 	 art 
+ point ; dot 	 نقطة 	 linguistics 
+ poison 	 سمم 	 verb 
+ poison ; toxicant ; poisonous substance 	 سم 	 material 
+ police ; police force ; constabulary ; law 	 شرطه 	 society 
+ policeman ; police officer ; officer 	 شرطي 	 profession 
+ policy 	 سِياسه 	 society 
+ polish ; smooth ; smoothen ; shine 	 لمع 	 verb 
+ political 	 سياسي 	 adjective 
+ politician ; politico ; pol ; political leader 	 سياسي، رجل سياسه 	 profession 
+ poor 	 فقير 	 adjective 
+ populace ; public ; world 	 جمهور 	 society 
+ popular ; pop 	 شعبي، مفهوم عند أكثرية الشعب 	 adjective 
+ population 	 شعب 	 society 
+ position ; place 	 موضع 	 linguistics 
+ possible 	 ممكن 	 adjective 
+ possibly ; perchance ; perhaps ; maybe ; mayhap ; peradventure 	 ربما 	 adverb 
+ postage ; postage stamp ; stamp 	 طابع بريد 	 object 
+ potato ; white potato ; Irish potato ; murphy ; spud ; tater 	 بطاطس 	 food 
+ potent ; strong ; stiff 	 قوي 	 adjective 
+ powder ; pulverization ; pulverisation 	 مسحوق 	 material 
+ power ; powerfulness 	 قوة 	 abstract 
+ practice 	 تمرين 	 art 
+ precisely ; exactly ; just 	 بالضبط 	 adverb 
+ present 	 حالي 	 adjective 
+ present 	 هدية 	 object 
+ present ; nowadays 	 حاضر 	 time 
+ president 	 رئيس الدوله 	 profession 
+ press 	 يضغط بإصبعِه 	 verb 
+ pressure ; pressure level ; force per unit area 	 ضغط 	 nature 
+ prevent ; forestall ; foreclose ; preclude ; forbid 	 يمنع 	 verb 
+ previous ; old 	 سابِق 	 adjective 
+ price 	 ثمن 	 verb 
+ price ; cost ; toll 	 ثمن 	 business 
+ price ; terms ; damage 	 ثمن 	 transport 
+ principle ; rule 	 قاعِده 	 linguistics 
+ print ; impress 	 طبع 	 verb 
+ prison ; prison house 	 سجن 	 city 
+ private 	 خاص 	 adjective 
+ probable ; likely 	 تقريبي 	 adjective 
+ probably ; likely ; in all likelihood ; in all probability ; belike 	 من المحتمل 	 adverb 
+ problem ; job 	 مشكلة 	 mathematics 
+ procedure ; process 	 إجراء 	 mathematics 
+ process ; physical process 	 إجراء 	 nature 
+ process ; treat 	 أجرى 	 verb 
+ produce ; make ; create 	 أنتج 	 verb 
+ product ; production 	 منتوج 	 object 
+ production 	 الإنتاج 	 abstract 
+ professional 	 مِهني 	 adjective 
+ professional ; professional person 	 محترف 	 profession 
+ profit ; turn a profit 	 استفاد 	 verb 
+ program ; programme ; computer program ; computer programme 	 برنامج 	 abstract 
+ project ; projection 	 مشروع، خطه 	 abstract 
+ promise ; hope 	 أمل 	 relations 
+ pronunciation 	 لفظ 	 linguistics 
+ property 	 خاصية 	 abstract 
+ property ; belongings ; holding 	 ملكية 	 society 
+ proposal 	 إقتِراح، عرض 	 abstract 
+ propose ; suggest ; advise 	 يقترِح 	 verb 
+ protest 	 احتج 	 verb 
+ protest ; protestation 	 احتجاج 	 communication 
+ prototype ; paradigm ; epitome ; image 	 نموذج أولي 	 linguistics 
+ public 	 عمومي 	 travelling 
+ publish ; bring out ; put out ; issue ; release 	 ينشر، يصدِر 	 verb 
+ pull ; draw ; force 	 سحب 	 verb 
+ pump 	 ضخ 	 verb 
+ pump 	 مضخة 	 device 
+ punishment ; penalty ; penalization ; penalisation 	 عقاب 	 society 
+ purple ; violet ; purplish 	 بنفسجي 	 color 
+ push ; force 	 دفع 	 verb 
+ push button ; push ; button 	 زر 	 object 
+ put ; set ; place ; pose ; position ; lay 	 وضع 	 verb 
+ quality 	 جودة 	 abstract 
+ quality ; character ; lineament 	 شخصِيه 	 abstract 
+ question ; inquiry ; enquiry ; query ; interrogation 	 سؤال 	 linguistics 
+ quiet 	 ساكن 	 adjective 
+ rain ; pelting 	 وابِلٌ من 	 nature 
+ rain ; rain down 	 أمطر 	 verb 
+ rain ; rainfall 	 مطر 	 nature 
+ raise ; lift ; elevate ; get up ; bring up 	 رفع ; ارتفع 	 verb 
+ rate ; charge per unit 	 نسبة 	 business 
+ rate ; rank ; range ; order ; grade ; place 	 قيم 	 verb 
+ reach ; make ; attain ; hit ; arrive at ; gain 	 وصل 	 verb 
+ reaction 	 ردة فعل 	 abstract 
+ read 	 يقرأ 	 verb 
+ ready 	 جاهز 	 adjective 
+ real ; existent 	 حقيقي 	 adjective 
+ rear ; raise ; bring up ; nurture ; parent 	 ربى 	 verb 
+ reason 	 سبب 	 communication 
+ reason 	 فكر منطقياً 	 verb 
+ reason ; ground 	 سبب 	 communication 
+ receive ; have 	 يستلِم 	 verb 
+ recent 	 جديد 	 adjective 
+ recently ; late ; lately ; of late ; latterly 	 مؤخرا 	 adverb 
+ record 	 رقم قياسي 	 abstract 
+ record ; tape 	 سجل 	 verb 
+ red ; reddish ; ruddy ; blood-red ; carmine ; cerise ; cherry ; cherry-red ; crimson ; ruby ; ruby-red ; scarlet 	 أحمر 	 color 
+ reduce ; cut down ; cut back ; trim ; trim down ; trim back ; cut ; bring down 	 يقلِل 	 verb 
+ reflect ; reverberate 	 يعكِس 	 verb 
+ refuse ; reject ; pass up ; turn down ; decline 	 رفض 	 verb 
+ regular 	 اعتيادي 	 adjective 
+ relation 	 علاقة 	 communication 
+ relationship ; human relationship 	 قرابة 	 society 
+ religion ; faith ; organized religion 	 دين 	 society 
+ religion ; faith ; religious belief 	 إيمان 	 society 
+ remainder ; balance ; residual ; residue ; residuum ; rest 	 باقي 	 business 
+ remember ; retrieve ; recall ; call back ; call up ; recollect ; think 	 يتذكر 	 verb 
+ remove ; take ; take away ; withdraw 	 يزيل، يبعِد 	 verb 
+ render ; return 	 أعاد 	 verb 
+ report 	 يقدِم تقريرا 	 verb 
+ represent ; stand for ; correspond 	 يمثِل 	 verb 
+ representative 	 ممثل 	 profession 
+ request ; asking 	 طلب 	 communication 
+ request ; bespeak ; call for ; quest 	 طلب 	 verb 
+ research 	 بحث 	 abstract 
+ respect ; honor ; honour ; abide by ; observe 	 احترم 	 verb 
+ respite ; recess ; break ; time out 	 توقف قصير 	 abstract 
+ responsibility ; responsibleness 	 مسؤولِيه 	 abstract 
+ responsible 	 مسؤول 	 adjective 
+ rest 	 ارتاح 	 verb 
+ rest ; ease ; repose ; relaxation 	 راحة 	 abstract 
+ restaurant ; eating house ; eating place ; eatery 	 المطعم 	 city 
+ restrict ; restrain ; trammel ; limit ; bound ; confine ; throttle 	 حدد 	 verb 
+ result ; resultant ; final result ; outcome ; termination 	 نتيجة 	 mathematics 
+ return ; homecoming 	 عوده 	 abstract 
+ reverse ; contrary ; opposite 	 مضاد 	 abstract 
+ rhythm ; beat ; musical rhythm 	 إيقاع 	 art 
+ rice 	 أرز 	 food 
+ rice 	 أرز 	 food 
+ right 	 تماماً 	 adverb 
+ right 	 حق 	 society 
+ right 	 مباشرة 	 adverb 
+ right 	 يمين 	 adjective 
+ rigid ; stiff 	 قاسي 	 adjective 
+ ring ; band 	 خاتم 	 clothes 
+ rise ; rising ; ascent ; ascension 	 صعود 	 abstract 
+ rival ; challenger ; competitor ; competition ; contender 	 منافِس 	 business 
+ river 	 نهر 	 nature 
+ road ; route 	 طريق 	 transport 
+ rock ; stone 	 حجر 	 nature 
+ roof 	 سقف 	 house 
+ room 	 غرفة 	 house 
+ root 	 جذر 	 mathematics 
+ root 	 جذر 	 nature 
+ rope 	 حبل 	 transport 
+ rough ; unsmooth 	 خشن 	 adjective 
+ round ; circular 	 دائري 	 adjective 
+ round off ; round down ; round out ; round 	 دور 	 verb 
+ rug ; carpet ; carpeting 	 سجادة 	 house 
+ rule ; regulation 	 قاعدة 	 linguistics 
+ run 	 جرى 	 verb 
+ sad 	 حزين 	 adjective 
+ safe 	 آمن 	 adjective 
+ safe 	 خزنة 	 object 
+ sail ; canvas ; canvass ; sheet 	 شراع ; حاجز معدني 	 object 
+ sailor ; crewman 	 بحار 	 profession 
+ salad 	 سلطة 	 food 
+ sale 	 بيع 	 business 
+ salt 	 ملح 	 verb 
+ salt ; table salt ; common salt 	 ملح 	 food 
+ salvage ; salve ; relieve ; save 	 الإنقاذ 	 verb 
+ same 	 مثل 	 adjective 
+ sand 	 رمل 	 material 
+ sandwich 	 السندويتش 	 food 
+ sauce 	 صلصة 	 food 
+ save ; preserve 	 يوفِر، يدخِر 	 verb 
+ school ; schoolhouse 	 مدرسة 	 city 
+ science ; scientific discipline 	 علم 	 society 
+ scientist 	 العالم 	 profession 
+ scissors ; pair of scissors 	 مقص 	 object 
+ scope ; range ; reach ; orbit ; compass ; ambit 	 مجال 	 abstract 
+ screen ; cover ; covert ; concealment 	 غطاء 	 object 
+ screw 	 فك 	 verb 
+ sea 	 بحر 	 nature 
+ season 	 موسِم 	 nature 
+ season ; flavor ; flavour 	 يعطي نكهةً 	 verb 
+ seat 	 مقعد للجلوس 	 house 
+ seat ; place 	 مقعد 	 abstract 
+ second ; 2nd ; 2d 	 ثاني 	 adjective 
+ second ; sec ; s 	 ثانية 	 time 
+ secret 	 سر 	 communication 
+ secretary ; secretarial assistant 	 سكرتير 	 profession 
+ see 	 شاهد 	 verb 
+ seed 	 بذرة 	 food 
+ sell 	 باع 	 verb 
+ sentence 	 جملة 	 linguistics 
+ separate 	 مفصول 	 adjective 
+ serious 	 جاد 	 adjective 
+ servant ; retainer 	 خادم 	 profession 
+ serve 	 يخدم في الجيش 	 verb 
+ service 	 خِدمه 	 sports 
+ set 	 'طقم 	 sports 
+ set 	 مجموعة 	 mathematics 
+ seven ; 7 ; vii 	 سبعة 	 number 
+ seventeen ; 17 ; xvii 	 سبعة عشر (sábʕaʈ ʕášar) 	 number 
+ seventy ; 70 ; lxx 	 سبعون 	 number 
+ several 	 عِدة 	 adjective 
+ sew ; run up ; sew together ; stitch 	 عقد 	 verb 
+ sex 	 جنس 	 nature 
+ sexual activity ; sexual practice ; sex ; sex activity 	 جنس 	 relations 
+ share 	 سهم 	 business 
+ share 	 يتشارك 	 verb 
+ share ; portion ; part ; percentage 	 جزء 	 society 
+ she 	 هي 	 pronoun 
+ sheep 	 خروف 	 animal 
+ shelf 	 رف 	 house 
+ ship 	 سفينة 	 transport 
+ shirt 	 قميص 	 clothes 
+ shock ; offend ; scandalize ; scandalise ; appal ; appall ; outrage 	 صدم 	 verb 
+ shoe 	 حذاء 	 clothes 
+ shop ; store 	 دكان 	 business 
+ short 	 قصير 	 adjective 
+ shout ; shout out ; cry ; call ; yell ; scream ; holler ; hollo ; squall 	 صرخ 	 verb 
+ show ; demo ; exhibit ; present ; demonstrate 	 عرض 	 verb 
+ shower 	 حمام ; دش 	 house 
+ shroud ; enshroud ; hide ; cover 	 غطى 	 verb 
+ shut ; unopen ; closed 	 مغلق 	 adjective 
+ side 	 جانب 	 mathematics 
+ sign 	 إشارة 	 linguistics 
+ silence ; quiet 	 سكون 	 abstract 
+ silent ; soundless ; still 	 ساكن 	 adjective 
+ silk 	 حرير 	 material 
+ silver 	 فضي 	 adjective 
+ silver ; Ag ; atomic number 47 	 فضة 	 material 
+ since 	 منذ 	 preposition 
+ sincere 	 مخلص 	 adjective 
+ sing 	 غنى 	 verb 
+ singer ; vocalist ; vocalizer ; vocaliser 	 مغنٍ 	 profession 
+ single 	 وحيد، مفرد 	 adjective 
+ sink 	 المغسلة 	 house 
+ sister ; sis 	 أخت 	 family 
+ sit ; sit down 	 جلس 	 verb 
+ situation ; state of affairs 	 حاله، وضع 	 abstract 
+ six ; 6 ; vi ; half dozen ; half-dozen 	 ستة 	 number 
+ sixteen ; 16 ; xvi 	 ستة عشر 	 number 
+ sixty ; 60 ; lx ; threescore 	 ستون 	 number 
+ size 	 حجم 	 physics 
+ skid ; slip ; sideslip 	 قسيمة 	 abstract 
+ skill ; science 	 براعه، حِذق 	 sports 
+ skin ; peel ; pare 	 قشر 	 verb 
+ skin ; tegument ; cutis 	 جلد 	 anatomy 
+ skirt 	 تنورة 	 clothes 
+ sky 	 سماء 	 nature 
+ sleep ; slumber 	 نوم 	 nature 
+ slow 	 بطيء 	 adjective 
+ slowly ; slow ; easy ; tardily 	 ببطء 	 adverb 
+ small ; little 	 صغير 	 adjective 
+ smash ; nail ; boom ; blast 	 اصطدم 	 verb 
+ smell 	 أصدر رائحة بشعة 	 verb 
+ smell 	 أصدر رائحة طيبة 	 verb 
+ smell 	 شم 	 verb 
+ smile 	 ابتسم 	 verb 
+ smile ; smiling ; grin ; grinning 	 ابتسامة 	 abstract 
+ smoke 	 دخن 	 verb 
+ smoke ; fume 	 دخان 	 nature 
+ smooth 	 مصقول 	 adjective 
+ snake ; serpent ; ophidian 	 أفعى 	 animal 
+ snog ; kiss ; buss ; osculate 	 قبل 	 verb 
+ snow 	 أثلج 	 verb 
+ snow 	 ثلج 	 nature 
+ snow ; snowfall 	 ثلج 	 nature 
+ so 	 جداً 	 adverb 
+ soap 	 صابون 	 material 
+ soap ; lather 	 أرغى 	 verb 
+ society 	 مجمتع 	 society 
+ sock 	 جورب 	 clothes 
+ soft 	 ناعم 	 adjective 
+ soldier 	 جندي 	 profession 
+ solid 	 صلب 	 adjective 
+ sometimes 	 أحيانا 	 adverb 
+ son ; boy 	 ابن 	 family 
+ song ; vocal 	 أغنية 	 art 
+ soon ; shortly ; presently ; before long 	 قريبا، عما قريب 	 adverb 
+ sound 	 صوت 	 nature 
+ soup 	 حساء 	 food 
+ south 	 جنوبي 	 adjective 
+ south ; due south ; southward ; S 	 جنوب 	 logistics 
+ space ; infinite 	 فضاء 	 mathematics 
+ sparse ; thin 	 نحيل 	 adjective 
+ specific 	 معين، محدد، خاص 	 adjective 
+ speech ; speech communication ; spoken communication ; spoken language ; language ; voice communication ; oral communication 	 حديث 	 linguistics 
+ spelling 	 تهجِئه 	 linguistics 
+ spend ; pass 	 يقضي 	 verb 
+ spill ; tumble ; fall 	 سقوط 	 abstract 
+ spoon 	 ملعقة 	 food 
+ spring 	 نابض 	 object 
+ spring ; fountain ; outflow ; outpouring ; natural spring 	 نبع 	 nature 
+ spring ; springtime 	 ربيع 	 nature 
+ square 	 مربع 	 adjective 
+ square ; foursquare 	 مربع 	 mathematics 
+ square ; second power 	 مربع 	 mathematics 
+ squash ; crush ; squelch ; mash ; squeeze 	 سحق ; ضغط 	 verb 
+ staff 	 هيئه، طاقم 	 society 
+ stage 	 منصة 	 object 
+ stalk ; stem 	 جذع 	 nature 
+ stamp 	 دمغة 	 object 
+ stand ; stand up 	 يقِف 	 verb 
+ standard 	 نموذجي، موحد، عادي 	 adjective 
+ standard ; criterion ; measure ; touchstone 	 مقدار معين من 	 communication 
+ star 	 نجمة 	 nature 
+ state 	 حاله 	 mathematics 
+ state 	 دوله، وِلايه 	 society 
+ state ; province 	 ولاية 	 society 
+ state ; say ; tell 	 قال 	 verb 
+ statement 	 تصريح 	 communication 
+ station 	 محطة 	 society 
+ stay ; remain ; rest 	 يبقى، يمكث 	 verb 
+ steal 	 سرق 	 verb 
+ steam 	 بخار 	 physics 
+ steel 	 فولاذ 	 material 
+ step ; stair 	 سلم 	 house 
+ stick 	 عود 	 object 
+ still 	 دائماً 	 adverb 
+ stitch 	 غرزة 	 medicine 
+ stomach ; tummy ; tum ; breadbasket 	 معدة 	 anatomy 
+ stop ; halt 	 توقف 	 abstract 
+ stop ; halt 	 توقف 	 verb 
+ straight 	 مستقيم 	 adjective 
+ strange ; unusual 	 غريب 	 adjective 
+ stream ; flow ; current 	 تيار 	 nature 
+ street 	 شارع 	 city 
+ stretch 	 مسافة واسعة 	 art 
+ strong 	 قوي 	 adjective 
+ structure 	 هيكلية 	 linguistics 
+ structure ; construction 	 بنية 	 house 
+ student ; pupil ; educatee 	 تلميذ 	 profession 
+ study 	 درس 	 verb 
+ stupid 	 غبي 	 adjective 
+ style 	 نمط 	 art 
+ stylish ; fashionable 	 أنيق، على الطِراز 	 adjective 
+ subject ; dependent 	 تابع 	 adjective 
+ subject ; topic ; theme 	 موضوع 	 linguistics 
+ subsequently ; later ; afterwards ; afterward ; after ; later on 	 فيما بعد 	 adverb 
+ substitution ; exchange ; commutation 	 استبدال 	 abstract 
+ success 	 نجاح 	 society 
+ successful 	 ناجِح 	 adjective 
+ such 	 هكذا 	 adverb 
+ sudden 	 فجائي 	 adjective 
+ suddenly ; all of a sudden ; of a sudden 	 فجأة (faj’áa) 	 adverb 
+ suffer ; endure 	 تألم (ta’állama) 	 verb 
+ sugar ; refined sugar 	 سكر 	 food 
+ sugar ; saccharify 	 حلى 	 verb 
+ suggestion ; proposition ; proffer 	 اقتراح 	 abstract 
+ sum ; amount ; total 	 مبلغ 	 mathematics 
+ summation ; addition ; plus 	 إضافة ; جمع 	 mathematics 
+ summer ; summertime 	 صيف 	 nature 
+ sun ; Sun 	 شمس 	 nature 
+ supermarket 	 سوبرماركِت: متجر كبير تباع فيه السِلع بطريقة ال 	 city 
+ supply ; provide ; render ; furnish 	 يزوِد، يعطي 	 verb 
+ support 	 دعم 	 abstract 
+ support ; back up 	 دعم 	 verb 
+ surely ; certainly ; sure ; for sure ; for certain ; sure enough ; sure as shooting 	 بالتأكيد 	 adverb 
+ surface 	 سطح خارِجي 	 mathematics 
+ surprise 	 فاجأ 	 verb 
+ surprise 	 مفاجأة 	 abstract 
+ surrender ; give up 	 استسلم (istáslama) 	 verb 
+ survive ; last ; live ; live on ; go ; endure ; hold up ; hold out 	 دام 	 verb 
+ sweet 	 حلو 	 adjective 
+ sweet ; sweetness ; sugariness 	 حلاوة 	 food 
+ swim 	 سبح 	 verb 
+ system ; scheme 	 نظام 	 linguistics 
+ table 	 طاولة 	 house 
+ table ; tabular array 	 مصفوفة 	 object 
+ tail 	 ذيل 	 anatomy 
+ take ; get hold of 	 أخذ 	 verb 
+ talk ; speak ; utter ; mouth ; verbalize ; verbalise 	 تحدث 	 verb 
+ tall 	 طويل 	 adjective 
+ taste ; gustation ; sense of taste ; gustatory modality 	 مذاق 	 nature 
+ taste ; savor ; savour 	 تذوق 	 verb 
+ tax ; taxation ; revenue enhancement 	 ضريبة 	 business 
+ tea 	 شاي 	 food 
+ teach ; learn ; instruct 	 علم 	 verb 
+ teacher ; instructor 	 معلم 	 profession 
+ team ; squad 	 فريق 	 society 
+ technology ; engineering 	 تكنولوجيا 	 society 
+ television camera ; tv camera ; camera 	 آلة تصوير 	 object 
+ television receiver ; television ; television set ; tv ; tv set ; idiot box ; boob tube ; telly ; goggle box 	 التلفاز 	 device 
+ ten ; 10 ; x 	 عشرة 	 number 
+ tendency ; trend 	 مَيْل 	 abstract 
+ tennis ; lawn tennis 	 كرة المضرب 	 sports 
+ test ; prove ; try ; try out ; examine ; essay 	 جرب 	 verb 
+ testify ; bear witness ; prove ; evidence ; show 	 يبرهِن 	 verb 
+ than 	 من 	 conjunction 
+ thank ; give thanks 	 يشكر 	 verb 
+ that 	 ذلك / تلك 	 pronoun 
+ that 	 ذلك / تلك 	 pronoun 
+ the 	 ال 	 article 
+ theater ; theatre ; house 	 مسرح 	 city 
+ their 	 ـهم 	 pronoun 
+ them 	 ـهم 	 pronoun 
+ then ; so ; and so ; and then 	 ثم 	 adverb 
+ theory 	 نظرية 	 education 
+ there ; at that place ; in that location 	 هناك 	 adverb 
+ therefore ; hence ; thence ; thus ; so 	 لِذلِك 	 adverb 
+ these 	 هؤلاء / هذه 	 pronoun 
+ they 	 هم 	 pronoun 
+ thick 	 سميك 	 adjective 
+ thick 	 كثيف 	 adjective 
+ thin 	 نحيف 	 adjective 
+ thin ; lean 	 نحيل 	 adjective 
+ thing 	 شيء 	 object 
+ thirsty 	 عطشان 	 adjective 
+ thirteen ; 13 ; xiii 	 ثلاثة عشر 	 number 
+ thirty ; 30 ; xxx 	 ثلاثون 	 number 
+ this 	 هذا / هذه 	 pronoun 
+ thorax ; chest ; pectus 	 صدر 	 anatomy 
+ those 	 أولئك / هذه 	 pronoun 
+ thousand ; one thousand ; 1000 ; M ; K ; chiliad ; G ; grand ; thou ; yard 	 ألف 	 number 
+ thousand ; one thousand ; 1000 ; m ; k 	 ألف 	 number 
+ three ; 3 ; iii 	 ثلاثة 	 number 
+ throat ; pharynx 	 بلعوم 	 anatomy 
+ throw 	 رمى 	 verb 
+ throw 	 طرح، إلقاء، رمي 	 sports 
+ thumb ; pollex 	 إبهام 	 anatomy 
+ ticket 	 بطاقة مخالفه 	 object 
+ ticket 	 تذكرة 	 object 
+ tight 	 محكم 	 adjective 
+ time period ; period of time ; period 	 فتره 	 time 
+ tired 	 متعب 	 adjective 
+ title 	 عنوان 	 society 
+ to 	 إلى 	 preposition 
+ today 	 اليوم 	 adverb 
+ toe 	 إبهام الرجل 	 anatomy 
+ together 	 معاً 	 adverb 
+ toilet ; lavatory ; lav ; can ; john ; privy ; bathroom 	 مرحاض 	 house 
+ tomato 	 طماطم 	 food 
+ tomato ; love apple ; tomato plant ; Lycopersicon esculentum 	 طماطم ؛ بندورة 	 food 
+ tomorrow 	 غد 	 time 
+ tomorrow 	 غداً 	 adverb 
+ tongue ; lingua ; glossa ; clapper 	 لسان 	 anatomy 
+ tonight ; this evening ; this night 	 الليلة (al-léila) 	 adverb 
+ tooth 	 سن 	 anatomy 
+ topographic point ; place ; spot 	 موقع 	 abstract 
+ torso ; trunk ; body 	 جسم ; جسد 	 anatomy 
+ touch ; touching 	 لمس 	 abstract 
+ town 	 مدينة 	 society 
+ trace ; draw ; line ; describe ; delineate 	 يرسم 	 verb 
+ track ; rail ; rails ; runway 	 سكة ; سكة حديدية 	 transport 
+ trade 	 تجارة 	 business 
+ trade ; merchandise 	 تاجر 	 verb 
+ train ; develop ; prepare ; educate 	 درب 	 verb 
+ train ; railroad train 	 قطار 	 transport 
+ training ; preparation ; grooming 	 تدريب 	 abstract 
+ transport ; carry 	 النقل 	 verb 
+ transport ; send ; ship 	 نقل 	 verb 
+ transportation ; shipping ; transport 	 نقل 	 transport 
+ travel ; go ; move ; locomote 	 ذهب 	 verb 
+ treat ; care for 	 يعالِج 	 verb 
+ treatment ; handling 	 تدبير 	 abstract 
+ tree 	 شجرة 	 house 
+ tremble ; shiver ; shake 	 اهتزاز 	 abstract 
+ trick 	 خدعة 	 abstract 
+ trouble ; problem 	 صعوبة 	 abstract 
+ true 	 حقيقي 	 adjective 
+ truly ; genuinely ; really 	 في الحقيقه، في الواقِع 	 adverb 
+ truthful ; true 	 صحيح 	 adjective 
+ try ; seek ; attempt ; essay ; assay 	 حاول 	 verb 
+ turn 	 التف 	 verb 
+ twenty ; 20 ; xx 	 عشرون 	 number 
+ two ; 2 ; ii 	 اثنان 	 number 
+ type 	 نوع، طِراز، نموذج 	 abstract 
+ ugly 	 قبيح 	 adjective 
+ understand 	 يفهم 	 verb 
+ undertaking ; project ; task ; labor 	 واجب 	 abstract 
+ union 	 نِقابه، منظمة 	 society 
+ unit of measurement ; unit 	 وحدة 	 mathematics 
+ university 	 الجامعة 	 city 
+ university 	 جامِعه 	 education 
+ university 	 جامِعَة'جامعة (já:miʕa) (f) 	 city 
+ unlike ; dissimilar ; different 	 مختلف 	 adjective 
+ unmarried ; single 	 مفرد 	 adjective 
+ until 	 حتى 	 conjunction 
+ unusual 	 غير عادي 	 adjective 
+ unwrap ; disclose ; let on ; bring out ; reveal ; discover ; expose ; divulge ; break ; give away ; let out 	 يظهِر، يفشي، يكشِف 	 verb 
+ up ; upwards ; upward ; upwardly 	 فوق 	 adverb 
+ us 	 ـنا 	 pronoun 
+ use ; usage ; utilization ; utilisation ; employment ; exercise 	 استخدام 	 linguistics 
+ use ; utilize ; utilise ; apply ; employ 	 استخدم 	 verb 
+ user 	 المستعمل 	 society 
+ vacation ; holiday 	 عطلة 	 travelling 
+ value 	 قيمة 	 art 
+ very ; really ; real ; rattling 	 جداً 	 adverb 
+ village ; hamlet 	 قرية 	 society 
+ village ; small town ; settlement 	 قرية 	 society 
+ violent 	 عنيف 	 adjective 
+ visit 	 زيارة 	 abstract 
+ visit ; see 	 يزور 	 verb 
+ vogue ; trend ; style 	 زي، موضه 	 abstract 
+ voice ; vocalization ; vocalisation ; vocalism ; phonation ; vox 	 صوت 	 communication 
+ volition ; will 	 إرادة 	 abstract 
+ wages ; reward ; payoff 	 مكافأة 	 society 
+ wait ; hold off ; hold back 	 ينتظِر 	 verb 
+ walk 	 مشى 	 verb 
+ wall 	 جدار 	 house 
+ war ; state of war 	 حرب 	 society 
+ warm 	 دافئ 	 adjective 
+ warm 	 سخن 	 verb 
+ wash ; launder 	 غسل 	 verb 
+ waste ; waste material ; waste matter ; waste product 	 قمامة 	 material 
+ watch ; ticker 	 ساعة 	 object 
+ watch ; view ; see ; catch ; take in 	 شاهد 	 verb 
+ water ; H2O 	 ماء 	 material 
+ wave ; moving ridge 	 موجة 	 nature 
+ we 	 نحن 	 pronoun 
+ wear 	 البِلى بالإستِعمال العادي 	 abstract 
+ wear ; have on 	 يلبِس، يرتدي 	 verb 
+ weather ; weather condition ; conditions ; atmospheric condition 	 طقس 	 nature 
+ wedding ; wedding ceremony ; nuptials ; hymeneals 	 زواج (zawá:j) (m) 	 family 
+ week ; calendar week 	 أسبوع 	 time 
+ weekend 	 نهاية الأسبوع 	 time 
+ weigh 	 وزن (wázana) 	 verb 
+ weight 	 وزن 	 physics 
+ well 	 بئر 	 object 
+ well ; good 	 جيداً 	 adverb 
+ west 	 غربي 	 adjective 
+ west ; due west ; westward ; W 	 غرب 	 logistics 
+ wet 	 بلل 	 verb 
+ wet 	 رطب 	 adjective 
+ what 	 ماذا / ما 	 pronoun 
+ wheel 	 عجلة 	 object 
+ when 	 متى 	 pronoun 
+ whenever 	 كلما 	 conjunction 
+ whether 	 إما 	 conjunction 
+ which 	 أي 	 pronoun 
+ while ; piece ; spell ; patch 	 فترة 	 transport 
+ whip 	 سوط 	 object 
+ white 	 أبيض 	 adjective 
+ who 	 مَن 	 pronoun 
+ whole 	 كامِل، تام 	 adjective 
+ whole 	 وحده كامِله 	 abstract 
+ whom 	 الذي 	 pronoun 
+ whose 	 لمن 	 pronoun 
+ wide ; broad 	 عريض 	 adjective 
+ wife ; married woman 	 زوجة 	 family 
+ will 	 إرادة 	 society 
+ will ; testament 	 وصية 	 society 
+ win 	 الفوز 	 sports 
+ win 	 ربح 	 verb 
+ wind ; air current ; current of air 	 ريح ; رياح 	 nature 
+ wind ; wrap ; roll ; twine 	 لف 	 verb 
+ window 	 نافذة 	 house 
+ wine ; vino 	 نبيذ 	 food 
+ wing 	 جناح 	 anatomy 
+ winter ; wintertime 	 شتاء 	 nature 
+ wire 	 سلك 	 object 
+ wise 	 حكيم 	 adjective 
+ wish 	 يرغب، يتمنى 	 verb 
+ wish ; wishing ; want 	 رغبة 	 abstract 
+ with 	 مع 	 preposition 
+ without 	 بدون 	 preposition 
+ woman ; adult female 	 امرأة 	 family 
+ wood 	 خشب 	 material 
+ wool 	 صوف 	 material 
+ word 	 كلمة 	 linguistics 
+ work 	 عمل 	 abstract 
+ work ; piece of work 	 عمل 	 abstract 
+ worker 	 عامل 	 profession 
+ world 	 عالم 	 nature 
+ write 	 كتب 	 verb 
+ writer ; author 	 كاتب ؛ مؤلف 	 profession 
+ writing 	 كتابة 	 linguistics 
+ year ; twelvemonth ; yr 	 سنة 	 time 
+ yellow ; yellowish ; xanthous 	 أصفر 	 color 
+ yes 	 نعم 	 abstract 
+ you 	 أنتَ / أنتِ 	 pronoun 
+ young ; immature 	 شاب 	 adjective 
+ your 	 ـك 	 pronoun 
+ yourself 	 نفسك 	 pronoun 
