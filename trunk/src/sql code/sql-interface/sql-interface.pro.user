@@ -48,7 +48,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <value key="QtVersionId" type="int" >0</value>
    <value key="addQDumper" type="" ></value>
-   <value key="buildDirectory" type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface</value>
+   <value key="buildDirectory" type="QString" >F:\Documents\aub\Courses\eece 499\Arabic Text Mining\trunk\src\sql code\sql-interface</value>
    <value key="clearSystemEnvironment" type="bool" >false</value>
    <valuelist key="userEnvironmentChanges" type="QVariantList" />
   </valuemap>
@@ -114,7 +114,7 @@
     <value type="QString" >-r</value>
    </valuelist>
    <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/qt/bin/qmake.exe</value>
-   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.enabled" type="bool" >false</value>
    <value key="abstractProcess.workingDirectory" type="QString" >F:/Documents/aub/Courses/eece 499/Arabic Text Mining/trunk/src/sql code/sql-interface</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
