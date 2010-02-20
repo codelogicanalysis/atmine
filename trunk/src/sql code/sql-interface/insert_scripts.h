@@ -3,7 +3,6 @@
 
 #include "sql-interface.h"
 #include "utilities.h"
-#include "trie.h"
 
 //utility function for insert scripts used in insert_propernames() and insert_placenames()
 int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QString description="Proper noun")
@@ -403,35 +402,6 @@ int insert_placenames() //not yet complete
 			}
 		}
 	}
-	return 0;
-}
-
-//starting point
-int start(QString input_str, QString &output_str, QString &error_str)
-{
-
-	out.setString(&output_str);
-	out.setCodec("utf-8");
-	in.setString(&input_str);
-	in.setCodec("utf-8");
-	displayed_error.setString(&error_str);
-	displayed_error.setCodec("utf-8");
-	/*if (insert_buckwalter()<0)//generate_all_prefixes()
-		return -1;
-	if (insert_propernames()<0)
-		return -1;
-	if (insert_placenames()<0)
-		return -1;*/
-	QString word;
-	in >>word;
-	out << removeLastDiacritic(word)/*.to_string().data()*/<<"\n";
-	/*for (int i=0;i<word.length();i++)
-		out<<((bitset<16>((int)word[word.length()-i-1].toAscii())).to_string().data());
-	out <<"\n";
-	for (int i=0;i<word.length();i++)
-		out<<(int)word[word.length()-i-1].unicode();
-	out<<"\n"<<bitset_to_string(string_to_bitset(word))<<"\n";*/
-	//display_table("stem_category");
 	return 0;
 }
 

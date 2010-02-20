@@ -1,7 +1,7 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include "sql-interface.h"
+//#include "sql-interface.h"
 
 //constantletters
 const QChar ya2=QChar(0x064A);

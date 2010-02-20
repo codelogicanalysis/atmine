@@ -2,13 +2,13 @@
 #define TRIE_H
 
 #include "sql-interface.h"
-
-
+#include "tree.h"
+/*
 typedef struct node_
 {
 
 } node;
-
+*/
 
 node * add_to_trie(item_types type, QString content, node * current)
 {
