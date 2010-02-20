@@ -1,5 +1,5 @@
 SOURCES += mainwindow.cpp
-INCLUDEPATH += /usr/include/qt4/QtSql
+INCLUDEPATH += C:/Qt/2009.04/qt/include/QtSql C:/Qt/2009.04/qt/include/Qt
 CONFIG += qt
 
 # debug

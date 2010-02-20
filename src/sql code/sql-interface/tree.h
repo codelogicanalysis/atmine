@@ -107,6 +107,10 @@ public:
 	{
 		base= new letter_node('\0');
 	}
+	node* getFirstNode()
+	{
+		return base;
+	}
 	void sample()
 	{
 		letter_node * A0=new letter_node('A');
@@ -164,7 +168,59 @@ public:
 	node* addElement(QString letters,long category_id, long resulting_category_id,node * current)
 	{
 		//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
-
+		if (current->isLetterNode() && current!=base)
+		{
+			error << "Unexpected Error: provided node was a letter node and not a result one\n";
+			return NULL;
+		}
+		QChar current_letter;
+		QList<node *> current_children;
+		int i,j;
+		if (letters.count()==0)
+		{
+			current_letter='\0';
+			if (current==base)
+				goto result;
+		}
+		else
+			current_letter=letters[0];
+		current_children=current->getChildren();
+		i=0;
+		do
+		{
+			int num_children=current_children.count();
+			for (j=0;j<num_children;j++)
+			{
+				if (current_children[j]->isLetterNode())
+					if (((letter_node*)current_children[j])->getLetter()==current_letter)
+					{
+						current=current_children[j];
+						current_children=current->getChildren();
+						i++;
+						current_letter=letters[i];
+						break;
+					}
+			}
+			if (j>=num_children)//old num_children is required in case previous if statement was successful
+				break;
+		}while(i<letters.count());
+		if (letters.count()==0 && i==0)
+		{
+			//add null letter
+			letter_node* new_node=new letter_node('\0');
+			current->addChild(new_node);
+			current=new_node;
+		}
+		for (;i<letters.count();i++)
+		{
+			//add necessary letters
+			letter_node* new_node=new letter_node(letters[i]);
+			current->addChild(new_node);
+			current=new_node;
+		}
+result:	result_node * result=new result_node(category_id,resulting_category_id);
+		current->addChild(result);
+		current=result;
 		return current;
 		//post-condition: returns node of resulting category reached after addition
 	}
@@ -172,7 +228,7 @@ public:
 	{
 		print_tree_helper(base,0);
 	}
-        void traverse_text(QString original_word, int starting_position,bool * on_match(...))
+	void traverse_text(QString original_word, int starting_position,bool * on_match(...))
 	{
             //traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match(original_word,new_position,...)
             //if on_match() returns true continue, else stop
