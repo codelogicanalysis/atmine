@@ -562,6 +562,7 @@ inline long insert_category(QString name, item_types type, bitset<max_sources> s
 inline long insert_category(QString name, item_types type, int source_id, bool isAbstract=false)//returns its id if already present
 {
 	bitset<max_sources> sources;
+	sources.reset();
 	int bit_index=get_bitindex(source_id,source_ids);
 	if (bit_index>=0 && bit_index<max_sources)
 	{
@@ -609,6 +610,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	long category_id =getID("category",category, QString("type=%1").arg((int)(type)));
 	long long description_id=getID("description",description,QString("type=%1").arg((int)(type)));
 	//update sources of category or insert it altogether if not there
+	//bool new_category=false;
 	if (category_id==-1)
 	{
 		int bit_index=get_bitindex(source_id,source_ids);
@@ -623,6 +625,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 			return -1;
 		if (warn_about_automatic_insertion)
 			warning << QString("New %2 Category Automatically inserted: '%1'").arg(category).arg(table.toUpper())<<"\n";
+		//new_category=true;
 	}
 	else
 	{
@@ -685,7 +688,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
 		for (int i=0; i<abstract_ids.count();i++)
 			abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
-		if (sources!=INVALID_BITSET || abstract_categories!=INVALID_BITSET) //assumed to mean row was modified
+		if (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/) //assumed to mean row was modified
 		{
 			if (type==STEM)
 			{
@@ -868,7 +871,7 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 	if (query.next()) //already present
 	{
 		bool ok;
-		long old_result_id=query.value(0).toLongLong(&ok);
+		long old_result_id=query.value(0).toULongLong(&ok);
 		if (query.isNull(0))
 			old_result_id=-1;
 		if (old_result_id==result_id)
@@ -950,10 +953,10 @@ private:
 	item_types type;
 	long long id;
 	QString name;
-	inline bool retrieve_internal(long category_id) //returns just a category but can contain redundancy
+	inline bool retrieve_internal(long &category_id) //returns just a category but can contain redundancy
 	{
 		bool ok;
-		category_id =query.value(1).toLongLong(&ok); //1=category_id
+		category_id =query.value(1).toULongLong(&ok); //1=category_id
 		if (!ok)
 		{
 			error << "Unexpected Error: Non-integer category_id's\n";
@@ -963,7 +966,7 @@ private:
 	}
 	inline bool retrieve_internal(all_item_info &info)
 	{
-#define toLL() toLongLong(&ok); if (!ok) { error << "Unexpected Error: Non-integer field\n"; return false; }
+#define toLL() toULongLong(&ok); if (!ok) { error << "Unexpected Error: Non-integer field\n"; return false; }
 
 
 		bool ok;
@@ -1121,7 +1124,7 @@ public:
 		if (type==STEM)
 		{
 			bool ok;
-			long long grammar_stem_id= getColumn("stem","grammar_stem_id",id).toLongLong(&ok);
+			long long grammar_stem_id= getColumn("stem","grammar_stem_id",id).toULongLong(&ok);
 			if (!ok)
 			{
 				error << "Non-integer Grammar Stem ID\n";
@@ -1152,10 +1155,10 @@ private:
 	QSqlQuery query;
 	item_types type;
 	bool err;
-	inline bool retrieve_internal(long long item_id)
+	inline bool retrieve_internal(long long &item_id)
 	{
 		bool ok;
-		item_id =query.value(0).toLongLong(&ok);
+		item_id =query.value(0).toULongLong(&ok);
 		if (!ok)
 		{
 			error << "Unexpected Error: Non-integer item_id's\n";
@@ -1209,17 +1212,17 @@ private:
 	inline bool retrieve_internal(long &category2, long &resulting_category)
 	{
 		bool ok;
-		category2 =query.value(0).toLongLong(&ok);
+		category2 =query.value(0).toULongLong(&ok);
 		if (!ok)
 		{
 			error << "Unexpected Error: Non-integer category_id's\n";
 			return false;
 		}
-		if (query.value(2).isNull())
+		if (query.value(1).isNull())
 			resulting_category=-1;
 		else
 		{
-			resulting_category=query.value(2).toLongLong(&ok);
+			resulting_category=query.value(1).toULongLong(&ok);
 			if (!ok)
 			{
 				error << "Unexpected Error: Non-integer category_id's\n";
@@ -1294,7 +1297,7 @@ inline bool areCompatible(rules rule,long category1,long category2, long& result
 		long result_id;
 		if (rule==AA || rule==CC)
 		{
-			result_id=resulting.toLongLong(&ok);
+			result_id=resulting.toULongLong(&ok);
 			if (ok && existsID("category",result_id,QString("type=%1").arg((rule==AA?(int)PREFIX:(int)SUFFIX))))
 				resulting_category=result_id;
 			else

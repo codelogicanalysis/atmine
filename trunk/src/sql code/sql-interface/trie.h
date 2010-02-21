@@ -37,7 +37,7 @@ int generate_all_prefixes()
 	QSqlQuery query(db);
 	QString stmt("SELECT id, name FROM prefix");
 	QString name;
-	long prefix_id1;
+	unsigned long prefix_id1;
 	bool ok;
 	node * first_node=sample_tree->getFirstNode();
 	if (!execute_query(stmt,query))

@@ -48,7 +48,7 @@
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <value key="QtVersionId" type="int" >0</value>
    <value key="addQDumper" type="" ></value>
-   <value key="buildDirectory" type="QString" >F:\Documents\aub\Courses\eece 499\Arabic Text Mining\trunk\src\sql code\sql-interface</value>
+   <value key="buildDirectory" type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface</value>
    <value key="clearSystemEnvironment" type="bool" >false</value>
    <valuelist key="userEnvironmentChanges" type="QVariantList" />
   </valuemap>
@@ -66,56 +66,47 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
-    <value type="QString" >APPDATA=C:\Users\Jad Makhlouta\AppData\Roaming</value>
-    <value type="QString" >AVANTD_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
-    <value type="QString" >COMPUTERNAME=JADMAKHLOUTA-PC</value>
-    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
-    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
-    <value type="QString" >HOMEDRIVE=C:</value>
-    <value type="QString" >HOMEPATH=\Users\Jad Makhlouta</value>
-    <value type="QString" >INCLUDE=C:\Program Files\Microsoft Visual Studio\VC98\atl\include;C:\Program Files\Microsoft Visual Studio\VC98\mfc\include;C:\Program Files\Microsoft Visual Studio\VC98\include</value>
-    <value type="QString" >INSTALLDIR=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >INSTALLDIR_2003_03=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >LIB=C:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;C:\Program Files\Microsoft Visual Studio\VC98\lib</value>
-    <value type="QString" >LM_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >LOCALAPPDATA=C:\Users\Jad Makhlouta\AppData\Local</value>
-    <value type="QString" >LOGONSERVER=\\JADMAKHLOUTA-PC</value>
-    <value type="QString" >MSDEVDIR=C:\Program Files\Microsoft Visual Studio\Common\MSDev98</value>
-    <value type="QString" >NUMBER_OF_PROCESSORS=2</value>
-    <value type="QString" >OS=Windows_NT</value>
-    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\Mendeley Desktop;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\TortoiseSVN\bin;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\perl\bin\;C:\Sun\SDK\jdk\bin\;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\PROGRAM FILES\Bellcore\xSuds\bin;C:\Program Files\Microsoft Visual Studio\Common\Tools\WinNT;C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin;C:\Program Files\Microsoft Visual Studio\Common\Tools;C:\Program Files\Microsoft Visual Studio\VC98\bin;C:\Sun\SDK\bin</value>
-    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
-    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
-    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 6, GenuineIntel</value>
-    <value type="QString" >PROCESSOR_LEVEL=6</value>
-    <value type="QString" >PROCESSOR_REVISION=0f06</value>
-    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
-    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
-    <value type="QString" >PSMODULEPATH=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\</value>
-    <value type="QString" >PUBLIC=C:\Users\Public</value>
-    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
-    <value type="QString" >SESSIONNAME=Console</value>
-    <value type="QString" >SYSTEMDRIVE=C:</value>
-    <value type="QString" >SYSTEMROOT=C:\Windows</value>
-    <value type="QString" >TEMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >TFS_DIR=C:\Program Files\ThinkVantage Fingerprint Software\</value>
-    <value type="QString" >TMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >USERDOMAIN=JadMakhlouta-PC</value>
-    <value type="QString" >USERNAME=Jad Makhlouta</value>
-    <value type="QString" >USERPROFILE=C:\Users\Jad Makhlouta</value>
-    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-CP84J7G3HA,guid=928f39bc25bd173a1f86be814b813dd5</value>
+    <value type="QString" >DESKTOP_SESSION=default</value>
+    <value type="QString" >DESKTOP_STARTUP_ID=</value>
+    <value type="QString" >DISPLAY=:0.0</value>
+    <value type="QString" >GDMSESSION=default</value>
+    <value type="QString" >GDM_LANG=en_US.UTF-8</value>
+    <value type="QString" >GDM_XSERVER_LOCATION=local</value>
+    <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
+    <value type="QString" >GNOME_KEYRING_PID=5941</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-MPimxd/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-NY0gRc/S.gpg-agent:6029:1</value>
+    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
+    <value type="QString" >HOME=/home/jad</value>
+    <value type="QString" >LANG=en_US.UTF-8</value>
+    <value type="QString" >LD_LIBRARY_PATH=/opt/qtsdk-2009.04/lib/qtcreator::/home/jad/Desktop/Downloads/ns-allinone-2.34/otcl-1.13:/home/jad/Desktop/Downloads/ns-allinone-2.34/lib</value>
+    <value type="QString" >LOGNAME=jad</value>
+    <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-jad</value>
+    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
+    <value type="QString" >PWD=/home/jad</value>
+    <value type="QString" >QTDIR=/usr</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5952</value>
+    <value type="QString" >SHELL=/bin/bash</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-MPimxd/ssh</value>
+    <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
+    <value type="QString" >USER=jad</value>
+    <value type="QString" >USERNAME=jad</value>
+    <value type="QString" >WINDOWPATH=7</value>
+    <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
+    <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1266761172.161524-1874437799</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >F:/Documents/aub/Courses/eece 499/Arabic Text Mining/trunk/src/sql code/sql-interface/sql-interface.pro</value>
+    <value type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface/sql-interface.pro</value>
     <value type="QString" >-spec</value>
-    <value type="QString" >win32-g++</value>
+    <value type="QString" >/usr/share/qt4/mkspecs/linux-g++</value>
     <value type="QString" >-r</value>
+    <value type="QString" >CONFIG+=debug</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/qt/bin/qmake.exe</value>
+   <value key="abstractProcess.command" type="QString" >/usr/bin/qmake-qt4</value>
    <value key="abstractProcess.enabled" type="bool" >false</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >F:/Documents/aub/Courses/eece 499/Arabic Text Mining/trunk/src/sql code/sql-interface</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface</value>
    <value key="buildConfiguration" type="int" >2</value>
   </valuemap>
  </data>
@@ -124,53 +115,43 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
-    <value type="QString" >APPDATA=C:\Users\Jad Makhlouta\AppData\Roaming</value>
-    <value type="QString" >AVANTD_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
-    <value type="QString" >COMPUTERNAME=JADMAKHLOUTA-PC</value>
-    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
-    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
-    <value type="QString" >HOMEDRIVE=C:</value>
-    <value type="QString" >HOMEPATH=\Users\Jad Makhlouta</value>
-    <value type="QString" >INCLUDE=C:\Program Files\Microsoft Visual Studio\VC98\atl\include;C:\Program Files\Microsoft Visual Studio\VC98\mfc\include;C:\Program Files\Microsoft Visual Studio\VC98\include</value>
-    <value type="QString" >INSTALLDIR=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >INSTALLDIR_2003_03=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >LIB=C:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;C:\Program Files\Microsoft Visual Studio\VC98\lib</value>
-    <value type="QString" >LM_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >LOCALAPPDATA=C:\Users\Jad Makhlouta\AppData\Local</value>
-    <value type="QString" >LOGONSERVER=\\JADMAKHLOUTA-PC</value>
-    <value type="QString" >MSDEVDIR=C:\Program Files\Microsoft Visual Studio\Common\MSDev98</value>
-    <value type="QString" >NUMBER_OF_PROCESSORS=2</value>
-    <value type="QString" >OS=Windows_NT</value>
-    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\Mendeley Desktop;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\TortoiseSVN\bin;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\perl\bin\;C:\Sun\SDK\jdk\bin\;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\PROGRAM FILES\Bellcore\xSuds\bin;C:\Program Files\Microsoft Visual Studio\Common\Tools\WinNT;C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin;C:\Program Files\Microsoft Visual Studio\Common\Tools;C:\Program Files\Microsoft Visual Studio\VC98\bin;C:\Sun\SDK\bin</value>
-    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
-    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
-    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 6, GenuineIntel</value>
-    <value type="QString" >PROCESSOR_LEVEL=6</value>
-    <value type="QString" >PROCESSOR_REVISION=0f06</value>
-    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
-    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
-    <value type="QString" >PSMODULEPATH=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\</value>
-    <value type="QString" >PUBLIC=C:\Users\Public</value>
-    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
-    <value type="QString" >SESSIONNAME=Console</value>
-    <value type="QString" >SYSTEMDRIVE=C:</value>
-    <value type="QString" >SYSTEMROOT=C:\Windows</value>
-    <value type="QString" >TEMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >TFS_DIR=C:\Program Files\ThinkVantage Fingerprint Software\</value>
-    <value type="QString" >TMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >USERDOMAIN=JadMakhlouta-PC</value>
-    <value type="QString" >USERNAME=Jad Makhlouta</value>
-    <value type="QString" >USERPROFILE=C:\Users\Jad Makhlouta</value>
-    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-CP84J7G3HA,guid=928f39bc25bd173a1f86be814b813dd5</value>
+    <value type="QString" >DESKTOP_SESSION=default</value>
+    <value type="QString" >DESKTOP_STARTUP_ID=</value>
+    <value type="QString" >DISPLAY=:0.0</value>
+    <value type="QString" >GDMSESSION=default</value>
+    <value type="QString" >GDM_LANG=en_US.UTF-8</value>
+    <value type="QString" >GDM_XSERVER_LOCATION=local</value>
+    <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
+    <value type="QString" >GNOME_KEYRING_PID=5941</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-MPimxd/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-NY0gRc/S.gpg-agent:6029:1</value>
+    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
+    <value type="QString" >HOME=/home/jad</value>
+    <value type="QString" >LANG=en_US.UTF-8</value>
+    <value type="QString" >LD_LIBRARY_PATH=/opt/qtsdk-2009.04/lib/qtcreator::/home/jad/Desktop/Downloads/ns-allinone-2.34/otcl-1.13:/home/jad/Desktop/Downloads/ns-allinone-2.34/lib</value>
+    <value type="QString" >LOGNAME=jad</value>
+    <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-jad</value>
+    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
+    <value type="QString" >PWD=/home/jad</value>
+    <value type="QString" >QTDIR=/usr</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5952</value>
+    <value type="QString" >SHELL=/bin/bash</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-MPimxd/ssh</value>
+    <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
+    <value type="QString" >USER=jad</value>
+    <value type="QString" >USERNAME=jad</value>
+    <value type="QString" >WINDOWPATH=7</value>
+    <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
+    <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1266761172.161524-1874437799</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >-w</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.command" type="QString" >/usr/bin/make</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >F:/Documents/aub/Courses/eece 499/Arabic Text Mining/trunk/src/sql code/sql-interface</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface</value>
   </valuemap>
  </data>
  <data>
@@ -178,54 +159,44 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
-    <value type="QString" >APPDATA=C:\Users\Jad Makhlouta\AppData\Roaming</value>
-    <value type="QString" >AVANTD_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
-    <value type="QString" >COMPUTERNAME=JADMAKHLOUTA-PC</value>
-    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
-    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
-    <value type="QString" >HOMEDRIVE=C:</value>
-    <value type="QString" >HOMEPATH=\Users\Jad Makhlouta</value>
-    <value type="QString" >INCLUDE=C:\Program Files\Microsoft Visual Studio\VC98\atl\include;C:\Program Files\Microsoft Visual Studio\VC98\mfc\include;C:\Program Files\Microsoft Visual Studio\VC98\include</value>
-    <value type="QString" >INSTALLDIR=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >INSTALLDIR_2003_03=C:\synopsys\Hspice2003.03</value>
-    <value type="QString" >LIB=C:\Program Files\Microsoft Visual Studio\VC98\mfc\lib;C:\Program Files\Microsoft Visual Studio\VC98\lib</value>
-    <value type="QString" >LM_LICENSE_FILE=C:\synopsys\Hspice2003.03\license.dat</value>
-    <value type="QString" >LOCALAPPDATA=C:\Users\Jad Makhlouta\AppData\Local</value>
-    <value type="QString" >LOGONSERVER=\\JADMAKHLOUTA-PC</value>
-    <value type="QString" >MSDEVDIR=C:\Program Files\Microsoft Visual Studio\Common\MSDev98</value>
-    <value type="QString" >NUMBER_OF_PROCESSORS=2</value>
-    <value type="QString" >OS=Windows_NT</value>
-    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\Mendeley Desktop;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\TortoiseSVN\bin;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\perl\bin\;C:\Sun\SDK\jdk\bin\;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\PROGRAM FILES\Bellcore\xSuds\bin;C:\Program Files\Microsoft Visual Studio\Common\Tools\WinNT;C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Bin;C:\Program Files\Microsoft Visual Studio\Common\Tools;C:\Program Files\Microsoft Visual Studio\VC98\bin;C:\Sun\SDK\bin</value>
-    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
-    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
-    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 6, GenuineIntel</value>
-    <value type="QString" >PROCESSOR_LEVEL=6</value>
-    <value type="QString" >PROCESSOR_REVISION=0f06</value>
-    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
-    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
-    <value type="QString" >PSMODULEPATH=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\</value>
-    <value type="QString" >PUBLIC=C:\Users\Public</value>
-    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
-    <value type="QString" >SESSIONNAME=Console</value>
-    <value type="QString" >SYSTEMDRIVE=C:</value>
-    <value type="QString" >SYSTEMROOT=C:\Windows</value>
-    <value type="QString" >TEMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >TFS_DIR=C:\Program Files\ThinkVantage Fingerprint Software\</value>
-    <value type="QString" >TMP=C:\Users\JADMAK~1\AppData\Local\Temp</value>
-    <value type="QString" >USERDOMAIN=JadMakhlouta-PC</value>
-    <value type="QString" >USERNAME=Jad Makhlouta</value>
-    <value type="QString" >USERPROFILE=C:\Users\Jad Makhlouta</value>
-    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-CP84J7G3HA,guid=928f39bc25bd173a1f86be814b813dd5</value>
+    <value type="QString" >DESKTOP_SESSION=default</value>
+    <value type="QString" >DESKTOP_STARTUP_ID=</value>
+    <value type="QString" >DISPLAY=:0.0</value>
+    <value type="QString" >GDMSESSION=default</value>
+    <value type="QString" >GDM_LANG=en_US.UTF-8</value>
+    <value type="QString" >GDM_XSERVER_LOCATION=local</value>
+    <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
+    <value type="QString" >GNOME_KEYRING_PID=5941</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-MPimxd/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-NY0gRc/S.gpg-agent:6029:1</value>
+    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
+    <value type="QString" >HOME=/home/jad</value>
+    <value type="QString" >LANG=en_US.UTF-8</value>
+    <value type="QString" >LD_LIBRARY_PATH=/opt/qtsdk-2009.04/lib/qtcreator::/home/jad/Desktop/Downloads/ns-allinone-2.34/otcl-1.13:/home/jad/Desktop/Downloads/ns-allinone-2.34/lib</value>
+    <value type="QString" >LOGNAME=jad</value>
+    <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-jad</value>
+    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
+    <value type="QString" >PWD=/home/jad</value>
+    <value type="QString" >QTDIR=/usr</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5952</value>
+    <value type="QString" >SHELL=/bin/bash</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-MPimxd/ssh</value>
+    <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
+    <value type="QString" >USER=jad</value>
+    <value type="QString" >USERNAME=jad</value>
+    <value type="QString" >WINDOWPATH=7</value>
+    <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
+    <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1266761172.161524-1874437799</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >clean</value>
     <value type="QString" >-w</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.command" type="QString" >/usr/bin/make</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >F:/Documents/aub/Courses/eece 499/Arabic Text Mining/trunk/src/sql code/sql-interface</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >/home/jad/Desktop/tools/trunk/src/sql code/sql-interface</value>
   </valuemap>
  </data>
  <data>
