@@ -4,6 +4,7 @@
 #include <QList>
 #include <QChar>
 #include <QString>
+#include "sql-interface.h"
 
 class node
 {
@@ -84,7 +85,7 @@ class result_node:public node
 		}
 		QString to_string()
 		{
-			return QString("-").append(QString("%1").arg(previous_category_id)).append(">[").append(QString("%1").arg(resulting_category_id)).append("]");
+			return QString("-").append(QString("%1").arg(getColumn("category","name",previous_category_id))).append(">[").append(QString("%1").arg(getColumn("category","name",resulting_category_id))).append("]");
 		}
 };
 
