@@ -4,7 +4,6 @@
 //#include "insert_scripts.h"
 #include "sql-interface.h"
 #include "tree.h"
-#include "trie.h"
 
 //starting point
 int start(QString input_str, QString &output_str, QString &error_str)
@@ -61,7 +60,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	out<<"-----------------------------------------------\n";
 	sample_tree->addElement(word,10,30);
 	sample_tree->print_tree();*/
-	generate_all_prefixes();
+	tree* sample_tree=new tree();
+	sample_tree->build_affix_tree(PREFIX);
 	sample_tree->print_tree();
 	return 0;
 }
