@@ -130,7 +130,7 @@ private:
 			for(int i=0;i<list.count();i++)
 					print_tree_helper(list.at(i),level+1);
 	}
-	int build_helper(item_types type,long cat_id1, int size,node * current)
+	int build_helper(item_types type, long cat_id1, int size, node * current)
 	{
 		if (size<=0)
 			return 0;
@@ -149,11 +149,11 @@ private:
 		}
 		return 0;
 	}
-	node* addElement(QString letters,long category_id, long resulting_category_id)
+	node* addElement(QString letters, long category_id, long resulting_category_id)
 	{
 		return addElement(letters,category_id, resulting_category_id,base);
 	}
-	node* addElement(QString letters,long category_id, long resulting_category_id,node * current)
+	node* addElement(QString letters, long category_id, long resulting_category_id,node * current)
 	{
 		//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
 		if (current->isLetterNode() && current!=base)
