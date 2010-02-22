@@ -216,11 +216,14 @@ result:	result_node * result=new result_node(category_id,resulting_category_id);
 		//post-condition: returns node of resulting category reached after addition
 	}
 
-	virtual bool on_match_helper(int match_pos,QList<long> cats) //useless here nedded just for purpose of TreeSearch
+	virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_cat_id) //nedded just for purpose of TreeSearch
 	{
-		out<<match_pos<<"\n";
+		for (int i=0;i<positions.length();i++)
+			out<<positions[i]<<" ";
+		out <<"\n";
 		return true;
 	}
+	//note that parameters here are: positions of internal breaks in the affix, categories for each subpart, and resulting category of whole affix
 public:
 	tree()
 	{
@@ -344,9 +347,9 @@ public:
 	}
 	void traverse_text(QString original_word, int starting_position)
 	{
-			//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match_helper'
-			//if on_match_helper() returns true continue, else stop
-		}
+		//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match_helper'
+		//if on_match_helper() returns true continue, else stop
+	}
 	virtual ~tree()
 	{
 		reset();

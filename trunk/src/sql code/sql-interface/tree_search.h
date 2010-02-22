@@ -8,15 +8,18 @@ class TreeSearch: public tree
 	protected:
 		int startingPos;
 		QString original_word;
-		int currentMatchPos;
 		int number_of_matches;
-		QList<long> catsOFCurrentMatch;
 
-		virtual bool on_match_helper(int match_pos,QList<long> cats)//match_pos=position of last letter
+		QList<int> sub_positionsOFCurrentMatch;
+		QList<long> catsOFCurrentMatch;
+		long resulting_category_idOFCurrentMatch;
+
+		virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_category_idOFCurrentMatch)
 		{
 			number_of_matches++;
-			currentMatchPos=match_pos;
+			sub_positionsOFCurrentMatch=positions;
 			catsOFCurrentMatch=cats;
+			resulting_category_idOFCurrentMatch=resulting_category_idOFCurrentMatch;
 			return onMatch();
 		}
 	public:
@@ -66,7 +69,7 @@ class SuffixSearch : public TreeSearch
 		}
 		virtual bool onMatch()
 		{
-			//do nothing I think
+			//do nothing I think, since we will not use traverse_text for stem but isAffix() instead
 			return true;
 		}
 };
@@ -94,6 +97,7 @@ class StemSearch /*: public Trie*/
 			SuffixSearch sSrch(original_word,currentMatchPos+1);
 			if (sSrch.isAffix(currentMatchPos+1))
 			{
+				//get additional info from database and then check compatibility
 				//display result somehow or call some function that does this
 			}
 			return true;
@@ -111,7 +115,7 @@ class PrefixSearch : public TreeSearch
 		}
 		virtual bool onMatch()
 		{
-			StemSearch sSrch(original_word,currentMatchPos+1);
+			StemSearch sSrch(original_word,sub_positionsOFCurrentMatch.last()+1);
 			sSrch();
 			return true;
 		}
