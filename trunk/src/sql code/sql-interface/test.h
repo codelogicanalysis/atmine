@@ -4,6 +4,7 @@
 //#include "insert_scripts.h"
 #include "sql-interface.h"
 #include "tree.h"
+#include "tree_search.h"
 
 //starting point
 int start(QString input_str, QString &output_str, QString &error_str)

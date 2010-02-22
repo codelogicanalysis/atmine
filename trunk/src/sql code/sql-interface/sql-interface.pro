@@ -13,4 +13,5 @@ HEADERS += mainwindow.h \
     insert_scripts.h \
     utilities.h \
     tree.h \
-    test.h
+    test.h \
+    tree_search.h
