@@ -215,6 +215,12 @@ result:	result_node * result=new result_node(category_id,resulting_category_id);
 		return current;
 		//post-condition: returns node of resulting category reached after addition
 	}
+
+	virtual bool on_match_helper(int match_pos,QList<long> cats) //useless here nedded just for purpose of TreeSearch
+	{
+		out<<match_pos<<"\n";
+		return true;
+	}
 public:
 	tree()
 	{
@@ -336,12 +342,12 @@ public:
 			<<"result nodes count= "<<result_nodes<<"\n"
 			<<QString().fill('-',40)<<"\n";
 	}
-	void traverse_text(QString original_word, int starting_position,bool * on_match(...))
+	void traverse_text(QString original_word, int starting_position)
 	{
-			//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match(original_word,new_position,...)
-			//if on_match() returns true continue, else stop
+			//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match_helper'
+			//if on_match_helper() returns true continue, else stop
 		}
-	~tree()
+	virtual ~tree()
 	{
 		reset();
 		delete base;
