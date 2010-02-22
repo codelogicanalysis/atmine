@@ -12,19 +12,34 @@ class node
 		QList<node *> children;
 	public:
 		virtual bool isLetterNode()=0;
-		virtual QString to_string()=0;
+		virtual QString to_string(bool isAffix=false)=0;
 		bool hasChildren()
 		{
-			return (children.count()!=0);
+				return (children.count()!=0);
 		}
 		QList<node *> getChildren()
 		{
-			return children;
+				return children;
 		}
 		void addChild(node* child)
 		{
 			children.append(child);
 		}
+		void removeChildren()//just remove references
+		{
+			int length=children.length();
+			for(int i=0;i<length;i++)
+			{
+				children.removeAt(i);
+				//delete children[i];
+			}
+		}
+		virtual ~node()	{}
+		/*{
+			int length=children.length();
+			for(int i=0;i<length;i++)
+				children.removeAt(i);
+		}*/
 };
 class letter_node:public node
 {
@@ -47,10 +62,11 @@ class letter_node:public node
 		{
 			this->letter=letter;
 		}
-		QString to_string()
+		QString to_string(bool isAffix=true)
 		{
 			return QString("--->(").append((letter=='\0'?'$':letter)).append(")");
 		}
+		~letter_node(){	}
 };
 class result_node:public node
 {
@@ -83,10 +99,11 @@ class result_node:public node
 		{
 			resulting_category_id=id;
 		}
-		QString to_string()
+		QString to_string(bool isAffix=true)
 		{
-			return QString("-").append(QString("%1").arg(getColumn("category","name",previous_category_id))).append(">[").append(QString("%1").arg(getColumn("category","name",resulting_category_id))).append("]");
+			return QString("-").append(QString("%1").arg((isAffix?getColumn("category","name",previous_category_id):QString("%1").arg(previous_category_id)))).append(">[").append(QString("%1").arg((isAffix?getColumn("category","name",resulting_category_id):QString("%1").arg(resulting_category_id)))).append("]");
 		}
+		~result_node(){	}
 };
 
 class tree
@@ -94,14 +111,24 @@ class tree
 private:
 	node* base;
 	int letter_nodes, result_nodes;
-
+	bool isAffix;
+	item_types type;
+	void delete_helper(node * current)
+	{
+		QList<node *> children=current->getChildren();
+		node* child;
+		foreach (child,children)
+		{
+			delete_helper(child);
+			delete child;
+		}
+	}
 	void print_tree_helper(node * current_node, int level)
 	{
-		out<<QString().fill(' ',level*7)<<current_node->to_string()<<"\n";
-		QList<node*> list=current_node->getChildren();
-		for(int i=0;i<list.count();i++)
-			print_tree_helper(list.at(i),level+1);
-
+			out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
+			QList<node*> list=current_node->getChildren();
+			for(int i=0;i<list.count();i++)
+					print_tree_helper(list.at(i),level+1);
 	}
 	int build_helper(item_types type,long cat_id1, int size,node * current)
 	{
@@ -194,13 +221,25 @@ public:
 		base= new letter_node('\0');
 		letter_nodes=1;
 		result_nodes=0;
+		isAffix=false;
 	}
+	bool getAffixType(item_types &type)
+		{
+			if (isAffix)
+			{
+				type=this->type;
+				return true;
+			}
+			else
+				return false;
+		}
 	node* getFirstNode()
 	{
 		return base;
 	}
 	void sample()
 	{
+		reset();
 		letter_node * A0=new letter_node('A');
 		letter_node * B0=new letter_node('B');
 		letter_node * C0=new letter_node('C');
@@ -247,10 +286,15 @@ public:
 		C3->addChild(F2);
 		F2->addChild(G2);
 		G2->addChild(rc9_);
-
+		letter_nodes=15;
+		result_nodes=9;
+		isAffix=false;
 	}
 	int build_affix_tree(item_types type)
 	{
+		reset();
+		isAffix=true;
+		this->type=type;
 		QSqlQuery query(db);
 		QString stmt=QString("SELECT id, name FROM %1").arg(interpret_type(type));
 		QString name;
@@ -272,8 +316,20 @@ public:
 		}
 		return 0;
 	}
+	void reset()
+	{
+		delete_helper(base);
+		base->removeChildren();
+		letter_nodes=1;
+		result_nodes=0;
+		isAffix=false;
+	}
 	void print_tree()
 	{
+		if (isAffix)
+			out	<<QString().fill('-',40)<<"\n"
+				<<"\t"<<interpret_type(type)<<" Tree\n"
+				<<QString().fill('-',40)<<"\n";
 		print_tree_helper(base,0);
 		out	<<QString().fill('-',40)<<"\n"
 			<<"letter nodes count= "<<letter_nodes<<"\n"
@@ -282,9 +338,14 @@ public:
 	}
 	void traverse_text(QString original_word, int starting_position,bool * on_match(...))
 	{
-            //traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match(original_word,new_position,...)
-            //if on_match() returns true continue, else stop
-        }
+			//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match(original_word,new_position,...)
+			//if on_match() returns true continue, else stop
+		}
+	~tree()
+	{
+		reset();
+		delete base;
+	}
 };
 
 #endif // TREE_H
