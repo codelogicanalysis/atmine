@@ -3,17 +3,16 @@
 
 #include "tree.h"
 
-class TreeSearch
+class TreeSearch: public tree
 {
-	private:
+	protected:
 		int startingPos;
 		QString original_word;
-		tree * affix_tree;
 		int currentMatchPos;
 		int number_of_matches;
 		QList<long> catsOFCurrentMatch;
 
-		bool on_match_helper(int & match_pos,QList<long> &cats)//match_pos=position of last letter
+		virtual bool on_match_helper(int match_pos,QList<long> cats)//match_pos=position of last letter
 		{
 			number_of_matches++;
 			currentMatchPos=match_pos;
@@ -22,18 +21,17 @@ class TreeSearch
 		}
 	public:
 
-		TreeSearch(item_types type, QString original_word,int position)
+		TreeSearch(item_types type, QString original_word,int position):tree()
 		{
-			affix_tree=new tree();
-			affix_tree->build_affix_tree(type);
-			this->original_word=original_word;
+			build_affix_tree(type);
+			original_word=original_word;
 			startingPos=position;
 			number_of_matches=0;
 		}
 		int operator()()
 		{
 			number_of_matches=0;
-			affix_tree->traverse_text(original_word,startingPos,&on_match_helper);
+			traverse_text(original_word,startingPos);
 			// TODO: also save the category and other info of the current match (access database)
 			return number_of_matches;
 		}
@@ -55,49 +53,7 @@ class TreeSearch
 			//TODO: check if what is left of word is an affix (as a whole)
 			return true;
 		}
-};
-
-class PrefixSearch : public TreeSearch
-{
-	public:
-		//....
-		//i can access the whole data in TreeSearch...
-		PrefixSearch(QString word)
-		{
-			TreeSearch(PREFIX,word,0);
-		}
-		virtual bool onMatch()
-		{
-			StemSearch sSrch(original_word,currentMatchPos+1);
-			sSrch();
-		}
-};
-
-class StemSearch /*: public Trie*/
-{
-	private:
-		int currentMatchPos;
-	public:
-		//....
-		//i can access the whole data in TreeSearch...
-		StemSearch(QString word,int pos)
-		{
-			TreeSearch(PREFIX,word,0);
-		}
-		int operator()()
-		{
-			// TODO: do search also save the category and other info of the current match (access database)
-			onMatch()
-			return 0;
-		}
-		virtual bool onMatch()
-		{
-			SuffixSearch sSrch(original_word,currentMatchPos+1);
-			if (sSrch.isAffix(currentMatchPos+1))
-			{
-				//display result somehow or call some function that does this
-			}
-		}
+		virtual ~TreeSearch() {}
 };
 
 class SuffixSearch : public TreeSearch
@@ -105,13 +61,63 @@ class SuffixSearch : public TreeSearch
 	public:
 		//....
 		//i can access the whole data in TreeSearch...
-		SuffixSearch(QString word, int pos)
+		SuffixSearch(QString word, int pos):TreeSearch(SUFFIX,word,pos)
 		{
-			TreeSearch(Suffix,word,pos);
 		}
 		virtual bool onMatch()
 		{
 			//do nothing I think
+			return true;
 		}
 };
+
+class StemSearch /*: public Trie*/
+{
+	private:
+		QString original_word;
+		int currentMatchPos;
+	public:
+		//....
+		//i can access the whole data in TreeSearch...
+		StemSearch(QString word,int pos)
+		{
+
+		}
+		int operator()()
+		{
+			// TODO: do search also save the category and other info of the current match (access database)
+			onMatch();
+			return 0;
+		}
+		bool onMatch()
+		{
+			SuffixSearch sSrch(original_word,currentMatchPos+1);
+			if (sSrch.isAffix(currentMatchPos+1))
+			{
+				//display result somehow or call some function that does this
+			}
+			return true;
+		}
+};
+
+class PrefixSearch : public TreeSearch
+{
+	public:
+		//....
+		//i can access the whole data in TreeSearch...
+		PrefixSearch(QString word):TreeSearch(PREFIX,word,0)
+		{
+
+		}
+		virtual bool onMatch()
+		{
+			StemSearch sSrch(original_word,currentMatchPos+1);
+			sSrch();
+			return true;
+		}
+};
+
+
+
+
 #endif // TREE_SEARCH_H
