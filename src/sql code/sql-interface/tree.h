@@ -345,11 +345,64 @@ public:
 			<<"result nodes count= "<<result_nodes<<"\n"
 			<<QString().fill('-',40)<<"\n";
 	}
-	void traverse_text(QString original_word, int starting_position)
-	{
-		//traverse according to 'original_word' starting from 'starting_position' and when a match is reached calls 'on_match_helper'
-		//if on_match_helper() returns true continue, else stop
-	}
+
+        void traverse_text(QString original_word,int position)
+        {
+            queue.enqueue(base);
+            QList <int>partitions;
+            QList <long>categories;
+            recur(original_word, position,partitions,categories);
+
+
+        }
+        void recur(node* current_node,QString original_word, int position, QList  <int> partitions, QList <long> categories)
+        {
+            if (queue.isEmpty())
+                return;
+
+            QList<node *> current_children=current_node->getChildren();
+            QChar current_letter=original_word[position];
+
+            int num_children=current_children.count();
+
+            for (int j=0;j<num_children;j++)
+            {
+                    node *current_child=current_children[j];
+
+                    if (current_child->isLetterNode())
+                        {
+                        if(((letter_node*)current_child)->getLetter()==current_letter)
+                            {
+                            queue.enqueue(current_child);
+                            position=position+1;
+                            }
+                        }
+                    else
+                        {
+                        partitions.append(position+1);
+                        categories.append(current_child->previous_category_id);
+
+                        if (!(on_match(partitions,categories,((result_node *)current_child)->resulting_category_id)))
+                            break;//do smthg else
+                        else
+                            {
+                            QList<letter_node *> result_node_children=current_node->getChildren();
+                            int num_result_children=result_node_children.count();
+                            for (int j=0;j<num_result_children;j++)
+                                queue.enqueue(result_node_children[j]);
+                            }
+                         }
+            }
+            letter_node * next_node=queue.dequeue();
+            queue_count=queue.count();
+
+            for (int j=0;j<queue_count;j++)
+                recur(next_node,original_word,position,partitions,categories);
+
+        }
+
+
+
 	virtual ~tree()
 	{
 		reset();
