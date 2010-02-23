@@ -51,7 +51,7 @@ class TreeSearch: public tree
 			return catsOFCurrentMatch;
 		}*/
 		virtual bool onMatch() = 0;// returns true to continue, false to abort
-		bool isAffix(int pos)
+		int isAffix(int pos)
 		{
 			//TODO: check if what is left of word is an affix (as a whole)
 			return true;
@@ -69,7 +69,8 @@ class SuffixSearch : public TreeSearch
 		}
 		virtual bool onMatch()
 		{
-			//do nothing I think, since we will not use traverse_text for stem but isAffix() instead
+			//get additional info from database and then check compatibility
+			//display result somehow or call some function that does this
 			return true;
 		}
 };
@@ -95,11 +96,7 @@ class StemSearch /*: public Trie*/
 		bool onMatch()
 		{
 			SuffixSearch sSrch(original_word,currentMatchPos+1);
-			if (sSrch.isAffix(currentMatchPos+1))
-			{
-				//get additional info from database and then check compatibility
-				//display result somehow or call some function that does this
-			}
+			sSrch.isAffix(currentMatchPos+1);
 			return true;
 		}
 };

@@ -4,6 +4,7 @@
 #include <QList>
 #include <QChar>
 #include <QString>
+#include <QQueue>
 #include "sql-interface.h"
 
 class node
@@ -27,7 +28,7 @@ class node
 		}
 		void removeChildren()//just remove references
 		{
-			int length=children.length();
+			int length=children.count();
 			for(int i=0;i<length;i++)
 			{
 				children.removeAt(i);
@@ -113,6 +114,9 @@ private:
 	int letter_nodes, result_nodes;
 	bool isAffix;
 	item_types type;
+	QQueue<letter_node *> queue;
+	QQueue<QList<int> > all_positions;
+	QQueue<QList<long> > all_categories;
 	void delete_helper(node * current)
 	{
 		QList<node *> children=current->getChildren();
@@ -215,11 +219,19 @@ result:	result_node * result=new result_node(category_id,resulting_category_id);
 		return current;
 		//post-condition: returns node of resulting category reached after addition
 	}
-
+	/*template<class T>
+	inline void duplicate(QList<QList<T>*> &old,int at_pos)
+	{
+		QList<T>* new_list=new QList<T>(old[at_pos]);
+		old.insert(at_pos,new_list);
+	}*/
 	virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_cat_id) //nedded just for purpose of TreeSearch
 	{
-		for (int i=0;i<positions.length();i++)
-			out<<positions[i]<<" ";
+		for (int i=0;i<positions.count();i++)
+		{
+			out<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
+			qDebug()<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
+		}
 		out <<"\n";
 		return true;
 	}
@@ -345,61 +357,78 @@ public:
 			<<"result nodes count= "<<result_nodes<<"\n"
 			<<QString().fill('-',40)<<"\n";
 	}
+	void traverse_text(QString original_word,int position)
+	{
+		QList <int>partitions;
+		QList <long>categories;
+		queue.clear();
+		all_categories.clear();
+		all_positions.clear();
+		all_categories.enqueue(categories);
+		all_positions.enqueue(partitions);
+		queue.enqueue((letter_node*)base);
+		QList  <int> temp_partition;
+		QList <long> temp_categories;
+		bool stop=false;
+		while (!queue.isEmpty() && !stop)
+		{
+			node* current_node=queue.dequeue();
+			partitions=all_positions.dequeue();
+			categories =all_categories.dequeue();
+			QList<node *> current_children=current_node->getChildren();
+			QChar current_letter=original_word[position];
 
-        void traverse_text(QString original_word,int position)
-        {
-            queue.enqueue(base);
-            QList <int>partitions;
-            QList <long>categories;
-            recur(original_word, position,partitions,categories);
+			int num_children=current_children.count();
 
+			for (int j=0;j<num_children;j++)
+			{
+				node *current_child=current_children[j];
 
-        }
-        void recur(node* current_node,QString original_word, int position, QList  <int> partitions, QList <long> categories)
-        {
-            if (queue.isEmpty())
-                return;
+				if (current_child->isLetterNode())
+				{
+					if(((letter_node*)current_child)->getLetter()==current_letter)
+					{
+						queue.enqueue((letter_node*)current_child);
+						temp_partition=partitions;
+						temp_categories=categories;
+						if (temp_partition.count()!=0)
+							temp_partition[temp_partition.count()-1]++;
+						all_positions.enqueue(temp_partition);
+						all_categories.enqueue(temp_categories);
+						position++;
+					}
+				}
+				else
+				{
+					partitions.append(position);
+					categories.append(((result_node*)current_child)->get_previous_category_id());
 
-            QList<node *> current_children=current_node->getChildren();
-            QChar current_letter=original_word[position];
+					if (!(on_match_helper(partitions,categories,((result_node *)current_child)->get_resulting_category_id())))
+					{
+						stop=true;
+						break;
+					}
+					else
+					{
+						QList<node *> result_node_children=current_node->getChildren();
+						int num_result_children=result_node_children.count();
+						for (int j=0;j<num_result_children;j++)
+						{
+							queue.enqueue((letter_node*)result_node_children[j]);
+							temp_partition=partitions;
+							temp_categories=categories;
+							temp_categories.append(((result_node *)current_child)->get_previous_category_id());
+							all_positions.enqueue(temp_partition);
+							all_categories.enqueue(temp_categories);
+						}
+					}
+				 }
+			}
+			if (stop)
+				return;
 
-            int num_children=current_children.count();
-
-            for (int j=0;j<num_children;j++)
-            {
-                    node *current_child=current_children[j];
-
-                    if (current_child->isLetterNode())
-                        {
-                        if(((letter_node*)current_child)->getLetter()==current_letter)
-                            {
-                            queue.enqueue(current_child);
-                            position=position+1;
-                            }
-                        }
-                    else
-                        {
-                        partitions.append(position+1);
-                        categories.append(current_child->previous_category_id);
-
-                        if (!(on_match(partitions,categories,((result_node *)current_child)->resulting_category_id)))
-                            break;//do smthg else
-                        else
-                            {
-                            QList<letter_node *> result_node_children=current_node->getChildren();
-                            int num_result_children=result_node_children.count();
-                            for (int j=0;j<num_result_children;j++)
-                                queue.enqueue(result_node_children[j]);
-                            }
-                         }
-            }
-            letter_node * next_node=queue.dequeue();
-            queue_count=queue.count();
-
-            for (int j=0;j<queue_count;j++)
-                recur(next_node,original_word,position,partitions,categories);
-
-        }
+		}
+	}
 
 
 
