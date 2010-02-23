@@ -22,7 +22,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		return -1;
 	if (insert_placenames()<0)
 		return -1;*/
-	/*int source_id=insert_source("Just for testing","","");
+	int source_id=insert_source("Just for testing","","");
 	insert_item(PREFIX,"ABCFG","","C9_2",source_id);
 	insert_item(PREFIX,"ABC","","C7",source_id);
 	insert_item(PREFIX,"FG","","C9_1",source_id);
@@ -44,7 +44,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	insert_compatibility_rules(AA,"rc3","C10","rc10",source_id);
 	insert_compatibility_rules(AA,"C5","C6","rc6",source_id);
 	insert_compatibility_rules(AA,"C7","C8","rc8",source_id);
-	insert_compatibility_rules(AA,"C7","C9_1","rc9",source_id);*/
+	insert_compatibility_rules(AA,"C7","C9_1","rc9",source_id);
 	/*QString word;
 	in >>word;*/
 	/*out << removeLastDiacritic(word)<<"\n";*/
@@ -62,13 +62,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	sample_tree->addElement(word,10,30);
 	sample_tree->print_tree();*/
 	tree* sample_tree=new tree();
-	sample_tree->sample();
+	/*sample_tree->sample();
 	sample_tree->print_tree();
 	sample_tree->reset();
 	sample_tree->print_tree();
-	sample_tree->sample();
-	//sample_tree->build_affix_tree(PREFIX);
+	//sample_tree->sample();*/
+	sample_tree->build_affix_tree(PREFIX);
 	sample_tree->print_tree();
+	sample_tree->traverse_text("ABCD",0);
 	return 0;
 }
 
