@@ -1,0 +1,38 @@
+#meeting feb 24,2010
+
+= Introduction =
+
+BFS traversal of fragmentation tree
+  on match we return the position and the resulting category
+  we add a function: getMatchDetails that returns a list of pairs (position,category)  to return the details.
+
+
+
+  # the stem search should take the resulting category of the prefix
+
+   # the suffix search should take the resulting categories of the prefix and the stem
+
+   # the suffix onMatch should only be called when the suffix covers till the end of the string
+    
+= Details =
+
+   one week left to delivery
+
+
+   the suffix onMatch should only be called when the suffix covers till the end of the string. this can be implemented as follows. the fragment tree has a function:
+{{{
+virtual bool shouldCallOnMatch(...) const {
+  return true;
+};
+}}}
+
+And the suffix subclass should implement this to return true only when the whole length is covered.
+{{{
+virtual bool shouldCallOnMatch(...) const {
+if (whole length is covered) 
+  return true; 
+return false;
+};
+}}}
+
+Then the search operator() should call the shouldCallOnMatch function to check whether to call onMatch or not. 
