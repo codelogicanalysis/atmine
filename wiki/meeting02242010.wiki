@@ -9,10 +9,8 @@ BFS traversal of fragmentation tree
 
 
   # the stem search should take the resulting category of the prefix
-
-   # the suffix search should take the resulting categories of the prefix and the stem
-
-   # the suffix onMatch should only be called when the suffix covers till the end of the string
+  # the suffix search should take the resulting categories of the prefix and the stem
+  # the suffix onMatch should only be called when the suffix covers till the end of the string
     
 = Details =
 
@@ -26,7 +24,7 @@ virtual bool shouldCallOnMatch(...) const {
 };
 }}}
 
-And the suffix subclass should implement this to return true only when the whole length is covered.
+  And the suffix subclass should implement this to return true only when the whole length is covered.
 {{{
 virtual bool shouldCallOnMatch(...) const {
 if (whole length is covered) 
@@ -35,4 +33,4 @@ return false;
 };
 }}}
 
-Then the search operator() should call the shouldCallOnMatch function to check whether to call onMatch or not. 
+  Then the search operator() should call the shouldCallOnMatch function to check whether to call onMatch or not. 
