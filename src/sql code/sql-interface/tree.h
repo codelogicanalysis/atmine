@@ -227,16 +227,24 @@ result:	result_node * result=new result_node(category_id,resulting_category_id);
 	}*/
 	void show_queue_content()
 	{
-		qDebug()<<"queue:";
+		/*qDebug()<<"queue:";
+		out<<"----";
 		for(int i=0;i<queue.count();i++)
 		{
 			qDebug()<<queue[i]->getLetter();
+			out<<queue[i]->getLetter()<< ":";
 			for (int j=0; j<all_categories[i].count();j++)
-				qDebug()<<getColumn("category","name",all_categories[i][j]);
-			qDebug()<<"positions:";
-			for (int j=0; j<all_positions[i].count();j++)
-				qDebug()<<all_positions[i][j];
+			{
+				qDebug()<<all_positions[i][j]<<getColumn("category","name",all_categories[i][j]);
+				out<<all_positions[i][j]<<getColumn("category","name",all_categories[i][j]);
+			}
+			out<<"-";
 		}
+		out<<"----\n";*/
+	}
+	virtual bool shouldcall_onmatch(int sizeOFword, int position)//re-implemented in case of SUFFIX search tree
+	{
+		return true;
 	}
 	virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_cat_id) //nedded just for purpose of TreeSearch
 	{
@@ -384,46 +392,50 @@ public:
 		QList  <int> temp_partition;
 		QList <long> temp_categories;
 		bool stop=false;
-		bool changed_level;
+		int nodes_per_level=1;
+		bool wait_for_dequeue=false;
 		while (!queue.isEmpty() && !stop)
 		{
+			if (wait_for_dequeue)
+				position++;
+			wait_for_dequeue=false;
 			node* current_node=queue.dequeue();
 			partitions=all_positions.dequeue();
 			categories =all_categories.dequeue();
+			nodes_per_level--;
+			if (nodes_per_level==0)
+			{
+				wait_for_dequeue=true;
+				nodes_per_level=queue.count();
+			}
 			show_queue_content();
 			QList<node *> current_children=current_node->getChildren();
 			QChar current_letter=original_word[position];
-			changed_level=false;
 			int num_children=current_children.count();
-
 			for (int j=0;j<num_children;j++)
 			{
 				node *current_child=current_children[j];
 				if (current_child->isLetterNode())
 				{
-					if (!changed_level)
-					{
-						position++;
-						changed_level=true;
-					}
 					if(((letter_node*)current_child)->getLetter()==current_letter)
 					{
 						queue.enqueue((letter_node*)current_child);
 						temp_partition=partitions;
 						temp_categories=categories;
-						/*if (temp_partition.count()!=0)
-							temp_partition[temp_partition.count()-1]++;*/
 						all_positions.enqueue(temp_partition);
 						all_categories.enqueue(temp_categories);
+						if (wait_for_dequeue)
+							nodes_per_level++;
 						show_queue_content();
 					}
 				}
 				else
 				{
-					partitions.append(position);
-					categories.append(((result_node*)current_child)->get_previous_category_id());
-
-					if (!(on_match_helper(partitions,categories,((result_node *)current_child)->get_resulting_category_id())))
+					temp_partition=partitions;
+					temp_categories=categories;
+					temp_partition.append(position-1);
+					temp_categories.append(((result_node *)current_child)->get_previous_category_id());
+					if (shouldcall_onmatch(original_word.size(),position) && !(on_match_helper(temp_partition,temp_categories,((result_node *)current_child)->get_resulting_category_id())))
 					{
 						stop=true;
 						break;
@@ -432,33 +444,25 @@ public:
 					{
 						QList<node *> result_node_children=current_child->getChildren();
 						int num_result_children=result_node_children.count();
-						if (!changed_level && num_result_children>0)
-						{
-							position++;
-							changed_level=true;
-						}
 						for (int j=0;j<num_result_children;j++)
 						{
-							queue.enqueue((letter_node*)result_node_children[j]);
-							temp_partition=partitions;
-							temp_categories=categories;
-							temp_partition.append(position);
-							temp_categories.append(((result_node *)current_child)->get_previous_category_id());
-							all_positions.enqueue(temp_partition);
-							all_categories.enqueue(temp_categories);
-							show_queue_content();
+							if(((letter_node*)result_node_children[j])->getLetter()==current_letter)
+							{
+								queue.enqueue((letter_node*)result_node_children[j]);
+								all_positions.enqueue(temp_partition);
+								all_categories.enqueue(temp_categories);
+								if (wait_for_dequeue)
+									nodes_per_level++;
+								show_queue_content();
+							}
 						}
 					}
 				 }
 			}
 			if (stop)
 				return;
-
 		}
 	}
-
-
-
 	virtual ~tree()
 	{
 		reset();
