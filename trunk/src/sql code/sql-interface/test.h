@@ -45,8 +45,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	insert_compatibility_rules(AA,"C5","C6","rc6",source_id);
 	insert_compatibility_rules(AA,"C7","C8","rc8",source_id);
 	insert_compatibility_rules(AA,"C7","C9_1","rc9",source_id);
-	/*QString word;
-	in >>word;*/
+	QString word;
+	in >>word;
 	/*out << removeLastDiacritic(word)<<"\n";*/
 	/*for (int i=0;i<word.length();i++)
 		out<<((bitset<16>((int)word[word.length()-i-1].toAscii())).to_string().data());
@@ -68,8 +68,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	sample_tree->print_tree();
 	//sample_tree->sample();*/
 	sample_tree->build_affix_tree(PREFIX);
+	sample_tree->traverse_text(word,0);
 	sample_tree->print_tree();
-	sample_tree->traverse_text("ABCD",0);
 	return 0;
 }
 
