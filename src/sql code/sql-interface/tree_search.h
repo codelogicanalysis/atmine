@@ -8,7 +8,7 @@ class TreeSearch: public tree
 	protected:
 		int startingPos;
 		QString original_word;
-		int number_of_matches;
+		//int number_of_matches;
 
 		QList<int> sub_positionsOFCurrentMatch;
 		QList<long> catsOFCurrentMatch;
@@ -16,7 +16,7 @@ class TreeSearch: public tree
 
 		virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_category_idOFCurrentMatch)
 		{
-			number_of_matches++;
+			//number_of_matches++;
 			sub_positionsOFCurrentMatch=positions;
 			catsOFCurrentMatch=cats;
 			this->resulting_category_idOFCurrentMatch=resulting_category_idOFCurrentMatch;
@@ -29,13 +29,13 @@ class TreeSearch: public tree
 			build_affix_tree(type);
 			this->original_word=original_word;
 			startingPos=position;
-			number_of_matches=0;
+			//number_of_matches=0;
 		}
-		int operator()()
+		void operator()()
 		{
-			number_of_matches=0;
+			//number_of_matches=0;
 			traverse_text(original_word,startingPos);
-			return number_of_matches;
+			//return number_of_matches;
 		}
 		virtual bool onMatch() = 0;// returns true to continue, false to abort
 		virtual ~TreeSearch() {}
