@@ -140,7 +140,7 @@ private:
 			return 0;
 		long long affix_id;
 		long cat_id2,cat_r_id;
-		Search_Compatibility s2(AA,cat_id1);
+		Search_Compatibility s2((type==PREFIX?AA:CC),cat_id1);
 		while (s2.retrieve(cat_id2,cat_r_id))
 		{
 			Search_by_category s3(cat_id2);
@@ -242,11 +242,11 @@ result:	result_node * result=new result_node(category_id,resulting_category_id);
 		}
 		out<<"----\n";*/
 	}
-	virtual bool shouldcall_onmatch(int sizeOFword, int position)//re-implemented in case of SUFFIX search tree
+	virtual bool shouldcall_onmatch(int,long)//re-implemented in case of SUFFIX search tree
 	{
 		return true;
 	}
-	virtual bool on_match_helper(QList<int> positions,QList<long> cats, long resulting_cat_id) //nedded just for purpose of TreeSearch
+	virtual bool on_match_helper(QList<int> positions,QList<long> cats, long /*resulting_cat_id*/) //needed just for purpose of TreeSearch
 	{
 		for (int i=0;i<positions.count();i++)
 		{
@@ -435,7 +435,8 @@ public:
 					temp_categories=categories;
 					temp_partition.append(position-1);
 					temp_categories.append(((result_node *)current_child)->get_previous_category_id());
-					if (shouldcall_onmatch(original_word.size(),position) && !(on_match_helper(temp_partition,temp_categories,((result_node *)current_child)->get_resulting_category_id())))
+					long result_id=((result_node *)current_child)->get_resulting_category_id();
+					if (shouldcall_onmatch(position,result_id) && !(on_match_helper(temp_partition,temp_categories,result_id)))
 					{
 						stop=true;
 						break;
