@@ -24,15 +24,19 @@ class TreeSearch: public tree
 		}
 	public:
 
-		TreeSearch(item_types type, QString original_word,int position):tree()
+		TreeSearch(item_types type):tree()
 		{
-			build_affix_tree(type);
-			this->original_word=original_word;
-			startingPos=position;
+			this->type=type;
 			//number_of_matches=0;
 		}
-		void operator()()
+		void build_tree()
 		{
+			build_affix_tree(type);
+		}
+		virtual void operator()(QString original_word,int position)
+		{
+			this->original_word=original_word;
+			startingPos=position;
 			//number_of_matches=0;
 			traverse_text(original_word,startingPos);
 			//return number_of_matches;
@@ -48,9 +52,13 @@ class SuffixSearch : public TreeSearch
 		long prefix_cat_id;
 		long stem_cat_id;
 	public:
-		SuffixSearch(QString word, int pos,long prefix_cat_id,long stem_cat_id,QList<int> pos_prefix,QList<long> cat_prefix):TreeSearch(SUFFIX,word,pos)
+		SuffixSearch():TreeSearch(SUFFIX)
 		{
 			//print_tree();
+		}
+		virtual void operator()(QString original_word,int position,long prefix_cat_id,long stem_cat_id,QList<int> pos_prefix,QList<long> cat_prefix)
+		{
+			TreeSearch::operator()(original_word,position);
 			this->pos_prefix=pos_prefix;
 			this->cat_prefix=cat_prefix;
 			this->prefix_cat_id=prefix_cat_id;
@@ -78,7 +86,7 @@ class SuffixSearch : public TreeSearch
 			return true;
 		}
 };
-
+SuffixSearch Suffix;
 class StemSearch /*: public Trie*/
 {
 	private:
@@ -93,13 +101,8 @@ class StemSearch /*: public Trie*/
 		int starting_pos;
 		long prefix_category;
 	public:
-		StemSearch(QString word,int pos,long prefix_category,QList<int> pos_prefix,QList<long> cat_prefix)
+		StemSearch()
 		{
-			original_word=word;
-			starting_pos=pos;
-			this->prefix_category=prefix_category;
-			this->pos_prefix=pos_prefix;
-			this->cat_prefix=cat_prefix;
 			/*QSqlQuery query(db);
 			QString stmt=QString("SELECT id, name FROM stem");
 			QString name;
@@ -116,8 +119,13 @@ class StemSearch /*: public Trie*/
 			}*/
 
 		}
-		int operator()()
+		int operator()(QString word,int pos,long prefix_category,QList<int> pos_prefix,QList<long> cat_prefix)
 		{
+			original_word=word;
+			starting_pos=pos;
+			this->prefix_category=prefix_category;
+			this->pos_prefix=pos_prefix;
+			this->cat_prefix=cat_prefix;
 			for (int i=starting_pos;i<=original_word.length();i++)
 			{
 				QString name=original_word.mid(starting_pos,i-starting_pos);
@@ -138,28 +146,31 @@ class StemSearch /*: public Trie*/
 		bool onMatch()
 		{
 			out<<"s:"<<original_word.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
-			SuffixSearch sSrch(original_word,currentMatchPos+1,prefix_category,category_of_currentmatch,pos_prefix,cat_prefix);
-			sSrch();
+			Suffix(original_word,currentMatchPos+1,prefix_category,category_of_currentmatch,pos_prefix,cat_prefix);
 			return true;
 		}
 };
-
+StemSearch Stem;
 class PrefixSearch : public TreeSearch
 {
 	public:
 
-		PrefixSearch(QString word):TreeSearch(PREFIX,word,0)
+		PrefixSearch():TreeSearch(PREFIX)
 		{
-			//print_tree();
+			print_tree();
+		}
+		virtual void operator()(QString original_word)
+		{
+			TreeSearch::operator()(original_word,0);
 		}
 		virtual bool onMatch()
 		{
 			out<<"p:"<<original_word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
-			StemSearch sSrch(original_word,sub_positionsOFCurrentMatch.last()+1,resulting_category_idOFCurrentMatch,sub_positionsOFCurrentMatch,catsOFCurrentMatch);
-			sSrch();
+			Stem(original_word,sub_positionsOFCurrentMatch.last()+1,resulting_category_idOFCurrentMatch,sub_positionsOFCurrentMatch,catsOFCurrentMatch);
 			return true;
 		}
 };
+PrefixSearch Prefix;
 
 
 
