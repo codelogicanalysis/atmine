@@ -5,6 +5,7 @@
 #include "sql-interface.h"
 #include "tree_search.h"
 
+bool first_time=true;
 //starting point
 int start(QString input_str, QString &output_str, QString &error_str)
 {
@@ -130,8 +131,13 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	//sample_tree->traverse_text(word,0);
 	//out<<"---\n";
 	//sample_tree->print_tree();
-	PrefixSearch search(word);
-	search();
+	if (first_time)
+	{
+		Prefix.build_tree();
+		Suffix.build_tree();
+		first_time=false;
+	}
+	Prefix(word);
 	return 0;
 }
 

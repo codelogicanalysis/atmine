@@ -109,7 +109,7 @@ class result_node:public node
 
 class tree
 {
-private:
+protected:
 	node* base;
 	int letter_nodes, result_nodes;
 	bool isAffix;
