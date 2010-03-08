@@ -209,7 +209,11 @@ protected:
 			current=new_node;
 			letter_nodes++;
 		}
-result:	result_node * result=new result_node(category_id,resulting_category_id);
+result:	node * old_result;
+		foreach (old_result,current->getChildren()) //check if this result node is already present
+			if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id)
+				return old_result;
+		result_node * result=new result_node(category_id,resulting_category_id);
 		current->addChild(result);
 		current=result;
 		result_nodes++;

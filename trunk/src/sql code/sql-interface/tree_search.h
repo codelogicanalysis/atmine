@@ -176,7 +176,7 @@ class SuffixSearch : public TreeSearch
 		}
 		virtual bool onMatch()
 		{
-			out<<"S:"<<original_word.mid(startingPos)<<"\n";
+			//out<<"S:"<<original_word.mid(startingPos)<<"\n";
 			for (int i=0;i<pos_prefix.count();i++)
 				out<<pos_prefix[i]<<" "<< getColumn("category","name",cat_prefix[i])<<" ";
 			out <<"--- ";
@@ -190,15 +190,13 @@ class SuffixSearch : public TreeSearch
 		}
 };
 
-class StemSearch /*: public Trie*/
+class StemSearch /*: public Trie*/ //just a proof of concept
 {
 	private:
 		QList<int> pos_prefix;
 		QList<long> cat_prefix;
 
 		QString original_word;
-		//QList<QString> stems;//just a proof of concept
-		//QList<long long> stem_ids;
 		int currentMatchPos;
 		long category_of_currentmatch;
 		int starting_pos;
@@ -248,7 +246,7 @@ class StemSearch /*: public Trie*/
 		}
 		bool onMatch()
 		{
-			out<<"s:"<<original_word.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
+			//out<<"s:"<<original_word.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
 			SuffixSearch Suffix(original_word,currentMatchPos+1,prefix_category,category_of_currentmatch,pos_prefix,cat_prefix);
 			Suffix();
 			return true;
@@ -268,7 +266,7 @@ class PrefixSearch : public TreeSearch
 		}
 		virtual bool onMatch()
 		{
-			out<<"p:"<<original_word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
+			//out<<"p:"<<original_word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
 			StemSearch Stem(original_word,sub_positionsOFCurrentMatch.last()+1,resulting_category_idOFCurrentMatch,sub_positionsOFCurrentMatch,catsOFCurrentMatch);
 			Stem();
 			return true;
