@@ -1,6 +1,6 @@
 SOURCES += mainwindow.cpp
 INCLUDEPATH += C:/Qt/2009.04/qt/include/QtSql \
-    C:/Qt/2009.04/qt/include/Qt
+	C:/Qt/2009.04/qt/include/Qt ../../dbitvec/
 CONFIG += qt
 
 # debug
@@ -14,4 +14,6 @@ HEADERS += mainwindow.h \
     utilities.h \
     tree.h \
     test.h \
-    tree_search.h
+    tree_search.h \
+    ../../dbitvec/dbitvec.h \
+    database_info.h
