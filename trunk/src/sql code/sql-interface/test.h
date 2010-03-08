@@ -139,8 +139,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	}
 	//Prefix(word);
 	//compatibility_rules r(AA);
-	PrefixSearch Prefix(word);
-	Prefix();
+	Stemmer stemmer(word);
+	stemmer.start_stemming();
 	//out<<database_info.rules_AB->operator ()(261,80)<<" "<<database_info.rules_AB->operator ()(261,127)<< " "<<database_info.rules_AB->operator ()(261,14)<<"\n";
 	return 0;
 }
