@@ -19,8 +19,7 @@ class dbitvec {
         NONE, MEM_EXCPT,BIT_BOUND_EXCPT
     } exception_em;
 
-    dbitvec() : size(0), bytes(0), data(0) {
-    }
+	dbitvec() : size(0), bytes(0), data(0) { }
 
     void resize(unsigned int length)  {
         unsigned int newbytes = (length+7) >> 3;

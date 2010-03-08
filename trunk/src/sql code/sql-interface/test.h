@@ -1,9 +1,10 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "insert_scripts.h"
+//#include "insert_scripts.h"
 #include "sql-interface.h"
 #include "tree_search.h"
+#include "database_info.h"
 
 bool first_time=true;
 //starting point
@@ -133,11 +134,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	//sample_tree->print_tree();
 	if (first_time)
 	{
-		Prefix.build_tree();
-		Suffix.build_tree();
+		database_info.fill();
 		first_time=false;
 	}
-	Prefix(word);
+	//Prefix(word);
+	//compatibility_rules r(AA);
+	PrefixSearch Prefix(word);
+	Prefix();
+	//out<<database_info.rules_AB->operator ()(261,80)<<" "<<database_info.rules_AB->operator ()(261,127)<< " "<<database_info.rules_AB->operator ()(261,14)<<"\n";
 	return 0;
 }
 
