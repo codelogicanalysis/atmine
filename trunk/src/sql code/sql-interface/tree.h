@@ -7,11 +7,19 @@
 #include <QQueue>
 #include "sql-interface.h"
 
+//#define QUEUE
+#ifndef QUEUE
+#define PARENT
+#endif
+
 class node
 {
 	private:
 		QList<node *> children;
 	public:
+#ifdef PARENT
+		node * parent; //public member and can be defined by other classes such as treesearch upon traversal.
+#endif
 		virtual bool isLetterNode()=0;
 		virtual QString to_string(bool isAffix=false)=0;
 		bool hasChildren()
@@ -25,6 +33,9 @@ class node
 		void addChild(node* child)
 		{
 			children.append(child);
+#ifdef PARENT
+			child->parent=this;
+#endif
 		}
 		void removeChildren()//just remove references
 		{
