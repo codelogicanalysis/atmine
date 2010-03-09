@@ -4,10 +4,6 @@
 #include "tree.h"
 #include "database_info.h"
 
-#define QUEUE
-#ifndef QUEUE
-#define PARENT
-#endif
 
 class Stemmer;
 
@@ -23,6 +19,9 @@ class TreeSearch
 		tree* Tree;
 		Stemmer* info;
 		QQueue<letter_node *> queue;
+#ifdef PARENT
+		node * current_node;
+#endif
 		//int number_of_matches;
 
 		virtual bool shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
@@ -57,6 +56,7 @@ class TreeSearch
 #ifdef QUEUE
 			//nothing needs to be done, members are already filled during traversals
 #elif defined(PARENT)
+			//use 'current_node'
 			//do the backward traversals to fill the function
 #endif
 		}
@@ -303,6 +303,8 @@ void TreeSearch::traverse_text()
 				this->sub_positionsOFCurrentMatch=temp_partition;
 				this->catsOFCurrentMatch=temp_categories;
 				this->idsOFCurrentMatch=temp_ids;
+#elif defined(PARENT)
+				current_node=current_child;
 #endif
 				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
