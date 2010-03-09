@@ -16,11 +16,11 @@ class node
 		virtual QString to_string(bool isAffix=false)=0;
 		bool hasChildren()
 		{
-				return (children.count()!=0);
+			return (children.count()!=0);
 		}
 		QList<node *> getChildren()
 		{
-				return children;
+			return children;
 		}
 		void addChild(node* child)
 		{
@@ -73,12 +73,14 @@ class result_node:public node
 {
 	private:
 		long previous_category_id;
+		long affix_id;
 		long resulting_category_id;
 	public:
-		result_node(long previous_category_id,long resulting_category_id)
+		result_node(long affix_id,long previous_category_id,long resulting_category_id)
 		{
 			set_previous_category_id(previous_category_id);
 			set_resulting_category_id(resulting_category_id);
+			set_affix_id(affix_id);
 		}
 		bool isLetterNode()
 		{
@@ -91,6 +93,14 @@ class result_node:public node
 		void set_previous_category_id(long id)
 		{
 			previous_category_id=id;
+		}
+		long get_affix_id()
+		{
+			return affix_id;
+		}
+		void set_affix_id(long id)
+		{
+			affix_id=id;
 		}
 		long get_resulting_category_id()
 		{
@@ -144,17 +154,17 @@ protected:
 			while(s3.retrieve(affix_id))
 			{
 				QString name= getColumn(interpret_type(type),"name",affix_id);
-				node * next=addElement(name,cat_id2,cat_r_id,current);
+				node * next=addElement(name,affix_id,cat_id2,cat_r_id,current);
 				build_helper(type,cat_r_id,size-name.length(),next);
 			}
 		}
 		return 0;
 	}
-	node* addElement(QString letters, long category_id, long resulting_category_id)
+	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id)
 	{
-		return addElement(letters,category_id, resulting_category_id,base);
+		return addElement(letters,affix_id,category_id, resulting_category_id,base);
 	}
-	node* addElement(QString letters, long category_id, long resulting_category_id,node * current)
+	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,node * current)
 	{
 		//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
 		if (current->isLetterNode() && current!=base)
@@ -211,9 +221,9 @@ protected:
 		}
 result:	node * old_result;
 		foreach (old_result,current->getChildren()) //check if this result node is already present
-			if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id)
+			if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id && ((result_node*)old_result)->get_affix_id()==affix_id)
 				return old_result;
-		result_node * result=new result_node(category_id,resulting_category_id);
+		result_node * result=new result_node(affix_id,category_id,resulting_category_id);
 		current->addChild(result);
 		current=result;
 		result_nodes++;
@@ -267,15 +277,15 @@ public:
 		letter_node * G1=new letter_node('G');
 		letter_node * G2=new letter_node('G');
 		letter_node * F2=new letter_node('F');
-		result_node * rc1= new result_node(0,1);
-		result_node * rc2= new result_node(2,2);
-		result_node * rc3= new result_node(0,3);
-		result_node * rc5= new result_node(3,5);
-		result_node * rc6= new result_node(4,6);
-		result_node * rc7= new result_node(9,7);
-		result_node * rc8= new result_node(1,8);
-		result_node * rc9= new result_node(1,9);
-		result_node * rc9_= new result_node(3,9);
+		result_node * rc1= new result_node(-1,0,1);
+		result_node * rc2= new result_node(-1,2,2);
+		result_node * rc3= new result_node(-1,0,3);
+		result_node * rc5= new result_node(-1,3,5);
+		result_node * rc6= new result_node(-1,4,6);
+		result_node * rc7= new result_node(-1,9,7);
+		result_node * rc8= new result_node(-1,1,8);
+		result_node * rc9= new result_node(-1,1,9);
+		result_node * rc9_= new result_node(-1,3,9);
 		base->addChild(A0);
 		A0->addChild(rc1);
 		A0->addChild(B0);
@@ -323,8 +333,8 @@ public:
 			Search_by_item s1(type,affix_id1);
 			while(s1.retrieve(cat_id))
 			{
-				node * next=addElement(name,cat_id,cat_id,base);
-				build_helper(type,affix_id1,6-name.length(),next);
+				node * next=addElement(name,affix_id1,cat_id,cat_id,base);
+				build_helper(type,cat_id,6-name.length(),next);
 			}
 		}
 		return 0;
