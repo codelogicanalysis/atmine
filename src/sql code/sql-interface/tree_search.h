@@ -305,6 +305,29 @@ void TreeSearch::traverse_text()
 				this->idsOFCurrentMatch=temp_ids;
 #elif defined(PARENT)
 				current_node=current_child;
+                                catsOFCurrentMatch.insert(0,((result_node *)current_node)->get_previous_category_id());
+                                idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
+                                sub_positionsOFCurrentMatch.insert(0,position);
+                                letter_node * tree_head=(letter_node*)Tree->getFirstNode();
+                                node * current_parent=((result_node *)current_node)->parent;
+
+                                int counter=0;
+                                while (current_parent!=tree_head)
+                                {
+                                    if (current_parent->isLetterNode())
+                                    {
+                                        count++;
+                                    }
+                                    else
+                                    {
+                                         catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
+                                         idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
+                                         sub_positionsOFCurrentMatch.insert(0, position-count);
+
+                                    }
+                                    current_parent=current_parent->parent;
+
+                                }
 #endif
 				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
