@@ -21,7 +21,9 @@ class TreeSearch
 		QQueue<letter_node *> queue;
 #ifdef PARENT
 		node * current_node;
+
 #endif
+                int position=startingPos;
 		//int number_of_matches;
 
 		virtual bool shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
@@ -56,6 +58,7 @@ class TreeSearch
 #ifdef QUEUE
 			//nothing needs to be done, members are already filled during traversals
 #elif defined(PARENT)
+
                         catsOFCurrentMatch.insert(0,((result_node *)current_node)->get_previous_category_id());
                         idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
                         sub_positionsOFCurrentMatch.insert(0,position);
@@ -246,7 +249,7 @@ class Stemmer
 
 void TreeSearch::traverse_text()
 {
-	int position=startingPos;
+
 	QList <long> catsOFCurrentMatch;
 	QList<int> sub_positionsOFCurrentMatch;
 	QList<long> idsOFCurrentMatch;
