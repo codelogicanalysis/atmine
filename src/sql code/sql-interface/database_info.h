@@ -1,8 +1,9 @@
 #ifndef DATABASE_INFO_H
 #define DATABASE_INFO_H
 
-#include <vector>
 #include <QList>
+#include <QVector>
+#include <QMap>
 #include "sql-interface.h"
 #include <QtAlgorithms>
 #include "tree.h"
@@ -13,9 +14,13 @@ class compatibility_rules
 {
 	private:
 		rules rule;
-		vector<dbitvec> rules_info;
-		QList<long>  bitorder[2];
-		QList<QList<long> > resulting_category;
+		typedef QVector<dbitvec> bitvec2d;
+		bitvec2d rules_info;
+		typedef QVector<long> index2id_map;
+		index2id_map  bitorder[2];
+		typedef QPair<long,long> ResultingCategoryKey;
+		typedef QMap<ResultingCategoryKey,long> ResultingCategoryMap;
+		ResultingCategoryMap resulting_category;
 
 		inline void generate_bit_order(rules rule)
 		{
@@ -40,7 +45,7 @@ class compatibility_rules
 		}
 		inline long get_bitindex(int order,long id)
 		{
-			QList<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
+			QVector<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
 			if (*i==id)
 				return i-bitorder[order].begin();
 			else
@@ -60,15 +65,9 @@ class compatibility_rules
 			int length[2];
 			length[0]=bitorder[0].count();
 			length[1]=bitorder[1].count();
-			QList<long> temp;
-			if (rule==AA || rule==CC)
-				for (int i=0;i<length[1];i++)
-					temp.append(-1);
 			for (int i = 0; i < length[0]; i++) {
 				rules_info.push_back( dbitvec() );
 				rules_info[i].resize(length[1]);
-				if (rule==AA || rule==CC)
-					resulting_category.push_back(temp);
 			}
 			QString stmt=QString( "SELECT category_id1, category_id2, resulting_category FROM compatibility_rules WHERE type=%1").arg((int)(rule));
 			if (!execute_query(stmt))
@@ -78,7 +77,12 @@ class compatibility_rules
 				int i1=this->get_bitindex(0,query.value(0).toLongLong());
 				int i2=this->get_bitindex(1,query.value(1).toLongLong());
 				if (rule==AA || rule==CC)
-					resulting_category[i1][i2]=(!query.value(2).isNull() ? query.value(2).toLongLong():query.value(1).toLongLong());
+				{
+					bool isValueNull = query.value(2).isNull();
+					resulting_category[ResultingCategoryKey(i1,i2)]= isValueNull ?
+													  query.value(1).toLongLong() :
+													  query.value(2).toLongLong();
+				}
 				rules_info[i1][i2]=true;
 				/*if (ok==false)
 				{
@@ -97,13 +101,17 @@ class compatibility_rules
 				return false;
 			}
 		}
-		bool operator()(int id1,int id2, int & id_r)
+		bool operator()(int id1,int id2, long & id_r)//-1 is invalid
 		{
 			try{
 				int i1=get_bitindex(0,id1);
 				int i2=get_bitindex(1,id2);
 				if (rule==AA || rule==CC)
-					id_r=resulting_category[i1][i2];
+				{
+					ResultingCategoryKey k(i1,i2);
+					if (resulting_category.contains(k))
+						 id_r=resulting_category[k];
+				}
 				return rules_info[i1][i2];
 			}catch(int i) {
 				return false;

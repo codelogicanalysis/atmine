@@ -23,65 +23,45 @@ class TreeSearch
 		node * current_node;
 
 #endif
-                int position=startingPos;
+		int position;
 		//int number_of_matches;
 
 		virtual bool shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
 		{
 			return true;
 		}
-		void traverse_text();
-		inline bool on_match_helper()
-		{
-			//number_of_matches++;
-			return onMatch();
-			/*
-			for (int i=0;i<positions.count();i++)
-			{
-				out<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
-				//qDebug()<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
-			}
-			out <<"\n";
-			return true;
-			*/
-		}
+		inline bool on_match_helper();
 	public:
 		TreeSearch(item_types type,Stemmer* info,int position);
-		virtual void operator()()
-		{
-			//number_of_matches=0;
-			traverse_text();
-			//return number_of_matches;
-		}
+		virtual bool operator()();
 		void fill_details() //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
 		{
 #ifdef QUEUE
 			//nothing needs to be done, members are already filled during traversals
 #elif defined(PARENT)
+			catsOFCurrentMatch.insert(0,((result_node *)current_node)->get_previous_category_id());
+			idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
+			sub_positionsOFCurrentMatch.insert(0,position);
+			letter_node * tree_head=(letter_node*)Tree->getFirstNode();
+			node * current_parent=((result_node *)current_node)->parent;
 
-                        catsOFCurrentMatch.insert(0,((result_node *)current_node)->get_previous_category_id());
-                        idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
-                        sub_positionsOFCurrentMatch.insert(0,position);
-                        letter_node * tree_head=(letter_node*)Tree->getFirstNode();
-                        node * current_parent=((result_node *)current_node)->parent;
+			int count=0;
+			while (current_parent!=tree_head)
+			{
+				if (current_parent->isLetterNode())
+				{
+					count++;
+				}
+				else
+				{
+					 catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
+					 idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
+					 sub_positionsOFCurrentMatch.insert(0, position-count);
 
-                        int counter=0;
-                        while (current_parent!=tree_head)
-                        {
-                            if (current_parent->isLetterNode())
-                            {
-                                count++;
-                            }
-                            else
-                            {
-                                 catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
-                                 idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
-                                 sub_positionsOFCurrentMatch.insert(0, position-count);
+				}
+				current_parent=current_parent->parent;
 
-                            }
-                            current_parent=current_parent->parent;
-
-                        }
+			}
 			//use 'current_node'
 			//do the backward traversals to fill the function
 #endif
@@ -96,13 +76,15 @@ class SuffixSearch : public TreeSearch
 		{
 			//print_tree();
 		}
-		virtual void operator()()
+		/*virtual bool operator()()
 		{
-			TreeSearch::operator()();
-		}
+			return TreeSearch::operator()();
+		}*/
 		virtual bool shouldcall_onmatch(int position);
 		virtual bool onMatch();
-		~SuffixSearch(){}
+		~SuffixSearch()
+		{
+		}
 };
 class StemSearch /*: public Trie*/ //just a proof of concept
 {
@@ -134,7 +116,7 @@ class StemSearch /*: public Trie*/ //just a proof of concept
 			}*/
 
 		}
-		int operator()();
+		bool operator()();
 		bool onMatch();
 		~StemSearch(){	}
 };
@@ -146,95 +128,139 @@ class PrefixSearch : public TreeSearch
 		{
 			//print_tree();
 		}
-		virtual void operator()()
+		/*virtual bool operator()()
 		{
 			TreeSearch::operator()();
-		}
+		}*/
 		virtual bool onMatch();
 		~PrefixSearch(){}
 };
 class Stemmer
 {
+	protected:
+		int total_matches_till_now;
+		item_types type;
 	public:
 		QString word;
+		bool called_everything;
 		PrefixSearch* Prefix;
 		StemSearch* Stem;
 		SuffixSearch* Suffix;
+
+		virtual bool on_match_helper() //needed just to count matches till now
+		{
+			total_matches_till_now++;
+			return on_match();
+		}
 		virtual bool on_match()
 		{
 			int count=0;
 			int number=0;
-			Prefix->fill_details();
-			out<<"(";
-			for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
+			if (called_everything || type==PREFIX)
 			{
-				//out<<Prefix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Prefix->catsOFCurrentMatch[i])<<" ";
-				if (number>0)
-					out<<" + ";
-				number++;
-				Search_by_item s(PREFIX,Prefix->idsOFCurrentMatch[i]);
-				minimal_item_info prefix_info;
-				while(s.retrieve(prefix_info))
+				Prefix->fill_details();
+				out<<"(";
+				for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
 				{
-					if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i])
+					//out<<Prefix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Prefix->catsOFCurrentMatch[i])<<" ";
+					if (number>0)
+						out<<" + ";
+					number++;
+					Search_by_item s(PREFIX,Prefix->idsOFCurrentMatch[i]);
+					minimal_item_info prefix_info;
+					while(s.retrieve(prefix_info))
 					{
-						if (count>0)
-							out << " OR ";
-						count++;
-						out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_info.description;
+						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i])
+						{
+							if (count>0)
+								out << " OR ";
+							count++;
+							out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_info.description;
+						}
 					}
 				}
+				out <<")-";
 			}
-			out <<")--(";
-
-			//out<<Suffix->startingPos-1<<" "<<getColumn("category","name",Stem->category_of_currentmatch)<<" --- ";
-			Search_by_item s(STEM,Stem->id_of_currentmatch);
 			minimal_item_info stem_info;
-			count=0;
-			while(s.retrieve(stem_info))
+			if (called_everything || type==STEM)
 			{
-				if (stem_info.category_id==Stem->category_of_currentmatch)
+				out<< "-(";
+				//out<<Suffix->startingPos-1<<" "<<getColumn("category","name",Stem->category_of_currentmatch)<<" --- ";
+				Search_by_item s(STEM,Stem->id_of_currentmatch);
+				count=0;
+				while(s.retrieve(stem_info))
 				{
-					if (count>0)
-						out << " OR ";
-					count++;
-					out<</*Stem->startingPos-1<<" "<<*/ stem_info.description;
-				}
-			}
-			out <<")--(";
-			Suffix->fill_details();
-			number=0;
-			count=0;
-			for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
-			{
-				if (number>0)
-					out<<" + ";
-				number++;
-				//out<<Suffix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Suffix->catsOFCurrentMatch[i])<<" ";
-				Search_by_item s(SUFFIX,Suffix->idsOFCurrentMatch[i]);
-				minimal_item_info suffix_info;
-				while(s.retrieve(suffix_info))
-				{
-					if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
+					if (stem_info.category_id==Stem->category_of_currentmatch)
 					{
 						if (count>0)
 							out << " OR ";
 						count++;
-						out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_info.description;
+						out<</*Stem->startingPos-1<<" "<<*/ stem_info.description;
+						out<<" [ ";
+						for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
+							if (stem_info.abstract_categories[i])
+									out<<getColumn("category","name",abstract_category_ids[i])<< " ";
+						out<<"]";
 					}
 				}
+				out <<")-";
 			}
-			out <<")\n";
+			if (called_everything || type==SUFFIX)
+			{
+				out<< "-(";
+				Suffix->fill_details();
+				number=0;
+				count=0;
+				for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
+				{
+					if (number>0)
+						out<<" + ";
+					number++;
+					//out<<Suffix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Suffix->catsOFCurrentMatch[i])<<" ";
+					Search_by_item s(SUFFIX,Suffix->idsOFCurrentMatch[i]);
+					minimal_item_info suffix_info;
+					while(s.retrieve(suffix_info))
+					{
+						if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
+						{
+							if (count>0)
+								out << " OR ";
+							count++;
+							out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_info.description;
+						}
+					}
+				}
+				out <<")";
+			}
+			out<<"\n";
 			return true;
 		}
 		Stemmer(QString word)
 		{
 			this->word=word;
 			Prefix=new PrefixSearch(this);
+			Stem=NULL;
+			Suffix=NULL;
 		}
-		void start_stemming()
+		bool operator()()//if returns true means there was a match
 		{
+			called_everything=true;
+			total_matches_till_now=0;
 			Prefix->operator ()();
+			return (total_matches_till_now>0);
+		}
+		bool operator()(item_types type)//if returns true means there was a match
+		{
+			called_everything=false;
+			this->type=type;
+			total_matches_till_now=0;
+			if (type==PREFIX)
+				Prefix->operator ()();
+			else if (type==STEM)
+				Stem->operator ()();
+			else if (type==SUFFIX)
+				Suffix->operator ()();
+			return (total_matches_till_now>0);
 		}
 		~Stemmer()
 		{
@@ -247,7 +273,7 @@ class Stemmer
 		}
 };
 
-void TreeSearch::traverse_text()
+bool TreeSearch::operator ()()
 {
 
 	QList <long> catsOFCurrentMatch;
@@ -273,8 +299,10 @@ void TreeSearch::traverse_text()
 	QList <long> temp_categories;
 #endif
 	bool stop=false;
+	bool called_match=false;
 	int nodes_per_level=1;
 	bool wait_for_dequeue=false;
+	position=startingPos;
 	while (!queue.isEmpty() && !stop)
 	{
 		if (wait_for_dequeue)
@@ -334,6 +362,7 @@ void TreeSearch::traverse_text()
 
 #endif
 				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
+				called_match=true;
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
 				{
 					stop=true;
@@ -362,8 +391,26 @@ void TreeSearch::traverse_text()
 			 }
 		}
 		if (stop)
-			return;
+			return called_match;
 	}
+	return called_match;
+}
+bool TreeSearch::on_match_helper()
+{
+	//number_of_matches++;
+	if (info->called_everything)
+		return onMatch();
+	else
+		return info->on_match_helper();
+	/*
+	for (int i=0;i<positions.count();i++)
+	{
+		out<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
+		//qDebug()<<positions[i]<<" "<< getColumn("category","name",cats[i])<<" ";
+	}
+	out <<"\n";
+	return true;
+	*/
 }
 TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 {
@@ -386,10 +433,11 @@ bool SuffixSearch::onMatch()
 {
 	//out<<"S:"<<info->word.mid(startingPos)<<"\n";
 	info->Suffix=this;
-	return info->on_match();
+	return info->on_match_helper();
 }
-int StemSearch::operator()()
+bool StemSearch::operator()()
 {
+	bool called_match=false;
 	for (int i=starting_pos;i<=info->word.length();i++)
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
@@ -402,19 +450,22 @@ int StemSearch::operator()()
 			{
 				category_of_currentmatch=cat_id;
 				currentMatchPos=i-1;
-				onMatch();
+				called_match=true;
+				if (info->called_everything)
+					onMatch();
+				else
+					info->on_match_helper();
 			}
 		}
 	}
-	return 0;
+	return called_match;
 }
 bool StemSearch::onMatch()
 {
 	//out<<"s:"<<info->word.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
 	info->Stem=this;
 	SuffixSearch * Suffix= new SuffixSearch(info,currentMatchPos+1);
-	Suffix->operator ()();
-	return true;
+	return Suffix->operator ()();
 }
 bool PrefixSearch::onMatch()
 {
