@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'mainwindow.ui'
 **
-** Created: Mon Mar 8 22:21:10 2010
+** Created: Thu Mar 11 03:08:21 2010
 **      by: Qt User Interface Compiler version 4.4.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -10,6 +10,7 @@
 #ifndef UI_MAINWINDOW_H
 #define UI_MAINWINDOW_H
 
+#include <QtCore/QLocale>
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
@@ -48,15 +49,21 @@ public:
     input = new QTextEdit(centralwidget);
     input->setObjectName(QString::fromUtf8("input"));
     input->setGeometry(QRect(90, 0, 401, 41));
+    input->setLayoutDirection(Qt::RightToLeft);
+    input->setLocale(QLocale(QLocale::Arabic, QLocale::Lebanon));
     output = new QTextBrowser(centralwidget);
     output->setObjectName(QString::fromUtf8("output"));
     output->setGeometry(QRect(0, 50, 711, 261));
     QFont font;
     font.setFamily(QString::fromUtf8("AlArabiya"));
     output->setFont(font);
+    output->setLayoutDirection(Qt::RightToLeft);
+    output->setLocale(QLocale(QLocale::Arabic, QLocale::Lebanon));
     errors = new QTextBrowser(centralwidget);
     errors->setObjectName(QString::fromUtf8("errors"));
     errors->setGeometry(QRect(0, 340, 711, 101));
+    errors->setLayoutDirection(Qt::RightToLeft);
+    errors->setLocale(QLocale(QLocale::Arabic, QLocale::Lebanon));
     label = new QLabel(centralwidget);
     label->setObjectName(QString::fromUtf8("label"));
     label->setGeometry(QRect(40, 0, 41, 18));

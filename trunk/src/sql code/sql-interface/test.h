@@ -108,40 +108,13 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	insert_compatibility_rules(AC,"rc9","Src9",source_id);*/
 	QString word;
 	in >>word;
-	/*out << removeLastDiacritic(word)<<"\n";*/
-	/*for (int i=0;i<word.length();i++)
-		out<<((bitset<16>((int)word[word.length()-i-1].toAscii())).to_string().data());
-	out <<"\n";
-	for (int i=0;i<word.length();i++)
-		out<<(int)word[word.length()-i-1].unicode();
-	out<<"\n"<<bitset_to_string(string_to_bitset(word))<<"\n";*/
-	//display_table("stem_category");
-	/*tree* sample_tree =new tree();
-	sample_tree->sample();
-	sample_tree->print_tree();
-	out<<"-----------------------------------------------\n";
-	sample_tree->addElement(word,10,30);
-	sample_tree->print_tree();*/
-	//tree* sample_tree=new tree();
-	/*sample_tree->sample();
-	sample_tree->print_tree();
-	sample_tree->reset();
-	sample_tree->print_tree();
-	//sample_tree->sample();*/
-	//sample_tree->build_affix_tree(PREFIX);
-	//sample_tree->traverse_text(word,0);
-	//out<<"---\n";
-	//sample_tree->print_tree();
 	if (first_time)
 	{
 		database_info.fill();
 		first_time=false;
 	}
-	//Prefix(word);
-	//compatibility_rules r(AA);
 	Stemmer stemmer(word);
-	stemmer.start_stemming();
-	//out<<database_info.rules_AB->operator ()(261,80)<<" "<<database_info.rules_AB->operator ()(261,127)<< " "<<database_info.rules_AB->operator ()(261,14)<<"\n";
+	stemmer();
 	return 0;
 }
 
