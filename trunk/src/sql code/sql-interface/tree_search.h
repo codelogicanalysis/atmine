@@ -2,6 +2,7 @@
 #define TREE_SEARCH_H
 
 #include "tree.h"
+#include "utilities.h"
 #include "database_info.h"
 
 
@@ -18,12 +19,12 @@ class TreeSearch
 	protected:
 		tree* Tree;
 		Stemmer* info;
+		item_types type;
 		QQueue<letter_node *> queue;
 #ifdef PARENT
-		node * current_node;
-
+		node * reached_node;
 #endif
-		int position;
+		int position;//note that provided position is 1+last_letter after traversal
 		//int number_of_matches;
 
 		virtual bool shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
@@ -39,25 +40,28 @@ class TreeSearch
 #ifdef QUEUE
 			//nothing needs to be done, members are already filled during traversals
 #elif defined(PARENT)
-			catsOFCurrentMatch.insert(0,((result_node *)current_node)->get_previous_category_id());
-			idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
-			sub_positionsOFCurrentMatch.insert(0,position);
+			sub_positionsOFCurrentMatch.clear();
+			catsOFCurrentMatch.clear();
+			idsOFCurrentMatch.clear();
+			catsOFCurrentMatch.insert(0,((result_node *)reached_node)->get_previous_category_id());
+			idsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_affix_id());
+			sub_positionsOFCurrentMatch.insert(0,position-1);
 			letter_node * tree_head=(letter_node*)Tree->getFirstNode();
-			node * current_parent=((result_node *)current_node)->parent;
+			node * current_parent=((result_node *)reached_node)->parent;
 
 			int count=0;
 			while (current_parent!=tree_head)
 			{
 				if (current_parent->isLetterNode())
 				{
-					count++;
+					if (((letter_node* )current_parent)->getLetter()!='\0')
+						count++;
 				}
 				else
 				{
 					 catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
-					 idsOFCurrentMatch.insert(0, ((result_node *)current_node)->get_affix_id());
-					 sub_positionsOFCurrentMatch.insert(0, position-count);
-
+					 idsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_affix_id());
+					 sub_positionsOFCurrentMatch.insert(0, position-count-1);
 				}
 				current_parent=current_parent->parent;
 
@@ -142,6 +146,7 @@ class Stemmer
 		item_types type;
 	public:
 		QString word;
+		QString diacritic_word;
 		bool called_everything;
 		PrefixSearch* Prefix;
 		StemSearch* Stem;
@@ -237,7 +242,8 @@ class Stemmer
 		}
 		Stemmer(QString word)
 		{
-			this->word=word;
+			this->diacritic_word=word;
+			this->word=removeDiacritics(word);
 			Prefix=new PrefixSearch(this);
 			Stem=NULL;
 			Suffix=NULL;
@@ -290,6 +296,10 @@ bool TreeSearch::operator ()()
 	all_categories.enqueue(catsOFCurrentMatch);
 	all_positions.enqueue(sub_positionsOFCurrentMatch);
 	all_ids.enqueue((idsOFCurrentMatch));
+#elif defined(PARENT)
+	/*this->sub_positionsOFCurrentMatch.clear();
+	this->catsOFCurrentMatch.clear();
+	this->idsOFCurrentMatch.clear();*/
 #endif
 	queue.enqueue((letter_node*)Tree->getFirstNode());
 	//show_queue_content();
@@ -308,7 +318,7 @@ bool TreeSearch::operator ()()
 		if (wait_for_dequeue)
 			position++;
 		wait_for_dequeue=false;
-		node* current_node=queue.dequeue();
+		node * current_node=queue.dequeue();
 #ifdef QUEUE
 		sub_positionsOFCurrentMatch=all_positions.dequeue();
 		catsOFCurrentMatch =all_categories.dequeue();
@@ -358,8 +368,7 @@ bool TreeSearch::operator ()()
 				this->catsOFCurrentMatch=temp_categories;
 				this->idsOFCurrentMatch=temp_ids;
 #elif defined(PARENT)
-				current_node=current_child;
-
+				reached_node=current_child;
 #endif
 				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
 				called_match=true;
@@ -397,6 +406,43 @@ bool TreeSearch::operator ()()
 }
 bool TreeSearch::on_match_helper()
 {
+	//check if matches with Diacritics
+	/*//TODO: continue
+	int diacritic_starting_pos;
+	int length=info->diacritic_word.count();
+		//start by finding the number of letters that are equivalent to startingPos
+		int num_letters=startingPos+1;
+		int count=0;
+		for (int i=0;i<length;i++)
+			if (!isDiacritic(info->diacritic_word[i]))
+			{
+				count++;
+				if (count==num_letters)
+					break;
+			}
+		diacritic_starting_pos=i-1;
+	num_letters=position-startingPos+1;//num_letters = the actual non_Diacritic letters in the match +1
+	count=0;
+	for (int i=startingPos;i<length;i++)
+		if (!isDiacritic(info->diacritic_word[i]))
+		{
+			count++;
+			if (count==num_letters)
+				break;
+		}
+	QString subword=info->diacritic_word.mid(diacritic_starting_pos,i-1-diacritic_starting_pos);
+
+	Search_by_item s(type,idsOFCurrentMatch[i]);
+	minimal_item_info item_info;
+	while(s.retrieve(item_info))
+	{
+		if (item_info.category_id==catsOFCurrentMatch[i])
+		{
+			//item_info.raw_data;
+		}
+	}
+	if (!equal(word,someword))
+		return false;*/
 	//number_of_matches++;
 	if (info->called_everything)
 		return onMatch();
@@ -415,6 +461,7 @@ bool TreeSearch::on_match_helper()
 TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 {
 	this->info=info;
+	this->type=type;
 	startingPos=position;
 	if (type==PREFIX)
 		Tree=database_info.Prefix_Tree;
@@ -471,7 +518,7 @@ bool PrefixSearch::onMatch()
 {
 	//out<<"p:"<<info->word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
 	info->Prefix=this;
-	StemSearch *Stem=new StemSearch(info,(sub_positionsOFCurrentMatch.count()>0?sub_positionsOFCurrentMatch.last()+1:0));
+	StemSearch *Stem=new StemSearch(info,(position-1>0?position:0));
 	Stem->operator ()();
 	return true;
 }

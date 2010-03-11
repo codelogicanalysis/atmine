@@ -2,10 +2,17 @@
 #define UTILITIES_H
 
 //#include "sql-interface.h"
+#include <QString>
+#include <QChar>
+#include <QList>
+#include <QVector>
 
 //constantletters
 const QChar ya2=QChar(0x064A);
 const QChar alef=QChar(0x0627);
+const QChar alef_madda_above= QChar(0x0622);
+const QChar alef_hamza_above= QChar(0x0623);
+const QChar alef_hamza_below= QChar(0x0625);
 const QChar ta2_marbouta=QChar(0x0629);
 const QChar waw=QChar(0x0648);
 const QChar shadde=QChar(0x0651);
@@ -104,6 +111,88 @@ inline QString get_Possessive_form(QString word)
 	}
 	else
 		return word.append(ya2);
+}
+inline bool equal_strict(QList<QChar> list1,QList<QChar> list2)
+{
+	int l1=list1.count(),l2=list2.count();
+	if (l1!=l2)
+		return false;
+	for (int i=0;i<l1;i++)
+		if (list1[i]!=list2[i])
+			return false;
+	return true;
+}
+inline bool equal(QChar c1, QChar c2)
+{
+	if (c1==c2)
+		return true;
+	QVector<QChar> alefs(4);
+	alefs.append(alef);
+	alefs.append(alef_hamza_above);
+	alefs.append(alef_hamza_below);
+	alefs.append(alef_madda_above);
+	if (alefs.contains(c1) && alefs.contains(c2))
+		return true;
+	return false;
+}
+inline bool equal(QString word1,QString word2)// is diacritics tolerant
+{
+	int length1=word1.count();
+	int length2=word2.count();
+	int i1=-1,i2=-1;
+	QList<QChar> diacritics1,diacritics2;
+	QChar letter1,letter2;
+	while (i1+1<length1 && i2+1<length2)
+	{
+		i1++;
+		i2++;
+		diacritics1.clear();
+		diacritics2.clear();
+		while (isDiacritic(word1[i1]))
+		{
+			if (word1[i1]!=shadde)
+				diacritics1.append(word1[i1]);
+			i1++;
+		}
+		if (i1<length1)
+			letter1=word1[i1];
+		else
+			letter1='\0';
+		while (isDiacritic(word2[i2]))
+		{
+			if (word1[i2]!=shadde)
+				diacritics2.append(word2[i2]);
+			i2++;
+		}
+		if (i2<length2)
+			letter2=word2[i2];
+		else
+			letter2='\0';
+		//now comparison first diacritics then next_letter
+		if (diacritics1.count()==0 || diacritics2.count()==0 || equal_strict(diacritics1,diacritics2))
+		{
+			if (equal(letter1,letter2))
+				continue;
+			else
+				return false;
+		}
+		return false;
+	}
+	if (length1-(i1+1)==0 && length2-(i2+1)==0)
+		return true;
+	if (length1-(i1+1)==0)
+	{
+		for (int i=i2+1;i<length2;i++)
+			if (!isDiacritic(word2[i]))
+				return false;
+	}
+	else
+	{
+		for (int i=i1+1;i<length1;i++)
+			if (!isDiacritic(word1[i]))
+				return false;
+	}
+	return true;
 }
 /*
 alef 				+consonant before			-wey					sayda --> saydawey		or		7alba --> 7albawey

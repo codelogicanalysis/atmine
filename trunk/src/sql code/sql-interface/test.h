@@ -5,6 +5,7 @@
 #include "sql-interface.h"
 #include "tree_search.h"
 #include "database_info.h"
+#include "utilities.h"
 
 bool first_time=true;
 //starting point
@@ -106,8 +107,9 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	insert_compatibility_rules(AC,"rc6","Src10",source_id);
 	insert_compatibility_rules(AC,"rc8","Src8",source_id);
 	insert_compatibility_rules(AC,"rc9","Src9",source_id);*/
-	QString word;
-	in >>word;
+	QString word/*,word2*/;
+	in >>word/*>>word2*/;
+	//out<<equal(word,word2)<<"\n";
 	if (first_time)
 	{
 		database_info.fill();
