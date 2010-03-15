@@ -51,8 +51,13 @@ class TreeSearch
 			sub_positionsOFCurrentMatch.clear();
 			catsOFCurrentMatch.clear();
 			idsOFCurrentMatch.clear();
+
 			catsOFCurrentMatch.insert(0,((result_node *)reached_node)->get_previous_category_id());
 			idsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_affix_id());
+#ifdef REDUCE_THRU_DIACRITICS
+			possible_raw_datasOFCurrentMatch.clear();
+			possible_raw_datasOFCurrentMatch.insert(0,((result_node *)reached_node)->raw_datas);
+#endif
 			sub_positionsOFCurrentMatch.insert(0,position-1);
 			letter_node * tree_head=(letter_node*)Tree->getFirstNode();
 			node * current_parent=((result_node *)reached_node)->parent;
@@ -68,14 +73,14 @@ class TreeSearch
 				else
 				{
 					 catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
-					 idsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_affix_id());
+					 idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
 					 sub_positionsOFCurrentMatch.insert(0, position-count-1);
+#ifdef REDUCE_THRU_DIACRITICS
+					 possible_raw_datasOFCurrentMatch.insert(0,((result_node *)current_parent)->raw_datas);
+#endif
 				}
 				current_parent=current_parent->parent;
-
 			}
-			//use 'current_node'
-			//do the backward traversals to fill the function
 #endif
 		}
 		virtual bool onMatch() = 0;// returns true to continue, false to abort
@@ -172,7 +177,9 @@ class Stemmer
 			int number=0;
 			if (called_everything || type==PREFIX)
 			{
+#if !defined (REDUCE_THRU_DIACRITICS)
 				Prefix->fill_details();
+#endif
 				out<<"(";
 				for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
 				{
@@ -230,7 +237,9 @@ class Stemmer
 			if (called_everything || type==SUFFIX)
 			{
 				out<< "-(";
+#if !defined (REDUCE_THRU_DIACRITICS)
 				Suffix->fill_details();
+#endif
 				number=0;
 				count=0;
 				for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
@@ -514,6 +523,9 @@ bool TreeSearch::on_match_helper()
 {
 	//check if matches with Diacritics
 #ifdef REDUCE_THRU_DIACRITICS
+#ifdef PARENT
+	fill_details();
+#endif
 	int startPos=startingPos;
 	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
 	{
@@ -653,7 +665,7 @@ bool PrefixSearch::onMatch()
 {
 	//out<<"p:"<<info->word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
 	info->Prefix=this;
-	StemSearch *Stem=new StemSearch(info,(position-1>0?position:0));
+	StemSearch *Stem=new StemSearch(info,(position/*-1>0?position:0*/));
 	return Stem->operator ()();
 }
 
