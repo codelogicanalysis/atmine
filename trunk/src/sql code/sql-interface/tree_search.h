@@ -1,6 +1,7 @@
 #ifndef TREE_SEARCH_H
 #define TREE_SEARCH_H
 
+#include <QVector>
 #include "tree.h"
 #include "utilities.h"
 #include "database_info.h"
@@ -16,12 +17,19 @@ class TreeSearch
 		QList<long> catsOFCurrentMatch;
 		QList<long> idsOFCurrentMatch;
 		long resulting_category_idOFCurrentMatch;
+#ifdef REDUCE_THRU_DIACRITICS
+		QList<QString > raw_datasOFCurrentMatch;
+	protected:
+		bool a_branch_returned_false; //needed by get_all_possibilities() to stop when a false is retuned
+		QList<QList <QString > > possible_raw_datasOFCurrentMatch;
+		void get_all_possibilities(int i, QList<QString> raw_datas);
+#endif
 	protected:
 		tree* Tree;
 		Stemmer* info;
 		item_types type;
 		QQueue<letter_node *> queue;
-#ifdef PARENT
+#if defined(PARENT)
 		node * reached_node;
 #endif
 		int position;//note that provided position is 1+last_letter after traversal
@@ -31,7 +39,7 @@ class TreeSearch
 		{
 			return true;
 		}
-		inline bool on_match_helper();
+		inline bool on_match_helper();		
 	public:
 		TreeSearch(item_types type,Stemmer* info,int position);
 		virtual bool operator()();
@@ -96,6 +104,7 @@ class StemSearch /*: public Trie*/ //just a proof of concept
 		int currentMatchPos;
 		long category_of_currentmatch;
 		long id_of_currentmatch;
+		QString raw_data_of_currentmatch;
 		int starting_pos;
 	private:
 		Stemmer * info;
@@ -175,7 +184,11 @@ class Stemmer
 					minimal_item_info prefix_info;
 					while(s.retrieve(prefix_info))
 					{
-						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i])
+#ifdef REDUCE_THRU_DIACRITICS
+						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && equal(prefix_info.raw_data,Prefix->raw_datasOFCurrentMatch[i]))
+#else
+						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] )
+#endif
 						{
 							if (count>0)
 								out << " OR ";
@@ -195,7 +208,11 @@ class Stemmer
 				count=0;
 				while(s.retrieve(stem_info))
 				{
+#ifdef REDUCE_THRU_DIACRITICS
+					if (stem_info.category_id==Stem->category_of_currentmatch && equal(stem_info.raw_data,Stem->raw_data_of_currentmatch))
+#else
 					if (stem_info.category_id==Stem->category_of_currentmatch)
+#endif
 					{
 						if (count>0)
 							out << " OR ";
@@ -226,7 +243,11 @@ class Stemmer
 					minimal_item_info suffix_info;
 					while(s.retrieve(suffix_info))
 					{
+#ifdef REDUCE_THRU_DIACRITICS
+						if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && equal(suffix_info.raw_data,Suffix->raw_datasOFCurrentMatch[i]))
+#else
 						if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
+#endif
 						{
 							if (count>0)
 								out << " OR ";
@@ -281,12 +302,11 @@ class Stemmer
 
 bool TreeSearch::operator ()()
 {
-
+	queue.clear();
+#ifdef QUEUE
 	QList <long> catsOFCurrentMatch;
 	QList<int> sub_positionsOFCurrentMatch;
 	QList<long> idsOFCurrentMatch;
-	queue.clear();
-#ifdef QUEUE
 	QQueue<QList<int> > all_positions;
 	QQueue<QList<long> > all_categories;
 	QQueue<QList<long> > all_ids;
@@ -295,7 +315,13 @@ bool TreeSearch::operator ()()
 	all_ids.clear();
 	all_categories.enqueue(catsOFCurrentMatch);
 	all_positions.enqueue(sub_positionsOFCurrentMatch);
-	all_ids.enqueue((idsOFCurrentMatch));
+	all_ids.enqueue(idsOFCurrentMatch);
+#ifdef REDUCE_THRU_DIACRITICS
+	QList<QList< QString> > possible_raw_datasOFCurrentMatch;
+	QQueue<QList<QList< QString> > > all_raw_datas;
+	all_raw_datas.clear();
+	all_raw_datas.enqueue(possible_raw_datasOFCurrentMatch);
+#endif
 #elif defined(PARENT)
 	/*this->sub_positionsOFCurrentMatch.clear();
 	this->catsOFCurrentMatch.clear();
@@ -307,9 +333,11 @@ bool TreeSearch::operator ()()
 	QList  <int> temp_partition;
 	QList  <long> temp_ids;
 	QList <long> temp_categories;
+#ifdef REDUCE_THRU_DIACRITICS
+	QList <QList<QString> > temp_raw_datas;
+#endif
 #endif
 	bool stop=false;
-	bool called_match=false;
 	int nodes_per_level=1;
 	bool wait_for_dequeue=false;
 	position=startingPos;
@@ -323,6 +351,9 @@ bool TreeSearch::operator ()()
 		sub_positionsOFCurrentMatch=all_positions.dequeue();
 		catsOFCurrentMatch =all_categories.dequeue();
 		idsOFCurrentMatch=all_ids.dequeue();
+#ifdef REDUCE_THRU_DIACRITICS
+		possible_raw_datasOFCurrentMatch=all_raw_datas.dequeue();
+#endif
 #endif
 		nodes_per_level--;
 		if (nodes_per_level==0)
@@ -349,6 +380,10 @@ bool TreeSearch::operator ()()
 					all_positions.enqueue(temp_partition);
 					all_categories.enqueue(temp_categories);
 					all_ids.enqueue(temp_ids);
+#ifdef REDUCE_THRU_DIACRITICS
+					temp_raw_datas=possible_raw_datasOFCurrentMatch;
+					all_raw_datas.enqueue(temp_raw_datas);
+#endif
 #endif
 					if (wait_for_dequeue)
 						nodes_per_level++;
@@ -367,11 +402,16 @@ bool TreeSearch::operator ()()
 				this->sub_positionsOFCurrentMatch=temp_partition;
 				this->catsOFCurrentMatch=temp_categories;
 				this->idsOFCurrentMatch=temp_ids;
-#elif defined(PARENT)
+#ifdef REDUCE_THRU_DIACRITICS
+				temp_raw_datas=possible_raw_datasOFCurrentMatch;
+				temp_raw_datas.append(((result_node *)current_child)->raw_datas);
+				this->possible_raw_datasOFCurrentMatch=temp_raw_datas;
+#endif
+#endif
+#if defined(PARENT)
 				reached_node=current_child;
 #endif
 				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
-				called_match=true;
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
 				{
 					stop=true;
@@ -390,6 +430,9 @@ bool TreeSearch::operator ()()
 							all_positions.enqueue(temp_partition);
 							all_categories.enqueue(temp_categories);
 							all_ids.enqueue(temp_ids);
+#ifdef REDUCE_THRU_DIACRITICS
+							all_raw_datas.enqueue(temp_raw_datas);
+#endif
 #endif
 							if (wait_for_dequeue)
 								nodes_per_level++;
@@ -399,51 +442,103 @@ bool TreeSearch::operator ()()
 				}
 			 }
 		}
-		if (stop)
-			return called_match;
 	}
-	return called_match;
+	return (!stop);
 }
-bool TreeSearch::on_match_helper()
+#ifdef REDUCE_THRU_DIACRITICS
+
+QString getDiacriticword(int position,int startPos,QString diacritic_word)
 {
-	//check if matches with Diacritics
-	/*//TODO: continue
 	int diacritic_starting_pos;
-	int length=info->diacritic_word.count();
-		//start by finding the number of letters that are equivalent to startingPos
-		int num_letters=startingPos+1;
+	int length=diacritic_word.count();
+		//start by finding the number of letters that are equivalent to startPos
+		int num_letters=startPos+1;
 		int count=0;
-		for (int i=0;i<length;i++)
-			if (!isDiacritic(info->diacritic_word[i]))
+		int i;
+		for (i=0;i<length;i++)
+			if (!isDiacritic(diacritic_word[i]))
 			{
 				count++;
 				if (count==num_letters)
 					break;
 			}
-		diacritic_starting_pos=i-1;
-	num_letters=position-startingPos+1;//num_letters = the actual non_Diacritic letters in the match +1
+		diacritic_starting_pos=i;
+	num_letters=position-startPos+2;//num_letters = the actual non_Diacritic letters in the match +1
 	count=0;
-	for (int i=startingPos;i<length;i++)
-		if (!isDiacritic(info->diacritic_word[i]))
+	for (i=startPos;i<length;i++)
+		if (!isDiacritic(diacritic_word[i]))
 		{
 			count++;
 			if (count==num_letters)
 				break;
 		}
-	QString subword=info->diacritic_word.mid(diacritic_starting_pos,i-1-diacritic_starting_pos);
+	return diacritic_word.mid(diacritic_starting_pos<0?0:diacritic_starting_pos,i-diacritic_starting_pos);
+}
 
-	Search_by_item s(type,idsOFCurrentMatch[i]);
-	minimal_item_info item_info;
-	while(s.retrieve(item_info))
+void TreeSearch::get_all_possibilities(int i, QList< QString>  raw_datas)
+{
+	if (i>possible_raw_datasOFCurrentMatch.count() || i<0)
+		return;
+	else if (i==possible_raw_datasOFCurrentMatch.count())
 	{
-		if (item_info.category_id==catsOFCurrentMatch[i])
+		if (!a_branch_returned_false)
 		{
-			//item_info.raw_data;
+			raw_datasOFCurrentMatch=raw_datas;
+			if (info->called_everything)
+			{
+				if (!onMatch())
+					a_branch_returned_false=true;
+			}
+			else
+			{
+				if (!info->on_match_helper())
+					a_branch_returned_false=true;
+			}
 		}
 	}
-	if (!equal(word,someword))
-		return false;*/
+	else
+	{
+		for (int j=0;j<possible_raw_datasOFCurrentMatch[i].count();j++)
+		{
+			if (!a_branch_returned_false)
+			{
+				QList< QString> raw_datas_modified=raw_datas;
+				raw_datas_modified.append(possible_raw_datasOFCurrentMatch[i][j]);
+				get_all_possibilities(i+1,raw_datas_modified);
+			}
+		}
+	}
+}
+#endif
+bool TreeSearch::on_match_helper()
+{
+	//check if matches with Diacritics
+#ifdef REDUCE_THRU_DIACRITICS
+	int startPos=startingPos;
+	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
+	{
+		QString subword=getDiacriticword(position-1,startPos,info->diacritic_word);
+		for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
+		{
+			if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
+			{
+				possible_raw_datasOFCurrentMatch[k].removeAt(j);
+				j--;
+			}
+		}
+
+		startPos=sub_positionsOFCurrentMatch[k]+1;
+	}
 	//number_of_matches++;
+	for (int i=0;i<possible_raw_datasOFCurrentMatch.count();i++)
+		if (0==possible_raw_datasOFCurrentMatch[i].count())
+			return true; //not matching, continue without doing anything
+	QList<QString> raw_datas;
+	raw_datas.clear();
+	a_branch_returned_false=false;
+	get_all_possibilities(0, raw_datas);
+	return !a_branch_returned_false;
+#else
 	if (info->called_everything)
 		return onMatch();
 	else
@@ -457,6 +552,7 @@ bool TreeSearch::on_match_helper()
 	out <<"\n";
 	return true;
 	*/
+#endif
 }
 TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 {
@@ -484,28 +580,67 @@ bool SuffixSearch::onMatch()
 }
 bool StemSearch::operator()()
 {
-	bool called_match=false;
+	bool false_returned=false;
 	for (int i=starting_pos;i<=info->word.length();i++)
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
-		long cat_id;
+
 		Search_by_item s1(STEM,name);
 		id_of_currentmatch=s1.ID();
-		while(s1.retrieve(cat_id))
+#ifdef REDUCE_THRU_DIACRITICS
+		minimal_item_info inf;
+		while(s1.retrieve(inf))
 		{
-			if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+			if (!false_returned)
 			{
-				category_of_currentmatch=cat_id;
-				currentMatchPos=i-1;
-				called_match=true;
-				if (info->called_everything)
-					onMatch();
-				else
-					info->on_match_helper();
+				if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))
+				{
+					category_of_currentmatch=inf.category_id;
+					raw_data_of_currentmatch=inf.raw_data;
+					currentMatchPos=i-1;
+					QString subword=getDiacriticword(i,starting_pos,info->diacritic_word);
+					if (equal(subword,raw_data_of_currentmatch))
+					{
+						if (info->called_everything)
+						{
+							if (!onMatch())
+								false_returned=true;
+						}
+						else
+						{
+							if (!info->on_match_helper())
+									false_returned=true;
+						}
+					}
+				}
 			}
 		}
+#else
+		long cat_id;
+		while(s1.retrieve(cat_id))
+		{
+			if (!false_returned)
+			{
+				if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+				{
+					category_of_currentmatch=cat_id;
+					currentMatchPos=i-1;
+					if (info->called_everything)
+					{
+						if (!onMatch())
+							false_returned=true;
+					}
+					else
+					{
+						if (!info->on_match_helper())
+								false_returned=true;
+					}
+				}
+			}
+		}
+#endif
 	}
-	return called_match;
+	return !false_returned;
 }
 bool StemSearch::onMatch()
 {
@@ -519,8 +654,7 @@ bool PrefixSearch::onMatch()
 	//out<<"p:"<<info->word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
 	info->Prefix=this;
 	StemSearch *Stem=new StemSearch(info,(position-1>0?position:0));
-	Stem->operator ()();
-	return true;
+	return Stem->operator ()();
 }
 
 #endif // TREE_SEARCH_H
