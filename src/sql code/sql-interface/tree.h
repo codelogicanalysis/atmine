@@ -8,13 +8,13 @@
 #include <QPair>
 #include "sql-interface.h"
 
-#define QUEUE
+//#define QUEUE
 #ifndef QUEUE
 #define PARENT
 #endif
 
 //#define MEMORY_EXHAUSTIVE
-//#define REDUCE_THRU_DIACRITICS
+#define REDUCE_THRU_DIACRITICS
 #ifdef REDUCE_THRU_DIACRITICS
 #undef MEMORY_EXHAUSTIVE
 #endif
