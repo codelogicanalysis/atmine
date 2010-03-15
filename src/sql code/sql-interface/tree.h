@@ -5,11 +5,18 @@
 #include <QChar>
 #include <QString>
 #include <QQueue>
+#include <QPair>
 #include "sql-interface.h"
 
-//#define QUEUE
+#define QUEUE
 #ifndef QUEUE
 #define PARENT
+#endif
+
+//#define MEMORY_EXHAUSTIVE
+#define REDUCE_THRU_DIACRITICS
+#ifdef REDUCE_THRU_DIACRITICS
+#undef MEMORY_EXHAUSTIVE
 #endif
 
 class node
@@ -87,8 +94,47 @@ class result_node:public node
 		long affix_id;
 		long resulting_category_id;
 	public:
+
+#ifdef REDUCE_THRU_DIACRITICS
+		QList<QString> raw_datas;
+
+		void add_raw_data(QString raw_data)
+		{
+			if (!raw_datas.contains(raw_data))
+				this->raw_datas.append(raw_data);
+		}
+#endif
+
+#ifdef MEMORY_EXHAUSTIVE
+		//TODO: change Pair to a public class outside result_node
+		class Additional
+		{
+			QString raw_data;
+			QString description;
+			QString
+		} ;
+		typedef QList<StringTriple> StringTriples;
+		StringPairs rawdata_description; //made public to reduce copying of strings
+
+		void addPair(QString raw_data,QString description)
+		{
+			if (!rawdata_description.contains(StringPair(raw_data,description)))
+				rawdata_description.append(StringPair(raw_data,description));
+		}
+
+		result_node(long affix_id,long previous_category_id,long resulting_category_id, QString raw_data, QString description)
+		{
+			rawdata_description.clear();
+			addPair(raw_data,description);
+#elif defined (REDUCE_THRU_DIACRITICS)
+		result_node(long affix_id,long previous_category_id,long resulting_category_id,QString raw_data)
+		{
+			this->raw_datas.clear();
+			add_raw_data(raw_data);
+#else
 		result_node(long affix_id,long previous_category_id,long resulting_category_id)
 		{
+#endif
 			set_previous_category_id(previous_category_id);
 			set_resulting_category_id(resulting_category_id);
 			set_affix_id(affix_id);
@@ -156,26 +202,43 @@ protected:
 	{
 		if (size<=0)
 			return 0;
-		long long affix_id;
 		long cat_id2,cat_r_id;
 		Search_Compatibility s2((type==PREFIX?AA:CC),cat_id1);
 		while (s2.retrieve(cat_id2,cat_r_id))
 		{
 			Search_by_category s3(cat_id2);
+#ifdef MEMORY_EXHAUSTIVE
+			all_item_info inf;
+			while(s3.retrieve(inf))
+			{
+				QString name= getColumn(interpret_type(type),"name",inf.item_id);
+				node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,inf.raw_data,inf.description,current);
+#elif defined(REDUCE_THRU_DIACRITICS)
+			all_item_info inf;
+			while(s3.retrieve(inf))
+			{
+				QString name= getColumn(interpret_type(type),"name",inf.item_id);
+				node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,inf.raw_data,current);
+#else
+			long long affix_id;
 			while(s3.retrieve(affix_id))
 			{
 				QString name= getColumn(interpret_type(type),"name",affix_id);
 				node * next=addElement(name,affix_id,cat_id2,cat_r_id,current);
+
+#endif
 				build_helper(type,cat_r_id,size-name.length(),next);
 			}
 		}
 		return 0;
 	}
-	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id)
-	{
-		return addElement(letters,affix_id,category_id, resulting_category_id,base);
-	}
+#ifdef MEMORY_EXHAUSTIVE
+	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,QString description,node * current)
+#elif defined (REDUCE_THRU_DIACRITICS)
+	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,node * current)
+#else
 	node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,node * current)
+#endif
 	{
 		//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
 		if (current->isLetterNode() && current!=base)
@@ -232,9 +295,24 @@ protected:
 		}
 result:	node * old_result;
 		foreach (old_result,current->getChildren()) //check if this result node is already present
+		{
 			if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id && ((result_node*)old_result)->get_affix_id()==affix_id)
+			{
+#ifdef MEMORY_EXHAUSTIVE
+				((result_node*)old_result)->addPair(raw_data,description);
+#elif defined(REDUCE_THRU_DIACRITICS)
+				((result_node*)old_result)->add_raw_data(raw_data);
+#endif
 				return old_result;
+			}
+		}
+#ifdef MEMORY_EXHAUSTIVE
+		result_node * result=new result_node(affix_id,category_id,resulting_category_id,raw_data,description);
+#elif defined(REDUCE_THRU_DIACRITICS)
+		result_node * result=new result_node(affix_id,category_id,resulting_category_id,raw_data);
+#else
 		result_node * result=new result_node(affix_id,category_id,resulting_category_id);
+#endif
 		current->addChild(result);
 		current=result;
 		result_nodes++;
@@ -271,6 +349,7 @@ public:
 	{
 		return base;
 	}
+#if !defined(MEMORY_EXHAUSTIVE) && !defined(REDUCE_THRU_DIACRITICS)
 	void sample()
 	{
 		reset();
@@ -324,6 +403,7 @@ public:
 		result_nodes=9;
 		isAffix=false;
 	}
+#endif
 	int build_affix_tree(item_types type)
 	{
 		reset();
@@ -340,13 +420,30 @@ public:
 		{
 			name=query.value(1).toString();
 			affix_id1=query.value(0).toLL();
-			long cat_id;
 			Search_by_item s1(type,affix_id1);
+#ifdef MEMORY_EXHAUSTIVE
+			minimal_item_info inf;
+			while(s1.retrieve(inf))
+			{
+				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,inf.description,base);
+				build_helper(type,inf.category_id,6-name.length(),next);
+			}
+#elif defined(REDUCE_THRU_DIACRITICS)
+			minimal_item_info inf;
+			while(s1.retrieve(inf))
+			{
+				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,base);
+				build_helper(type,inf.category_id,6-name.length(),next);
+			}
+#else
+			long cat_id;
 			while(s1.retrieve(cat_id))
 			{
 				node * next=addElement(name,affix_id1,cat_id,cat_id,base);
 				build_helper(type,cat_id,6-name.length(),next);
 			}
+
+#endif
 		}
 		return 0;
 	}

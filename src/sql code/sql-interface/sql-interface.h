@@ -1166,6 +1166,33 @@ private:
 		}
 		return true;
 	}
+	inline bool retrieve_internal(all_item_info & info)
+	{
+		bool ok;
+		info.item_id=query.value(0).toLL();
+		info.category_id =query.value(1).toLL();
+		info.sources=string_to_bitset(query.value(2));
+		info.raw_data=query.value(3).toString();
+		info.POS=query.value(4).toString();
+		if (query.value(5).isNull())
+			info.description="";
+		else
+		{
+			long long description_id=query.value(5).toLL();
+			info.description=getColumn("description","name",description_id);  //uses global query
+		}
+		if (type==STEM)
+		{
+			info.abstract_categories=string_to_bitset(query.value(6));
+			info.lemma_ID=query.value(7).toString();
+		}
+		else
+		{
+			info.abstract_categories.reset();
+			info.lemma_ID="";
+		}
+		return true;
+	}
 public:
 	Search_by_category(long category_id)
 	{
@@ -1174,8 +1201,8 @@ public:
 		query=temp;
 		get_type_of_category(category_id,type);
 		QString table = interpret_type(type);
-		QString stmt( "SELECT %1_id FROM %1_category WHERE category_id ='%2' ORDER BY %1_id ASC");
-		stmt=stmt.arg(interpret_type(type)).arg(category_id);
+		QString stmt( "SELECT %1_id, category_id, sources, raw_data, POS, description_id %3 FROM %1_category WHERE category_id ='%2' ORDER BY %1_id ASC");
+		stmt=stmt.arg(table).arg(category_id).arg((type==STEM?", abstract_categories, lemma_ID":""));
 		if (!execute_query(stmt,query)) //will use the local query
 			err=true;
 	}
@@ -1187,6 +1214,13 @@ public:
 	{
 		if (!err && query.next())
 			return retrieve_internal(item_id);
+		else
+			return false;
+	}
+	inline bool retrieve(all_item_info &info)
+	{
+		if (!err && query.next())
+			return retrieve_internal(info);
 		else
 			return false;
 	}
