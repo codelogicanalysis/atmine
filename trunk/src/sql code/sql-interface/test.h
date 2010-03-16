@@ -108,9 +108,10 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	insert_compatibility_rules(AC,"rc8","Src8",source_id);
 	insert_compatibility_rules(AC,"rc9","Src9",source_id);*/
 	/*QString word,word2;
+	in >>word;
 	int i1,i2;
-	in >>word>>word2>>i1>>i2;
-	out<<getDiacriticword(i2,i1,word2)<<"\n";*/
+	in >>i1>>i2;
+	out<<getDiacriticword(i2,i1,word)<<"\n";*/
 	//out<<equal(word,word2)<<"\n";
 
 	QString word;

@@ -474,7 +474,7 @@ QString getDiacriticword(int position,int startPos,QString diacritic_word)
 		diacritic_starting_pos=i;
 	num_letters=position-startPos+2;//num_letters = the actual non_Diacritic letters in the match +1
 	count=0;
-	for (i=startPos;i<length;i++)
+	for (i=diacritic_starting_pos;i<length;i++)
 		if (!isDiacritic(diacritic_word[i]))
 		{
 			count++;
@@ -521,17 +521,31 @@ void TreeSearch::get_all_possibilities(int i, QList< QString>  raw_datas)
 #endif
 bool TreeSearch::on_match_helper()
 {
+	//out<<"p-S:"<<info->word.mid(startingPos)<<"\n";
 	//check if matches with Diacritics
 #ifdef REDUCE_THRU_DIACRITICS
 #ifdef PARENT
 	fill_details();
 #endif
 	int startPos=startingPos;
+	//out<<"startPos="<<startPos<<"position-1="<<position-1<<"\n";
+	QString subword=getDiacriticword(position-1,startPos,info->diacritic_word);
 	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
 	{
-		QString subword=getDiacriticword(position-1,startPos,info->diacritic_word);
 		for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
 		{
+			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
+			if (isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the suffix region
+			{
+				if (!equal(getDiacriticword(startPos-1,startPos-1,info->diacritic_word),QString("%1%2").arg(info->word[startPos-1]).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				{
+					possible_raw_datasOFCurrentMatch[k].removeAt(j);
+					j--;
+					continue;
+				}
+				possible_raw_datasOFCurrentMatch[k][j]=possible_raw_datasOFCurrentMatch[k][j].mid(1);
+			}
+			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
 			{
 				possible_raw_datasOFCurrentMatch[k].removeAt(j);
@@ -596,7 +610,7 @@ bool StemSearch::operator()()
 	for (int i=starting_pos;i<=info->word.length();i++)
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
-
+		//out<<name<<"\n";
 		Search_by_item s1(STEM,name);
 		id_of_currentmatch=s1.ID();
 #ifdef REDUCE_THRU_DIACRITICS
@@ -610,9 +624,11 @@ bool StemSearch::operator()()
 					category_of_currentmatch=inf.category_id;
 					raw_data_of_currentmatch=inf.raw_data;
 					currentMatchPos=i-1;
-					QString subword=getDiacriticword(i,starting_pos,info->diacritic_word);
+					QString subword=getDiacriticword(i-1,starting_pos,info->diacritic_word);
+					//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
 					if (equal(subword,raw_data_of_currentmatch))
 					{
+						//out<<"yes\n";
 						if (info->called_everything)
 						{
 							if (!onMatch())
@@ -663,9 +679,9 @@ bool StemSearch::onMatch()
 }
 bool PrefixSearch::onMatch()
 {
-	//out<<"p:"<<info->word.mid(0,sub_positionsOFCurrentMatch.last()+1)<<"\n";
+	//out<<"p:"<<info->word.mid(0,position)<<"\n";
 	info->Prefix=this;
-	StemSearch *Stem=new StemSearch(info,(position/*-1>0?position:0*/));
+	StemSearch *Stem=new StemSearch(info,position);
 	return Stem->operator ()();
 }
 
