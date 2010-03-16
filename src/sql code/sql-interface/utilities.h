@@ -160,7 +160,7 @@ inline bool equal(QString word1,QString word2)// is diacritics tolerant
 			letter1='\0';
 		while (isDiacritic(word2[i2]))
 		{
-			if (word1[i2]!=shadde)
+			if (word2[i2]!=shadde)
 				diacritics2.append(word2[i2]);
 			i2++;
 		}
