@@ -316,7 +316,7 @@ int insert_placenames() //not yet complete
 				abstract_categories.append(abstract_category_id);
 				abstract_categories.append(abstract_place_names);
 				if (insert_NProp(line, abstract_categories,source_id,file_name.split(".").at(0))<0)
-					/*return -1*/;
+				{/*return -1*/;}
 			}
 			out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 			input.close();
@@ -340,7 +340,7 @@ int insert_placenames() //not yet complete
 				abstract_categories.append(abstract_continent_name);
 				abstract_categories.append(abstract_place_names);
 				if (insert_NProp(continent_arabic, abstract_categories,folders_source_id,continent_english)<0)
-					/*return -1*/;
+				{/*return -1*/;}
 			}
 			bitset<max_sources> sources;
 			sources.reset();
@@ -368,7 +368,7 @@ int insert_placenames() //not yet complete
 					abstract_categories.append(abstract_place_names);
 					abstract_categories.append(continent_id);
 					if (insert_NProp(country_arabic, abstract_categories,folders_source_id,country_english)<0)
-						/*return -1*/;
+					{	/*return -1*/;}
 				}
 				long country_id=insert_category(country_english,STEM,folders_source_id,true);
 				while (!file.atEnd())
@@ -394,9 +394,9 @@ int insert_placenames() //not yet complete
 					QStringList city=alltext.split(QRegExp("[.-,]"));
 					if (city.count()>1) //add all the text in addition to the primary part
 						if (insert_NProp(alltext, abstract_categories,folders_source_id,"city/town in "+country_english)<0)
-							/*return -1*/;
+						{/*return -1*/;}
 					if (insert_NProp(city[0], abstract_categories,folders_source_id,"city/town in "+country_english)<0)
-						/*return -1*/;
+					{/*return -1*/;}
 				}
 				out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name2);
 				input.close();
