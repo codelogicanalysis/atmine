@@ -1,5 +1,7 @@
 #include "result_node.h"
 
+#include "../sql-interface/sql_queries.h"
+
 #ifdef REDUCE_THRU_DIACRITICS
     void result_node::add_raw_data(QString raw_data)
     {
@@ -60,11 +62,10 @@
     {
         resulting_category_id=id;
     }
-    QString result_node::to_string(bool isAffix=true)
+	QString result_node::to_string(bool isAffix)
     {
         return QString("-").append(QString("%1").arg((isAffix?getColumn("category","name",previous_category_id):QString("%1").arg(previous_category_id)))).append(">[").append(QString("%1").arg((isAffix?getColumn("category","name",resulting_category_id):QString("%1").arg(resulting_category_id)))).append("]");
     }
     result_node::~result_node(){	}
-};
 
 

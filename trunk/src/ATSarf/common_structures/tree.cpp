@@ -236,13 +236,12 @@ int tree::build_affix_tree(item_types type)
     QString stmt=QString("SELECT id, name FROM %1").arg(interpret_type(type));
     QString name;
     unsigned long affix_id1;
-    bool ok;
     if (!execute_query(stmt,query))
             return -1;;
     while (query.next())
     {
             name=query.value(1).toString();
-            affix_id1=query.value(0).toLL();
+			affix_id1=query.value(0).toULongLong();
             Search_by_item s1(type,affix_id1);
 #ifdef MEMORY_EXHAUSTIVE
             minimal_item_info inf;
@@ -290,7 +289,7 @@ void tree::print_tree()
             <<"result nodes count= "<<result_nodes<<"\n"
             <<QString().fill('-',40)<<"\n";
 }
-virtual tree::~tree()
+tree::~tree()
 {
     reset();
     delete base;

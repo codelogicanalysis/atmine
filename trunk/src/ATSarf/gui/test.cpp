@@ -1,9 +1,9 @@
 #include "test.h"
 #include "../builders/all.h"
 #include "../sql-interface/sql_queries.h"
-#include "tree_search.h"
-#include "database_info.h"
-#include "utilities.h"
+#include "../sarf/stemmer.h"
+#include "../caching_structures/database_info_block.h"
+#include "../utilities/diacritics.h"
 
 bool first_time=true;
 //starting point

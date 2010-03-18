@@ -1,5 +1,5 @@
-INCLUDEPATH += C:/Qt/2009.04/qt/include/QtSql \
-    C:/Qt/2009.04/qt/include/Qt
+INCLUDEPATH += /opt/qtsdk-2009.04/qt/include/QtSql \
+    /opt/qtsdk-2009.04/qt/include/Qt
 HEADERS += utilities/text_handling.h \
     utilities/diacritics.h \
     utilities/dbitvec.h \
@@ -7,7 +7,7 @@ HEADERS += utilities/text_handling.h \
     sql-interface/Search_Compatibility.h \
     sql-interface/Search_by_item.h \
     sql-interface/Search_by_category.h \
-    sarf/ATtree_search.h \
+    sarf/tree_search.h \
     sarf/suffix_search.h \
     sarf/stemmer.h \
     sarf/stem_search.h \
@@ -24,7 +24,8 @@ HEADERS += utilities/text_handling.h \
     gui/test.h \
     gui/mainwindow.h \
     logger/logger.h \
-    common_structures/common.h
+    common_structures/common.h \
+    sql-interface/Retrieve_Template.h
 SOURCES += utilities/text_handling.cpp \
     utilities/diacritics.cpp \
     utilities/dbitvec.cpp \
@@ -45,7 +46,9 @@ SOURCES += utilities/text_handling.cpp \
     builders/all.cpp \
     gui/test.cpp \
     gui/mainwindow.cpp \
-    sarf/tree_search.cpp
+    sarf/tree_search.cpp \
+    sql-interface/Retrieve_Template.cpp \
+    common_structures/global_variables.cpp
 CONFIG += qt
 
 # debug

@@ -1,6 +1,8 @@
 #ifndef _RESULT_NODE_H
 #define	_RESULT_NODE_H
 
+#include "node.h"
+
 class result_node:public node
 {
     private:
@@ -28,7 +30,13 @@ class result_node:public node
 
         void addPair(QString raw_data,QString description);
     #endif
-        result_node(long affix_id,long previous_category_id,long resulting_category_id, QString raw_data, QString description);
+	#ifdef MEMORY_EXHAUSTIVE
+		result_node(long affix_id,long previous_category_id,long resulting_category_id, QString raw_data, QString description);
+	#elif defined(REDUCE_THRU_DIACRITICS)
+		result_node(long affix_id,long previous_category_id,long resulting_category_id, QString raw_data);
+	#else
+		result_node(long affix_id,long previous_category_id,long resulting_category_id);
+	#endif
         bool isLetterNode();
         long get_previous_category_id();
         void set_previous_category_id(long id);
@@ -37,7 +45,7 @@ class result_node:public node
         long get_resulting_category_id();
         void set_resulting_category_id(long id);
         QString to_string(bool isAffix=true);
-        ~result_node(){	}
+		~result_node();
 };
 
 #endif	/* _RESULT_NODE_H */

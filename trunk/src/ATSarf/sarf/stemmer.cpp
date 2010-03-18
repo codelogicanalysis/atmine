@@ -1,11 +1,15 @@
+#include "logger/logger.h"
+#include "../sql-interface/Search_by_item.h"
+#include "../utilities/text_handling.h"
+#include "../utilities/diacritics.h"
 #include "stemmer.h"
 
-virtual bool Stemmer::on_match_helper() //needed just to count matches till now
+bool Stemmer::on_match_helper() //needed just to count matches till now
 {
         total_matches_till_now++;
         return on_match();
 }
-virtual bool Stemmer::on_match()
+bool Stemmer::on_match()
 {
         int count=0;
         int number=0;
@@ -62,7 +66,7 @@ virtual bool Stemmer::on_match()
                                 out<<" [ ";
                                 for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
                                         if (stem_info.abstract_categories[i])
-                                                        out<<getColumn("category","name",abstract_category_ids[i])<< " ";
+														out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
                                 out<<"]";
                         }
                 }

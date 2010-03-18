@@ -20,6 +20,6 @@ class database_info_block
         ~database_info_block();
 };
 
-database_info_block database_info;
+extern database_info_block database_info;
 
 #endif // DATABASE_INFO_H

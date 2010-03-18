@@ -92,21 +92,16 @@ brief: provides a bitvector with [] access and dynamic size
 			(data[byte] & (~mask));
 	}
 
-	class dbitvec::Byte
-        { public:
-		unsigned int bit;//offset within the byte
-		dbitvec * vec;// pointer to vector
-		Byte(unsigned int i, dbitvec * v) :
-			bit(i),  vec(v) {}
-		operator bool () {
-			return vec->getBit(bit);
-		}
+	dbitvec::Byte::Byte(unsigned int i, dbitvec * v) :bit(i),  vec(v) {}
 
-		Byte & operator = (bool b) {
-			vec->setBit(bit, b);
-			return *this;
-		}
-	};
+	dbitvec::Byte::operator bool () {
+		return vec->getBit(bit);
+	}
+
+	dbitvec::Byte & dbitvec::Byte::operator = (bool b) {
+		vec->setBit(bit, b);
+		return *this;
+	}
 
 	dbitvec::Byte dbitvec::operator [] (unsigned int bit) {
 		return Byte(bit, this);

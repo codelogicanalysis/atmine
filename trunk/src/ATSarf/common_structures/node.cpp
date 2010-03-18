@@ -1,6 +1,3 @@
-#ifndef TREE_H
-#define TREE_H
-
 #include "node.h"
 
 bool node::hasChildren()
@@ -27,7 +24,6 @@ void node::removeChildren()//just remove references
             //delete children[i];
     }
 }
-virtual node::~node() {}
+node::~node() {}
 
-#endif // TREE_H
 

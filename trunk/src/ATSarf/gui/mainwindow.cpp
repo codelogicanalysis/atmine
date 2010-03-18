@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "test.h"
 #include "../sql-interface/sql_queries.h"
 #include "ui_mainwindow.h"
 

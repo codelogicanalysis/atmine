@@ -133,6 +133,20 @@ inline int get_bitindex(int id,int array[])
         assert(1);*/
 	return max_sources-1;
 }
+inline long get_abstractCategory_id(int bit)//-1 is invalid
+{
+	if (bit<abstract_category_ids[max_sources] && bit>0)
+		return abstract_category_ids[bit];
+	else
+		return -1;
+}
+inline long get_source_id(int bit)
+{
+	if (bit<source_ids[max_sources] && bit>0)
+		return source_ids[bit];
+	else
+		return -1;
+}
 inline bitset<max_sources> bigint_to_bitset(unsigned long long ll)
 {
 	unsigned long long mask=0x1;
