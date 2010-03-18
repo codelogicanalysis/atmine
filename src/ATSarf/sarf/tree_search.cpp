@@ -1,19 +1,17 @@
-#ifndef _TREE_SEARCH_H
-#define _TREE_SEARCH_H
-
-#include "ATtree_search.h"
+#include "tree_search.h"
 
 #include "suffix_search.h"
 #include "stem_search.h"
 #include "prefix_search.h"
 #include "stemmer.h"
 #include <QVector>
+#include "../common_structures/node.h"
 #include "../common_structures/tree.h"
 #include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"
 #include "../caching_structures/database_info_block.h"
 
-virtual bool TreeSearch::shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
+bool TreeSearch::shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
 {
         return true;
 }
@@ -57,7 +55,7 @@ void TreeSearch::fill_details() //this function fills the public member function
         }
 #endif
 }
-virtual TreeSearch::~TreeSearch() {}
+TreeSearch::~TreeSearch() {}
 bool TreeSearch::operator ()()
 {
 	queue.clear();
@@ -311,6 +309,4 @@ TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 		Tree=database_info.Suffix_Tree;
 	//number_of_matches=0;
 }
-
-#endif // TREE_SEARCH_H
 

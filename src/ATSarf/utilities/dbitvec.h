@@ -30,7 +30,14 @@ class dbitvec {
 	//TODO: resize, copy constructor
 	bool getBit(unsigned int i) const;
 	void setBit(unsigned int i, bool b = true) const;
-	class Byte;
+	class Byte
+	{ public:
+		unsigned int bit;//offset within the byte
+		dbitvec * vec;// pointer to vector
+		Byte(unsigned int i, dbitvec * v);
+		operator bool () ;
+		Byte & operator = (bool b) ;
+	};
 	Byte operator [] (unsigned int bit);
 };
 #endif

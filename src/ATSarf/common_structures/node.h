@@ -15,8 +15,6 @@
 #undef MEMORY_EXHAUSTIVE
 #endif
 
-#include "node.h"
-
 class node
 {
 	private:

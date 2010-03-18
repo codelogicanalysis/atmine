@@ -8,7 +8,7 @@ using namespace std;
 
 #define max_sources 256
 
-bitset<max_sources> INVALID_BITSET;
+extern bitset<max_sources> INVALID_BITSET;
 
 enum rules { AA,AB,AC,BC,CC };
 enum item_types { PREFIX, STEM, SUFFIX};

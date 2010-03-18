@@ -1,7 +1,7 @@
 #ifndef _SUFFIX_SEARCH_H
 #define	_SUFFIX_SEARCH_H
 
-#include "ATtree_search.h"
+#include "tree_search.h"
 
 class Stemmer;
 

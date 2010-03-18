@@ -13,7 +13,7 @@
 
 using namespace std;
 
-QSqlDatabase db;
+extern QSqlDatabase db;
 
 #define perform_query(stmt)  \
 	if (!execute_query(stmt)) \
@@ -31,6 +31,8 @@ inline bitset<max_sources> string_to_bitset(QString val);
 inline bitset<max_sources> string_to_bitset(QVariant val);
 inline bool start_connection(); //and do other initializations
 inline void close_connection();
+inline long get_abstractCategory_id(int bit);
+inline long get_source_id(int bit);
 inline bool existsID(QString table,unsigned long long id,QString additional_condition ="");
 inline long long getID(QString table, QString name, QString additional_condition="", QString column_name="name");
 inline QString getColumn(QString table, QString column_name, long long id, QString additional_condition="",bool has_id=true);

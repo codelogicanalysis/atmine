@@ -1,6 +1,8 @@
 #ifndef _LETTER_NODE_H
 #define	_LETTER_NODE_H
 
+#include "node.h"
+
 class letter_node:public node
 {
     private:

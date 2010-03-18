@@ -4,14 +4,14 @@
 #include <QTextStream>
 #include <bitset>
 
-QTextStream out;
-QTextStream in;
-QTextStream displayed_error;
+extern QTextStream out;
+extern QTextStream in;
+extern QTextStream displayed_error;
 
-bool KEEP_OLD=true;
-bool warn_about_automatic_insertion =false;
-bool display_errors=true;
-bool display_warnings=true;
+extern bool KEEP_OLD;
+extern bool warn_about_automatic_insertion;
+extern bool display_errors;
+extern bool display_warnings;
 
 #define error \
 	if (display_errors) displayed_error << "ERROR! "

@@ -16,7 +16,7 @@ void letter_node::setLetter(QChar letter)
 {
     this->letter=letter;
 }
-QString letter_node::to_string(bool =true)
+QString letter_node::to_string(bool)
 {
     return QString("--->(").append((letter=='\0'?'$':letter)).append(")");
 }

@@ -1,4 +1,6 @@
-
+#include "../sql-interface/Search_by_item.h"
+#include "../utilities/text_handling.h"
+#include "../utilities/diacritics.h"
 #include "stem_search.h"
 #include "stemmer.h"
 
