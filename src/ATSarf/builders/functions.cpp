@@ -1,7 +1,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QDir>
-#include "all.h"
+#include "functions.h"
 #include "../sql-interface/sql_queries.h"
 #include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"

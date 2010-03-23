@@ -38,7 +38,7 @@ class TreeSearch
         //int number_of_matches;
 
         virtual bool shouldcall_onmatch(int);
-        inline bool on_match_helper();
+		bool on_match_helper();
     public:
         TreeSearch(item_types type,Stemmer* info,int position);
         virtual bool operator()();
