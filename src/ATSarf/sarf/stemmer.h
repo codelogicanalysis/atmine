@@ -9,7 +9,7 @@
 class Stemmer
 {
     protected:
-        int total_matches_till_now;
+		//int total_matches_till_now;
         item_types type;
     public:
         QString word;

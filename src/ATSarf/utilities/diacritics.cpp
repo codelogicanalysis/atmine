@@ -7,21 +7,21 @@
 #include <QRegExp>
 
 //utility functions
-inline bool isConsonant(QChar letter)
+bool isConsonant(QChar letter)
 {
 	if (letter !=ya2 && letter !=waw && letter !=alef) //not a very firm condition to assume consonant but might work here
 		return true;
 	else
 		return false;
 }
-inline bool isDiacritic(QChar letter) //TODO: add the madda
+bool isDiacritic(QChar letter) //TODO: add the madda
 {
 	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn)
 		return true;
 	else
 		return false;
 }
-inline QString removeDiacritics(QString /*&*/text)
+QString removeDiacritics(QString /*&*/text)
 {
 	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+kasratayn+fathatayn+dammatayn+QString("]"));
 	/*QString changed=*/return text.remove(exp);
@@ -29,7 +29,7 @@ inline QString removeDiacritics(QString /*&*/text)
 	text=changed;
 	return letters_removed;*/
 }
-inline int getLastLetter_index(QString word) //last non-Diacritical letter, -1 means that all letters are diactrics
+int getLastLetter_index(QString word) //last non-Diacritical letter, -1 means that all letters are diactrics
 {
 	int length=word.length();
 	if (length==0)
@@ -39,23 +39,23 @@ inline int getLastLetter_index(QString word) //last non-Diacritical letter, -1 m
 		i--;
 	return i; //even if -1 is returned it shows that all characters are diactrics
 }
-inline QChar getLastLetter(QString word, int pos) //helper function for last non-Diacritic letter
+QChar getLastLetter(QString word, int pos) //helper function for last non-Diacritic letter
 {
 	if (pos>=0 && pos < word.length())
 		return word[pos];
 	else
 		return '\0';
 }
-inline QChar getLastLetter(QString word) //last non-Diacritical letter
+QChar getLastLetter(QString word) //last non-Diacritical letter
 {
 	int pos=getLastLetter_index(word);
 	return getLastLetter(word,pos);
 }
-inline QString removeLastLetter(QString word) //last non-Diacritical letter
+QString removeLastLetter(QString word) //last non-Diacritical letter
 {
 	return word.left(getLastLetter_index(word));
 }
-inline QString removeLastDiacritic(QString word) //removes last consecutive diactrics until a normal letter is reached
+QString removeLastDiacritic(QString word) //removes last consecutive diactrics until a normal letter is reached
 {
 	/*if (word.length()==0)
 		return word;

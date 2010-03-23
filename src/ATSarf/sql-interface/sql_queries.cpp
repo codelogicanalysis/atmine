@@ -45,7 +45,7 @@ void backtrace(void)
 
 */
 
-inline QString interpret_type(item_types t)
+QString interpret_type(item_types t)
 {
 	switch(t)
 	{
@@ -60,7 +60,7 @@ inline QString interpret_type(item_types t)
 		return "--";
 	}
 }
-inline QString interpret_type(rules r)
+QString interpret_type(rules r)
 {
 	switch(r)
 	{
@@ -79,7 +79,7 @@ inline QString interpret_type(rules r)
 		return "--";
 	}
 }
-inline bool execute_query(QString stmt, QSqlQuery &query)
+bool execute_query(QString stmt, QSqlQuery &query)
 {
 	if (!query.exec(stmt))
 	{
@@ -88,11 +88,11 @@ inline bool execute_query(QString stmt, QSqlQuery &query)
 	}
 	return true;
 }
-inline bool execute_query(QString stmt)
+bool execute_query(QString stmt)
 {
 	return execute_query(stmt,query);
 }
-inline int generate_bit_order(QString table,int array[],QString filter_column ="")
+int generate_bit_order(QString table,int array[],QString filter_column ="")
 {
 	QString stmt=QString( "SELECT id FROM %1 %2").arg(table).arg((filter_column==""?QString(""):QString("WHERE %1=1").arg(filter_column)));
 	perform_query(stmt);
@@ -111,7 +111,7 @@ inline int generate_bit_order(QString table,int array[],QString filter_column ="
 	array[max_sources]=i;
 	return i;
 }
-inline int append_to_bit_order(int array[],int id)
+int append_to_bit_order(int array[],int id)
 {
 	if ((++array[max_sources])>max_sources)
 	{
@@ -122,7 +122,7 @@ inline int append_to_bit_order(int array[],int id)
 	array[array[max_sources]-1]=id;
 	return array[max_sources];
 }
-inline int get_bitindex(int id,int array[])
+int get_bitindex(int id,int array[])
 {
 	for (int i=0;i<max_sources && i<array[max_sources];i++)//array[max_sources] stores by convention the number of filled entries in the array
 		if (array[i]==id)
@@ -133,21 +133,21 @@ inline int get_bitindex(int id,int array[])
         assert(1);*/
 	return max_sources-1;
 }
-inline long get_abstractCategory_id(int bit)//-1 is invalid
+long get_abstractCategory_id(int bit)//-1 is invalid
 {
 	if (bit<abstract_category_ids[max_sources] && bit>0)
 		return abstract_category_ids[bit];
 	else
 		return -1;
 }
-inline long get_source_id(int bit)
+long get_source_id(int bit)
 {
 	if (bit<source_ids[max_sources] && bit>0)
 		return source_ids[bit];
 	else
 		return -1;
 }
-inline bitset<max_sources> bigint_to_bitset(unsigned long long ll)
+bitset<max_sources> bigint_to_bitset(unsigned long long ll)
 {
 	unsigned long long mask=0x1;
 	bitset<max_sources> b;
@@ -158,20 +158,20 @@ inline bitset<max_sources> bigint_to_bitset(unsigned long long ll)
 	}
 	return b;
 }
-inline bitset<max_sources> bigint_to_bitset(char * val)
+bitset<max_sources> bigint_to_bitset(char * val)
 {
 	unsigned long long ll;
 	sscanf(val,"%llu",&ll);
 	return bigint_to_bitset(ll);
 }
-inline bitset<max_sources> bigint_to_bitset(QVariant val)
+bitset<max_sources> bigint_to_bitset(QVariant val)
 {
 	bool ok;
 	if (val.canConvert(QVariant::ULongLong))
 		return bigint_to_bitset(val.toULongLong(&ok));
 	return bigint_to_bitset((char *)val.toString().toStdString().data());
 }
-inline bitset<max_sources> string_to_bitset(QString val)
+bitset<max_sources> string_to_bitset(QString val)
 {
 	ushort mask=0x1;
 	bitset<max_sources> b;
@@ -186,11 +186,11 @@ inline bitset<max_sources> string_to_bitset(QString val)
 	}
 	return b;
 }
-inline bitset<max_sources> string_to_bitset(QVariant val)
+bitset<max_sources> string_to_bitset(QVariant val)
 {
 	return string_to_bitset(val.toString());
 }
-inline QString bitset_to_string(bitset<max_sources> b)
+QString bitset_to_string(bitset<max_sources> b)
 {
 	ushort shift=0;
 	int num_characters=max_sources>>4;
@@ -206,7 +206,7 @@ inline QString bitset_to_string(bitset<max_sources> b)
 	}
 	return QString(val,num_characters);
 }
-inline bool start_connection() //and do other initializations
+bool start_connection() //and do other initializations
 {
 	/*qDebug()<<db.isOpen()<<db.databaseName();
 	if (!db.isOpen())
@@ -239,21 +239,21 @@ inline bool start_connection() //and do other initializations
 	//}
 	return 0;
 }
-inline void close_connection()
+void close_connection()
 {
 		db.close();
 		//TODO: must destroy the db before calling the following
 		//QSqlDatabase::removeDatabase("atm");
 
 }
-inline bool existsID(QString table,unsigned long long id,QString additional_condition)
+bool existsID(QString table,unsigned long long id,QString additional_condition)
 {
 	QString stmt( "SELECT * FROM %1 WHERE id ='%2' %3");
 	stmt=stmt.arg(table).arg(id).arg((additional_condition==""?additional_condition:"AND "+additional_condition));
 	perform_query(stmt);
 	return (query.size()>0);
 }
-inline long long getID(QString table, QString name, QString additional_condition, QString column_name)
+long long getID(QString table, QString name, QString additional_condition, QString column_name)
 {
 	bool ok;
 	QString stmt( "SELECT id FROM %1 WHERE %4 =\"%2\" %3");
@@ -264,7 +264,7 @@ inline long long getID(QString table, QString name, QString additional_condition
 	else
 		return -1;
 }
-inline QString getColumn(QString table, QString column_name, long long id, QString additional_condition,bool has_id)
+QString getColumn(QString table, QString column_name, long long id, QString additional_condition,bool has_id)
 {
 	QString stmt( "SELECT %4 FROM %1 WHERE %2 %3");
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):"")).arg((additional_condition==QString("")?additional_condition:(has_id==true?"AND ":"")+additional_condition)).arg(column_name);
@@ -281,7 +281,7 @@ inline QString getColumn(QString table, QString column_name, long long id, QStri
 		return "";
 	}
 }
-inline bool existsSOURCE(int source_id)
+bool existsSOURCE(int source_id)
 {
 	if (source_id<0 || source_id>=max_sources || !existsID("source",source_id))
 	{
@@ -291,7 +291,7 @@ inline bool existsSOURCE(int source_id)
 	else
 		return true;
 }
-inline bitset<max_sources> get_bitset_column(QString table,QString column,unsigned long long id=-1, QString additional_condition ="", bool has_id=true)
+bitset<max_sources> get_bitset_column(QString table,QString column,unsigned long long id=-1, QString additional_condition ="", bool has_id=true)
 {
 	QString stmt( "SELECT %4 FROM %1 WHERE %2 %3");
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):QString(""))).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition)).arg(column);
@@ -302,11 +302,11 @@ inline bitset<max_sources> get_bitset_column(QString table,QString column,unsign
 	else
 		return INVALID_BITSET;
 }
-inline bitset<max_sources> getSources(QString table,unsigned long long id, QString additional_condition, bool has_id)
+bitset<max_sources> getSources(QString table,unsigned long long id, QString additional_condition, bool has_id)
 {
 	return get_bitset_column(table,"sources",id,additional_condition,has_id);
 }
-inline int get_type_of_category(long category_id, item_types & type)
+int get_type_of_category(long category_id, item_types & type)
 {
 	bool ok;
 	QString stmt=QString("SELECT cast(type as unsigned) from category WHERE id=%1").arg(category_id);
@@ -323,7 +323,7 @@ inline int get_type_of_category(long category_id, item_types & type)
 	}
 	return -1;
 }
-inline bool get_types_of_rule(rules rule, item_types &t1, item_types &t2)
+bool get_types_of_rule(rules rule, item_types &t1, item_types &t2)
 {
 	switch (rule)
 	{
@@ -353,13 +353,13 @@ inline bool get_types_of_rule(rules rule, item_types &t1, item_types &t2)
 	}
 	return true;
 }
-inline bool update_dates(int source_id)
+bool update_dates(int source_id)
 {
 	QString stmt= QString("UPDATE source SET date_last = NOW() WHERE id = '%1'").arg( source_id);
 	perform_query(stmt);
 	return 0;
 }
-inline bitset<max_sources> set_index_bitset(QString table,QString column_name, int index, long long id=-1 , QString additional_condition ="",bool has_id=true)
+bitset<max_sources> set_index_bitset(QString table,QString column_name, int index, long long id=-1 , QString additional_condition ="",bool has_id=true)
 {
 	//precondition index is valid
 	long long num=0x1;
@@ -370,7 +370,7 @@ inline bitset<max_sources> set_index_bitset(QString table,QString column_name, i
 		return INVALID_BITSET; //must not reach here
 	return get_bitset_column(table,column_name, id,additional_condition,has_id);
 }
-inline bitset<max_sources> addSource(QString table, int source_id, long long id , QString additional_condition,bool has_id)
+bitset<max_sources> addSource(QString table, int source_id, long long id , QString additional_condition,bool has_id)
 {
 	if (!existsSOURCE(source_id))
 		return INVALID_BITSET;
@@ -383,7 +383,7 @@ inline bitset<max_sources> addSource(QString table, int source_id, long long id 
 		return INVALID_BITSET;
 	}
 }
-inline bitset<max_sources> addAbstractCategory(QString table, int abstract_category_id, long long id , QString additional_condition ,bool has_id)
+bitset<max_sources> addAbstractCategory(QString table, int abstract_category_id, long long id , QString additional_condition ,bool has_id)
 {
 	if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
 		return INVALID_BITSET;
@@ -397,7 +397,7 @@ inline bitset<max_sources> addAbstractCategory(QString table, int abstract_categ
 	}
 
 }
-/*inline long long getGrammarStem_id(QString table,int stem_id)
+/*long long getGrammarStem_id(QString table,int stem_id)
 {
 	bool ok;
 	QString stmt( "SELECT grammar_stem_id FROM %1 WHERE id =%2");
@@ -414,7 +414,7 @@ inline bitset<max_sources> addAbstractCategory(QString table, int abstract_categ
 	else
 		return -1;
 }*/
-inline int resolve_conflict(QString table, QString column_name, QVariant new_value, QString primary_key_condition, int source_id, bool nonvague_sources=true/*, QString additional_SET_condition=""*/)
+int resolve_conflict(QString table, QString column_name, QVariant new_value, QString primary_key_condition, int source_id, bool nonvague_sources=true/*, QString additional_SET_condition=""*/)
 {
 /*	long long old_value_long;
 	QString old_value_string;
@@ -504,7 +504,7 @@ inline int resolve_conflict(QString table, QString column_name, QVariant new_val
 	}
 	return 0;
 }
-inline long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract)//returns its id if already present and if names are equal but others are not, -1 is returned
+long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract)//returns its id if already present and if names are equal but others are not, -1 is returned
 {
 	long id=getID("category",name,QString("abstract=%1 AND type=%2").arg((isAbstract?"1":"0")).arg((int)type));
 	if (id>=0)
@@ -525,7 +525,7 @@ inline long insert_category(QString name, item_types type, bitset<max_sources> s
 	return id;
 	//maybe must update dates, but I think no need here
 }
-inline long insert_category(QString name, item_types type, int source_id, bool isAbstract)//returns its id if already present
+long insert_category(QString name, item_types type, int source_id, bool isAbstract)//returns its id if already present
 {
 	bitset<max_sources> sources;
 	sources.reset();
@@ -541,7 +541,7 @@ inline long insert_category(QString name, item_types type, int source_id, bool i
 		return -4;
 	}
 }
-inline long long insert_description(QString name,item_types type)
+long long insert_description(QString name,item_types type)
 {
 	QString stmt( "INSERT INTO description(name,type) VALUES('%1',%2)");
 	stmt=stmt.arg(name).arg((int)type);
@@ -549,7 +549,7 @@ inline long long insert_description(QString name,item_types type)
 	return getID("description",name,QString("type=%1").arg((int)type));//get id of inserted
 }
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
-inline long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
+long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
 {
 	QString table=interpret_type(type);
 	QString item_category=QString("%1_category").arg(table);
@@ -710,7 +710,7 @@ inline long insert_item(item_types type,QString name, QString raw_data, QString 
 	return item_id;
 }
 //let dispay table return the number of rows in the table
-inline long display_table(QString table) //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
+long display_table(QString table) //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
 {
 
 	out<<"--------------------------------------------------\n"<<table<<":\n";
@@ -781,7 +781,7 @@ inline long display_table(QString table) //TODO: has some error in producing sou
 	out<<QString("Rows: %1\n").arg((long)query.size());
 	return 0;
 }
-inline int insert_source(QString name, QString normalization_process, QString creator) //returns current number of sources
+int insert_source(QString name, QString normalization_process, QString creator) //returns current number of sources
 {
 	QString stmt( "SELECT id FROM source WHERE description =\"%1\"");
 	stmt=stmt.arg(name);
@@ -806,7 +806,7 @@ inline int insert_source(QString name, QString normalization_process, QString cr
 		return -1;
 	return id;
 }
-inline int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id)
+int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id)
 {
 	QString stmt;
 	item_types t1,t2;
@@ -882,7 +882,7 @@ inline int insert_compatibility_rules(rules rule, long id1,long id2, long result
 	update_dates(source_id);
 	return 0;
 }
-inline int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id)
+int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id)
 {
 	//maybe better later to check for category type, else error will appear later for an id which the user did not enter
 	long id1=getID("category",category1), id2=getID("category",category2),id_r=getID("category",category_result);
@@ -903,15 +903,15 @@ inline int insert_compatibility_rules(rules rule,QString category1,QString categ
 	}
 	return insert_compatibility_rules(rule,id1,id2,id_r,source_id);
 }
-inline int insert_compatibility_rules(rules rule,QString category1,QString category2, int source_id)
+int insert_compatibility_rules(rules rule,QString category1,QString category2, int source_id)
 {
 	return insert_compatibility_rules(rule, category1,category2,category2,source_id);
 }
-inline int insert_compatibility_rules(rules rule, long id1,long id2, int source_id)
+int insert_compatibility_rules(rules rule, long id1,long id2, int source_id)
 {
 	return insert_compatibility_rules(rule,id1,id2,id2,source_id);
 }
-inline bool areCompatible(rules rule,long category1,long category2, long& resulting_category)
+bool areCompatible(rules rule,long category1,long category2, long& resulting_category)
 {
 	QString resulting=getColumn("compatibility_rules","resulting_category",-1,QString("category_id1=%1 AND category_id2=%2 AND type =%3").arg(category1).arg(category2).arg((int)rule),false);
 	if (resulting=="")
@@ -939,7 +939,7 @@ inline bool areCompatible(rules rule,long category1,long category2, long& result
 		return true;
 	}
 }
-inline bool areCompatible(rules rule,long category1,long category2)
+bool areCompatible(rules rule,long category1,long category2)
 {
 	long resulting_id;
 	return areCompatible(rule,category1,category2,resulting_id);
