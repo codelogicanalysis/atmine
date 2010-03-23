@@ -7,7 +7,7 @@
 #include <QList>
 #include <QVector>
 
-inline QString get_Possessive_form(QString word)
+QString get_Possessive_form(QString word)
 {
 	if (word.length()>=2)
 	{
@@ -48,7 +48,7 @@ Notes:
 -asma2 el mourakaba according to last word
   */
 
-inline bool equal_strict(QList<QChar> list1,QList<QChar> list2)
+bool equal_strict(QList<QChar> list1,QList<QChar> list2)
 {
 	int l1=list1.count(),l2=list2.count();
 	if (l1!=l2)
@@ -58,7 +58,7 @@ inline bool equal_strict(QList<QChar> list1,QList<QChar> list2)
 			return false;
 	return true;
 }
-inline bool equal(QChar c1, QChar c2)
+bool equal(QChar c1, QChar c2)
 {
 	if (c1==c2)
 		return true;
@@ -71,7 +71,7 @@ inline bool equal(QChar c1, QChar c2)
 		return true;
 	return false;
 }
-inline bool equal(QString word1,QString word2)// is diacritics tolerant
+bool equal(QString word1,QString word2)// is diacritics tolerant
 {
 	int length1=word1.count();
 	int length2=word2.count();
@@ -130,7 +130,7 @@ inline bool equal(QString word1,QString word2)// is diacritics tolerant
 	}
 	return true;
 }
-inline bool startsWithAL( QString word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
+bool startsWithAL( QString word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	if (word.length()<=2)
 		return false;
@@ -138,7 +138,7 @@ inline bool startsWithAL( QString word) //does not take in account cases were Di
 		return true;
 	return false;
 }
-inline bool removeAL( QString &word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
+bool removeAL( QString &word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	if (!startsWithAL(word))
 		return false;

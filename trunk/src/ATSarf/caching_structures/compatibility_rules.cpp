@@ -12,7 +12,7 @@
 
 using namespace std;
 
-inline void compatibility_rules::generate_bit_order(rules rule)
+void compatibility_rules::generate_bit_order(rules rule)
 {
     item_types t[2];
     get_types_of_rule(rule,t[0],t[1]);
@@ -31,7 +31,7 @@ inline void compatibility_rules::generate_bit_order(rules rule)
 		}
     }
 }
-inline long compatibility_rules::get_bitindex(int order,long id)
+long compatibility_rules::get_bitindex(int order,long id)
 {
 	QVector<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
 	if (*i==id)

@@ -1,7 +1,7 @@
 #include "Search_by_item.h"
 #include "sql_queries.h"
 
-inline bool Search_by_item::retrieve_internal(long &category_id) //returns just a category but can contain redundancy
+bool Search_by_item::retrieve_internal(long &category_id) //returns just a category but can contain redundancy
 {
         bool ok;
         category_id =query.value(1).toULongLong(&ok); //1=category_id
@@ -12,7 +12,7 @@ inline bool Search_by_item::retrieve_internal(long &category_id) //returns just 
         }
         return true;
 }
-inline bool Search_by_item::retrieve_internal(all_item_info &info)
+bool Search_by_item::retrieve_internal(all_item_info &info)
 {
 //#define toLL() toULongLong(&ok); if (!ok) { error << "Unexpected Error: Non-integer field\n"; return false; }
 
@@ -40,7 +40,7 @@ inline bool Search_by_item::retrieve_internal(all_item_info &info)
         }
         return true;
 }
-inline bool Search_by_item::retrieve_internal(minimal_item_info &minimal)
+bool Search_by_item::retrieve_internal(minimal_item_info &minimal)
 {
         all_item_info all;
         if (!retrieve_internal(all))
@@ -52,7 +52,7 @@ inline bool Search_by_item::retrieve_internal(minimal_item_info &minimal)
         minimal.raw_data=all.raw_data;
         return true;
 }
-/*inline bool Search_by_item::execute_query(QString stmt) //just a copy of the global one, bc we need to use the local query and not the global
+/*bool Search_by_item::execute_query(QString stmt) //just a copy of the global one, bc we need to use the local query and not the global
 {
         if (!query.exec(stmt))
         {
@@ -96,43 +96,43 @@ Search_by_item::Search_by_item(item_types type,QString name)
                         id=-1; //not really, but because an error took place
         }
 }
-inline long long Search_by_item::ID()
+long long Search_by_item::ID()
 {
         return id;
 }
-inline QString Search_by_item::Name()
+QString Search_by_item::Name()
 {
         if (id!=-1)
                 return name;
         else
                 return QString::null;
 }
-inline int Search_by_item::size() //total size and not what is left
+int Search_by_item::size() //total size and not what is left
 {
         return query.size();
 }
-inline bool Search_by_item::retrieve(long &category_id) //returns just a category but can contain redundancy
+bool Search_by_item::retrieve(long &category_id) //returns just a category but can contain redundancy
 {
         if (id !=-1 && query.next())
                 return retrieve_internal(category_id);
         else
                 return false;
 }
-inline bool Search_by_item::retrieve(all_item_info & info)
+bool Search_by_item::retrieve(all_item_info & info)
 {
         if (id !=-1 && query.next())
                 return retrieve_internal(info);
         else
                 return false;
 }
-inline bool Search_by_item::retrieve(minimal_item_info &info)
+bool Search_by_item::retrieve(minimal_item_info &info)
 {
         if (id !=-1 && query.next())
                 return retrieve_internal(info);
         else
                 return false;
 }
-inline int Search_by_item::retrieve(long category_ids[],int size_of_array)
+int Search_by_item::retrieve(long category_ids[],int size_of_array)
 {
         if (size_of_array<=0 || id ==-1)
                 return 0;
@@ -156,15 +156,15 @@ inline int Search_by_item::retrieve(long category_ids[],int size_of_array)
         } \
         return i; \
 }
-inline int Search_by_item::retrieve(minimal_item_info info[], int size_of_array)
+int Search_by_item::retrieve(minimal_item_info info[], int size_of_array)
 {
         retrieve_info();
 }
-inline int Search_by_item::retrieve(all_item_info info[], int size_of_array)
+int Search_by_item::retrieve(all_item_info info[], int size_of_array)
 {
         retrieve_info();
 }
-inline QString Search_by_item::getGrammarStem() //just for stems
+QString Search_by_item::getGrammarStem() //just for stems
 {
         if (type==STEM)
         {
@@ -183,7 +183,7 @@ inline QString Search_by_item::getGrammarStem() //just for stems
                 return "";
         }
 }
-inline bitset<max_sources> Search_by_item::getGrammarStem_sources() //just for stems
+bitset<max_sources> Search_by_item::getGrammarStem_sources() //just for stems
 {
         if (type==STEM)
                 return getSources("stem",id);

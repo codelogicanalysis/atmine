@@ -21,8 +21,8 @@ class compatibility_rules
         index2id_map  bitorder[2];
         ResultingCategoryMap resulting_category;
 
-        inline void generate_bit_order(rules rule);
-        inline long get_bitindex(int order,long id);
+		void generate_bit_order(rules rule);
+		long get_bitindex(int order,long id);
     public:
         compatibility_rules(rules rule);
         void fill();

@@ -2,7 +2,7 @@
 #include "Search_by_category.h"
 #include "sql_queries.h"
 
-inline bool Search_by_category::retrieve_internal(long long &item_id)
+bool Search_by_category::retrieve_internal(long long &item_id)
 {
         bool ok;
         item_id =query.value(0).toULongLong(&ok);
@@ -13,7 +13,7 @@ inline bool Search_by_category::retrieve_internal(long long &item_id)
         }
         return true;
 }
-inline bool Search_by_category::retrieve_internal(all_item_info & info)
+bool Search_by_category::retrieve_internal(all_item_info & info)
 {
 		info.item_id=query.value(0).toULongLong();
 		info.category_id =query.value(1).toULongLong();
@@ -51,25 +51,25 @@ Search_by_category::Search_by_category(long category_id)
         if (!execute_query(stmt,query)) //will use the local query
                 err=true;
 }
-inline int Search_by_category::size() //total size and not what is left
+int Search_by_category::size() //total size and not what is left
 {
         return query.size();
 }
-inline bool Search_by_category::retrieve(long long &item_id)
+bool Search_by_category::retrieve(long long &item_id)
 {
         if (!err && query.next())
                 return retrieve_internal(item_id);
         else
                 return false;
 }
-inline bool Search_by_category::retrieve(all_item_info &info)
+bool Search_by_category::retrieve(all_item_info &info)
 {
         if (!err && query.next())
                 return retrieve_internal(info);
         else
                 return false;
 }
-inline int Search_by_category::retrieve(long long item_ids[],int size_of_array)
+int Search_by_category::retrieve(long long item_ids[],int size_of_array)
 {
         if (size_of_array<=0 || !err)
                 return 0;

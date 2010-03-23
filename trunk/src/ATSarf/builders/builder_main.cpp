@@ -1,13 +1,6 @@
-/* 
- * File:   builder_main.cpp
- * Author: Jad Makhlouta
- *
- * Created on March 18, 2010, 4:03 PM
- */
-
 #include <stdio.h>
 #include <stdlib.h>
-#include "all.h"
+#include "functions.h"
 
 /*
  * Executable to augment disctionary

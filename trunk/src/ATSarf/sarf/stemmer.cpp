@@ -6,7 +6,7 @@
 
 bool Stemmer::on_match_helper() //needed just to count matches till now
 {
-        total_matches_till_now++;
+		//total_matches_till_now++;
         return on_match();
 }
 bool Stemmer::on_match()
@@ -30,7 +30,7 @@ bool Stemmer::on_match()
                         while(s.retrieve(prefix_info))
                         {
 #ifdef REDUCE_THRU_DIACRITICS
-                                if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && equal(prefix_info.raw_data,Prefix->raw_datasOFCurrentMatch[i]))
+								if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && prefix_info.raw_data==Prefix->raw_datasOFCurrentMatch[i])
 #else
                                 if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] )
 #endif
@@ -54,7 +54,7 @@ bool Stemmer::on_match()
                 while(s.retrieve(stem_info))
                 {
 #ifdef REDUCE_THRU_DIACRITICS
-                        if (stem_info.category_id==Stem->category_of_currentmatch && equal(stem_info.raw_data,Stem->raw_data_of_currentmatch))
+						if (stem_info.category_id==Stem->category_of_currentmatch && stem_info.raw_data==Stem->raw_data_of_currentmatch)
 #else
                         if (stem_info.category_id==Stem->category_of_currentmatch)
 #endif
@@ -65,7 +65,7 @@ bool Stemmer::on_match()
                                 out<</*Stem->startingPos-1<<" "<<*/ stem_info.description;
                                 out<<" [ ";
                                 for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
-                                        if (stem_info.abstract_categories[i])
+										if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 														out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
                                 out<<"]";
                         }
@@ -91,7 +91,7 @@ bool Stemmer::on_match()
                         while(s.retrieve(suffix_info))
                         {
 #ifdef REDUCE_THRU_DIACRITICS
-                                if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && equal(suffix_info.raw_data,Suffix->raw_datasOFCurrentMatch[i]))
+								if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && suffix_info.raw_data==Suffix->raw_datasOFCurrentMatch[i])
 #else
                                 if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
 #endif
@@ -119,22 +119,24 @@ Stemmer::Stemmer(QString word)
 bool Stemmer::operator()()//if returns true means there was a match
 {
         called_everything=true;
-        total_matches_till_now=0;
-        Prefix->operator ()();
-        return (total_matches_till_now>0);
+		//total_matches_till_now=0;
+		return Prefix->operator ()();
+		//return (total_matches_till_now>0);
 }
 bool Stemmer::operator()(item_types type)//if returns true means there was a match
 {
         called_everything=false;
         this->type=type;
-        total_matches_till_now=0;
+		//total_matches_till_now=0;
         if (type==PREFIX)
-                Prefix->operator ()();
+				return Prefix->operator ()();
         else if (type==STEM)
-                Stem->operator ()();
+				return Stem->operator ()();
         else if (type==SUFFIX)
-                Suffix->operator ()();
-        return (total_matches_till_now>0);
+				return Suffix->operator ()();
+		else
+			return false;
+		//return (total_matches_till_now>0);
 }
 Stemmer::~Stemmer()
 {

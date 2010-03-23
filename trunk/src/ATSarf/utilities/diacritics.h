@@ -22,14 +22,14 @@ const QChar kasratayn=QChar(0x064D);
 const QChar dammatayn=QChar(0x064C);
 const QChar fathatayn=QChar(0x064B);
 
-inline bool isConsonant(QChar letter);
-inline bool isDiacritic(QChar letter); //TODO: add the madda
-inline QString removeDiacritics(QString /*&*/text);
-inline int getLastLetter_index(QString word); //last non-Diacritical letter, -1 means that all letters are diactrics
-inline QChar getLastLetter(QString word, int pos); //helper function for last non-Diacritic letter
-inline QChar getLastLetter(QString word); //last non-Diacritical letter
-inline QString removeLastLetter(QString word); //last non-Diacritical letter
-inline QString removeLastDiacritic(QString word); //removes last consecutive diactrics until a normal letter is reached
+bool isConsonant(QChar letter);
+bool isDiacritic(QChar letter); //TODO: add the madda
+QString removeDiacritics(QString /*&*/text);
+int getLastLetter_index(QString word); //last non-Diacritical letter, -1 means that all letters are diactrics
+QChar getLastLetter(QString word, int pos); //helper function for last non-Diacritic letter
+QChar getLastLetter(QString word); //last non-Diacritical letter
+QString removeLastLetter(QString word); //last non-Diacritical letter
+QString removeLastDiacritic(QString word); //removes last consecutive diactrics until a normal letter is reached
 QString getDiacriticword(int position,int startPos,QString diacritic_word);
 
 #endif	/* _DIACRITICS_H */

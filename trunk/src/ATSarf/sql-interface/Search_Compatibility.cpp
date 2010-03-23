@@ -2,7 +2,7 @@
 #include "Search_Compatibility.h"
 #include "sql_queries.h"
 
-inline bool Search_Compatibility::retrieve_internal(long &category2, long &resulting_category)
+bool Search_Compatibility::retrieve_internal(long &category2, long &resulting_category)
 {
         bool ok;
         category2 =query.value(0).toULongLong(&ok);
@@ -41,23 +41,23 @@ Search_Compatibility::Search_Compatibility(rules rule, long category_id1)
         if (!execute_query(stmt,query)) //will use the local query
                 err=true;
 }
-inline int Search_Compatibility::size() //total size and not what is left
+int Search_Compatibility::size() //total size and not what is left
 {
         return query.size();
 }
-inline bool Search_Compatibility::retrieve(long &category2, long &resulting_category)
+bool Search_Compatibility::retrieve(long &category2, long &resulting_category)
 {
         if (!err && query.next())
                 return retrieve_internal(category2,resulting_category);
         else
                 return false;
 }
-inline bool Search_Compatibility::retrieve(long &category2)
+bool Search_Compatibility::retrieve(long &category2)
 {
         long resulting_category;
         return retrieve(category2, resulting_category);
 }
-inline int Search_Compatibility::retrieve(long category2_ids[],long resulting_categorys[],int size_of_array)
+int Search_Compatibility::retrieve(long category2_ids[],long resulting_categorys[],int size_of_array)
 {
         if (size_of_array<=0 || !err)
                 return 0;
@@ -69,7 +69,7 @@ inline int Search_Compatibility::retrieve(long category2_ids[],long resulting_ca
         }
         return i;
 }
-inline int Search_Compatibility::retrieve(long category2_ids[],int size_of_array)
+int Search_Compatibility::retrieve(long category2_ids[],int size_of_array)
 {
         long resulting_categorys[size_of_array];
         return retrieve(category2_ids,resulting_categorys,size_of_array);
