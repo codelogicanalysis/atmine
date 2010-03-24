@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QRegExp>
+#include <QStringList>
 #include "test.h"
 //#include "../builders/functions.h"
 #include "../sql-interface/sql_queries.h"
@@ -19,7 +20,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
 
-
+/*
 	//file parsing:
 	QFile input(input_str);
 	if (!input.open(QIODevice::ReadWrite))
@@ -38,7 +39,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 			continue;
 		QStringList entries=line.split(QRegExp(QString("[ \n]")),QString::KeepEmptyParts);//space or enter
             }
-
+*/
 	/*QString word,word2;
 	in >>word;
 	int i1,i2;
@@ -57,7 +58,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	stemmer();
 
 ///hhh
-
+/*
 
         QStringList wordList=word.split(" ",QString::SkipEmptyParts);
 
@@ -83,14 +84,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
                 }
             }
         }
-
+*/
 ///hhh
 
 
 
 	return 0;
 }
-
+/*
 int getSanadBeginning(QStringList wordList)
 {
     int listSize=wordList.size();
@@ -179,3 +180,4 @@ bool isValidTransition(int previousState,wordType currenType)
     }
 
 }
+*/
