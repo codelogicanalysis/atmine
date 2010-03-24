@@ -59,7 +59,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 ///hhh
 
 
-        QStringList wordList=wordFromSanad.split(" ",QString::SkipEmptyParts);
+        QStringList wordList=word.split(" ",QString::SkipEmptyParts);
 
         int sanadBeginning=getSanadBeginning(wordList);
 
@@ -68,15 +68,16 @@ int start(QString input_str, QString &output_str, QString &error_str)
 
         int listSize=wordList.size()-sanadBeginning;
 
-        wordState previousState=IKHBAR;
-        wordState currentState;
+        int previousState=1;
+        int currentType;
 
         for (i=sanadBeginning;i<listSize;i++)
         {
-            wordState currentState=getWordState(wordListFromSanad[i]);
-            if (currentState!=OTHER)
+            currentType=getWordType(wordListFromSanad[i]);
+
+            if (currentType!=OTHER)
             {
-                if (isValidTransition(previousState,currentState))
+                if (isValidTransition(previousState,currentType))
                 {
                     continue;
                 }
@@ -95,8 +96,86 @@ int getSanadBeginning(QStringList wordList)
     int listSize=wordList.size();
     for (int i=0;i<listSize;i++)
     {
-        if (getWordState(wordList[i])==IKHBAR)
+        if (getWordType(wordList[i])==IKHBAR)
             return i;
     }
     return -1;
+}
+
+wordState getWordType(QString word)
+{
+    //after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
+    return IKHBAR
+
+}
+
+bool isValidTransition(int previousState,wordType currenType)
+{
+    int nextState=-1;
+
+    switch(previousState)
+    {
+        case 1:
+        if(currentType==NAME)
+        {
+            nextState=2;
+            return TRUE;
+        }
+        else
+            return FALSE;
+
+        case 2:
+        if(currentType==AAN)
+        {
+            nextState=3;
+            return TRUE;
+        }
+        else if(currentType==KAWL)
+        {
+            nextState=4;
+            return TRUE;
+        }
+        else
+            return FALSE;
+
+        case 3:
+        if(currentType==NAME)
+        {
+            nextState=2;
+            return TRUE;
+        }
+        else
+            return FALSE;
+
+        case 4:
+        if(currentType==IKHBAR)
+        {
+            nextState=1;
+            return TRUE;
+        }
+        else if(currentType==KAWL)
+        {
+            nextState=5;
+            return TRUE;
+        }
+        else
+            return FALSE;
+
+        case 5:
+        if(currentType==NAME)
+        {
+            nextState=2;
+            return TRUE;
+        }
+        else if (currenType==NAME_NABI)
+        {
+            nextState=6;
+            return TRUE;
+        }
+        else
+            return FALSE;
+        default:
+            return FALSE;
+    }
+
 }
