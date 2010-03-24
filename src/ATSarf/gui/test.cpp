@@ -37,7 +37,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		if (line.isEmpty()) //ignore empty lines if they exist
 			continue;
 		QStringList entries=line.split(QRegExp(QString("[ \n]")),QString::KeepEmptyParts);//space or enter
-
+            }
 
 	/*QString word,word2;
 	in >>word;
@@ -55,5 +55,48 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	}
 	Stemmer stemmer(word);
 	stemmer();
+
+///hhh
+
+
+        QStringList wordList=wordFromSanad.split(" ",QString::SkipEmptyParts);
+
+        int sanadBeginning=getSanadBeginning(wordList);
+
+        if (sanadBeginning<0)
+            return 0;
+
+        int listSize=wordList.size()-sanadBeginning;
+
+        wordState previousState=IKHBAR;
+        wordState currentState;
+
+        for (i=sanadBeginning;i<listSize;i++)
+        {
+            wordState currentState=getWordState(wordListFromSanad[i]);
+            if (currentState!=OTHER)
+            {
+                if (isValidTransition(previousState,currentState))
+                {
+                    continue;
+                }
+            }
+        }
+
+///hhh
+
+
+
 	return 0;
+}
+
+int getSanadBeginning(QStringList wordList)
+{
+    int listSize=wordList.size();
+    for (int i=0;i<listSize;i++)
+    {
+        if (getWordState(wordList[i])==IKHBAR)
+            return i;
+    }
+    return -1;
 }
