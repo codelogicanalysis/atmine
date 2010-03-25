@@ -1,3 +1,3 @@
 -about space. in tree after we find a space, we call get anotherword then continue parsing according to the next word
-
--about reflexions in the jazer, we have to make rules for them and generate them and then add them to database and not compute them on the fly
+-about blind space. letters with terminal form in the middle of the word. ('waw' not 'seen' for example)
+-about inflections in the jazer, we have to make rules for them and generate them and then add them to database and not compute them on the fly

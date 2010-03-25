@@ -12,7 +12,7 @@ private:
 	bool err;
 	bool retrieve_internal(long &category2, long &resulting_category);
 public:
-	Search_Compatibility(rules rule, long category_id1);
+	Search_Compatibility(rules rule, long category_id,bool first=true);//firstt means first category provided as parameter, while being false means second provided
 	int size(); //total size and not what is left
 	bool retrieve(long &category2, long &resulting_category);
 	bool retrieve(long &category2);

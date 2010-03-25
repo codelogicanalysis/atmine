@@ -49,13 +49,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
 
 	QString word;
 	in >>word;
-	if (first_time)
+	out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
+	/*if (first_time)
 	{
 		database_info.fill();
 		first_time=false;
 	}
 	Stemmer stemmer(word);
-	stemmer();
+	stemmer();*/
 
 ///hhh
 /*

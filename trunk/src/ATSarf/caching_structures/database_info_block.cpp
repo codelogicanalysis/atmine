@@ -4,6 +4,7 @@ database_info_block::database_info_block()
 {
     Prefix_Tree=new tree();
     Suffix_Tree=new tree();
+	Stem_Tree=new tree();
     rules_AA=new compatibility_rules(AA);
     rules_AB=new compatibility_rules(AB);
     rules_AC=new compatibility_rules(AC);
@@ -15,6 +16,7 @@ void database_info_block::fill()
 {
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
+	Stem_Tree->build_affix_tree(STEM);
     rules_AA->fill();
     rules_AB->fill();
     rules_AC->fill();
@@ -26,6 +28,7 @@ database_info_block::~database_info_block()
 {
     delete Prefix_Tree;
     delete Suffix_Tree;
+	delete Stem_Tree;
     delete rules_AA;
     delete rules_AB;
     delete rules_AC;
@@ -33,3 +36,4 @@ database_info_block::~database_info_block()
     delete rules_CC;
 }
 
+database_info_block database_info;

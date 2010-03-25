@@ -248,21 +248,24 @@ int tree::build_affix_tree(item_types type)
             while(s1.retrieve(inf))
             {
                     node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,inf.description,base);
-                    build_helper(type,inf.category_id,6-name.length(),next);
+					if (type!=STEM)
+						build_helper(type,inf.category_id,6-name.length(),next);
             }
 #elif defined(REDUCE_THRU_DIACRITICS)
             minimal_item_info inf;
             while(s1.retrieve(inf))
             {
-                    node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,base);
-                    build_helper(type,inf.category_id,6-name.length(),next);
+					node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,base);
+					if (type!=STEM)
+						build_helper(type,inf.category_id,6-name.length(),next);
             }
 #else
             long cat_id;
             while(s1.retrieve(cat_id))
             {
                     node * next=addElement(name,affix_id1,cat_id,cat_id,base);
-                    build_helper(type,cat_id,6-name.length(),next);
+					if (type!=STEM)
+						build_helper(type,cat_id,6-name.length(),next);
             }
 
 #endif

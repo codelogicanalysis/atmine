@@ -14,6 +14,7 @@
 #include <QVariant>
 #include <QStringList>
 #include <QList>
+#include <assert.h>
 
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
@@ -176,10 +177,13 @@ bitset<max_sources> string_to_bitset(QString val)
 	ushort mask=0x1;
 	bitset<max_sources> b;
 	b.reset();
+	//qDebug()<<b.to_string().data();
+	val.remove('-');
 	int num_bits=val.length()<<4;
 	for (int i=0 ; i<max_sources && i<num_bits; i++)
 	{
 		b[i]=(mask & (ushort)val[i>>4].unicode())!=0;
+		//qDebug()<<b[i]<<(ushort)val[i>>4].unicode();
 		mask=mask <<1;
 		if (mask==0x0)
 			mask=0x1;
@@ -193,18 +197,33 @@ bitset<max_sources> string_to_bitset(QVariant val)
 QString bitset_to_string(bitset<max_sources> b)
 {
 	ushort shift=0;
+	QString result;
 	int num_characters=max_sources>>4;
 	QChar val[num_characters];
 	for (int i=0 ; i<num_characters; i++)
 		val[i]=0;
+	int j=0;
 	for (int i=0 ; i<max_sources; i++)
 	{
-		val[i>>4]=(val[i>>4].unicode()+((ushort)b[i] << shift));
+		//val[i>>4]=(val[i>>4].unicode() | ((ushort)b[i] << shift));
+		j=j | ((ushort)b[i] << shift);
 		shift=shift +1;
 		if (shift==16)
+		{
 			shift=0;
+			val[(i>>4)]=j;
+			j=0;
+			//qDebug()<<(i>>4)<<" "<<val[(i>>4)];
+		}
 	}
-	return QString(val,num_characters);
+	QChar val2[num_characters<<1];// *2
+	for (int i=0;i<num_characters;i++)
+	{
+		val2[i<<1]=val[i];
+		val2[(i<<1)|1]='-';
+	}
+	//qDebug()<<QString(val,num_characters);
+	return QString(val2,num_characters<<1);
 }
 bool start_connection() //and do other initializations
 {
@@ -362,13 +381,23 @@ bool update_dates(int source_id)
 bitset<max_sources> set_index_bitset(QString table,QString column_name, int index, long long id=-1 , QString additional_condition ="",bool has_id=true)
 {
 	//precondition index is valid
-	long long num=0x1;
-	num=num<<index;
-	QString stmt("UPDATE %3 SET %5= %5 | %2 WHERE %1 %4");
-	stmt=stmt.arg((has_id==true?QString("id ='%1'").arg(id):QString(""))).arg(num).arg(table).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition)).arg(column_name);
+	bitset<max_sources> old_bitset;
+	old_bitset.reset();
+	old_bitset=get_bitset_column(table,column_name,id,additional_condition,has_id);
+	old_bitset.set(index);//it became new now
+	QString str1=bitset_to_string(old_bitset);
+redo:
+	QString stmt("UPDATE ");
+	stmt.append(table).append(" SET ").append(column_name).append("= '").append(str1);
+	stmt.append("' WHERE ").append((has_id==true?QString("id ='%1'").arg(id):QString(""))).append((additional_condition==""?additional_condition:(has_id?" AND ":"")+additional_condition));
 	if (!execute_query(stmt))
 		return INVALID_BITSET; //must not reach here
-	return get_bitset_column(table,column_name, id,additional_condition,has_id);
+	bitset<max_sources> new_bitset;
+	new_bitset.reset();
+	new_bitset=get_bitset_column(table,column_name,id,additional_condition,has_id);
+	/*if (new_bitset!=old_bitset)
+		goto redo;*/
+	return old_bitset;//it is actually new now
 }
 bitset<max_sources> addSource(QString table, int source_id, long long id , QString additional_condition,bool has_id)
 {
@@ -389,7 +418,7 @@ bitset<max_sources> addAbstractCategory(QString table, int abstract_category_id,
 		return INVALID_BITSET;
 	int bit_index=get_bitindex(abstract_category_id,abstract_category_ids);
 	if (bit_index>=0 && bit_index<max_sources)
-		return set_index_bitset(table,"abstract_categories",get_bitindex(abstract_category_id,abstract_category_ids),id,additional_condition,has_id);
+		return set_index_bitset(table,"abstract_categories",bit_index,id,additional_condition,has_id);
 	else
 	{
 		error << "Unexpected Error: abstract_category_id ="<<abstract_category_id<<"\n";
@@ -475,6 +504,7 @@ int resolve_conflict(QString table, QString column_name, QVariant new_value, QSt
 			else
 			{
 				bitset<max_sources> sources;
+				sources.reset();
 				int bit_index=get_bitindex(source_id,source_ids);
 				if (bit_index>=0 && bit_index<max_sources)
 				{
@@ -567,6 +597,9 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		}
 	QString stmt;
 	bitset<max_sources> cat_sources,sources,abstract_categories;
+	cat_sources.reset();
+	sources.reset();
+	abstract_categories.reset();
 	long long item_id=getID(table,name);
 	long long grammar_stem_id =-1;
 	if (type==STEM && grammar_stem!="")
@@ -607,6 +640,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		if (type==STEM)
 		{
 			bitset<max_sources> grammar_stem_sources;
+			grammar_stem_sources.reset();
 			if (grammar_stem_id!=-1)
 			{
 				int bit_index=get_bitindex(source_id,source_ids);
@@ -652,8 +686,9 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		}
 		QString primary_condition=QString("%1_id = '%2' AND category_id = '%3' AND raw_data='%4' AND description_id = %5 AND POS=\"%6\"").arg(table).arg(item_id).arg(category_id).arg(raw_data).arg(description_id).arg(POS);
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
-		for (int i=0; i<abstract_ids.count();i++)
-			abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
+		if (type==STEM)
+			for (int i=0; i<abstract_ids.count();i++)
+				abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
 		if (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/) //assumed to mean row was modified
 		{
 			if (type==STEM)
@@ -851,6 +886,7 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, in
 			else
 			{
 				bitset<max_sources> sources;
+				sources.reset();
 				int bit_index=get_bitindex(source_id,source_ids);
 				if (!(bit_index>=0 && bit_index<max_sources))
 				{
@@ -868,6 +904,7 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, in
 	else
 	{
 		bitset<max_sources> sources;
+		sources.reset();
 		int bit_index=get_bitindex(source_id,source_ids);
 		if (!(bit_index>=0 && bit_index<max_sources))
 		{

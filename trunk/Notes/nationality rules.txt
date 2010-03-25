@@ -11,7 +11,7 @@ ends				additional					rule					eg:
 ----------------------------------------------------------------------------------------------------------------------------------------
 alef 				+consonant before			-wey					sayda --> saydawey		or		7alba --> 7albawey
 alef				+waw or ya2 before			-y instead of alef		souriya--> souriyy		or		nikaragwa -->nikaragwiy
-consonant or waw								-ya2					lubna -> lubnaniy		or		hunululo  -->	hunululoy (???)
+consonant or waw								-ya2					lubnan -> lubnaniy		or		hunululo  -->	hunululoy (???)
 ta2	marbouta		+consonant before			-ya2 instead of ta2		makka --> makkiy
 ya2												-add a shadde on ya2	jibouti --> jiboutiy
 

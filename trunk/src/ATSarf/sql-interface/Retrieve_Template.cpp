@@ -2,7 +2,10 @@
 #include "sql_queries.h"
 #include <assert.h>
 
-void Retrieve_Template::intitialize(QString table,QVector<QString> columns,QString where)
+typedef QVector<QString> Columns;
+typedef QVector<QVariant> Elements;
+
+void Retrieve_Template::intitialize(QString table,Columns columns,QString where)
 {
 	QSqlQuery temp(db);
 	this->query=temp;
@@ -20,32 +23,35 @@ void Retrieve_Template::intitialize(QString table,QVector<QString> columns,QStri
 		this->columns=columns;
 }
 
-Retrieve_Template::Retrieve_Template(QString table,QVector<QString> columns,QString where)
+Retrieve_Template::Retrieve_Template(QString table,Columns columns,QString where)
 {
 	intitialize(table,columns,where);
 }
 Retrieve_Template::Retrieve_Template(QString table,QString column, QString where)
 {
-	QVector<QString> list;
+	Columns list;
+	list.clear();
 	list.append(column);
 	intitialize(table,list,where);
 }
 Retrieve_Template::Retrieve_Template(QString table,QString column1, QString column2, QString where)
 {
-	QVector<QString> list;
+	Columns list;
+	list.clear();
 	list.append(column1);
 	list.append(column2);
 	intitialize(table,list,where);
 }
 Retrieve_Template::Retrieve_Template(QString table,QString column1, QString column2, QString column3, QString where)
 {
-	QVector<QString> list;
+	Columns list;
+	list.clear();
 	list.append(column1);
 	list.append(column2);
 	list.append(column3);
 	intitialize(table,list,where);
 }
-bool Retrieve_Template::retrieve(QVector<QVariant> &elements) //returns just a category but can contain redundancy
+bool Retrieve_Template::retrieve(Elements &elements) //returns just a category but can contain redundancy
 {
 	if (!err && this->query.next())
 	{
