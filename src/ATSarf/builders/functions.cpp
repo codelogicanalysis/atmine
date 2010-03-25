@@ -5,6 +5,36 @@
 #include "../sql-interface/sql_queries.h"
 #include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"
+#include "../sql-interface/Search_Compatibility.h"
+
+int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds to them the support for Al
+{
+	int source_id=insert_source("Jad and Hamza modifications","as needed","Hamza Harkous and Jad Makhlouta");
+	QStringList added_prefixes;
+	added_prefixes<<"NPref-Al"<<"NPref-BiAl"<<"NPref-Lil"<<"NPref-LiAl";
+	long prefix_cat_id,suffix_cat_id;
+	long stem_cat_id_Nprop=getID("category","Nprop");
+	long stem_cat_id_Nprop_Al=insert_category("Nprop_Al",STEM,source_id,false);
+	Search_Compatibility search_suffixes(BC,stem_cat_id_Nprop,true);
+	while (search_suffixes.retrieve(suffix_cat_id))
+	{
+		Search_Compatibility search_prefixes(AB,stem_cat_id_Nprop,false);
+		qDebug()<<search_prefixes.size()<<" "<<search_suffixes.size()<<"\n";
+		while (search_prefixes.retrieve(prefix_cat_id))
+		{
+			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
+			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
+		}
+		QString prefix_cat;
+		foreach(prefix_cat,added_prefixes)
+		{
+			prefix_cat_id=getID("category",prefix_cat);
+			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
+			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
+		}
+	}
+	return 0;
+}
 
 //utility function for insert scripts used in insert_propernames() and insert_placenames()
 int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QString description="Proper noun")
@@ -20,7 +50,7 @@ int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QS
 	//insert possessive form of the word
 	QString possessive=get_Possessive_form(word);
 	out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
-        stem_id=insert_item(STEM,removeDiacritics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,description,"","","");
+		stem_id=insert_item(STEM,removeDiacritics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,QString("possessive form of ").append(description),"","","");
 	if (stem_id<0)
 	{
 		error<<"while adding Possessive: "<<word<<"'\n";
@@ -34,9 +64,9 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-	const QString item_files[3]= {"../../buckwalter scripts/list_of_stems.txt", \
-								  "../../buckwalter scripts/list_of_prefixes.txt", \
-								  "../../buckwalter scripts/list_of_suffixes.txt"};
+	const QString item_files[3]= {"../buckwalter scripts/list_of_stems.txt", \
+								  "../buckwalter scripts/list_of_prefixes.txt", \
+								  "../buckwalter scripts/list_of_suffixes.txt"};
 	const item_types types[3] ={ STEM, PREFIX, SUFFIX};
 	for (int j=0;j<3;j++)
 	{
@@ -129,9 +159,9 @@ int insert_buckwalter()
 		input.close();
 	}
 	//compatibility rules
-	const QString rules_files[3]= {"../../buckwalter scripts/tableAB", \
-								  "../../buckwalter scripts/tableBC", \
-								  "../../buckwalter scripts/tableAC"};
+	const QString rules_files[3]= {"../buckwalter scripts/tableAB", \
+								  "../buckwalter scripts/tableBC", \
+								  "../buckwalter scripts/tableAC"};
 	const rules rule[3] ={ AB, BC, AC};
 	for (int j=0;j<3;j++)
 	{
@@ -174,7 +204,7 @@ int insert_buckwalter()
 
 int insert_propernames()
 {
-	QDir folder("../../../dic/N","*.txt");
+	QDir folder("../../dic/N","*.txt");
 	if (!folder.exists())
 	{
 		out << "Invalid Folder\n";
@@ -248,7 +278,7 @@ int insert_propernames()
 
 int insert_placenames() //not yet complete
 {
-        QDir folder("../../../../dic/P");
+		QDir folder("../../dic/P");
 	if (!folder.exists())
 	{
 		out << "Invalid Folder\n";

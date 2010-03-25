@@ -42,7 +42,7 @@ class TreeSearch
     public:
         TreeSearch(item_types type,Stemmer* info,int position);
         virtual bool operator()();
-        void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
+		virtual void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
         virtual bool onMatch() = 0;// returns true to continue, false to abort
         virtual ~TreeSearch();
 };

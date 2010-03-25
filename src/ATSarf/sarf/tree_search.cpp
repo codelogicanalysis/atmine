@@ -167,7 +167,10 @@ bool TreeSearch::operator ()()
 #if defined(PARENT)
 				reached_node=current_child;
 #endif
-				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
+				/*if (type==STEM)
+					resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_previous_category_id();
+				else*/
+					resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
 				{
 					stop=true;
@@ -307,6 +310,8 @@ TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 		Tree=database_info.Prefix_Tree;
 	else if (type==SUFFIX)
 		Tree=database_info.Suffix_Tree;
+	else if (type==STEM)
+		Tree=database_info.Stem_Tree;
 	//number_of_matches=0;
 }
 

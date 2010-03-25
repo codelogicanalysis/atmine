@@ -15,5 +15,3 @@ bool KEEP_OLD=true;
 bool warn_about_automatic_insertion =false;
 bool display_errors=true;
 bool display_warnings=true;
-
-database_info_block database_info;

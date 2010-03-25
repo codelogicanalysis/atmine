@@ -9,7 +9,7 @@ class database_info_block
     public:
         tree* Prefix_Tree;
         tree* Suffix_Tree;
-        //trie * Stem_Trie;
+		tree * Stem_Tree;
         compatibility_rules * rules_AA;
         compatibility_rules * rules_AB;
         compatibility_rules * rules_AC;

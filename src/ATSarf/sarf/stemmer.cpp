@@ -48,6 +48,9 @@ bool Stemmer::on_match()
         if (called_everything || type==STEM)
         {
                 out<< "-(";
+#if !defined (REDUCE_THRU_DIACRITICS)
+				Stem->fill_details();
+#endif
                 //out<<Suffix->startingPos-1<<" "<<getColumn("category","name",Stem->category_of_currentmatch)<<" --- ";
                 Search_by_item s(STEM,Stem->id_of_currentmatch);
                 count=0;

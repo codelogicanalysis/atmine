@@ -26,7 +26,10 @@ bool Search_by_item::retrieve_internal(all_item_info &info)
         else
         {
 				long long description_id=query.value(5).toULongLong();
-                info.description=getColumn("description","name",description_id);  //uses global query
+				if (description_id<0)
+					info.description="";
+				else
+					info.description=getColumn("description","name",description_id);  //uses global query
         }
         if (type==STEM)
         {

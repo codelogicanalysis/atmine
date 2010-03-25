@@ -15,7 +15,7 @@ using namespace std;
 typedef vector< dbitvec> vecbitvec;
 
 int
-main() {
+testdbitvector() {
     try{
         dbitvec x(12);
 

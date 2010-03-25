@@ -24,7 +24,7 @@ bool Search_Compatibility::retrieve_internal(long &category2, long &resulting_ca
         }
         return true;
 }
-Search_Compatibility::Search_Compatibility(rules rule, long category_id1)
+Search_Compatibility::Search_Compatibility(rules rule, long category_id,bool first)
 {
         err=false;
         QSqlQuery temp(db);
@@ -33,12 +33,13 @@ Search_Compatibility::Search_Compatibility(rules rule, long category_id1)
         item_types t1,t2,t_cat;
         if (!get_types_of_rule(rule,t1,t2))
                 err=true;
-        get_type_of_category(category_id1,t_cat);
-        if (t1!=t_cat)
+		get_type_of_category(category_id,t_cat);
+		if ((first?t1:t2)!=t_cat)
                 err=true;
-        QString stmt( "SELECT category_id2, resulting_category FROM compatibility_rules WHERE category_id1 ='%1' AND type=%2");
-        stmt=stmt.arg(category_id1).arg((int)rule);
-        if (!execute_query(stmt,query)) //will use the local query
+		QString stmt( "SELECT %4, resulting_category FROM compatibility_rules WHERE %3 ='%1' AND type=%2");
+		stmt=stmt.arg(category_id).arg((int)rule).arg(first?"category_id1":"category_id2").arg(first?"category_id2":"category_id1");
+		qDebug()<<stmt;
+		if (!execute_query(stmt,query)) //will use the local query
                 err=true;
 }
 int Search_Compatibility::size() //total size and not what is left
