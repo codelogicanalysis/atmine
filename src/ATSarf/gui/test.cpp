@@ -49,17 +49,18 @@ int start(QString input_str, QString &output_str, QString &error_str)
 
 	QString word;
 	in >>word;
-	out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
-	/*if (first_time)
+    //    out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
+        if (first_time)
 	{
 		database_info.fill();
 		first_time=false;
 	}
 	Stemmer stemmer(word);
-	stemmer();*/
+        stemmer();
+
 
 ///hhh
-/*
+
 
         QStringList wordList=word.split(" ",QString::SkipEmptyParts);
 
@@ -71,11 +72,11 @@ int start(QString input_str, QString &output_str, QString &error_str)
         int listSize=wordList.size()-sanadBeginning;
 
         int previousState=1;
-        int currentType;
+        wordType currentType;
 
-        for (i=sanadBeginning;i<listSize;i++)
+        for (int i=sanadBeginning;i<listSize;i++)
         {
-            currentType=getWordType(wordListFromSanad[i]);
+            currentType=getWordType(wordList[i]);
 
             if (currentType!=OTHER)
             {
@@ -85,14 +86,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
                 }
             }
         }
-*/
+
 ///hhh
 
 
 
 	return 0;
 }
-/*
+
 int getSanadBeginning(QStringList wordList)
 {
     int listSize=wordList.size();
@@ -104,14 +105,14 @@ int getSanadBeginning(QStringList wordList)
     return -1;
 }
 
-wordState getWordType(QString word)
+wordType getWordType(QString word)
 {
     //after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
-    return IKHBAR
+    return IKHBAR;
 
 }
 
-bool isValidTransition(int previousState,wordType currenType)
+bool isValidTransition(int previousState,wordType currentType)
 {
     int nextState=-1;
 
@@ -169,7 +170,7 @@ bool isValidTransition(int previousState,wordType currenType)
             nextState=2;
             return TRUE;
         }
-        else if (currenType==NAME_NABI)
+        else if (currentType==NAME_NABI)
         {
             nextState=6;
             return TRUE;
@@ -181,4 +182,4 @@ bool isValidTransition(int previousState,wordType currenType)
     }
 
 }
-*/
+
