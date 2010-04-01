@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#define max_sources 128//256
+#define max_sources 256//128
 
 extern bitset<max_sources> INVALID_BITSET;
 
