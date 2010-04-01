@@ -178,7 +178,7 @@ bitset<max_sources> string_to_bitset(QString val)
 	bitset<max_sources> b;
 	b.reset();
 	//qDebug()<<b.to_string().data();
-	val.remove('-');
+	//val.remove('-');
 	int num_bits=val.length()<<4;
 	for (int i=0 ; i<max_sources && i<num_bits; i++)
 	{
@@ -216,14 +216,15 @@ QString bitset_to_string(bitset<max_sources> b)
 			//qDebug()<<(i>>4)<<" "<<val[(i>>4)];
 		}
 	}
-	QChar val2[num_characters<<1];// *2
+	/*QChar val2[num_characters<<1];// *2
 	for (int i=0;i<num_characters;i++)
 	{
 		val2[i<<1]=val[i];
 		val2[(i<<1)|1]='-';
-	}
+	}*/
 	//qDebug()<<QString(val,num_characters);
-	return QString(val2,num_characters<<1);
+	//return QString(val2,num_characters<<1);
+	return QString(val,num_characters);
 }
 bool start_connection() //and do other initializations
 {
