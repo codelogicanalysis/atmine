@@ -3,14 +3,28 @@
 #include "../utilities/diacritics.h"
 #include "stem_search.h"
 #include "stemmer.h"
-#include "../common_structures/tree.h"
 
-StemSearch::StemSearch(Stemmer * info,int pos):TreeSearch(STEM,info,pos)
+StemSearch::StemSearch(Stemmer * info,int pos)
 {
+    this->info=info;
     starting_pos=pos;
+    /*QSqlQuery query(db);
+        QString stmt=QString("SELECT id, name FROM stem");
+        QString name;
+        unsigned long long stem_id;
+        bool ok;
+        if (!execute_query(stmt,query))
+                return ;
+        while (query.next())
+        {
+                name=query.value(1).toString();
+                stem_id=query.value(0).toLongLong(&ok);
+                stems.append(name);
+                stem_ids.append(stem_id);
+        }*/
 }
 StemSearch::~StemSearch(){	}
-/*bool StemSearch::operator()()
+bool StemSearch::operator()()
 {
 	bool false_returned=false;
 	for (int i=starting_pos;i<=info->word.length();i++)
@@ -75,27 +89,11 @@ StemSearch::~StemSearch(){	}
 #endif
 	}
 	return !false_returned;
-}*/
+}
 bool StemSearch::onMatch()
 {
-#ifdef REDUCE_THRU_DIACRITICS
-	raw_data_of_currentmatch=raw_datasOFCurrentMatch[0];
-#endif
-	//out<<"s:"<<info->word.mid(starting_pos,position-starting_pos)<<"\n";
+	//out<<"s:"<<info->word.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
 	info->Stem=this;
-	SuffixSearch * Suffix= new SuffixSearch(info,position);
+	SuffixSearch * Suffix= new SuffixSearch(info,currentMatchPos+1);
 	return Suffix->operator ()();
-}
-bool StemSearch::shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
-{
-	if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,resulting_category_idOFCurrentMatch))
-		return true;
-	return false;
-}
-void StemSearch::fill_details()
-{
-	TreeSearch::fill_details();
-	currentMatchPos=position-1;
-	category_of_currentmatch=catsOFCurrentMatch[0];
-	id_of_currentmatch=idsOFCurrentMatch[0];
 }
