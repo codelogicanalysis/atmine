@@ -12,23 +12,7 @@
 
 enum wordType { IKHBAR, KAWL, AAN, NAME, NAME_NABI,OTHER};
 
-//const QChar alef_hamza_above= QChar(0x0623);
-//const QChar ya2=QChar(0x064A);
-//const QChar waw=QChar(0x0648);
-const QChar kha2=QChar(0x062E);
-const QChar ba2=QChar(0x0628);
-const QChar ra2=QChar(0x0628);
-const QChar noon=QChar(0x0646);
-//const QChar alef=QChar(0x0627);
-const QChar seen=QChar(0x0633);
-const QChar meem=QChar(0x0645);
-const QChar ayn=QChar(0x0639);
-const QChar ta2=QChar(0x062A);
-const QChar qaf=QChar(0x0642);
-const QChar _7a2=QChar(0x062D);
-const QChar dal=QChar(0x062F);
-const QChar tha2=QChar(0x062B);
-
+const QString delimeters("[ :.,]");
 QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool;
 
 class mystemmer: public Stemmer
@@ -56,12 +40,16 @@ class mystemmer: public Stemmer
 #endif
 						{
 								for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
-										if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
-												if (getColumn("category","name",get_abstractCategory_id(i))=="NOUN_PROP")
-														{
-															name=true;
-															return false;
-														}
+									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
+									{
+
+										if (getColumn("category","name",get_abstractCategory_id(i))=="NOUN_PROP" ||getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
+										{
+											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
+											name=true;
+											return false;
+										}
+									}
 						}
 				}
 				return true;
@@ -71,19 +59,36 @@ class mystemmer: public Stemmer
 
 wordType getWordType(QString word)
 {
+	out << word<<":";
 	mystemmer s(word);
 	s();
 	//after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
 	if (equal(word,a5barana) || equal(word,a5barani) || equal(word,hadathana) || equal(word,hadathani))
+	{
+		out <<"IKHBAR"<< " ";
 		return IKHBAR;
+	}
 	else if (equal(word,qal) || equal(word,yaqool))
+	{
+		out <<"KAWL"<< " ";
 		return KAWL;
+	}
 	else if (equal(word,Aan))
+	{
+		out <<"AAN"<< " ";
 		return AAN;
+	}
 	else if (s.name)
+	{
+		out <<"NAME"<< " ";
 		return NAME;
+	}
 	else
+	{
+		out <<"OTHER"<< " ";
 		return OTHER;
+	}
+
 }
 
 int getSanadBeginning(QStringList wordList)
@@ -111,9 +116,9 @@ void buildwords()
 }
 
 
-bool isValidTransition(int previousState,wordType currentType)
+bool isValidTransition(int previousState,wordType currentType,int & nextState)
 {
-	int nextState=-1;
+
 
 	switch(previousState)
 	{
@@ -177,7 +182,11 @@ bool isValidTransition(int previousState,wordType currentType)
 		else
 			return FALSE;
 		default:
-			return FALSE;
+		{
+			nextState=previousState;
+			return TRUE;
+
+		}
 	}
 
 }
@@ -193,11 +202,12 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
-/*
+
 		if (first_time)
 	{
 		database_info.fill();
 		first_time=false;
+		buildwords();
 	}
 	//file parsing:
 	QFile input(input_str);
@@ -215,8 +225,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 			break;
 		if (line.isEmpty()) //ignore empty lines if they exist
 			continue;
-		//QStringList entries=line.split(QRegExp(QString("[ \n]")),QString::KeepEmptyParts);//space or enter
-*/
+		QStringList wordList=line.split((QRegExp(delimeters)),QString::KeepEmptyParts);//space or enter
+
 
 	/*QString word,word2;
 	in >>word;
@@ -225,43 +235,53 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	out<<getDiacriticword(i2,i1,word)<<"\n";*/
 	//out<<equal(word,word2)<<"\n";
 
-	QString word;
+/*	QString word;
 	in >>word;
-	   out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
+		out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
 /*	Stemmer stemmer(word);
-        stemmer();
+		stemmer();
 */
 
 ///hhh
-/*
 
-		QStringList wordList=line.split(" ",QString::SkipEmptyParts);
 
-        int sanadBeginning=getSanadBeginning(wordList);
+		int sanadBeginning=getSanadBeginning(wordList);
 
-        if (sanadBeginning<0)
-            return 0;
+		int countOthersMax=5;
+		int countOthers=0;
+		if (sanadBeginning<0)
+			return 0;
 
-        int listSize=wordList.size()-sanadBeginning;
+		int listSize=wordList.size()-sanadBeginning;
 
-        int previousState=1;
-        wordType currentType;
+		int previousState=1;
+		int nextState=1;
+		wordType currentType;
+		out<<"start of hadith";
+		for (int i=sanadBeginning;i<listSize;i++)
+		{
+			currentType=getWordType(wordList[i]);
 
-        for (int i=sanadBeginning;i<listSize;i++)
-        {
-            currentType=getWordType(wordList[i]);
-
-            if (currentType!=OTHER)
-            {
-                if (isValidTransition(previousState,currentType))
-                {
+			if (currentType!=OTHER)
+			{
+				countOthers=0;
+				if (isValidTransition(previousState,currentType,nextState))
+				{
+					//out << wordList[i]<< " ";
+					previousState=nextState;
 					continue;
-                }
-            }
-        }
+				}
+			}
+			else
+			{
+				countOthers++;
+				if (countOthers==countOthersMax)
+					out<<"End of Sanad";
+			}
+		}
 	}
 ///hhh
-*/
+
 
 
 	return 0;

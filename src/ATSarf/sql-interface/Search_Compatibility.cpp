@@ -38,7 +38,7 @@ Search_Compatibility::Search_Compatibility(rules rule, long category_id,bool fir
                 err=true;
 		QString stmt( "SELECT %4, resulting_category FROM compatibility_rules WHERE %3 ='%1' AND type=%2");
 		stmt=stmt.arg(category_id).arg((int)rule).arg(first?"category_id1":"category_id2").arg(first?"category_id2":"category_id1");
-		qDebug()<<stmt;
+		//qDebug()<<stmt;
 		if (!execute_query(stmt,query)) //will use the local query
                 err=true;
 }

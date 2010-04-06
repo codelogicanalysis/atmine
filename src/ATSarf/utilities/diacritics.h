@@ -21,6 +21,18 @@ const QChar lam=QChar(0x0644);
 const QChar kasratayn=QChar(0x064D);
 const QChar dammatayn=QChar(0x064C);
 const QChar fathatayn=QChar(0x064B);
+const QChar kha2=QChar(0x062E);
+const QChar ba2=QChar(0x0628);
+const QChar ra2=QChar(0x0628);
+const QChar noon=QChar(0x0646);
+const QChar seen=QChar(0x0633);
+const QChar meem=QChar(0x0645);
+const QChar ayn=QChar(0x0639);
+const QChar ta2=QChar(0x062A);
+const QChar qaf=QChar(0x0642);
+const QChar _7a2=QChar(0x062D);
+const QChar dal=QChar(0x062F);
+const QChar tha2=QChar(0x062B);
 
 bool isConsonant(QChar letter);
 bool isDiacritic(QChar letter); //TODO: add the madda

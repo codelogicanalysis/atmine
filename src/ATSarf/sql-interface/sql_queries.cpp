@@ -387,9 +387,16 @@ bitset<max_sources> set_index_bitset(QString table,QString column_name, int inde
 	old_bitset=get_bitset_column(table,column_name,id,additional_condition,has_id);
 	old_bitset.set(index);//it became new now
 	QString str1=bitset_to_string(old_bitset);
-redo:
+//redo:
 	QString stmt("UPDATE ");
-	stmt.append(table).append(" SET ").append(column_name).append("= '").append(str1);
+	stmt.append(table).append(" SET ").append(column_name).append("= '");
+	/*for (int i=0;i<str1.length();i++){
+		QChar ch =str1[i];
+		stmt.append(ch);
+	}*/
+	int x=sizeof(QChar);
+	stmt+=str1;
+
 	stmt.append("' WHERE ").append((has_id==true?QString("id ='%1'").arg(id):QString(""))).append((additional_condition==""?additional_condition:(has_id?" AND ":"")+additional_condition));
 	if (!execute_query(stmt))
 		return INVALID_BITSET; //must not reach here

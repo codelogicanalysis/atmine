@@ -310,8 +310,8 @@ TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 		Tree=database_info.Prefix_Tree;
 	else if (type==SUFFIX)
 		Tree=database_info.Suffix_Tree;
-	else if (type==STEM)
-		Tree=database_info.Stem_Tree;
+	/*else if (type==STEM)
+		Tree=database_info.Stem_Tree;*/
 	//number_of_matches=0;
 }
 

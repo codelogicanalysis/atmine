@@ -19,7 +19,7 @@ int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds 
 	while (search_suffixes.retrieve(suffix_cat_id))
 	{
 		Search_Compatibility search_prefixes(AB,stem_cat_id_Nprop,false);
-		qDebug()<<search_prefixes.size()<<" "<<search_suffixes.size()<<"\n";
+		//qDebug()<<search_prefixes.size()<<" "<<search_suffixes.size()<<"\n";
 		while (search_prefixes.retrieve(prefix_cat_id))
 		{
 			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
