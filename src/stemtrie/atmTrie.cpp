@@ -132,6 +132,65 @@ ATTrie :: enumerate(ATTrieEnumerator* e)
     return trie_enumerate(data->trie, at_trie_enum_func, (void*) e);
 }
 
+    ATTrie::Position 
+ATTrie :: startWalk()
+{
+    return (void*) trie_root(data->trie);
+}
+
+ATTrie::Position ATTrie :: clonePosition(ATTrie::Position p)
+{
+    return trie_state_clone( (const TrieState*)p);
+}
+
+void ATTrie :: freePosition(ATTrie::Position p)
+{
+    trie_state_free((TrieState*)p);
+}
+
+void ATTrie :: rewindPosition(ATTrie::Position p)
+{
+    trie_state_rewind((TrieState*)p);
+}
+
+bool ATTrie :: walk(ATTrie::Position pos, QChar c)
+{
+    Bool ret = trie_state_walk( (TrieState*)pos, c.unicode());
+    return ret == true;
+}
+
+bool ATTrie :: isWalkable(ATTrie::Position pos, QChar c)
+{
+    Bool ret = trie_state_is_walkable( (TrieState*)pos, c.unicode());
+    return ret == true;
+}
+
+bool ATTrie :: isTerminal(ATTrie::Position pos)
+{
+    Bool ret = trie_state_is_walkable( (TrieState*)pos,
+            TRIE_CHAR_TERM);
+    return ret == true;
+}
+
+bool ATTrie :: isLeaf(ATTrie::Position pos)
+{
+    return trie_state_is_leaf( (TrieState*)pos);
+}
+
+bool ATTrie :: isSingle(ATTrie::Position pos)
+{
+    Bool ret = trie_state_is_single( (TrieState*)pos);
+    return ret == true;
+}
+
+StemNode *
+ATTrie :: getData(ATTrie::Position pos)
+{
+    TrieData d = trie_state_get_data( (const TrieState*) pos);
+    return (StemNode*) d;
+}
+
+
 ATTrie :: ~ATTrie() 
 {
     if (data->trie != NULL)
