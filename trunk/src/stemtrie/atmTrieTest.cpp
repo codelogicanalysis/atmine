@@ -103,6 +103,32 @@ bool ATMTrieTestMainWindow :: saveAs()
 
 void ATMTrieTestMainWindow :: about()
 {
+#if 1 // Fadi test
+    QString text = textEdit->textCursor().selectedText();
+    if (!text.isEmpty()){
+        ATTrie::Position pos = trie->startWalk();
+        int i = 0;
+        for (i = 0; i < text.length(); i++){
+            if (!trie->walk(pos, text[i])){
+                break;
+            }
+        }
+        if (i == text.length()){
+            if (trie->isTerminal(pos)){
+                StemNode * node = trie->getData(pos);
+                if (node != NULL){
+                    textEdit->insertPlainText( "\n" );
+                    textEdit->insertPlainText( node->key);
+                    textEdit->insertPlainText( " ");
+                    textEdit->insertPlainText( QString::number(node->catID));
+                }
+            }
+        } else {
+            textEdit->appendPlainText( QString::number(i));
+        }
+        return;
+    }
+#endif
     QMessageBox::about(this, tr("About Application"),
             tr("The <b>Application</b> example demonstrates how to "
                 "write modern GUI applications using Qt, with a menu bar, "
