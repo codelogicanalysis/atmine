@@ -148,6 +148,12 @@ void ATTrie :: freePosition(ATTrie::Position p)
     trie_state_free((TrieState*)p);
 }
 
+void 
+ATTrie :: savePosition(ATTrie :: Position dst, ATTrie :: Position src)
+{
+    trie_state_copy((TrieState*)dst, (TrieState*)src);
+}
+
 void ATTrie :: rewindPosition(ATTrie::Position p)
 {
     trie_state_rewind((TrieState*)p);
