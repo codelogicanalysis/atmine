@@ -40,7 +40,7 @@ class ATTrie {
         ATTrie(const char * path);
         ~ATTrie() ;
 
-        void save(const char * path) ;
+        void save(const char * path);
         bool store(const QString & key, StemNode * node) ;
         bool retreive(const QString & key, StemNode ** node) ;
         bool remove(const QString & key);
@@ -82,6 +82,9 @@ class ATTrie {
         // this means there is no other path from here to
         // the leaf (in other words we are on a single path)
         bool isSingle(Position pos);
+
+        //given a terminal position
+        // returns the node associated with the position
         StemNode * getData(Position pos);
 
         // you need to implement the abstract class ATTrieEnumerator
