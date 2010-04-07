@@ -33,21 +33,35 @@ public:
 #endif
 
 class ATTrie {
-private:
-    ATTrieData * data;
-public:
-    ATTrie();
-    ATTrie(const char * path);
-    ~ATTrie() ;
+    private:
+        ATTrieData * data;
+    public:
+        ATTrie();
+        ATTrie(const char * path);
+        ~ATTrie() ;
 
-    void save(const char * path) ;
-    bool store(const QString & key, StemNode * node) ;
-    bool retreive(const QString & key, StemNode ** node) ;
-    bool remove(const QString & key);
+        void save(const char * path) ;
+        bool store(const QString & key, StemNode * node) ;
+        bool retreive(const QString & key, StemNode ** node) ;
+        bool remove(const QString & key);
+        bool isDirty() const;
 
-    bool isDirty() const;
+        typedef void * Position;
 
-    // you need to implement the abstract class ATTrieEnumerator
-    // to enumerate all stems in the trie
-    bool enumerate(ATTrieEnumerator* e);
+        Position startWalk();
+        Position clonePosition(Position p);
+        void freePosition(Position p);
+        void rewindPosition(Position p);
+        bool walk(Position pos, QChar c);
+        bool isWalkable(Position pos, QChar c);
+        bool isTerminal(Position pos);
+
+        bool isLeaf(Position pos);
+        bool isSingle(Position pos);
+        StemNode * getData(Position pos);
+
+
+        // you need to implement the abstract class ATTrieEnumerator
+        // to enumerate all stems in the trie
+        bool enumerate(ATTrieEnumerator* e);
 };
