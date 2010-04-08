@@ -1,6 +1,6 @@
 -- MySQL dump 10.11
 --
--- Host: localhost    Database: atm1
+-- Host: localhost    Database: atm
 -- ------------------------------------------------------
 -- Server version	5.0.67-0ubuntu6
 
@@ -26,11 +26,11 @@ CREATE TABLE `category` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(40) NOT NULL,
   `type` bit(2) NOT NULL,
-  `sources` bigint(20) NOT NULL,
+  `sources` char(16) NOT NULL,
   `abstract` bit(1) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -53,7 +53,7 @@ CREATE TABLE `compatibility_rules` (
   `category_id1` int(11) NOT NULL,
   `category_id2` int(11) NOT NULL,
   `type` bit(3) NOT NULL,
-  `sources` bigint(20) NOT NULL,
+  `sources` char(16) NOT NULL,
   `resulting_category` int(11) default NULL,
   PRIMARY KEY  (`category_id1`,`category_id2`),
   KEY `category_id2` (`category_id2`),
@@ -83,7 +83,7 @@ CREATE TABLE `description` (
   `type` bit(2) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`,`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -107,7 +107,7 @@ CREATE TABLE `prefix` (
   `name` char(7) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -129,11 +129,11 @@ SET character_set_client = utf8;
 CREATE TABLE `prefix_category` (
   `prefix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `sources` bigint(20) NOT NULL,
+  `sources` char(16) NOT NULL,
   `raw_data` varchar(60) NOT NULL default '',
-  `POS` varchar(250) default NULL,
+  `POS` varchar(250) NOT NULL default '',
   `description_id` bigint(20) default NULL,
-  PRIMARY KEY  (`prefix_id`,`category_id`,`raw_data`),
+  PRIMARY KEY  (`prefix_id`,`category_id`,`raw_data`,`POS` ),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -163,7 +163,7 @@ CREATE TABLE `source` (
   `date_start` date default NULL,
   `date_last` date default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -186,11 +186,11 @@ CREATE TABLE `stem` (
   `id` bigint(20) unsigned NOT NULL auto_increment,
   `name` varchar(30) NOT NULL,
   `grammar_stem_id` bigint(20) default NULL,
-  `sources` bigint(20) NOT NULL default '0',
+  `sources` char(16) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `grammar_stem_id` (`grammar_stem_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -212,8 +212,8 @@ SET character_set_client = utf8;
 CREATE TABLE `stem_category` (
   `stem_id` bigint(20) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `abstract_categories` bigint(20) NOT NULL,
-  `sources` bigint(20) NOT NULL,
+  `abstract_categories` char(16) NOT NULL,
+  `sources` char(16) NOT NULL,
   `raw_data` varchar(60) NOT NULL default '',
   `POS` varchar(250) NOT NULL default '',
   `lemma_ID` char(15) default NULL,
@@ -245,7 +245,7 @@ CREATE TABLE `suffix` (
   `name` char(7) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -267,11 +267,11 @@ SET character_set_client = utf8;
 CREATE TABLE `suffix_category` (
   `suffix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `sources` bigint(20) NOT NULL,
+  `sources` char(16) NOT NULL,
   `raw_data` varchar(60) NOT NULL default '',
-  `POS` varchar(250) default NULL,
+  `POS` varchar(250) NOT NULL default '',
   `description_id` bigint(20) default NULL,
-  PRIMARY KEY  (`suffix_id`,`category_id`,`raw_data`),
+  PRIMARY KEY  (`suffix_id`,`category_id`,`raw_data`, `POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -295,4 +295,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-12-30 23:49:04
+-- Dump completed on 2010-01-19  0:29:24
