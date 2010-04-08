@@ -202,7 +202,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
-
+/*
 		if (first_time)
 	{
 		database_info.fill();
@@ -226,7 +226,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		if (line.isEmpty()) //ignore empty lines if they exist
 			continue;
 		QStringList wordList=line.split((QRegExp(delimeters)),QString::KeepEmptyParts);//space or enter
-
+*/
 
 	/*QString word,word2;
 	in >>word;
@@ -235,16 +235,17 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	out<<getDiacriticword(i2,i1,word)<<"\n";*/
 	//out<<equal(word,word2)<<"\n";
 
-/*	QString word;
+	QString word;
 	in >>word;
-		out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
+		out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
+		out<<string_to_bitset(bitset_to_string(string_to_bitset(word))).to_string().data()<<"\n";
 /*	Stemmer stemmer(word);
 		stemmer();
 */
 
 ///hhh
 
-
+/*
 		int sanadBeginning=getSanadBeginning(wordList);
 
 		int countOthersMax=5;
@@ -282,7 +283,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	}
 ///hhh
 
-
+*/
 
 	return 0;
 }
