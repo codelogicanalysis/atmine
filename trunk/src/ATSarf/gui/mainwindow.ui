@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
+     <enum>Qt::LeftToRight</enum>
     </property>
     <property name="locale">
      <locale language="Arabic" country="Lebanon"/>
@@ -45,7 +45,7 @@
      </font>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
+     <enum>Qt::LeftToRight</enum>
     </property>
     <property name="locale">
      <locale language="Arabic" country="Lebanon"/>
@@ -61,7 +61,7 @@
      </rect>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
+     <enum>Qt::LeftToRight</enum>
     </property>
     <property name="locale">
      <locale language="Arabic" country="Lebanon"/>

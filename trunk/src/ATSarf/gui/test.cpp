@@ -10,9 +10,9 @@
 #include "../caching_structures/database_info_block.h"
 #include "../utilities/diacritics.h"
 
-enum wordType { IKHBAR, KAWL, AAN, NAME, NAME_NABI,OTHER};
+enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER};
 
-const QString delimeters("[ :.,]");
+QString delimiters(" :.,");
 QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool;
 
 class mystemmer: public Stemmer
@@ -113,14 +113,18 @@ void buildwords()
 	qal.append(qaf).append(alef).append(lam);
 	yaqool.append(ya2).append(qaf).append(waw).append(lam);
 
+        delimiters="["+delimiters+fasila+"]";
+
+
+
 }
 
 
-bool isValidTransition(int previousState,wordType currentType,int & nextState)
+bool isValidTransition(int currentState,wordType currentType,int & nextState)
 {
 
 
-	switch(previousState)
+        switch(currentState)
 	{
 		case 1:
 		if(currentType==NAME)
@@ -174,7 +178,7 @@ bool isValidTransition(int previousState,wordType currentType,int & nextState)
 			nextState=2;
 			return TRUE;
 		}
-		else if (currentType==NAME_NABI)
+                else if (currentType==TERMINAL_NAME)
 		{
 			nextState=6;
 			return TRUE;
@@ -183,14 +187,280 @@ bool isValidTransition(int previousState,wordType currentType,int & nextState)
 			return FALSE;
 		default:
 		{
-			nextState=previousState;
+                        nextState=currentState;
 			return TRUE;
 
 		}
 	}
 
 }
+int word_sarf_test()
+{
 
+///hhh
+
+        QString word;
+        in >>word;
+        //	out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
+        Stemmer stemmer(word);
+        stemmer();
+        return 0;
+
+
+
+}
+int hadith_test_case(QString input_str)
+{
+        //file parsing:
+        QFile input(input_str);
+        if (!input.open(QIODevice::ReadWrite))
+        {
+                out << "File not found\n";
+                return 1;
+        }
+        QTextStream file(&input);
+        file.setCodec("utf-8");
+        while (!file.atEnd())
+        {
+                QString line=file.readLine(0);
+                if (line.isNull())
+                        break;
+                if (line.isEmpty()) //ignore empty lines if they exist
+                        continue;
+                QStringList wordList=line.split((QRegExp(delimiters)),QString::KeepEmptyParts);//space or enter
+
+
+
+                int sanadBeginning=getSanadBeginning(wordList);
+
+                int countOthersMax=5;
+                int countOthers=0;
+                if (sanadBeginning<0)
+                        return 0;
+
+                int listSize=wordList.size()-sanadBeginning;
+
+                int currentState=1;
+                int nextState=1;
+                wordType currentType;
+                out<<"start of hadith";
+                for (int i=sanadBeginning;i<listSize;i++)
+                {
+                        currentType=getWordType(wordList[i]);
+
+                        if (currentType!=OTHER)
+                        {
+                                countOthers=0;
+                                if (isValidTransition(currentState,currentType,nextState))
+                                {
+                                        //out << wordList[i]<< " ";
+                                        currentState=nextState;
+                                        continue;
+                                }
+                        }
+                        else
+                        {
+                                countOthers++;
+                                if (countOthers==countOthersMax)
+                                        out<<"End of Sanad";
+                        }
+                }
+        }
+        return 0;
+///hhh
+}
+
+typedef struct stateData_{
+    int count21,count22,max21,min21,min22,max22,firstNameIndex;
+} stateData;
+
+void initializeStateData(stateData & currentData)
+{
+currentData.count21=0;
+currentData.count22=0;
+currentData.max21=1000;
+currentData.max22=4;
+currentData.min21=4;
+currentData.min22=0;
+}
+
+
+int getNextState(int currentState,wordType currentType,int & nextState,stateData & currentData,int index)
+{
+
+        out<<currentState<<endl;
+        out<<"21:"<<currentData.count21<<" ";
+        out<<"22:"<<currentData.count22<<" ";
+        switch(currentState)
+        {
+                case 0:
+                if(currentType==NAME)
+                {
+                    nextState=1;
+                    currentData.firstNameIndex=index;
+                    currentData.count21=0;
+                    currentData.count22=0;
+                    return 1;
+                }
+
+                return 0; //still outside
+
+                case 1:
+                if((currentType!=NAME)&&(currentState!=AAN))
+                {
+                    nextState=2;
+                }
+                return 1;
+
+                case 2:
+                if(currentType==NAME)
+                {
+                    nextState=1;
+                    currentData.count21++;
+                    if ((currentData.count21==currentData.min21)&&(currentData.count22>=currentData.min22))
+                    {
+                       // nextIndex=index+1;
+                        return 2;
+                    }
+
+                }                
+                else if (currentType==TERMINAL_NAME)//modify this for backtracking
+                {
+                    nextState=3;
+                 //   nextIndex=index+1;
+                    return 2;
+                }
+                else
+                {
+                    currentData.count22++;
+                    if (currentData.count22==currentData.max22)
+                        return 0;
+
+                }
+                return 1;
+
+
+                default:
+                return 0;
+         }
+    }
+
+
+int hadith_test_case_general(QString input_str)
+{
+
+
+    //file parsing:
+        QFile input(input_str);
+        if (!input.open(QIODevice::ReadWrite))
+        {
+                out << "File not found\n";
+                return 1;
+        }
+        QTextStream file(&input);
+        file.setCodec("utf-8");
+//        while (!file.atEnd())
+  //      {
+                QString wholeFile=file.readAll();//
+                if (wholeFile.isNull())
+                {
+                        out<<"file error";
+                        return 0;
+                }
+                if (wholeFile.isEmpty()) //ignore empty files
+                {
+                    out<<"empty file";
+                    return 0;
+                }
+                QStringList wordList=wholeFile.split((QRegExp(delimiters)),QString::KeepEmptyParts);//space or enter
+
+ //finding the start of hadith
+                int listSize=wordList.size();
+
+                int currentState=0;
+                int nextState=0;
+                int offset=3; //letters before first name in hadith
+                wordType currentType;
+                int newHadithStart=-1;
+
+
+                stateData currentData;
+                initializeStateData(currentData);
+
+                int i=0;
+                while (i<listSize)
+                {
+                        currentType=getWordType(wordList[i]);
+
+                        if(getNextState(currentState,currentType,nextState,currentData,i)==2)
+
+                        {
+                                 newHadithStart=currentData.firstNameIndex;//-offset;
+                                 out<<"start: "<<wordList[newHadithStart]<<endl;
+                                 break;
+                        }
+                        currentState=nextState;
+                        i++;
+                }
+
+
+                if (newHadithStart<0)
+                {
+                    out<<"no hadith found\n";
+                    return 0;
+                }
+
+
+//continue probing the hadith for end of sanad
+                i++;
+                bool searchForStart=false;
+                bool searchForEnd=true;
+
+                int result;
+
+                while (i<listSize)
+                {
+
+                   currentType=getWordType(wordList[i]);
+                   result=getNextState(currentState,currentType,nextState,currentData,i);
+                   out<<"result: "<<result<<endl;
+
+                   if (searchForEnd)
+                    {
+                       if(result==0)
+
+                        {
+                            out<<"end: "<<wordList[i]<<endl;
+                            searchForStart=true;
+                            searchForEnd=false;
+
+                        }
+                    }
+
+                    else if(searchForStart)
+                    {
+
+                        if(result==2)
+
+                        {
+                                 newHadithStart=currentData.firstNameIndex;//-offset;
+                                 out<<"start: "<<wordList[newHadithStart]<<endl;
+                                 searchForStart=false;
+                                 searchForEnd=true;
+                        }
+
+                    }
+
+                    currentState=nextState;
+                    i++;
+                }
+
+                //
+
+    //     }
+
+return 0;
+}
 bool first_time=true;
 //starting point
 int start(QString input_str, QString &output_str, QString &error_str)
@@ -209,33 +479,14 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		first_time=false;
 		buildwords();
 	}
-	//file parsing:
-	QFile input(input_str);
-	if (!input.open(QIODevice::ReadWrite))
-	{
-		out << "File not found\n";
-		return 1;
-	}
-	QTextStream file(&input);
-	file.setCodec("utf-8");
-	while (!file.atEnd())
-	{
-		QString line=file.readLine(0);
-		if (line.isNull())
-			break;
-		if (line.isEmpty()) //ignore empty lines if they exist
-			continue;
-		QStringList wordList=line.split((QRegExp(delimeters)),QString::KeepEmptyParts);//space or enter
 
+      //  hadith_test_case(input_str);
+        //word_sarf_test();
+                hadith_test_case_general(input_str);
 
-	/*QString word,word2;
-	in >>word;
-	int i1,i2;
-	in >>i1>>i2;
-	out<<getDiacriticword(i2,i1,word)<<"\n";*/
-	//out<<equal(word,word2)<<"\n";
 	/*if (insert_rules_for_Nprop_Al()<0)
 		return -1;*/
+
 
 	/*QString word;
 	in >>word;*/
@@ -243,48 +494,6 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		out<<string_to_bitset(bitset_to_string(string_to_bitset(word))).to_string().data()<<"\n";*/
 	/*Stemmer stemmer(word);
 	stemmer();*/
-
-
-///hhh
-
-
-		int sanadBeginning=getSanadBeginning(wordList);
-
-		int countOthersMax=5;
-		int countOthers=0;
-		if (sanadBeginning<0)
-			return 0;
-
-		int listSize=wordList.size()-sanadBeginning;
-
-		int previousState=1;
-		int nextState=1;
-		wordType currentType;
-		out<<"start of hadith";
-		for (int i=sanadBeginning;i<listSize;i++)
-		{
-			currentType=getWordType(wordList[i]);
-
-			if (currentType!=OTHER)
-			{
-				countOthers=0;
-				if (isValidTransition(previousState,currentType,nextState))
-				{
-					//out << wordList[i]<< " ";
-					previousState=nextState;
-					continue;
-				}
-			}
-			else
-			{
-				countOthers++;
-				if (countOthers==countOthersMax)
-					out<<"End of Sanad";
-			}
-		}
-	}
-///hhh
-
 
 
 	return 0;
