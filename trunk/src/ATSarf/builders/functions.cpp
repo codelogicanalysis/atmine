@@ -24,6 +24,7 @@ int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds 
 		{
 			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
 			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
+			insert_compatibility_rules(BC,stem_cat_id_Nprop_Al,suffix_cat_id,source_id);
 		}
 		QString prefix_cat;
 		foreach(prefix_cat,added_prefixes)
@@ -31,6 +32,7 @@ int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds 
 			prefix_cat_id=getID("category",prefix_cat);
 			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
 			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
+			insert_compatibility_rules(BC,stem_cat_id_Nprop_Al,suffix_cat_id,source_id);
 		}
 	}
 	return 0;
@@ -49,7 +51,7 @@ int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QS
 	}
 	//insert possessive form of the word
 	QString possessive=get_Possessive_form(word);
-	out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
+	//out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
 		stem_id=insert_item(STEM,removeDiacritics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,QString("possessive form of ").append(description),"","","");
 	if (stem_id<0)
 	{
@@ -143,7 +145,7 @@ int insert_buckwalter()
 					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)STEM)))==-1)
 					{
 						abstract_id=insert_category(abstract_category,STEM,source_id,true);
-						out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
+						//out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
 					}
 				}
 			}
@@ -292,6 +294,7 @@ int insert_placenames() //not yet complete
 	long abstract_country_name=insert_category("Country",STEM,bitset<max_sources>(),true);////returns id if already present
 	long abstract_city_name=insert_category("City/Town",STEM,bitset<max_sources>(),true);////returns id if already present
 	QString file_name;
+	QStringList h=folder.entryList();
 	foreach (file_name,folder.entryList())
 	{
 		if (file_name.endsWith(".txt"))

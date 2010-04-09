@@ -177,27 +177,17 @@ bitset<max_sources> string_to_bitset(QString val)
 	ushort mask=0x1;
 	bitset<max_sources> b;
 	b.reset();
-	//qDebug()<<b.to_string().data();
-	//val.remove('-');
-	int num_bits=(val.length()<<4)-val.length();
-	int j=0;
+	int num_bits=val.length()<<4;
 	for (int i=0 ; i<max_sources && i<num_bits; i++)
 	{
-		if (mask==0x8000)
-		{
+		b[i]=(mask & (ushort)val[i>>4].unicode())!=0;
+		mask=mask <<1;
+		if (mask==0x0)
 			mask=0x1;
-			j+=2;
-		}
-		else
-		{
-			b[i]=(mask & (ushort)val[j>>4].unicode())!=0;
-			//qDebug()<<b[i]<<(ushort)val[i>>4].unicode();
-			mask=mask <<1;
-			j++;
-		}
 	}
 	return b;
 }
+
 bitset<max_sources> string_to_bitset(QVariant val)
 {
 	return string_to_bitset(val.toString());
@@ -206,41 +196,22 @@ QString bitset_to_string(bitset<max_sources> b)
 {
 	ushort shift=0;
 	QString result;
-	int num_characters=(max_sources>>4)+2;
+	int num_characters=max_sources>>4;
 	QChar val[num_characters];
 	for (int i=0 ; i<num_characters; i++)
 		val[i]=0;
-	int j=0,f=0;
+	int j=0;
 	for (int i=0 ; i<max_sources; i++)
 	{
-		//val[i>>4]=(val[i>>4].unicode() | ((ushort)b[i] << shift));
 		j=j | ((ushort)b[i] << shift);
 		shift=shift +1;
-		if (shift==15)
+		if (shift==16)
 		{
-			j=j | (0x8000);
 			shift=0;
-			val[(f>>4)]=j;
+			val[(i>>4)]=j;
 			j=0;
-			f+=2;
-			//qDebug()<<(i>>4)<<" "<<val[(i>>4)];
 		}
-		else
-			f++;
 	}
-	if (shift!=0)
-	{
-		j=j | (0x8000);
-		val[num_characters-1]=j;
-	}
-	/*QChar val2[num_characters<<1];// *2
-	for (int i=0;i<num_characters;i++)
-	{
-		val2[i<<1]=val[i];
-		val2[(i<<1)|1]='-';
-	}*/
-	//qDebug()<<QString(val,num_characters);
-	//return QString(val2,num_characters<<1);
 	return QString(val,num_characters);
 }
 bool start_connection() //and do other initializations
