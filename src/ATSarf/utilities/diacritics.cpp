@@ -16,14 +16,14 @@ bool isConsonant(QChar letter)
 }
 bool isDiacritic(QChar letter) //TODO: add the madda
 {
-	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn)
+	if (letter==shadde || letter==fatha || letter==damma || letter==kasra || letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn || letter ==aleft_superscript)
 		return true;
 	else
 		return false;
 }
 QString removeDiacritics(QString /*&*/text)
 {
-	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+kasratayn+fathatayn+dammatayn+QString("]"));
+	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+kasratayn+fathatayn+dammatayn+aleft_superscript+QString("]"));
 	/*QString changed=*/return text.remove(exp);
 	/*int letters_removed=text.length()-changed.length();
 	text=changed;

@@ -19,7 +19,7 @@ SOURCES += builders/functions.cpp \
     sql-interface/Search_by_category.cpp \
     sql-interface/Retrieve_Template.cpp \
     utilities/text_handling.cpp \
-    utilities/diacritics.cpp
+	utilities/diacritics.cpp
 CONFIG += qt
 
 # debug

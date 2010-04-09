@@ -4,6 +4,7 @@
 #include "../sql-interface/sql_queries.h"
 #include "../logger/logger.h"
 #include <QDebug>
+#include "../gui/mainwindow.h"
 
 int augment()
 {
@@ -25,6 +26,7 @@ int augment()
 int main(int , char** ) {//change to err and output of command line or output file
 
 	start_connection();
+	MainWindow mw();
 	QTextStream out_temp(stdout);
 	QString output,errors;
 	out.setString(&output);

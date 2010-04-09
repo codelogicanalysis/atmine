@@ -1,5 +1,5 @@
-TOP=/home/fadi/projects/gcode/atmine
-QTDIR=/home/fadi/Qt/qt-everywhere-opensource-src-4.6.2
+TOP=/home/jad/Desktop/tools
+QTDIR=/opt/qtsdk-2009.04/qt
 
 HEADERS += atmTrieTest.h atmTrie.h trie.h
 HEADERS += utilities.h
@@ -15,11 +15,13 @@ INCLUDEPATH += $$QTDIR/include/Qt
 INCLUDEPATH += $$QTDIR/include/QtCore
 INCLUDEPATH += $$QTDIR/include/QtGui
 INCLUDEPATH += $$QTDIR/include/QtSql
-INCLUDEPATH += $$TOP/datrie/
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2/datrie
+#INCLUDEPATH += $$TOP/datrie/
+#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2
+#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2/datrie
+INCLUDEPATH += $$TOP/libdatrie-0.2.2
+INCLUDEPATH += $$TOP/libdatrie-0.2.2/datrie
 
-LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs -ldatrie
+LIBS += -L$$TOP/libdatrie-0.2.2/datrie/.libs -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 

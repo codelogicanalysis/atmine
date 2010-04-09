@@ -56,7 +56,6 @@ class mystemmer: public Stemmer
 	}
 
 };
-
 wordType getWordType(QString word)
 {
 	out << word<<":";
@@ -90,7 +89,6 @@ wordType getWordType(QString word)
 	}
 
 }
-
 int getSanadBeginning(QStringList wordList)
 {
 	int listSize=wordList.size();
@@ -101,7 +99,6 @@ int getSanadBeginning(QStringList wordList)
 	}
 	return -1;
 }
-
 void buildwords()
 {
 	a5barani.append(alef_hamza_above).append(kha2).append(ba2).append(ra2).append(noon).append(ya2);
@@ -118,8 +115,6 @@ void buildwords()
 
 
 }
-
-
 bool isValidTransition(int currentState,wordType currentType,int & nextState)
 {
 
@@ -284,7 +279,6 @@ currentData.min21=4;
 currentData.min22=0;
 }
 
-
 int getNextState(int currentState,wordType currentType,int & nextState,stateData & currentData,int index)
 {
 
@@ -344,7 +338,6 @@ int getNextState(int currentState,wordType currentType,int & nextState,stateData
                 return 0;
          }
     }
-
 
 int hadith_test_case_general(QString input_str)
 {
@@ -461,6 +454,19 @@ int hadith_test_case_general(QString input_str)
 
 return 0;
 }
+int augment()
+{
+	if (insert_buckwalter()<0)
+		return -1;
+	if (insert_rules_for_Nprop_Al())
+		return -1;
+	if (insert_propernames()<0)
+		return -1;
+	if (insert_placenames()<0)
+		return -1;
+	return 0;
+}
+
 bool first_time=true;
 //starting point
 int start(QString input_str, QString &output_str, QString &error_str)
@@ -480,22 +486,12 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		buildwords();
 	}
 
-      //  hadith_test_case(input_str);
-        //word_sarf_test();
-                hadith_test_case_general(input_str);
-
-	/*if (insert_rules_for_Nprop_Al()<0)
+	//  hadith_test_case(input_str);
+	//word_sarf_test();
+	hadith_test_case_general(input_str);
+	//augment();
+	/*if (insert_placenames()<0)
 		return -1;*/
-
-
-	/*QString word;
-	in >>word;*/
-	/*	out<<string_to_bitset(word).to_string().data()<<"     "<<bitset_to_string(string_to_bitset(word))<<"\n";
-		out<<string_to_bitset(bitset_to_string(string_to_bitset(word))).to_string().data()<<"\n";*/
-	/*Stemmer stemmer(word);
-	stemmer();*/
-
-
 	return 0;
 }
 

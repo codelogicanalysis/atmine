@@ -136,14 +136,14 @@ int get_bitindex(int id,int array[])
 }
 long get_abstractCategory_id(int bit)//-1 is invalid
 {
-	if (bit<abstract_category_ids[max_sources] && bit>0)
+	if (bit<abstract_category_ids[max_sources] && bit>=0)
 		return abstract_category_ids[bit];
 	else
 		return -1;
 }
 long get_source_id(int bit)
 {
-	if (bit<source_ids[max_sources] && bit>0)
+	if (bit<source_ids[max_sources] && bit>=0)
 		return source_ids[bit];
 	else
 		return -1;
@@ -602,13 +602,16 @@ long insert_category(QString name, item_types type, int source_id, bool isAbstra
 }
 long long insert_description(QString name,item_types type)
 {
-	QString stmt( "INSERT INTO description(name,type) VALUES('%1',%2)");
-	stmt=stmt.arg(name).arg((int)type);
-	query.exec(stmt);
+	if (!existsEntry("description",-1,QString("name= \"%1\" AND type=%2").arg(name).arg((int)type)))
+	{
+		QString stmt( "INSERT INTO description(name,type) VALUES('%1',%2)");
+		stmt=stmt.arg(name).arg((int)type);
+		query.exec(stmt);
+	}
 	return getID("description",name,QString("type=%1").arg((int)type));//get id of inserted
 }
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
-long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
+long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
 {
 	QString table=interpret_type(type);
 	QString item_category=QString("%1_category").arg(table);
@@ -616,14 +619,17 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		return -3; //must not reach here
 	if (!existsSOURCE(source_id))
 		return -2;
-	for (int i=0; i<abstract_ids.count();i++)
-		if (abstract_ids[i]==-1 || !existsID("category",abstract_ids[i],QString("abstract=1 AND type =%1").arg((int)(STEM))))
-		{
-			if (abstract_ids[i]!=-1)
-				warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids[i]);
-			abstract_ids.removeAt(i);
-			i--;
-		}
+	if (abstract_ids!=NULL)
+	{
+		for (int i=0; i<abstract_ids->count();i++)
+			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(STEM))))
+			{
+				if (abstract_ids->operator [](i)!=-1)
+					warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
+				abstract_ids->removeAt(i);
+				i--;
+			}
+	}
 	QString stmt;
 	bitset<max_sources> cat_sources,sources,abstract_categories;
 	cat_sources.reset();
@@ -706,16 +712,18 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 				return -1;
 		}
 	}
-
-	for (int i=0; i<abstract_ids.count();i++)
+	if (abstract_ids!=NULL)
 	{
-		int bit_index=get_bitindex(abstract_ids[i],abstract_category_ids);
-		if (!(bit_index>=0 && bit_index<max_sources))
+		for (int i=0; i<abstract_ids->count();i++)
 		{
-			error << "Unexpected Error: abstract_id ="<<abstract_ids[i]<<"\n";
-			return -4;
+			int bit_index=get_bitindex(abstract_ids->operator [](i),abstract_category_ids);
+			if (!(bit_index>=0 && bit_index<max_sources))
+			{
+				error << "Unexpected Error: abstract_id ="<<abstract_ids->operator [](i)<<"\n";
+				return -4;
+			}
+			abstract_categories.set(bit_index);
 		}
-		abstract_categories.set(bit_index);
 	}
 	//later would be updated
 
@@ -724,8 +732,8 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	{
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
 		if (type==STEM)
-			for (int i=0; i<abstract_ids.count();i++)
-				abstract_categories=addAbstractCategory(item_category,abstract_ids[i],-1,primary_condition,false);
+			for (int i=0; i<abstract_ids->count();i++)
+				abstract_categories=addAbstractCategory(item_category,abstract_ids->at(i),-1,primary_condition,false);
 		assert (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/); //assumed to mean row was modified
 		{
 			if (type==STEM)

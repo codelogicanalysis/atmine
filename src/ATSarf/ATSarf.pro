@@ -18,7 +18,7 @@ HEADERS += utilities/text_handling.h \
     common_structures/letter_node.h \
     caching_structures/database_info_block.h \
     caching_structures/compatibility_rules.h \
-	builders/functions.h \
+    builders/functions.h \
     gui/test.h \
     gui/mainwindow.h \
     logger/logger.h \
@@ -41,12 +41,13 @@ SOURCES += utilities/text_handling.cpp \
     common_structures/letter_node.cpp \
     caching_structures/database_info_block.cpp \
     caching_structures/compatibility_rules.cpp \
-	builders/functions.cpp \
+    builders/functions.cpp \
     gui/test.cpp \
     gui/mainwindow.cpp \
     sarf/tree_search.cpp \
     sql-interface/Retrieve_Template.cpp \
-    common_structures/global_variables.cpp
+    common_structures/global_variables.cpp \
+    atmTrie.cpp
 CONFIG += qt
 
 # debug

@@ -1,10 +1,68 @@
 #include "database_info_block.h"
+#include "atmTrie.h"
+#include "../sql-interface/sql_queries.h"
+#include "../sql-interface/Search_by_item.h"
+
+void buildTrie(ATTrie trie)
+{
+	QSqlQuery query(db);
+	QString stmt=QString("SELECT id, name FROM stem");
+	QString name;
+	unsigned long long  stem_id;
+	if (!execute_query(stmt,query))
+			return;
+	while (query.next())
+	{
+			name=query.value(1).toString();
+			stem_id=query.value(0).toULongLong();
+			Search_by_item s1(STEM,stem_id);
+#ifdef MEMORY_EXHAUSTIVE
+			/*minimal_item_info inf;
+			while(s1.retrieve(inf))
+			{
+					StemNode * node=new StemNode();
+					node->category_id=inf.category_id;
+					node->key=name;
+					node->raw_datas.append(inf.raw_data);
+					node->stem_id=stem_id;
+					node->description=inf.description;//must be changed later
+			}*/
+#elif defined(REDUCE_THRU_DIACRITICS)
+			minimal_item_info inf;
+			while(s1.retrieve(inf))
+			{
+					/*StemNode * node = NULL;
+					trie.retreive(name,&node);
+					if (node == NULL){
+						node=new StemNode();
+						if (exist(
+						node->category_id=inf.category_id;
+						node->key=name;
+						node->raw_datas.append(inf.raw_data);
+						node->stem_id=stem_id;
+						trie.store(name,&node);
+					}
+					else
+					{
+						node->raw_datas.append(inf.raw_data);
+					}*/
+			}
+#else
+			long cat_id;
+			while(s1.retrieve(cat_id))
+			{
+
+			}
+
+#endif
+	}
+}
 
 database_info_block::database_info_block()
 {
     Prefix_Tree=new tree();
     Suffix_Tree=new tree();
-	//Stem_Tree=new tree();
+	//Stem_Trie= new ATTrie();
     rules_AA=new compatibility_rules(AA);
     rules_AB=new compatibility_rules(AB);
     rules_AC=new compatibility_rules(AC);

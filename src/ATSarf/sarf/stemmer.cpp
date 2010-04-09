@@ -68,8 +68,9 @@ bool Stemmer::on_match()
                                 out<</*Stem->startingPos-1<<" "<<*/ stem_info.description;
                                 out<<" [ ";
                                 for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
-										if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
-														out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
+									if (stem_info.abstract_categories[i])
+										if (get_abstractCategory_id(i)>=0)
+											out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
                                 out<<"]";
                         }
                 }

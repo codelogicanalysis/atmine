@@ -112,7 +112,7 @@ ATTrie :: isDirty() const
 {
     Bool ret = trie_is_dirty(data->trie);
     return ret == true;
-};
+}
 
 Bool 
 at_trie_enum_func (

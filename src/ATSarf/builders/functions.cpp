@@ -7,6 +7,9 @@
 #include "../utilities/diacritics.h"
 #include "../sql-interface/Search_Compatibility.h"
 
+bool pos=false;
+long abstract_possessive;
+
 int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds to them the support for Al
 {
 	int source_id=insert_source("Jad and Hamza modifications","as needed","Hamza Harkous and Jad Makhlouta");
@@ -39,17 +42,23 @@ int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds 
 }
 
 //utility function for insert scripts used in insert_propernames() and insert_placenames()
-int insert_NProp(QString word,QList<long> abstract_categories, int source_id, QString description="Proper noun")
+int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, QString description="Proper noun")
 {
 	bool hasAL= removeAL(word);
 	//insert word as is
-        int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
+	int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
 	if (stem_id<0)
 	{
 		error <<"while adding stem: "<<word<<"'\n";
 		return -1;
 	}
 	//insert possessive form of the word
+	if (!pos)
+	{
+		abstract_possessive=insert_category("POSSESSIVE",STEM,bitset<max_sources>(),true);
+		pos=true;
+	}
+	abstract_categories->append(abstract_possessive);
 	QString possessive=get_Possessive_form(word);
 	//out << QString("Possesive form for '%1' is '%2'\n").arg(word).arg(possessive);
 		stem_id=insert_item(STEM,removeDiacritics(possessive),possessive,(possessive.startsWith(lam)?"Nall_L":"Nall"),source_id,abstract_categories,QString("possessive form of ").append(description),"","","");
@@ -123,7 +132,7 @@ int insert_buckwalter()
 			{
 				QString before=raw_data;
 				raw_data=raw_data.replace("{",QString(QChar(0x0671)));
-				raw_data=raw_data.replace("`",QString(QChar(0x0670)));
+				raw_data=raw_data.replace("`",QString(aleft_superscript));
 				raw_data=raw_data.replace("V",QString(QChar(0x06A4)));
 				//out << "Replaced "<<interpret_type(types[j])<<": "<<before<<" by "<<raw_data<<"\n";
 			}
@@ -149,9 +158,9 @@ int insert_buckwalter()
 					}
 				}
 			}
-			QList<long> abstract_categories;
-			abstract_categories.append(abstract_id);
-			if ((types[j]==STEM?insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:insert_item(types[j],item,raw_data,category,source_id,QList<long>(),description,POS,"","")<0))
+			QList<long> *abstract_categories=new QList<long>();
+			abstract_categories->append(abstract_id);
+			if ((types[j]==STEM?insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:insert_item(types[j],item,raw_data,category,source_id,NULL,description,POS,"","")<0))
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
@@ -262,10 +271,10 @@ int insert_propernames()
 			}
 			if (line.isEmpty()) //ignore empty lines if they exist
 				continue;
-			QList<long> abstract_categories;
-			abstract_categories.append(abstract_Noun_Prop_id);
-			abstract_categories.append(abstract_category_id);
-			abstract_categories.append(abstract_people_names);
+			QList<long> * abstract_categories=new QList<long>();
+			abstract_categories->append(abstract_Noun_Prop_id);
+			abstract_categories->append(abstract_category_id);
+			abstract_categories->append(abstract_people_names);
 			if (insert_NProp(line, abstract_categories,source_id,"Name of Person")<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
@@ -295,6 +304,7 @@ int insert_placenames() //not yet complete
 	long abstract_city_name=insert_category("City/Town",STEM,bitset<max_sources>(),true);////returns id if already present
 	QString file_name;
 	QStringList h=folder.entryList();
+	//qDebug()<<"size: "<<h.size();
 	foreach (file_name,folder.entryList())
 	{
 		if (file_name.endsWith(".txt"))
@@ -344,10 +354,10 @@ int insert_placenames() //not yet complete
 				}
 				if (line.isEmpty()) //ignore empty lines if they exist
 					continue;
-				QList<long> abstract_categories;
-				abstract_categories.append(abstract_Noun_Prop_id);
-				abstract_categories.append(abstract_category_id);
-				abstract_categories.append(abstract_place_names);
+				QList<long> * abstract_categories=new QList<long>();;
+				abstract_categories->append(abstract_Noun_Prop_id);
+				abstract_categories->append(abstract_category_id);
+				abstract_categories->append(abstract_place_names);
 				if (insert_NProp(line, abstract_categories,source_id,file_name.split(".").at(0))<0)
 				{/*return -1*/;}
 			}
@@ -367,11 +377,11 @@ int insert_placenames() //not yet complete
 			if (continent.count()>1)
 			{
 				QString continent_arabic=continent[1];
-				QList<long> abstract_categories;
-				abstract_categories.clear();
-				abstract_categories.append(abstract_Noun_Prop_id);
-				abstract_categories.append(abstract_continent_name);
-				abstract_categories.append(abstract_place_names);
+				QList<long> * abstract_categories=new QList<long>();
+				abstract_categories->clear();
+				abstract_categories->append(abstract_Noun_Prop_id);
+				abstract_categories->append(abstract_continent_name);
+				abstract_categories->append(abstract_place_names);
 				if (insert_NProp(continent_arabic, abstract_categories,folders_source_id,continent_english)<0)
 				{/*return -1*/;}
 			}
@@ -395,11 +405,11 @@ int insert_placenames() //not yet complete
 				if (country.count()>1)
 				{
 					QString country_arabic=country[1].split(".")[0];
-					QList<long> abstract_categories;
-					abstract_categories.append(abstract_Noun_Prop_id);
-					abstract_categories.append(abstract_country_name);
-					abstract_categories.append(abstract_place_names);
-					abstract_categories.append(continent_id);
+					QList<long> * abstract_categories=new QList<long>();
+					abstract_categories->append(abstract_Noun_Prop_id);
+					abstract_categories->append(abstract_country_name);
+					abstract_categories->append(abstract_place_names);
+					abstract_categories->append(continent_id);
 					if (insert_NProp(country_arabic, abstract_categories,folders_source_id,country_english)<0)
 					{	/*return -1*/;}
 				}
@@ -417,12 +427,12 @@ int insert_placenames() //not yet complete
 						continue;
 					if (line.split(" ")[0].length()==1) //ignore lines that are just for sorting in alphabatical order
 						continue;
-					QList<long> abstract_categories;
-					abstract_categories.append(abstract_Noun_Prop_id);
-					abstract_categories.append(abstract_city_name);
-					abstract_categories.append(abstract_place_names);
-					abstract_categories.append(continent_id);
-					abstract_categories.append(country_id);
+					QList<long> * abstract_categories=new QList<long>();
+					abstract_categories->append(abstract_Noun_Prop_id);
+					abstract_categories->append(abstract_city_name);
+					abstract_categories->append(abstract_place_names);
+					abstract_categories->append(continent_id);
+					abstract_categories->append(country_id);
 					QString alltext=line.split('(')[0];
 					QStringList city=alltext.split(QRegExp("[.-,]"));
 					if (city.count()>1) //add all the text in addition to the primary part

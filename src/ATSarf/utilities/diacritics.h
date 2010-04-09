@@ -34,6 +34,7 @@ const QChar _7a2=QChar(0x062D);
 const QChar dal=QChar(0x062F);
 const QChar tha2=QChar(0x062B);
 const QChar fasila=QChar(0x060C);
+const QChar aleft_superscript=QChar(0x0670);
 
 bool isConsonant(QChar letter);
 bool isDiacritic(QChar letter); //TODO: add the madda
