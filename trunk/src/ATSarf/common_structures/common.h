@@ -4,6 +4,20 @@
 #include <QString>
 #include <bitset>
 
+
+//#define QUEUE
+#ifndef QUEUE
+#define PARENT
+#endif
+
+//#define MEMORY_EXHAUSTIVE
+#define REDUCE_THRU_DIACRITICS
+#ifdef REDUCE_THRU_DIACRITICS
+#undef MEMORY_EXHAUSTIVE
+#endif
+
+
+
 using namespace std;
 
 #define max_sources 256//128

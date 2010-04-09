@@ -86,7 +86,7 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 		diacritics2.clear();
 		while (isDiacritic(word1[i1]))
 		{
-			if (word1[i1]!=shadde)
+			if (word1[i1]!=shadde && word1[i1]!=aleft_superscript)
 				diacritics1.append(word1[i1]);
 			i1++;
 		}
@@ -96,7 +96,7 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 			letter1='\0';
 		while (isDiacritic(word2[i2]))
 		{
-			if (word2[i2]!=shadde)
+			if (word2[i2]!=shadde && word2[i2]!=aleft_superscript)
 				diacritics2.append(word2[i2]);
 			i2++;
 		}

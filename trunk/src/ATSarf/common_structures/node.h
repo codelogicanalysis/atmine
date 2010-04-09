@@ -3,17 +3,8 @@
 
 #include <QList>
 #include <QString>
+#include "common.h"
 
-//#define QUEUE
-#ifndef QUEUE
-#define PARENT
-#endif
-
-//#define MEMORY_EXHAUSTIVE
-#define REDUCE_THRU_DIACRITICS
-#ifdef REDUCE_THRU_DIACRITICS
-#undef MEMORY_EXHAUSTIVE
-#endif
 
 class node
 {

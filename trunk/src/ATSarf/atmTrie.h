@@ -1,13 +1,14 @@
+#ifndef _ATM_TRIE_H
+#define	_ATM_TRIE_H
+
+
 #include <QString>
 #include <QList>
+#include <QVector>
+#include "common_structures/common.h"
+#include "StemNode.h"
 
 class ATTrieData;
-
-class StemNode {
-public:
-  QString key;
-  long catID;
-};
 
 class ATTrieEnumerator {
 public:
@@ -91,3 +92,5 @@ class ATTrie {
         // to enumerate all stems in the trie
         bool enumerate(ATTrieEnumerator* e);
 };
+
+#endif

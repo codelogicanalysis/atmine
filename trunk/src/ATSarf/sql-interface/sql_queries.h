@@ -47,7 +47,7 @@ long insert_category(QString name, item_types type, bitset<max_sources> sources,
 long insert_category(QString name, item_types type, int source_id, bool isAbstract=false);//returns its id if already present
 long long insert_description(QString name,item_types type);
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
-long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> abstract_ids =QList<long>(), QString description="", QString POS="",QString grammar_stem="",QString lemma_ID="");
+long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description="", QString POS="",QString grammar_stem="",QString lemma_ID="");
 //let dispay table return the number of rows in the table
 long display_table(QString table); //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
 int insert_source(QString name, QString normalization_process, QString creator); //returns current number of sources
