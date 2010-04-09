@@ -25,14 +25,14 @@ typedef struct minimal_item_info_
 typedef struct all_item_info_
 {
 
-	unsigned long long item_id;
-	long category_id;
-	bitset<max_sources> abstract_categories; //only for STEMS
-	bitset<max_sources> sources;
-	QString raw_data;
-	QString description;
-	QString POS;
-	QString lemma_ID; //only for STEMs
+        unsigned long long item_id;
+        long category_id;
+        bitset<max_sources> abstract_categories; //only for STEMS
+        bitset<max_sources> sources;
+        QString raw_data;
+        QString description;
+        QString POS;
+        QString lemma_ID; //only for STEMs
 } all_item_info;
 
 #endif
