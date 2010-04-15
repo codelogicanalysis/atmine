@@ -1,10 +1,10 @@
 #include "database_info_block.h"
-//#include "../common_structures/atmTrie.h"
+#include "../common_structures/atmTrie.h"
 #include "../sql-interface/sql_queries.h"
 #include "../sql-interface/Search_by_item.h"
 #include <assert.h>
 
-/*void buildTrie(ATTrie* trie)
+void buildTrie(ATTrie* trie)
 {
 	QSqlQuery query(db);
 	QString stmt=QString("SELECT id, name FROM stem");
@@ -72,12 +72,12 @@
 #endif
 	}
 }
-*/
+
 database_info_block::database_info_block()
 {
     Prefix_Tree=new tree();
     Suffix_Tree=new tree();
-	//Stem_Trie= new ATTrie();
+	Stem_Trie= new ATTrie();
     rules_AA=new compatibility_rules(AA);
     rules_AB=new compatibility_rules(AB);
     rules_AC=new compatibility_rules(AC);
@@ -89,7 +89,7 @@ void database_info_block::fill()
 {
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
-	//buildTrie(Stem_Trie);
+	buildTrie(Stem_Trie);
     rules_AA->fill();
     rules_AB->fill();
     rules_AC->fill();
@@ -101,7 +101,7 @@ database_info_block::~database_info_block()
 {
     delete Prefix_Tree;
     delete Suffix_Tree;
-	//delete Stem_Trie;
+	delete Stem_Trie;
     delete rules_AA;
     delete rules_AB;
     delete rules_AC;

@@ -42,7 +42,6 @@ class mystemmer: public Stemmer
 								for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
 									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 									{
-
 										if (getColumn("category","name",get_abstractCategory_id(i))=="NOUN_PROP" ||getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
 										{
 											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";

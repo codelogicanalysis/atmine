@@ -55,13 +55,11 @@ SOURCES += utilities/text_handling.cpp \
     sarf/tree_search.cpp \
     sql-interface/Retrieve_Template.cpp \
     common_structures/global_variables.cpp \
-	common_structures/StemNode.cpp
-	#common_structures/atmTrie.cpp
-SOURCES += 
+	common_structures/StemNode.cpp \
+	common_structures/atmTrie.cpp
 
-# LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs -ldatrie
-# LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
-	#-ldatrie
+
+LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 
