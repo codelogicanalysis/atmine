@@ -1,11 +1,11 @@
 #ifndef _STEM_SEARCH_H
 #define	_STEM_SEARCH_H
 
-#include "atmTrie.h"
+//#include "../common_structures/atmTrie.h"
 #include <QString>
 class Stemmer;
 
-class StemSearch /*: public Trie*/ //just a proof of concept
+class StemSearch
 {
 	public:
 		int currentMatchPos;
@@ -14,7 +14,7 @@ class StemSearch /*: public Trie*/ //just a proof of concept
 		QString raw_data_of_currentmatch;
 		int starting_pos;
 	private:
-
+		//ATTrie * trie;
 		Stemmer * info;
 	public:
 		StemSearch(Stemmer * info,int pos);
