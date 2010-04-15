@@ -12,7 +12,7 @@ public:
 
 	QString key;
 	unsigned long long stem_id;
-private:
+//private:
 	CategoryVector category_ids;
 public:
 	void add_info(long cat_id);
@@ -26,9 +26,26 @@ public:
 		void add_info(long cat_id,RawDatasEntry raw_data_entry);
 		bool exists(long cat_id, QString raw_data);
 		bool get(long cat_id, RawDatasEntry &raw_datas_entry);
-	public://private:
+	//private:
 		RawDatas raw_datas;
 	#endif
+};
+
+class Search_StemNode
+{
+private:
+	StemNode * node;
+	int cat_index;
+#ifdef REDUCE_THRU_DIACRITICS
+	int rawdata_index;
+#endif
+
+public:
+	Search_StemNode(StemNode *);
+	bool retrieve(long &category_id);
+#ifdef REDUCE_THRU_DIACRITICS
+	bool retrieve(minimal_item_info & info);
+#endif
 };
 
 #endif // STEMNODE_H

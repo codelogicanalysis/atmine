@@ -1,12 +1,13 @@
 #include "StemNode.h"
 #include "../utilities/text_handling.h"
 #include <QtAlgorithms>
+#include <QDebug>
 
 void StemNode::add_info(const long cat_id)
 {
 	#if !defined(REDUCE_THRU_DIACRITICS) && !defined(MEMORY_EXHAUSTIVE)
 		QVector<long>::iterator i =   qLowerBound(category_ids.begin(),category_ids.end(), cat_id);
-		if (*i!=cat_id)
+		if (i==category_ids.end() || *i!=cat_id)
 			category_ids.insert(i, cat_id);
 	#elif defined(REDUCE_THRU_DIACRITICS)
 		add_info(cat_id,key);
@@ -22,7 +23,7 @@ bool StemNode::exists(const long cat_id)
 	{
 		QVector<long>::iterator i = qLowerBound(category_ids.begin(),category_ids.end(), cat_id);
 		int index=i-category_ids.begin();//maybe does not work for 64-bit machine
-		if (*i!=cat_id)
+		if (i==category_ids.end() || *i!=cat_id)
 		{
 			category_ids.insert(index, cat_id);
 			RawDatasEntry ent;
@@ -31,7 +32,8 @@ bool StemNode::exists(const long cat_id)
 		}
 		else
 		{
-			if (!raw_datas.at(index).contains(raw_data))
+			//qDebug() << raw_datas.size();
+			if (!raw_datas[index].contains(raw_data))
 				raw_datas[index].append(raw_data);
 		}
 	}
@@ -39,7 +41,7 @@ bool StemNode::exists(const long cat_id)
 	{
 		QVector<long>::iterator i = qLowerBound(category_ids.begin(),category_ids.end(), cat_id);
 		int index=i-category_ids.begin();//maybe does not work for 64-bit machine
-		if (*i!=cat_id)
+		if (i==category_ids.end() || *i!=cat_id)
 		{
 			category_ids.insert(index, cat_id);
 			RawDatasEntry ent;
@@ -79,4 +81,53 @@ bool StemNode::exists(const long cat_id)
 		else
 			return false;
 	}
+
+//Search_StemNode
+	Search_StemNode::Search_StemNode(StemNode * node)
+	{
+		this->node=node;
+		cat_index=0;
+#ifdef REDUCE_THRU_DIACRITICS
+		rawdata_index=0;
+#endif
+	}
+	bool Search_StemNode::retrieve(long &category_id)
+	{
+		if (cat_index<node->category_ids.size())
+		{
+			category_id=node->category_ids[cat_index];
+			cat_index++;
+			return true;
+		}
+		else
+			return false;
+	}
+#ifdef REDUCE_THRU_DIACRITICS
+	bool Search_StemNode::retrieve(minimal_item_info & info)
+	{
+		if (cat_index<node->category_ids.size())
+		{
+			if (rawdata_index<node->raw_datas[cat_index].size())
+			{
+				info.category_id=node->category_ids[cat_index];
+				info.raw_data=node->raw_datas[cat_index][rawdata_index];
+				info.type=STEM;
+				info.POS=QString::null;
+				info.abstract_categories=INVALID_BITSET;
+				info.description=QString::null;
+				rawdata_index++;
+				return true;
+			}
+			else
+			{
+				cat_index++;
+				rawdata_index=0;
+				return retrieve(info);
+			}
+		}
+		else
+			return false;
+	}
+#endif
+
 #endif

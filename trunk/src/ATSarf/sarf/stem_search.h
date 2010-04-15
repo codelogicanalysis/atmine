@@ -1,7 +1,7 @@
 #ifndef _STEM_SEARCH_H
 #define	_STEM_SEARCH_H
 
-//#include "../common_structures/atmTrie.h"
+#include "../common_structures/atmTrie.h"
 #include <QString>
 class Stemmer;
 
@@ -14,7 +14,7 @@ class StemSearch
 		QString raw_data_of_currentmatch;
 		int starting_pos;
 	private:
-		//ATTrie * trie;
+		ATTrie * trie;
 		Stemmer * info;
 	public:
 		StemSearch(Stemmer * info,int pos);
