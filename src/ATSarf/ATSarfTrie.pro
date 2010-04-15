@@ -28,9 +28,9 @@ HEADERS += utilities/text_handling.h \
     logger/logger.h \
     common_structures/common.h \
     sql-interface/Retrieve_Template.h \
-    StemNode.h
-HEADERS += atmTrie.h \
-    trie.h \
+	common_structures/StemNode.h \
+	common_structures/atmTrie.h
+HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
     utilities/diacritics.cpp \
@@ -55,11 +55,13 @@ SOURCES += utilities/text_handling.cpp \
     sarf/tree_search.cpp \
     sql-interface/Retrieve_Template.cpp \
     common_structures/global_variables.cpp \
-    StemNode.cpp
+	common_structures/StemNode.cpp
+	#common_structures/atmTrie.cpp
 SOURCES += 
 
 # LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs -ldatrie
-# LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs -L. -ldatrie
+# LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
+	#-ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 

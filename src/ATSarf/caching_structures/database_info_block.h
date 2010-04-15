@@ -3,14 +3,14 @@
 
 #include "compatibility_rules.h"
 #include "../common_structures/tree.h"
-//#include "atmTrie.h"
+//#include "../common_structures/atmTrie.h"
 
 class database_info_block
 {
     public:
         tree* Prefix_Tree;
         tree* Suffix_Tree;
-		//ATTrie Stem_Trie;
+		//ATTrie * Stem_Trie;
         compatibility_rules * rules_AA;
         compatibility_rules * rules_AB;
         compatibility_rules * rules_AC;

@@ -8,20 +8,7 @@ StemSearch::StemSearch(Stemmer * info,int pos)
 {
     this->info=info;
     starting_pos=pos;
-    /*QSqlQuery query(db);
-        QString stmt=QString("SELECT id, name FROM stem");
-        QString name;
-        unsigned long long stem_id;
-        bool ok;
-        if (!execute_query(stmt,query))
-                return ;
-        while (query.next())
-        {
-                name=query.value(1).toString();
-                stem_id=query.value(0).toLongLong(&ok);
-                stems.append(name);
-                stem_ids.append(stem_id);
-        }*/
+	//trie=database_info.Stem_Trie;
 }
 StemSearch::~StemSearch(){	}
 bool StemSearch::operator()()
@@ -32,6 +19,11 @@ bool StemSearch::operator()()
 		QString name=info->word.mid(starting_pos,i-starting_pos);
 		//out<<name<<"\n";
 		Search_by_item s1(STEM,name);
+		/*StemNode * node = NULL;
+		trie->retreive(name,&node);
+		if (node == NULL){
+			return true;//check this
+		}*/
 		id_of_currentmatch=s1.ID();
 #ifdef REDUCE_THRU_DIACRITICS
 		minimal_item_info inf;
