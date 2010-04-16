@@ -343,7 +343,8 @@ int hadith_test_case_general(QString input_str)
 
 
     //file parsing:
-        QFile input(input_str);
+		QFile input(input_str.split("\n")[0]);
+		//out<<"file error:"<<input.errorString();
         if (!input.open(QIODevice::ReadWrite))
         {
                 out << "File not found\n";
@@ -356,12 +357,13 @@ int hadith_test_case_general(QString input_str)
                 QString wholeFile=file.readAll();//
                 if (wholeFile.isNull())
                 {
-                        out<<"file error";
-                        return 0;
+						out<<"file error:"<<input.errorString()<<"\n";
+						/*#undef error
+						return (input.error());*/
                 }
                 if (wholeFile.isEmpty()) //ignore empty files
                 {
-                    out<<"empty file";
+					out<<"empty file\n";
                     return 0;
                 }
                 QStringList wordList=wholeFile.split((QRegExp(delimiters)),QString::KeepEmptyParts);//space or enter

@@ -1,17 +1,29 @@
+#include <QFile>
 #include "database_info_block.h"
 #include "../common_structures/atmTrie.h"
+#include "../common_structures/common.h"
 #include "../sql-interface/sql_queries.h"
 #include "../sql-interface/Search_by_item.h"
 #include <assert.h>
 
+#ifdef USE_TRIE
 void buildTrie(ATTrie* trie)
 {
+	/*QFile input(trie_path);
+	if (input.open(QIODevice::ReadOnly))
+	{
+		delete database_info.Stem_Trie;
+		input.close();
+		ATTrie * temp=new ATTrie(trie_path.toStdString().data());
+		database_info.Stem_Trie=temp;
+		return;
+	}*/
 	QSqlQuery query(db);
 	QString stmt=QString("SELECT id, name FROM stem");
 	QString name;
 	unsigned long long  stem_id;
 	if (!execute_query(stmt,query))
-			return;
+		return;
 	while (query.next())
 	{
 			name=query.value(1).toString();
@@ -71,13 +83,16 @@ void buildTrie(ATTrie* trie)
 
 #endif
 	}
+	database_info.Stem_Trie->save(trie_path.toStdString().data());
 }
-
+#endif
 database_info_block::database_info_block()
 {
     Prefix_Tree=new tree();
     Suffix_Tree=new tree();
+#ifdef USE_TRIE
 	Stem_Trie= new ATTrie();
+#endif
     rules_AA=new compatibility_rules(AA);
     rules_AB=new compatibility_rules(AB);
     rules_AC=new compatibility_rules(AC);
@@ -89,7 +104,9 @@ void database_info_block::fill()
 {
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
+#ifdef USE_TRIE
 	buildTrie(Stem_Trie);
+#endif
     rules_AA->fill();
     rules_AB->fill();
     rules_AC->fill();
@@ -101,7 +118,9 @@ database_info_block::~database_info_block()
 {
     delete Prefix_Tree;
     delete Suffix_Tree;
+#ifdef USE_TRIE
 	delete Stem_Trie;
+#endif
     delete rules_AA;
     delete rules_AB;
     delete rules_AC;

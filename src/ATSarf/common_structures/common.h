@@ -4,6 +4,7 @@
 #include <QString>
 #include <bitset>
 
+//#define USE_TRIE
 
 //#define QUEUE
 #ifndef QUEUE

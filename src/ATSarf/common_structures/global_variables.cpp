@@ -15,3 +15,5 @@ bool KEEP_OLD=true;
 bool warn_about_automatic_insertion =false;
 bool display_errors=true;
 bool display_warnings=true;
+
+QString trie_path="stem_trie.txt";

@@ -2,6 +2,7 @@
 #define	_STEM_SEARCH_H
 
 #include "../common_structures/atmTrie.h"
+#include "../common_structures/common.h"
 #include <QString>
 class Stemmer;
 
@@ -14,7 +15,9 @@ class StemSearch
 		QString raw_data_of_currentmatch;
 		int starting_pos;
 	private:
+#ifdef USE_TRIE
 		ATTrie * trie;
+#endif
 		Stemmer * info;
 	public:
 		StemSearch(Stemmer * info,int pos);
