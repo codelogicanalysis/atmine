@@ -4,6 +4,7 @@
 #include "compatibility_rules.h"
 #include "../common_structures/tree.h"
 #include "../common_structures/atmTrie.h"
+#include "../common_structures/common.h"
 #include <QString>
 
 class database_info_block
