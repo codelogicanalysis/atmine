@@ -9,11 +9,11 @@
 #include "../sarf/stemmer.h"
 #include "../caching_structures/database_info_block.h"
 #include "../utilities/diacritics.h"
-
-enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER};
-
+//#define HADITHDEBUG
+enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER, NRC,NMC};
+enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QString delimiters(" :.,");
-QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool;
+QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool,_bin,_ibin;
 
 class mystemmer: public Stemmer
 {
@@ -42,6 +42,7 @@ class mystemmer: public Stemmer
 								for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
 									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 									{
+
 										if (getColumn("category","name",get_abstractCategory_id(i))=="NOUN_PROP" ||getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
 										{
 											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
@@ -88,6 +89,50 @@ wordType getWordType(QString word)
 	}
 
 }
+
+wordType getWordTypeGeneral(QString word)
+{
+#ifdef     HADITHDEBUG
+        out << word<<":";
+#endif
+
+        mystemmer s(word);
+        s();
+        //after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
+        if (equal(word,a5barana) || equal(word,a5barani) || equal(word,hadathana) || equal(word,hadathani) || equal(word,qal) || equal(word,yaqool) ||equal(word,Aan))
+        {
+#ifdef     HADITHDEBUG
+
+                out <<"NRC"<< " ";
+#endif
+                return NRC;
+        }
+        else if (s.name)
+        {
+            if (equal(word,_bin) || equal(word,_ibin))
+            {
+                #ifdef     HADITHDEBUG
+                out <<"NMC"<< " ";
+#endif
+                return NMC;
+            }
+            else
+            {
+                #ifdef     HADITHDEBUG
+                out <<"NAME"<< " ";
+#endif
+                return NAME;
+            }
+        }
+        else //add nisba later
+        {
+            #ifdef     HADITHDEBUG
+                out <<"NMC"<< " ";
+#endif
+                return NMC;
+        }
+
+}
 int getSanadBeginning(QStringList wordList)
 {
 	int listSize=wordList.size();
@@ -107,7 +152,9 @@ void buildwords()
 	hadathani.append(_7a2).append(dal).append(tha2).append(noon).append(ya2);
 	Aan.append(ayn).append(noon);
 	qal.append(qaf).append(alef).append(lam);
-	yaqool.append(ya2).append(qaf).append(waw).append(lam);
+        yaqool.append(ya2).append(qaf).append(waw).append(lam);
+        _bin.append(ba2).append(noon);
+        _ibin.append(alef).append(ba2).append(noon);
 
         delimiters="["+delimiters+fasila+"]";
 
@@ -265,76 +312,155 @@ int hadith_test_case(QString input_str)
 }
 
 typedef struct stateData_{
-    int count21,count22,max21,min21,min22,max22,firstNameIndex;
+    int firstNameIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold;
+    QList <QString>nmcList;
+    QList <QString>nrcList;
 } stateData;
 
 void initializeStateData(stateData & currentData)
 {
-currentData.count21=0;
-currentData.count22=0;
-currentData.max21=1000;
-currentData.max22=4;
-currentData.min21=4;
-currentData.min22=0;
+
+currentData.nmcThreshold=3;
+currentData.nmcList.clear();
+currentData.narratorCount=0;
+currentData.nrcThreshold=5;
+currentData.nrcList.clear();
+currentData.narratorStartIndex=0;
+currentData.narratorEndIndex=0;
+currentData.nrcStartIndex=0;
+currentData.nrcEndIndex=0;
+currentData.narratorThreshold=3;
 }
 
-int getNextState(int currentState,wordType currentType,int & nextState,stateData & currentData,int index)
+
+bool getNextState(stateType currentState,wordType currentType,stateType & nextState,stateData & currentData,int index,QStringList wordList)
 {
 
-        out<<currentState<<endl;
-        out<<"21:"<<currentData.count21<<" ";
-        out<<"22:"<<currentData.count22<<" ";
+        //out<<currentState<<endl;
+    #ifdef     HADITHDEBUG
+        out<<" nmcsize: "<<currentData.nmcList.size();
+        out<<" nrcsize: "<<currentData.nrcList.size();
+#endif
         switch(currentState)
         {
-                case 0:
-                if(currentType==NAME)
-                {
-                    nextState=1;
-                    currentData.firstNameIndex=index;
-                    currentData.count21=0;
-                    currentData.count22=0;
-                    return 1;
-                }
-
-                return 0; //still outside
-
-                case 1:
-                if((currentType!=NAME)&&(currentState!=AAN))
-                {
-                    nextState=2;
-                }
-                return 1;
-
-                case 2:
-                if(currentType==NAME)
-                {
-                    nextState=1;
-                    currentData.count21++;
-                    if ((currentData.count21==currentData.min21)&&(currentData.count22>=currentData.min22))
+                case TEXT_S:
+                  #ifdef     HADITHDEBUG
+            out<<"TEXT_S"<<endl;
+#endif
+                    if(currentType==NAME)
                     {
-                       // nextIndex=index+1;
-                        return 2;
+                        nextState=NAME_S;
+                        currentData.firstNameIndex=index;
+                        currentData.narratorStartIndex=index;
+                        currentData.narratorCount=0;
+                    }
+                    else if (currentType==NRC)
+                    {
+                        nextState=NRC_S;
+                    }
+                    else
+                    {
+                        nextState=TEXT_S;
                     }
 
-                }                
-                else if (currentType==TERMINAL_NAME)//modify this for backtracking
-                {
-                    nextState=3;
-                 //   nextIndex=index+1;
-                    return 2;
-                }
-                else
-                {
-                    currentData.count22++;
-                    if (currentData.count22==currentData.max22)
-                        return 0;
+                    return TRUE;
 
-                }
-                return 1;
+                case NAME_S:
+                    #ifdef     HADITHDEBUG
+                    out<<"NAME_S"<<endl;
+#endif
+                    if(currentType==NMC)
+                    {
+                        nextState=NMC_S;
+                        currentData.nmcList.clear();
+                        currentData.nmcList.append(wordList[index]);
+
+                    }
+                    else if (currentType==NRC)
+                    {
+                        nextState=NRC_S;
+                        currentData.narratorCount++;
+                        #ifdef     HADITHDEBUG
+                        out<<"counter"<<currentData.narratorCount<<endl;
+#endif
+                        currentData.nrcList.clear();
+                         currentData.nrcList.append(wordList[index]);
+                        currentData.narratorEndIndex=index-1;
+                        currentData.nrcStartIndex=index;
+
+                    }
+                    else
+                    {
+                        nextState=NAME_S;
+                    }
+
+                    return TRUE;
+
+                case NMC_S:
+                    #ifdef     HADITHDEBUG
+                    out<<"NMC_S"<<endl;
+#endif
+                    if ((currentData.nmcList.size()>currentData.nmcThreshold)&&((!(currentData.nmcList.contains(_bin))) || (!(currentData.nmcList.contains(_ibin)))))
+                    {
+                        nextState=TEXT_S;
+                        currentData.narratorEndIndex=index-1;
+                        return FALSE;
+                    }
+                    else if (currentType==NRC)
+                    {
+                        currentData.narratorCount++;
+                        #ifdef     HADITHDEBUG
+                        out<<"counter"<<currentData.narratorCount<<endl;
+#endif
+
+                        currentData.nrcList.clear();
+                        currentData.nrcList.append(wordList[index]);
+
+                        nextState=NRC_S;
+                        currentData.narratorEndIndex=index-1;
+                        currentData.nrcStartIndex=index;
+                    }
+
+                    else if(currentType==NAME)
+                    {
+                        nextState=NAME_S;
+                    }
+                    else if (currentType==NMC)
+                    {
+                        currentData.nmcList.append(wordList[index]);
+                        nextState=NMC_S;
+                    }
+                    else
+                    {
+                        nextState=NMC_S; //maybe modify later
+                    }
+                    return TRUE;
+
+                case NRC_S:
+                    #ifdef     HADITHDEBUG
+                    out<<"NRC_S"<<endl;
+#endif
+
+                    if (currentData.nrcList.size()>currentData.nrcThreshold)
+                    {
+                        nextState=TEXT_S;
+                        currentData.nrcEndIndex=index-1;
+                        return FALSE;
+                    }
+                    else if (currentType==NAME)
+                    {
+                        nextState=NAME_S;
+                        currentData.nrcEndIndex=index-1;
+                    }
+                    else
+                    {
+                        nextState=NRC_S;
+                    }
+                    return TRUE;
 
 
                 default:
-                return 0;
+                return TRUE;
          }
     }
 
@@ -371,8 +497,8 @@ int hadith_test_case_general(QString input_str)
  //finding the start of hadith
                 int listSize=wordList.size();
 
-                int currentState=0;
-                int nextState=0;
+                stateType currentState=TEXT_S;
+                stateType nextState=TEXT_S;
                 int offset=3; //letters before first name in hadith
                 wordType currentType;
                 int newHadithStart=-1;
@@ -384,14 +510,15 @@ int hadith_test_case_general(QString input_str)
                 int i=0;
                 while (i<listSize)
                 {
-                        currentType=getWordType(wordList[i]);
+                        currentType=getWordTypeGeneral(wordList[i]);
 
-                        if(getNextState(currentState,currentType,nextState,currentData,i)==2)
+                        if((getNextState(currentState,currentType,nextState,currentData,i,wordList)==FALSE)&& currentData.narratorCount>=currentData.narratorThreshold)
 
                         {
                                  newHadithStart=currentData.firstNameIndex;//-offset;
-                                 out<<"start: "<<wordList[newHadithStart]<<endl;
-                                 break;
+                                 out<<"new hadith start: "<<wordList[newHadithStart]<<" "<<wordList[newHadithStart+1]<<" "<<wordList[newHadithStart+2]<<" "<<wordList[newHadithStart+3]<<endl;
+                                 out<<"sanad end: "<<wordList[i]<<" "<<wordList[i+1]<<" "<<wordList[i+2]<<endl; //maybe i+-1
+                               //  break;
                         }
                         currentState=nextState;
                         i++;
@@ -404,7 +531,7 @@ int hadith_test_case_general(QString input_str)
                     return 0;
                 }
 
-
+/*
 //continue probing the hadith for end of sanad
                 i++;
                 bool searchForStart=false;
@@ -448,10 +575,8 @@ int hadith_test_case_general(QString input_str)
                     currentState=nextState;
                     i++;
                 }
+*/
 
-                //
-
-    //     }
 
 return 0;
 }
@@ -487,11 +612,18 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		buildwords();
 	}
 
+    //   hadith_test_case_general(input_str);
+      word_sarf_test();
+               // hadith_test_case_general(input_str);
+
+	/*if (insert_rules_for_Nprop_Al()<0)
+=======
 	//  hadith_test_case(input_str);
 	//word_sarf_test();
 	hadith_test_case_general(input_str);
 	//augment();
-	/*if (insert_placenames()<0)
+        if (insert_placenames()<0)
+>>>>>>> .r120
 		return -1;*/
 	return 0;
 }
