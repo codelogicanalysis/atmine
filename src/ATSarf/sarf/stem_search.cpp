@@ -20,32 +20,150 @@ bool StemSearch::operator()()
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
 #ifdef USE_TRIE
+		QVector<QChar> alefs(4);
+		alefs[0]=alef;
+		alefs[1]=alef_hamza_above;
+		alefs[2]=alef_hamza_below;
+		alefs[3]=alef_madda_above;
+		/*Search_StemNode s1(NULL);
+		StemNode * node=NULL;
+		ATTrie::Position pos = trie->startWalk();
+		int i = 0;
+		for (i = 0; i < name.length(); i++)
+		{
+			if (!alefs.contains(name[i]))
+			{
+				if (!trie->walk(pos, name[i]))
+					break;
+			}
+			else
+			{
+				bool walked=false;
+				for (int j=0;j<alefs.size();j++)
+				{
+					if (trie->isWalkable(pos,alefs[j])){
+						trie->walk(pos, alefs[j]);
+						walked=true;
+						break;
+					}
+				}
+				if (!walked)
+					break;
+			}
+		}
+		if (i == name.length())
+		{
+			if (trie->isLeaf(pos))
+			{
+				node = trie->getData(pos);
+				if (node != NULL)
+				{
+					id_of_currentmatch=node->stem_id;
+					Search_StemNode s2(node);
+					s1=s2;
+				}
+			}
+			else
+				continue;
+		}
+		else
+			continue;*/
+
 		StemNode * node = NULL;
 		trie->retreive(name,&node);
 		if (node == NULL)
-			continue;
+		{
+			if (!alefs.contains(name[i]))
+			{
+				bool matched=false;
+				for (int j=0;j<alefs.size();j++)
+				{
+					trie->retreive(alefs[j] + name.mid(1),&node);
+					if (node != NULL){
+						matched=true;
+						break;
+					}
+				}
+				if (!matched)
+					continue;
+			}
+			else
+				continue;
+		}
 		id_of_currentmatch=node->stem_id;
 		Search_StemNode s1(node);
+
 #else
-		Search_by_item s1(STEM,name);
-		id_of_currentmatch=s1.ID();
-#endif
-#ifdef REDUCE_THRU_DIACRITICS
-		minimal_item_info inf;
-		while(s1.retrieve(inf))
+		QVector<QChar> alefs(4);
+		alefs[0]=alef;
+		alefs[1]=alef_hamza_above;
+		alefs[2]=alef_hamza_below;
+		alefs[3]=alef_madda_above;
+		Search_by_item s1(STEM,-1);
+		bool not_finished=true;
+		int j=0;
+		while (not_finished)
 		{
-			if (!false_returned)
+			if (name.size()>0 && alefs.contains(name[0]))
 			{
-				if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))
+				if  (j<alefs.size())
 				{
-					category_of_currentmatch=inf.category_id;
-					raw_data_of_currentmatch=inf.raw_data;
-					currentMatchPos=i-1;
-					QString subword=getDiacriticword(i-1,starting_pos,info->diacritic_word);
-					//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
-					if (equal(subword,raw_data_of_currentmatch))
+					QString t=alefs[j]+name.mid(1);
+					Search_by_item s2(STEM,t);
+					s1=s2;
+					j++;
+				}
+				else
+					not_finished=false;
+			}
+			else
+			{
+				Search_by_item s2(STEM,name);
+				s1=s2;
+				not_finished=false;
+			}
+			id_of_currentmatch=s1.ID();
+	#endif
+	#ifdef REDUCE_THRU_DIACRITICS
+			minimal_item_info inf;
+			while(s1.retrieve(inf))
+			{
+				if (!false_returned)
+				{
+					if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))
 					{
-						//out<<"yes\n";
+						category_of_currentmatch=inf.category_id;
+						raw_data_of_currentmatch=inf.raw_data;
+						currentMatchPos=i-1;
+						QString subword=getDiacriticword(i-1,starting_pos,info->diacritic_word);
+						//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
+						if (equal(subword,raw_data_of_currentmatch))
+						{
+							//out<<"yes\n";
+							if (info->called_everything)
+							{
+								if (!onMatch())
+									false_returned=true;
+							}
+							else
+							{
+								if (!info->on_match_helper())
+										false_returned=true;
+							}
+						}
+					}
+				}
+			}
+	#else
+			long cat_id;
+			while(s1.retrieve(cat_id))
+			{
+				if (!false_returned)
+				{
+					if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+					{
+						category_of_currentmatch=cat_id;
+						currentMatchPos=i-1;
 						if (info->called_everything)
 						{
 							if (!onMatch())
@@ -59,29 +177,8 @@ bool StemSearch::operator()()
 					}
 				}
 			}
-		}
-#else
-		long cat_id;
-		while(s1.retrieve(cat_id))
-		{
-			if (!false_returned)
-			{
-				if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
-				{
-					category_of_currentmatch=cat_id;
-					currentMatchPos=i-1;
-					if (info->called_everything)
-					{
-						if (!onMatch())
-							false_returned=true;
-					}
-					else
-					{
-						if (!info->on_match_helper())
-								false_returned=true;
-					}
-				}
-			}
+#endif
+#ifndef USE_TRIE
 		}
 #endif
 	}

@@ -46,7 +46,7 @@ int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, 
 {
 	bool hasAL= removeAL(word);
 	//insert word as is
-	int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop"),source_id,abstract_categories,description,"","","");
+	int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop_Al"),source_id,abstract_categories,description,"","","");
 	if (stem_id<0)
 	{
 		error <<"while adding stem: "<<word<<"'\n";

@@ -9,19 +9,27 @@
 #include "../sarf/stemmer.h"
 #include "../caching_structures/database_info_block.h"
 #include "../utilities/diacritics.h"
+
 //#define HADITHDEBUG
 enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
-QString delimiters(" :.,");
+QString delimiters(" :.,()");
 QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool,_bin,_ibin;
 
 class mystemmer: public Stemmer
 {
-	public:
-	bool name;
+private:
+	bool possessive,place;
+public:
+	bool name, nrc, nmc ;
+
 	mystemmer(QString word):Stemmer(word)
 	{
 		name=false;
+		nmc=false;
+		nrc=false;
+		possessive=false;
+		place=false;
 	}
 	bool on_match()
 	{
@@ -33,21 +41,53 @@ class mystemmer: public Stemmer
 				Search_by_item s(STEM,Stem->id_of_currentmatch);
 				while(s.retrieve(stem_info))
 				{
+						if (s.Name()==QString("").append(_7a2).append(dal).append(tha2))
+						{
+							nrc=true;
+							//return false;
+						}
 #ifdef REDUCE_THRU_DIACRITICS
 						if (stem_info.category_id==Stem->category_of_currentmatch && stem_info.raw_data==Stem->raw_data_of_currentmatch)
 #else
 						if (stem_info.category_id==Stem->category_of_currentmatch)
 #endif
 						{
-								for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
+							if (stem_info.description=="son")
+							{
+								nmc=true;
+								return false;
+							}
+							else if (stem_info.description=="said" || stem_info.description=="say" || stem_info.description=="notify/communicate" || stem_info.description.split(QRegExp("[ /]")).contains("listen") || stem_info.description.contains("from/about"))
+							{
+								nrc=true;
+								return false;
+							}
+							for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
 									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 									{
-
-										if (getColumn("category","name",get_abstractCategory_id(i))=="NOUN_PROP" ||getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
+										if (getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
 										{
 											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
 											name=true;
 											return false;
+										}
+										else if (getColumn("category","name",get_abstractCategory_id(i))=="POSSESIVE")
+										{
+											possessive=true;
+											if (place)
+											{
+												nmc=true;
+												return false;
+											}
+										}
+										else if (getColumn("category","name",get_abstractCategory_id(i))=="Name of Place")
+										{
+											place=true;
+											if (possessive)
+											{
+												nmc=true;
+												return false;
+											}
 										}
 									}
 						}
@@ -99,34 +139,30 @@ wordType getWordTypeGeneral(QString word)
         mystemmer s(word);
         s();
         //after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
-        if (equal(word,a5barana) || equal(word,a5barani) || equal(word,hadathana) || equal(word,hadathani) || equal(word,qal) || equal(word,yaqool) ||equal(word,Aan))
+		if (s.nrc)
         {
 #ifdef     HADITHDEBUG
-
                 out <<"NRC"<< " ";
 #endif
                 return NRC;
         }
         else if (s.name)
         {
-            if (equal(word,_bin) || equal(word,_ibin))
-            {
-                #ifdef     HADITHDEBUG
-                out <<"NMC"<< " ";
-#endif
-                return NMC;
-            }
-            else
-            {
                 #ifdef     HADITHDEBUG
                 out <<"NAME"<< " ";
 #endif
                 return NAME;
-            }
         }
-        else //add nisba later
-        {
-            #ifdef     HADITHDEBUG
+		else if (s.nmc)//redundant included in below
+		{
+#ifdef     HADITHDEBUG
+				out <<"NMC"<< " ";
+#endif
+				return NMC;
+		}
+		else
+		{
+#ifdef     HADITHDEBUG
                 out <<"NMC"<< " ";
 #endif
                 return NMC;
@@ -156,7 +192,7 @@ void buildwords()
         _bin.append(ba2).append(noon);
         _ibin.append(alef).append(ba2).append(noon);
 
-        delimiters="["+delimiters+fasila+"]";
+		delimiters="["+delimiters+fasila+"]";
 
 
 
@@ -312,6 +348,7 @@ int hadith_test_case(QString input_str)
 }
 
 typedef struct stateData_{
+	bool started;
     int firstNameIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold;
     QList <QString>nmcList;
     QList <QString>nrcList;
@@ -330,6 +367,7 @@ currentData.narratorEndIndex=0;
 currentData.nrcStartIndex=0;
 currentData.nrcEndIndex=0;
 currentData.narratorThreshold=3;
+currentData.started=false;
 }
 
 
@@ -351,6 +389,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     {
                         nextState=NAME_S;
                         currentData.firstNameIndex=index;
+						currentData.started=true;
                         currentData.narratorStartIndex=index;
                         currentData.narratorCount=0;
                     }
@@ -424,6 +463,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     else if(currentType==NAME)
                     {
                         nextState=NAME_S;
+						if (!currentData.started)
+						{
+							currentData.firstNameIndex=index;
+							currentData.started=true;
+						}
                     }
                     else if (currentType==NMC)
                     {
@@ -466,8 +510,6 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 
 int hadith_test_case_general(QString input_str)
 {
-
-
     //file parsing:
 		QFile input(input_str.split("\n")[0]);
 		//out<<"file error:"<<input.errorString();
@@ -492,7 +534,7 @@ int hadith_test_case_general(QString input_str)
 					out<<"empty file\n";
                     return 0;
                 }
-                QStringList wordList=wholeFile.split((QRegExp(delimiters)),QString::KeepEmptyParts);//space or enter
+                QStringList wordList=wholeFile.split((QRegExp(delimiters)),QString::SkipEmptyParts);//space or enter
 
  //finding the start of hadith
                 int listSize=wordList.size();
@@ -513,11 +555,11 @@ int hadith_test_case_general(QString input_str)
                         currentType=getWordTypeGeneral(wordList[i]);
 
                         if((getNextState(currentState,currentType,nextState,currentData,i,wordList)==FALSE)&& currentData.narratorCount>=currentData.narratorThreshold)
-
                         {
                                  newHadithStart=currentData.firstNameIndex;//-offset;
-                                 out<<"new hadith start: "<<wordList[newHadithStart]<<" "<<wordList[newHadithStart+1]<<" "<<wordList[newHadithStart+2]<<" "<<wordList[newHadithStart+3]<<endl;
+								 out<<"new hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
                                  out<<"sanad end: "<<wordList[i]<<" "<<wordList[i+1]<<" "<<wordList[i+2]<<endl; //maybe i+-1
+								 currentData.started=false;
                                //  break;
                         }
                         currentState=nextState;
@@ -612,19 +654,11 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		buildwords();
 	}
 
-    //   hadith_test_case_general(input_str);
-      word_sarf_test();
-               // hadith_test_case_general(input_str);
-
-	/*if (insert_rules_for_Nprop_Al()<0)
-=======
-	//  hadith_test_case(input_str);
-	//word_sarf_test();
-	hadith_test_case_general(input_str);
-	//augment();
-        if (insert_placenames()<0)
->>>>>>> .r120
-		return -1;*/
+	   hadith_test_case_general(input_str);
+	  //word_sarf_test();
+		// hadith_test_case_general(input_str);
+	/*if (augment()<0)
+			return -1;*/
 	return 0;
 }
 
