@@ -4,13 +4,16 @@
 #include "compatibility_rules.h"
 #include "../common_structures/tree.h"
 #include "../common_structures/atmTrie.h"
+#include <QString>
 
 class database_info_block
 {
     public:
         tree* Prefix_Tree;
         tree* Suffix_Tree;
+#ifdef USE_TRIE
 		ATTrie * Stem_Trie;
+#endif
         compatibility_rules * rules_AA;
         compatibility_rules * rules_AB;
         compatibility_rules * rules_AC;
@@ -22,5 +25,6 @@ class database_info_block
 };
 
 extern database_info_block database_info;
+extern QString trie_path;
 
 #endif // DATABASE_INFO_H

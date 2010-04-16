@@ -8,7 +8,9 @@ StemSearch::StemSearch(Stemmer * info,int pos)
 {
     this->info=info;
     starting_pos=pos;
+#ifdef USE_TRIE
 	trie=database_info.Stem_Trie;
+#endif
 }
 StemSearch::~StemSearch(){	}
 bool StemSearch::operator()()
@@ -17,16 +19,17 @@ bool StemSearch::operator()()
 	for (int i=starting_pos;i<=info->word.length();i++)
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
-		/*if (name=="")
-			return true;*/
-		//out<<name<<"\n";
+#ifdef USE_TRIE
 		StemNode * node = NULL;
 		trie->retreive(name,&node);
-		if (node == NULL){
+		if (node == NULL)
 			continue;
-		}
 		id_of_currentmatch=node->stem_id;
 		Search_StemNode s1(node);
+#else
+		Search_by_item s1(STEM,name);
+		id_of_currentmatch=s1.ID();
+#endif
 #ifdef REDUCE_THRU_DIACRITICS
 		minimal_item_info inf;
 		while(s1.retrieve(inf))
