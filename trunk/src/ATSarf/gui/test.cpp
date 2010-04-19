@@ -14,7 +14,7 @@
 enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QString delimiters(" :.,()");
-QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool,_bin,_ibin;
+QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool,_bin,_ibin, alayhi,alsalam;
 
 class mystemmer: public Stemmer
 {
@@ -44,8 +44,9 @@ public:
 						if (s.Name()==QString("").append(_7a2).append(dal).append(tha2))
 						{
 							nrc=true;
-							//return false;
+                                                        return false;
 						}
+
 #ifdef REDUCE_THRU_DIACRITICS
 						if (stem_info.category_id==Stem->category_of_currentmatch && stem_info.raw_data==Stem->raw_data_of_currentmatch)
 #else
@@ -57,7 +58,7 @@ public:
 								nmc=true;
 								return false;
 							}
-							else if (stem_info.description=="said" || stem_info.description=="say" || stem_info.description=="notify/communicate" || stem_info.description.split(QRegExp("[ /]")).contains("listen") || stem_info.description.contains("from/about"))
+                                                        else if (stem_info.description=="said" || stem_info.description=="say" || stem_info.description=="notify/communicate" || stem_info.description.split(QRegExp("[ /]")).contains("listen") || stem_info.description.contains("from/about")||stem_info.description.contains("narrate"))
 							{
 								nrc=true;
 								return false;
@@ -65,7 +66,7 @@ public:
 							for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
 									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 									{
-                                                                                if (getColumn("category","name",get_abstractCategory_id(i))=="Male Names")
+                                                                                if (getColumn("category","name",get_abstractCategory_id(i))=="Male Names") //Name of Person
 										{
 											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
 											name=true;
@@ -131,12 +132,26 @@ wordType getWordType(QString word)
 
 }
 
-wordType getWordTypeGeneral(QString word,bool & isBinOrPossessive)
+wordType getWordTypeGeneral(QString word,bool & isBinOrPossessive, int & index ,QString nextWord)
 {
 #ifdef     HADITHDEBUG
         out << word<<":";
 #endif
+
         isBinOrPossessive=false;
+
+        if (equal(word,alayhi))
+        {
+                if (equal(nextWord,alsalam))
+                {
+                    #ifdef     HADITHDEBUG
+                out <<"NMC"<< " ";
+                    #endif
+                    index++;
+                    return NMC;
+                }
+        }
+
 
         mystemmer s(word);
         s();
@@ -193,8 +208,10 @@ void buildwords()
         yaqool.append(ya2).append(qaf).append(waw).append(lam);
         _bin.append(ba2).append(noon);
         _ibin.append(alef).append(ba2).append(noon);
+        alayhi.append(ayn).append(lam).append(ya2).append(ha2);
+        alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
 
-		delimiters="["+delimiters+fasila+"]";
+        delimiters="["+delimiters+fasila+"]";
 
 
 
@@ -581,7 +598,7 @@ int hadith_test_case_general(QString input_str)
                 bool isBinOrPossessive=false;
                 while (i<listSize)
                 {
-                        currentType=getWordTypeGeneral(wordList[i],isBinOrPossessive);
+                        currentType=getWordTypeGeneral(wordList[i],isBinOrPossessive,i,(i+1<wordList.size()?wordList[i+1]:""));
 
                         if((getNextState(currentState,currentType,nextState,currentData,i,isBinOrPossessive)==FALSE)&& currentData.narratorCount>=currentData.narratorThreshold)
                         {
