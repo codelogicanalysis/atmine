@@ -3,3 +3,9 @@ use stem comparison for NRC
 Differentiate between name of person and name of place for the hadith...and nisba for person and place
 Detect days 
 عمّن as عن
+
+in case  we have two عن, and later we have continued list of narrators, then consider these as narrator....(عن أبيه(
+also consider the ه in أبيه as referring to the on before him so express the relation...
+also عنه to be considered
+remove names of females or consider them at the end
+numbers should take me to text directly

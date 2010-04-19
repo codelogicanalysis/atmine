@@ -65,15 +65,16 @@ public:
 							for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
 									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
 									{
-										if (getColumn("category","name",get_abstractCategory_id(i))=="Name of Person")
+                                                                                if (getColumn("category","name",get_abstractCategory_id(i))=="Male Names")
 										{
 											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
 											name=true;
 											return false;
 										}
-										else if (getColumn("category","name",get_abstractCategory_id(i))=="POSSESIVE")
+                                                                                else if (getColumn("category","name",get_abstractCategory_id(i))=="POSSESSIVE")
 										{
 											possessive=true;
+                                                                                       // out<<"\nI am possesive\n";
 											if (place)
 											{
 												nmc=true;
@@ -130,15 +131,15 @@ wordType getWordType(QString word)
 
 }
 
-wordType getWordTypeGeneral(QString word)
+wordType getWordTypeGeneral(QString word,bool & isBinOrPossessive)
 {
 #ifdef     HADITHDEBUG
         out << word<<":";
 #endif
+        isBinOrPossessive=false;
 
         mystemmer s(word);
         s();
-        //after adding abstract categories, we can return IKHBAR, KAWL, AAN, NAME,OTHER
 		if (s.nrc)
         {
 #ifdef     HADITHDEBUG
@@ -153,11 +154,12 @@ wordType getWordTypeGeneral(QString word)
 #endif
                 return NAME;
         }
-		else if (s.nmc)//redundant included in below
+                else if (s.nmc)
 		{
 #ifdef     HADITHDEBUG
-				out <<"NMC"<< " ";
+                                out <<"NMC-Bin/Pos ";
 #endif
+                                isBinOrPossessive=true;
 				return NMC;
 		}
 		else
@@ -348,36 +350,42 @@ int hadith_test_case(QString input_str)
 }
 
 typedef struct stateData_{
-	bool started;
-    int firstNameIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold;
-    QList <QString>nmcList;
-    QList <QString>nrcList;
+//	bool started;
+    int sanadStartIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold,;
+    int nmcCount, nrcCount;
+    bool nmcValid;
+
+    // QList <QString>nmcList;
+   // QList <QString>nrcList;
 } stateData;
 
 void initializeStateData(stateData & currentData)
 {
 
 currentData.nmcThreshold=3;
-currentData.nmcList.clear();
+//currentData.nmcList.clear();
+currentData.nmcCount=0;
 currentData.narratorCount=0;
 currentData.nrcThreshold=5;
-currentData.nrcList.clear();
+//currentData.nrcList.clear();
+currentData.nrcCount=0;
 currentData.narratorStartIndex=0;
 currentData.narratorEndIndex=0;
 currentData.nrcStartIndex=0;
 currentData.nrcEndIndex=0;
 currentData.narratorThreshold=3;
-currentData.started=false;
+currentData.nmcValid=false;
+//currentData.started=false;
 }
 
 
-bool getNextState(stateType currentState,wordType currentType,stateType & nextState,stateData & currentData,int index,QStringList wordList)
+bool getNextState(stateType currentState,wordType currentType,stateType & nextState,stateData & currentData,int index,bool isBinOrPossessive)
 {
 
         //out<<currentState<<endl;
     #ifdef     HADITHDEBUG
-        out<<" nmcsize: "<<currentData.nmcList.size();
-        out<<" nrcsize: "<<currentData.nrcList.size();
+        out<<" nmcsize: "<<currentData.nmcCount<<" ";
+        out<<" nrcsize: "<<currentData.nrcCount<<" ";
 #endif
         switch(currentState)
         {
@@ -385,16 +393,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                   #ifdef     HADITHDEBUG
             out<<"TEXT_S"<<endl;
 #endif
+                    initializeStateData(currentData);
+
                     if(currentType==NAME)
                     {
                         nextState=NAME_S;
-                        currentData.firstNameIndex=index;
-						currentData.started=true;
+                        currentData.sanadStartIndex=index;
+                        //			currentData.started=true;
                         currentData.narratorStartIndex=index;
-                        currentData.narratorCount=0;
+
+
                     }
                     else if (currentType==NRC)
                     {
+                        currentData.sanadStartIndex=index;
+
                         nextState=NRC_S;
                     }
                     else
@@ -411,8 +424,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     if(currentType==NMC)
                     {
                         nextState=NMC_S;
-                        currentData.nmcList.clear();
-                        currentData.nmcList.append(wordList[index]);
+                        currentData.nmcValid=isBinOrPossessive;
+
+                        currentData.nmcCount=1;
 
                     }
                     else if (currentType==NRC)
@@ -422,8 +436,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                         #ifdef     HADITHDEBUG
                         out<<"counter"<<currentData.narratorCount<<endl;
 #endif
-                        currentData.nrcList.clear();
-                         currentData.nrcList.append(wordList[index]);
+                        currentData.nrcCount=1;
                         currentData.narratorEndIndex=index-1;
                         currentData.nrcStartIndex=index;
 
@@ -439,11 +452,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     #ifdef     HADITHDEBUG
                     out<<"NMC_S"<<endl;
 #endif
-                    if ((currentData.nmcList.size()>currentData.nmcThreshold)&&((!(currentData.nmcList.contains(_bin))) || (!(currentData.nmcList.contains(_ibin)))))
+                    if (currentData.nmcCount>currentData.nmcThreshold)
                     {
-                        nextState=TEXT_S;
-                        currentData.narratorEndIndex=index-1;
-                        return FALSE;
+                        if (currentData.nmcValid)
+                        {
+                            currentData.nmcValid=false;
+                            nextState=NMC_S;
+                            currentData.nmcCount=0;
+                        }
+                        else
+                        {
+                            nextState=TEXT_S;
+                            return FALSE;
+                        }
+               //         currentData.narratorEndIndex=index-1; check this case
+
                     }
                     else if (currentType==NRC)
                     {
@@ -452,8 +475,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                         out<<"counter"<<currentData.narratorCount<<endl;
 #endif
 
-                        currentData.nrcList.clear();
-                        currentData.nrcList.append(wordList[index]);
+                        currentData.nrcCount=1;
 
                         nextState=NRC_S;
                         currentData.narratorEndIndex=index-1;
@@ -463,15 +485,20 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     else if(currentType==NAME)
                     {
                         nextState=NAME_S;
-						if (!currentData.started)
+                        /*			if (!currentData.started)
 						{
-							currentData.firstNameIndex=index;
+                                                        currentData.sanadStartIndex=index;
 							currentData.started=true;
 						}
+                                                */
                     }
                     else if (currentType==NMC)
                     {
-                        currentData.nmcList.append(wordList[index]);
+                        currentData.nmcCount++;
+
+                        if (isBinOrPossessive)
+                        currentData.nmcValid=true;
+
                         nextState=NMC_S;
                     }
                     else
@@ -485,10 +512,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     out<<"NRC_S"<<endl;
 #endif
 
-                    if (currentData.nrcList.size()>currentData.nrcThreshold)
+                    if (currentData.nrcCount>=currentData.nrcThreshold)
                     {
                         nextState=TEXT_S;
                         currentData.nrcEndIndex=index-1;
+
                         return FALSE;
                     }
                     else if (currentType==NAME)
@@ -499,6 +527,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                     else
                     {
                         nextState=NRC_S;
+                        currentData.nrcCount++;
                     }
                     return TRUE;
 
@@ -510,9 +539,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 
 int hadith_test_case_general(QString input_str)
 {
-    //file parsing:
-		QFile input(input_str.split("\n")[0]);
-		//out<<"file error:"<<input.errorString();
+        QFile input(input_str.split("\n")[0]);
+
         if (!input.open(QIODevice::ReadWrite))
         {
                 out << "File not found\n";
@@ -520,8 +548,7 @@ int hadith_test_case_general(QString input_str)
         }
         QTextStream file(&input);
         file.setCodec("utf-8");
-//        while (!file.atEnd())
-  //      {
+
                 QString wholeFile=file.readAll();//
                 if (wholeFile.isNull())
                 {
@@ -536,7 +563,6 @@ int hadith_test_case_general(QString input_str)
                 }
                 QStringList wordList=wholeFile.split((QRegExp(delimiters)),QString::SkipEmptyParts);//space or enter
 
- //finding the start of hadith
                 int listSize=wordList.size();
 
                 stateType currentState=TEXT_S;
@@ -550,17 +576,20 @@ int hadith_test_case_general(QString input_str)
                 initializeStateData(currentData);
 
                 int i=0;
+                int sanadEnd;
+
+                bool isBinOrPossessive=false;
                 while (i<listSize)
                 {
-                        currentType=getWordTypeGeneral(wordList[i]);
+                        currentType=getWordTypeGeneral(wordList[i],isBinOrPossessive);
 
-                        if((getNextState(currentState,currentType,nextState,currentData,i,wordList)==FALSE)&& currentData.narratorCount>=currentData.narratorThreshold)
+                        if((getNextState(currentState,currentType,nextState,currentData,i,isBinOrPossessive)==FALSE)&& currentData.narratorCount>=currentData.narratorThreshold)
                         {
-                                 newHadithStart=currentData.firstNameIndex;//-offset;
-								 out<<"new hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
-                                 out<<"sanad end: "<<wordList[i]<<" "<<wordList[i+1]<<" "<<wordList[i+2]<<endl; //maybe i+-1
-								 currentData.started=false;
-                               //  break;
+                                 sanadEnd=currentData.narratorEndIndex;
+                                 newHadithStart=currentData.sanadStartIndex;//-offset;
+                                 out<<"\n new hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
+                                 out<<"sanad end: "<<wordList[sanadEnd-2]<<" "<<wordList[sanadEnd-1]<<" "<<wordList[sanadEnd]<<endl<<endl; //maybe i+-1
+                               //  currentData.started=false;
                         }
                         currentState=nextState;
                         i++;
@@ -572,53 +601,6 @@ int hadith_test_case_general(QString input_str)
                     out<<"no hadith found\n";
                     return 0;
                 }
-
-/*
-//continue probing the hadith for end of sanad
-                i++;
-                bool searchForStart=false;
-                bool searchForEnd=true;
-
-                int result;
-
-                while (i<listSize)
-                {
-
-                   currentType=getWordType(wordList[i]);
-                   result=getNextState(currentState,currentType,nextState,currentData,i);
-                   out<<"result: "<<result<<endl;
-
-                   if (searchForEnd)
-                    {
-                       if(result==0)
-
-                        {
-                            out<<"end: "<<wordList[i]<<endl;
-                            searchForStart=true;
-                            searchForEnd=false;
-
-                        }
-                    }
-
-                    else if(searchForStart)
-                    {
-
-                        if(result==2)
-
-                        {
-                                 newHadithStart=currentData.firstNameIndex;//-offset;
-                                 out<<"start: "<<wordList[newHadithStart]<<endl;
-                                 searchForStart=false;
-                                 searchForEnd=true;
-                        }
-
-                    }
-
-                    currentState=nextState;
-                    i++;
-                }
-*/
-
 
 return 0;
 }
@@ -654,8 +636,8 @@ int start(QString input_str, QString &output_str, QString &error_str)
 		buildwords();
 	}
 
-	   hadith_test_case_general(input_str);
-	  //word_sarf_test();
+           hadith_test_case_general(input_str);
+       //   word_sarf_test();
 		// hadith_test_case_general(input_str);
 	/*if (augment()<0)
 			return -1;*/
