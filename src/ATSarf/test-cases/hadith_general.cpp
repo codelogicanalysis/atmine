@@ -84,8 +84,16 @@ void hadith_initialize()
 	alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
 	delimiters="["+delimiters+fasila+"]";
 	alayhi_alsalam=alayhi.append(' ').append(alsalam);
-	compound_words.append(alayhi_alsalam);
-	//here add additional compound words
+	QFile input("test-cases/phrases"); //contains compound words or phrases
+									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
+	if (!input.open(QIODevice::ReadOnly))
+		return;
+	QTextStream file(&input);
+	file.setCodec("utf-8");
+	QString phrases=file.readAll();
+	if (phrases.isNull() || phrases.isEmpty())
+		return;
+	compound_words=phrases.split("\n",QString::SkipEmptyParts);
 }
 
 void initializeStateData(stateData & currentData)
