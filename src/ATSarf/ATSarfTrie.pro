@@ -28,8 +28,11 @@ HEADERS += utilities/text_handling.h \
     logger/logger.h \
     common_structures/common.h \
     sql-interface/Retrieve_Template.h \
-	common_structures/StemNode.h \
-	common_structures/atmTrie.h
+    common_structures/StemNode.h \
+    common_structures/atmTrie.h \
+    common_structures/Item_Structures.h \
+    test-cases/hadith.h \
+    utilities/letters.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -55,11 +58,13 @@ SOURCES += utilities/text_handling.cpp \
     sarf/tree_search.cpp \
     sql-interface/Retrieve_Template.cpp \
     common_structures/global_variables.cpp \
-	common_structures/StemNode.cpp \
-	common_structures/atmTrie.cpp
-
-
-LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ -ldatrie
+    common_structures/StemNode.cpp \
+    common_structures/atmTrie.cpp \
+    common_structures/Item_Structures.cpp \
+    test-cases/hadith_general.cpp \
+    test-cases/hadith_1.cpp
+LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
+    -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 

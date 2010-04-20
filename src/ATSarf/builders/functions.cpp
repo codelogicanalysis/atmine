@@ -123,17 +123,17 @@ int insert_buckwalter()
 			if (item.contains("{") || item.contains("`") || item.contains("V"))
 			{
 				QString before=item;
-				item=item.replace("{",QString(QChar(0x0671)));
-				item=item.replace("`",QString(QChar(0x0670)));
-				item=item.replace("V",QString(QChar(0x06A4)));
+				item=item.replace("{",QString(alef_wasla));
+				item=item.replace("`",QString(aleft_superscript));
+				item=item.replace("V",QString(veh));
 				//out << "Replaced "<<interpret_type(types[j])<<": "<<before<<" by "<<item<<"\n";
 			}
 			if (raw_data.contains("{") || raw_data.contains("`") || raw_data.contains("V"))
 			{
 				QString before=raw_data;
-				raw_data=raw_data.replace("{",QString(QChar(0x0671)));
+				raw_data=raw_data.replace("{",QString(alef_wasla));
 				raw_data=raw_data.replace("`",QString(aleft_superscript));
-				raw_data=raw_data.replace("V",QString(QChar(0x06A4)));
+				raw_data=raw_data.replace("V",QString(veh));
 				//out << "Replaced "<<interpret_type(types[j])<<": "<<before<<" by "<<raw_data<<"\n";
 			}
 			QString abstract_category;
