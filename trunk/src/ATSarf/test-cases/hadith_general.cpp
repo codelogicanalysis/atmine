@@ -85,6 +85,7 @@ void hadith_initialize()
 	delimiters="["+delimiters+fasila+"]";
 	alayhi_alsalam=alayhi.append(' ').append(alsalam);
 	compound_words.append(alayhi_alsalam);
+	//here add additional compound words
 }
 
 void initializeStateData(stateData & currentData)
@@ -196,7 +197,7 @@ wordType getWordType(QString word,bool & isBinOrPossessive)
 	isBinOrPossessive=false;
 	mystemmer s(word);
 	s();
-#ifdef TENTATIVE
+#ifdef TENTATIVE //needed in order not consider 'alayhi_alsalam' as an additional NMC which results in it not being counted in case it is the last allowable count of NMC...
 	if (word==alayhi_alsalam)
 		return result(NRC);
 #endif
@@ -236,13 +237,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentData.sanadStartIndex=index;
 				nextState=NRC_S;
 			}
-#ifdef TENTATIVE
-			/*else if (currentType==NMC && isBinOrPossessive)
+#ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
+			else if (currentType==NMC && isBinOrPossessive)
 			{
 				currentData.narratorStartIndex=index;
 				currentData.sanadStartIndex=index;
 				nextState=NAME_S;
-			}*/
+			}
 #endif
 			else
 			{
@@ -327,7 +328,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				nextState=NAME_S;
 				currentData.nrcEndIndex=index-1;
 			}
-#ifdef TENTATIVE
+#ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
 			else if (currentType==NRC)
 			{
 				currentData.narratorCount++;
