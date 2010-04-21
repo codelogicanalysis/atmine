@@ -7,6 +7,7 @@
 extern QTextStream out;
 extern QTextStream in;
 extern QTextStream displayed_error;
+extern QTextStream chainOut;
 
 extern bool KEEP_OLD;
 extern bool warn_about_automatic_insertion;
