@@ -32,7 +32,8 @@ HEADERS += utilities/text_handling.h \
     common_structures/atmTrie.h \
     common_structures/Item_Structures.h \
     test-cases/hadith.h \
-    utilities/letters.h
+    utilities/letters.h \
+    test-cases/narrator_abstraction.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -62,7 +63,8 @@ SOURCES += utilities/text_handling.cpp \
     common_structures/atmTrie.cpp \
     common_structures/Item_Structures.cpp \
     test-cases/hadith_general.cpp \
-    test-cases/hadith_1.cpp
+    test-cases/hadith_1.cpp \
+    test-cases/narrator_abstraction.cpp
 LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
     -ldatrie
 CONFIG += qt

@@ -13,5 +13,5 @@ in case we have عن then consider as continued sanad
 done ----add روى to the nrc 
 عبيد الله combined names
  صلى الله عليه و عليه السلام should not be detected as a name
-
+if we have two nrcs seperated by nothing dont increment the counter (tentative)
 

@@ -10,6 +10,7 @@ QSqlDatabase db;
 QTextStream out;
 QTextStream in;
 QTextStream displayed_error;
+QTextStream chainOut;
 
 bool KEEP_OLD=true;
 bool warn_about_automatic_insertion =false;
