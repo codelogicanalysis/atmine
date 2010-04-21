@@ -193,6 +193,8 @@ StemNode *
 ATTrie :: getData(ATTrie::Position pos)
 {
     TrieData d = trie_state_get_data( (const TrieState*) pos);
+	if (d==TRIE_DATA_ERROR)
+		return NULL;
     return (StemNode*) d;
 }
 

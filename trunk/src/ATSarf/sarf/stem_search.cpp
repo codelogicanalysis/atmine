@@ -20,12 +20,14 @@ bool StemSearch::operator()()
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
 #ifdef USE_TRIE
+
 		QVector<QChar> alefs(4);
 		alefs[0]=alef;
 		alefs[1]=alef_hamza_above;
 		alefs[2]=alef_hamza_below;
 		alefs[3]=alef_madda_above;
-		/*Search_StemNode s1(NULL);
+#ifdef USE_TRIE_WALK
+		Search_StemNode s1(NULL);
 		StemNode * node=NULL;
 		ATTrie::Position pos = trie->startWalk();
 		int i = 0;
@@ -53,7 +55,7 @@ bool StemSearch::operator()()
 		}
 		if (i == name.length())
 		{
-			if (trie->isLeaf(pos))
+			if (trie->isTerminal(pos))
 			{
 				node = trie->getData(pos);
 				if (node != NULL)
@@ -67,8 +69,8 @@ bool StemSearch::operator()()
 				continue;
 		}
 		else
-			continue;*/
-
+			continue;
+#else
 		StemNode * node = NULL;
 		trie->retreive(name,&node);
 		if (node == NULL)
@@ -92,7 +94,7 @@ bool StemSearch::operator()()
 		}
 		id_of_currentmatch=node->stem_id;
 		Search_StemNode s1(node);
-
+#endif
 #else
 		QVector<QChar> alefs(4);
 		alefs[0]=alef;
@@ -102,19 +104,25 @@ bool StemSearch::operator()()
 		Search_by_item s1(STEM,-1);
 		bool not_finished=true;
 		int j=0;
+		QVector<QString> names;
 		while (not_finished)
 		{
 			if (name.size()>0 && alefs.contains(name[0]))
 			{
-				if  (j<alefs.size())
+				/*if  (j<alefs.size())
 				{
-					QString t=alefs[j]+name.mid(1);
+					QString t=;
 					Search_by_item s2(STEM,t);
 					s1=s2;
 					j++;
 				}
 				else
-					not_finished=false;
+					not_finished=false;*/
+				for (int j=0;j<alefs.size();j++)
+					names.append(alefs[j]+name.mid(1));
+				Search_by_item s2(STEM,names);
+				s1=s2;
+				not_finished=false;
 			}
 			else
 			{

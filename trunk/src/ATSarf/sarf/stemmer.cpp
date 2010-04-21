@@ -6,8 +6,76 @@
 
 bool Stemmer::on_match_helper() //needed just to count matches till now
 {
-		//total_matches_till_now++;
-        return on_match();
+	if (get_all_details)
+	{
+		if (called_everything || type==PREFIX)
+		{
+			prefix_infos=new QVector<minimal_item_info>();
+			#if !defined (REDUCE_THRU_DIACRITICS)
+				Prefix->fill_details();
+			#endif
+			for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++)
+			{
+				Search_by_item s(PREFIX,Prefix->idsOFCurrentMatch[i]);
+				minimal_item_info prefix_info;
+				while(s.retrieve(prefix_info))//TODO: results with incorrect behaviour assuming more than 1 category works for any affix, but assuming just one match this works
+				{
+					#ifdef REDUCE_THRU_DIACRITICS
+						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && prefix_info.raw_data==Prefix->raw_datasOFCurrentMatch[i])
+					#else
+						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] )
+					#endif
+							prefix_infos->append(prefix_info);
+				}
+			}
+		}
+		if (called_everything || type==SUFFIX)
+		{
+			suffix_infos=new QVector<minimal_item_info>();
+			#if !defined (REDUCE_THRU_DIACRITICS)
+				Suffix->fill_details();
+			#endif
+			for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
+			{
+				Search_by_item s(SUFFIX,Suffix->idsOFCurrentMatch[i]);
+				minimal_item_info suffix_info;
+				while(s.retrieve(suffix_info))
+				{
+				#ifdef REDUCE_THRU_DIACRITICS
+					if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && suffix_info.raw_data==Suffix->raw_datasOFCurrentMatch[i])
+				#else
+					if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
+				#endif
+						suffix_infos->append(suffix_info);
+				}
+			}
+		}
+		if (called_everything || type==STEM)
+		{
+			#if !defined (REDUCE_THRU_DIACRITICS)
+				Stem->fill_details();
+			#endif
+			Search_by_item s(STEM,Stem->id_of_currentmatch);
+			stem_info=new minimal_item_info;
+			while(s.retrieve(*stem_info))
+			{
+				#ifdef REDUCE_THRU_DIACRITICS
+					if (stem_info->category_id==Stem->category_of_currentmatch && stem_info->raw_data==Stem->raw_data_of_currentmatch)
+				#else
+					if (stem_info->category_id==Stem->category_of_currentmatch)
+				#endif
+					if (!on_match())
+						return false;
+			}
+			return true;
+		}
+		else
+			return on_match();
+	}
+	else
+	{
+		return on_match();
+	}
 }
 bool Stemmer::on_match()
 {
@@ -15,110 +83,66 @@ bool Stemmer::on_match()
         int number=0;
         if (called_everything || type==PREFIX)
         {
-#if !defined (REDUCE_THRU_DIACRITICS)
-                Prefix->fill_details();
-#endif
-                out<<"(";
-                for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
-                {
-                        //out<<Prefix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Prefix->catsOFCurrentMatch[i])<<" ";
-                        if (number>0)
-                                out<<" + ";
-                        number++;
-                        Search_by_item s(PREFIX,Prefix->idsOFCurrentMatch[i]);
-                        minimal_item_info prefix_info;
-                        while(s.retrieve(prefix_info))
-                        {
-#ifdef REDUCE_THRU_DIACRITICS
-								if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && prefix_info.raw_data==Prefix->raw_datasOFCurrentMatch[i])
-#else
-                                if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] )
-#endif
-                                {
-                                        if (count>0)
-                                                out << " OR ";
-                                        count++;
-                                        out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_info.description;
-                                }
-                        }
-                }
-                out <<")-";
+			out<<"(";
+			for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
+			{
+				if (number>0)
+						out<<" + ";
+				number++;
+				if (count>0)
+						out << " OR ";
+				count++;
+				out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description;
+			}
+			out <<")-";
         }
-        minimal_item_info stem_info;
         if (called_everything || type==STEM)
         {
-                out<< "-(";
-#if !defined (REDUCE_THRU_DIACRITICS)
-				Stem->fill_details();
-#endif
-                //out<<Suffix->startingPos-1<<" "<<getColumn("category","name",Stem->category_of_currentmatch)<<" --- ";
-                Search_by_item s(STEM,Stem->id_of_currentmatch);
-                count=0;
-                while(s.retrieve(stem_info))
-                {
-#ifdef REDUCE_THRU_DIACRITICS
-						if (stem_info.category_id==Stem->category_of_currentmatch && stem_info.raw_data==Stem->raw_data_of_currentmatch)
-#else
-                        if (stem_info.category_id==Stem->category_of_currentmatch)
-#endif
-                        {
-                                if (count>0)
-                                        out << " OR ";
-                                count++;
-                                out<</*Stem->startingPos-1<<" "<<*/ stem_info.description;
-                                out<<" [ ";
-                                for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
-									if (stem_info.abstract_categories[i])
-										if (get_abstractCategory_id(i)>=0)
-											out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
-                                out<<"]";
-                        }
-                }
-                out <<")-";
+			out<< "-(";
+			count=0;
+			if (count>0)
+					out << " OR ";
+			count++;
+			out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
+			out<<" [ ";
+			for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
+				if (stem_info->abstract_categories[i])
+					if (get_abstractCategory_id(i)>=0)
+						out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
+			out<<"]";
+			out <<")-";
         }
         if (called_everything || type==SUFFIX)
         {
-                out<< "-(";
-#if !defined (REDUCE_THRU_DIACRITICS)
-                Suffix->fill_details();
-#endif
-                number=0;
-                count=0;
-                for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
-                {
-                        if (number>0)
-                                out<<" + ";
-                        number++;
-                        //out<<Suffix->sub_positionsOFCurrentMatch[i]<<" "<< getColumn("category","name",Suffix->catsOFCurrentMatch[i])<<" ";
-                        Search_by_item s(SUFFIX,Suffix->idsOFCurrentMatch[i]);
-                        minimal_item_info suffix_info;
-                        while(s.retrieve(suffix_info))
-                        {
-#ifdef REDUCE_THRU_DIACRITICS
-								if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && suffix_info.raw_data==Suffix->raw_datasOFCurrentMatch[i])
-#else
-                                if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
-#endif
-                                {
-                                        if (count>0)
-                                                out << " OR ";
-                                        count++;
-                                        out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_info.description;
-                                }
-                        }
-                }
-                out <<")";
+			out<< "-(";
+			number=0;
+			count=0;
+			for (int i=0;i<suffix_infos->count();i++)
+			{
+				if (number>0)
+						out<<" + ";
+				number++;
+				if (count>0)
+						out << " OR ";
+				count++;
+				out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description;
+			}
+			out <<")";
         }
         out<<"\n";
         return true;
 }
-Stemmer::Stemmer(QString word)
+Stemmer::Stemmer(QString word, bool get_info)
 {
-        this->diacritic_word=word;
-        this->word=removeDiacritics(word);
-        Prefix=new PrefixSearch(this);
-        Stem=NULL;
-        Suffix=NULL;
+	prefix_infos=NULL;
+	stem_info=NULL;
+	suffix_infos=NULL;
+	this->diacritic_word=word;
+	this->get_all_details=get_info;
+	this->word=removeDiacritics(word);
+	Prefix=new PrefixSearch(this);
+	Stem=NULL;
+	Suffix=NULL;
 }
 bool Stemmer::operator()()//if returns true means there was a match
 {

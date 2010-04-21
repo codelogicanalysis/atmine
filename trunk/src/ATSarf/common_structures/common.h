@@ -5,6 +5,10 @@
 #include <bitset>
 
 //#define USE_TRIE
+//#define USE_TRIE_WALK
+#ifndef USE_TRIE
+#undef USE_TRIE_WALK
+#endif
 
 //#define QUEUE
 #ifndef QUEUE
