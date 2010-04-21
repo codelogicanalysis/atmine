@@ -99,6 +99,39 @@ Search_by_item::Search_by_item(item_types type,QString name)
                         id=-1; //not really, but because an error took place
         }
 }
+Search_by_item::Search_by_item(item_types type,QVector<QString> names)
+{
+		QSqlQuery temp(db);
+		query=temp;
+		this->type=type;
+		QString table = interpret_type(type);
+		//maybe better here get information about GrammarStem, and its sources and save it, but not a problem, or not??
+		QString where;
+		int count=0;
+		for (int i=0;i<names.count();i++)
+		{
+			int temp_id=getID(table,names[i]); //will use the global query
+			if (temp_id!=-1)
+			{
+				id=temp_id;
+				this->name=names[i];
+				if (count!=0)
+					where.append(" OR ");
+				else
+					where.append("WHERE ");
+				where.append(QString("%1_id ='%2'").arg(table).arg(id));
+			}
+		}
+		if (count==0)
+			id=-1;
+		else
+		{
+			QString stmt( "SELECT %1_id, category_id, sources, raw_data, POS, description_id %3 FROM %1_category %2 ORDER BY category_id ASC");
+			stmt=stmt.arg(table).arg(where).arg((type==STEM?", abstract_categories, lemma_ID":""));
+			if (!execute_query(stmt,query)) //will use the local query
+				id=-1; //not really, but because an error took place
+		}
+}
 long long Search_by_item::ID()
 {
         return id;

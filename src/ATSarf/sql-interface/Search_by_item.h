@@ -16,6 +16,7 @@ private:
 public:
 	Search_by_item(item_types type,long long id);
 	Search_by_item(item_types type,QString name);
+	Search_by_item(item_types type,QVector<QString> names);
 	long long ID();
 	QString Name();
 	int size(); //total size and not what is left
