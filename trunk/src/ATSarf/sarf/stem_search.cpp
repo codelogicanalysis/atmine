@@ -109,20 +109,20 @@ bool StemSearch::operator()()
 		{
 			if (name.size()>0 && alefs.contains(name[0]))
 			{
-				/*if  (j<alefs.size())
+				if  (j<alefs.size())
 				{
-					QString t=;
+					QString t=alefs[j]+name.mid(1);
 					Search_by_item s2(STEM,t);
 					s1=s2;
 					j++;
 				}
 				else
-					not_finished=false;*/
-				for (int j=0;j<alefs.size();j++)
+					not_finished=false;
+				/*for (int j=0;j<alefs.size();j++)
 					names.append(alefs[j]+name.mid(1));
-				Search_by_item s2(STEM,names);
+				Search_by_item s2(STEM,name,names);
 				s1=s2;
-				not_finished=false;
+				not_finished=false;*/
 			}
 			else
 			{
