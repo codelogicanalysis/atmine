@@ -407,7 +407,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 #ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
 			else if (currentType==NRC)
 			{
-                                if(currentData.nrcCount>=1) //in order not to have two NRCs without a name suspect between them
+                                if(currentData.nrcCount>1) //in order not to have two NRCs without a name suspect between them
                             {
 				currentData.narratorCount++;
 				display(QString("counter%1\n").arg(currentData.narratorCount));
@@ -530,7 +530,7 @@ int hadith(QString input_str)
 		{
 				 sanadEnd=currentData.narratorEndIndex;
                                  newHadithStart=currentData.sanadStartIndex;
-				 out<<"new hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
+                                 out<<"\nnew hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
 				 out<<"sanad end: "<<wordList[sanadEnd-2]<<" "<<wordList[sanadEnd-1]<<" "<<wordList[sanadEnd]<<endl<<endl; //maybe i+-1
                                  currentChain->chain->serialize();
                                // chainOut<<"Hamza";
