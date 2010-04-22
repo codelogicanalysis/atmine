@@ -2,8 +2,7 @@ use runtime options instead of compile options
 done---use stem comparison for NRC
 done---Differentiate between name of person and name of place for the hadith...and nisba for person and place
 done ---Detect days 
-عمّن as عن
-
+done ---عمّن as عن
 done--in case  we have two عن, and later we have continued list of narrators, then consider these as narrator....(عن أبيه(
 also consider the ه in أبيه as referring to the on before him so express the relation...
 also عنه to be considered
@@ -12,21 +11,13 @@ numbers should take me to text directly
 done ---in case we have عن then consider as continued sanad
 done ----add روى to the nrc 
 عبيد الله combined names
-<<<<<<< .mine
 done---- صلى الله عليه و عليه السلام should not be detected as a name
 done --if we have two nrcs seperated by nothing dont increment the counter (tentative)
 look into the duplicates in the results of wordsarf (stemmer on_match)
-=======
  صلى الله عليه و عليه السلام should not be detected as a name
 StemNode and Search_StemNode (jad)
 string reference in stemmer (jad)
 all text in stemmer (jad)
 if we have two nrcs seperated by nothing dont increment the counter (tentative)
->>>>>>> .r135
-<<<<<<< .mine
-
 stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence.
-
-
-=======
->>>>>>> .r135
+add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """  
