@@ -3,29 +3,40 @@
 #include <QFile>
 #include "logger/logger.h"
 
+class ChainNarratorPrim;
 
+typedef QList <ChainNarratorPrim *>::iterator CNPIterator;
+
+//#enumerate the types
 
 class ChainNarratorPrim {
 public:
-    virtual void f()=0;
+
+    virtual CNPIterator first () const=0;
+    virtual CNPIterator end () const=0;
 
 };
 
+
+
 class NarratorPrim: public ChainNarratorPrim {
 public:
-    virtual void f()=0;
     long long m_start;
     long long m_end;
 
     NarratorPrim();
     NarratorPrim(long long m_start);
 
+    virtual CNPIterator first () const=0;
+    virtual CNPIterator end () const=0;
 
 };
 
 class ChainPrim :public ChainNarratorPrim {
 public:
-    virtual void f()=0;
+    virtual CNPIterator first () const=0;
+    virtual CNPIterator end () const=0;
+
 
 };
 
@@ -34,41 +45,75 @@ public:
     virtual void f(){}
     NamePrim();
     NamePrim(long long m_start);
+
+    virtual CNPIterator first () const{
+    return QList<ChainNarratorPrim*> ().begin();
+        }
+
+    virtual CNPIterator end () const{
+    return QList<ChainNarratorPrim*> ().end();
+    }
+
 };
 
 
 class NameConnectorPrim :public NarratorPrim {
 public:
 
-    virtual void f(){}
     NameConnectorPrim();
     NameConnectorPrim(long long m_start);
 
+    virtual CNPIterator first () const{
+    return QList<ChainNarratorPrim*> ().begin();
+        }
+
+    virtual CNPIterator end () const{
+    return QList<ChainNarratorPrim*> ().end();
+    }
 };
 
 
 class NarratorConnectorPrim :public ChainPrim {
 public:
-    virtual void f(){}
     long long m_start;
     long long m_end;
     NarratorConnectorPrim();
     NarratorConnectorPrim(long long m_start);
 
+    virtual CNPIterator first () const{
+    return QList<ChainNarratorPrim*> ().begin();
+        }
+
+    virtual CNPIterator end () const{
+    return QList<ChainNarratorPrim*> ().end();
+    }
 
 };
 
 class Narrator :public ChainPrim {
 public:
-    virtual void f(){}
     QList <NarratorPrim *> m_narrator;
+
+    virtual CNPIterator first () const{
+    //return m_narrator.begin();
+        }
+
+    virtual CNPIterator end () const{
+    //return m_narrator.end();
+    }
 };
 
 class Chain: public ChainNarratorPrim {
 public:
-    virtual void f(){}
     QList <ChainPrim *> m_chain;
     void serialize();
 
+    virtual CNPIterator first () const{
+    //return m_chain.begin();
+        }
+
+    virtual CNPIterator end () const{
+    //return m_chain.end();
+    }
 
 };
