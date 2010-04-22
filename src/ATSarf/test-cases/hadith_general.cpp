@@ -142,7 +142,7 @@ private:
 public:
 	bool name, nrc, nmc ;
 
-	mystemmer(QString word):Stemmer(word)
+	mystemmer(QString word):Stemmer(word,false)
 	{
 		name=false;
 		nmc=false;
@@ -183,34 +183,34 @@ public:
 								return false;
 							}
 							for (unsigned int i=0;i<stem_info.abstract_categories.size();i++)
-									if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
+								if (stem_info.abstract_categories[i] && get_abstractCategory_id(i)>=0)
+								{
+									if (getColumn("category","name",get_abstractCategory_id(i))=="Male Names") //Name of Person
 									{
-										if (getColumn("category","name",get_abstractCategory_id(i))=="Male Names") //Name of Person
+										//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
+										name=true;
+										return false;
+									}
+									else if (getColumn("category","name",get_abstractCategory_id(i))=="POSSESSIVE")
+									{
+										possessive=true;
+										// out<<"\nI am possesive\n";
+										if (place)
 										{
-											//out<<"abcat:"<<	getColumn("category","name",get_abstractCategory_id(i))<<"\n";
-											name=true;
+											nmc=true;
 											return false;
 										}
-										else if (getColumn("category","name",get_abstractCategory_id(i))=="POSSESSIVE")
+									}
+									else if (getColumn("category","name",get_abstractCategory_id(i))=="Name of Place")
+									{
+										place=true;
+										if (possessive)
 										{
-											possessive=true;
-											// out<<"\nI am possesive\n";
-											if (place)
-											{
-												nmc=true;
-												return false;
-											}
-										}
-										else if (getColumn("category","name",get_abstractCategory_id(i))=="Name of Place")
-										{
-											place=true;
-											if (possessive)
-											{
-												nmc=true;
-												return false;
-											}
+											nmc=true;
+											return false;
 										}
 									}
+								}
 						}
 				}
 				return true;

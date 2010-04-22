@@ -99,7 +99,7 @@ Search_by_item::Search_by_item(item_types type,QString name)
                         id=-1; //not really, but because an error took place
         }
 }
-Search_by_item::Search_by_item(item_types type,QVector<QString> names)
+Search_by_item::Search_by_item(item_types type,QString name,QVector<QString> names)
 {
 		QSqlQuery temp(db);
 		query=temp;
@@ -108,18 +108,23 @@ Search_by_item::Search_by_item(item_types type,QVector<QString> names)
 		//maybe better here get information about GrammarStem, and its sources and save it, but not a problem, or not??
 		QString where;
 		int count=0;
-		for (int i=0;i<names.count();i++)
+		id=getID(table,name); //will use the global query
+		if (id!=-1)
 		{
-			int temp_id=getID(table,names[i]); //will use the global query
-			if (temp_id!=-1)
+			if (!names.contains(name))
+				names.append(name);
+			for (int i=0;i<names.count();i++)
 			{
-				id=temp_id;
-				this->name=names[i];
-				if (count!=0)
-					where.append(" OR ");
-				else
-					where.append("WHERE ");
-				where.append(QString("%1_id ='%2'").arg(table).arg(id));
+				int temp_id=getID(table,names[i]); //will use the global query
+				if (temp_id!=-1)
+				{
+					if (count!=0)
+						where.append(" OR ");
+					else
+						where.append("WHERE ");
+					where.append(QString("%1_id ='%2'").arg(table).arg(temp_id));
+					count++;
+				}
 			}
 		}
 		if (count==0)
@@ -130,6 +135,7 @@ Search_by_item::Search_by_item(item_types type,QVector<QString> names)
 			stmt=stmt.arg(table).arg(where).arg((type==STEM?", abstract_categories, lemma_ID":""));
 			if (!execute_query(stmt,query)) //will use the local query
 				id=-1; //not really, but because an error took place
+			//qDebug() <<stmt;
 		}
 }
 long long Search_by_item::ID()
