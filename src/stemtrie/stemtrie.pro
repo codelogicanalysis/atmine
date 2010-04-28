@@ -18,10 +18,10 @@ INCLUDEPATH += $$QTDIR/include/QtSql
 #INCLUDEPATH += $$TOP/datrie/
 #INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2
 #INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2/datrie
-INCLUDEPATH += $$TOP/libdatrie-0.2.2
-INCLUDEPATH += $$TOP/libdatrie-0.2.2/datrie
+INCLUDEPATH += $$TOP/libdatrie-0.2.3
+INCLUDEPATH += $$TOP/libdatrie-0.2.3/datrie
 
-LIBS += -L$$TOP/libdatrie-0.2.2/datrie/.libs -ldatrie
+LIBS += -L$$TOP/libdatrie-0.2.3/datrie/.libs -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 

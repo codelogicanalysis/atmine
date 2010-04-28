@@ -2,8 +2,8 @@ TOP = ../..
 INCLUDEPATH += $$QTDIR/include/QtSql \
     $$QTDIR/include/Qt
 INCLUDEPATH += $$TOP/datrie/
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2/datrie
+INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.3
+INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.3/datrie
 HEADERS += utilities/text_handling.h \
     utilities/diacritics.h \
     utilities/dbitvec.h \
@@ -65,8 +65,8 @@ SOURCES += utilities/text_handling.cpp \
     test-cases/hadith_general.cpp \
     test-cases/hadith_1.cpp \
     test-cases/narrator_abstraction.cpp
-LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
-    -ldatrie
+LIBS += -ldatrie
+#LIBS += -L$$TOP/datrie/libdatrie-0.2.3/datrie/.libs/ -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 

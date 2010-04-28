@@ -104,7 +104,7 @@ bool ATMTrieTestMainWindow :: saveAs()
 void ATMTrieTestMainWindow :: about()
 {
 #if 1 // Fadi test
-    QString text = textEdit->textCursor().selectedText();
+	QString text = textEdit->textCursor().selectedText();
     if (!text.isEmpty()){
         ATTrie::Position pos = trie->startWalk();
         int i = 0;

@@ -15,19 +15,18 @@ StemSearch::StemSearch(Stemmer * info,int pos)
 StemSearch::~StemSearch(){	}
 bool StemSearch::operator()()
 {
+	QVector<QChar> alefs(4);
+	alefs[0]=alef;
+	alefs[1]=alef_hamza_above;
+	alefs[2]=alef_hamza_below;
+	alefs[3]=alef_madda_above;
 	bool false_returned=false;
 	for (int i=starting_pos;i<=info->word.length();i++)
 	{
 		QString name=info->word.mid(starting_pos,i-starting_pos);
 #ifdef USE_TRIE
-
-		QVector<QChar> alefs(4);
-		alefs[0]=alef;
-		alefs[1]=alef_hamza_above;
-		alefs[2]=alef_hamza_below;
-		alefs[3]=alef_madda_above;
 #ifdef USE_TRIE_WALK
-		Search_StemNode s1(NULL);
+		Search_StemNode s1;
 		StemNode * node=NULL;
 		ATTrie::Position pos = trie->startWalk();
 		int i = 0;
@@ -61,9 +60,10 @@ bool StemSearch::operator()()
 				if (node != NULL)
 				{
 					id_of_currentmatch=node->stem_id;
-					Search_StemNode s2(node);
-					s1=s2;
+					s1.setNode(node);
 				}
+				else
+					continue;
 			}
 			else
 				continue;
@@ -96,11 +96,6 @@ bool StemSearch::operator()()
 		Search_StemNode s1(node);
 #endif
 #else
-		QVector<QChar> alefs(4);
-		alefs[0]=alef;
-		alefs[1]=alef_hamza_above;
-		alefs[2]=alef_hamza_below;
-		alefs[3]=alef_madda_above;
 		Search_by_item s1(STEM,-1);
 		bool not_finished=true;
 		int j=0;
