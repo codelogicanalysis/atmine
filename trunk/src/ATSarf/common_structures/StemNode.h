@@ -41,7 +41,9 @@ private:
 #endif
 
 public:
+	Search_StemNode();
 	Search_StemNode(StemNode *);
+	void setNode(StemNode *);
 	bool retrieve(long &category_id);
 #ifdef REDUCE_THRU_DIACRITICS
 	bool retrieve(minimal_item_info & info);

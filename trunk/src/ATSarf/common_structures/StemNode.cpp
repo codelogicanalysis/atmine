@@ -83,9 +83,19 @@ bool StemNode::exists(const long cat_id)
 	}
 
 //Search_StemNode
+	Search_StemNode::Search_StemNode()
+	{
+		//implement later
+	}
 	Search_StemNode::Search_StemNode(StemNode * node)
 	{
+		setNode(node);
+	}
+	void Search_StemNode::setNode(StemNode * node)
+	{
 		this->node=node;
+		if (node==NULL)
+			throw "cannot search a null pointer";
 		cat_index=0;
 #ifdef REDUCE_THRU_DIACRITICS
 		rawdata_index=0;

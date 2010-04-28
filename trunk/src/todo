@@ -18,6 +18,11 @@ look into the duplicates in the results of wordsarf (stemmer on_match)
 StemNode and Search_StemNode (jad)
 string reference in stemmer (jad)
 all text in stemmer (jad)
+fix walk (Fadi)
+index the trie node
+load and save the trie (tentative)
 if we have two nrcs seperated by nothing dont increment the counter (tentative)
 stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence.
-add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """  
+biographies
+deserialize
+add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """
