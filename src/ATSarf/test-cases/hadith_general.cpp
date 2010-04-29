@@ -83,6 +83,7 @@ void initializeChainData(chainData *currentChain){
    currentChain->narratorConnectorPrim=new NarratorConnectorPrim ;
    currentChain->  narrator=new Narrator ();
    currentChain->  chain=new Chain();
+   out<<"\ninit"<<currentChain->narrator->m_narrator.size()<<"\n";
 }
 
 
@@ -252,19 +253,24 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		switch(currentState)
 		{
 		case TEXT_S:
-			initializeStateData(currentData);
+
+
 			if(currentType==NAME)
 			{
+                                initializeStateData(currentData);
+                                initializeChainData(currentChain);
 				nextState=NAME_S;
 				currentData.sanadStartIndex=index;
-				//currentData.started=true;
+
 				currentData.narratorStartIndex=index;
-                                //currentData.nameStartIndex=index;
+
                                 currentChain->namePrim=new NamePrim(index);
 
 			}
 			else if (currentType==NRC)
 			{
+                                initializeStateData(currentData);
+                                initializeChainData(currentChain);
 				currentData.sanadStartIndex=index;
                                 currentData.nrcStartIndex=index;
                                 currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
@@ -273,6 +279,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 #ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
 			else if (currentType==NMC && isBinOrPossessive)
 			{
+                                initializeStateData(currentData);
+                                initializeChainData(currentChain);
 				currentData.narratorStartIndex=index;
 				currentData.sanadStartIndex=index;
                                 currentData.nmcStartIndex=index;
@@ -314,6 +322,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 
                                 currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
                                 currentChain->chain->m_chain.append(currentChain->narrator);
+                                currentChain->narrator=new Narrator();
 			}
 			else
 			{
@@ -322,25 +331,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			return true;
 
 		case NMC_S:
-			if (currentData.nmcCount>currentData.nmcThreshold)
-			{
-				if (currentData.nmcValid)
-				{
-					currentData.nmcValid=false;
-					nextState=NMC_S;
-					currentData.nmcCount=0;
-				}
-				else
-				{
-					nextState=TEXT_S;
-                                        currentChain->nameConnectorPrim->m_end=index-1;//later check for out of bounds
-                                        currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
-					return FALSE;
-				}
-				//currentData.narratorEndIndex=index-1; check this case
 
-			}
-			else if (currentType==NRC)
+                        if (currentType==NRC)
 			{
 				currentData.narratorCount++;
 				display(QString("counter%1\n").arg(currentData.narratorCount));
@@ -355,6 +347,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 
                                 currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
                                 currentChain->chain->m_chain.append(currentChain->narrator);
+                                currentChain->narrator=new Narrator();
 			}
 			else if(currentType==NAME)
 			{
@@ -366,6 +359,27 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                                 currentChain->namePrim=new NamePrim(index);
 
 			}
+
+                        else if (currentData.nmcCount>currentData.nmcThreshold)
+                        {
+                                if (currentData.nmcValid)
+                                {
+                                        currentData.nmcValid=false;
+                                        nextState=NMC_S;
+                                        currentData.nmcCount=0;
+                                }
+                                else
+                                {
+                                        nextState=TEXT_S;
+                                        currentChain->nameConnectorPrim->m_end=index-1;//later check for out of bounds
+                                        currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
+                                        currentChain->chain->m_chain.append(currentChain->narrator);
+
+                                        return FALSE;
+                                }
+                                //currentData.narratorEndIndex=index-1; check this case
+
+                        }
 			else if (currentType==NMC)
 			{
 				currentData.nmcCount++;
@@ -373,6 +387,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
                                     currentData.nmcValid=true;
 				nextState=NMC_S;
 			}
+
 			else
 			{
 				nextState=NMC_S; //maybe modify later
@@ -380,21 +395,12 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			return true;
 
 		case NRC_S:
-			if (currentData.nrcCount>=currentData.nrcThreshold)
-			{
-				nextState=TEXT_S;
-				currentData.nrcEndIndex=index-1;
 
-                                currentChain->narratorConnectorPrim->m_end=index-1;
-
-                                currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);                                
-				return false;
-			}
-			else if (currentType==NAME)
+                        if (currentType==NAME)
 			{
 				nextState=NAME_S;
                                 //currentData.nameStartIndex=index;
-                                currentChain->namePrim->m_start=index;
+                                //currentChain->namePrim->m_start=index;
 
                                 currentChain->narratorConnectorPrim->m_end=index-1;
                                 currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
@@ -404,6 +410,16 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 
 				currentData.nrcEndIndex=index-1;
 			}
+                        else if (currentData.nrcCount>=currentData.nrcThreshold)
+                        {
+                                nextState=TEXT_S;
+                                currentData.nrcEndIndex=index-1;
+
+                                currentChain->narratorConnectorPrim->m_end=index-1;
+
+                                currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+                                return false;
+                        }
 #ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
 			else if (currentType==NRC)
 			{
@@ -469,12 +485,17 @@ int parse(QString & text,QStringList & list)//returns number of times compound w
 int hadith(QString input_str)
 {
 
-         QFile chainOutput("test-cases/chainOutput");
+        QFile chainOutput("test-cases/chainOutput");
+
+        chainOutput.remove();
         if (!chainOutput.open(QIODevice::ReadWrite))
                 return 1;
 
+        chainOutput.flush();
         QTextStream chainOut(&chainOutput);
         chainOut.setCodec("utf-8");
+        //chainOut.setFieldAlignment(QTextStream::AlignCenter);
+
 
 
 
@@ -532,7 +553,8 @@ int hadith(QString input_str)
                                  newHadithStart=currentData.sanadStartIndex;
                                  out<<"\nnew hadith start: "<<wordList[newHadithStart]<<" "<<(newHadithStart+1<wordList.size()?wordList[newHadithStart+1]:"")<<" "<<(newHadithStart+2<wordList.size()?wordList[newHadithStart+2]:"")<<" "<<(newHadithStart+3<wordList.size()?wordList[newHadithStart+3]:"")<<endl;
 				 out<<"sanad end: "<<wordList[sanadEnd-2]<<" "<<wordList[sanadEnd-1]<<" "<<wordList[sanadEnd]<<endl<<endl; //maybe i+-1
-                                 currentChain->chain->serialize();
+                                 currentChain->chain->serialize(chainOut,wordList);
+
                                // chainOut<<"Hamza";
 
 		}
