@@ -5,18 +5,20 @@
 #include <bitset>
 
 #define USE_TRIE
-#define USE_TRIE_WALK
+#define TRIE_FROM_FILE
+//#define USE_TRIE_WALK
+//#define QUEUE
+//#define MEMORY_EXHAUSTIVE
+#define REDUCE_THRU_DIACRITICS
+
+
 #ifndef USE_TRIE
 #undef USE_TRIE_WALK
+#undef TRIE_FROM_FILE
 #endif
-
-//#define QUEUE
 #ifndef QUEUE
 #define PARENT
 #endif
-
-//#define MEMORY_EXHAUSTIVE
-#define REDUCE_THRU_DIACRITICS
 #ifdef REDUCE_THRU_DIACRITICS
 #undef MEMORY_EXHAUSTIVE
 #endif

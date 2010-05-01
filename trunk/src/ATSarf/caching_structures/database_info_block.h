@@ -14,6 +14,7 @@ class database_info_block
         tree* Suffix_Tree;
 #ifdef USE_TRIE
 		ATTrie * Stem_Trie;
+		QVector<StemNode> * trie_nodes;
 #endif
         compatibility_rules * rules_AA;
         compatibility_rules * rules_AB;
@@ -27,5 +28,6 @@ class database_info_block
 
 extern database_info_block database_info;
 extern QString trie_path;
+extern QString trie_list_path;
 
 #endif // DATABASE_INFO_H

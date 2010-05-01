@@ -2,8 +2,8 @@
 #define STEMNODE_H
 
 #include <QString>
-#include <QList>
 #include <QVector>
+#include <QList>
 #include "common_structures/common.h"
 
 class StemNode {
@@ -30,6 +30,12 @@ public:
 		RawDatas raw_datas;
 	#endif
 };
+
+QDataStream &operator>>(QDataStream &in, StemNode &node);
+QDataStream &operator<<(QDataStream &out, const StemNode &node);
+
+QDataStream &operator>>(QDataStream &in, StemNode* &node);
+QDataStream &operator<<(QDataStream &out, const StemNode* &node);
 
 class Search_StemNode
 {

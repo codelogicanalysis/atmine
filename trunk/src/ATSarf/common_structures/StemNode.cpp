@@ -1,7 +1,9 @@
 #include "StemNode.h"
 #include "../utilities/text_handling.h"
 #include <QtAlgorithms>
-#include <QDebug>
+#include <QVector>
+#include <QList>
+#include <QDataStream>
 
 void StemNode::add_info(const long cat_id)
 {
@@ -139,5 +141,39 @@ bool StemNode::exists(const long cat_id)
 			return false;
 	}
 #endif
+
+QDataStream &operator>>(QDataStream &in, long &l)
+{
+	qint64 s;
+	in>>s;
+	l=s;
+	return in;
+}
+
+QDataStream &operator<<(QDataStream &out, const long &l)
+{
+	out<<(qint64)l;
+	return out;
+}
+
+QDataStream &operator>>(QDataStream &in, StemNode &node)
+{
+	qulonglong stem_id;
+	in>>stem_id>>node.category_ids;
+	node.stem_id=stem_id;
+#ifdef REDUCE_THRU_DIACRITICS
+	in >>node.raw_datas;
+#endif
+	return in;
+}
+
+QDataStream &operator<<(QDataStream &out, const StemNode &node)
+{
+	out<<(qulonglong)node.stem_id<<node.category_ids;
+#ifdef REDUCE_THRU_DIACRITICS
+	out<<node.raw_datas;
+#endif
+	return out;
+}
 
 #endif
