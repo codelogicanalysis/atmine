@@ -10,18 +10,12 @@
 
 int word_sarf_test()
 {
-
-///hhh
-
-		QString word;
-		in >>word;
-		//	out<<string_to_bitset(word).to_string().data()<<"	 "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
-		Stemmer stemmer(word);
-		stemmer();
-		return 0;
-
-
-
+	QString word;
+	in >>word;
+	//	out<<string_to_bitset(word).to_string().data()<<"	 "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
+	Stemmer stemmer(word);
+	stemmer();
+	return 0;
 }
 int augment()
 {
@@ -39,8 +33,6 @@ int augment()
 bool first_time=true;
 int start(QString input_str, QString &output_str, QString &error_str)
 {
-
-
 	out.setString(&output_str);
 	out.setCodec("utf-8");
 	in.setString(&input_str);

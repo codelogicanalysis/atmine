@@ -19,6 +19,7 @@ StemNode and Search_StemNode (jad)
 string reference in stemmer (jad)
 all text in stemmer (jad)
 fix walk (Fadi)
+fix bug in crashing on deleting of trie if it was loaded from file (maybe due to uninitialized alfa_map) (Fadi)
 index the trie node
 load and save the trie (tentative)
 if we have two nrcs seperated by nothing dont increment the counter (tentative)

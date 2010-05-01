@@ -4,6 +4,7 @@ extern "C" {
 #include <datrie/trie.h>
 }
 #include "../common_structures/atmTrie.h"
+#include "../caching_structures/database_info_block.h"
 
 #define AT_ALPHA_KEY_MAX_LENGTH 1024
 
@@ -16,6 +17,7 @@ class ATTrieData {
 
 
 ATTrie :: ATTrie() : data(NULL) {
+	nodes=database_info.trie_nodes;
     data = new ATTrieData;
     data->amap = alpha_map_new();
     if (data->amap == NULL)
@@ -34,7 +36,8 @@ ATTrie :: ATTrie() : data(NULL) {
 }
 
 ATTrie :: ATTrie(const char * path) : data(NULL) {
-    data = new ATTrieData;
+	nodes=database_info.trie_nodes;
+	data = new ATTrieData;
     data->trie = trie_new_from_file(path);
     if (data->trie == NULL)
         throw "TrieConstructionException";
@@ -52,10 +55,10 @@ ATTrie :: save(const char * path)
 }
 
 bool 
-ATTrie :: store(const QString & key, StemNode * node) 
+ATTrie :: store(const QString & key, int index)
 {
-    if (node == NULL)
-        return false;
+	/*if (node == NULL)
+		return false;*/
     if (data->trie == NULL)
         return false;
     if (key.length() > AT_ALPHA_KEY_MAX_LENGTH - 1)
@@ -65,17 +68,33 @@ ATTrie :: store(const QString & key, StemNode * node)
         data->alpha_key[i] = key[i].unicode();
     data->alpha_key[key.length()] = 0;
 
-    TrieData d = (TrieData) node;
+	TrieData d = (TrieData) index;
 
     Bool ret = trie_store(data->trie, data->alpha_key, d);
     return ret == TRUE;
 }
 
-bool 
-ATTrie :: retreive(const QString & key, StemNode ** node) 
+bool
+ATTrie :: retreive(const QString & key, StemNode** node)
 {
-    if (node == NULL)
-        return false;
+	if (node == NULL)
+		return false;
+	int index;
+	bool ret= retreive(key,&index);
+	if (ret)
+	{
+		if (*node==NULL)
+			*node=new StemNode();
+		*(*node)=database_info.trie_nodes->at(index);
+	}
+	return ret;
+}
+
+bool 
+ATTrie :: retreive(const QString & key, int* index)
+{
+	/*if (node == NULL)
+		return false;*/
     if (data->trie == NULL)
         return false;
     if (key.length() > AT_ALPHA_KEY_MAX_LENGTH - 1)
@@ -85,7 +104,7 @@ ATTrie :: retreive(const QString & key, StemNode ** node)
         data->alpha_key[i] = key[i].unicode();
     data->alpha_key[key.length()] = 0;
 
-    TrieData * o_d = (TrieData*) node;
+	TrieData * o_d = (TrieData*) index;
 
     Bool ret = trie_retrieve (data->trie, data->alpha_key, o_d);
     return ret == true;
@@ -113,7 +132,7 @@ ATTrie :: isDirty() const
     Bool ret = trie_is_dirty(data->trie);
     return ret == true;
 }
-
+/*
 Bool 
 at_trie_enum_func (
         const AlphaChar * key, 
@@ -121,8 +140,8 @@ at_trie_enum_func (
         void * user_data)
 {
     ATTrieEnumerator* e = (ATTrieEnumerator*) user_data;
-    StemNode * node = (StemNode*)key_data;
-    return (Bool)(e->enumerator(node->key, node)? 1 : 0);
+	int index = (int)key_data;
+	return (Bool)(e->enumerator(key, index)? 1 : 0);
 }
 
 
@@ -130,7 +149,7 @@ bool
 ATTrie :: enumerate(ATTrieEnumerator* e)
 {
     return trie_enumerate(data->trie, at_trie_enum_func, (void*) e);
-}
+}*/
 
     ATTrie::Position 
 ATTrie :: startWalk()
@@ -189,13 +208,13 @@ bool ATTrie :: isSingle(ATTrie::Position pos)
     return ret == true;
 }
 
-StemNode *
+int
 ATTrie :: getData(ATTrie::Position pos)
 {
     TrieData d = trie_state_get_data( (const TrieState*) pos);
 	if (d==TRIE_DATA_ERROR)
 		return NULL;
-    return (StemNode*) d;
+	return (int) d;
 }
 
 

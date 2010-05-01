@@ -9,12 +9,14 @@
 #include "StemNode.h"
 
 class ATTrieData;
-
+/*
 class ATTrieEnumerator {
 public:
     void * UserData;
-    virtual bool enumerator(const QString & key, StemNode * node) = 0;
+	//virtual bool enumerator(const QString & key, StemNode * node) = 0;
+	virtual bool enumerator(const QString & key, int index) = 0;
 };
+*/
 #if 0
 class ATTrieEnumeratorExample : public ATTrieEnumerator {
 public:
@@ -37,13 +39,17 @@ class ATTrie {
     private:
         ATTrieData * data;
     public:
+		QVector<StemNode> * nodes;
+
         ATTrie();
         ATTrie(const char * path);
         ~ATTrie() ;
 
         void save(const char * path);
-        bool store(const QString & key, StemNode * node) ;
+		//bool store(const QString & key, StemNode * node) ;
         bool retreive(const QString & key, StemNode ** node) ;
+		bool retreive(const QString & key, int* index);
+		bool store(const QString & key, int index) ;
         bool remove(const QString & key);
         bool isDirty() const;
 
@@ -86,11 +92,11 @@ class ATTrie {
 
         //given a terminal position
         // returns the node associated with the position
-        StemNode * getData(Position pos);
+		int getData(Position pos);
 
         // you need to implement the abstract class ATTrieEnumerator
         // to enumerate all stems in the trie
-        bool enumerate(ATTrieEnumerator* e);
+		//bool enumerate(ATTrieEnumerator* e);
 };
 
 #endif
