@@ -40,7 +40,7 @@ QDataStream &operator<<(QDataStream &out, const StemNode* &node);
 class Search_StemNode
 {
 private:
-	StemNode * node;
+	const StemNode * node;
 	int cat_index;
 #ifdef REDUCE_THRU_DIACRITICS
 	int rawdata_index;
@@ -48,8 +48,8 @@ private:
 
 public:
 	Search_StemNode();
-	Search_StemNode(StemNode *);
-	void setNode(StemNode *);
+	Search_StemNode(const StemNode *);
+	void setNode(const StemNode *);
 	bool retrieve(long &category_id);
 #ifdef REDUCE_THRU_DIACRITICS
 	bool retrieve(minimal_item_info & info);

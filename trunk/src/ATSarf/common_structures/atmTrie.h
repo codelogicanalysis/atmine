@@ -47,7 +47,7 @@ class ATTrie {
 
         void save(const char * path);
 		//bool store(const QString & key, StemNode * node) ;
-        bool retreive(const QString & key, StemNode ** node) ;
+		bool retreive(const QString & key, const StemNode ** node) ;
 		bool retreive(const QString & key, int* index);
 		bool store(const QString & key, int index) ;
         bool remove(const QString & key);
@@ -92,7 +92,8 @@ class ATTrie {
 
         //given a terminal position
         // returns the node associated with the position
-		int getData(Position pos);
+		int getData(Position pos,bool integer);
+		const StemNode* getData(Position pos);
 
         // you need to implement the abstract class ATTrieEnumerator
         // to enumerate all stems in the trie

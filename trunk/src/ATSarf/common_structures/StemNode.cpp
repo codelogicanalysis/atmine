@@ -89,11 +89,11 @@ bool StemNode::exists(const long cat_id)
 	{
 		//implement later
 	}
-	Search_StemNode::Search_StemNode(StemNode * node)
+	Search_StemNode::Search_StemNode(const StemNode * node)
 	{
 		setNode(node);
 	}
-	void Search_StemNode::setNode(StemNode * node)
+	void Search_StemNode::setNode(const StemNode * node)
 	{
 		this->node=node;
 		if (node==NULL)

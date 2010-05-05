@@ -10,10 +10,9 @@
 
 
 #ifdef USE_TRIE
-void buildTrie(ATTrie* trie)
+
+void buildfromfile()
 {
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
-#ifndef TRIE_FROM_FILE
 	QSqlQuery query(db);
 #ifdef REDUCE_THRU_DIACRITICS
 	QString stmt=QString("SELECT stem.id, stem.name, stem_category.category_id, stem_category.raw_data FROM stem, stem_category WHERE stem.id=stem_category.stem_id ORDER BY stem.id ASC");
@@ -38,9 +37,7 @@ void buildTrie(ATTrie* trie)
 			{
 				database_info.trie_nodes->insert(index,*node);
 				delete node;
-#ifndef TRIE_FROM_FILE
-				trie->store(name,index);
-#endif
+				database_info.Stem_Trie->store(name,index);
 				index++;
 			}
 			last_id=stem_id;
@@ -60,24 +57,39 @@ void buildTrie(ATTrie* trie)
 	out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	database_info.Stem_Trie->save(trie_path.toStdString().data());
 	QFile file(trie_list_path.toStdString().data());
-	file.open(QIODevice::WriteOnly);
-	QDataStream out(&file);   // we will serialize the data into the file
-	out << *(database_info.trie_nodes);
-	file.close();
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out << *(database_info.trie_nodes);
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write TRIE to file\n";
+}
+
+void buildTrie()
+{
+	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+#ifndef TRIE_FROM_FILE
+	buildfromfile();
 #else
 	QFile file(trie_list_path.toStdString().data());
-	file.open(QIODevice::ReadOnly);
-	QDataStream in(&file);    // read the data serialized from the file
-	in >> *(database_info.trie_nodes);
-	file.close();
-	QFile input(trie_path);
-	if (input.open(QIODevice::ReadOnly))
+	if (file.open(QIODevice::ReadOnly))
 	{
-		delete database_info.Stem_Trie;
-		input.close();
-		database_info.Stem_Trie=new ATTrie(trie_path.toStdString().data());
-		out<<QDateTime::currentDateTime().time().toString()<<"\n";
+		QDataStream in(&file);    // read the data serialized from the file
+		in >> *(database_info.trie_nodes);
+		file.close();
+		QFile input(trie_path);
+		if (input.open(QIODevice::ReadOnly))
+		{
+			delete database_info.Stem_Trie;
+			input.close();
+			database_info.Stem_Trie=new ATTrie(trie_path.toStdString().data());
+			out<<QDateTime::currentDateTime().time().toString()<<"\n";
+		}
 	}
+	else
+		buildfromfile();
 #endif
 }
 #endif
@@ -102,7 +114,7 @@ void database_info_block::fill()
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
 #ifdef USE_TRIE
-	buildTrie(Stem_Trie);
+	buildTrie();
 #endif
     rules_AA->fill();
     rules_AB->fill();
