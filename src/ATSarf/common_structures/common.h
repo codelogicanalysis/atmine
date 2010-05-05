@@ -6,7 +6,7 @@
 
 #define USE_TRIE
 #define TRIE_FROM_FILE
-//#define USE_TRIE_WALK
+#define USE_TRIE_WALK
 //#define QUEUE
 //#define MEMORY_EXHAUSTIVE
 #define REDUCE_THRU_DIACRITICS

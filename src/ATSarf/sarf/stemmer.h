@@ -10,9 +10,9 @@
 class Stemmer
 {
     protected:
-		//int total_matches_till_now;
         item_types type;
 		bool get_all_details;
+		//for use in on_match()
 		QVector<minimal_item_info> * prefix_infos;
 		minimal_item_info * stem_info;
 		QVector<minimal_item_info> * suffix_infos;

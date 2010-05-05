@@ -75,7 +75,7 @@ ATTrie :: store(const QString & key, int index)
 }
 
 bool
-ATTrie :: retreive(const QString & key, StemNode** node)
+ATTrie :: retreive(const QString & key, const StemNode** node)
 {
 	if (node == NULL)
 		return false;
@@ -84,8 +84,8 @@ ATTrie :: retreive(const QString & key, StemNode** node)
 	if (ret)
 	{
 		if (*node==NULL)
-			*node=new StemNode();
-		*(*node)=database_info.trie_nodes->at(index);
+			*node=new const StemNode();
+		*node=&(database_info.trie_nodes->at(index));
 	}
 	return ret;
 }
@@ -208,12 +208,24 @@ bool ATTrie :: isSingle(ATTrie::Position pos)
     return ret == true;
 }
 
-int
+const StemNode *
 ATTrie :: getData(ATTrie::Position pos)
 {
-    TrieData d = trie_state_get_data( (const TrieState*) pos);
-	if (d==TRIE_DATA_ERROR)
+	int index=getData(pos,true);
+	if (index>0)
+	{
+		return &(database_info.trie_nodes->at(index));
+	}
+	else
 		return NULL;
+}
+
+int
+ATTrie :: getData(ATTrie::Position pos, bool)
+{
+	TrieData d = trie_state_get_data( (const TrieState*) pos);
+	if (d==TRIE_DATA_ERROR)
+		return -1;
 	return (int) d;
 }
 

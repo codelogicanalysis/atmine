@@ -27,7 +27,7 @@ bool StemSearch::operator()()
 #ifdef USE_TRIE
 #ifdef USE_TRIE_WALK
 		Search_StemNode s1;
-		StemNode * node=NULL;
+		const StemNode * node=NULL;
 		ATTrie::Position pos = trie->startWalk();
 		int i = 0;
 		for (i = 0; i < name.length(); i++)
@@ -52,10 +52,11 @@ bool StemSearch::operator()()
 					break;
 			}
 		}
-		if (i == name.length())
+		if (i == name.length() || name[i]==' ')
 		{
 			if (trie->isTerminal(pos))
 			{
+				trie->walk(pos, '\0');
 				node = trie->getData(pos);
 				if (node != NULL)
 				{
@@ -71,7 +72,7 @@ bool StemSearch::operator()()
 		else
 			continue;
 #else
-		StemNode * node = NULL;
+		const StemNode * node = NULL;
 		trie->retreive(name,&node);
 		if (node == NULL)
 		{
