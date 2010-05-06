@@ -4,7 +4,7 @@
 #include <QString>
 #include <bitset>
 
-#define USE_TRIE
+//#define USE_TRIE
 #define TRIE_FROM_FILE
 #define USE_TRIE_WALK
 //#define QUEUE
