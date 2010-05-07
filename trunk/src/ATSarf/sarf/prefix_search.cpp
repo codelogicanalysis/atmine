@@ -3,7 +3,7 @@
 #include "stemmer.h"
 
 
-PrefixSearch::PrefixSearch(Stemmer * info):TreeSearch(PREFIX,info,0)
+PrefixSearch::PrefixSearch(Stemmer * info,int start):TreeSearch(PREFIX,info,start)
 {
         //print_tree();
 }

@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QRegExp>
 #include <QStringList>
+#include <QString>
 #include "test.h"
 #include "../logger/logger.h"
 #include "../test-cases/hadith.h"
@@ -8,12 +9,10 @@
 #include "../sarf/stemmer.h"
 #include "../caching_structures/database_info_block.h"
 
-int word_sarf_test()
+int word_sarf_test(QString input_str)
 {
-	QString word;
-	in >>word;
-	//	out<<string_to_bitset(word).to_string().data()<<"	 "<<bitset_to_string(string_to_bitset(word))<<"\n";*/
-	Stemmer stemmer(word);
+	QString line=input_str.split('\n')[0];
+	Stemmer stemmer(&line,0);
 	stemmer();
 	return 0;
 }
@@ -39,7 +38,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
-
+	initializa_variables();
 #if defined(HADITH) || defined(WORD_SARF)
 	if (first_time)
 	{
@@ -54,7 +53,7 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	if (hadith(input_str))
 		return -1;
 #elif defined(WORD_SARF)
-	if (word_sarf_test())
+	if (word_sarf_test(input_str))
 		return -1;
 #elif defined(AUGMENT_DICTIONARY)
 	if (augment()<0)

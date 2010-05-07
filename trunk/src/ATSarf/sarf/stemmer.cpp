@@ -28,6 +28,8 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 							prefix_infos->append(prefix_info);
 				}
 			}
+			if (!called_everything)
+				finish=Prefix->sub_positionsOFCurrentMatch.last();
 		}
 		if (called_everything || type==SUFFIX)
 		{
@@ -49,6 +51,7 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 						suffix_infos->append(suffix_info);
 				}
 			}
+			finish=Suffix->sub_positionsOFCurrentMatch.last();
 		}
 		if (called_everything || type==STEM)
 		{
@@ -56,6 +59,8 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 				Stem->fill_details();
 			#endif
 			Search_by_item s(STEM,Stem->id_of_currentmatch);
+			if (!called_everything)
+				finish=Stem->currentMatchPos;
 			stem_info=new minimal_item_info;
 			while(s.retrieve(*stem_info))
 			{
@@ -79,68 +84,70 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 }
 bool Stemmer::on_match()
 {
-        int count=0;
-        int number=0;
-        if (called_everything || type==PREFIX)
-        {
-			out<<"(";
-			for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
-			{
-				if (number>0)
-						out<<" + ";
-				number++;
-				if (count>0)
-						out << " OR ";
-				count++;
-				out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description;
-			}
-			out <<")-";
-        }
-        if (called_everything || type==STEM)
-        {
-			out<< "-(";
-			count=0;
+	int count=0;
+	int number=0;
+	if (called_everything || type==PREFIX)
+	{
+		out<<"(";
+		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
+		{
+			if (number>0)
+					out<<" + ";
+			number++;
 			if (count>0)
 					out << " OR ";
 			count++;
-			out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
-			out<<" [ ";
-			for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
-				if (stem_info->abstract_categories[i])
-					if (get_abstractCategory_id(i)>=0)
-						out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
-			out<<"]";
-			out <<")-";
-        }
-        if (called_everything || type==SUFFIX)
-        {
-			out<< "-(";
-			number=0;
-			count=0;
-			for (int i=0;i<suffix_infos->count();i++)
-			{
-				if (number>0)
-						out<<" + ";
-				number++;
-				if (count>0)
-						out << " OR ";
-				count++;
-				out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description;
-			}
-			out <<")";
-        }
-        out<<"\n";
-        return true;
+			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description;
+		}
+		out <<")-";
+	}
+	if (called_everything || type==STEM)
+	{
+		out<< "-(";
+		count=0;
+		if (count>0)
+				out << " OR ";
+		count++;
+		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
+		out<<" [ ";
+		for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
+			if (stem_info->abstract_categories[i])
+				if (get_abstractCategory_id(i)>=0)
+					out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
+		out<<"]";
+		out <<")-";
+	}
+	if (called_everything || type==SUFFIX)
+	{
+		out<< "-(";
+		number=0;
+		count=0;
+		for (int i=0;i<suffix_infos->count();i++)
+		{
+			if (number>0)
+					out<<" + ";
+			number++;
+			if (count>0)
+					out << " OR ";
+			count++;
+			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description;
+		}
+		out <<")";
+	}
+	out<<" "<<finish<<"\n";
+	return true;
 }
-Stemmer::Stemmer(QString word, bool get_info)
+Stemmer::Stemmer(QString *text,int start_pos, bool get_info)
 {
 	prefix_infos=NULL;
 	stem_info=NULL;
 	suffix_infos=NULL;
-	this->diacritic_word=word;
+	start=start_pos;
+	finish=start_pos;
+	this->diacritic_text=text;
 	this->get_all_details=get_info;
-	this->word=removeDiacritics(word);
-	Prefix=new PrefixSearch(this);
+	//this->text=removeDiacritics(text);
+	Prefix=new PrefixSearch(this,start_pos);
 	Stem=NULL;
 	Suffix=NULL;
 }

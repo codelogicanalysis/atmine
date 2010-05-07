@@ -1,4 +1,5 @@
 #include "sql_queries.h"
+#include "../utilities/letters.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -233,8 +234,6 @@ bool start_connection() //and do other initializations
 			db.exec("SET NAMES 'utf8'");
 			QSqlQuery temp(db);
 			query=temp;
-			INVALID_BITSET.reset();
-			INVALID_BITSET.set(max_sources-1);
 			generate_bit_order("source",source_ids);
 			generate_bit_order("category",abstract_category_ids,"abstract");
 			return 0;
@@ -613,6 +612,19 @@ long long insert_description(QString name,item_types type)
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
 long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
 {
+#if 1 //change alef in the first of the word to one type
+	if (raw_data.length()<name.length())
+		raw_data=name;
+	int i=0;
+	if (name.length()>0)
+		do
+		{
+			//qDebug()<<"o:"<<name;
+			if (alefs.contains(name[i]))
+				name[i]=alef;
+			//qDebug()<<"n:"<<name;
+		}while ((i=name.indexOf(' ',i)+1)>0 && i<name.length());
+#endif
 	QString table=interpret_type(type);
 	QString item_category=QString("%1_category").arg(table);
 	if (table=="--")
