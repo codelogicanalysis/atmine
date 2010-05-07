@@ -1,5 +1,5 @@
 #include "text_handling.h"
-
+#include "../common_structures/common.h"
 #include "logger/logger.h"
 #include "diacritics.h"
 #include <QString>
@@ -62,12 +62,6 @@ bool equal(QChar c1, QChar c2)
 {
 	if (c1==c2)
 		return true;
-	QVector<QChar> alefs(4);
-	alefs.append(alef);
-	alefs.append(alef_hamza_above);
-	alefs.append(alef_hamza_below);
-	alefs.append(alef_madda_above);
-	alefs.append(alef_wasla);
 	if (alefs.contains(c1) && alefs.contains(c2))
 		return true;
 	if ((c1==veh && c2==feh) || (c2==veh && c1==feh))

@@ -9,9 +9,10 @@
 #include "../sql-interface/Search_by_item.h"
 #include "../sarf/stemmer.h"
 #include "../utilities/letters.h"
+#include "../common_structures/common.h"
 
 enum wordType { IKHBAR, KAWL, AAN, NAME, TERMINAL_NAME,OTHER};
-QString delimiters(" :.,()");
+//QString delimiters(" :.,()");
 QString a5barani,a5barana,sami3to,hadathana,hadathani,Aan,qal,yaqool,_bin,_ibin;
 
 void hadith_initialize()
@@ -25,7 +26,7 @@ void hadith_initialize()
 	qal.append(qaf).append(alef).append(lam);
 	yaqool.append(ya2).append(qaf).append(waw).append(lam);
 
-	delimiters="["+delimiters+fasila+"]";
+	//delimiters="["+delimiters+fasila+"]";
 }
 
 class mystemmer: public Stemmer

@@ -10,20 +10,20 @@ remove names of females or consider them at the end
 numbers should take me to text directly
 done ---in case we have عن then consider as continued sanad
 done ----add روى to the nrc 
-عبيد الله combined names
+done---عبيد الله combined names
 done---- صلى الله عليه و عليه السلام should not be detected as a name
 done --if we have two nrcs seperated by nothing dont increment the counter (tentative)
-look into the duplicates in the results of wordsarf (stemmer on_match)
+done---look into the duplicates in the results of wordsarf (stemmer on_match)
  صلى الله عليه و عليه السلام should not be detected as a name
-StemNode and Search_StemNode (jad)
-string reference in stemmer (jad)
-all text in stemmer (jad)
-fix walk (Fadi)
-fix bug in crashing on deleting of trie if it was loaded from file (maybe due to uninitialized alfa_map) (Fadi)
-index the trie node
-load and save the trie (tentative)
+done---StemNode and Search_StemNode (jad)
+done---string reference in stemmer (jad)
+done---all text in stemmer (jad)
+done---fix walk (Fadi)
+done---fix bug in crashing on deleting of trie if it was loaded from file (maybe due to uninitialized alfa_map) (Jad)
+done---index the trie node
+done---load and save the trie (tentative)
 if we have two nrcs seperated by nothing dont increment the counter (tentative)
-stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence.
+done ---stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence.
 biographies
 deserialize
 add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """

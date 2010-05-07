@@ -10,6 +10,7 @@
 #include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"
 #include "../caching_structures/database_info_block.h"
+#include <QDebug>
 
 bool TreeSearch::shouldcall_onmatch(int)//re-implemented in case of SUFFIX search tree
 {
@@ -119,7 +120,26 @@ bool TreeSearch::operator ()()
 		}
 		//show_queue_content();
 		QList<node *> current_children=current_node->getChildren();
-		QChar current_letter=info->word[position];
+#ifndef USE_TRIE_WALK
+		QChar current_letter=info->diacritic_text->at(position);
+#else
+		QChar current_letter;
+		if (position==info->diacritic_text->length())
+			current_letter='\0';
+		else if (position>info->diacritic_text->length())
+			break;
+		else
+		{
+			current_letter=info->diacritic_text->at(position);
+			while (position <info->diacritic_text->length() && isDiacritic(current_letter))
+			{
+				current_letter=info->diacritic_text->at(position);
+				position++;
+			}
+			if (position==info->diacritic_text->length())
+				current_letter='\0';
+		}
+#endif
 		int num_children=current_children.count();
 		for (int j=0;j<num_children;j++)
 		{
@@ -128,6 +148,7 @@ bool TreeSearch::operator ()()
 			{
 				if(equal(((letter_node*)current_child)->getLetter(),current_letter))
 				{
+					//qDebug()<<"p/S:"<<current_letter;
 					queue.enqueue((letter_node*)current_child);
 #ifdef QUEUE
 					temp_partition=sub_positionsOFCurrentMatch;
@@ -236,6 +257,8 @@ void TreeSearch::get_all_possibilities(int i, QList< QString>  raw_datas)
 				raw_datas_modified.append(possible_raw_datasOFCurrentMatch[i][j]);
 				get_all_possibilities(i+1,raw_datas_modified);
 			}
+			else
+				break;
 		}
 	}
 }
@@ -250,7 +273,7 @@ bool TreeSearch::on_match_helper()
 #endif
 	int startPos=startingPos;
 	//out<<"startPos="<<startPos<<"position-1="<<position-1<<"\n";
-	QString subword=getDiacriticword(position-1,startPos,info->diacritic_word);
+	QString subword=getDiacriticword(position-1,startPos,*info->diacritic_text);
 	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
 	{
 		for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
@@ -258,7 +281,7 @@ bool TreeSearch::on_match_helper()
 			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			if (isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the suffix region
 			{
-				if (!equal(getDiacriticword(startPos-1,startPos-1,info->diacritic_word),QString("%1%2").arg(info->word[startPos-1]).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				if (!equal(getDiacriticword(startPos-1,startPos-1,*info->diacritic_text),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
 				{
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;

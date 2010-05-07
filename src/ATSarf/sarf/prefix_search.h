@@ -8,7 +8,7 @@ class Stemmer;
 class PrefixSearch : public TreeSearch
 {
     public:
-        PrefixSearch(Stemmer * info);
+		PrefixSearch(Stemmer * info,int start_pos);
         virtual bool onMatch();
 		virtual ~PrefixSearch();
 };
