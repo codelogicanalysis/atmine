@@ -92,11 +92,11 @@ int current_pos;
 
 void initializeChainData(chainData *currentChain){
 
-   currentChain-> namePrim=new NamePrim();
-   currentChain-> nameConnectorPrim=new NameConnectorPrim ();
-   currentChain->narratorConnectorPrim=new NarratorConnectorPrim ;
-   currentChain->  narrator=new Narrator ();
-   currentChain->  chain=new Chain();
+   currentChain-> namePrim=new NamePrim(text);
+   currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
+   currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
+   currentChain->  narrator=new Narrator (text);
+   currentChain->  chain=new Chain(text);
    display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 }
 
@@ -107,6 +107,7 @@ void hadith_initialize()
 	alayhi.append(ayn).append(lam).append(ya2).append(ha2);
 	alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
 	alayhi_alsalam=alayhi.append(' ').append(alsalam);
+#if 0
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
@@ -117,7 +118,7 @@ void hadith_initialize()
 	if (phrases.isNull() || phrases.isEmpty())
 		return;
 	compound_words=phrases.split("\n",QString::SkipEmptyParts);
-
+#endif
 }
 
 void initializeStateData()
@@ -217,6 +218,14 @@ long long next_positon(long long finish)
 	return finish;
 }
 
+long long getLastLetter_IN_previousWord(long long start_letter_current_word)
+{
+	start_letter_current_word--;
+	while(start_letter_current_word>=0 && delimiters.contains(text->at(start_letter_current_word)))
+		start_letter_current_word--;
+	return start_letter_current_word;
+}
+
 inline wordType result(wordType t){display(t); return t;}
 wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 {
@@ -244,7 +253,7 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 		return result(NMC);
 }
 
-bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  index,bool isBinOrPossessive,chainData *currentChain)
+bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,chainData *currentChain)
 {
 		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
@@ -258,20 +267,20 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				initializeStateData();
 				initializeChainData(currentChain);
 				nextState=NAME_S;
-				currentData.sanadStartIndex=index;
+				currentData.sanadStartIndex=start_index;
 
-				currentData.narratorStartIndex=index;
+				currentData.narratorStartIndex=start_index;
 
-				currentChain->namePrim=new NamePrim(index);
+				currentChain->namePrim=new NamePrim(text,start_index);
 
 			}
 			else if (currentType==NRC)
 			{
 				initializeStateData();
 				initializeChainData(currentChain);
-				currentData.sanadStartIndex=index;
-				currentData.nrcStartIndex=index;
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
+				currentData.sanadStartIndex=start_index;
+				currentData.nrcStartIndex=start_index;
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 				nextState=NRC_S;
 			}
 #ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
@@ -279,10 +288,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			{
 				initializeStateData(currentData);
 				initializeChainData(currentChain);
-				currentData.narratorStartIndex=index;
-				currentData.sanadStartIndex=index;
-				currentData.nmcStartIndex=index;
-				currentChain->nameConnectorPrim=new NameConnectorPrim(index);
+				currentData.narratorStartIndex=start_index;
+				currentData.sanadStartIndex=start_index;
+				currentData.nmcStartIndex=start_index;
+				currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
 				nextState=NAME_S;
 			}
 #endif
@@ -298,12 +307,12 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				nextState=NMC_S;
 				currentData.nmcValid=isBinOrPossessive;
 				currentData.nmcCount=1;
-				currentData.nmcStartIndex=index;
+				currentData.nmcStartIndex=start_index;
 
-				currentChain->namePrim->m_end=index-1;
+				currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->narrator->m_narrator.append(currentChain->namePrim);
 
-				currentChain->nameConnectorPrim=new NameConnectorPrim(index);
+				currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
 
 			}
 			else if (currentType==NRC)
@@ -312,15 +321,15 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentData.narratorCount++;
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				currentData.nrcCount=1;
-				currentData.narratorEndIndex=index-1;
-				currentData.nrcStartIndex=index;
+				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+				currentData.nrcStartIndex=start_index;
 
-				currentChain->namePrim->m_end=index-1;
+				currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->narrator->m_narrator.append(currentChain->namePrim);
 
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 				currentChain->chain->m_chain.append(currentChain->narrator);
-				currentChain->narrator=new Narrator();
+				currentChain->narrator=new Narrator(text);
 			}
 			else
 			{
@@ -337,24 +346,24 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentData.nrcCount=1;
 				nextState=NRC_S;
 
-				currentData.narratorEndIndex=index-1;
-				currentData.nrcStartIndex=index;
+				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+				currentData.nrcStartIndex=start_index;
 
-				currentChain->nameConnectorPrim->m_end=index-1;
+				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 				currentChain->chain->m_chain.append(currentChain->narrator);
-				currentChain->narrator=new Narrator();
+				currentChain->narrator=new Narrator(text);
 			}
 			else if(currentType==NAME)
 			{
 				nextState=NAME_S;
 
-				currentChain->nameConnectorPrim->m_end=index-1;
+				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 
-				currentChain->namePrim=new NamePrim(index);
+				currentChain->namePrim=new NamePrim(text,start_index);
 
 			}
 
@@ -369,13 +378,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				else
 				{
 					nextState=TEXT_S;
-					currentChain->nameConnectorPrim->m_end=index-1;//later check for out of bounds
+					currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
 					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
 					currentChain->chain->m_chain.append(currentChain->narrator);
 
 					return false;
 				}
-				//currentData.narratorEndIndex=index-1; check this case
+				//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
 
 			}
 			else if (currentType==NMC)
@@ -397,23 +406,23 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			if (currentType==NAME)
 			{
 				nextState=NAME_S;
-				//currentData.nameStartIndex=index;
-				//currentChain->namePrim->m_start=index;
+				//currentData.nameStartIndex=start_index;
+				//currentChain->namePrim->m_start=start_index;
 
-				currentChain->narratorConnectorPrim->m_end=index-1;
+				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 
-				currentChain->namePrim=new NamePrim(index);
+				currentChain->namePrim=new NamePrim(text,start_index);
 
 
-				currentData.nrcEndIndex=index-1;
+				currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
 			}
 			else if (currentData.nrcCount>=currentData.nrcThreshold)
 			{
 				nextState=TEXT_S;
-				currentData.nrcEndIndex=index-1;
+				currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
 
-				currentChain->narratorConnectorPrim->m_end=index-1;
+				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 
 				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 				return false;
@@ -427,13 +436,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				currentData.nrcCount=1;
 				nextState=NRC_S;
-				currentData.narratorEndIndex=index-1;
-				currentData.nrcStartIndex=index;
+				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+				currentData.nrcStartIndex=start_index;
 
-				currentChain->narratorConnectorPrim->m_end=index-1;
+				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(index);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 				}
 			}
 #endif
@@ -491,9 +500,9 @@ int hadith(QString input_str)
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 
-	chainOutput.flush();
-	QTextStream chainOut(&chainOutput);
-	chainOut.setCodec("utf-8");
+	//chainOutput.flush();
+	QDataStream chainOut(&chainOutput);
+	//chainOut.setCodec("utf-8");
 	//chainOut.setFieldAlignment(QTextStream::AlignCenter);
 
 	QFile input(input_str.split("\n")[0]);
@@ -539,20 +548,23 @@ int hadith(QString input_str)
 	long long  sanadEnd;
 
 	bool isBinOrPossessive=false;
+	int chaincount=0;
 	for (;current_pos<text_size;)
 	{
-		long long i=current_pos;
+		long long start=current_pos;
 		long long next;
 		currentType=getWordType(isBinOrPossessive,next);
 		current_pos=next;//here current_pos is changed
-		if((getNextState(currentState,currentType,nextState,i,isBinOrPossessive,currentChain)==false)&& currentData.narratorCount>=currentData.narratorThreshold)
+		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,currentChain)==false)&& currentData.narratorCount>=currentData.narratorThreshold)
 		{
 			 sanadEnd=currentData.narratorEndIndex;
 			 newHadithStart=currentData.sanadStartIndex;
 			 out<<"\nnew hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
 			 long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 			 out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
-			 //currentChain->chain->serialize(chainOut,wordList);
+			 currentChain->chain->serialize(chainOut);
+			 //currentChain->chain->serialize(displayed_error);
+			 chaincount++;
 		}
 		currentState=nextState;
 		if (current_pos==text_size-1)
@@ -562,9 +574,22 @@ int hadith(QString input_str)
 	if (newHadithStart<0)
 	{
 		out<<"no hadith found\n";
+		chainOutput.close();
 		return 0;
 	}
-
+	chainOutput.close();
+#if 0 //just for testing deserialize
+	if (!chainOutput.open(QIODevice::ReadWrite))
+		return 1;
+	QDataStream tester(&chainOutput);
+	Chain * s=new Chain(text);
+	while (!tester.atEnd())
+	{
+		s->deserialize(tester);
+		s->serialize(out);
+	}
+	chainOutput.close();
+#endif
 	return 0;
 }
 

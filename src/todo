@@ -14,7 +14,7 @@ done---عبيد الله combined names
 done---- صلى الله عليه و عليه السلام should not be detected as a name
 done --if we have two nrcs seperated by nothing dont increment the counter (tentative)
 done---look into the duplicates in the results of wordsarf (stemmer on_match)
- صلى الله عليه و عليه السلام should not be detected as a name
+done---صلى الله عليه و عليه السلام should not be detected as a name
 done---StemNode and Search_StemNode (jad)
 done---string reference in stemmer (jad)
 done---all text in stemmer (jad)
@@ -23,7 +23,9 @@ done---fix bug in crashing on deleting of trie if it was loaded from file (maybe
 done---index the trie node
 done---load and save the trie (tentative)
 if we have two nrcs seperated by nothing dont increment the counter (tentative)
-done ---stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence.
-biographies
-deserialize
-add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """
+done ---stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence. 
+biographies (hamza)
+done---deserialize (jad)
+add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """ (jad)
+add on_match_helper() in stem_search to check if diacritic (1 or even 2) after in the suffix of raw_data are matching
+check for 2 consequitive diacritics in the following recursive affix in on_match_helper() of tree_search
