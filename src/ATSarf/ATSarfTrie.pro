@@ -65,11 +65,16 @@ SOURCES += utilities/text_handling.cpp \
     test-cases/hadith_general.cpp \
     test-cases/hadith_1.cpp \
     test-cases/narrator_abstraction.cpp
-#LIBS += -ldatrie
-LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ -ldatrie
+
+# LIBS += -ldatrie
+LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
+    -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
 
 # debug
 QT += sql
 FORMS += gui/mainwindow.ui
+OTHER_FILES += ../../../../4A52DB4952DB3881/Users/Hamza/Desktop/sarf2.png \
+    ../../../../../home/hamza/Desktop/lab3_222.bmp
+RESOURCES += images.qrc
