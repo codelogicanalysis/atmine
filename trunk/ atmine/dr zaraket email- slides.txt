@@ -1,0 +1,50 @@
+Dear Zahraa and Habib,
+
+I appreciate it if you can work on the set of slides for last lecture
+about Arabic text rendering and selection problems.
+
+
+Start with defining the problem. Maybe with a text that spans more than one line.
+
+Start with static text (strings that are all predefined and we only have to show
+them --- 4 forms of each character...).
+
+Then move to dynamic text (text entered or received from the net).
+
+Discuss each problem on at least one separate slide. For example: right to left,
+bi-directionality,
+more text less width, less text more width, wrapping to a new line...
+
+
+
+Then move to discuss selection and rendering Arabic selections. Inversion of
+selection areas and flikkering on drap...
+
+How to define a good rectangle, what are the alternatives...
+Discuss wrap lines and why they are good versus keeping the whole text in lines.
+Discuss the issue of copy/paste where we have to copy an Arabic
+(or bidirectional string) into another string.
+How does that affect rendering and wrapping.
+
+
+
+
+
+
+
+
+
+You may want to work on this together to put your memory together.
+Or you may want to divide the work,
+I prefer the first, but I leave it up to you.
+
+Cheers,
+
+Fadi A Zaraket
+Assistant Professor
+Electrical and Computer Engineering
+American University of Beirut
+fadi.zaraket@aub.edu.lb
+http://webfea.fea.aub.edu.lb/fadi
+t: +961(1)350-000 ext 3484
+f: +961(1)744-462
