@@ -1,0 +1,1 @@
+the Legend, Tag, and TagType classes are done with check that they are running well

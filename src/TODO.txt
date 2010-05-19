@@ -1,0 +1,4 @@
+- there is a mistake in the way of using the vector in TagSet class. Need to recheck it
+- finish the map in the TagtypeLegend class
+- update the Legend class with the newly discussed parameters (discussed in class on Monday May 17, 2010)
+- continue on different parts of the project
