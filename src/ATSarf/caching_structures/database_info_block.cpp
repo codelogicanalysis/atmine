@@ -69,7 +69,7 @@ void buildfromfile()
 
 void buildTrie()
 {
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 #ifndef TRIE_FROM_FILE
 	buildfromfile();
 #else
@@ -85,7 +85,7 @@ void buildTrie()
 			delete database_info.Stem_Trie;
 			input.close();
 			database_info.Stem_Trie=new ATTrie(trie_path.toStdString().data());
-			out<<QDateTime::currentDateTime().time().toString()<<"\n";
+			//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 		}
 	}
 	else

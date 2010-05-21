@@ -497,7 +497,7 @@ int hadith(QString input_str)
 	QFile chainOutput("test-cases/chainOutput");
 
 	chainOutput.remove();
-	if (!chainOutput.open(QIODevice::ReadWrite))
+	if (!chainOutput.open(QIODevice::ReadOnly))
 		return 1;
 
 	//chainOutput.flush();
@@ -578,7 +578,7 @@ int hadith(QString input_str)
 		return 0;
 	}
 	chainOutput.close();
-#if 0 //just for testing deserialize
+#if 1 //just for testing deserialize
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream tester(&chainOutput);
