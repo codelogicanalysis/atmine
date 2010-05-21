@@ -30,7 +30,7 @@ int augment()
 }
 
 bool first_time=true;
-int start(QString input_str, QString &output_str, QString &error_str)
+int start(QString input_str, QString &output_str, QString &error_str, bool had)
 {
 	out.setString(&output_str);
 	out.setCodec("utf-8");
@@ -39,23 +39,18 @@ int start(QString input_str, QString &output_str, QString &error_str)
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
 	initializa_variables();
-#if defined(HADITH) || defined(WORD_SARF)
+#ifndef AUGMENT_DICTIONARY
 	if (first_time)
 	{
 		database_info.fill();
 		first_time=false;
-#ifdef HADITH
 		hadith_initialize();
-#endif
 	}
-#endif
-#if defined(HADITH)
-	if (hadith(input_str))
+	if (had && hadith(input_str))
 		return -1;
-#elif defined(WORD_SARF)
-	if (word_sarf_test(input_str))
+	if (!had &&word_sarf_test(input_str))
 		return -1;
-#elif defined(AUGMENT_DICTIONARY)
+#else
 	if (augment()<0)
 		return -1;
 #endif

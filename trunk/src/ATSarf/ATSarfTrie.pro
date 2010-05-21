@@ -77,4 +77,4 @@ QT += sql
 FORMS += gui/mainwindow.ui
 OTHER_FILES += ../../../../4A52DB4952DB3881/Users/Hamza/Desktop/sarf2.png \
     ../../../../../home/hamza/Desktop/lab3_222.bmp
-RESOURCES += images.qrc
+RESOURCES += 

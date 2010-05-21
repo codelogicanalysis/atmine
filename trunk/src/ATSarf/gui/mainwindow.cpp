@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow)
 {
 	m_ui->setupUi(this);
+	m_ui->label_5->setPixmap(QPixmap("./sarf33.bmp"));
 	//m_ui->pushButton->setAutoDefault(false);
 	//connect((QObject*)m_ui->MainWindow,SIGNAL(destroyed())),(QObject*)m_ui,SLOT(do_it()));
 }
@@ -32,7 +33,7 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str;
-	start(m_ui->input->toPlainText(),output_str,error_str);
+	start(m_ui->input->toPlainText(),output_str,error_str,m_ui->checkBox->isChecked());
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 }

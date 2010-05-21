@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1250</width>
-    <height>800</height>
+    <height>757</height>
    </rect>
   </property>
   <property name="palette">
@@ -454,6 +454,18 @@
       <height>301</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>1151</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1151</width>
+      <height>16777215</height>
+     </size>
+    </property>
     <property name="font">
      <font>
       <family>AlArabiya</family>
@@ -471,7 +483,7 @@
      <rect>
       <x>40</x>
       <y>410</y>
-      <width>1161</width>
+      <width>1151</width>
       <height>101</height>
      </rect>
     </property>
@@ -939,7 +951,7 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>570</x>
       <y>530</y>
       <width>92</width>
       <height>28</height>
@@ -1390,17 +1402,36 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>480</x>
       <y>580</y>
-      <width>471</width>
-      <height>201</height>
+      <width>273</width>
+      <height>163</height>
      </rect>
     </property>
     <property name="text">
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../../../../../../home/hamza/Desktop/sarf2.png</pixmap>
+     <pixmap>../sarf33.bmp</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>20</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hadith</string>
     </property>
    </widget>
   </widget>
