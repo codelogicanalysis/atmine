@@ -3,6 +3,14 @@
 #include "TagType.h"
 
 
+TagType::TagType()
+{
+    ID=-1;
+    type = "";
+    description = "";
+    source="";
+}
+
 TagType::TagType(int i, QString t, QString d, QString s)
 {
     ID = i;
@@ -47,4 +55,44 @@ void TagType::setSource(QString s)
 QString TagType::getSource()
 {
     return source;
+}
+bool TagType::operator== (TagType &t2)
+{
+ if ((t2.description==description) && (t2.ID==ID) && (t2.source==source) &&(t2.type==type))
+
+    return 1;
+ else
+     return 0;
+
+}
+/*
+bool TagType::operator< (const TagType &t2)
+{
+    if (t2.ID < ID)
+        return 1;
+    else return 0;
+}
+*/
+bool TagType::operator> (const TagType &t2)
+{
+
+    if (t2.ID > ID)
+        return 1;
+    else return 0;
+}
+
+
+bool TagType::operator< ( TagType &t2)
+{
+    if (t2.ID < ID)
+        return 1;
+    else return 0;
+}
+
+bool TagType::operator> ( TagType &t2)
+{
+
+    if (t2.ID > ID)
+        return 1;
+    else return 0;
 }

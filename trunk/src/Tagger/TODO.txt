@@ -1,4 +1,2 @@
-- correct the vector implementation of the TagSet class
-- upload the TagtypeLegend class which contains the map between tag and legend
 - update the parameters of the Legend class based on the newly agreed on parameters discussed in the latter session (on Monday May 17,2010) with Dr.Zaraket
 - continue the different parts of the project

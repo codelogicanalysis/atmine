@@ -4,8 +4,8 @@
 #include "TagType.h"
 class Tag
 {public:
-
-    Tag(TagType *, int, int);
+Tag();
+    Tag(TagType*, int, int);
     void SetStart(int);
     void SetLength(int);
     void SetTagType(TagType*);
@@ -13,8 +13,12 @@ class Tag
     int GetStart();
     int GetLength();
     TagType* GetTagType();
+    bool operator==(const Tag &);
+    bool operator==(Tag &);
 
+    //Tag operator=(Tag &);
 
+private:
 int tagStart;
 int tagLength;
 TagType* tgtpe;
