@@ -13,6 +13,7 @@ class Legend
 
 
 public:
+    Legend();
     Legend(int);
     Legend(int,QColor,QColor);
     Legend(int,QColor,QColor,bool,bool,bool);
@@ -30,6 +31,7 @@ public:
     bool isItalic();
     bool isBold();
     bool isUnderlined();
+     bool operator==(const Legend &);
 
 };
 

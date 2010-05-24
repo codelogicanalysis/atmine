@@ -1,2 +1,2 @@
-the classes Legend, Tag, and Tagtype are done with test that they are working.
-the class TagSet contains an error in the vector implementation
+the classes Legend, Tag, Tagtype, and TagtypeLegend are done with test that they are working.
+need some final refinement..
