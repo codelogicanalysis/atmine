@@ -261,7 +261,11 @@ int insert_propernames()
 			else if (line_num==3)
 			{
 				source_id=insert_source(source,normalization_process,line);
-				abstract_category_id=insert_category(file_name.split(".").at(0),STEM,source_id,true);
+				QString ab=file_name.split(".").at(0);
+				if (ab!="Compound Names")
+					abstract_category_id=insert_category(ab,STEM,source_id,true);
+				else
+					abstract_category_id=insert_category("Male Names",STEM,source_id,true);
 				continue;
 			}
 			if (line.isNull())
