@@ -1,4 +1,5 @@
 http://www.cs.cmu.edu/afs/cs/user/lsl/Nice/Urdu-MT/data/mono-pos-lexicon.filtered
+Direct Copy
 Hamza Harkous
 عبد الله
 عبد العدل
