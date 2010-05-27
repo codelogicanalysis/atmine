@@ -6,4 +6,4 @@ This folder sontains 2 .sql files which represent the database (one empty and on
 5- sudo mysql atm < atm_filled.sql
 --> At this point all information must have been filled into the databases...
 
-
+To dump: sudo mysqldump atm > atm_filled.sql
