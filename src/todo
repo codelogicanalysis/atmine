@@ -29,3 +29,4 @@ done---deserialize (jad)
 add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """ (jad)
 add on_match_helper() in stem_search to check if diacritic (1 or even 2) after in the suffix of raw_data are matching
 check for 2 consequitive diacritics in the following recursive affix in on_match_helper() of tree_search
+make more than 1 space as equivalent to 1 and no space in some cases as equivalent to space
