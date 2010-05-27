@@ -18,14 +18,14 @@ int word_sarf_test(QString input_str)
 }
 int augment()
 {
-	if (insert_buckwalter()<0)
+	/*if (insert_buckwalter()<0)
 		return -1;
 	if (insert_rules_for_Nprop_Al())
-		return -1;
+		return -1;*/
 	if (insert_propernames()<0)
 		return -1;
-	if (insert_placenames()<0)
-		return -1;
+	/*if (insert_placenames()<0)
+		return -1;*/
 	return 0;
 }
 
