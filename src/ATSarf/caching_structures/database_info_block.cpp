@@ -24,7 +24,7 @@ void buildfromfile()
 	long long  stem_id, last_id;
 	if (!execute_query(stmt,query))
 		return;
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	StemNode * node = NULL;
 	int index=0;
 	last_id=-1;
@@ -54,7 +54,7 @@ void buildfromfile()
 		node->add_info(category_id);
 #endif
 	}
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	database_info.Stem_Trie->save(trie_path.toStdString().data());
 	QFile file(trie_list_path.toStdString().data());
 	if (file.open(QIODevice::WriteOnly))
