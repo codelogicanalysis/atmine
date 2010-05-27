@@ -497,7 +497,7 @@ int hadith(QString input_str)
 	QFile chainOutput("test-cases/chainOutput");
 
 	chainOutput.remove();
-        if (!chainOutput.open(QIODevice::ReadWrite))
+	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 
 	//chainOutput.flush();
