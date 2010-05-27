@@ -107,7 +107,7 @@ void hadith_initialize()
 	alayhi.append(ayn).append(lam).append(ya2).append(ha2);
 	alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
 	alayhi_alsalam=alayhi.append(' ').append(alsalam);
-#if 0
+#if 1
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
@@ -497,7 +497,7 @@ int hadith(QString input_str)
 	QFile chainOutput("test-cases/chainOutput");
 
 	chainOutput.remove();
-	if (!chainOutput.open(QIODevice::ReadOnly))
+        if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 
 	//chainOutput.flush();
