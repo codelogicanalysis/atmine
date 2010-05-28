@@ -1,3 +1,0 @@
-#A link to Buckwalter POS 
-
-http://projects.ldc.upenn.edu/TIDES/Arabic/data/POS
