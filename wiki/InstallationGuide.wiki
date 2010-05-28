@@ -1,0 +1,13 @@
+= AUBSarf Installation =
+
+== Prerequisites ==
+
+* MYSQL
+   * http://dev.mysql.com/downloads/mysql/
+   * http://dev.mysql.com/downloads/connector/cpp/#downloads
+* QT libraries
+   - http://qt.nokia.com/downloads
+
+== Details ==
+
+Get our latest version of software from the following page http://code.google.com/p/atmine/downloads/list and just run it. *Enjoy!*
