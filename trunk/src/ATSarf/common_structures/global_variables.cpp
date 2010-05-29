@@ -12,6 +12,7 @@ QSqlDatabase db;
 QTextStream out;
 QTextStream in;
 QTextStream displayed_error;
+QTextStream hadith_out;
 //QTextStream chainOut;
 
 bool KEEP_OLD=true;

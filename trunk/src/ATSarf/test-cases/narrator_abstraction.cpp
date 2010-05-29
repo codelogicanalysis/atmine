@@ -48,19 +48,19 @@ NarratorPrim::NarratorPrim(QString * hadith_text,long long m_start){
 //}
 Narrator::Narrator(QString * hadith_text):ChainPrim(hadith_text){}
 void Narrator::serialize(QTextStream &chainOut) const{
-    chainOut<<"\t\t\t\t\t\tNarrator {\n";
+	chainOut<<"\tNarrator {\n";
     int size=m_narrator.size();
     for (int i=0;i<size;i++)
 	{
-		chainOut<<"\t\t\t\t\t\t";
+		chainOut<<"\t";
 		m_narrator[i]->serialize(chainOut);
 
-		chainOut<<m_narrator[i]->m_start<<" "<<m_narrator[i]->m_end<<"";
-		chainOut<<"\t\t";
+		//chainOut<<m_narrator[i]->m_start<<" "<<m_narrator[i]->m_end<<"";
+		chainOut<<"\t";
 		chainOut<<hadith_text->mid(m_narrator[i]->m_start, m_narrator[i]->m_end-m_narrator[i]->m_start+1)<<" ";
 		chainOut<<"\n";
 	}
-    chainOut<<"\t\t\t\t\t\t\t}\n";
+	chainOut<<"\t\t}\n";
 }
 void Narrator::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const Narrator*)this);
@@ -102,10 +102,10 @@ NamePrim::NamePrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_
 void NamePrim::serialize(QTextStream &chainOut) const{
     chainOut<<"\tName ";
 }
-void NamePrim::serialize(QDataStream &chainOut) const{
+void NamePrim::serialize(QDataStream & chainOut) const{
 	chainOut<<getType((const NamePrim*)this);
 }
-void NamePrim::deserialize(QDataStream &chainIn) {
+void NamePrim::deserialize(QDataStream &) {
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const NamePrim*)this));*/
@@ -121,7 +121,7 @@ void NameConnectorPrim::serialize(QTextStream &chainOut) const
 void NameConnectorPrim::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const NameConnectorPrim*)this);
 }
-void NameConnectorPrim::deserialize(QDataStream &chainIn) {
+void NameConnectorPrim::deserialize(QDataStream &) {
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const NameConnectorPrim*)this));*/
@@ -138,7 +138,7 @@ NarratorConnectorPrim::NarratorConnectorPrim(QString * hadith_text,long long m_s
 }
 
 void NarratorConnectorPrim::serialize(QTextStream &chainOut) const{
-    chainOut<<"\t\t\t\t\t\tNarrator Connector: "<<m_start<<" "<<m_end<<"";
+	chainOut<<"\tNarrator Connector: ";//<<m_start<<" "<<m_end<<"";
 	chainOut<<"\t\t";
 	chainOut<<hadith_text->mid(this->m_start,this->m_end-this->m_start+1)<<" ";
 	chainOut<<"\n";
@@ -163,10 +163,10 @@ Chain::Chain(QString * hadith_text)
 void Chain::serialize(QTextStream & chainOut) const
 {
 	int size=m_chain.size();
-	chainOut<<"\t\t\t\t\tCH {\n";
+	chainOut<<"CH {\n";
 	for (int i=0;i<size;i++)
 		m_chain[i]->serialize(chainOut);
-	chainOut<<"\t\t\t\t\t}\n\n";
+	chainOut<<"}\n\n";
 }
 void Chain::serialize(QDataStream &stream) const
 {

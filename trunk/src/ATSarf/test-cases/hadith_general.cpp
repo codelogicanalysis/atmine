@@ -586,7 +586,8 @@ int hadith(QString input_str)
 	while (!tester.atEnd())
 	{
 		s->deserialize(tester);
-		s->serialize(out);
+		s->serialize(hadith_out);
+		//s->serialize(out);
 	}
 	chainOutput.close();
 #endif

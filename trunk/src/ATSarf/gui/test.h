@@ -10,6 +10,6 @@
 //#define WORD_SARF
 
 //starting point
-int start(QString input_str, QString &output_str, QString &error_str, bool hadith);
+int start(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith);
 
 #endif // TEST_H

@@ -215,35 +215,39 @@ QString bitset_to_string(bitset<max_sources> b)
 	}
 	return QString(val,num_characters);
 }
+bool tried_once=false;
 bool start_connection() //and do other initializations
 {
-	/*qDebug()<<db.isOpen()<<db.databaseName();
-	if (!db.isOpen())
+	db = QSqlDatabase::addDatabase("QMYSQL");
+	db.setHostName("localhost");
+	db.setDatabaseName("atm");
+	db.setUserName("root");
+	db.setPassword("");
+	bool ok = db.open();
+	if (ok)
 	{
-		if (db.databaseName()!="atm")
-		{*/
-			db = QSqlDatabase::addDatabase("QMYSQL");
-			db.setHostName("localhost");
-			db.setDatabaseName("atm");
-			db.setUserName("root");
-			db.setPassword("");
-		//}
-		bool ok = db.open();
-		if (ok)
+		db.exec("SET NAMES 'utf8'");
+		QSqlQuery temp(db);
+		query=temp;
+		generate_bit_order("source",source_ids);
+		generate_bit_order("category",abstract_category_ids,"abstract");
+		return 0;
+	}
+	else
+	{
+		if (!tried_once)
 		{
-			db.exec("SET NAMES 'utf8'");
-			QSqlQuery temp(db);
-			query=temp;
-			generate_bit_order("source",source_ids);
-			generate_bit_order("category",abstract_category_ids,"abstract");
-			return 0;
+			system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
+			system("mysql --user=\"root\" --password=\"\" atm <\"../sql design/atm_filled.sql\"");
+			tried_once=true;
+			start_connection();
 		}
 		else
 		{
-			error <<db.lastError().text()<<"\n";
+			error <<"Unable to build databases. Reason: "<<db.lastError().text()<<"\n";
 			return 1;
 		}
-	//}
+	}
 	return 0;
 }
 void close_connection()
