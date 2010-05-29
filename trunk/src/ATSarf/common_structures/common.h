@@ -22,7 +22,7 @@
 #ifdef REDUCE_THRU_DIACRITICS
 #undef MEMORY_EXHAUSTIVE
 #endif
-
+#define TIMESTAMP
 
 
 using namespace std;
