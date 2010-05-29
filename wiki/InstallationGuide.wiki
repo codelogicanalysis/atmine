@@ -10,6 +10,7 @@
 
 == Details ==
 
-* Get our latest version of source code from the following page http://code.google.com/p/atmine/downloads/list 
+* Get our latest version of source code from the following page http://code.google.com/p/atmine/downloads/list
+
 * Build the source code using QT for the file src/ATSarf/ATSarfTrie.pro 
 * Run the resulting Executable generated. *Enjoy!*
