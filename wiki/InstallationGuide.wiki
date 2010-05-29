@@ -2,15 +2,15 @@
 
 == Prerequisites ==
 
-* MYSQL
+ * MYSQL
    * http://dev.mysql.com/downloads/mysql/
    * http://dev.mysql.com/downloads/connector/cpp/#downloads
-* QT libraries
+ * QT libraries
    - http://qt.nokia.com/downloads
 
 == Details ==
 
-* Get our latest version of source code from the following page http://code.google.com/p/atmine/downloads/list
-* Open datrie/libdatrie-0.2.3 & "./configure" & "make"
-* Build the source code using QT for the file src/ATSarf/ATSarfTrie.pro 
-* Run the resulting Executable generated. *Enjoy!*
+ * Get our latest version of source code from the following page http://code.google.com/p/atmine/downloads/list
+ * Open datrie/libdatrie-0.2.3 & "./configure" & "make"
+ * Build the source code using QT for the file src/ATSarf/ATSarfTrie.pro 
+ * Run the resulting Executable generated. *Enjoy!*
