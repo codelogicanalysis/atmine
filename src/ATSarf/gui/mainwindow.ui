@@ -426,7 +426,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>AUBSarf</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTextEdit" name="input">
@@ -1891,3 +1891,4 @@
  <resources/>
  <connections/>
 </ui>
+   
