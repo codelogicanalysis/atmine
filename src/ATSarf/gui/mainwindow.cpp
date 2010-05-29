@@ -32,10 +32,11 @@ void MainWindow::changeEvent(QEvent *e)
 
 void MainWindow::on_pushButton_clicked()
 {
-	QString error_str,output_str;
-	start(m_ui->input->toPlainText(),output_str,error_str,m_ui->checkBox->isChecked());
+	QString error_str,output_str,hadith_str;
+	start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked());
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
+	m_ui->hadith_display->setText(hadith_str);
 }
 
 void MainWindow::on_destroyed()

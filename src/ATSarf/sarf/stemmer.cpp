@@ -134,7 +134,7 @@ bool Stemmer::on_match()
 		}
 		out <<")";
 	}
-	out<<" "<<finish<<"\n";
+	out<<" "<<finish+1<<"\n";
 	return true;
 }
 Stemmer::Stemmer(QString *text,int start_pos, bool get_info)

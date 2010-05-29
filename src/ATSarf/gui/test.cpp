@@ -18,19 +18,19 @@ int word_sarf_test(QString input_str)
 }
 int augment()
 {
-	/*if (insert_buckwalter()<0)
+	if (insert_buckwalter()<0)
 		return -1;
 	if (insert_rules_for_Nprop_Al())
-		return -1;*/
+		return -1;
 	if (insert_propernames()<0)
 		return -1;
-	/*if (insert_placenames()<0)
-		return -1;*/
+	if (insert_placenames()<0)
+		return -1;
 	return 0;
 }
 
 bool first_time=true;
-int start(QString input_str, QString &output_str, QString &error_str, bool had)
+int start(QString input_str, QString &output_str, QString &error_str, QString &hadith_str, bool had)
 {
 	out.setString(&output_str);
 	out.setCodec("utf-8");
@@ -38,6 +38,8 @@ int start(QString input_str, QString &output_str, QString &error_str, bool had)
 	in.setCodec("utf-8");
 	displayed_error.setString(&error_str);
 	displayed_error.setCodec("utf-8");
+	hadith_out.setString(&hadith_str);
+	hadith_out.setCodec("utf-8");
 	initializa_variables();
 #ifndef AUGMENT_DICTIONARY
 	if (first_time)
