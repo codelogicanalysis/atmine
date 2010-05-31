@@ -50,7 +50,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	}
 	if (had && hadith(input_str))
 		return -1;
-	if (!had &&word_sarf_test(input_str))
+	if (!had && word_sarf_test(input_str))
 		return -1;
 #else
 	if (augment()<0)
