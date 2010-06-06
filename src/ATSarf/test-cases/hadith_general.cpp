@@ -13,7 +13,8 @@
 #include "../utilities/diacritics.h"
 #include "narrator_abstraction.h"
 #include "../common_structures/common.h"
-
+#include "../gui/mainwindow.h"
+#include "ui_mainwindow.h"
 enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
@@ -491,7 +492,7 @@ int parse(QString & text,QStringList & list)//returns number of times compound w
 }
 #endif
 
-int hadith(QString input_str)
+int hadith(QString input_str,Ui::MainWindow *m_ui)
 {
 
 	QFile chainOutput("test-cases/chainOutput");
@@ -567,6 +568,8 @@ int hadith(QString input_str)
 			 chaincount++;
 		}
 		currentState=nextState;
+                //m_ui->progressBar->setValue(current_pos/text_size*100);
+                //m_ui->progressBar->valueChanged(current_pos/text_size*100);
 		if (current_pos==text_size-1)
 			break;
 	}

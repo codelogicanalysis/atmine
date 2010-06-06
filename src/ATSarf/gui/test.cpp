@@ -30,7 +30,7 @@ int augment()
 }
 
 bool first_time=true;
-int start(QString input_str, QString &output_str, QString &error_str, QString &hadith_str, bool had)
+int start(QString input_str, QString &output_str, QString &error_str, QString &hadith_str, bool had,Ui::MainWindow *m_ui)
 {
 	out.setString(&output_str);
 	out.setCodec("utf-8");
@@ -48,7 +48,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		first_time=false;
 		hadith_initialize();
 	}
-	if (had && hadith(input_str))
+        if (had && hadith(input_str,m_ui))
 		return -1;
 	if (!had && word_sarf_test(input_str))
 		return -1;

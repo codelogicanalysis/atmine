@@ -18,6 +18,8 @@ MainWindow::~MainWindow()
     delete m_ui;
 }
 
+
+
 void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
@@ -33,7 +35,7 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-	start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked());
+        start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),m_ui);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
@@ -44,6 +46,7 @@ void MainWindow::on_destroyed()
 	close_connection();
 }
 
+
 int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
@@ -52,3 +55,11 @@ int main(int argc, char *argv[])
 	mainw.show();
 	return app.exec();
 }
+
+
+
+
+/*void MainWindow::on_progressBar_valueChanged(int value)
+{
+   m_ui->progressBar->setValue(value);
+}*/
