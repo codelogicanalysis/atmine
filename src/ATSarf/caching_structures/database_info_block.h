@@ -6,6 +6,12 @@
 #include "../common_structures/atmTrie.h"
 #include "../common_structures/common.h"
 #include <QString>
+#include <QDateTime>
+
+#ifdef GUI_SPECIFIC
+#include "../gui/mainwindow.h"
+#include "ui_mainwindow.h"
+#endif
 
 class database_info_block
 {
@@ -22,12 +28,17 @@ class database_info_block
         compatibility_rules * rules_BC;
         compatibility_rules * rules_CC;
         database_info_block();
-        void fill();
+#ifdef GUI_SPECIFIC
+		void fill(Ui::MainWindow *m_ui);
+#else
+		void fill();
+#endif
         ~database_info_block();
 };
 
 extern database_info_block database_info;
 extern QString trie_path;
 extern QString trie_list_path;
+extern QDateTime executable_timestamp;
 
 #endif // DATABASE_INFO_H

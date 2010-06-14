@@ -1,3 +1,5 @@
+#include <QFile>
+#include <QFileInfo>
 #include "sql_queries.h"
 #include "../utilities/letters.h"
 
@@ -16,6 +18,8 @@
 #include <QStringList>
 #include <QList>
 #include <assert.h>
+
+#include "../caching_structures/database_info_block.h"
 
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
@@ -83,6 +87,11 @@ QString interpret_type(rules r)
 }
 bool execute_query(QString stmt, QSqlQuery &query)
 {
+	if (stmt.contains('\"'))
+	{
+		error <<"INVALID QUERY, contains '\"'\n"<<"STATEMENT WAS: "<<stmt<<"\n";
+		return false;
+	}
 	if (!query.exec(stmt))
 	{
 		error <<query.lastError().text()<<"\n"<<"STATEMENT WAS: "<<stmt<<"\n";
@@ -216,6 +225,29 @@ QString bitset_to_string(bitset<max_sources> b)
 	return QString(val,num_characters);
 }
 bool tried_once=false;
+void check_for_staleness()
+{
+	QFileInfo temp(trie_list_path);
+	QDateTime cache_time;
+	if (temp.exists())
+		cache_time=temp.lastModified();
+	else
+		return;
+	execute_query("SHOW TABLE STATUS");
+	while (query.next())
+	{
+		QDateTime d=query.value(12).toDateTime();
+#ifndef IGNORE_EXEC_TIMESTAMP
+		if (d>executable_timestamp || d>cache_time)
+#else
+		if (d>cache_time)
+#endif
+		{
+			system(QString(QString("rm ") +trie_path+ " "+trie_list_path).toStdString().data());
+			return;
+		}
+	}
+}
 bool start_connection() //and do other initializations
 {
 	db = QSqlDatabase::addDatabase("QMYSQL");
@@ -229,6 +261,7 @@ bool start_connection() //and do other initializations
 		db.exec("SET NAMES 'utf8'");
 		QSqlQuery temp(db);
 		query=temp;
+		check_for_staleness();
 		generate_bit_order("source",source_ids);
 		generate_bit_order("category",abstract_category_ids,"abstract");
 		return 0;

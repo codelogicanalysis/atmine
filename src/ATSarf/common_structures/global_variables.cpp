@@ -1,6 +1,7 @@
 #include <bitset>
 #include <QSqlDatabase>
 #include <QTextStream>
+#include <QDateTime>
 #include "../caching_structures/database_info_block.h"
 #include "../utilities/letters.h"
 #include "../sql-interface/sql_queries.h"
@@ -22,6 +23,7 @@ bool display_warnings=true;
 
 QString trie_path="stem_trie.dat";
 QString trie_list_path="stem_list.dat";
+QDateTime executable_timestamp;
 
 QString delimiters(QString("[ :.,()")+fasila+"]");
 

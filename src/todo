@@ -1,13 +1,9 @@
-use runtime options instead of compile options
+done partially---use runtime options instead of compile options
 done---use stem comparison for NRC
 done---Differentiate between name of person and name of place for the hadith...and nisba for person and place
-done ---Detect days 
-done ---عمّن as عن
-done--in case  we have two عن, and later we have continued list of narrators, then consider these as narrator....(عن أبيه(
-also consider the ه in أبيه as referring to the on before him so express the relation...
-also عنه to be considered
-remove names of females or consider them at the end
-numbers should take me to text directly
+done---Detect days 
+done---عمّن as عن
+done--in case  we have two عن, and later we have continued list of narrators, then consider these as narrator....(عن أبيه)
 done ---in case we have عن then consider as continued sanad
 done ----add روى to the nrc 
 done---عبيد الله combined names
@@ -22,11 +18,21 @@ done---fix walk (Fadi)
 done---fix bug in crashing on deleting of trie if it was loaded from file (maybe due to uninitialized alfa_map) (Jad)
 done---index the trie node
 done---load and save the trie (tentative)
-if we have two nrcs seperated by nothing dont increment the counter (tentative)
+done---if we have two nrcs seperated by nothing dont increment the counter (tentative)
 done ---stress in the full paper that our system is a composition of 3 state machines that reduces the computations done by buckwalter's concatenative analysis that is 3-machines running in sequence. 
-biographies (hamza)
 done---deserialize (jad)
-add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """ (jad)
-add on_match_helper() in stem_search to check if diacritic (1 or even 2) after in the suffix of raw_data are matching
-check for 2 consequitive diacritics in the following recursive affix in on_match_helper() of tree_search
-make more than 1 space as equivalent to 1 and no space in some cases as equivalent to space
+done---add check if syntax of sql is always acceptable eg: does not contain double quotations since results in """ (jad)
+done---add on_match_helper() in stem_search to check if diacritic (1 or even 2) after in the suffix of raw_data are matching
+done---check for 2 consequitive diacritics in the following recursive affix in on_match_helper() of tree_search (not totally tested bc no recursive affixes yet)
+done---about timestamp and staleness of data of in .dat files
+done---solve the bug of diacritics at the end of prefix, stem or suffix eg: بِرد was not working previously
+done---solve problem of incompatibe formats of caching structures when using or not using REDUCE_THRU_DIACRITICS
+make a loop after suffix is over and delimiter not yet encountered: back to prefix (non-space seperation of words) and make reporting when delimeter is found
+consider the ه in أبيه as referring to the on before him so express the relation...
+also عنه to be considered
+remove names of females or consider them at the end (for later refinements)
+numbers should take me to text directly (not necessarily, for later refinements)
+biographies
+test-senarios from LDC
+solve bug in non-diacritic-reduction version (using REDUCE_THRU_DIACRITICS) of code not working
+if shadde exists in word force it in possibilities

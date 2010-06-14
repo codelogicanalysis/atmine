@@ -8,9 +8,11 @@
 #define TRIE_FROM_FILE
 #define USE_TRIE_WALK
 //#define QUEUE
-//#define MEMORY_EXHAUSTIVE
+//#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 
+#define IGNORE_EXEC_TIMESTAMP
+#define GUI_SPECIFIC
 
 #ifndef USE_TRIE
 #undef USE_TRIE_WALK
@@ -27,7 +29,7 @@
 
 using namespace std;
 
-#define max_sources 256//128
+#define max_sources 256
 
 extern bitset<max_sources> INVALID_BITSET;
 extern QString delimiters;

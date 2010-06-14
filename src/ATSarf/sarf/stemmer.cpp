@@ -55,9 +55,6 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 		}
 		if (called_everything || type==STEM)
 		{
-			#if !defined (REDUCE_THRU_DIACRITICS)
-				Stem->fill_details();
-			#endif
 			Search_by_item s(STEM,Stem->id_of_currentmatch);
 			if (!called_everything)
 				finish=Stem->currentMatchPos;

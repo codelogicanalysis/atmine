@@ -13,8 +13,12 @@
 #include "../utilities/diacritics.h"
 #include "narrator_abstraction.h"
 #include "../common_structures/common.h"
+
+#ifdef GUI_SPECIFIC
 #include "../gui/mainwindow.h"
 #include "ui_mainwindow.h"
+#endif
+
 enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
@@ -491,8 +495,11 @@ int parse(QString & text,QStringList & list)//returns number of times compound w
 	return count;
 }
 #endif
-
+#ifdef GUI_SPECIFIC
 int hadith(QString input_str,Ui::MainWindow *m_ui)
+#else
+int hadith(QString input_str)
+#endif
 {
 
 	QFile chainOutput("test-cases/chainOutput");
@@ -568,12 +575,12 @@ int hadith(QString input_str,Ui::MainWindow *m_ui)
 			 chaincount++;
 		}
 		currentState=nextState;
-                //m_ui->progressBar->setValue(current_pos/text_size*100);
-                //m_ui->progressBar->valueChanged(current_pos/text_size*100);
+		#ifdef GUI_SPECIFIC
+			m_ui->progressBar->setValue((double)current_pos/text_size*100+0.5);
+		#endif
 		if (current_pos==text_size-1)
 			break;
 	}
-
 	if (newHadithStart<0)
 	{
 		out<<"no hadith found\n";

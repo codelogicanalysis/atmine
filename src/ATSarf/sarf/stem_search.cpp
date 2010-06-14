@@ -137,8 +137,11 @@ bool StemSearch::operator()()
 						currentMatchPos=i-1;
 						QString subword=getDiacriticword(i-1,starting_pos,*info->diacritic_text);
 #else
-						currentMatchPos=i;
-						QString subword=info->diacritic_text->mid(starting_pos,i-starting_pos+1);
+						//currentMatchPos=i;
+						int last;
+						QString subword=addlastDiacritics(starting_pos,i,info->diacritic_text,last);
+								//info->diacritic_text->mid(starting_pos,i-starting_pos+1);
+						currentMatchPos=last>0?last-1:0;
 #endif
 						//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
 						if (equal(subword,raw_data_of_currentmatch))
@@ -218,7 +221,7 @@ bool StemSearch::operator()()
 }
 bool StemSearch::onMatch()
 {
-	//out<<"s:"<<info->text.mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
+	//out<<"s:"<<info->diacritic_text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
 	info->Stem=this;
 	SuffixSearch * Suffix= new SuffixSearch(info,currentMatchPos+1);
 	return Suffix->operator ()();

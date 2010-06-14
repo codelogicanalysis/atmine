@@ -1,7 +1,9 @@
+#include <QFileInfo>
 #include "mainwindow.h"
 #include "test.h"
 #include "../sql-interface/sql_queries.h"
 #include "ui_mainwindow.h"
+#include "../caching_structures/database_info_block.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -9,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	m_ui->label_5->setPixmap(QPixmap("./sarf33.bmp"));
+#ifndef GUI_SPECIFIC
+	m_ui->progressBar->setVisible(false);
+#endif
 	//m_ui->pushButton->setAutoDefault(false);
 	//connect((QObject*)m_ui->MainWindow,SIGNAL(destroyed())),(QObject*)m_ui,SLOT(do_it()));
 }
@@ -35,7 +40,11 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-        start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),m_ui);
+#ifdef GUI_SPECIFIC
+	start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),m_ui);
+#else
+	start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked());
+#endif
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
@@ -49,17 +58,11 @@ void MainWindow::on_destroyed()
 
 int main(int argc, char *argv[])
 {
+	/*QFileInfo fileinfo(argv[0]);
+	executable_timestamp=fileinfo.lastModified();*/
 	QApplication app(argc, argv);
 	MainWindow mainw;
 	start_connection();
 	mainw.show();
 	return app.exec();
 }
-
-
-
-
-/*void MainWindow::on_progressBar_valueChanged(int value)
-{
-   m_ui->progressBar->setValue(value);
-}*/

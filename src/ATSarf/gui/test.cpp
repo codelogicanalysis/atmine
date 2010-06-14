@@ -9,6 +9,8 @@
 #include "../sarf/stemmer.h"
 #include "../caching_structures/database_info_block.h"
 
+#include "../utilities/diacritics.h"
+
 int word_sarf_test(QString input_str)
 {
 	QString line=input_str.split('\n')[0];
@@ -30,7 +32,11 @@ int augment()
 }
 
 bool first_time=true;
+#ifdef GUI_SPECIFIC
 int start(QString input_str, QString &output_str, QString &error_str, QString &hadith_str, bool had,Ui::MainWindow *m_ui)
+#else
+int start(QString input_str, QString &output_str, QString &error_str, QString &hadith_str, bool had)
+#endif
 {
 	out.setString(&output_str);
 	out.setCodec("utf-8");
@@ -44,14 +50,29 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 #ifndef AUGMENT_DICTIONARY
 	if (first_time)
 	{
+#ifdef GUI_SPECIFIC
+		database_info.fill(m_ui);
+#else
 		database_info.fill();
+#endif
 		first_time=false;
 		hadith_initialize();
 	}
-        if (had && hadith(input_str,m_ui))
+#if 1
+#ifdef GUI_SPECIFIC
+	if (had && hadith(input_str,m_ui))
+#else
+	if (had && hadith(input_str))
+#endif
 		return -1;
 	if (!had && word_sarf_test(input_str))
 		return -1;
+#else //testing
+	int i,j;
+	QString s;
+	in >>s>>i>>j;
+	out <<addlastDiacritics(i,j,&s);
+#endif
 #else
 	if (augment()<0)
 		return -1;
