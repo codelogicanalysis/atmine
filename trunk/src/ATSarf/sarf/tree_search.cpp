@@ -1,5 +1,5 @@
 #include "tree_search.h"
-
+#include "../logger/logger.h"
 #include "suffix_search.h"
 #include "stem_search.h"
 #include "prefix_search.h"
@@ -38,21 +38,21 @@ void TreeSearch::fill_details() //this function fills the public member function
         int count=0;
         while (current_parent!=tree_head)
         {
-                if (current_parent->isLetterNode())
-                {
-                        if (((letter_node* )current_parent)->getLetter()!='\0')
-                                count++;
-                }
-                else
-                {
-                         catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
-                         idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
-                         sub_positionsOFCurrentMatch.insert(0, position-count-1);
+			if (current_parent->isLetterNode())
+			{
+				if (((letter_node* )current_parent)->getLetter()!='\0')
+					count++;
+			}
+			else
+			{
+				 catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
+				 idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
+				 sub_positionsOFCurrentMatch.insert(0, position-count-1);
 #ifdef REDUCE_THRU_DIACRITICS
-                         possible_raw_datasOFCurrentMatch.insert(0,((result_node *)current_parent)->raw_datas);
+				 possible_raw_datasOFCurrentMatch.insert(0,((result_node *)current_parent)->raw_datas);
 #endif
-                }
-                current_parent=current_parent->parent;
+			}
+			current_parent=current_parent->parent;
         }
 #endif
 }
@@ -89,7 +89,7 @@ bool TreeSearch::operator ()()
 #ifdef QUEUE
 	QList  <int> temp_partition;
 	QList  <long> temp_ids;
-	QList <long> temp_categories;
+	QList  <long> temp_categories;
 #ifdef REDUCE_THRU_DIACRITICS
 	QList <QList<QString> > temp_raw_datas;
 #endif
@@ -121,23 +121,25 @@ bool TreeSearch::operator ()()
 		//show_queue_content();
 		QList<node *> current_children=current_node->getChildren();
 #ifndef USE_TRIE_WALK
-		QChar current_letter=info->diacritic_text->at(position);
+		QChar future_letter=info->diacritic_text->at(position);
 #else
-		QChar current_letter;
+		QChar future_letter;
 		if (position==info->diacritic_text->length())
-			current_letter='\0';
+			future_letter='\0';
 		else if (position>info->diacritic_text->length())
 			break;
 		else
 		{
-			current_letter=info->diacritic_text->at(position);
-			while (position <info->diacritic_text->length() && isDiacritic(current_letter))
+			future_letter=info->diacritic_text->at(position);
+			while (position <info->diacritic_text->length() && isDiacritic(future_letter))
 			{
-				current_letter=info->diacritic_text->at(position);
 				position++;
+				if (position==info->diacritic_text->length())
+					future_letter='\0';
+				else
+					future_letter=info->diacritic_text->at(position);
 			}
-			if (position==info->diacritic_text->length())
-				current_letter='\0';
+			//qDebug()<<future_letter;
 		}
 #endif
 		int num_children=current_children.count();
@@ -146,9 +148,9 @@ bool TreeSearch::operator ()()
 			node *current_child=current_children[j];
 			if (current_child->isLetterNode())
 			{
-				if(equal(((letter_node*)current_child)->getLetter(),current_letter))
+				if(equal(((letter_node*)current_child)->getLetter(),future_letter))
 				{
-					//qDebug()<<"p/S:"<<current_letter;
+					//qDebug()<<"p/S:"<<future_letter;
 					queue.enqueue((letter_node*)current_child);
 #ifdef QUEUE
 					temp_partition=sub_positionsOFCurrentMatch;
@@ -188,10 +190,7 @@ bool TreeSearch::operator ()()
 #if defined(PARENT)
 				reached_node=current_child;
 #endif
-				/*if (type==STEM)
-					resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_previous_category_id();
-				else*/
-					resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
+				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
 				if (shouldcall_onmatch(position) && !(on_match_helper()))
 				{
 					stop=true;
@@ -203,7 +202,7 @@ bool TreeSearch::operator ()()
 					int num_result_children=result_node_children.count();
 					for (int j=0;j<num_result_children;j++)
 					{
-						if(((letter_node*)result_node_children[j])->getLetter()==current_letter)
+						if(((letter_node*)result_node_children[j])->getLetter()==future_letter)
 						{
 							queue.enqueue((letter_node*)result_node_children[j]);
 #ifdef QUEUE
@@ -263,6 +262,7 @@ void TreeSearch::get_all_possibilities(int i, QList< QString>  raw_datas)
 	}
 }
 #endif
+
 bool TreeSearch::on_match_helper()
 {
 	//out<<"p-S:"<<info->word.mid(startingPos)<<"\n";
@@ -271,24 +271,31 @@ bool TreeSearch::on_match_helper()
 #ifdef PARENT
 	fill_details();
 #endif
-	int startPos=startingPos;
+	int startPos=startingPos/*, last*/;
 	//out<<"startPos="<<startPos<<"position-1="<<position-1<<"\n";
-	QString subword=getDiacriticword(position-1,startPos,*info->diacritic_text);
+	QString subword=addlastDiacritics(startPos,position-1, info->diacritic_text/*, last*/);
+	/*int size=info->diacritic_text->length();
+	position=last<size?last+1:size;*/
 	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
 	{
 		for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
 		{
 			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
-			if (isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the suffix region
+			bool cont=false;
+			while (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
 			{
-				if (!equal(getDiacriticword(startPos-1,startPos-1,*info->diacritic_text),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				if (!equal(info->diacritic_text->mid(startPos-1,1),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				//if (!equal(getDiacriticword(startPos-1,startPos-1,*info->diacritic_text),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
 				{
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;
-					continue;
+					cont=true;
+					break;
 				}
 				possible_raw_datasOFCurrentMatch[k][j]=possible_raw_datasOFCurrentMatch[k][j].mid(1);
 			}
+			if (cont)
+				continue;
 			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
 			{
@@ -309,6 +316,9 @@ bool TreeSearch::on_match_helper()
 	get_all_possibilities(0, raw_datas);
 	return !a_branch_returned_false;
 #else
+	int last;
+	QString subword=addlastDiacritics(startingPos,position-1,info->diacritic_text,last);
+	position=last;
 	if (info->called_everything)
 		return onMatch();
 	else

@@ -12,7 +12,6 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-	//void start();
 
 protected:
     void changeEvent(QEvent *e);
@@ -21,8 +20,7 @@ private:
     Ui::MainWindow *m_ui;
 
 private slots:
- //void on_progressBar_valueChanged(int value);
- void on_pushButton_clicked();
+	void on_pushButton_clicked();
 	void on_destroyed();
 };
 

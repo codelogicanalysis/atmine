@@ -8,8 +8,23 @@
 #include <assert.h>
 #include <QDebug>
 
-
 #ifdef USE_TRIE
+
+#ifdef GUI_SPECIFIC
+	Ui::MainWindow *m_ui;
+#endif
+
+#ifdef REDUCE_THRU_DIACRITICS
+inline QString cache_version()
+{
+	return "RD";
+}
+#else
+inline QString cache_version()
+{
+	return "ND";
+}
+#endif
 
 void buildfromfile()
 {
@@ -28,6 +43,7 @@ void buildfromfile()
 	StemNode * node = NULL;
 	int index=0;
 	last_id=-1;
+	int total=query.size(), current=0;
 	while (query.next())
 	{
 		stem_id=query.value(0).toULongLong();
@@ -53,6 +69,10 @@ void buildfromfile()
 #else
 		node->add_info(category_id);
 #endif
+	#ifdef GUI_SPECIFIC
+		current++;
+		m_ui->progressBar->setValue((double)current/total*100+0.5);
+	#endif
 	}
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	database_info.Stem_Trie->save(trie_path.toStdString().data());
@@ -60,6 +80,7 @@ void buildfromfile()
 	if (file.open(QIODevice::WriteOnly))
 	{
 		QDataStream out(&file);   // we will serialize the data into the file
+		out << cache_version();
 		out << *(database_info.trie_nodes);
 		file.close();
 	}
@@ -77,8 +98,19 @@ void buildTrie()
 	if (file.open(QIODevice::ReadOnly))
 	{
 		QDataStream in(&file);    // read the data serialized from the file
-		in >> *(database_info.trie_nodes);
-		file.close();
+		QString version;
+		in >> version;
+		if (version==cache_version())
+		{
+			in >> *(database_info.trie_nodes);
+			file.close();
+		}
+		else
+		{
+			file.close();
+			buildfromfile();
+			return;
+		}
 		QFile input(trie_path);
 		if (input.open(QIODevice::ReadOnly))
 		{
@@ -108,12 +140,18 @@ database_info_block::database_info_block()
     rules_BC=new compatibility_rules(BC);
     rules_CC=new compatibility_rules(CC);
 }
-
+#ifdef GUI_SPECIFIC
+void database_info_block::fill(Ui::MainWindow *ui)
+#else
 void database_info_block::fill()
+#endif
 {
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
 #ifdef USE_TRIE
+	#ifdef GUI_SPECIFIC
+		m_ui=ui;
+	#endif
 	buildTrie();
 #endif
     rules_AA->fill();

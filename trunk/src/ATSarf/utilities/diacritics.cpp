@@ -6,6 +6,8 @@
 #include <QVector>
 #include <QRegExp>
 
+#include <QDebug>
+
 //utility functions
 bool isConsonant(QChar letter)
 {
@@ -94,3 +96,22 @@ QString getDiacriticword(int position,int startPos,QString diacritic_word)
 	return diacritic_word.mid(diacritic_starting_pos<0?0:diacritic_starting_pos,i-diacritic_starting_pos);
 }
 
+QString addlastDiacritics(int start, int position, QString * diacritic_word, int &last_pos)
+{
+	//qDebug()<<diacritic_word->mid(start,position-start+1);
+	QChar nextletter;
+	do{
+		position++;
+		if (position ==diacritic_word->length())
+			break;
+		nextletter=diacritic_word->at(position);
+	}while (isDiacritic(nextletter));
+	//qDebug()<<diacritic_word->mid(start,position-start);
+	last_pos=position;
+	return diacritic_word->mid(start,position-start);
+}
+QString addlastDiacritics(int start, int position, QString * diacritic_word)
+{
+	int last;
+	return addlastDiacritics(start, position, diacritic_word, last);
+}

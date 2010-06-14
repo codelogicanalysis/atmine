@@ -14,6 +14,7 @@ QChar getLastLetter(QString word); //last non-Diacritical letter
 QString removeLastLetter(QString word); //last non-Diacritical letter
 QString removeLastDiacritic(QString word); //removes last consecutive diactrics until a normal letter is reached
 QString getDiacriticword(int position,int startPos,QString diacritic_word);
-
+QString addlastDiacritics(int start, int position, QString * diacritic_word, int &last_position);
+QString addlastDiacritics(int start, int position, QString * diacritic_word);
 #endif	/* _DIACRITICS_H */
 

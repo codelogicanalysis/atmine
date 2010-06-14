@@ -83,7 +83,7 @@ bool StemNode::exists(const long cat_id)
 		else
 			return false;
 	}
-
+#endif
 //Search_StemNode
 	Search_StemNode::Search_StemNode()
 	{
@@ -175,5 +175,3 @@ QDataStream &operator<<(QDataStream &out, const StemNode &node)
 #endif
 	return out;
 }
-
-#endif
