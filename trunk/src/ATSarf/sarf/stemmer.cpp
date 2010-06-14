@@ -131,6 +131,16 @@ bool Stemmer::on_match()
 		}
 		out <<")";
 	}
+	if (called_everything)
+	{
+		QString word;
+		for (int i=0;i<prefix_infos->count();i++)
+			word.append(prefix_infos->at(i).raw_data);
+		word.append(stem_info->raw_data);
+		for (int i=0;i<suffix_infos->count();i++)
+			word.append(suffix_infos->at(i).raw_data);
+		out <<" "<<word<<" ";
+	}
 	out<<" "<<finish+1<<"\n";
 	return true;
 }

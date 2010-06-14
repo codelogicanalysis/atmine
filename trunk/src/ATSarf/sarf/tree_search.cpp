@@ -271,41 +271,47 @@ bool TreeSearch::on_match_helper()
 #ifdef PARENT
 	fill_details();
 #endif
-	int startPos=startingPos/*, last*/;
+	int startPos=startingPos, last;
 	//out<<"startPos="<<startPos<<"position-1="<<position-1<<"\n";
-	QString subword=addlastDiacritics(startPos,position-1, info->diacritic_text/*, last*/);
-	/*int size=info->diacritic_text->length();
-	position=last<size?last+1:size;*/
+	QString subword=addlastDiacritics(startPos,position-1, info->diacritic_text, last);
 	for (int k=0;k<sub_positionsOFCurrentMatch.count();k++)
 	{
 		for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
 		{
 			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
-			bool cont=false;
-			while (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
+			//bool cont=false;
+			if (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
 			{
-				if (!equal(info->diacritic_text->mid(startPos-1,1),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				QString diacritics_of_word=isDiacritic(info->diacritic_text->at(position-1))?info->diacritic_text->mid(position-1,last-position+1):"",diacritics_of_rawdata=addlastDiacritics(0,0,&possible_raw_datasOFCurrentMatch[k][j]);
+				//qDebug()<<info->diacritic_text->mid(startPos-1,1)<<"-"<<QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0]);
+				//if (!equal(info->diacritic_text->mid(startPos-1,1),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
 				//if (!equal(getDiacriticword(startPos-1,startPos-1,*info->diacritic_text),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
+				qDebug()<<diacritics_of_word<<"-"<<diacritics_of_rawdata;
+				if (!equal(diacritics_of_word,diacritics_of_rawdata))
 				{
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;
-					cont=true;
-					break;
+					/*cont=true;
+					break;*/
+					continue;
 				}
-				possible_raw_datasOFCurrentMatch[k][j]=possible_raw_datasOFCurrentMatch[k][j].mid(1);
+				//possible_raw_datasOFCurrentMatch[k][j]=possible_raw_datasOFCurrentMatch[k][j].mid(1);
 			}
-			if (cont)
-				continue;
-			//out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
+			/*if (cont)
+				continue;*/
+#ifdef DEBUG
+			out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
+#endif
 			if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
 			{
 				possible_raw_datasOFCurrentMatch[k].removeAt(j);
 				j--;
 			}
 		}
-
 		startPos=sub_positionsOFCurrentMatch[k]+1;
 	}
+	int size=info->diacritic_text->length();
+	position=last;//+1<size?last+1:last;
 	//number_of_matches++;
 	for (int i=0;i<possible_raw_datasOFCurrentMatch.count();i++)
 		if (0==possible_raw_datasOFCurrentMatch[i].count())

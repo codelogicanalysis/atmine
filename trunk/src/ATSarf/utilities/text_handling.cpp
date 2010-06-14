@@ -6,6 +6,7 @@
 #include <QChar>
 #include <QList>
 #include <QVector>
+#include <QDebug>
 
 QString get_Possessive_form(QString word)
 {
@@ -70,6 +71,7 @@ bool equal(QChar c1, QChar c2)
 }
 bool equal(QString word1,QString word2)// is diacritics tolerant
 {
+	qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
 	int length2=word2.count();
 	int i1=-1,i2=-1;
