@@ -221,7 +221,9 @@ bool StemSearch::operator()()
 }
 bool StemSearch::onMatch()
 {
-	//out<<"s:"<<info->diacritic_text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
+#ifdef DEBUG
+	out<<"s:"<<info->diacritic_text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
+#endif
 	info->Stem=this;
 	SuffixSearch * Suffix= new SuffixSearch(info,currentMatchPos+1);
 	return Suffix->operator ()();

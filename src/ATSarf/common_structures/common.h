@@ -11,6 +11,8 @@
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 
+//#define DEBUG
+
 #define IGNORE_EXEC_TIMESTAMP
 #define GUI_SPECIFIC
 
