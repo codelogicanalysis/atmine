@@ -14,10 +14,7 @@
 #include "narrator_abstraction.h"
 #include "../common_structures/common.h"
 
-#ifdef GUI_SPECIFIC
-#include "../gui/mainwindow.h"
-#include "ui_mainwindow.h"
-#endif
+#include "ATMProgressIFC.h"
 
 enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
@@ -495,11 +492,7 @@ int parse(QString & text,QStringList & list)//returns number of times compound w
 	return count;
 }
 #endif
-#ifdef GUI_SPECIFIC
-int hadith(QString input_str,Ui::MainWindow *m_ui)
-#else
-int hadith(QString input_str)
-#endif
+int hadith(QString input_str,ATMProgressIFC *prg)
 {
 
 	QFile chainOutput("test-cases/chainOutput");
@@ -575,9 +568,7 @@ int hadith(QString input_str)
 			 chaincount++;
 		}
 		currentState=nextState;
-		#ifdef GUI_SPECIFIC
-			m_ui->progressBar->setValue((double)current_pos/text_size*100+0.5);
-		#endif
+		prg->report((double)current_pos/text_size*100+0.5);
 		if (current_pos==text_size-1)
 			break;
 	}

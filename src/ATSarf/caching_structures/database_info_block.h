@@ -8,10 +8,7 @@
 #include <QString>
 #include <QDateTime>
 
-#ifdef GUI_SPECIFIC
-#include "../gui/mainwindow.h"
-#include "ui_mainwindow.h"
-#endif
+#include "ATMProgressIFC.h"
 
 class database_info_block
 {
@@ -28,11 +25,7 @@ class database_info_block
         compatibility_rules * rules_BC;
         compatibility_rules * rules_CC;
         database_info_block();
-#ifdef GUI_SPECIFIC
-		void fill(Ui::MainWindow *m_ui);
-#else
-		void fill();
-#endif
+		void fill(ATMProgressIFC *p_ifc);
         ~database_info_block();
 };
 

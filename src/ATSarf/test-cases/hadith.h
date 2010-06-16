@@ -3,17 +3,12 @@
 
 #include <QString>
 #include "../common_structures/common.h"
+#include "ATMProgressIFC.h"
 #define GENERAL_HADITH
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 
-
-#ifdef GUI_SPECIFIC
-#include "../gui/mainwindow.h"
-int hadith(QString input_str,Ui::MainWindow *m_ui);
-#else
-int hadith(QString input_str);
-#endif
+int hadith(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
 
 #endif // HADITH_H

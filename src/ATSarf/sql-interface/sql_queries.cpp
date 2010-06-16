@@ -248,7 +248,7 @@ void check_for_staleness()
 		}
 	}
 }
-bool start_connection() //and do other initializations
+bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 {
 	db = QSqlDatabase::addDatabase("QMYSQL");
 	db.setHostName("localhost");
@@ -273,7 +273,7 @@ bool start_connection() //and do other initializations
 			system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
 			system("mysql --user=\"root\" --password=\"\" atm <\"../sql design/atm_filled.sql\"");
 			tried_once=true;
-			start_connection();
+			start_connection(p_ifc);
 		}
 		else
 		{

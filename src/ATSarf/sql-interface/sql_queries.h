@@ -10,6 +10,7 @@
 #include <QVariant>
 #include "logger/logger.h"
 #include "../common_structures/common.h"
+#include "ATMProgressIFC.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ bitset<max_sources> bigint_to_bitset(QVariant val);
 bitset<max_sources> string_to_bitset(QString val);
 bitset<max_sources> string_to_bitset(QVariant val);
 QString bitset_to_string(bitset<max_sources> b);
-bool start_connection(); //and do other initializations
+bool start_connection(ATMProgressIFC *); //and do other initializations
 void close_connection();
 long get_abstractCategory_id(int bit);
 long get_source_id(int bit);

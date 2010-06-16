@@ -2,16 +2,18 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include "ATMProgressIFC.h"
 
 namespace Ui {
     class MainWindow;
 }
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow,public ATMProgressIFC {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+	virtual void report(int value);
 
 protected:
     void changeEvent(QEvent *e);
