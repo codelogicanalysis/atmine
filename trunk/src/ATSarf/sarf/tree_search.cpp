@@ -219,7 +219,7 @@ bool TreeSearch::operator ()()
 						}
 					}
 				}
-			 }
+			}
 		}
 	}
 	return (!stop);
@@ -286,7 +286,7 @@ bool TreeSearch::on_match_helper()
 				//qDebug()<<info->diacritic_text->mid(startPos-1,1)<<"-"<<QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0]);
 				//if (!equal(info->diacritic_text->mid(startPos-1,1),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
 				//if (!equal(getDiacriticword(startPos-1,startPos-1,*info->diacritic_text),QString("%1%2").arg(info->diacritic_text->at(startPos-1)).arg(possible_raw_datasOFCurrentMatch[k][j][0])))
-				qDebug()<<diacritics_of_word<<"-"<<diacritics_of_rawdata;
+				//qDebug()<<diacritics_of_word<<"-"<<diacritics_of_rawdata;
 				if (!equal(diacritics_of_word,diacritics_of_rawdata))
 				{
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
@@ -310,7 +310,7 @@ bool TreeSearch::on_match_helper()
 		}
 		startPos=sub_positionsOFCurrentMatch[k]+1;
 	}
-	int size=info->diacritic_text->length();
+	//int size=info->diacritic_text->length();
 	position=last;//+1<size?last+1:last;
 	//number_of_matches++;
 	for (int i=0;i<possible_raw_datasOFCurrentMatch.count();i++)

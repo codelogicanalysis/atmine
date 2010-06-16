@@ -14,7 +14,6 @@
 //#define DEBUG
 
 #define IGNORE_EXEC_TIMESTAMP
-#define GUI_SPECIFIC
 
 #ifndef USE_TRIE
 #undef USE_TRIE_WALK

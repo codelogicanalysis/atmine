@@ -5,14 +5,13 @@
 #include "../common_structures/common.h"
 #include "../sql-interface/sql_queries.h"
 #include "../sql-interface/Search_by_item.h"
+#include "ATMProgressIFC.h"
 #include <assert.h>
 #include <QDebug>
 
 #ifdef USE_TRIE
 
-#ifdef GUI_SPECIFIC
-	Ui::MainWindow *m_ui;
-#endif
+ATMProgressIFC *prgsIFC=NULL;
 
 #ifdef REDUCE_THRU_DIACRITICS
 inline QString cache_version()
@@ -69,10 +68,8 @@ void buildfromfile()
 #else
 		node->add_info(category_id);
 #endif
-	#ifdef GUI_SPECIFIC
 		current++;
-		m_ui->progressBar->setValue((double)current/total*100+0.5);
-	#endif
+		prgsIFC->report((double)current/total*100+0.5);
 	}
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	database_info.Stem_Trie->save(trie_path.toStdString().data());
@@ -140,18 +137,12 @@ database_info_block::database_info_block()
     rules_BC=new compatibility_rules(BC);
     rules_CC=new compatibility_rules(CC);
 }
-#ifdef GUI_SPECIFIC
-void database_info_block::fill(Ui::MainWindow *ui)
-#else
-void database_info_block::fill()
-#endif
+void database_info_block::fill(ATMProgressIFC *p)
 {
     Prefix_Tree->build_affix_tree(PREFIX);
     Suffix_Tree->build_affix_tree(SUFFIX);
+	prgsIFC=p;
 #ifdef USE_TRIE
-	#ifdef GUI_SPECIFIC
-		m_ui=ui;
-	#endif
 	buildTrie();
 #endif
     rules_AA->fill();

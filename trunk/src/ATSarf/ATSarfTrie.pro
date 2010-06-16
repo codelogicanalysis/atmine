@@ -33,7 +33,8 @@ HEADERS += utilities/text_handling.h \
     common_structures/Item_Structures.h \
     test-cases/hadith.h \
     utilities/letters.h \
-    test-cases/narrator_abstraction.h
+    test-cases/narrator_abstraction.h \
+    ATMProgressIFC.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
