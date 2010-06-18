@@ -46,6 +46,20 @@ void MainWindow::on_pushButton_clicked()
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
+#if 0
+	if (hadith_str.length()>200)
+	{
+		QFile f("hadith_chains.txt");
+		if (!f.open(QIODevice::WriteOnly))
+		{
+			throw "Unable to open file";
+		}
+		QTextStream file(&f);
+		file.setCodec("utf-8");
+		file<<hadith_str;
+		f.close();
+	}
+#endif
 }
 
 void MainWindow::on_destroyed()
