@@ -581,6 +581,12 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	}
 	chainOutput.close();
 #if 1 //just for testing deserialize
+	/*QFile f("hadith_chains.txt");
+	if (!f.open(QIODevice::WriteOnly))
+		return 1;
+	QTextStream file_hadith(&f);
+	file_hadith.setCodec("utf-8");*/
+
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream tester(&chainOutput);
@@ -589,9 +595,10 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	{
 		s->deserialize(tester);
 		s->serialize(hadith_out);
-		//s->serialize(out);
+		//s->serialize(file_hadith);
 	}
 	chainOutput.close();
+	//f.close();
 #endif
 	return 0;
 }
