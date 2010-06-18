@@ -1,0 +1,22 @@
+\def\parsearg #1{\let\next=#1\begingroup\obeylines\futurelet\temp\parseargx}
+
+\def\parseargx{%
+\ifx \obeyedspace\temp \aftergroup\parseargdiscardspace \else%
+\aftergroup \parseargline %
+\fi \endgroup}
+
+{\obeyspaces %
+\gdef\parseargdiscardspace {\begingroup\obeylines\futurelet\temp\parseargx}}
+
+\gdef\obeyedspace{\ }
+
+\def\parseargline{\begingroup \obeylines \parsearglinex}
+{\obeylines %
+\gdef\parsearglinex #1^^M{\endgroup \next {#1}}}
+
+\def\flushcr{\ifx\par\lisppar \def\next##1{}\else \let\next=\relax \fi \next}
+
+
+\def\comment{\parsearg \commentxxx}
+\def\commentxxx #1{}
+
