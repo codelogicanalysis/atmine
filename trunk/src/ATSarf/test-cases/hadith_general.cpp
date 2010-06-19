@@ -92,14 +92,19 @@ stateData currentData;
 QString * text;
 int current_pos;
 
-void initializeChainData(chainData *currentChain){
-
-   currentChain-> namePrim=new NamePrim(text);
-   currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
-   currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
-   currentChain->  narrator=new Narrator (text);
-   currentChain->  chain=new Chain(text);
-   display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
+void initializeChainData(chainData *currentChain)
+{
+	delete currentChain->namePrim;
+	delete currentChain->nameConnectorPrim;
+	delete currentChain->narratorConnectorPrim;
+	delete currentChain->narrator;
+	delete currentChain->chain;
+	currentChain-> namePrim=new NamePrim(text);
+	currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
+	currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
+	currentChain->  narrator=new Narrator (text);
+	currentChain->  chain=new Chain(text);
+	display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 }
 
 void hadith_initialize()
@@ -590,12 +595,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream tester(&chainOutput);
-	Chain * s=new Chain(text);
 	while (!tester.atEnd())
 	{
+		Chain * s=new Chain(text);
 		s->deserialize(tester);
 		s->serialize(hadith_out);
 		//s->serialize(file_hadith);
+		delete s;
 	}
 	chainOutput.close();
 	//f.close();

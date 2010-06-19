@@ -36,3 +36,4 @@ biographies
 test-senarios from LDC
 solve bug in non-diacritic-reduction version (using REDUCE_THRU_DIACRITICS) of code not working
 if shadde exists in word force it in possibilities
+check for memory leaks in "hadith_general"
