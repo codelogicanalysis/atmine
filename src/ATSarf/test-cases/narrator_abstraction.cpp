@@ -156,14 +156,16 @@ void NarratorConnectorPrim::deserialize(QDataStream &chainIn){
 	m_start=start;
 	m_end=end;
 }
-Chain::Chain(QString * hadith_text)
+Chain::Chain(QString * hadith_text, int chainID)
 {
 	this->hadith_text=hadith_text;
+        this->chainID=chainID;
+
 }
 void Chain::serialize(QTextStream & chainOut) const
 {
 	int size=m_chain.size();
-	chainOut<<"CH {\n";
+        chainOut<<chainID<<" CH {\n";
 	for (int i=0;i<size;i++)
 		m_chain[i]->serialize(chainOut);
 	chainOut<<"}\n\n";

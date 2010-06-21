@@ -20,7 +20,6 @@ enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
 QString hadath,alayhi_alsalam;
-
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -103,7 +102,7 @@ void initializeChainData(chainData *currentChain)
 	currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
 	currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
 	currentChain->  narrator=new Narrator (text);
-	currentChain->  chain=new Chain(text);
+        currentChain->  chain=new Chain(text,currentChain->chain?currentChain->chain->chainID+1:1);
 	display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 }
 
@@ -555,7 +554,8 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	long long  sanadEnd;
 
 	bool isBinOrPossessive=false;
-	int chaincount=0;
+        int hadith_Counter=1;
+
 	for (;current_pos<text_size;)
 	{
 		long long start=current_pos;
@@ -566,12 +566,12 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		{
 			 sanadEnd=currentData.narratorEndIndex;
 			 newHadithStart=currentData.sanadStartIndex;
-			 out<<"\nnew hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
+                         out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
 			 long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 			 out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
 			 currentChain->chain->serialize(chainOut);
 			 //currentChain->chain->serialize(displayed_error);
-			 chaincount++;
+                         hadith_Counter++;
 		}
 		currentState=nextState;
 		prg->report((double)current_pos/text_size*100+0.5);
@@ -586,21 +586,23 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	}
 	chainOutput.close();
 #if 1 //just for testing deserialize
-	/*QFile f("hadith_chains.txt");
+        QFile f("hadith_chains.txt");
 	if (!f.open(QIODevice::WriteOnly))
 		return 1;
 	QTextStream file_hadith(&f);
-	file_hadith.setCodec("utf-8");*/
+        file_hadith.setCodec("utf-8");
 
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream tester(&chainOutput);
+        int tester_Counter=1;
 	while (!tester.atEnd())
 	{
-		Chain * s=new Chain(text);
+                Chain * s=new Chain(text,tester_Counter);
 		s->deserialize(tester);
 		s->serialize(hadith_out);
-		//s->serialize(file_hadith);
+                tester_Counter++;
+		s->serialize(file_hadith);
 		delete s;
 	}
 	chainOutput.close();
