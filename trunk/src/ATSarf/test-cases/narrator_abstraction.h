@@ -5,6 +5,7 @@
 
 #define SHOW_AS_TEXT
 
+
 class ChainNarratorPrim;
 
 //typedef QList <ChainNarratorPrim *>::iterator CNPIterator;
@@ -117,7 +118,8 @@ public:
 };
 class Chain: public ChainNarratorPrim {
 public:
-	Chain(QString * hadith_text);
+        Chain(QString * hadith_text,int chainID);
+        int chainID;
 	//QList <ChainNarratorPrim *> m_chain;//to be reverted to
     QList <ChainPrim *> m_chain;
 	virtual void serialize(QDataStream &chainOut) const;

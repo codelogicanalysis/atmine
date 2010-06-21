@@ -28,6 +28,8 @@ QDateTime executable_timestamp;
 QString delimiters(QString("[ :.,()")+fasila+"]");
 
 QVector<QChar> alefs(5);
+
+
 void initializa_variables()
 {
 	alefs[1]=alef_hamza_above;
