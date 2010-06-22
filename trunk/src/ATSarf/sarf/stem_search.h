@@ -19,9 +19,15 @@ class StemSearch
 		ATTrie * trie;
 #endif
 		Stemmer * info;
+		bool stop;
 	public:
 		StemSearch(Stemmer * info,int pos);
 		bool operator()();
+#ifdef USE_TRIE_WALK
+		bool check_for_terminal(int letter_index,ATTrie::Position pos);
+#endif
+		void traverse(int letter_index,ATTrie::Position pos);
+		bool on_match_helper(int last_letter_index,Search_StemNode s1);
 		bool onMatch();
 		~StemSearch();
 };
