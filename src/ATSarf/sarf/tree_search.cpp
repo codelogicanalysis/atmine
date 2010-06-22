@@ -148,7 +148,7 @@ bool TreeSearch::operator ()()
 			node *current_child=current_children[j];
 			if (current_child->isLetterNode())
 			{
-				if(equal(((letter_node*)current_child)->getLetter(),future_letter))
+				if(((letter_node*)current_child)->getLetter()==future_letter)//(equal(((letter_node*)current_child)->getLetter(),future_letter))
 				{
 					//qDebug()<<"p/S:"<<future_letter;
 					queue.enqueue((letter_node*)current_child);

@@ -20,6 +20,7 @@
 #include <assert.h>
 
 #include "../caching_structures/database_info_block.h"
+#include "../utilities/diacritics.h"
 
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
@@ -87,11 +88,13 @@ QString interpret_type(rules r)
 }
 bool execute_query(QString stmt, QSqlQuery &query)
 {
+#if 0
 	if (stmt.contains('\"'))
 	{
 		error <<"INVALID QUERY, contains '\"'\n"<<"STATEMENT WAS: "<<stmt<<"\n";
 		return false;
 	}
+#endif
 	if (!query.exec(stmt))
 	{
 		error <<query.lastError().text()<<"\n"<<"STATEMENT WAS: "<<stmt<<"\n";
@@ -649,7 +652,7 @@ long long insert_description(QString name,item_types type)
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
 long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
 {
-#if 1 //change alef in the first of the word to one type
+#if 1 //if alef is first word and different form of alef the rawdata dont insert
 	if (raw_data.length()<name.length())
 		raw_data=name;
 	int i=0;
@@ -658,7 +661,17 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		{
 			//qDebug()<<"o:"<<name;
 			if (alefs.contains(name[i]))
-				name[i]=alef;
+			{
+				QString corresponding_part=getDiacriticword(i,i,raw_data);//must be one letter
+				assert(corresponding_part.length()>0);
+				if (name[i]!=corresponding_part[0])
+				{
+					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
+					assert(alefs.contains(corresponding_part[0]));
+					name[i]=corresponding_part[0];
+
+				}
+			}
 			//qDebug()<<"n:"<<name;
 		}while ((i=name.indexOf(' ',i)+1)>0 && i<name.length());
 #endif
