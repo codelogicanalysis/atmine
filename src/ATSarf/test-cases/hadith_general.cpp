@@ -233,19 +233,72 @@ long long getLastLetter_IN_previousWord(long long start_letter_current_word)
 	return start_letter_current_word;
 }
 
+long long getLastLetter_IN_currentWord(long long start_letter_current_word)
+{
+	//start_letter_current_word++;
+	int size=text->length();
+	while(start_letter_current_word<size && !delimiters.contains(text->at(start_letter_current_word)))
+		start_letter_current_word++;
+	return start_letter_current_word;
+}
+
 inline wordType result(wordType t){display(t); return t;}
 wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 {
+	long long  finish;
 	isBinOrPossessive=false;
+	QString c;
+	bool found,phrase=false;
+	foreach (c, compound_words)
+	{
+		found=true;
+		int pos=current_pos;
+		/*qDebug()<< c<< " - "<<text->mid(current_pos,c.length());
+		if (equal( c,text->mid(current_pos,c.length())))
+			qDebug()<<"should be";*/
+		for (int i=0;i<c.length();)
+		{
+			if (!isDiacritic(text->at(pos)))
+			{
+				if (!equal(c[i],text->at(pos)))
+				{
+					found=false;
+					break;
+				}
+				i++;
+			}
+			pos++;
+		}
+		if (found)
+		{
+			//qDebug()<<"found";
+			phrase=true;
+			finish=pos-1;
+			//qDebug()<<text->mid(current_pos,finish-current_pos+1);
+			break;
+		}
+	}
 	hadith_stemmer s(text,current_pos);
-	s();
-	long long finish=max(s.finish,s.finish_pos);
+	if (!phrase)
+	{
+		s();
+		finish=max(s.finish,s.finish_pos);
+		if (finish==current_pos)
+			finish=getLastLetter_IN_currentWord(current_pos);
+		//qDebug()<<text->mid(current_pos,finish-current_pos+1);
+	}
 	next_pos=next_positon(finish);
 	display(text->mid(current_pos,finish-current_pos+1)+":");
 #ifdef TENTATIVE //needed in order not consider 'alayhi_alsalam' as an additional NMC which results in it not being counted in case it is the last allowable count of NMC...
 	if (word==alayhi_alsalam)
 		return result(NRC);
 #endif
+	if (phrase)
+	{
+		display("PHRASE");
+		isBinOrPossessive=true; //same behaviour as Bin
+		return NMC;
+	}
 	if (s.nrc )
 		return result(NRC);
 	else if (s.name)
@@ -388,7 +441,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 					currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
 					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
 					currentChain->chain->m_chain.append(currentChain->narrator);
-
+					currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
 					return false;
 				}
 				//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
@@ -427,11 +480,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			else if (currentData.nrcCount>=currentData.nrcThreshold)
 			{
 				nextState=TEXT_S;
-				currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+				//currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+				//currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+				//currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 
-				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-
-				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+				//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
 				return false;
 			}
 #ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
