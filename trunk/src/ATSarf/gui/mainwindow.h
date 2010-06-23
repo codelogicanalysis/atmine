@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui/QMainWindow>
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
 
 namespace Ui {
     class MainWindow;

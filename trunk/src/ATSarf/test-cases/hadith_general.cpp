@@ -13,8 +13,9 @@
 #include "../utilities/diacritics.h"
 #include "narrator_abstraction.h"
 #include "../common_structures/common.h"
-
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
+#include "../utilities/Math_functions.h"
+#include <assert.h>
 
 enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
@@ -74,26 +75,36 @@ inline void display(QString)  {}
 
 #define display_letters 30
 
-typedef struct chainData_{
+typedef struct chainData_ {
     NamePrim *namePrim;
     NameConnectorPrim *nameConnectorPrim;
     NarratorConnectorPrim *narratorConnectorPrim;
     Narrator *narrator;
     Chain *chain;
 } chainData;
-typedef struct stateData_{
+typedef struct stateData_ {
 	long long  sanadStartIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold,;
 	long long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
 	bool nmcValid;
 } stateData;
 
 #ifdef STATS
+typedef struct map_entry_ {
+	int frequency;
+	QString exact;
+	QString stem;
+} map_entry;
 typedef struct statistics_{
 	int names_in, names_out, chains, narrators;
 	QVector<int> narrator_per_chain, name_per_narrator;
+	QMap <QString, map_entry*>  nrc_exact, nmc_exact;
+	QMap <QString, int> nrc_stem,nmc_stem;
 } statistics;
+QVector<map_entry*> temp_nrc_s, temp_nmc_s;
+int temp_nrc_count,temp_nmc_count;
 statistics stat;
 int temp_names_per_narrator;
+QString current_exact,current_stem;
 #endif
 
 stateData currentData;
@@ -167,6 +178,10 @@ private:
 public:
 	bool name, nrc, nmc ;
 	long long finish_pos;
+#ifdef STATS
+	QString stem;
+	QList<QString> stems;
+#endif
 
 	hadith_stemmer(QString * word, int start):Stemmer(word,start/*,false*/)
 	{
@@ -176,23 +191,39 @@ public:
 		possessive=false;
 		place=false;
 		finish_pos=start;
+	#ifdef STATS
+		stem="";
+		stems.clear();
+	#endif
 	}
 	bool on_match()
 	{
+	#ifdef STATS
+		QString temp_stem=removeDiacritics(diacritic_text->mid(Stem->starting_pos, Suffix->startingPos-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
+	#endif
 		if (removeDiacritics(stem_info->raw_data)==hadath)
 		{
+		#ifdef STATS
+			stem=temp_stem;
+		#endif
 			nrc=true;
 			finish_pos=finish;
 			return false;
 		}
 		else if (stem_info->description=="son")
 		{
+		#ifdef STATS
+			stem=temp_stem;
+		#endif
 			nmc=true;
 			finish_pos=finish;
 			return false;
 		}
 		else if (stem_info->description=="said" || stem_info->description=="say" || stem_info->description=="notify/communicate" || stem_info->description.split(QRegExp("[ /]")).contains("listen") || stem_info->description.contains("from/about")||stem_info->description.contains("narrate"))
 		{
+		#ifdef STATS
+			stem=temp_stem;
+		#endif
 			nrc=true;
 			finish_pos=finish;
 			return false;
@@ -205,7 +236,12 @@ public:
 				{
 					name=true;
 					if (finish>finish_pos)
+					{
 						finish_pos=finish;
+					#ifdef STATS
+						stem=temp_stem;
+					#endif
+					}
 					return true;
 				}
 				else if (abstract_category=="POSSESSIVE")
@@ -213,6 +249,9 @@ public:
 					possessive=true;
 					if (place)
 					{
+					#ifdef STATS
+						stem=temp_stem;
+					#endif
 						nmc=true;
 						finish_pos=finish;
 						return false;
@@ -220,6 +259,9 @@ public:
 				}
 				else if (abstract_category=="Name of Place")
 				{
+				#ifdef STATS
+					stem=temp_stem;
+				#endif
 					place=true;
 					if (possessive)
 					{
@@ -229,6 +271,9 @@ public:
 					}
 				}
 			}
+		#ifdef STATS
+			stems.append(temp_stem);
+		#endif
 		return true;
 	}
 };
@@ -259,6 +304,16 @@ long long getLastLetter_IN_currentWord(long long start_letter_current_word)
 }
 
 inline wordType result(wordType t){display(t); return t;}
+inline QString choose_stem(QList<QString> stems) //rule can be modified later
+{
+	if (stems.size()==0)
+		return "";
+	QString result=stems[0];
+	for (int i=1;i<stems.size();i++)
+		if (result.length()>stems[i].length())
+			result=stems[i];
+	return result;
+}
 wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 {
 	long long  finish;
@@ -269,9 +324,6 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 	{
 		found=true;
 		int pos=current_pos;
-		/*qDebug()<< c<< " - "<<text->mid(current_pos,c.length());
-		if (equal( c,text->mid(current_pos,c.length())))
-			qDebug()<<"should be";*/
 		for (int i=0;i<c.length();)
 		{
 			if (!isDiacritic(text->at(pos)))
@@ -287,10 +339,12 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 		}
 		if (found)
 		{
-			//qDebug()<<"found";
 			phrase=true;
 			finish=pos-1;
-			//qDebug()<<text->mid(current_pos,finish-current_pos+1);
+		#ifdef STATS
+			current_stem=c;
+			current_exact=c;
+		#endif
 			break;
 		}
 	}
@@ -301,7 +355,14 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 		finish=max(s.finish,s.finish_pos);
 		if (finish==current_pos)
 			finish=getLastLetter_IN_currentWord(current_pos);
-		//qDebug()<<text->mid(current_pos,finish-current_pos+1);
+		#ifdef STATS
+			current_exact=removeDiacritics(s.diacritic_text->mid(current_pos,finish-current_pos+1));
+			current_stem=s.stem;
+			if (current_stem=="")
+				current_stem=choose_stem(s.stems);
+			if (current_stem=="")
+				current_stem=current_exact;
+		#endif
 	}
 	next_pos=next_positon(finish);
 	display(text->mid(current_pos,finish-current_pos+1)+":");
@@ -358,6 +419,15 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentData.nrcStartIndex=start_index;
 			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 			nextState=NRC_S;
+		#ifdef STATS
+			temp_nrc_s.clear();
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count=1;
+		#endif
 		}
 #ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
 		else if (currentType==NMC && isBinOrPossessive)
@@ -384,12 +454,17 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentData.nmcValid=isBinOrPossessive;
 			currentData.nmcCount=1;
 			currentData.nmcStartIndex=start_index;
-
 			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
 			currentChain->narrator->m_narrator.append(currentChain->namePrim);
-
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
-
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count++;
+		#endif
 		}
 		else if (currentType==NRC)
 		{
@@ -398,6 +473,14 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
 			temp_names_per_narrator=0;
+
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count=1;
+			temp_nmc_count=0;
 		#endif
 			display(QString("counter%1\n").arg(currentData.narratorCount));
 			currentData.nrcCount=1;
@@ -430,6 +513,14 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
 			temp_names_per_narrator=0;
+
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count=1;
+			temp_nmc_count=0;
 		#endif
 			display(QString("counter%1\n").arg(currentData.narratorCount));
 			currentData.nrcCount=1;
@@ -481,10 +572,26 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			if (isBinOrPossessive)
 				currentData.nmcValid=true;
 			nextState=NMC_S;
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count++;
+		#endif
 		}
 		else
 		{
 			nextState=NMC_S; //maybe modify later
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count++;
+		#endif
 		}
 		return true;
 
@@ -505,7 +612,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		}
 		else if (currentData.nrcCount>=currentData.nrcThreshold)
 		{
+		#ifdef STATS
 			nextState=TEXT_S;
+			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
+			{
+				delete temp_nmc_s[i];
+				temp_nmc_s.remove(i);
+			}
+			for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
+			{
+				delete temp_nrc_s[i];
+				temp_nrc_s.remove(i);
+			}
+			temp_nmc_count=0;
+			temp_nrc_count=0;
+		#endif
 			//currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
 			//currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 			//currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
@@ -536,11 +657,29 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		{
 			nextState=NRC_S;
 			currentData.nrcCount++;
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count++;
+		#endif
 		}
 		return true;
 	default:
 		return true;
 	}
+}
+
+void show_according_to_frequency(QList<int> freq,QList<QString> words)
+{
+	QList<QPair<int, QString> > l;
+	for (int i=0;i<stat.nmc_stem.size();i++)
+		l.append(QPair<int,QString>(freq[i],words[i]));
+	qSort(l.begin(),l.end());
+	for (int i=l.size()-1;i>=0;i--)
+		displayed_error <<"("<<l[i].first<<") "<<l[i].second<<"\n";
 }
 
 int hadith(QString input_str,ATMProgressIFC *prg)
@@ -623,6 +762,43 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 				stat.narrator_per_chain.append(currentData.narratorCount);
 				stat.narrators+=currentData.narratorCount;
 				display(QString("narrator_per_chain=")+QString::number(currentData.narratorCount)+", names="+QString::number(additional_names)+"\n");
+
+				for (int i=0;i<temp_nmc_s.count();i++)
+				{
+					if (!stat.nmc_stem.contains(temp_nmc_s[i]->stem))
+						stat.nmc_stem[temp_nmc_s[i]->stem]=1;
+					else
+						stat.nmc_stem[temp_nmc_s[i]->stem]++;
+					if (!stat.nmc_exact.contains(temp_nmc_s[i]->exact))
+						stat.nmc_exact.insert(temp_nmc_s[i]->exact,temp_nmc_s[i]);
+					else
+					{
+						map_entry * entry=stat.nmc_exact.value(temp_nmc_s[i]->exact);
+						assert (entry->stem==temp_nmc_s[i]->stem);
+						entry->frequency++;
+						delete  temp_nmc_s[i];
+					}
+				}
+				temp_nmc_s.clear();
+				temp_nmc_count=0;
+				for (int i=0;i<temp_nrc_s.count();i++)
+				{
+					if (!stat.nrc_stem.contains(temp_nrc_s[i]->stem))
+						stat.nrc_stem[temp_nrc_s[i]->stem]=1;
+					else
+						stat.nrc_stem[temp_nrc_s[i]->stem]++;
+					if (!stat.nrc_exact.contains(temp_nrc_s[i]->exact))
+						stat.nrc_exact.insert(temp_nrc_s[i]->exact,temp_nrc_s[i]);
+					else
+					{
+						map_entry * entry=stat.nrc_exact.value(temp_nrc_s[i]->exact);
+						assert (entry->stem==temp_nrc_s[i]->stem);
+						entry->frequency++;
+						delete  temp_nrc_s[i];
+					}
+				}
+				temp_nrc_s.clear();
+				temp_nrc_count=0;
 			#endif
 			}
 			else
@@ -635,6 +811,15 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 				stat.names_out+=additional_names;
 				stat.name_per_narrator.remove(stat.name_per_narrator.size()-currentData.narratorCount,currentData.narratorCount);
 				display(QString("additional names out names =")+QString::number(additional_names)+"\n");
+
+				for (int i=0;i<temp_nmc_s.count();i++)
+					delete temp_nmc_s[i];
+				temp_nmc_s.clear();
+				for (int i=0;i<temp_nrc_s.count();i++)
+					delete temp_nrc_s[i];
+				temp_nrc_s.clear();
+				temp_nmc_count=0;
+				temp_nrc_count=0;
 			#endif
 			}
 		}
@@ -675,21 +860,42 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	f.close();
 #endif
 #ifdef STATS
-	double avg_narrators_per_chain=0;
-	for (int i=0;i<stat.narrator_per_chain.size();i++)
-		avg_narrators_per_chain+=stat.narrator_per_chain[i];
-	avg_narrators_per_chain/=stat.narrator_per_chain.size();
-	double avg_names_per_narrator=0;
-	for (int i=0;i<stat.name_per_narrator.size();i++)
-		avg_names_per_narrator+=stat.name_per_narrator[i];
-	avg_names_per_narrator/=stat.name_per_narrator.size();
+	double avg_narrators_per_chain=average(stat.narrator_per_chain);
+	double avg_names_per_narrator=average(stat.name_per_narrator);
 
 	displayed_error	<<"Chains=\t\t"<<stat.chains<<"\n"
 					<<"Narrators=\t\t"<<stat.narrators<<"\n"
 					<<"Names IN=\t\t"<<stat.names_in<<"\n"
 					<<"Names OUT=\t\t"<<stat.names_out<<"\n"
 					<<"Avg Names/Narr=\t"<<avg_names_per_narrator<<"\n"
-					<<"Avg Narr/Chain=\t"<<avg_narrators_per_chain<<"\n";
+					<<"Avg Narr/Chain=\t"<<avg_narrators_per_chain<<"\n"
+					<<"Median Names/Narr=\t"<<median(stat.name_per_narrator)<<"\n"
+					<<"Median Narr/Chain=\t"<<median(stat.narrator_per_chain)<<"\n"
+					<<"St Dev Names/Narr=\t"<<standard_deviation(stat.name_per_narrator,avg_names_per_narrator)<<"\n"
+					<<"St Dev Narr/Chain=\t"<<standard_deviation(stat.narrator_per_chain,avg_narrators_per_chain)<<"\n";
+	displayed_error <<"\nNMC:\n";
+	show_according_to_frequency(stat.nmc_stem.values(),stat.nmc_stem.keys());
+	displayed_error <<"\nNRC:\n";
+	show_according_to_frequency(stat.nrc_stem.values(),stat.nrc_stem.keys());
+	displayed_error <<"\n\nNMC-exact:\n";
+	QList<int> freq;
+	QList<map_entry *> temp=stat.nmc_exact.values();
+	for (int i=0;i<temp.size();i++)
+		freq.append(temp[i]->frequency);
+	show_according_to_frequency(freq,stat.nmc_exact.keys());
+	displayed_error <<"\nNRC-exact:\n";
+	freq.clear();
+	temp=stat.nrc_exact.values();
+	for (int i=0;i<temp.size();i++)
+		freq.append(temp[i]->frequency);
+	show_according_to_frequency(freq,stat.nrc_exact.keys());
+	displayed_error <<"\n";
+	temp=stat.nmc_exact.values();
+	for (int i=0;i<temp.size();i++)
+		delete temp[i];
+	temp=stat.nrc_exact.values();
+	for (int i=0;i<temp.size();i++)
+		delete temp[i];
 #endif
 	return 0;
 }

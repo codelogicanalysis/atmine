@@ -8,7 +8,7 @@
 #include <QString>
 #include <QDateTime>
 
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
 
 class database_info_block
 {

@@ -3,7 +3,7 @@
 
 #include <QString>
 #include "../common_structures/common.h"
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
 
 //careful just one of the below precompiler definitions should be left uncommented
 //if more than one is defined than HADITH takes priority then WORD_SARF then AUGMENT_DICTIONARY

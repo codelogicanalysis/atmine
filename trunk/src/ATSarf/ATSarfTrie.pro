@@ -34,7 +34,8 @@ HEADERS += utilities/text_handling.h \
     test-cases/hadith.h \
     utilities/letters.h \
     test-cases/narrator_abstraction.h \
-    ATMProgressIFC.h
+    ATMProgressIFC.h \
+    utilities/Math_functions.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -65,7 +66,8 @@ SOURCES += utilities/text_handling.cpp \
     common_structures/Item_Structures.cpp \
     test-cases/hadith_general.cpp \
     test-cases/hadith_1.cpp \
-    test-cases/narrator_abstraction.cpp
+    test-cases/narrator_abstraction.cpp \
+    utilities/Math_functions.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
