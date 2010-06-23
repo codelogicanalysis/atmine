@@ -312,7 +312,7 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 	if (phrase)
 	{
 		display("PHRASE");
-		isBinOrPossessive=true; //same behaviour as Bin
+		//isBinOrPossessive=true; //same behaviour as Bin
 		return NMC;
 	}
 	if (s.nrc )
@@ -331,251 +331,218 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 
 bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,chainData *currentChain)
 {
-		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
-		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
-		display(currentState);
+	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
+	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
+	display(currentState);
 
-		switch(currentState)
+	switch(currentState)
+	{
+	case TEXT_S:
+		if(currentType==NAME)
 		{
-		case TEXT_S:
-			if(currentType==NAME)
-			{
-				initializeStateData();
-				initializeChainData(currentChain);
-				nextState=NAME_S;
-				currentData.sanadStartIndex=start_index;
-				currentData.narratorStartIndex=start_index;
-				currentChain->namePrim=new NamePrim(text,start_index);
-			#ifdef STATS
-				temp_names_per_narrator=1;
-			#endif
-			}
-			else if (currentType==NRC)
-			{
-				initializeStateData();
-				initializeChainData(currentChain);
-				currentData.sanadStartIndex=start_index;
-				currentData.nrcStartIndex=start_index;
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
-				nextState=NRC_S;
-			}
+			initializeStateData();
+			initializeChainData(currentChain);
+			nextState=NAME_S;
+			currentData.sanadStartIndex=start_index;
+			currentData.narratorStartIndex=start_index;
+			currentChain->namePrim=new NamePrim(text,start_index);
+		#ifdef STATS
+			temp_names_per_narrator=1;
+		#endif
+		}
+		else if (currentType==NRC)
+		{
+			initializeStateData();
+			initializeChainData(currentChain);
+			currentData.sanadStartIndex=start_index;
+			currentData.nrcStartIndex=start_index;
+			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
+			nextState=NRC_S;
+		}
 #ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
-			else if (currentType==NMC && isBinOrPossessive)
-			{
-				initializeStateData(currentData);
-				initializeChainData(currentChain);
-				currentData.narratorStartIndex=start_index;
-				currentData.sanadStartIndex=start_index;
-				currentData.nmcStartIndex=start_index;
-				currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
-				nextState=NAME_S;
-			}
+		else if (currentType==NMC && isBinOrPossessive)
+		{
+			initializeStateData(currentData);
+			initializeChainData(currentChain);
+			currentData.narratorStartIndex=start_index;
+			currentData.sanadStartIndex=start_index;
+			currentData.nmcStartIndex=start_index;
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+			nextState=NAME_S;
+		}
 #endif
-			else
-			{
-				nextState=TEXT_S;
-			}
-			return true;
+		else
+		{
+			nextState=TEXT_S;
+		}
+		return true;
 
-		case NAME_S:
-			if(currentType==NMC)
-			{
-				nextState=NMC_S;
-				currentData.nmcValid=isBinOrPossessive;
-				currentData.nmcCount=1;
-				currentData.nmcStartIndex=start_index;
+	case NAME_S:
+		if(currentType==NMC)
+		{
+			nextState=NMC_S;
+			currentData.nmcValid=isBinOrPossessive;
+			currentData.nmcCount=1;
+			currentData.nmcStartIndex=start_index;
 
-				currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->narrator->m_narrator.append(currentChain->namePrim);
 
-				currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
 
-			}
-			else if (currentType==NRC)
-			{
-				nextState=NRC_S;
-				currentData.narratorCount++;
-			#ifdef STATS
-				stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
-				temp_names_per_narrator=0;
-			#endif
-				display(QString("counter%1\n").arg(currentData.narratorCount));
-				currentData.nrcCount=1;
-				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
-				currentData.nrcStartIndex=start_index;
+		}
+		else if (currentType==NRC)
+		{
+			nextState=NRC_S;
+			currentData.narratorCount++;
+		#ifdef STATS
+			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+			temp_names_per_narrator=0;
+		#endif
+			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nrcCount=1;
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+			currentData.nrcStartIndex=start_index;
 
-				currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->narrator->m_narrator.append(currentChain->namePrim);
 
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
-				currentChain->chain->m_chain.append(currentChain->narrator);
-				currentChain->narrator=new Narrator(text);
-			}
-			else
-			{
-				if (currentType==NAME)
-				{
-				#ifdef STATS
-					temp_names_per_narrator++;//found another name name
-				#endif
-				}
-				nextState=NAME_S;
-			}
-			return true;
-
-		case NMC_S:
-			if (currentType==NRC)
-			{
-				currentData.narratorCount++;
-			#ifdef STATS
-				stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
-				temp_names_per_narrator=0;
-			#endif
-				display(QString("counter%1\n").arg(currentData.narratorCount));
-				currentData.nrcCount=1;
-				nextState=NRC_S;
-
-				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
-				currentData.nrcStartIndex=start_index;
-
-				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
-
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
-				currentChain->chain->m_chain.append(currentChain->narrator);
-				currentChain->narrator=new Narrator(text);
-			}
-			else if(currentType==NAME)
-			{
-				nextState=NAME_S;
-				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
-				currentChain->namePrim=new NamePrim(text,start_index);
-			#ifdef STATS
-				temp_names_per_narrator++;//found another name name
-			#endif
-			}
-			else if (currentData.nmcCount>currentData.nmcThreshold)
-			{
-				if (currentData.nmcValid)
-				{
-					currentData.nmcValid=false;
-					nextState=NMC_S;
-					currentData.nmcCount=0;
-				}
-				else
-				{
-					nextState=TEXT_S;
-					currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
-					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
-					currentChain->chain->m_chain.append(currentChain->narrator);
-					currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
-					return false;
-				}
-				//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
-
-			}
-			else if (currentType==NMC)
-			{
-				currentData.nmcCount++;
-				if (isBinOrPossessive)
-					currentData.nmcValid=true;
-				nextState=NMC_S;
-			}
-			else
-			{
-				nextState=NMC_S; //maybe modify later
-			}
-			return true;
-
-		case NRC_S:
-
+			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
+			currentChain->chain->m_chain.append(currentChain->narrator);
+			currentChain->narrator=new Narrator(text);
+		}
+		else
+		{
 			if (currentType==NAME)
 			{
-				nextState=NAME_S;
-				//currentData.nameStartIndex=start_index;
-				//currentChain->namePrim->m_start=start_index;
-				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-				currentChain->namePrim=new NamePrim(text,start_index);
-				currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
 			#ifdef STATS
 				temp_names_per_narrator++;//found another name name
 			#endif
 			}
-			else if (currentData.nrcCount>=currentData.nrcThreshold)
+			nextState=NAME_S;
+		}
+		return true;
+
+	case NMC_S:
+		if (currentType==NRC)
+		{
+			currentData.narratorCount++;
+		#ifdef STATS
+			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+			temp_names_per_narrator=0;
+		#endif
+			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nrcCount=1;
+			nextState=NRC_S;
+
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+			currentData.nrcStartIndex=start_index;
+
+			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+
+			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
+			currentChain->chain->m_chain.append(currentChain->narrator);
+			currentChain->narrator=new Narrator(text);
+		}
+		else if(currentType==NAME)
+		{
+			nextState=NAME_S;
+			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+			currentChain->namePrim=new NamePrim(text,start_index);
+		#ifdef STATS
+			temp_names_per_narrator++;//found another name name
+		#endif
+		}
+		else if (currentData.nmcCount>currentData.nmcThreshold)
+		{
+			if (currentData.nmcValid)
 			{
-				nextState=TEXT_S;
-				//currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
-				//currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-				//currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-
-				//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
-				return false;
+				currentData.nmcValid=false;
+				nextState=NMC_S;
+				currentData.nmcCount=0;
 			}
-#ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
-			else if (currentType==NRC)
-			{
-				if(currentData.nrcCount>1) //in order not to have two NRCs without a name suspect between them
-				{
-				currentData.narratorCount++;
-				display(QString("counter%1\n").arg(currentData.narratorCount));
-				currentData.nrcCount=1;
-				nextState=NRC_S;
-				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
-				currentData.nrcStartIndex=start_index;
-
-				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-
-				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
-				}
-			}
-#endif
 			else
 			{
-				nextState=NRC_S;
-				currentData.nrcCount++;
+				nextState=TEXT_S;
+				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
+				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
+				return false;
 			}
-			return true;
-		default:
-			return true;
-		}
-	}
+			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
 
-#if 0
-int parse(QString & text,QStringList & list)//returns number of times compound words were found
-{
-	int count=0;
-	list=text.split((QRegExp(delimiters)),QString::SkipEmptyParts);
-	QString c;
-	for (long long  i=0;i<list.size();i++)
-	{
-		foreach (c,compound_words)
+		}
+		else if (currentType==NMC)
 		{
-			int s=list.size();
-			QStringList w=c.split(QString(' '),QString::SkipEmptyParts);
-			int j;
-			for(j=0;j<w.size() && j+i<s;j++)
-			{
-				if (!equal(w[j],list[j+i]))
-					break;
-			}
-			if (j==w.size())
-			{
-				count++;
-				for (int k=1;k<j;k++)
-				{
-					list[i].append(' ').append(list[i+1]);
-					list.removeAt(i+1);
-				}
+			currentData.nmcCount++;
+			if (isBinOrPossessive)
+				currentData.nmcValid=true;
+			nextState=NMC_S;
+		}
+		else
+		{
+			nextState=NMC_S; //maybe modify later
+		}
+		return true;
 
+	case NRC_S:
+
+		if (currentType==NAME)
+		{
+			nextState=NAME_S;
+			//currentData.nameStartIndex=start_index;
+			//currentChain->namePrim->m_start=start_index;
+			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+			currentChain->namePrim=new NamePrim(text,start_index);
+			currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+		#ifdef STATS
+			temp_names_per_narrator++;//found another name name
+		#endif
+		}
+		else if (currentData.nrcCount>=currentData.nrcThreshold)
+		{
+			nextState=TEXT_S;
+			//currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+			//currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			//currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+
+			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
+			return false;
+		}
+#ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
+		else if (currentType==NRC)
+		{
+			if(currentData.nrcCount>1) //in order not to have two NRCs without a name suspect between them
+			{
+			currentData.narratorCount++;
+			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nrcCount=1;
+			nextState=NRC_S;
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+			currentData.nrcStartIndex=start_index;
+
+			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+
+			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 			}
 		}
-	}
-	return count;
-}
 #endif
+		else
+		{
+			nextState=NRC_S;
+			currentData.nrcCount++;
+		}
+		return true;
+	default:
+		return true;
+	}
+}
+
 int hadith(QString input_str,ATMProgressIFC *prg)
 {
 
@@ -609,13 +576,6 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		out<<"empty file\n";
 		return 0;
 	}
-#if 0 //just to test parsing
-	QStringList wordList;
-	parse(*text,wordList);
-	for (long long  i=0;i<wordList.size();i++)
-		out<<wordList[i]<<"_";
-	return 0;
-#endif
 	long long text_size=text->size();
 	stateType currentState=TEXT_S;
 	stateType nextState=TEXT_S;
