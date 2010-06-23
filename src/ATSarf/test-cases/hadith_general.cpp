@@ -5,7 +5,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
-#include "logger/logger.h"
+#include "../logger/logger.h"
 #include "../sql-interface/Search_by_item.h"
 #include "../sarf/stemmer.h"
 #include "../utilities/letters.h"
@@ -87,6 +87,15 @@ typedef struct stateData_{
 	bool nmcValid;
 } stateData;
 
+#ifdef STATS
+typedef struct statistics_{
+	int names_in, names_out, chains, narrators;
+	QVector<int> narrator_per_chain, name_per_narrator;
+} statistics;
+statistics stat;
+int temp_names_per_narrator;
+#endif
+
 stateData currentData;
 QString * text;
 int current_pos;
@@ -102,7 +111,7 @@ void initializeChainData(chainData *currentChain)
 	currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
 	currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
 	currentChain->  narrator=new Narrator (text);
-        currentChain->  chain=new Chain(text,currentChain->chain?currentChain->chain->chainID+1:1);
+	currentChain->  chain=new Chain(text);
 	display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 }
 
@@ -113,7 +122,7 @@ void hadith_initialize()
 	alayhi.append(ayn).append(lam).append(ya2).append(ha2);
 	alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
 	alayhi_alsalam=alayhi.append(' ').append(alsalam);
-#if 1
+
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
@@ -124,6 +133,13 @@ void hadith_initialize()
 	if (phrases.isNull() || phrases.isEmpty())
 		return;
 	compound_words=phrases.split("\n",QString::SkipEmptyParts);
+#ifdef STATS
+	stat.chains=0;
+	stat.names_in=0;
+	stat.names_out=0;
+	stat.narrators=0;
+	stat.name_per_narrator.clear();
+	stat.narrator_per_chain.clear();
 #endif
 }
 
@@ -328,11 +344,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				initializeChainData(currentChain);
 				nextState=NAME_S;
 				currentData.sanadStartIndex=start_index;
-
 				currentData.narratorStartIndex=start_index;
-
 				currentChain->namePrim=new NamePrim(text,start_index);
-
+			#ifdef STATS
+				temp_names_per_narrator=1;
+			#endif
 			}
 			else if (currentType==NRC)
 			{
@@ -379,6 +395,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			{
 				nextState=NRC_S;
 				currentData.narratorCount++;
+			#ifdef STATS
+				stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+				temp_names_per_narrator=0;
+			#endif
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				currentData.nrcCount=1;
 				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
@@ -393,15 +413,24 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			}
 			else
 			{
+				if (currentType==NAME)
+				{
+				#ifdef STATS
+					temp_names_per_narrator++;//found another name name
+				#endif
+				}
 				nextState=NAME_S;
 			}
 			return true;
 
 		case NMC_S:
-
 			if (currentType==NRC)
 			{
 				currentData.narratorCount++;
+			#ifdef STATS
+				stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+				temp_names_per_narrator=0;
+			#endif
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				currentData.nrcCount=1;
 				nextState=NRC_S;
@@ -419,14 +448,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			else if(currentType==NAME)
 			{
 				nextState=NAME_S;
-
 				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
-
 				currentChain->namePrim=new NamePrim(text,start_index);
-
+			#ifdef STATS
+				temp_names_per_narrator++;//found another name name
+			#endif
 			}
-
 			else if (currentData.nmcCount>currentData.nmcThreshold)
 			{
 				if (currentData.nmcValid)
@@ -454,7 +482,6 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 					currentData.nmcValid=true;
 				nextState=NMC_S;
 			}
-
 			else
 			{
 				nextState=NMC_S; //maybe modify later
@@ -468,14 +495,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				nextState=NAME_S;
 				//currentData.nameStartIndex=start_index;
 				//currentChain->namePrim->m_start=start_index;
-
 				currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-
 				currentChain->namePrim=new NamePrim(text,start_index);
-
-
 				currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+			#ifdef STATS
+				temp_names_per_narrator++;//found another name name
+			#endif
 			}
 			else if (currentData.nrcCount>=currentData.nrcThreshold)
 			{
@@ -615,16 +641,42 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		long long next;
 		currentType=getWordType(isBinOrPossessive,next);
 		current_pos=next;//here current_pos is changed
-		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,currentChain)==false)&& currentData.narratorCount>=currentData.narratorThreshold)
+		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,currentChain)==false))
 		{
-			 sanadEnd=currentData.narratorEndIndex;
-			 newHadithStart=currentData.sanadStartIndex;
-                         out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
-			 long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
-			 out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
-			 currentChain->chain->serialize(chainOut);
-			 //currentChain->chain->serialize(displayed_error);
-                         hadith_Counter++;
+			if (currentData.narratorCount>=currentData.narratorThreshold)
+			{
+				sanadEnd=currentData.narratorEndIndex;
+				newHadithStart=currentData.sanadStartIndex;
+				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
+				long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
+				out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
+				currentChain->chain->serialize(chainOut);
+				//currentChain->chain->serialize(displayed_error);
+				hadith_Counter++;
+			#ifdef STATS
+				int additional_names=temp_names_per_narrator;
+				temp_names_per_narrator=0;
+				for (int i=1;i<=currentData.narratorCount;i++)
+					additional_names+=stat.name_per_narrator[stat.name_per_narrator.size()-i];//we are sure names found are in narrators
+				stat.names_in+=additional_names;
+				stat.chains++;
+				stat.narrator_per_chain.append(currentData.narratorCount);
+				stat.narrators+=currentData.narratorCount;
+				display(QString("narrator_per_chain=")+QString::number(currentData.narratorCount)+", names="+QString::number(additional_names)+"\n");
+			#endif
+			}
+			else
+			{
+			#ifdef STATS
+				int additional_names=temp_names_per_narrator;
+				temp_names_per_narrator=0;
+				for (int i=1;i<=currentData.narratorCount;i++)
+					additional_names+=stat.name_per_narrator[stat.name_per_narrator.size()-i];//we are sure names found are in not inside valid narrators
+				stat.names_out+=additional_names;
+				stat.name_per_narrator.remove(stat.name_per_narrator.size()-currentData.narratorCount,currentData.narratorCount);
+				display(QString("additional names out names =")+QString::number(additional_names)+"\n");
+			#endif
+			}
 		}
 		currentState=nextState;
 		prg->report((double)current_pos/text_size*100+0.5);
@@ -639,7 +691,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	}
 	chainOutput.close();
 #if 1 //just for testing deserialize
-        QFile f("hadith_chains.txt");
+	QFile f("hadith_chains.txt");
 	if (!f.open(QIODevice::WriteOnly))
 		return 1;
 	QTextStream file_hadith(&f);
@@ -648,18 +700,36 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream tester(&chainOutput);
-        int tester_Counter=1;
+	int tester_Counter=1;
 	while (!tester.atEnd())
 	{
-                Chain * s=new Chain(text,tester_Counter);
+		Chain * s=new Chain(text);
 		s->deserialize(tester);
+		hadith_out<<tester_Counter<<" ";
 		s->serialize(hadith_out);
-                tester_Counter++;
+		tester_Counter++;
 		s->serialize(file_hadith);
 		delete s;
 	}
 	chainOutput.close();
-	//f.close();
+	f.close();
+#endif
+#ifdef STATS
+	double avg_narrators_per_chain=0;
+	for (int i=0;i<stat.narrator_per_chain.size();i++)
+		avg_narrators_per_chain+=stat.narrator_per_chain[i];
+	avg_narrators_per_chain/=stat.narrator_per_chain.size();
+	double avg_names_per_narrator=0;
+	for (int i=0;i<stat.name_per_narrator.size();i++)
+		avg_names_per_narrator+=stat.name_per_narrator[i];
+	avg_names_per_narrator/=stat.name_per_narrator.size();
+
+	displayed_error	<<"Chains=\t\t"<<stat.chains<<"\n"
+					<<"Narrators=\t\t"<<stat.narrators<<"\n"
+					<<"Names IN=\t\t"<<stat.names_in<<"\n"
+					<<"Names OUT=\t\t"<<stat.names_out<<"\n"
+					<<"Avg Names/Narr=\t"<<avg_names_per_narrator<<"\n"
+					<<"Avg Narr/Chain=\t"<<avg_narrators_per_chain<<"\n";
 #endif
 	return 0;
 }
