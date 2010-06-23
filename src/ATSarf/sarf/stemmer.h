@@ -17,7 +17,7 @@ class Stemmer
 		minimal_item_info * stem_info;
 		QVector<minimal_item_info> * suffix_infos;
     public:
-		QString *text;
+		//QString *text;
 		QString *diacritic_text;
 		long long start,finish;
         bool called_everything;

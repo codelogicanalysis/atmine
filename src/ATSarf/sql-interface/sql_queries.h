@@ -10,7 +10,7 @@
 #include <QVariant>
 #include "logger/logger.h"
 #include "../common_structures/common.h"
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
 
 using namespace std;
 

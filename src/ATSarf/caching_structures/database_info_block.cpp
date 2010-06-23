@@ -5,7 +5,7 @@
 #include "../common_structures/common.h"
 #include "../sql-interface/sql_queries.h"
 #include "../sql-interface/Search_by_item.h"
-#include "ATMProgressIFC.h"
+#include "../logger/ATMProgressIFC.h"
 #include <assert.h>
 #include <QDebug>
 
