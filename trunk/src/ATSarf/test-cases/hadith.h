@@ -5,6 +5,7 @@
 #include "../common_structures/common.h"
 #include "ATMProgressIFC.h"
 #define GENERAL_HADITH
+#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 

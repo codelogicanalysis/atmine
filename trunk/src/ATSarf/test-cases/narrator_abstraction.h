@@ -118,8 +118,7 @@ public:
 };
 class Chain: public ChainNarratorPrim {
 public:
-        Chain(QString * hadith_text,int chainID);
-        int chainID;
+	Chain(QString * hadith_text);
 	//QList <ChainNarratorPrim *> m_chain;//to be reverted to
     QList <ChainPrim *> m_chain;
 	virtual void serialize(QDataStream &chainOut) const;
