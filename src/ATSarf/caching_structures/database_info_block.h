@@ -12,7 +12,6 @@
 
 typedef Triplet<long long, long, QString> Map_key;
 typedef Triplet<bitset<max_sources>,QString,QString> Map_entry;
-
 class database_info_block
 {
     public:
@@ -28,9 +27,9 @@ class database_info_block
         compatibility_rules * rules_BC;
         compatibility_rules * rules_CC;
 
-		QMap<Map_key,Map_entry > * map_prefix;
-		QMap<Map_key,Map_entry > * map_stem;
-		QMap<Map_key,Map_entry > * map_suffix;
+		QHash<Map_key,Map_entry > * map_prefix;
+		QHash<Map_key,Map_entry > * map_stem;
+		QHash<Map_key,Map_entry > * map_suffix;
 
         database_info_block();
 		void fill(ATMProgressIFC *p_ifc);

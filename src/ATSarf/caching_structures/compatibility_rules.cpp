@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
-#include <QMap>
+#include <QHash>
 #include <QtAlgorithms>
 #include "../sql-interface/sql_queries.h"
 #include "../utilities/dbitvec.h"

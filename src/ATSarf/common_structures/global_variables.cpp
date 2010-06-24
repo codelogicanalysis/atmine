@@ -40,3 +40,5 @@ void initializa_variables()
 	INVALID_BITSET.reset();
 	INVALID_BITSET.set(max_sources-1);
 }
+
+bool filling=true;

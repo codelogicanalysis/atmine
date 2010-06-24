@@ -57,6 +57,11 @@ Q_INLINE_TEMPLATE bool operator>=(const  Triplet<T1, T2, T3> &p1, const  Triplet
 	return !(p1 < p2);
 }
 
+Q_INLINE_TEMPLATE uint qHash ( Triplet<long long, long, QString> t)
+{
+	return uint(qHash(t.first));//+qHash(t.second)+qHash(t.third));
+}
+
 QT_END_NAMESPACE
 
 QT_END_HEADER

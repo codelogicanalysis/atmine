@@ -4,14 +4,14 @@
 
 #include <QPair>
 #include <QVector>
-#include <QMap>
+#include <QHash>
 #include "../utilities/dbitvec.h"
 #include "../common_structures/common.h"
 
 typedef QVector<dbitvec> bitvec2d;
 typedef QVector<long> index2id_map;
 typedef QPair<long,long> ResultingCategoryKey;
-typedef QMap< ResultingCategoryKey,long> ResultingCategoryMap;
+typedef QHash< ResultingCategoryKey,long> ResultingCategoryMap;
 
 class compatibility_rules
 {

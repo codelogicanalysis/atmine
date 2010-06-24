@@ -6,9 +6,9 @@
 
 void tree::delete_helper(node * current)
 {
-    QList<node *> children=current->getChildren();
+	QList<node *>* children=current->getChildren();
     node* child;
-    foreach (child,children)
+	foreach (child,*children)
     {
             delete_helper(child);
             delete child;
@@ -17,9 +17,9 @@ void tree::delete_helper(node * current)
 void tree::print_tree_helper(node * current_node, int level)
 {
     out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
-    QList<node*> list=current_node->getChildren();
-    for(int i=0;i<list.count();i++)
-                    print_tree_helper(list.at(i),level+1);
+	QList<node*>* list=current_node->getChildren();
+	for(int i=0;i<list->count();i++)
+					print_tree_helper(list->at(i),level+1);
 }
 int tree::build_helper(item_types type, long cat_id1, int size, node * current)
 {
@@ -70,7 +70,7 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
             return NULL;
     }
     QChar current_letter;
-    QList<node *> current_children;
+	QList<node *>* current_children;
     int i,j;
     if (letters.count()==0)
     {
@@ -84,13 +84,13 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
     i=0;
     do
     {
-            int num_children=current_children.count();
+			int num_children=current_children->count();
             for (j=0;j<num_children;j++)
             {
-                    if (current_children[j]->isLetterNode())
-                            if (((letter_node*)current_children[j])->getLetter()==current_letter)
+					if (current_children->at(j)->isLetterNode())
+							if (((letter_node*)current_children->at(j))->getLetter()==current_letter)
                             {
-                                    current=current_children[j];
+									current=current_children->at(j);
                                     current_children=current->getChildren();
                                     i++;
                                     current_letter=letters[i];
@@ -117,7 +117,7 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
             letter_nodes++;
     }
 result:	node * old_result;
-    foreach (old_result,current->getChildren()) //check if this result node is already present
+	foreach (old_result,*current->getChildren()) //check if this result node is already present
     {
             if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id && ((result_node*)old_result)->get_affix_id()==affix_id)
             {

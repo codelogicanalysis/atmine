@@ -25,12 +25,6 @@
 ################################################################################
 
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,
-$yday,$isdst)=localtime(time);
-printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
-$year+1900,$mon+1,$mday,$hour,$min,$sec;
-
-
 # usage: 
 # perl -w AraMorph.pl < infile > outfile
 # were "infile" is the input text in Arabic Windows encoding (cp1256) 
@@ -46,6 +40,11 @@ $year+1900,$mon+1,$mday,$hour,$min,$sec;
 %prefix_hash = load_dict("dictPrefixes"); # dict of prefixes (A)
 %stem_hash   = load_dict("dictStems");    # dict of stems    (B)
 %suffix_hash = load_dict("dictSuffixes"); # dict of suffixes (C)
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,
+$yday,$isdst)=localtime(time);
+printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
+$year+1900,$mon+1,$mday,$hour,$min,$sec;
 
 while (<STDIN>) {
 

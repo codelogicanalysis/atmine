@@ -119,7 +119,7 @@ bool TreeSearch::operator ()()
 			nodes_per_level=queue.count();
 		}
 		//show_queue_content();
-		QList<node *> current_children=current_node->getChildren();
+		QList<node *>* current_children=current_node->getChildren();
 #ifndef USE_TRIE_WALK
 		QChar future_letter=info->diacritic_text->at(position);
 #else
@@ -142,10 +142,10 @@ bool TreeSearch::operator ()()
 			//qDebug()<<future_letter;
 		}
 #endif
-		int num_children=current_children.count();
+		int num_children=current_children->count();
 		for (int j=0;j<num_children;j++)
 		{
-			node *current_child=current_children[j];
+			node *current_child=current_children->at(j);
 			if (current_child->isLetterNode())
 			{
 				if(((letter_node*)current_child)->getLetter()==future_letter)//(equal(((letter_node*)current_child)->getLetter(),future_letter))
@@ -198,13 +198,13 @@ bool TreeSearch::operator ()()
 				}
 				else
 				{
-					QList<node *> result_node_children=current_child->getChildren();
-					int num_result_children=result_node_children.count();
+					QList<node *>* result_node_children=current_child->getChildren();
+					int num_result_children=result_node_children->count();
 					for (int j=0;j<num_result_children;j++)
 					{
-						if(((letter_node*)result_node_children[j])->getLetter()==future_letter)
+						if(((letter_node*)result_node_children->at(j))->getLetter()==future_letter)
 						{
-							queue.enqueue((letter_node*)result_node_children[j]);
+							queue.enqueue((letter_node*)result_node_children->at(j));
 #ifdef QUEUE
 							all_positions.enqueue(temp_partition);
 							all_categories.enqueue(temp_categories);

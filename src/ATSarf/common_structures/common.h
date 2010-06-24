@@ -32,6 +32,8 @@ using namespace std;
 
 #define max_sources 256
 
+extern bool filling;
+
 extern bitset<max_sources> INVALID_BITSET;
 extern QString delimiters;
 extern QVector<QChar> alefs;

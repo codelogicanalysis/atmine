@@ -1,8 +1,5 @@
 #include <QFile>
 #include <QFileInfo>
-#include "sql_queries.h"
-#include "../utilities/letters.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -19,6 +16,7 @@
 #include <QList>
 #include <assert.h>
 
+#include "sql_queries.h"
 #include "../caching_structures/database_info_block.h"
 #include "../utilities/diacritics.h"
 
@@ -95,6 +93,8 @@ bool execute_query(QString stmt, QSqlQuery &query)
 		return false;
 	}
 #endif
+	if (!filling)
+		qDebug()<<stmt;
 	if (!query.exec(stmt))
 	{
 		error <<query.lastError().text()<<"\n"<<"STATEMENT WAS: "<<stmt<<"\n";
@@ -1076,7 +1076,7 @@ bool areCompatible(rules rule,long category1,long category2)
 	return areCompatible(rule,category1,category2,resulting_id);
 }
 
-QMap<QString, int> abstract_id_mapping;
+QHash<QString, int> abstract_id_mapping;
 int get_abstractCategory_id(QString abstract_category)
 {
 	if (abstract_id_mapping.contains(abstract_category))
