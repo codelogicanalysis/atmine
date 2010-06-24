@@ -612,8 +612,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		}
 		else if (currentData.nrcCount>=currentData.nrcThreshold)
 		{
-		#ifdef STATS
 			nextState=TEXT_S;
+		#ifdef STATS
 			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
 			{
 				delete temp_nmc_s[i];
