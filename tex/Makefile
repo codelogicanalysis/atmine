@@ -9,7 +9,7 @@ SRCS_PS_TEX = ${patsubst psfigs/%.fig, psfigs/%.pstex, ${wildcard psfigs/*.fig}}
 .PHONY:clean cleanall cleanaux 
 .PRECIOUS: %.bbl %.ps
 
-all: cvhdl.pdf
+all: sarf.pdf
 
 slides: slidescvhdl.pdf
 

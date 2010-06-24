@@ -4,30 +4,57 @@
 % Contact: nasmith@cs.cmu.edu
 
 \documentclass[11pt,letterpaper]{article}
+\usepackage{arabtex}
 \usepackage{naaclhlt2010}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{times}
+\usepackage{caption}
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{color}
+\usepackage{rotate}
+\usepackage{rotating}
+\usepackage{multirow}
+\usepackage{amsthm}
+
+\usepackage{relsize}
+\usepackage{fancyvrb}
+%\usepackage{times}
 \usepackage{latexsym}
+\usepackage{utf8}
+
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{float}
+
+\setarab
+%\fullvocalize
+%\transtrue
+\arabtrue
+
 \setlength\titlebox{6.5cm}    % Expanding the titlebox
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
 \title{Case based Arabic Morphological Analysis with 
     Compositional Non-deterministic Automata }
 
-\author{Hamza Harkous \\
+\author{ Jad Makhlouta \\
   \And
-  Jad Makhlouta \\
+Hamza Harkous \\
   American University of Beirut \\
-  {\tt \{hhh20, jem04, fz11\}@aub.edu.lb }
+  {\tt \{jem04, hhh20, fz11\}@aub.edu.lb }
   \And 
-      Fadi Zaraket 
+  Fadi Zaraket 
 }
 
 \date{}
 
 \begin{document}
 \maketitle
+
 \begin{abstract}
-  Morphological analysis is key in current automated analysis techniques 
+ Morphological analysis is key in current automated analysis techniques 
   for Arabic text. 
   Current morphological analyzers take an Arabic word as input and 
   enumerate all possible morphological solutions (stems or 
@@ -68,6 +95,8 @@
 \section{Introduction}
 
 
+
+
 \subsection{Contributions}
 % does not have to be a subsection, 
 %just to highlight it as an item we should not miss
@@ -88,6 +117,25 @@
 
 \subsection{Motivating Example}
 % the FSMs for the three words
+
+\begin{figure}[t!]
+\begin{center}
+\resizebox{2\columnwidth}{!}{ \input{psfigs/FSM.pstex_t}}
+\caption{Example FSM.}
+\end{center}
+\label{f:examples}
+\end{figure}
+%
+
+%\begin{figure}
+%\center{
+%%\resizebox{\columnwidth}{!}
+%{ \input{psfigs/exampleFSM1.pstex_t}
+%\caption{Example FSM.}
+%\label{f:examples}
+%}}
+%\end{figure}
+
 
 \subsection{Affix Linear FSM}
 
