@@ -174,9 +174,9 @@ void initializeStateData()
 class hadith_stemmer: public Stemmer
 {
 private:
-	bool possessive,place;
+        bool place;
 public:
-	bool name, nrc, nmc ;
+        bool name, nrc, nmc,possessive ;
 	long long finish_pos;
 #ifdef STATS
 	QString stem;
@@ -191,6 +191,7 @@ public:
 		possessive=false;
 		place=false;
 		finish_pos=start;
+
 	#ifdef STATS
 		stem="";
 		stems.clear();
@@ -215,8 +216,8 @@ public:
 		#ifdef STATS
 			stem=temp_stem;
 		#endif
-			nmc=true;
-			finish_pos=finish;
+                        nmc=true;
+                        finish_pos=finish;
 			return false;
 		}
 		else if (stem_info->description=="said" || stem_info->description=="say" || stem_info->description=="notify/communicate" || stem_info->description.split(QRegExp("[ /]")).contains("listen") || stem_info->description.contains("from/about")||stem_info->description.contains("narrate"))
