@@ -34,6 +34,7 @@ QString bitset_to_string(bitset<max_sources> b);
 bool start_connection(ATMProgressIFC *); //and do other initializations
 void close_connection();
 long get_abstractCategory_id(int bit);
+int get_abstractCategory_id(QString abstract_category);
 long get_source_id(int bit);
 bool existsID(QString table,unsigned long long id,QString additional_condition ="");
 long long getID(QString table, QString name, QString additional_condition="", QString column_name="name");
@@ -58,6 +59,4 @@ int insert_compatibility_rules(rules rule,QString category1,QString category2, i
 int insert_compatibility_rules(rules rule, long id1,long id2, int source_id);
 bool areCompatible(rules rule,long category1,long category2, long& resulting_category);
 bool areCompatible(rules rule,long category1,long category2);
-
-
 #endif

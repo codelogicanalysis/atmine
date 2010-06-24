@@ -1076,4 +1076,15 @@ bool areCompatible(rules rule,long category1,long category2)
 	return areCompatible(rule,category1,category2,resulting_id);
 }
 
-
+QMap<QString, int> abstract_id_mapping;
+int get_abstractCategory_id(QString abstract_category)
+{
+	if (abstract_id_mapping.contains(abstract_category))
+		return abstract_id_mapping[abstract_category];
+	else
+	{
+		int id=getID("category",abstract_category,"abstract=1","name");
+		abstract_id_mapping.insert(abstract_category,id);
+		return id;
+	}
+}

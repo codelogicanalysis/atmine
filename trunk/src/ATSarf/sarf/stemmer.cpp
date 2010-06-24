@@ -1,5 +1,5 @@
 #include "logger/logger.h"
-#include "../sql-interface/Search_by_item.h"
+#include "../caching_structures/Search_by_item_locally.h"
 #include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"
 #include "stemmer.h"
@@ -16,16 +16,11 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 			#endif
 			for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++)
 			{
-				Search_by_item s(PREFIX,Prefix->idsOFCurrentMatch[i]);
+				Search_by_item_locally s(PREFIX,Prefix->idsOFCurrentMatch[i],Prefix->catsOFCurrentMatch[i],Prefix->raw_datasOFCurrentMatch[i]);
 				minimal_item_info prefix_info;
 				while(s.retrieve(prefix_info))//TODO: results with incorrect behaviour assuming more than 1 category works for any affix, but assuming just one match this works
 				{
-					#ifdef REDUCE_THRU_DIACRITICS
-						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] && prefix_info.raw_data==Prefix->raw_datasOFCurrentMatch[i])
-					#else
-						if (prefix_info.category_id==Prefix->catsOFCurrentMatch[i] )
-					#endif
-							prefix_infos->append(prefix_info);
+					prefix_infos->append(prefix_info);
 				}
 			}
 			if (!called_everything)
@@ -39,35 +34,25 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 			#endif
 			for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
 			{
-				Search_by_item s(SUFFIX,Suffix->idsOFCurrentMatch[i]);
+				Search_by_item_locally s(SUFFIX,Suffix->idsOFCurrentMatch[i],Suffix->catsOFCurrentMatch[i],Suffix->raw_datasOFCurrentMatch[i]);
 				minimal_item_info suffix_info;
 				while(s.retrieve(suffix_info))
 				{
-				#ifdef REDUCE_THRU_DIACRITICS
-					if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i] && suffix_info.raw_data==Suffix->raw_datasOFCurrentMatch[i])
-				#else
-					if (suffix_info.category_id==Suffix->catsOFCurrentMatch[i])
-				#endif
-						suffix_infos->append(suffix_info);
+					suffix_infos->append(suffix_info);
 				}
 			}
 			finish=Suffix->sub_positionsOFCurrentMatch.last();
 		}
 		if (called_everything || type==STEM)
 		{
-			Search_by_item s(STEM,Stem->id_of_currentmatch);
+			Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);
 			if (!called_everything)
 				finish=Stem->currentMatchPos;
 			stem_info=new minimal_item_info;
 			while(s.retrieve(*stem_info))
 			{
-				#ifdef REDUCE_THRU_DIACRITICS
-					if (stem_info->category_id==Stem->category_of_currentmatch && stem_info->raw_data==Stem->raw_data_of_currentmatch)
-				#else
-					if (stem_info->category_id==Stem->category_of_currentmatch)
-				#endif
-					if (!on_match())
-						return false;
+				if (!on_match())
+					return false;
 			}
 			return true;
 		}
