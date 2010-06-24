@@ -1,7 +1,7 @@
 #ifndef _Search_by_item_locally_LOCALLY_H
 #define	_Search_by_item_locally_LOCALLY_H
 
-#include <QMap>
+#include <QHash>
 #include "../sql-interface/sql_queries.h"
 #include "../caching_structures/database_info_block.h"
 
@@ -9,7 +9,7 @@
 class Search_by_item_locally
 {
 private:
-	QMap<Map_key,Map_entry > * map;
+	QHash<Map_key,Map_entry > * map;
 	item_types type;
 	long long id;
 	long category_id;

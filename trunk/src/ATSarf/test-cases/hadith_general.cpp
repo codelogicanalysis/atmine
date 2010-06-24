@@ -5,8 +5,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
-#include "../logger/logger.h"
-#include "../sql-interface/Search_by_item.h"
+
 #include "../sarf/stemmer.h"
 #include "../utilities/letters.h"
 #include "../utilities/text_handling.h"
@@ -15,12 +14,13 @@
 #include "../common_structures/common.h"
 #include "../logger/ATMProgressIFC.h"
 #include "../utilities/Math_functions.h"
+#include "../sql-interface/sql_queries.h"
 #include <assert.h>
 
 enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
-QString hadath,alayhi_alsalam;
+QString hadath;
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -97,8 +97,8 @@ typedef struct map_entry_ {
 typedef struct statistics_{
 	int names_in, names_out, chains, narrators;
 	QVector<int> narrator_per_chain, name_per_narrator;
-	QMap <QString, map_entry*>  nrc_exact, nmc_exact;
-	QMap <QString, int> nrc_stem,nmc_stem;
+	QHash <QString, map_entry*>  nrc_exact, nmc_exact;
+	QHash <QString, int> nrc_stem,nmc_stem;
 } statistics;
 QVector<map_entry*> temp_nrc_s, temp_nmc_s;
 int temp_nrc_count,temp_nmc_count;
@@ -128,12 +128,8 @@ void initializeChainData(chainData *currentChain)
 
 void hadith_initialize()
 {
-	QString alayhi,alsalam;
 	hadath.append(_7a2).append(dal).append(tha2);
-	alayhi.append(ayn).append(lam).append(ya2).append(ha2);
-	alsalam.append(alef).append(lam).append(seen).append(lam).append(alef).append(meem);
-	alayhi_alsalam=alayhi.append(' ').append(alsalam);
-
+#ifdef REFINEMENTS
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
@@ -144,6 +140,7 @@ void hadith_initialize()
 	if (phrases.isNull() || phrases.isEmpty())
 		return;
 	compound_words=phrases.split("\n",QString::SkipEmptyParts);
+#endif
 #ifdef STATS
 	stat.chains=0;
 	stat.names_in=0;
@@ -174,9 +171,9 @@ void initializeStateData()
 class hadith_stemmer: public Stemmer
 {
 private:
-        bool place;
+	bool place;
 public:
-        bool name, nrc, nmc,possessive ;
+	bool name, nrc, nmc,possessive;
 	long long finish_pos;
 #ifdef STATS
 	QString stem;
@@ -234,7 +231,11 @@ public:
 			int abstract_category_id=get_abstractCategory_id(i);
 			if (stem_info->abstract_categories[i] && abstract_category_id>=0)
 			{
-				if (abstract_category_id==get_abstractCategory_id(QString("Male Names"))) //Name of Person
+#ifdef REFINEMENTS
+				if (abstract_category_id==get_abstractCategory_id("Male Names"))
+#else
+				if (abstract_category_id==get_abstractCategory_id("Name of Person"))
+#endif
 				{
 					name=true;
 					if (finish>finish_pos)
@@ -246,7 +247,7 @@ public:
 					}
 					return true;
 				}
-				else if (abstract_category_id==get_abstractCategory_id(QString("POSSESSIVE")))
+				else if (abstract_category_id==get_abstractCategory_id("POSSESSIVE"))
 				{
 					possessive=true;
 					if (place)
@@ -259,7 +260,7 @@ public:
 						return false;
 					}
 				}
-				else if (abstract_category_id==get_abstractCategory_id(QString("Name of Place")))
+				else if (abstract_category_id==get_abstractCategory_id("Name of Place"))
 				{
 				#ifdef STATS
 					stem=temp_stem;
@@ -299,7 +300,6 @@ long long getLastLetter_IN_previousWord(long long start_letter_current_word)
 
 long long getLastLetter_IN_currentWord(long long start_letter_current_word)
 {
-	//start_letter_current_word++;
 	int size=text->length();
 	while(start_letter_current_word<size && !delimiters.contains(text->at(start_letter_current_word)))
 		start_letter_current_word++;
@@ -317,10 +317,12 @@ inline QString choose_stem(QList<QString> stems) //rule can be modified later
 			result=stems[i];
 	return result;
 }
-wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
+wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next_pos)
 {
 	long long  finish;
 	isBinOrPossessive=false;
+	hadith_stemmer s(text,current_pos);
+#ifdef REFINEMENTS
 	QString c;
 	bool found,phrase=false;
 	foreach (c, compound_words)
@@ -351,9 +353,9 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 			break;
 		}
 	}
-	hadith_stemmer s(text,current_pos);
 	if (!phrase)
 	{
+#endif
 		s();
 		finish=max(s.finish,s.finish_pos);
 		if (finish==current_pos)
@@ -366,19 +368,20 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 			if (current_stem=="")
 				current_stem=current_exact;
 		#endif
+#ifdef REFINEMENTS
 	}
+#endif
 	next_pos=next_positon(finish);
 	display(text->mid(current_pos,finish-current_pos+1)+":");
-#ifdef TENTATIVE //needed in order not consider 'alayhi_alsalam' as an additional NMC which results in it not being counted in case it is the last allowable count of NMC...
-	if (word==alayhi_alsalam)
-		return result(NRC);
-#endif
+#ifdef REFINEMENTS
 	if (phrase)
 	{
 		display("PHRASE");
 		//isBinOrPossessive=true; //same behaviour as Bin
 		return NMC;
 	}
+#endif
+	possessive=s.possessive;
 	if (s.nrc )
 		return result(NRC);
 	else if (s.name)
@@ -393,7 +396,7 @@ wordType getWordType(bool & isBinOrPossessive, long long &next_pos)
 		return result(NMC);
 }
 
-bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,chainData *currentChain)
+bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,bool possessive,chainData *currentChain)
 {
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
@@ -599,8 +602,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		return true;
 
 	case NRC_S:
-
+#ifdef REFINEMENTS
+		if (currentType==NAME || possessive)
+#else
 		if (currentType==NAME)
+#endif
 		{
 			nextState=NAME_S;
 			//currentData.nameStartIndex=start_index;
@@ -693,14 +699,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	chainOutput.remove();
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
-
-	//chainOutput.flush();
 	QDataStream chainOut(&chainOutput);
-	//chainOut.setCodec("utf-8");
-	//chainOut.setFieldAlignment(QTextStream::AlignCenter);
 
 	QFile input(input_str.split("\n")[0]);
-
 	if (!input.open(QIODevice::ReadWrite))
 	{
 		out << "File not found\n";
@@ -734,25 +735,27 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 
 	long long  sanadEnd;
 
-	bool isBinOrPossessive=false;
-        int hadith_Counter=1;
+	   int hadith_Counter=1;
 
 	for (;current_pos<text_size;)
 	{
 		long long start=current_pos;
 		long long next;
-		currentType=getWordType(isBinOrPossessive,next);
+		bool isBinOrPossessive=false,possessive=false;
+		currentType=getWordType(isBinOrPossessive,possessive,next);
 		current_pos=next;//here current_pos is changed
-		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,currentChain)==false))
+		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,currentChain)==false))
 		{
 			if (currentData.narratorCount>=currentData.narratorThreshold)
 			{
 				sanadEnd=currentData.narratorEndIndex;
 				newHadithStart=currentData.sanadStartIndex;
-				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
 				long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
+#if 1
+				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
 				out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
 				currentChain->chain->serialize(chainOut);
+#endif
 				//currentChain->chain->serialize(displayed_error);
 				hadith_Counter++;
 			#ifdef STATS

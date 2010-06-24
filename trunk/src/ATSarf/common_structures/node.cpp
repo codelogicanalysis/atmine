@@ -4,9 +4,9 @@ bool node::hasChildren()
 {
     return (children.count()!=0);
 }
-QList<node *> node::getChildren()
+QList<node *>* node::getChildren()
 {
-    return children;
+	return &children;
 }
 void node::addChild(node* child)
 {

@@ -123,7 +123,7 @@ void buildTrie()
 }
 #endif
 
-void fillMap(item_types type,QMap<Map_key,Map_entry> * map)
+void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
@@ -162,9 +162,9 @@ database_info_block::database_info_block()
     rules_BC=new compatibility_rules(BC);
     rules_CC=new compatibility_rules(CC);
 
-	map_prefix=new QMap<Map_key,Map_entry>;
-	map_stem=new QMap<Map_key,Map_entry>;
-	map_suffix=new QMap<Map_key,Map_entry>;
+	map_prefix=new QHash<Map_key,Map_entry>;
+	map_stem=new QHash<Map_key,Map_entry>;
+	map_suffix=new QHash<Map_key,Map_entry>;
 }
 void database_info_block::fill(ATMProgressIFC *p)
 {
@@ -183,6 +183,7 @@ void database_info_block::fill(ATMProgressIFC *p)
 	fillMap(PREFIX,map_prefix);
 	fillMap(STEM,map_stem);
 	fillMap(SUFFIX,map_suffix);
+	filling=false;
 }
 
 database_info_block::~database_info_block()

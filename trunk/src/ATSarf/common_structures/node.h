@@ -17,7 +17,7 @@ class node
 		virtual bool isLetterNode()=0;
 		virtual QString to_string(bool isAffix=false)=0;
 		bool hasChildren();
-		QList<node *> getChildren();
+		QList<node *>* getChildren();
 		void addChild(node* child);
 		void removeChildren();//just remove references
 		virtual ~node();

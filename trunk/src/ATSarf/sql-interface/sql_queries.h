@@ -1,6 +1,9 @@
 #ifndef SQL_INTERFACE_H
 #define SQL_INTERFACE_H
 
+#include "logger/logger.h"
+#include "../common_structures/common.h"
+
 #include <bitset>
 #include <QString>
 #include <QSqlDatabase>
@@ -8,8 +11,6 @@
 #include <QDebug>
 #include <QSqlQuery>
 #include <QVariant>
-#include "logger/logger.h"
-#include "../common_structures/common.h"
 #include "../logger/ATMProgressIFC.h"
 
 using namespace std;

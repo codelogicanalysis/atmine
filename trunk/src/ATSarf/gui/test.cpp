@@ -44,8 +44,6 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
 
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
-
 	initializa_variables();
 #ifndef AUGMENT_DICTIONARY
 	if (first_time)
@@ -54,6 +52,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		first_time=false;
 		hadith_initialize();
 	}
+	out<<QDateTime::currentDateTime().time().toString()<<"\n";
 #if 1
 	if (had && hadith(input_str,prg))
 		return -1;
