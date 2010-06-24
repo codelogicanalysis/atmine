@@ -675,7 +675,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 void show_according_to_frequency(QList<int> freq,QList<QString> words)
 {
 	QList<QPair<int, QString> > l;
-	for (int i=0;i<stat.nmc_stem.size();i++)
+	for (int i=0;i<freq.size() && i<words.size();i++)
 		l.append(QPair<int,QString>(freq[i],words[i]));
 	qSort(l.begin(),l.end());
 	for (int i=l.size()-1;i>=0;i--)

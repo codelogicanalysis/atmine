@@ -2,6 +2,7 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QString>
+#include <QDateTime>
 #include "test.h"
 #include "../logger/logger.h"
 #include "../test-cases/hadith.h"
@@ -42,6 +43,9 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	displayed_error.setCodec("utf-8");
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
+
+	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+
 	initializa_variables();
 #ifndef AUGMENT_DICTIONARY
 	if (first_time)
@@ -65,6 +69,9 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	if (augment()<0)
 		return -1;
 #endif
+
+	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+
 	return 0;
 }
 
