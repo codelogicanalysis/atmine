@@ -229,10 +229,11 @@ public:
 			return false;
 		}
 		for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
-			if (stem_info->abstract_categories[i] && get_abstractCategory_id(i)>=0)
+		{
+			int abstract_category_id=get_abstractCategory_id(i);
+			if (stem_info->abstract_categories[i] && abstract_category_id>=0)
 			{
-				QString abstract_category=getColumn("category","name",get_abstractCategory_id(i));
-				if (abstract_category=="Male Names") //Name of Person
+				if (abstract_category_id==get_abstractCategory_id(QString("Male Names"))) //Name of Person
 				{
 					name=true;
 					if (finish>finish_pos)
@@ -244,7 +245,7 @@ public:
 					}
 					return true;
 				}
-				else if (abstract_category=="POSSESSIVE")
+				else if (abstract_category_id==get_abstractCategory_id(QString("POSSESSIVE")))
 				{
 					possessive=true;
 					if (place)
@@ -257,7 +258,7 @@ public:
 						return false;
 					}
 				}
-				else if (abstract_category=="Name of Place")
+				else if (abstract_category_id==get_abstractCategory_id(QString("Name of Place")))
 				{
 				#ifdef STATS
 					stem=temp_stem;
@@ -271,6 +272,7 @@ public:
 					}
 				}
 			}
+		}
 		#ifdef STATS
 			stems.append(temp_stem);
 		#endif

@@ -123,6 +123,31 @@ void buildTrie()
 }
 #endif
 
+void fillMap(item_types type,QMap<Map_key,Map_entry> * map)
+{
+	QSqlQuery query(db);
+	QString table = interpret_type(type);
+	QString stmt( "SELECT %1_id, category_id, raw_data, POS, description.name %2 FROM %1_category,description WHERE %1_category.description_id=description.id");
+	stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":""));
+	assert (execute_query(stmt,query)) ;
+	while (query.next())
+	{
+		long long item_id=query.value(0).toULongLong();
+		long category_id =query.value(1).toULongLong();
+		QString raw_data=query.value(2).toString();
+		QString POS=query.value(3).toString();
+		QString description=query.value(4).toString();
+		bitset<max_sources> abstract_categories;
+		if (type==STEM)
+				abstract_categories=string_to_bitset(query.value(5));
+		else
+				abstract_categories.reset();
+		Map_key key(item_id,category_id,raw_data);
+		Map_entry entry(abstract_categories,description,POS);
+		map->insertMulti(key,entry);
+	}
+}
+
 database_info_block::database_info_block()
 {
     Prefix_Tree=new tree();
@@ -136,6 +161,10 @@ database_info_block::database_info_block()
     rules_AC=new compatibility_rules(AC);
     rules_BC=new compatibility_rules(BC);
     rules_CC=new compatibility_rules(CC);
+
+	map_prefix=new QMap<Map_key,Map_entry>;
+	map_stem=new QMap<Map_key,Map_entry>;
+	map_suffix=new QMap<Map_key,Map_entry>;
 }
 void database_info_block::fill(ATMProgressIFC *p)
 {
@@ -150,6 +179,10 @@ void database_info_block::fill(ATMProgressIFC *p)
     rules_AC->fill();
     rules_BC->fill();
     rules_CC->fill();
+
+	fillMap(PREFIX,map_prefix);
+	fillMap(STEM,map_stem);
+	fillMap(SUFFIX,map_suffix);
 }
 
 database_info_block::~database_info_block()
@@ -165,6 +198,10 @@ database_info_block::~database_info_block()
     delete rules_AC;
     delete rules_BC;
     delete rules_CC;
+
+	delete map_stem;
+	delete map_prefix;
+	delete map_suffix;
 }
 
 database_info_block database_info;
