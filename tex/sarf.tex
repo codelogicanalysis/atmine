@@ -22,14 +22,10 @@
 \usepackage{fancyvrb}
 %\usepackage{times}
 \usepackage{latexsym}
+
 \usepackage{utf8}
-
-\usepackage{graphics}
-\usepackage{graphicx}
-\usepackage{float}
-
 \setarab
-%\fullvocalize
+\fullvocalize
 %\transtrue
 \arabtrue
 
@@ -39,14 +35,14 @@
 \title{Case based Arabic Morphological Analysis with 
     Compositional Non-deterministic Automata }
 
-\author{ Jad Makhlouta \\
-  \And
-Hamza Harkous \\
-  American University of Beirut \\
-  {\tt \{jem04, hhh20, fz11\}@aub.edu.lb }
-  \And 
-  Fadi Zaraket 
-}
+%\author{ Jad Makhlouta \\
+%  \And
+%Hamza Harkous \\
+%  American University of Beirut \\
+%  {\tt \{jem04, hhh20, fz11\}@aub.edu.lb }
+%  \And 
+%  Fadi Zaraket 
+%}
 
 \date{}
 
@@ -54,48 +50,144 @@ Hamza Harkous \\
 \maketitle
 
 \begin{abstract}
- Morphological analysis is key in current automated analysis techniques 
-  for Arabic text. 
-  Current morphological analyzers take an Arabic word as input and 
-  enumerate all possible morphological solutions (stems or 
-  derivations) using concatenation based analysis.
-  The solutions suffer from accuracy due to the inherent difficulties
-  of morphological analysis of the Arabic language. 
-  The enumeration of all possible solutions may also hurt the performance
-  in cases where not all solutions are needed.
-  In this paper, we present a novel efficient morphological analyzer that 
-  uses parallel compositional non-deterministic Automata 
-  driven by a case based controller.
-  The analyzer keeps alive possible analyses of the text 
-  for the controller to intervene with a decision and thus 
-  reduce false positives on case basis.
-
-  Our concatenative analysis uses recursive affixes in order to
-  retain better part of speech information and enhance the 
-  efficiency of affix matching. 
-  The analyzer takes as input a character from a full text stream 
-  rather than a sequence of words and thus performs tokenization
-  on the fly and based on morphological correctness. 
-  This relieves the user from preprocessing the text and provides
-  a more exact tokenization than delimiter based tokenization. 
-  This is important for Arabic since two words can occur in a text
-  without a delimiter in between.
-
-  We used our analyzer to successfully automate the analysis of 
-  three books of Islamic literature where we segmented each book
-  into several narrations. In each narration, we detected 
-  a chain of narrators, where each narrator is a complex sequence of
-  proper names separated with name connector phrases. 
-  This is a collection of chain of narrator structures where each
-  chain is a structure with three levels of hierarchy.
-  Our results show better accuracy and higher efficiency than current 
-  morphological analyzers. 
+Natural language processing uses morphological 
+analysis to abstract and annotate text.
+Often times, and in particular in the context
+of the Arabic language, annotations resulting from 
+an ongoing branch of morphological analysis may not be
+appropriate for the case study at hand. 
+In this paper we present Sarf, a case based morphological 
+analyser for Arabic text. 
+Sarf allows a case-based controller to control and refine
+the state of the analysis on the fly. 
+It uses compositional non-deterministic finite state machines 
+to analyse a stream of text. 
+Each alive machine corresponds to a valid analysis. 
+Sarf uses concatenative analysis based on recursive affixes 
+to better preserve part of speech information.
+We automated the analysis of three books of Islamic
+narrations (hadith) using Sarf where we
+abstracted each book into a vector of complex structures.
+Our results show high accuracy and efficiency compared to
+state of the art analyzers. 
 \end{abstract}
 
 \section{Introduction}
 
+Automated analysis of Arabic data sets, including texts, 
+publications, records and digital media is essential
+with the huge digital Arabic content available nowadays. 
+Morphological analysis is key in current automated 
+analysis techniques for Arabic text. 
+Current morphological analyzers~\cite{Sughaiyer:04}
+use concatenative analysis
+to analyze an Arabic word and
+consider its internal structure composed of several
+{\em morphemes}. A morpheme can be a {\em stem}, or an {\em affix}.
+An affix can be a {\em prefix, suffix, } or an {\em infix}.
+The analysis of one word may lead to several possible
+morphological solutions.
+\vocalize
+For instance the word \RL{'a.hmadH} 
+may have two valid morphological analyses where in the first
+\RL{'a} is a prefix and the word means ``I praise him'',
+and in the second \RL{'a} is part of the stem 
+\RL{'a.hmad} (a proper noun)
+and the word means ``his Ahmad''.
 
+\novocalize
+The solutions suffer from accuracy due to inherent difficulties
+of morphological analysis of the Arabic language. 
+For example, it is common practice to write Arabic text
+without short vowels. 
+Arabic letters can also have up to four different shapes 
+corresponding to their position in a word, i.e, begining of 
+a word, middle of a word, end of word, and separated. 
+This allows two consecutive words such as 
+\RL{almdrsT}\RL{al_A}
+to be visually recognizable
+as two separate words \RL{al_A} and \RL{almdrsT} without 
+the need of a delimiter such as a space in between. 
+This specifically happens when the first word ends with
+a non-connecting letter and is referred to as the ``run-o'' words
+problem~\cite{Buckwalter:04}.
+Such forms occur in text and greatly increase the
+difficulty of tokenization.
 
+Current morphological analyzers such as 
+Buckwalter~\shortcite{Buckwalter:02},
+Xerox~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
+and ElixirFM~\cite{Otakar:07} exist.
+They take as input white space delimited tokens~\cite{Kulick:10},
+consider them as words,
+and enumerate all possible solutions. 
+This exhaustive enumeration may hurt performance and may
+not be necessary or appropriate
+in some case studies as noted in~\cite{Maamouri:10}. 
+Moreover, a white space delimited token may have 
+more than one word.
+Other morphological analyzers such as Amira~\cite{Diab:07,Benajiba:07},
+MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
+also use machine learning and support vector machines (SVM) 
+to enhance the accuracy of the morphological analysis at the expense 
+of perfomance.
+
+We hypothesise that many NLP case studies need the 
+morphological analyser to answer simple queries that do not need 
+all this complexity and accuracy and thus most of the work can be ignored. 
+For example, if the query is interested in proper names and the 
+prefix in question now can only connect to a verb, we can provide an answer
+without completing the analysis. 
+We find evidence to our hypothesis in~\cite{Maamouri:10} where the 
+addition of a new corpus to the Arabic Tree Bank~\cite{Maamouri:04}
+with features demanding resolution at an abstraction level
+higher than the text itself
+led to a refined analyzer~\cite{Kulick:10}.  
+
+In this paper, we present Sarf, a {\em novel case-based efficient morphological 
+analyzer} that uses parallel compositional non-deterministic Automata 
+driven by a case based controller.
+Each alive machine in Sarf represents a valid morphological analysis. 
+Sarf keeps alive all possible analyses of the text and gives opportunity for the 
+controller to intervene at every single input character. 
+The decisions of the case-based controller can thus prune false positives early 
+in the run. 
+Each alive machine in Sarf takes as input one character at a time 
+from a text stream. Sarf does not assume that the word at hand is a token and
+performs tokenization on the fly based on morphological correctness.
+To out knowledge, This solves the ``run-on'' words problem. 
+
+Sarf uses a {\em recursive} concatenative analysis with a novel 
+refinement. 
+Sarf introduces recursive affixes in order to
+retain better part of speech information and enhance the 
+efficiency of affix matching. 
+
+We validate our hypothesis using a case study from the Islamic 
+literature. 
+A {\em hadith} is a narration related to the prophet Mohamad
+through a {\em sanad} or a sequence of narrators. 
+The authentication of a hadith higly depends on the credibility
+of each of the narrators as reported in separate biography 
+books. 
+In this paper we consider the problem of automatically segmenting
+a hadith book into narrations, then segmenting each narration into
+its content or {\em matn} and its sanad.
+We also would like to partition the sanad accurately into the 
+separate narrators so that we can later look each one of them 
+up in the biography books. 
+
+The hadith case study is interesting for Sarf since the controller
+considers most of the analyses where we have a concentration
+of proper names in the text, and ignores most of the analyses as long 
+as they are valid where we do not have proper names. 
+The controller is also interested in a small subset of words 
+that relate persons to each other such as \RL{bin} or ``the sun of''
+or words that mean narrate such as \RL{qaal} or ``said''. 
+With Sarf, we successfully automated the analysis of 
+three books of Islamic narrations~\cite{narrations1,narrations2, narrations3}
+and extracted from each one of them a vector of a three level deep
+complex structure. 
 
 \subsection{Contributions}
 % does not have to be a subsection, 
@@ -109,6 +201,8 @@ Hamza Harkous \\
 
 \section{Related Work }
 
+Many morphological analyzers exist~\cite{sWe limit our comparison to related wowour discussion of related work toLots of work 
+
 \section{Sarf}
 
 \subsection{Recursive Affixes}
@@ -118,23 +212,15 @@ Hamza Harkous \\
 \subsection{Motivating Example}
 % the FSMs for the three words
 
-\begin{figure}[t!]
-\begin{center}
-\resizebox{2\columnwidth}{!}{ \input{psfigs/FSM.pstex_t}}
-\caption{Example FSM.}
-\end{center}
-\label{f:examples}
-\end{figure}
-%
 
-%\begin{figure}
-%\center{
-%%\resizebox{\columnwidth}{!}
-%{ \input{psfigs/exampleFSM1.pstex_t}
-%\caption{Example FSM.}
-%\label{f:examples}
-%}}
-%\end{figure}
+\begin{figure*}[tb]
+\center{
+\resizebox{1.8\columnwidth}{!}
+{ \input{psfigs/FSM.pstex_t}}
+\caption{Example FSM.}
+\label{f:examples}
+}
+\end{figure*}
 
 
 \subsection{Affix Linear FSM}
@@ -196,39 +282,7 @@ Hamza Harkous \\
 
 \section*{Acknowledgments}
 
-
-\begin{thebibliography}{}
-
-\bibitem[\protect\citename{Aho and Ullman}1972]{Aho:72}
-Alfred~V. Aho and Jeffrey~D. Ullman.
-\newblock 1972.
-\newblock {\em The Theory of Parsing, Translation and Compiling}, volume~1.
-\newblock Prentice-{Hall}, Englewood Cliffs, NJ.
-
-%\bibitem[\protect\citename{{American Psychological Association}}1983]{APA:83}
-%{American Psychological Association}.
-%\newblock 1983.
-%\newblock {\em Publications Manual}.
-%\newblock American Psychological Association, Washington, DC.
-%
-%\bibitem[\protect\citename{{Association for Computing Machinery}}1983]{ACM:83}
-%{Association for Computing Machinery}.
-%\newblock 1983.
-%\newblock {\em Computing Reviews}, 24(11):503--512.
-%
-%\bibitem[\protect\citename{Chandra \bgroup et al.\egroup }1981]{Chandra:81}
-%Ashok~K. Chandra, Dexter~C. Kozen, and Larry~J. Stockmeyer.
-%\newblock 1981.
-%\newblock Alternation.
-%\newblock {\em Journal of the Association for Computing Machinery},
-%  28(1):114--133.
-%
-%\bibitem[\protect\citename{Gusfield}1997]{Gusfield:97}
-%Dan Gusfield.
-%\newblock 1997.
-%\newblock {\em Algorithms on Strings, Trees and Sequences}.
-%\newblock Cambridge University Press, Cambridge, UK.
-
-\end{thebibliography}
+\bibliographystyle{naaclhlt2010}
+\bibliography{fzAr}
 
 \end{document}
