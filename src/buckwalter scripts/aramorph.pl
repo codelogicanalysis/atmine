@@ -23,6 +23,14 @@
 #                Suite 810
 #                Philadelphia, PA, 19104-2653, USA.
 ################################################################################
+
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,
+$yday,$isdst)=localtime(time);
+printf "%4d-%02d-%02d %02d:%02d:%02d\n",
+$year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+
 # usage: 
 # perl -w AraMorph.pl < infile > outfile
 # were "infile" is the input text in Arabic Windows encoding (cp1256) 
@@ -117,6 +125,14 @@ foreach my $item (sort { $freqnotfound{$b} <=> $freqnotfound{$a} } @items) {
 close OUT;
 
 # ============================
+
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,
+$yday,$isdst)=localtime(time);
+printf "%4d-%02d-%02d %02d:%02d:%02d\n",
+$year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+
 sub analyze { # returns a list of 1 or more solutions
 
    $this_word = shift @_; @solutions = (); $cnt = 0;
@@ -370,9 +386,9 @@ sub load_dict { # loads a dict into a hash table where the key is $entry and its
          # because the info in last field, $glossPOS, was split into two: $gloss and $POS
          #push ( @{ $temp_hash{$entry} }, "$entry\t$voc\t$cat\t$gloss\t$POS") ; # the value of $temp_hash{$entry} is a list of values
          push ( @{ $temp_hash{$entry} }, "$entry\t$voc\t$cat\t$gloss\t$POS\t$lemmaID") ; # the value of $temp_hash{$entry} is a list of values
-			$voc =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/;
-			$entry =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/;		      		 
-			print  "$entry\t$voc\t$cat\t$gloss\t$POS\t$lemmaID\n";
+			# $voc =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/;
+			# $entry =~ tr/PJRG,;?'|>&<}AbptvjHxd*rzs\$SDTZEg_fqklmnhwYyFNKaui~o/\x81\x8D\x8E\x90\xA1\xBA\xBF\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF\xE1\xE3\xE4\xE5\xE6\xEC\xED\xF0\xF1\xF2\xF3\xF5\xF6\xF8\xFA/;		      		 
+			#print  "$entry\t$voc\t$cat\t$gloss\t$POS\t$lemmaID\n";
       }
    }
    close IN;
