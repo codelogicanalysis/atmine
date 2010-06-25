@@ -134,28 +134,41 @@ of perfomance.
 
 We hypothesise that many NLP case studies need the 
 morphological analyser to answer simple queries that do not need 
-all this complexity and accuracy and thus most of the work can be ignored. 
+high complexity and accuracy at the low morphological analysis level 
+and that can often compensate for tolerable inaccuracy at higher level. 
 For example, if the query is interested in proper names and the 
-prefix in question now can only connect to a verb, we can provide an answer
-without completing the analysis. 
+prefix in question in the analysis can only connect to a verb, 
+we can provide an answer without completing the analysis. 
+%TODO A lso if a word such as \RL{wasiim} was name was ambiguous and we were looking for a sequence of names, then 
 We find evidence to our hypothesis in~\cite{Maamouri:10} where the 
 addition of a new corpus to the Arabic Tree Bank~\cite{Maamouri:04}
 with features demanding resolution at an abstraction level
 higher than the text itself
 led to a refined analyzer~\cite{Kulick:10}.  
+We also find evidence in~\cite{Habash:06} that different types of 
+morphological analyses behave differently on the same case study. 
+We strongly beleive and we find evidence in our results that a 
+case-based controller intervening at every decision is necessary to 
+guide, use, prune, and refine the morphological analysis.
 
-In this paper, we present Sarf, a {\em novel case-based efficient morphological 
-analyzer} that uses parallel compositional non-deterministic Automata 
-driven by a case based controller.
+\subsection{Sarf}
+\label{sec:intro:sarf}
+
+In this paper, we present Sarf, a {\em novel case-based efficient
+morphological analyzer} that uses parallel compositional 
+non-deterministic automata driven by a case based controller.
 Each alive machine in Sarf represents a valid morphological analysis. 
-Sarf keeps alive all possible analyses of the text and gives opportunity for the 
-controller to intervene at every single input character. 
-The decisions of the case-based controller can thus prune false positives early 
-in the run. 
+Sarf keeps alive all possible analyses of the text and gives 
+opportunity to the controller to intervene at every single input 
+character. 
+The decisions of the case-based controller can thus prune false 
+positives early in the run. 
 Each alive machine in Sarf takes as input one character at a time 
-from a text stream. Sarf does not assume that the word at hand is a token and
+from a text stream. 
+Sarf does not assume that the word at hand is a token and
 performs tokenization on the fly based on morphological correctness.
-To out knowledge, This solves the ``run-on'' words problem. 
+To out knowledge, this is the first morphological analyzer that 
+handles the ``run-on'' words problem. 
 
 Sarf uses a {\em recursive} concatenative analysis with a novel 
 refinement. 
@@ -189,19 +202,59 @@ three books of Islamic narrations~\cite{narrations1,narrations2, narrations3}
 and extracted from each one of them a vector of a three level deep
 complex structure. 
 
-\subsection{Contributions}
+%\subsection{Contributions}
+
+We make the following key contributions. 
+\begin{enumerate}
+\item {\bf Case-based analysis:}  We deisgned and implemented
+a case-based morphological analyzer where a case-based controller
+machine controls and guides the analysis. 
+\item {\bf Exhaustive analysis:} Since we have a case-based 
+controller that can decide on the fly whether an analysis is 
+accepted or not, we can afford to keep all valid analyses modulo
+those pruned by the case controller. 
+We do that using non-deterministic FSAs. 
+\item {\bf Recursive affixes:}
+We refine the concatenative analysis of 
+Buckwalter~\shortcite{Buckwalter:02}  and use recursive affixes. 
+This allowed Sarf to retain better compositional part of speech
+tags.
+\item {\bf Hadith case study:}
+We evaluated Sarf using the hadith case study. We were able to
+efficiently extract the sequence of narrators into a complex
+data structure with three levels of hierarchy with high accuracy. 
+\end{enumerate}
+
+
+
 % does not have to be a subsection, 
 %just to highlight it as an item we should not miss
 
 
 % paper structure
 
-
 \section{Background}
 
 \section{Related Work }
 
-Many morphological analyzers exist~\cite{sWe limit our comparison to related wowour discussion of related work toLots of work 
+Many morphological analyzers exist~\cite{Sughaiyer:04}. 
+Some use specialized part of speech tag sets~\cite{Khoja:01,Darwish:02}.
+
+Buckwalter: used lexicon, added proper nouns, word based, recursive affixes
+
+MAGEAD
+
+Beeseley: many compiled FSAs compared to compositions of three FSAs 
+
+SAMA: word based, treebank specific, 
+
+MADA+TOKAN: no controller, we do not need a tokenizer
+
+AMIRA: machine learning... 
+
+ElixirFM: 
+
+
 
 \section{Sarf}
 
@@ -221,7 +274,6 @@ Many morphological analyzers exist~\cite{sWe limit our comparison to related wow
 \label{f:examples}
 }
 \end{figure*}
-
 
 \subsection{Affix Linear FSM}
 
