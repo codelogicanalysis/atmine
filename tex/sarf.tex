@@ -30,6 +30,9 @@
 %\transtrue
 \arabtrue
 
+\newcommand{\CharCodeIn}[1]{`\CodeIn{#1}'}
+\newcommand{\CodeIn}[1]{{\small\texttt{#1}}}
+
 \setlength\titlebox{6.5cm}    % Expanding the titlebox
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
@@ -234,11 +237,11 @@ data structure with three levels of hierarchy with high accuracy.
 
 % paper structure
 
-\section{Background}
-
-% nondeterministic finite-state automata
+%\section{Background}
+% TODO: nondeterministic finite-state automata
 
 \section{Related Work }
+\label{sec:related}
 
 The survey work in~\cite{Sughaiyer:04} discusses and compares
 several morphological analyzers. 
@@ -291,7 +294,7 @@ text where a composition decision was made.
 The case-baded controller can build the trace when needed. 
 
 %MAGEAD 
-    %Maamouri, Mohamed and \bgroup et al.\egroup },
+%Maamouri, Mohamed and \bgroup et al.\egroup },
 
 We strongly feel that the refinemet of SAMA~\cite{Maamouri:10} 
 is the closest to our approach. SAMA was refined to interact with
@@ -332,17 +335,26 @@ Sarf extends the lexicon of Buckwalter~\shortcite{Buckwalter:02} with
 proper names and location names extracted from different online 
 sources~\footnote{\href{http://alasmaa.net/}{http://alasmaa.net/ }, 
 \href{http://ar.wikipedia.org/}{http://ar.wikipedia.org/}}
-as well as biblical sources~\cite{}. 
+as well as biblical sources~\footnote{Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}.
 
+Sarf encodes the prefix, suffix and stem lexicons into 
+three linear FSAs and uses a non-deterministic composition
+of the three FSAs to compute all valid morphological analyses.
+We first present a runing example of Sarf. 
+The running example explains
+how the non-deterministic composition works and 
+illustrates how Sarf implements recursive affixes and
+handles ``run-on'' words.
+Then we discuss how Sarf builds and composes the different FSAs.
 
-\subsection{Sarf example }
+\subsection{Sarf example}
 \label{sec:example}
 
 \begin{figure*}[tb]
 \center{
-\resizebox{1.8\columnwidth}{!}
+\resizebox{1.9\columnwidth}{!}
 { \input{psfigs/FSM.pstex_t}}
-\caption{Example composition of the prefix, stem and suffix FSAs}
+\caption{Example composition of the prefix, stem and suffix FSAs.}
 \label{f:example}
 }
 \end{figure*}
@@ -446,44 +458,171 @@ is not interesting.
 It may also decide to correct the analysis of one automata
 based on the decision of the others. 
 
-
 \subsection{Recursive Affixes}
-% smaller FSM
-% retain POS info
+\label{sec:recaffix}
 
+Morphological analysis partitions a given Arabic word
+into a set of morphemes.
+A morpheme is either an affix or a stem. 
+We call two morphemes compatible if their concatenation
+forms a legal morpheme. 
+Buckwalter~\cite{Buckwalter:02} keeps separate lists 
+of prefixes, suffixes and stems and assigns a category
+to each morphemes. 
+The relation between morphemes and categories is one 
+to many. 
 
-\subsection{Affix Linear FSM}
+A compatibility rule is a pair of categories 
+$\langle c_1, c_2\rangle$  stating that morphemes
+with category $c_1$ can be concatenated with morphemes
+of category $c_2$. 
+Buckwalter keeps three lists $L_{ps}, L_{sx},$ and $L_{px}$ 
+of compatibility rules relating
+prefixes to stems, stems to suffixes, and prefixes to suffixes
+respectively. 
+Consider a string $s=\alpha\beta\gamma$ where $\alpha$ is 
+a prefix, $\beta$ is a stem, and $\gamma$ is a suffix. 
+The string $\alpha\beta\gamma$ partition of the string is a 
+valid morphological analysis if  and only if we have
+$\langle c(\alpha),c(\beta)\rangle \in L_{ps}$ and
+$\langle c(\beta),c(\gamma)\rangle \in L_{sx}$ and
+$\langle c(\alpha),c(\gamma)\rangle \in L_{px}$ where
+$c()$ returns the category of the morpheme.
 
-\subsection{Stem Linear FSM}
+Many affixes are composed of other affixes. For example,
+the prefix \RL{wsy} is composed of three other prefixes
+namely \RL{w}, \RL{s}, and \RL{y}.
+Moreover, the POS tag for \RL{wsy} is a concatenation
+of the POS tags of each of the three morphemes. 
+Keeping these morphemes separate in a list
+is redundant and may produce consistency issues. 
+We add two lists of compatibilty rules $L_{pp}$ and
+$L_{xx}$ for prefix-prefix and suffix suffix compatibility
+respectively.
+This allows us to keep a shorter list of affixes. 
+We need one more additional modification to accomodate 
+a category for the morphemes accepted by the $L_{pp}$
+and the $L_{xx}$ rules. For that we introduce the concept
+of a {\em resulting category}. 
+The resulting category in all practical cases
+was the category of the second morpheme in the pair. 
+
+\subsection{Affix Linear FSA}
+\label{sec:affixFSA}
+
+We analyzed the prefixes and suffixes of 
+Buckwalter~\cite{Buckwalter:02}
+and extracted our refined lists of recursives affixes.
+We encoded the lists into a FSA similar to that
+in Figure~\ref{f:example}(a) and Figure~\ref{f:example}(c).
+The two FSAs are directed acyclic graphs. 
+The abscence of cycles in these FSAs reduces the 
+traversal of the affix FSAs to a linear traversal.
+This is computationaly superior to the 
+approach of Buckwalter where the analyzer considers
+all possible substrings of the word in question
+and looks it up in the affix tables. 
+
+The prefix and suffix FSAs encode the $L_{pp}$ and
+$L_{xx}$ compatibility lists.
+An accept state in the FSA corresponds to the last character
+of a prefix in the predix and suffix lists.
+The accept states hold category state information as well
+as POS and other tags.
+
+\subsection{Stem Linear FSA}
+\label{sec:stemFSA}
+
+We built our stem lexicon using the stem lexicon of 
+Buckwalter. 
+We augmented the lexicon with a set of proper names and
+a set of location names. 
+We obtained the set of proper names from online 
+and biblical sources. 
+
+The stems share lots of substrings. We encoded them in
+an efficient double array trie structure~\cite{Aoe:89}. 
+The structure is also a linear FSA where the accept
+states are the terminal nodes corresponding to the last 
+letters in stems. 
+This approach is superior to Buckwalter since again it is
+a linear walk in the trie while with Buckwalter it is 
+several hash lookups.
 
 \subsection{Non-deterministic Composition of FSMs}
 \label{sec:ndfsa}
+
+The diagram in Figure~\ref{f:composition} shows an 
+abstraction of the non-deterministic composition 
+of the prefix, stem and suffix FSA. 
+The circle represents regular states, the square
+represents accept state and the triangle represents
+reject states. 
+Note that the concrete prefix, stem and suffix FSAs
+are all linear and do not have cycles as discussed 
+is Sections~\ref{sec:stemFSA} and~\ref{sec:affixFSA}.
+The cycles are introduced in the abstract machine
+for brevity and illustrative purposes.
 
 \begin{figure*}[tb]
 \center{
 \resizebox{1.8\columnwidth}{!}
 { \input{psfigs/abstract_machine.pstex_t}}
-\caption{An abstraction of the non-deterministic composition of the prefix, stem and suffix FSAs}
-\label{f:example}
+\caption{An abstraction of the non-deterministic composition of 
+    the prefix, stem and suffix FSAs.}
+\label{f:composition}
 }
 \end{figure*}
 
-% algorithm
-% diagram of abstract machines
+The algorithm \CodeIn{NDSarf} below controls Sarf. 
+It takes as input a text string $L$ and a case-based controller
+$A$. 
+It starts with one FSA $\Phi_1$ similar to the one in 
+Figure~\ref{f:composition} and inserts it into a collection
+of FSAs $M$. 
+The algorithm reads a character $c$ at a time from $L$
+and moves on all the machines in $M$. 
+For each $\Phi$ in $M$ the algorithm checks whether
+$\Phi$ is in an accept state or not. 
 
+If $\Phi$ is in an accpet state and it is in the suffix
+phase, then the algorithm checks whether it should report
+a full word. 
+This happens when $c$ is a white space or a delimiter, 
+or when the last character leading to the current state
+was a non-connecting character. 
+
+In all cases, if $\Phi$ is in an accept state, 
+it spawns another FSA $\Psi$ and adds it to $M$. 
+If $c$ leads to a reject state, then $\Phi$ dies 
+and we remove it from $M$. 
+Otherwise, $\Phi$ transitions using the $c$ edge.
+We invoke the controller $A$ after all the FSAs in $M$ 
+have moved and allow it full access and control over
+all FSAs in $M$. 
+
+The arrows in Figure~\ref{f:composition} that transition
+from prefix to stem, stem to suffix, and suffix to prefix
+show the compatibility constraints as a condition for 
+the transition.
+
+\begin{table}[tb]
+\centering
+\begin{tabular} {p{6cm}}
 \begin{Verbatim}[fontsize=\relsize{-1},
-frame=topline,framesep=4mm,label=\fbox{NDFSA Sarf algorithm},
+frame=topline,framesep=4mm,label=\fbox{NDSarf algorithm},
 commandchars=\\\{\}, codes={\catcode`$=3\catcode`_=8}]
-Sarf(string $L$, Controller $A$) 
+NDSarf(string $L$, Controller $A$) 
   FSAVec $M$; -- collection of FSA automata
   FSA $\Phi_1$;
   $M$.insert($\Phi_1$);
   foreach $c$ in $L$ \{
     foreach $\Phi$ in $M$ \{
-      $A$.control($M$, $c$);
       if ( $\Phi$.state.isAccept() ) \{
         if ($\Phi$.isSuffix())
-          if ($c$.isWhiteORNonConnecting())
+          if ($c$.isWhite()) or 
+            $A$.report();
+          if ($\Phi$.lastChar().isNonConnecting())
             $A$.report();
         $\Psi$ = $\Phi$.clone();
         $M$.insert($\Psi$); \}
@@ -493,17 +632,58 @@ Sarf(string $L$, Controller $A$)
       \} else \{
         $M$.remove($\Phi$);
         $\Phi$.die();
-      \} \} \}
+      \} \} 
+    $A$.control($M$, $c$); \}
 \end{Verbatim}
+\end{tabular}
+\label{a:ndsarf}
+\end{table}
 
 \section{Islamic Literature Case Study}
+\label{sec:islamic}
 
-\subsection{Hadith Segmentation}
+A hadith in Islamic literature is a narration from the prophet Mohamad
+related by multiple narrators.
+Establishing the authenticity of a hadith is an important task
+in Islamic studies. 
+%Several researchers~\cite{Hadithopaedia:08} attempted to automate 
+%the analysis of the hadith literature. 
+In this paper we use Sarf to sucessfully automate the
+analysis of three books of hadith selected 
+arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
+  the digitized books from online sources such as 
+  \href{http://www.yasoob.com/}{http://www.yasoob.com/} and 
+  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. 
+  Our understanding is that those books are historical documents with 
+  public IP.}.
 
-\subsection{Chain of Narrators} 
+Our analysis accpets a book as a text stream input
+and segements it into a vector of individual hadiths. 
+We segment each hadith into two parts. The first part
+is the sanad and it
+contains the chain of narrators who related the hadith
+to Mohamad. 
+The second part is the matn and it constitutes the content
+of the hadith. 
+We are concerned in further exploring the sanad. 
+In particular, we detect the chain of narrators
+and the relation between each narrator, his ancestor, and 
+his predecessor in the chain. 
+We also detect the full name of each narrator that is
+usually composed of several proper names with connectors
+in between. 
+
+We built our case-based controller to target
+the detection of proper names. 
+This includes the task of finding compound names 
+composed of several words such as \RL{`bd alr.hmn} often
+appearing as ``run-on'' words.
+The controller also targets words that mean narrate when
+they appear in the neighborhood of multiple proper names. 
 
 \subsection{Controller}
 % FSM for the controller
+The FSA in Figure~\ref{f:hadith}
 
 
 \section{Results}
