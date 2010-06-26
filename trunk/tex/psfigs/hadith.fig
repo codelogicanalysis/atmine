@@ -1,4 +1,4 @@
-#FIG 3.2  Produced by xfig version 3.2.5
+#FIG 3.2  Produced by xfig version 3.2.5a
 Portrait
 Center
 Metric
@@ -144,9 +144,9 @@ Single
 4 1 0 2 0 12 10 0.0000 6 150 1620 23850 6390 $\\neg \\mbox{NAME}$\001
 4 1 0 2 0 12 10 0.0000 6 150 2160 23850 6615 $\\wedge \\neg \\mbox{NRC}$\001
 -6
-6 17055 4320 28395 4725
+6 16695 4335 28755 4710
 4 1 0 2 0 12 10 0.0000 6 150 8550 22725 4455 $\\neg \\mbox{NAME} \\wedge \\neg \\mbox{NRC} \\wedge |\\mbox{LIST}_{\\mbox{NMC}}| > \\tau_{\\mbox{NMC}}$\001
-4 1 0 2 0 12 10 0.0000 6 150 11340 22725 4680 $\\wedge ( (\\mbox{NAME} \\vee \\mbox{NISBA} \\vee \\mbox{IBN}) \\notin \\mbox{Last}(\\mbox{LIST}_{\\mbox{NMC}},\\lambda_{\\mbox{NMC}}) )$\001
+4 1 0 2 0 12 10 0.0000 6 150 12060 22725 4680 $\\wedge ( (\\mbox{NAME} \\vee \\mbox{NISBA} \\vee \\mbox{IBN}) \\cap \\mbox{Last}(\\mbox{LIST}_{\\mbox{NMC}},\\lambda_{\\mbox{NMC}})=\\emptyset )$\001
 -6
 2 1 0 1 0 0 1 0 -1 5.354 0 0 0 1 0 2
 	2 1 1.57 118.11 118.11
