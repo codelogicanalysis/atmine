@@ -144,11 +144,11 @@ of performance.
 We hypothesize that many NLP case studies need the 
 morphological analyzer to answer simple queries that do not need 
 high complexity and accuracy at the low morphological analysis level 
-and that can often compensate for tolerable inaccuracy at higher levels. 
-For example, if the query concerns proper names and the 
-prefix in question in the analysis can only connect to a verb, 
-we can provide an answer without completing the analysis. 
-%TODO A lso if a word such as \RL{wasiim} was name was ambiguous and we were looking for a sequence of names, then 
+and that can often compensate at higher level for tolerable inaccuracy at low levels. 
+For example, if a query concerns proper names and the 
+prefix in question in the analysis connects only to a verb, 
+we do not need to further analyze the rest of the word 
+to provide an answer.
 We find evidence to our hypothesis in~\cite{Maamouri:10} where the 
 addition of a new corpus to the Arabic Tree Bank~\cite{Maamouri:04}
 with features demanding resolution at an abstraction level
@@ -207,7 +207,7 @@ of proper names in the text. It ignores the text where
 proper names occur rarely as long 
 as the text is valid.
 The controller is also interested in discovering a subset of words 
-that relate persons to each other such as \RL{bin} or ``the sun of''
+that relate persons to each other such as \RL{bin} or ``the son of''
 or words that mean narrate such as \RL{qaal} or ``said''. 
 With Sarf, we successfully automated the analysis of 
 three books of Islamic narrations~\cite{IbnHanbal,AlTousi,AlKulayni}
@@ -233,8 +233,7 @@ We do that using non-deterministic FSAs.
 We refine the concatenative analysis of 
 Buckwalter~\shortcite{Buckwalter:02}  and use recursive affixes. 
 This allows Sarf to perform better and 
-better retain compositional part of speech
-tags.
+maintain compositional part of speech tags.
 \item {\bf Hadith case study:}
 We evaluated Sarf using the hadith case study. We were able to
 efficiently extract the sequence of narrators into a complex
@@ -248,11 +247,11 @@ data structure with three levels of hierarchy with high accuracy.
 
 The rest of this paper is structured as follows. In Section~\ref{sec:related}
 we compare Sarf to related work. Then in Section~\ref{sec:sarf}
-we discuss Sarf, illustrate the way it works with a running example
-that also explains how non-deterministic finite state automata
-works. In Section~\ref{sec:islamic} we present the hadith case
+we discuss Sarf and illustrate the way it works with a running example.
+We also explain how non-deterministic finite state Automata
+work. In Section~\ref{sec:islamic} we present the hadith case
 study. We present our results in Section~\ref{sec:results}
-and we conclude with future work in Section~\ref{sec:future}.
+and conclude with future work in Section~\ref{sec:future}.
 
 %\section{Background}
 % TODO: nondeterministic finite-state automata
@@ -260,7 +259,7 @@ and we conclude with future work in Section~\ref{sec:future}.
 \section{Related Work }
 \label{sec:related}
 
-The survey work in~\cite{Sughaiyer:04} discusses and compares
+The survey in~\cite{Sughaiyer:04} discusses and compares
 several morphological analyzers. 
 Analyzers such as~\cite{Khoja:01,Darwish:02} 
 target specific applications in the morphological 
@@ -270,8 +269,6 @@ Sarf differs in that it is a general and rich morphological
 analyzer that reports all possible solutions. 
 It is case-based in the sense that a controller that drives
 the morphological analyzer prunes these decisions. 
-Up to our knowledge, Sarf is the only morphological analyzer
-that addresses the ``run-on'' words problem. 
 
 Sarf builds upon the lexicon of Buckwalter\shortcite{Buckwalter:02}.
 It differs from Buckwalter in that it defines a shorter list of affixes
@@ -297,8 +294,8 @@ compose the FSAs into a single FSA framework.
 Sarf solves the problem with a non-deterministic composition of three
 FSAs that are the prefix, stem, and suffix FSAs. 
 With Sarf it is easy to control the FSAs with a custom user case 
-controller, while with Beesley and up to our understanding the 
-effort requires recompiling the Xerox rules.
+controller. Up to our understanding, Beesley  
+requires recompiling the Xerox rules.
 
 Sarf is similar to The MADA+TOKAN toolkit in that it thinks of
 the several valid morphological analyses as a richness that 
@@ -323,9 +320,9 @@ new corpus. We find supporting evidence in this decision to our hypothesis
 about the utility of a case-based analyzer. 
 The refinements that resulted in algorithmic changes in SAMA were 
 done manually and worked in integration with the ATB format. 
-In Sarf we propose a case-based controller approach that can modify 
-the behavior of the analyzer on the fly and that should interact
-with the case study. In Sarf the analyzer remains general, and the 
+Sarf is a case-based controller approach that can modify 
+the behavior of the analyzer on the fly and can interact
+with the any case study. In Sarf, the analyzer remains general, and the 
 case-based controller specializes the analysis.
 
 The AMIRA~\cite{Diab:07} analyzer uses 
@@ -339,15 +336,15 @@ of the Buckwalter analyzer.
 We also use deterministic parsing with tries in our analysis 
 to run the prefix, suffix and stem FSAs. 
 We think that the inferential-realizational approach 
-of ElixierFM
+of ElixirFM
 that is highly compatible with the Arabic linguistic 
 description~\cite{Badawi:04}
 can benefit from many features unique to the Arabic language.
 Sarf leaves implementing that to the case-based controller
 since in many cases the abstraction needed may not need the 
-text to be grammar correct.
-We can compare the case-based controller in Sarf to a high level
-component in the ElixirFM domain specific language. 
+text to be grammatically correct.
+%We can compare the case-based controller in Sarf to a high level
+%component in the ElixirFM domain specific language. 
 
 \section{Sarf}
 \label{sec:sarf}
@@ -473,7 +470,7 @@ This is refined in Sarf to happen only with white space, delimiters,
 or non-connecting letters. 
 We left that out in Figure~\ref{f:example} for clarity. 
 
-Finally, The case-based controller can interfere at any point in the 
+Finally, the case-based controller can interfere at any point in the 
 analysis to make a decision like ignoring an Automata that 
 is not interesting. 
 It may also decide to correct the analysis of one Automata
@@ -674,9 +671,9 @@ analysis of three books of hadith selected
 arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
   the digitized books from online sources such as 
   \href{http://www.yasoob.com/}{http://www.yasoob.com/} and 
-  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. 
-  Our understanding is that those books are historical documents with 
-  public IP.}.
+  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }
+%  Our understanding is that those books are historical documents with 
+ % public IP.}.
 
 Our analysis accepts a book as input
 and segments it into a vector of hadiths. 
@@ -762,8 +759,8 @@ NMC\_S can only be reached from a NAME\_S state.
 
 The FSA reports a valid chain of narrators when a sequence of names
 connected by narrator connectors appears. 
-It marks the begining of the hadith with the begining of the sequence,
-and marks the end of the hadith by the begining of the next sequence. 
+It marks the beginning of the hadith with the beginning of the sequence,
+and marks the end of the hadith by the beginning of the next sequence. 
 It also marks the chain of narrators as the sequence itself. 
 
 The definition of input labels such as NAME and IBN depends on the 
@@ -781,12 +778,12 @@ under both a good analyzer and a refined one.
 %\begin{tabular}{|p{1.5cm}||c|c||c|c||c|c|} \hline
 \begin{tabular}{lp{.2cm}ccp{.2cm}ccp{.2cm}cc} %\cline{2-10}
  & & \multicolumn{2}{c}{Al Kafi} & & \multicolumn{2}{c}{Al Istibsar} & &\multicolumn{2}{c}{Ibn Hanbal} \\ 
- & & Simple & Accurate & & Simple & Accurate & & Simple  & Accurate \\ \hline \hline
+ & & Simple & Refined & & Simple & Refined & & Simple  & Refined \\ \hline \hline
 Word count & &\multicolumn{2}{c}{98,943} & & \multicolumn{2}{c}{103,835} & & \multicolumn{2}{c}{20,354} \\ 
  Names      & & 20,473 & 12,060  & &20,646 &  14,613& & 4,762 & 3,013\\
 Names/Narrator& &2.48 & 1.97 & & 2.17 &  1.84& & 1.49 & 1.25 \\
 Narrators & &3,080 & 2,623 & & 6,164 &  5,767& & 2,082 & 1,755 \\ 
-Narrator/Chain & & 5.28 & 4.84 & & 4.98&  4.76 & & 4.8 &4.05 \\
+Narrators/Chain & & 5.28 & 4.84 & & 4.98&  4.76 & & 4.8 &4.05 \\
 Chains & & 583 & 542 &  & 1,238& 1,211& & 433 & 433 \\ 
 Ignored names & & 11,801 & 6,400 &  & 5,845 & 3,348 & & 1,386 & 642 \\ \hline \hline
 Segmentation accuracy & & 85\% & 96\%& & 96\%& 96\%& & 92\%& 92\%\\ 
@@ -801,9 +798,9 @@ Sarf running time (secs.)& & 24.5 & 22.67 & & 23.5 & 23.17 & & 2.25 & 1.67\\ \hl
 \end{table*}
 
 To evaluate our hypothesis of the utility of a case-based morphological analyzer,
-we ran our case study in two modes, simple and accurate.
-In the simple mode Sarf is controlled by the hadith controller.
-In the accurate mode we apply several refinements to Sarf.
+we ran our case study in two modes, simple and refined.
+In the simple mode, Sarf is controlled by the hadith controller.
+In the refined mode, we apply several refinements to Sarf.
 The first refinement removes female proper names since they do not occur often in
 hadith.
 We also add a refinement that detects compound names as they are common in narrator
@@ -817,13 +814,13 @@ The number of names, narrators, and chains reflect a hierarchical structure wher
 narrators, and a narrator contains names.
 In general, we observe that the refinements slightly improved performance and accuracy at
 the lowest level of abstraction by reducing false positives.
-However, the refienements had little to no effect on the high accuracy measures at higher
+However, the refinements had little to no effect on the high accuracy measures at higher
 levels of abstraction.
-We beleive that this is a strong supporting evidence to our hypothesis.
+We believe that this is a strong supporting evidence to our hypothesis.
 
-The names row reports the total number of detected names. The names/narator row reports the average
-number of names per narrator structure. The narrator row reports the number of narrators detected.
-The narrator/chain reports the number of narrators per chain structure. And the chain row reports
+The names row reports the total number of detected names. The names/narrator row reports the average
+number of names per narrator structure. The narrators row reports the number of narrators detected.
+The narrators/chain row reports the number of narrators per chain structure. And the chain row reports
 the number of detected chains in the book.
 The ignored names row reports the number of names detected outside the chains and thus irrelevant to
 the case study.
@@ -831,33 +828,35 @@ The segmentation accuracy reports on the accuracy of segmentation of the book in
 The metric is computed manually over a representative sample of each text. The same applies to all other accuracy measures.
 The chain accuracy reflects the percentage of correct narrators covered by extracted chains.
 The narrator name accuracy row reflects the percentage of correct proper names detected within
-narrator strutures.
+narrator structures.
 
 The name false positives row reports the percentage of words recognized as names while they should not.
-We notice that the low level metric of name false positives improved dramatically with the accurate
+We notice that the low level metric of name false positives improved dramatically with the refined
 analysis without substantially affecting the high abstract measures such as chain and segmentation
 accuracy.
 We notice that the controller in the simple analysis ignored more names and thus the case-based
 controller compensated for the inaccuracy of the low level analysis with a simple heuristic and
 without the need of the fancy refinements.
 
-We investigated the case of Al Kafi where the accuracy of the simple analysis was significantly lower than the accurate
-analysis and discovered that the chains detected by the accurate analysis were a subset of those detected by the simple
+We investigated the case of Al Kafi where the accuracy of the simple analysis was significantly lower than that of the refined
+analysis. We  discovered that the chains detected by the refined analysis were a subset of those detected by the simple
 analysis. 
-This means that the simple analysis results have false positives and did not miss important information. We hypothesize
-that a higher level of abstraction analysis such as intersecting the narrators with their biographies can 
-reduce false positives in the simple analysis.
+The reason for the lower accuracy is false positive chains. 
+The simple analysis did not miss important information. 
+We hypothesize that a higher level of abstraction such as intersecting the narrators from the hadith books with the narrators 
+in the biographies can reduce the false positives in the chains.
 
 \section{Future Work}
 \label{sec:future}
 
-In the future we plan to complete the hadith case study 
+In the future, we plan to complete the hadith case study 
 and automate narrator discovery and authentication in the 
 biography books. 
 We plan to make use of the name connector and narrator
 connector stop phrases that our case study extracted to create a 
 learning system that can learn more names. 
 We also plan on developing a domain specific language similar 
+to ElexirFM~\cite{Otakar:07}
 that allows users to easily specify their case-based controller
 to interact with Sarf.
 
