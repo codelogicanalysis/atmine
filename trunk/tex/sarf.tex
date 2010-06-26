@@ -72,8 +72,9 @@ to better preserve part of speech information.
 We automated the analysis of three books of Islamic
 narrations (hadith) using Sarf where we
 abstracted each book into a vector of complex structures.
-Our results show high accuracy and efficiency compared to
-state of the art analyzers. 
+Our results show high accuracy and efficiency.
+%compared to
+%state of the art analyzers. 
 \end{abstract}
 
 \section{Introduction}
@@ -93,43 +94,47 @@ The analysis of one word may lead to several possible
 morphological solutions.
 \vocalize
 For instance the word \RL{'a.hmadH} 
-may have two valid morphological analyzes where in the first
-\RL{'a} is a prefix and the word means ``I praise him'',
-and in the second \RL{'a} is part of the stem 
+may have two valid morphological analyses. In the first
+the letter \RL{'a} is a prefix and the word means ``I praise him'',
+and in the second the letter \RL{'a} is part of the stem 
 \RL{'a.hmad} (a proper noun)
 and the word means ``his Ahmad''.
 
 \novocalize
-The solutions suffer from accuracy due to inherent difficulties
+The accuracy of the solutions suffer due to inherent difficulties
 of morphological analysis of the Arabic language. 
 For example, it is common practice to write Arabic text
 without short vowels. 
-Arabic letters can also have up to four different shapes 
-corresponding to their position in a word, i.e, beginning of 
-a word, middle of a word, end of word, and separated. 
-This allows two consecutive words such as 
+This greatly increases the ambiguity of Arabic text. 
+Another difficulty is that  Arabic letters can have up to 
+four different forms
+corresponding to their position in a word, i.e, beginning,
+middle, end of word forms and separate forms. 
+This allows the phrase 
 \RL{almdrsT}\RL{al_A}
 to be visually recognizable
 as two separate words \RL{al_A} and \RL{almdrsT} without 
 the need of a delimiter such as a space in between. 
-This specifically happens when the first word ends with
-a non-connecting letter and is referred to as the ``run-o'' words
-problem~\cite{Buckwalter:04}.
-Such forms occur in text and greatly increase the
-difficulty of tokenization.
+This happens because the first word \RL{almdrsT} ends with
+\RL{T} a non-connecting letter. 
+These words occur often in text and greatly increase the
+difficulty of tokenization and are referred to as 
+``run-on'' words~\cite{Buckwalter:04}.
 
 Current morphological analyzers such as 
 Buckwalter~\shortcite{Buckwalter:02},
-Xerox~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
+Beesely~\shortcite{Beesley:01}, SAMA~\cite{Kulick:10},
 and ElixirFM~\cite{Otakar:07} exist.
 They take as input white space delimited tokens~\cite{Kulick:10},
 consider them as words,
 and enumerate all possible solutions. 
-This exhaustive enumeration may hurt performance and may
+This approach has several problems. 
+First, 
+a white space delimited token may have 
+more than one word.
+Second, the exhaustive enumeration may hurt performance and may
 not be necessary or appropriate
 in some case studies as noted in~\cite{Maamouri:10}. 
-Moreover, a white space delimited token may have 
-more than one word.
 Other morphological analyzers such as Amira~\cite{Diab:07,Benajiba:07},
 MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
 also use machine learning and support vector machines (SVM) 
@@ -139,8 +144,8 @@ of performance.
 We hypothesize that many NLP case studies need the 
 morphological analyzer to answer simple queries that do not need 
 high complexity and accuracy at the low morphological analysis level 
-and that can often compensate for tolerable inaccuracy at higher level. 
-For example, if the query is interested in proper names and the 
+and that can often compensate for tolerable inaccuracy at higher levels. 
+For example, if the query concerns proper names and the 
 prefix in question in the analysis can only connect to a verb, 
 we can provide an answer without completing the analysis. 
 %TODO A lso if a word such as \RL{wasiim} was name was ambiguous and we were looking for a sequence of names, then 
@@ -152,14 +157,16 @@ led to a refined analyzer~\cite{Kulick:10}.
 We also find evidence in~\cite{Habash:06} that different types of 
 morphological analyses behave differently on the same case study. 
 We strongly believe and we find evidence in our results that a 
-case-based controller intervening at every decision is necessary to 
-guide, use, prune, and refine the morphological analysis.
+case-based morphological analyzer that allows a case-based
+controller to intervene at every decision to 
+guide, use, prune, and refine the morphological analysis
+is of high utility.
 
 \subsection{Sarf}
 \label{sec:intro:sarf}
 
 In this paper, we present Sarf, a {\em novel case-based efficient
-morphological analyzer} that uses parallel compositional 
+morphological analyzer} that uses compositional 
 non-deterministic Automata driven by a case based controller.
 Each alive machine in Sarf represents a valid morphological analysis. 
 Sarf keeps alive all possible analyses of the text and gives 
@@ -196,9 +203,10 @@ up in the biography books.
 
 The hadith case study is interesting for Sarf since the controller
 considers most of the analyses where we have a concentration
-of proper names in the text, and ignores most of the analyses as long 
-as they are valid where we do not have proper names. 
-The controller is also interested in a small subset of words 
+of proper names in the text, and ignores most of the analyses 
+where we do not have proper names in text as long 
+as they are valid.
+The controller is also interested in discovering a subset of words 
 that relate persons to each other such as \RL{bin} or ``the sun of''
 or words that mean narrate such as \RL{qaal} or ``said''. 
 With Sarf, we successfully automated the analysis of 
@@ -234,8 +242,13 @@ data structure with three levels of hierarchy with high accuracy.
 % does not have to be a subsection, 
 %just to highlight it as an item we should not miss
 
-
-% paper structure
+The rest of this paper is structured as follows. In Section~\ref{sec:related}
+we compare Sarf to related work. Then in Section~\ref{sec:sarf}
+we discuss Sarf, illustrate the way it works with a running example
+that also explains how non-deterministic finite state automata
+works. In Section~\ref{sec:islamic} we present the hadith case
+study. We present our results in Section~\ref{sec:results}
+and we conclude with future work in Section~\ref{sec:future}.
 
 %\section{Background}
 % TODO: nondeterministic finite-state automata
@@ -727,7 +740,14 @@ Sarf running time & &a & & & & & & & \\ \hline
 % segmentation: two hadiths are merged
 
 \section{Future Work}
+\label{sec:future}
 
+In the future we plan to complete the hadith case study 
+and automate narrator discovery and authentication in the 
+biography books. 
+We also plan on developing a domain specific language similar 
+that allows users to easily specify their case-based controller
+to interact with Sarf.
 
 %For reasons of uniformity, Adobe's {\bf Times Roman} font should be
 %used. In \LaTeX2e{} this is accomplished by putting
