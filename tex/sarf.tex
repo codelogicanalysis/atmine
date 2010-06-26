@@ -676,6 +676,16 @@ arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
 %  Our understanding is that those books are historical documents with 
  % public IP.}.
 
+
+%\setcode{utf8}
+%\begin{arabtext}
+%حدثنا \emphasize{هشيم}، أخبرنا \emphasize{إسماعيل بن أبي خالد}،
+% عن أبي إسحاق، عن سعيد بن جبير، قال كنا
+%    مع ابن عمر رضي الله عنه حيث أفاض من
+%    عرفات إلى جمع فصلى بنا المغرب ومضى
+%\end{arabtext}
+%\setcode{standard}
+
 Our analysis accepts a book as input
 and segments it into a vector of hadiths. 
 We segment each individual hadith into two parts. 
@@ -701,8 +711,8 @@ The controller also targets words that mean narrate when
 they appear in the neighborhood of multiple proper names. 
 
 \subsection{Controller}
+\label{sec:controller}
 % FSM for the controller
-
 
 We illustrate the hadith case-based controller FSA 
 in Figure~\ref{f:hadith}. 
@@ -713,7 +723,7 @@ An NRC label means that Sarf met a narrator connector such as
 \RL{`an} "on behalf of", \RL{.hada_t} "narrated", \RL{qaal} "said", 
 \RL{'a_hbar} "told" or one of their derivations. 
 The IBN label corresponds to the word \RL{ibn} "the son of" and is a name connector.
-The NISBA label corresponds to the an adjective that points to a person such 
+The NISBA label corresponds to an adjective that points to a person such 
 as \RL{alma.sriy} "the Egyptian". 
 
 The symbol $\tau_{\mbox{NMC}}$ is a threshold
@@ -736,7 +746,7 @@ The controller moves to the state NAME\_S whenever
 NAME is reported by Sarf.
 State NRC\_S means that the controller thinks it is in the context
 of a narrator name after Sarf reports an NRC.
-Similarly, state NMC\_S
+State NMC\_S
 indicates that the controller expects a name to appear within 
 a tolerance threshold expressed by 
 $\tau_{\mbox{NMC}}$ and $\lambda_{\mbox{NMC}}$.
@@ -767,7 +777,7 @@ It also marks the chain of narrators as the sequence itself.
 The definition of input labels such as NAME and IBN depends on the 
 morphological analyzer. 
 However, our case-based controller approach was able to perform well
-under both a good analyzer and a refined one. 
+under both Sarf and a refined version of Sarf.
 
 
 \section{Results}
