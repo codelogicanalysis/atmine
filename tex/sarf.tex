@@ -93,10 +93,10 @@ An affix can be a {\em prefix, suffix, } or an {\em infix}.
 The analysis of one word may lead to several possible
 morphological solutions.
 \vocalize
-For instance the word \RL{'a.hmadH} 
-may have two valid morphological analyses. In the first
-the letter \RL{'a} is a prefix and the word means ``I praise him'',
-and in the second the letter \RL{'a} is part of the stem 
+For instance, the word \RL{'a.hmadH} 
+may have two valid morphological analyses. 
+The letter \RL{'a} may be prefix and the word means ``I praise him''.
+The letter \RL{'a} may also be part of the stem 
 \RL{'a.hmad} (a proper noun)
 and the word means ``his Ahmad''.
 
@@ -171,14 +171,14 @@ non-deterministic Automata driven by a case based controller.
 Each alive machine in Sarf represents a valid morphological analysis. 
 Sarf keeps alive all possible analyses of the text and gives 
 opportunity to the controller to intervene at every single input 
-character. 
+letter. 
 The decisions of the case-based controller can thus prune false 
 positives early in the run. 
-Each alive machine in Sarf takes as input one character at a time 
+Each alive machine in Sarf takes as input one letter at a time 
 from a text stream. 
 Sarf does not assume that the word at hand is a token and
 performs tokenization on the fly based on morphological correctness.
-To out knowledge, this is the first morphological analyzer that 
+Up to our knowledge, this is the first morphological analyzer that 
 handles the ``run-on'' words problem. 
 
 Sarf uses a {\em recursive} concatenative analysis with a novel 
@@ -197,15 +197,15 @@ books.
 In this paper we consider the problem of automatically segmenting
 a hadith book into narrations, then segmenting each narration into
 its content or {\em matn} and its sanad.
-We also would like to partition the sanad accurately into the 
+We also partition the sanad accurately into the 
 separate narrators so that we can later look each one of them 
 up in the biography books. 
 
-The hadith case study is interesting for Sarf since the controller
+The hadith case study is interesting to Sarf since the controller
 considers most of the analyses where we have a concentration
-of proper names in the text, and ignores most of the analyses 
-where we do not have proper names in text as long 
-as they are valid.
+of proper names in the text. It ignores the text where
+proper names occur rarely as long 
+as the text is valid.
 The controller is also interested in discovering a subset of words 
 that relate persons to each other such as \RL{bin} or ``the sun of''
 or words that mean narrate such as \RL{qaal} or ``said''. 
@@ -213,6 +213,9 @@ With Sarf, we successfully automated the analysis of
 three books of Islamic narrations~\cite{IbnHanbal,AlTousi,AlKulayni}
 and extracted from each one of them a vector of a three level deep
 complex structure. 
+We also showcase that the results of the accurate high level abstraction
+results of the case-based analysis was not affected by a major
+refinement to the analyzer that increased low level analysis accuracy. 
 
 %\subsection{Contributions}
 
@@ -229,7 +232,8 @@ We do that using non-deterministic FSAs.
 \item {\bf Recursive affixes:}
 We refine the concatenative analysis of 
 Buckwalter~\shortcite{Buckwalter:02}  and use recursive affixes. 
-This allowed Sarf to retain better compositional part of speech
+This allows Sarf to perform better and 
+better retain compositional part of speech
 tags.
 \item {\bf Hadith case study:}
 We evaluated Sarf using the hadith case study. We were able to
@@ -259,40 +263,42 @@ and we conclude with future work in Section~\ref{sec:future}.
 The survey work in~\cite{Sughaiyer:04} discusses and compares
 several morphological analyzers. 
 Analyzers such as~\cite{Khoja:01,Darwish:02} 
-target specific specific applications in the morphological 
+target specific applications in the morphological 
 analyzer itself or use a specific set of part of speech tags
 as their reference.
 Sarf differs in that it is a general and rich morphological 
 analyzer that reports all possible solutions. 
 It is case-based in the sense that a controller that drives
-the morphological analyzers prunes these decisions. 
+the morphological analyzer prunes these decisions. 
 Up to our knowledge, Sarf is the only morphological analyzer
 that addresses the ``run-on'' words problem. 
 
 Sarf builds upon the lexicon of Buckwalter\shortcite{Buckwalter:02}.
-It differs than Buckwalter where it defines a shorter list of affixes
+It differs from Buckwalter in that it defines a shorter list of affixes
 and a longer list of affix compatibility rules to allow recursive 
 affixes so that we can have prefix-prefix an suffix-suffix 
 concatenations.
 This allows Sarf to better maintain and propagate 
 the part of speech information
-tags associated with each prefix while these need to be highly 
+tags associated with each prefix and suffix.
+This information is highly 
 redundant with Buckwalter and that may lead to consistency issues. 
-Sarf keeps the possible analyses alive as a sequence corresponding
-to the text. Buckwalter produces a set of solutions for each token 
-and the several analysis threads of the whole text need to be 
+Sarf keeps all the possible analyses alive where each analysis
+corresponds to a set of decisions and positions in the text. 
+Buckwalter produces a set of solutions for each token 
+and the several analysis threads of the text need to be 
 generated as a product of the token solutions. 
 
 Sarf is similar to Beesley~\shortcite{Beesley:01} in that it uses
 finite-state Automata (FSA). 
 Beesley reports that the number of the Automata generated by a compiler
-from Xerox rules is not controlled and also reports a difficulty to 
+from Xerox rules can not be controlled and also reports a difficulty to 
 compose the FSAs into a single FSA framework. 
 Sarf solves the problem with a non-deterministic composition of three
 FSAs that are the prefix, stem, and suffix FSAs. 
-With Sarf it is easy to control the FSAs with a user custom case 
-controller, while with Beesley the effort requires recompiling the
-Xerox rules.
+With Sarf it is easy to control the FSAs with a custom user case 
+controller, while with Beesley and up to our understanding the 
+effort requires recompiling the Xerox rules.
 
 Sarf is similar to The MADA+TOKAN toolkit in that it thinks of
 the several valid morphological analyses as a richness that 
@@ -304,7 +310,8 @@ at a finer granularity level.
 Also in Sarf there is no need for a separate tokenizer such as
 TOKAN as each alive Automata carries with it the positions in 
 text where a composition decision was made. 
-The case-based controller can build the trace when needed. 
+The case-based controller can build the trace 
+when needed. 
 
 %MAGEAD 
 %Maamouri, Mohamed and \bgroup et al.\egroup },
@@ -312,29 +319,30 @@ The case-based controller can build the trace when needed.
 We strongly feel that the refinement of SAMA~\cite{Maamouri:10} 
 is the closest to our approach. SAMA was refined to interact with
 the ATB~\cite{Maamouri:04} project after the addition of a large 
-new corpus. We find evidence in this decision that our hypothesis
-about the utility of case-based analyzers. The refinements
-that resulted in algorithmic changes in SAMA were done manually
-and worked in integration with the ATB format only. 
+new corpus. We find supporting evidence in this decision to our hypothesis
+about the utility of a case-based analyzer. 
+The refinements that resulted in algorithmic changes in SAMA were 
+done manually and worked in integration with the ATB format. 
 In Sarf we propose a case-based controller approach that can modify 
 the behavior of the analyzer on the fly and that should interact
 with the case study. In Sarf the analyzer remains general, and the 
-case-based controller specializes the analyses.
+case-based controller specializes the analysis.
 
 The AMIRA~\cite{Diab:07} analyzer uses 
 a language independent SVM based analysis. 
 While the SVM analysis learns features from the text passed to the case
-study, it does not make use of the type oh the query the 
+study, it does not make use of the type of the query the 
 case study targets in the text. 
 
 Like ElixirFM~\cite{Otakar:07} Sarf builds on the lexicon
 of the Buckwalter analyzer. 
-We also use deterministic parsing with tries or our analysis 
+We also use deterministic parsing with tries in our analysis 
 to run the prefix, suffix and stem FSAs. 
-We think that their inferential-realizational approach 
+We think that the inferential-realizational approach 
+of ElixierFM
 that is highly compatible with the Arabic linguistic 
 description~\cite{Badawi:04}
-can make benefit of many features unique to the Arabic language.
+can benefit from many features unique to the Arabic language.
 Sarf leaves implementing that to the case-based controller
 since in many cases the abstraction needed may not need the 
 text to be grammar correct.
@@ -365,7 +373,7 @@ Then we discuss how Sarf builds and composes the different FSAs.
 
 \begin{figure*}[tb]
 \center{
-\resizebox{1.9\columnwidth}{!}
+\resizebox{1.7\columnwidth}{!}
 { \input{psfigs/FSM.pstex_t}}
 \caption{Example composition of the prefix, stem and suffix FSAs.}
 \label{f:example}
@@ -397,35 +405,35 @@ in separate form to ease following the example
 }
 The square and circle legends are states of the FSA
 and the directed edges are transitions driven by an input
-character that matches the label of the edge. 
+letter that matches the label of the edge. 
 The square denotes an accept state, 
 the circle denotes a regular state, and the reject states
 are omitted for clarity. 
-Figure~\ref{f:example}a represents the prefix FSA and 
-Figures~\ref{f:example}b and~\ref{f:example}c represent the 
+Figure~\ref{f:example}(a) represents the prefix FSA and 
+Figures~\ref{f:example}(b) and~\ref{f:example}(c) represent the 
 stem and suffix FSAs respectively. 
 The symbol $\epsilon$ represents an empty string and is 
 the source of non-determinism in this example. 
 
 We start at the root square state in the prefix FSA
 which is an accept state. 
-The edge labeled $\epsilon$ that connects the prefix 
-FSA to the stem FSA can transition from any accept state
+The edge labeled $\epsilon$ connects the prefix 
+FSA to the stem FSA and transitions from any accept state
 in the prefix FSA to the root state in the stem FSA.
 The edge that connects the stem FSA to the suffix FSA
 follows the same behavior. 
 
 When there are two valid transitions such as \RL{w} 
-and $\epsilon$ as is the start case, a non-deterministic 
+and $\epsilon$ in the start case, the non-deterministic 
 FSA $\Phi$ spawns an exact copy of itself $\Psi$. FSA $\Phi$
 makes one transition, and FSA $\Psi$ makes the other. 
 Each of the FSAs now represent a valid analysis so far. 
-When the FSA is at a state where the next input character
+When the FSA is at a state where the next input letter
 leads to a reject state, the FSA dies.
 The reject states are omitted from Figure~\ref{f:example}
 and are denoted by the absence of the corresponding 
-characters. 
-In our examples, if we assume there were no stems that start 
+letters. 
+In our example, if we assume there were no stems that start 
 with the letter \RL{w}, $\Psi$ will die then. 
 In reality probably $\Psi$ will die when the input string
 is at \RL{wsyl`}. 
@@ -444,8 +452,8 @@ state.
 Before moving with the letter \RL{b} to the accept state,
 $\Phi$ needs to make sure that the stem \RL{l`b} is compatible
 with the prefix \RL{wsy}. 
-We do that by associating a category value for each accept state. 
-We consider the value of the category as part of the state.
+It does that by associating a category value for each accept state. 
+Sarf considers the value of the category as part of the state.
 Thus each state shown in Figure~\ref{f:example} actually represents
 more than one state. 
 If the category of \RL{l`b} is compatible with the category of
@@ -462,7 +470,7 @@ Note that $\Sigma$ can report a full word at any accept state
 now by spawning a new Automata using the $\epsilon$ transition
 to the prefix FSA.
 This is refined in Sarf to happen only with white space, delimiters, 
-or non-connecting characters. 
+or non-connecting letters. 
 We left that out in Figure~\ref{f:example} for clarity. 
 
 Finally, The case-based controller can interfere at any point in the 
@@ -471,7 +479,7 @@ is not interesting.
 It may also decide to correct the analysis of one Automata
 based on the decision of the others. 
 
-\subsection{Recursive Affixes}
+\subsection{Recursive affixes}
 \label{sec:recaffix}
 
 Morphological analysis partitions a given Arabic word
@@ -479,9 +487,9 @@ into a set of morphemes.
 A morpheme is either an affix or a stem. 
 We call two morphemes compatible if their concatenation
 forms a legal morpheme. 
-Buckwalter~\cite{Buckwalter:02} keeps separate lists 
+Buckwalter~\shortcite{Buckwalter:02} keeps separate lists 
 of prefixes, suffixes and stems and assigns a category
-to each morphemes. 
+to each morpheme. 
 The relation between morphemes and categories is one 
 to many. 
 
@@ -495,7 +503,7 @@ prefixes to stems, stems to suffixes, and prefixes to suffixes
 respectively. 
 Consider a string $s=\alpha\beta\gamma$ where $\alpha$ is 
 a prefix, $\beta$ is a stem, and $\gamma$ is a suffix. 
-The string $\alpha\beta\gamma$ partition of the string is a 
+The $\alpha\beta\gamma$ partition of the string is a 
 valid morphological analysis if  and only if we have
 $\langle c(\alpha),c(\beta)\rangle \in L_{ps}$ and
 $\langle c(\beta),c(\gamma)\rangle \in L_{sx}$ and
@@ -510,7 +518,7 @@ of the POS tags of each of the three morphemes.
 Keeping these morphemes separate in a list
 is redundant and may produce consistency issues. 
 We add two lists of compatibility rules $L_{pp}$ and
-$L_{xx}$ for prefix-prefix and suffix suffix compatibility
+$L_{xx}$ for prefix-prefix and suffix-suffix compatibility
 respectively.
 This allows us to keep a shorter list of affixes. 
 We need one more additional modification to accommodate 
@@ -518,15 +526,15 @@ a category for the morphemes accepted by the $L_{pp}$
 and the $L_{xx}$ rules. For that we introduce the concept
 of a {\em resulting category}. 
 The resulting category in all practical cases
-was the category of the second morpheme in the pair. 
+is the category of the second morpheme in the pair. 
 
-\subsection{Affix Linear FSA}
+\subsection{Affix linear FSA}
 \label{sec:affixFSA}
 
 We analyzed the prefixes and suffixes of 
-Buckwalter~\cite{Buckwalter:02}
+Buckwalter~\shortcite{Buckwalter:02}
 and extracted our refined lists of recursive affixes.
-We encoded the lists into a FSA similar to that
+We encoded the lists into an FSA similar to those
 in Figure~\ref{f:example}(a) and Figure~\ref{f:example}(c).
 The two FSAs are directed acyclic graphs. 
 The absence of cycles in these FSAs reduces the 
@@ -538,12 +546,12 @@ and looks it up in the affix tables.
 
 The prefix and suffix FSAs encode the $L_{pp}$ and
 $L_{xx}$ compatibility lists.
-An accept state in the FSA corresponds to the last character
+An accept state in the FSA corresponds to the last letter 
 of a prefix in the prefix and suffix lists.
 The accept states hold category state information as well
 as POS and other tags.
 
-\subsection{Stem Linear FSA}
+\subsection{Stem linear FSA}
 \label{sec:stemFSA}
 
 We built our stem lexicon using the stem lexicon of 
@@ -558,18 +566,19 @@ an efficient double array trie structure~\cite{Aoe:89}.
 The structure is also a linear FSA where the accept
 states are the terminal nodes corresponding to the last 
 letters in stems. 
-This approach is superior to Buckwalter since again it is
-a linear walk in the trie while with Buckwalter it is 
-several hash lookups.
+This approach is superior to Buckwalter since it consists of
+a linear walk in the trie while with Buckwalter we need
+a number of hash lookups in the order of all possible partitions
+of the string.
 
-\subsection{Non-deterministic Composition of FSAs}
+\subsection{Non-deterministic composition of FSAs}
 \label{sec:ndfsa}
 
 The diagram in Figure~\ref{f:composition} shows an 
 abstraction of the non-deterministic composition 
-of the prefix, stem and suffix FSA. 
+of the prefix, stem and suffix FSAs. 
 The circle represents regular states, the square
-represents accept state and the triangle represents
+represents accept states and the triangle represents
 reject states. 
 Note that the concrete prefix, stem and suffix FSAs
 are all linear and do not have cycles as discussed 
@@ -593,30 +602,29 @@ $A$.
 It starts with one FSA $\Phi_1$ similar to the one in 
 Figure~\ref{f:composition} and inserts it into a collection
 of FSAs $M$. 
-The algorithm reads a character $c$ at a time from $L$
-and moves on all the machines in $M$. 
-For each $\Phi$ in $M$ the algorithm checks whether
-$\Phi$ is in an accept state or not. 
-
-If $\Phi$ is in an accept state and it is in the suffix
+The algorithm reads a letter $c$ at a time from $L$
+and iterates over all machines in $M$. 
+For each $\Phi$ in $M$,
+if $\Phi$ is in an accept state and it is in the suffix
 phase, then the algorithm checks whether it should report
 a full word. 
 This happens when $c$ is a white space or a delimiter, 
-or when the last character leading to the current state
-was a non-connecting character. 
+or when the last letter leading to the current state
+was a non-connecting letter. 
 
 In all cases, if $\Phi$ is in an accept state, 
 it spawns another FSA $\Psi$ and adds it to $M$. 
 If $c$ leads to a reject state, then $\Phi$ dies 
 and we remove it from $M$. 
 Otherwise, $\Phi$ transitions using the $c$ edge.
-We invoke the controller $A$ after all the FSAs in $M$ 
-have moved and allow it full access and control over
+After iterating over all FSAs in $M$, we invoke the 
+controller $A$
+and grant it full access and control over
 all FSAs in $M$. 
 
 The arrows in Figure~\ref{f:composition} that transition
 from prefix to stem, stem to suffix, and suffix to prefix
-show the compatibility constraints as a condition for 
+require compatibility constraints for 
 the transition.
 
 \begin{table}[tb]
@@ -670,23 +678,23 @@ arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
   Our understanding is that those books are historical documents with 
   public IP.}.
 
-Our analysis accepts a book as a text stream input
-and segments it into a vector of individual hadiths. 
-We segment each hadith into two parts. The first part
-is the sanad and it
+Our analysis accepts a book as input
+and segments it into a vector of hadiths. 
+We segment each individual hadith into two parts. 
+The first part is the sanad and it
 contains the chain of narrators who related the hadith
-to Mohammad. 
-The second part is the matn and it constitutes the content
+from Mohammad. 
+The second part is the matn or the content
 of the hadith. 
-We are concerned in further exploring the sanad. 
-In particular, we detect the chain of narrators
-and the relation between each narrator, his ancestor, and 
+We are concerned to further explore the sanad and
+we detect the chain of narrators and 
+the relation that links each narrator to his ancestor and 
 his predecessor in the chain. 
 We also detect the full name of each narrator that is
 usually composed of several proper names with connectors
 in between. 
 
-We built our case-based controller to target
+We built our hadith case-based controller to target
 the detection of proper names. 
 This includes the task of finding compound names 
 composed of several words such as \RL{`bd alr.hmn} often
@@ -696,14 +704,76 @@ they appear in the neighborhood of multiple proper names.
 
 \subsection{Controller}
 % FSM for the controller
-The FSA in Figure~\ref{f:hadith}
+
+
+We illustrate the hadith case-based controller FSA is 
+in Figure~\ref{f:hadith}. 
+The transitions in the hadith FSA are excited
+by inputs from the Sarf morphological analyzer. 
+A NAME label means that Sarf encountered a proper name.
+An NRC label means that Sarf met a narrator connector such as
+\RL{`an} "on behalf of", \RL{.hada_t} "narrated", \RL{qaal} "said", 
+\RL{'a_hbar} "told" or one of their derivations. 
+The IBN label corresponds to the word \RL{ibn} "the son of" and is a name connector.
+The NISBA label corresponds to the an adjective that points to a person such 
+as \RL{alma.sriy} "the Egyptian". 
+
+The symbol $\tau_{\mbox{NMC}}$ is a threshold
+that corresponds to the number of tolerated name connectors 
+that may occur between two names. 
+The symbol LIST$_{\mbox{NMC}}$ corresponds to the list 
+of name connectors collected since the controller
+started looping in the state NMC\_S. 
+The symbol $\lambda_{\mbox{NMC}}$ is a parameter 
+that corresponds to a relaxed tolerance measure that
+the controller resorts to in case the words separating
+two names were longer than $\tau_{\mbox{NMC}}$ but 
+contained a name connector word such as IBN or NISBA.
+
+The controller has four states that correspond to 
+an abstract position in text relative to the next sanad. 
+State TEXT\_S is the initial state and denotes that
+the controller is outside the context of a sanad.
+The controller moves to the state NAME\_S whenever
+NAME is reported by Sarf.
+State NRC\_S means that the controller thinks it is in the context
+of a narrator name after Sarf reports an NRC.
+Similarly, state NMC\_S
+indicates that the controller expects a name to appear within 
+a tolerance threshold expressed by 
+$\tau_{\mbox{NMC}}$ and $\lambda_{\mbox{NMC}}$.
+
+\begin{figure}[tb!]
+\center{
+\resizebox{.9\columnwidth}{!}
+{ \input{psfigs/hadith.pstex_t}}
+\caption{FSA for the controller of the hadith case study.}
+\label{f:hadith}
+}
+\end{figure}
+
+Similarly, the NRC\_S state tolerates $\tau_{\mbox{NRC}}$ words 
+before it gives up on its expectations. 
+
+We reach the NAME\_S state only when a
+valid NAME is detected and we leave when no more NAME's are detected. 
+The NRC\_S state can only be reached if an NRC is detected.
+NMC\_S can only be reached from a NAME\_S state.
+
+The FSA reports a valid chain of narrators when a sequence of names
+connected by narrator connectors appears. 
+It marks the begining of the hadith with the begining of the sequence,
+and marks the end of the hadith by the begining of the next sequence. 
+It also marks the chain of narrators as the sequence itself. 
+
+The definition of input labels such as NAME and IBN depends on the 
+morphological analyzer. 
+However, our case-based controller approach was able to perform well
+under both a good analyzer and a refined one. 
 
 
 \section{Results}
 \label{sec:results}
-
-We report our results based on a manual validation of 
-a representative sample selected randomly from the text.
 
 \begin{table*}[bt]
 \centering
@@ -719,25 +789,64 @@ Narrators & &3,080 & 2,623 & & 6,164 &  5,767& & 2,082 & 1,755 \\
 Narrator/Chain & & 5.28 & 4.84 & & 4.98&  4.76 & & 4.8 &4.05 \\
 Chains & & 583 & 542 &  & 1,238& 1,211& & 433 & 433 \\ 
 Ignored names & & 11,801 & 6,400 &  & 5,845 & 3,348 & & 1,386 & 642 \\ \hline \hline
-Segmentation accuracy & & 80\% & 96\%& & 96\%& 96\%& & 92\%& 92\%\\ 
+Segmentation accuracy & & 85\% & 96\%& & 96\%& 96\%& & 92\%& 92\%\\ 
 Chain accuracy & & 99\% & 99\%&  & 98\%& 99\%& & 99\% & 97\% \\ 
 %Narrator accuracy & & & & & &  & & & \\ 
-Name accuracy & & 93\% & 91\%& &  92\%& 90\% & & 90\% & 90\% \\ \hline
+Narrator name accuracy & & 93\% & 91\%& &  92\%& 90\% & & 90\% & 90\% \\ \hline
 Name false positives & & 28\% & 7\%&  & 9\%& 4\% & & 34\% & 4\% \\ \hline
-Sarf running time & &a & & & & & & & \\ \hline
+Sarf running time (secs.)& & 24.5 & 22.67 & & 23.5 & 23.17 & & 2.25 & 1.67\\ \hline
 \end{tabular}
 \normalsize
 \label{t:hadithresallresults}
 \end{table*}
 
-\subsection{Efficiency Comparison Against Buckwalter and SAMA}
+To evaluate our hypothesis of the utility of a case-based morphological analyzer,
+we ran our case study in two modes, simple and accurate.
+In the simple mode Sarf is controlled by the hadith controller.
+In the accurate mode we apply several refinements to Sarf.
+The first refinement removes female proper names since they do not occur often in
+hadith.
+We also add a refinement that detects compound names as they are common in narrator
+names.
+Finally, we consider a possessive form as a reference to a person and treat
+it as a narrator.
 
-\subsection{Case Study Accuracy and Efficiency Results}
+We report our results in Table~\ref{t:hadithresallresults} on the three hadith books.
+The word count row is an indicator of the size of data.
+The number of names, narrators, and chains reflect a hierarchical structure where a chain contains
+narrators, and a narrator contains names.
+In general, we observe that the refinements slightly improved performance and accuracy at
+the lowest level of abstraction by reducing false positives.
+However, the refienements had little to no effect on the high accuracy measures at higher
+levels of abstraction.
+We beleive that this is a strong supporting evidence to our hypothesis.
 
-% accuracy measure:
-% on names: a word is a name or not
-% chains: narrator is missing from a chain
-% segmentation: two hadiths are merged
+The names row reports the total number of detected names. The names/narator row reports the average
+number of names per narrator structure. The narrator row reports the number of narrators detected.
+The narrator/chain reports the number of narrators per chain structure. And the chain row reports
+the number of detected chains in the book.
+The ignored names row reports the number of names detected outside the chains and thus irrelevant to
+the case study.
+The segmentation accuracy reports on the accuracy of segmentation of the book into separate hadiths.
+The metric is computed manually over a representative sample of each text. The same applies to all other accuracy measures.
+The chain accuracy reflects the percentage of correct narrators covered by extracted chains.
+The narrator name accuracy row reflects the percentage of correct proper names detected within
+narrator strutures.
+
+The name false positives row reports the percentage of words recognized as names while they should not.
+We notice that the low level metric of name false positives improved dramatically with the accurate
+analysis without substantially affecting the high abstract measures such as chain and segmentation
+accuracy.
+We notice that the controller in the simple analysis ignored more names and thus the case-based
+controller compensated for the inaccuracy of the low level analysis with a simple heuristic and
+without the need of the fancy refinements.
+
+We investigated the case of Al Kafi where the accuracy of the simple analysis was significantly lower than the accurate
+analysis and discovered that the chains detected by the accurate analysis were a subset of those detected by the simple
+analysis. 
+This means that the simple analysis results have false positives and did not miss important information. We hypothesize
+that a higher level of abstraction analysis such as intersecting the narrators with their biographies can 
+reduce false positives in the simple analysis.
 
 \section{Future Work}
 \label{sec:future}
@@ -745,6 +854,9 @@ Sarf running time & &a & & & & & & & \\ \hline
 In the future we plan to complete the hadith case study 
 and automate narrator discovery and authentication in the 
 biography books. 
+We plan to make use of the name connector and narrator
+connector stop phrases that our case study extracted to create a 
+learning system that can learn more names. 
 We also plan on developing a domain specific language similar 
 that allows users to easily specify their case-based controller
 to interact with Sarf.
@@ -778,6 +890,6 @@ to interact with Sarf.
 % this will go into the regular submission
 
 \bibliographystyle{naaclhlt2010}
-\bibliography{fzAr}
+{\small \bibliography{fzAr}}
 
 \end{document}
