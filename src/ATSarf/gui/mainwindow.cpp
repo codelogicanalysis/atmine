@@ -78,3 +78,8 @@ int main(int argc, char *argv[])
 	mainw.show();
 	return app.exec();
 }
+
+void MainWindow::on_exit_clicked()
+{
+	exit(0);
+}
