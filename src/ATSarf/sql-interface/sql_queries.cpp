@@ -93,8 +93,10 @@ bool execute_query(QString stmt, QSqlQuery &query)
 		return false;
 	}
 #endif
+#if 0
 	if (!filling)
 		qDebug()<<stmt;
+#endif
 	if (!query.exec(stmt))
 	{
 		error <<query.lastError().text()<<"\n"<<"STATEMENT WAS: "<<stmt<<"\n";
