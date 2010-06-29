@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [2][-]{subsection.2}{Sarf}{section.1}
+\BOOKMARK [1][-]{section.7}{Related Work }{}
+\BOOKMARK [1][-]{section.8}{Sarf}{}
+\BOOKMARK [2][-]{subsection.11}{Sarf example}{section.8}
+\BOOKMARK [2][-]{subsection.14}{Recursive affixes}{section.8}
+\BOOKMARK [2][-]{subsection.15}{Affix linear FSA}{section.8}
+\BOOKMARK [2][-]{subsection.16}{Stem linear FSA}{section.8}
+\BOOKMARK [2][-]{subsection.17}{Non-deterministic composition of FSAs}{section.8}
+\BOOKMARK [1][-]{section.19}{Islamic Literature Case Study}{}
+\BOOKMARK [2][-]{subsection.21}{Controller}{section.19}
+\BOOKMARK [1][-]{section.23}{Results}{}
+\BOOKMARK [1][-]{section.25}{Future Work}{}
