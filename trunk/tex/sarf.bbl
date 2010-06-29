@@ -1,0 +1,140 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citename{Al~Kulayni}]{AlKulayni}
+Muhammad ibn~Yaaqub Al~Kulayni.
+\newblock {\em Kitab al-Kafi}.
+
+\bibitem[\protect\citename{Al-Sughaiyer and Al-Kharashi}2004]{Sughaiyer:04}
+Imad~A. Al-Sughaiyer and Ibrahim~A. Al-Kharashi.
+\newblock 2004.
+\newblock Arabic morphological analysis techniques: a comprehensive survey.
+\newblock {\em American Society for Information Science and Technology},
+  55(3):189--213.
+
+\bibitem[\protect\citename{Al~Tousi}]{AlTousi}
+Mohammad bin Hasan bin~Ali Al~Tousi.
+\newblock {\em Al Istibsar}.
+
+\bibitem[\protect\citename{Aoe}1989]{Aoe:89}
+Jun-ichi Aoe.
+\newblock 1989.
+\newblock An efficient digital search algorithm by using a double-array
+  structure.
+\newblock {\em IEEE Transactions on Software Engineering}, 15(9):1066--1077,
+  May.
+
+\bibitem[\protect\citename{Badawi \bgroup et al.\egroup }2004]{Badawi:04}
+Elsaid Badawi, Mike~G. Carter, and Adrian Gully.
+\newblock 2004.
+\newblock {\em Modern Written Arabic: A Comprehensive Grammar}.
+\newblock Routledge, New York.
+
+\bibitem[\protect\citename{Beesley}2001]{Beesley:01}
+Keneth~R. Beesley.
+\newblock 2001.
+\newblock Finite-state morphological analysis and generation of arabic at xerox
+  research: Status and plans.
+\newblock In {\em Workshop Proceedings on Arabic Language Processing: Status
+  and Prospects}, pages 1--8, Toulouse, France.
+
+\bibitem[\protect\citename{Benajiba \bgroup et al.\egroup }2008]{Benajiba:07}
+Yassine Benajiba, Mona Diab, and Paolo Rosso.
+\newblock 2008.
+\newblock Arabic named entity recognition using optimized feature sets.
+\newblock In {\em EMNLP '08: Proceedings of the Conference on Empirical Methods
+  in Natural Language Processing}, pages 284--293, Morristown, NJ, USA.
+
+\bibitem[\protect\citename{Buckwalter}2002]{Buckwalter:02}
+Timothy Buckwalter.
+\newblock 2002.
+\newblock Buckwalter arabic morphological analyzer version 1.0.
+\newblock Technical report, LDC catalog number LDC2002L49.
+
+\bibitem[\protect\citename{Buckwalter}2004]{Buckwalter:04}
+Timothy Buckwalter.
+\newblock 2004.
+\newblock Issues in arabic orthography and morphology analysis.
+\newblock In {\em Semitic '04: Proceedings of the Workshop on Computational
+  Approaches to Arabic Script-based Languages}, pages 31--34, Morristown, NJ,
+  USA.
+
+\bibitem[\protect\citename{Darwish}2002]{Darwish:02}
+Kareem Darwish.
+\newblock 2002.
+\newblock Building a shallow arabic morphological analyzer in one day.
+\newblock In {\em Proceedings of the ACL-02 workshop on Computational
+  approaches to semitic languages}.
+
+\bibitem[\protect\citename{Habash and Sadat}2006]{Habash:06}
+Nizar Habash and Fatiha Sadat.
+\newblock 2006.
+\newblock Arabic preprocessing schemes for statistical machine translation.
+\newblock In {\em Proceedings of the North American Chapter of the Association
+  for Computational Linguistics(NAACL)}, pages 49--52.
+
+\bibitem[\protect\citename{Habash \bgroup et al.\egroup }2005]{Habash:05}
+Nizar Habash, Owen Rambow, and George Kiraz.
+\newblock 2005.
+\newblock Morphological analysis and generation for arabic dialects.
+\newblock In {\em Semitic '05: Proceedings of the ACL Workshop on Computational
+  Approaches to Semitic Languages}, pages 17--24, Morristown, NJ, USA.
+
+\bibitem[\protect\citename{Habash \bgroup et al.\egroup }2009]{Habash:09}
+Nizar Habash, Owen Rambow, and Ryan Roth.
+\newblock 2009.
+\newblock Mada+tokan: A toolkit for arabic tokenization, diacritization,
+  morphological disambiguation, pos tagging, stemming and lemmatization.
+\newblock In Khalid Choukri and Bente Maegaard, editors, {\em Proceedings of
+  the Second International Conference on Arabic Language Resources and Tools},
+  Cairo, Egypt, April. The MEDAR Consortium.
+
+\bibitem[\protect\citename{Ibn~Hanbal}]{IbnHanbal}
+Ahmad Ibn~Hanbal.
+\newblock {\em Musnad Ahmad Ibn Hanbal}.
+
+\bibitem[\protect\citename{Khoja}2001]{Khoja:01}
+Shereen Khoja.
+\newblock 2001.
+\newblock Apt: Arabic part of speech tagger.
+\newblock In {\em NAACL student research workshop}.
+
+\bibitem[\protect\citename{Kulick \bgroup et al.\egroup }2010]{Kulick:10}
+Seth Kulick, Ann Bies, and Mohamed Maamouri.
+\newblock 2010.
+\newblock Consistent and flexible integration of morphological annotation in
+  the arabic treebank.
+\newblock In {\em Proceedings of the Seventh conference on International
+  Language Resources and Evaluation (LREC'10)}, Valletta, Malta, May.
+
+\bibitem[\protect\citename{Maamouri and Bies}2004]{Maamouri:04}
+Mohamed Maamouri and Ann Bies.
+\newblock 2004.
+\newblock Developing an arabic treebank: methods, guidelines, procedures, and
+  tools.
+\newblock In {\em Semitic '04: Proceedings of the Workshop on Computational
+  Approaches to Arabic Script-based Languages}, pages 2--9.
+
+\bibitem[\protect\citename{Maamouri \bgroup et al.\egroup }2010]{Maamouri:10}
+Mohamed Maamouri, Ann Bies, Seth Kulick, Wajdi Zaghouani, David Graff, and
+  Michael Ciul.
+\newblock 2010.
+\newblock From speech to trees: Applying treebank annotation to arabic
+  broadcast news.
+\newblock In {\em Proceedings of the Seventh conference on International
+  Language Resources and Evaluation (LREC'10)}, Valletta, Malta, May.
+
+\bibitem[\protect\citename{Mona~Diab and Jurafsky}2007]{Diab:07}
+Kadri~Hacioglu Mona~Diab and Daniel Jurafsky, 2007.
+\newblock {\em Arabic Computational Morphology: Knowledge-based and Empirical
+  Methods}, chapter~9, pages 159--179.
+\newblock Springer.
+
+\bibitem[\protect\citename{Smr\v{z}}2007]{Otakar:07}
+Otakar Smr\v{z}.
+\newblock 2007.
+\newblock Elixirfm: implementation of functional arabic morphology.
+\newblock In {\em Semitic '07: Proceedings of the 2007 Workshop on
+  Computational Approaches to Semitic Languages}, pages 1--8, Prague, Czech
+  Republic.
+
+\end{thebibliography}

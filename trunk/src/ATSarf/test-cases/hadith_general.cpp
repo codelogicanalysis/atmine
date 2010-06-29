@@ -830,7 +830,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			}
 		}
 		currentState=nextState;
-#if 0
+#if 1
 		prg->report((double)current_pos/text_size*100+0.5);
 		if (current_pos==text_size-1)
 			break;
