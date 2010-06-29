@@ -19,7 +19,7 @@ figures: $(SRCS_PS_TEX_T) $(SRCS_PDF_TEX_T)
 slides%.pdf: slides%.tex figures refstrings.sty slidesMacros.sty
 	pdflatex slides$*.tex
 
-%.bbl: my.bib
+%.bbl: fzAr.bib
 	latex $*.tex
 	-bibtex $*
 

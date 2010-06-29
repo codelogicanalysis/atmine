@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2010.6.24)  26 JUN 2010 09:21
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=latex 2010.6.24)  29 JUN 2010 13:22
 entering extended mode
  %&-line parsing enabled.
 **sarf.tex
@@ -223,6 +223,26 @@ Package: amsthm 2004/08/06 v2.20
 \thm@headsep=\skip51
 \dth@everypar=\toks45
 )
+(/usr/share/texmf-texlive/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen146
+\lightrulewidth=\dimen147
+\cmidrulewidth=\dimen148
+\belowrulesep=\dimen149
+\belowbottomsep=\dimen150
+\aboverulesep=\dimen151
+\abovetopsep=\dimen152
+\cmidrulesep=\dimen153
+\cmidrulekern=\dimen154
+\defaultaddspace=\dimen155
+\@cmidla=\count135
+\@cmidlb=\count136
+\@aboverulesep=\dimen156
+\@belowrulesep=\dimen157
+\@thisruleclass=\count137
+\@lastruleclass=\count138
+\@thisrulewidth=\dimen158
+)
 (/usr/share/texmf-texlive/tex/latex/ltxmisc/relsize.sty
 Package: relsize 2003/07/04 ver 3.1
 )
@@ -230,11 +250,11 @@ Package: relsize 2003/07/04 ver 3.1
 Package: fancyvrb 1998/07/17
 
 Style option: `fancyvrb' v2.6, with DG/SPQR fixes <1998/07/17> (tvz)
-\FV@CodeLineNo=\count135
+\FV@CodeLineNo=\count139
 \FV@InFile=\read1
 \FV@TabBox=\box45
-\c@FancyVerbLine=\count136
-\FV@StepNumber=\count137
+\c@FancyVerbLine=\count140
+\FV@StepNumber=\count141
 \FV@OutFile=\write5
 
 No file fancyvrb.cfg.
@@ -246,9 +266,9 @@ LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
 )
 (/usr/share/texmf-texlive/tex/latex/hyperref/hyperref.sty
 Package: hyperref 2007/02/07 v6.75r Hypertext links for LaTeX
-\@linkdim=\dimen146
-\Hy@linkcounter=\count138
-\Hy@pagecounter=\count139
+\@linkdim=\dimen159
+\Hy@linkcounter=\count142
+\Hy@pagecounter=\count143
 
 (/usr/share/texmf-texlive/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2007/02/07 v6.75r Hyperref: PDFDocEncoding definition (HO)
@@ -274,9 +294,9 @@ Package hyperref Info: Bookmarks ON on input line 2444.
 Package: url 2005/06/27  ver 3.2  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 2599.
-\Fld@menulength=\count140
-\Field@Width=\dimen147
-\Fld@charsize=\dimen148
+\Fld@menulength=\count144
+\Field@Width=\dimen160
+\Fld@charsize=\dimen161
 \Choice@toks=\toks46
 \Field@toks=\toks47
 Package hyperref Info: Hyper figures OFF on input line 3102.
@@ -284,9 +304,9 @@ Package hyperref Info: Link nesting OFF on input line 3107.
 Package hyperref Info: Hyper index ON on input line 3110.
 Package hyperref Info: backreferencing OFF on input line 3117.
 Package hyperref Info: Link coloring OFF on input line 3122.
-\Hy@abspage=\count141
-\c@Item=\count142
-\c@Hfootnote=\count143
+\Hy@abspage=\count145
+\c@Item=\count146
+\c@Hfootnote=\count147
 )
 *hyperref using default driver hdvips*
 (/usr/share/texmf-texlive/tex/latex/hyperref/hdvips.def
@@ -298,34 +318,34 @@ File: pdfmark.def 2007/02/07 v6.75r Hyperref definitions for pdfmark specials
 \pdf@box=\box46
 \pdf@toks=\toks49
 \pdf@defaulttoks=\toks50
-\Fld@listcount=\count144
+\Fld@listcount=\count148
 ))
 (/usr/share/texmf-texlive/tex/latex/arabtex/utf8.sty
 (/usr/share/texmf-texlive/tex/latex/arabtex/utfcode.sty
 Package: utfcode 2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
-\u@lb=\count145
-\u@lq=\count146
+\u@lb=\count149
+\u@lq=\count150
 )
 Package: utf8 2000/06/13  3.10 UTF-8 input encoding 
 
 (ArabTeX) scanner for code UTF-8 installed.) (./sarf.aux)
 \openout1 = `sarf.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 53.
-LaTeX Font Info:    ... okay on input line 53.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 53.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 54.
 
 (/usr/share/texmf-texlive/tex/latex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -353,10 +373,10 @@ LaTeX Info: Redefining \selectfont on input line 125.
 \JustifyingParindent=\skip65
 )
 Package caption Info: hyperref package v6.74m (or newer) detected on input line
- 53.
+ 54.
 Package caption Info: rotating package v2.0 (or newer) detected on input line 5
-3.
-Package hyperref Info: Link coloring OFF on input line 53.
+4.
+Package hyperref Info: Link coloring OFF on input line 54.
 
 (/usr/share/texmf-texlive/tex/latex/hyperref/nameref.sty
 Package: nameref 2006/12/27 v2.28 Cross-referencing by name of section
@@ -364,60 +384,131 @@ Package: nameref 2006/12/27 v2.28 Cross-referencing by name of section
 (/usr/share/texmf-texlive/tex/latex/oberdiek/refcount.sty
 Package: refcount 2006/02/20 v3.0 Data extraction from references (HO)
 )
-\c@section@level=\count147
+\c@section@level=\count151
 )
-LaTeX Info: Redefining \ref on input line 53.
-LaTeX Info: Redefining \pageref on input line 53.
+LaTeX Info: Redefining \ref on input line 54.
+LaTeX Info: Redefining \pageref on input line 54.
  (./sarf.out)
 (./sarf.out)
 \@outlinefile=\write6
 \openout6 = `sarf.out'.
 
  (/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
-\a@lines=\count148
-\a@Lwidth=\dimen149
-\a@displaywidth=\dimen150
+\a@lines=\count152
+\a@Lwidth=\dimen162
+\a@displaywidth=\dimen163
 
 (/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
 (ArabTeX) 3.11 local stub, 26.02.2006)
 (ArabTeX) version 3.11s (02.07.2006): second phase of patching)
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 55.
-LaTeX Font Info:    Try loading font information for U+msa on input line 55.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
+LaTeX Font Info:    Try loading font information for U+msa on input line 56.
 
 (/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2002/01/19 v2.2g AMS font definitions
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 55.
+LaTeX Font Info:    Try loading font information for U+msb on input line 56.
 
 (/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2002/01/19 v2.2g AMS font definitions
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 55.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 56.
 
 (/usr/share/texmf-texlive/tex/latex/base/ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 55.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 56.
 
 
 LaTeX Warning: No \author given.
 
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 86.
-
-LaTeX Warning: Citation `Sughaiyer:04' on page 1 undefined on input line 86.
-
-LaTeX Font Info:    Try loading font information for U+xnsh on input line 96.
+LaTeX Font Info:    Try loading font information for U+xnsh on input line 97.
 (/usr/share/texmf-texlive/tex/latex/arabtex/Uxnsh.fd
 File: uxnsh.fd  1999/10/19 v3.10 ArabTeX Naskh extd. font definitions
 )
 LaTeX Font Info:    Font shape `U/xnsh/m/n' will be
-(Font)              scaled to size 15.76802pt on input line 96.
+(Font)              scaled to size 15.76802pt on input line 97.
+
+Underfull \hbox (badness 1226) in paragraph at lines 83--97
+\OT1/ptm/m/n/10.95 ing texts, pub-li-ca-tions, records and dig-i-tal me-
+ []
 
 
-LaTeX Warning: Citation `Buckwalter:04' on page 1 undefined on input line 124.
+Overfull \hbox (3.12943pt too wide) detected at line 101
+|[]
+ []
+
+
+Overfull \hbox (3.6487pt too wide) detected at line 117
+|[]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+[]\OT1/ptm/m/n/10.95 Current mor-pho-log-i-cal an-a-lyz-ers such
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 as Buck-wal-ter ([][][][]), Beesly ([][][][]),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 SAMA ([][][][]), and
+ []
+
+
+Underfull \hbox (badness 1215) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 First, a white space de-lim-ited to-ken may have
+ []
+
+
+Underfull \hbox (badness 1533) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 more than one word. Sec-ond, the ex-haus-tive
+ []
+
+
+Underfull \hbox (badness 6316) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 enu-mer-a-tion may hurt per-for-mance and may
+ []
+
+
+Underfull \hbox (badness 2173) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 not be nec-es-sary or ap-pro-pri-ate in some case
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 stud-ies as noted in ([][][][]).
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 Other mor-pho-log-i-cal an-a-lyz-ers such as
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 Amira ([][][][];
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+[][][][]\OT1/ptm/m/n/10.95 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 MAGEAD ([][][][]), and
+ []
+
+
+Underfull \hbox (badness 2376) in paragraph at lines 125--144
+\OT1/ptm/m/n/10.95 to en-hance the ac-cu-racy of the mor-pho-log-i-cal
+ []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -428,102 +519,46 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 ]
+Underfull \hbox (badness 1253) in paragraph at lines 145--165
+[]\OT1/ptm/m/n/10.95 We hy-poth-e-size that many NLP case stud-ies
+ []
 
-LaTeX Warning: Citation `Buckwalter:02' on page 2 undefined on input line 129.
-
-
-LaTeX Warning: Citation `Beesley:01' on page 2 undefined on input line 130.
-
-
-LaTeX Warning: Citation `Kulick:10' on page 2 undefined on input line 130.
-
-
-LaTeX Warning: Citation `Otakar:07' on page 2 undefined on input line 131.
-
-
-LaTeX Warning: Citation `Kulick:10' on page 2 undefined on input line 132.
-
-
-LaTeX Warning: Citation `Maamouri:10' on page 2 undefined on input line 137.
-
-
-LaTeX Warning: Citation `Diab:07' on page 2 undefined on input line 140.
-
-
-LaTeX Warning: Citation `Benajiba:07' on page 2 undefined on input line 140.
-
-
-LaTeX Warning: Citation `Habash:05' on page 2 undefined on input line 141.
-
-
-LaTeX Warning: Citation `Habash:09' on page 2 undefined on input line 141.
-
-
-LaTeX Warning: Citation `Maamouri:10' on page 2 undefined on input line 162.
-
-
-LaTeX Warning: Citation `Maamouri:04' on page 2 undefined on input line 163.
-
-
-LaTeX Warning: Citation `Kulick:10' on page 2 undefined on input line 166.
-
-
-LaTeX Warning: Citation `Habash:06' on page 2 undefined on input line 167.
-
-
-LaTeX Warning: Citation `IbnHanbal' on page 2 undefined on input line 227.
-
-
-LaTeX Warning: Citation `AlTousi' on page 2 undefined on input line 227.
-
-
-LaTeX Warning: Citation `AlKulayni' on page 2 undefined on input line 227.
-
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 166.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-
-LaTeX Warning: Citation `Buckwalter:02' on page 3 undefined on input line 248.
-
-
-LaTeX Warning: Reference `sec:future' on page 3 undefined on input line 270.
+Overfull \hbox (2.0785pt too wide) in paragraph at lines 263--273
+\OT1/ptm/m/n/10.95 The sur-vey in ([][][][])
+ []
 
 
-LaTeX Warning: Citation `Sughaiyer:04' on page 3 undefined on input line 281.
+Underfull \hbox (badness 4699) in paragraph at lines 263--273
+\OT1/ptm/m/n/10.95 dis-cusses and com-pares sev-eral mor-pho-log-i-cal
+ []
 
 
-LaTeX Warning: Citation `Khoja:01' on page 3 undefined on input line 283.
+Underfull \hbox (badness 5519) in paragraph at lines 263--273
+\OT1/ptm/m/n/10.95 an-a-lyz-ers. An-a-lyz-ers such as ([][][][];
+ []
 
 
-LaTeX Warning: Citation `Darwish:02' on page 3 undefined on input line 283.
+Underfull \hbox (badness 1902) in paragraph at lines 263--273
+\OT1/ptm/m/n/10.95 mor-pho-log-i-cal an-a-lyzer it-self or use a spe-cific
+ []
 
 
-LaTeX Warning: Citation `Buckwalter:02' on page 3 undefined on input line 292.
+Underfull \hbox (badness 10000) in paragraph at lines 317--328
+[]\OT1/ptm/m/n/10.95 We strongly feel that the re-fine-ment of
+ []
 
 
-LaTeX Warning: Citation `Beesley:01' on page 3 undefined on input line 308.
+Underfull \hbox (badness 10000) in paragraph at lines 317--328
+\OT1/ptm/m/n/10.95 SAMA ([][][][]) is the clos-est
+ []
 
-
-LaTeX Warning: Citation `Maamouri:10' on page 3 undefined on input line 335.
-
-
-LaTeX Warning: Citation `Maamouri:04' on page 3 undefined on input line 337.
-
-[3]
-
-LaTeX Warning: Citation `Diab:07' on page 4 undefined on input line 347.
-
-
-LaTeX Warning: Citation `Otakar:07' on page 4 undefined on input line 353.
-
-
-LaTeX Warning: Citation `Badawi:04' on page 4 undefined on input line 360.
-
-
-LaTeX Warning: Citation `Buckwalter:02' on page 4 undefined on input line 371.
-
-(./psfigs/FSM.pstex_t
+[3] (./psfigs/FSM.pstex_t
 File: psfigs/FSM.pstex Graphic file (type eps)
  <psfigs/FSM.pstex>
 LaTeX Font Info:    Font shape `U/xnsh/m/n' will be
@@ -534,7 +569,7 @@ LaTeX Font Info:    Try loading font information for OT1+phv on input line 40.
 File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
 ))
 LaTeX Font Info:    Font shape `U/xnsh/m/n' will be
-(Font)              scaled to size 12.96002pt on input line 421.
+(Font)              scaled to size 12.96002pt on input line 403.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -543,72 +578,69 @@ Overfull \vbox (29.83191pt too high) has occurred while \output is active []
 
 
 [4]
-
-LaTeX Warning: Citation `Buckwalter:02' on page 5 undefined on input line 506.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [5]
-
-LaTeX Warning: Citation `Buckwalter:02' on page 6 undefined on input line 551.
-
-
-LaTeX Warning: Citation `Aoe:89' on page 6 undefined on input line 581.
-
-
-Underfull \vbox (badness 1132) has occurred while \output is active []
-
-
 (./psfigs/abstract_machine.pstex_t
 File: psfigs/abstract_machine.pstex Graphic file (type eps)
  <psfigs/abstract_machine.pstex>)
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 615.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 597.
 
 
 (/usr/share/texmf-texlive/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Try loading font information for OMS+pcr on input line 656.
+LaTeX Font Info:    Try loading font information for OMS+pcr on input line 638.
 
 
 (/usr/share/texmf-texlive/tex/latex/psnfss/omspcr.fd
 File: omspcr.fd 
 )
 LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 656.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 638.
+ [6]
+Overfull \vbox (16.92915pt too high) has occurred while \output is active []
 
 
-LaTeX Warning: Citation `IbnHanbal' on page 6 undefined on input line 690.
-
-
-LaTeX Warning: Citation `AlKulayni' on page 6 undefined on input line 690.
-
-
-LaTeX Warning: Citation `AlTousi' on page 6 undefined on input line 690.
-
-[6]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [7]
 (./psfigs/hadith.pstex_t
 File: psfigs/hadith.pstex Graphic file (type eps)
- <psfigs/hadith.pstex>)
-Underfull \hbox (badness 2111) in paragraph at lines 813--818
-[]\OT1/ptm/m/n/10.95 In gen-eral, we ob-serve that the re-fine-ments
+ <psfigs/hadith.pstex>) [7] [8] (./sarf.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 8--13
+[]\OT1/ptm/m/n/10 Imad A. Al-
  []
 
-[8]
 
-LaTeX Warning: Citation `Otakar:07' on page 9 undefined on input line 926.
+Underfull \hbox (badness 1178) in paragraph at lines 19--25
+[]\OT1/ptm/m/n/10 Jun-ichi Aoe.  1989.  An ef-fi-cient dig-i-
+ []
 
-(./sarf.bbl) [9] [10] (./sarf.aux)
+[9]
+Underfull \hbox (badness 1112) in paragraph at lines 118--125
+\OT1/ptm/m/n/10 Seth Kulick, Wa-jdi Za-ghouani, David Graff, and
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 127--131
+[]\OT1/ptm/m/n/10 Kadri Ha-cioglu
+ []
+
+
+Underfull \hbox (badness 1509) in paragraph at lines 127--131
+\OT1/ptm/m/n/10 Mona Diab and Daniel Ju-raf-sky, 2007.  \OT1/ptm/m/it/10 Ara-bi
+c
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 127--131
+\OT1/ptm/m/it/10 Com-pu-ta-tional Mor-phol-ogy: Knowledge-based
+ []
+
+) [10
+
+] (./sarf.aux)
 
  *File List*
  article.cls    2005/09/16 v1.4f Standard LaTeX document class
@@ -665,6 +697,7 @@ rotating.sty    1997/09/26, v2.13 Rotation package
   ifthen.sty    2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
 multirow.sty    
   amsthm.sty    2004/08/06 v2.20
+booktabs.sty    2005/04/14 v1.61803 publication quality tables
  relsize.sty    2003/07/04 ver 3.1
 fancyvrb.sty    1998/07/17
 latexsym.sty    1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
@@ -703,16 +736,16 @@ psfigs/hadith.pstex
  ***********
 
 
-LaTeX Warning: There were undefined references.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 7329 strings out of 95078
- 92374 string characters out of 1182998
- 177548 words of memory out of 1500000
- 10282 multiletter control sequences out of 10000+50000
- 21932 words of font info for 78 fonts, out of 1200000 for 2000
+ 7388 strings out of 95078
+ 93150 string characters out of 1182998
+ 179297 words of memory out of 1500000
+ 10337 multiletter control sequences out of 10000+50000
+ 22480 words of font info for 79 fonts, out of 1200000 for 2000
  28 hyphenation exceptions out of 8191
- 35i,17n,40p,291b,515s stack positions out of 5000i,500n,6000p,200000b,5000s
+ 35i,16n,40p,299b,515s stack positions out of 5000i,500n,6000p,200000b,5000s
 
-Output written on sarf.dvi (10 pages, 72740 bytes).
+Output written on sarf.dvi (10 pages, 87196 bytes).
