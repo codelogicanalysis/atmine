@@ -213,8 +213,8 @@ public:
 		#ifdef STATS
 			stem=temp_stem;
 		#endif
-                        nmc=true;
-                        finish_pos=finish;
+			nmc=true;
+			finish_pos=finish;
 			return false;
 		}
 		else if (stem_info->description=="said" || stem_info->description=="say" || stem_info->description=="notify/communicate" || stem_info->description.split(QRegExp("[ /]")).contains("listen") || stem_info->description.contains("from/about")||stem_info->description.contains("narrate"))
@@ -830,9 +830,11 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			}
 		}
 		currentState=nextState;
+#if 0
 		prg->report((double)current_pos/text_size*100+0.5);
 		if (current_pos==text_size-1)
 			break;
+#endif
 	}
 	if (newHadithStart<0)
 	{
