@@ -85,7 +85,6 @@ bool TreeSearch::operator ()()
 	this->idsOFCurrentMatch.clear();*/
 #endif
 	queue.enqueue((letter_node*)Tree->getFirstNode());
-	//show_queue_content();
 #ifdef QUEUE
 	QList  <int> temp_partition;
 	QList  <long> temp_ids;
@@ -118,8 +117,6 @@ bool TreeSearch::operator ()()
 			wait_for_dequeue=true;
 			nodes_per_level=queue.count();
 		}
-		//show_queue_content();
-		QList<node *>* current_children=current_node->getChildren();
 #ifndef USE_TRIE_WALK
 		QChar future_letter=info->diacritic_text->at(position);
 #else
@@ -142,82 +139,74 @@ bool TreeSearch::operator ()()
 			//qDebug()<<future_letter;
 		}
 #endif
-		int num_children=current_children->count();
+
+		letter_node * let_node=current_node->getLetterChild(future_letter);
+		if (let_node!=NULL)
+		{
+			//qDebug()<<"p/S:"<<future_letter;
+			queue.enqueue(let_node);
+#ifdef QUEUE
+			temp_partition=sub_positionsOFCurrentMatch;
+			temp_categories=catsOFCurrentMatch;
+			temp_ids=idsOFCurrentMatch;
+			all_positions.enqueue(temp_partition);
+			all_categories.enqueue(temp_categories);
+			all_ids.enqueue(temp_ids);
+#ifdef REDUCE_THRU_DIACRITICS
+			temp_raw_datas=possible_raw_datasOFCurrentMatch;
+			all_raw_datas.enqueue(temp_raw_datas);
+#endif
+#endif
+			if (wait_for_dequeue)
+				nodes_per_level++;
+		}
+		QList<result_node *>* current_result_children=current_node->getResultChildren();
+		int num_children=current_result_children->count();
 		for (int j=0;j<num_children;j++)
 		{
-			node *current_child=current_children->at(j);
-			if (current_child->isLetterNode())
-			{
-				if(((letter_node*)current_child)->getLetter()==future_letter)//(equal(((letter_node*)current_child)->getLetter(),future_letter))
-				{
-					//qDebug()<<"p/S:"<<future_letter;
-					queue.enqueue((letter_node*)current_child);
+			result_node *current_child=current_result_children->at(j);
 #ifdef QUEUE
-					temp_partition=sub_positionsOFCurrentMatch;
-					temp_categories=catsOFCurrentMatch;
-					temp_ids=idsOFCurrentMatch;
+			temp_partition=sub_positionsOFCurrentMatch;
+			temp_categories=catsOFCurrentMatch;
+			temp_ids=idsOFCurrentMatch;
+			temp_partition.append(position-1);
+			temp_categories.append(((result_node *)current_child)->get_previous_category_id());
+			temp_ids.append(((result_node *)current_child)->get_affix_id());
+			this->sub_positionsOFCurrentMatch=temp_partition;
+			this->catsOFCurrentMatch=temp_categories;
+			this->idsOFCurrentMatch=temp_ids;
+#ifdef REDUCE_THRU_DIACRITICS
+			temp_raw_datas=possible_raw_datasOFCurrentMatch;
+			temp_raw_datas.append(((result_node *)current_child)->raw_datas);
+			this->possible_raw_datasOFCurrentMatch=temp_raw_datas;
+#endif
+#endif
+#if defined(PARENT)
+			reached_node=current_child;
+#endif
+			resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
+			if (shouldcall_onmatch(position) && !(on_match_helper()))
+			{
+				stop=true;
+				break;
+			}
+			else
+			{
+				let_node=current_child->getLetterChild(future_letter);///
+				if (let_node!=NULL)
+				{
+					queue.enqueue((letter_node*)let_node);
+#ifdef QUEUE
 					all_positions.enqueue(temp_partition);
 					all_categories.enqueue(temp_categories);
 					all_ids.enqueue(temp_ids);
 #ifdef REDUCE_THRU_DIACRITICS
-					temp_raw_datas=possible_raw_datasOFCurrentMatch;
 					all_raw_datas.enqueue(temp_raw_datas);
 #endif
 #endif
 					if (wait_for_dequeue)
 						nodes_per_level++;
 					//show_queue_content();
-				}
-			}
-			else
-			{
-#ifdef QUEUE
-				temp_partition=sub_positionsOFCurrentMatch;
-				temp_categories=catsOFCurrentMatch;
-				temp_ids=idsOFCurrentMatch;
-				temp_partition.append(position-1);
-				temp_categories.append(((result_node *)current_child)->get_previous_category_id());
-				temp_ids.append(((result_node *)current_child)->get_affix_id());
-				this->sub_positionsOFCurrentMatch=temp_partition;
-				this->catsOFCurrentMatch=temp_categories;
-				this->idsOFCurrentMatch=temp_ids;
-#ifdef REDUCE_THRU_DIACRITICS
-				temp_raw_datas=possible_raw_datasOFCurrentMatch;
-				temp_raw_datas.append(((result_node *)current_child)->raw_datas);
-				this->possible_raw_datasOFCurrentMatch=temp_raw_datas;
-#endif
-#endif
-#if defined(PARENT)
-				reached_node=current_child;
-#endif
-				resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
-				if (shouldcall_onmatch(position) && !(on_match_helper()))
-				{
-					stop=true;
-					break;
-				}
-				else
-				{
-					QList<node *>* result_node_children=current_child->getChildren();
-					int num_result_children=result_node_children->count();
-					for (int j=0;j<num_result_children;j++)
-					{
-						if(((letter_node*)result_node_children->at(j))->getLetter()==future_letter)
-						{
-							queue.enqueue((letter_node*)result_node_children->at(j));
-#ifdef QUEUE
-							all_positions.enqueue(temp_partition);
-							all_categories.enqueue(temp_categories);
-							all_ids.enqueue(temp_ids);
-#ifdef REDUCE_THRU_DIACRITICS
-							all_raw_datas.enqueue(temp_raw_datas);
-#endif
-#endif
-							if (wait_for_dequeue)
-								nodes_per_level++;
-							//show_queue_content();
-						}
-					}
 				}
 			}
 		}
@@ -349,8 +338,5 @@ TreeSearch::TreeSearch(item_types type,Stemmer* info,int position)
 		Tree=database_info.Prefix_Tree;
 	else if (type==SUFFIX)
 		Tree=database_info.Suffix_Tree;
-	/*else if (type==STEM)
-		Tree=database_info.Stem_Tree;*/
-	//number_of_matches=0;
 }
 

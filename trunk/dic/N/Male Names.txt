@@ -1,5 +1,5 @@
 ﻿alasmaa.net
-Search for "*" in female names and then use AutoPager to scroll the pages and then manual parsing was performed
+Search for "*" in male names and then use AutoPager to scroll the pages and then manual parsing was performed
 Hamza Harkous
 آدام
 آدب

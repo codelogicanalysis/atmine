@@ -25,7 +25,6 @@ int abstract_category_ids[max_sources+1]={0};//here last element stores number o
 
 QSqlQuery query;
 
-
 /*
 #include <stdio.h>
 #include <execinfo.h>
@@ -202,7 +201,6 @@ bitset<max_sources> string_to_bitset(QString val)
 	}
 	return b;
 }
-
 bitset<max_sources> string_to_bitset(QVariant val)
 {
 	return string_to_bitset(val.toString());

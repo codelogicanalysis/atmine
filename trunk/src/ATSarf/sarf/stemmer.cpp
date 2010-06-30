@@ -8,6 +8,7 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 {
 	if (get_all_details)
 	{
+#if 1
 		if (called_everything || type==PREFIX)
 		{
 			prefix_infos=new QVector<minimal_item_info>();
@@ -43,6 +44,7 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 			}
 			finish=Suffix->sub_positionsOFCurrentMatch.last();
 		}
+#endif
 		if (called_everything || type==STEM)
 		{
 			Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);

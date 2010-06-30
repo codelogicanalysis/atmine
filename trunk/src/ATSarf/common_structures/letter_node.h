@@ -9,12 +9,25 @@ class letter_node:public node
         QChar letter;
     public:
         letter_node(QChar letter);
-        bool isLetterNode();
-        QChar getLetter();
+		bool isLetterNode() const;
+		QChar getLetter() const;
         void setLetter(QChar letter);
         QString to_string(bool =true);
         ~letter_node();
 };
+
+bool operator==(const  letter_node &p1, const  letter_node &p2);
+
+bool operator!=(const  letter_node &p1, const  letter_node &p2);
+
+bool operator<(const  letter_node &p1, const  letter_node &p2);
+
+bool operator>(const  letter_node &p1, const  letter_node &p2);
+
+bool operator<=(const  letter_node &p1, const  letter_node &p2);
+
+bool operator>=(const  letter_node &p1, const letter_node &p2);
+
 
 #endif	/* _LETTER_NODE_H */
 

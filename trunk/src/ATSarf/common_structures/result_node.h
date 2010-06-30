@@ -37,7 +37,7 @@ class result_node:public node
 	#else
 		result_node(long affix_id,long previous_category_id,long resulting_category_id);
 	#endif
-        bool isLetterNode();
+		bool isLetterNode() const;
         long get_previous_category_id();
         void set_previous_category_id(long id);
         long get_affix_id();
