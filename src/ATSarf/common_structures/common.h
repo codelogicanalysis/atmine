@@ -38,7 +38,7 @@ extern bitset<max_sources> INVALID_BITSET;
 extern QString delimiters;
 extern QVector<QChar> alefs;
 
-void initializa_variables(); //must be called at the start
+void initialize_variables(); //must be called at the start
 
 enum rules { AA,AB,AC,BC,CC };
 enum item_types { PREFIX, STEM, SUFFIX};

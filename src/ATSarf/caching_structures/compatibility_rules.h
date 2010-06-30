@@ -18,7 +18,8 @@ class compatibility_rules
     private:
         rules rule;
         bitvec2d rules_info;
-        index2id_map  bitorder[2];
+		//index2id_map  bitorder[2];
+		QHash<long,short> bitorder[2];
         ResultingCategoryMap resulting_category;
 
 		void generate_bit_order(rules rule);

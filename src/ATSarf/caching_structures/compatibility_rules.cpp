@@ -19,28 +19,32 @@ void compatibility_rules::generate_bit_order(rules rule)
     for (int i=0;i<2;i++)
     {
 		Retrieve_Template order(QString("category"),QString("id"),QString("abstract=0 AND type=%1 ORDER BY id ASC").arg((int)(t[i])));
+		int j=0;
 		while (order.retrieve())
 		{
 			bool ok;
-			bitorder[i].append(order.get(0).toLongLong(&ok));
+			//bitorder[i].append(order.get(0).toLongLong(&ok));
+			bitorder[i].insert(order.get(0).toLongLong(&ok),j);
 			if (ok==false)
 			{
 					error << "Unexpected Error: Non-integer ID\n";
 					return; //must not reach here
 			}
+			j++;
 		}
     }
 }
 long compatibility_rules::get_bitindex(int order,long id)
 {
-	QVector<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
+	/*QVector<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
 	if (*i==id)
 		return i-bitorder[order].begin();
 	else
 	{
 		error<<"Unexpected Error: id "<<id<< " is not part of the ids array\n";
-		throw 1 /*Not found*/;
-	}
+		throw 1; //Not found
+	}*/
+	return bitorder[order].value(id,-1);
 }
 compatibility_rules::compatibility_rules(rules rule)
 {
@@ -50,7 +54,7 @@ void compatibility_rules::fill()
 {
         generate_bit_order(rule);
         int length[2];
-        length[0]=bitorder[0].count();
+		length[0]=bitorder[0].count();
         length[1]=bitorder[1].count();
         for (int i = 0; i < length[0]; i++) {
                 rules_info.push_back( dbitvec() );

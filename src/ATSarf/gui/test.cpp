@@ -44,10 +44,10 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
 
-	initializa_variables();
 #ifndef AUGMENT_DICTIONARY
 	if (first_time)
 	{
+		initialize_variables();
 		database_info.fill(prg);
 		first_time=false;
 		hadith_initialize();
