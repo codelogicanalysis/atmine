@@ -3,23 +3,32 @@
 #include "../sql-interface/Search_Compatibility.h"
 #include "../sql-interface/Search_by_category.h"
 #include "../sql-interface/Search_by_item.h"
+#include "assert.h"
 
 void tree::delete_helper(node * current)
 {
-	QList<node *>* children=current->getChildren();
-    node* child;
-	foreach (child,*children)
+	QList<result_node*>* children1=current->getResultChildren();
+	for(int i=0;i<children1->count();i++)
     {
-            delete_helper(child);
-            delete child;
+		delete_helper(children1->at(i));
+		delete children1->at(i);
     }
+	QVector< Ptr<letter_node> >* children2=current->letter_children;
+	for(int i=0;i<children2->count();i++)
+	{
+		delete_helper(children2->at(i).p);
+		delete children2->at(i).p;
+	}
 }
 void tree::print_tree_helper(node * current_node, int level)
 {
     out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
-	QList<node*>* list=current_node->getChildren();
+	QVector<letter_node* >* list=current_node->getLetterChildren();
 	for(int i=0;i<list->count();i++)
-					print_tree_helper(list->at(i),level+1);
+		print_tree_helper(list->at(i),level+1);
+	QList<result_node*>* list2=current_node->getResultChildren();
+	for(int i=0;i<list2->count();i++)
+		print_tree_helper(list2->at(i),level+1);
 }
 int tree::build_helper(item_types type, long cat_id1, int size, node * current)
 {
@@ -66,68 +75,64 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
     //pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
     if (current->isLetterNode() && current!=base)
     {
-            error << "Unexpected Error: provided node was a letter node and not a result one\n";
-            return NULL;
+		error << "Unexpected Error: provided node was a letter node and not a result one\n";
+		return NULL;
     }
     QChar current_letter;
-	QList<node *>* current_children;
-    int i,j;
+	//QList<letter_node *>* current_letter_children;
+	letter_node* matching_letter_node=NULL;
+	int i;
     if (letters.count()==0)
     {
-            current_letter='\0';
-            if (current==base)
-                    goto result;
+		current_letter='\0';
+		if (current==base)
+			goto result;
     }
     else
-            current_letter=letters[0];
-    current_children=current->getChildren();
+		current_letter=letters[0];
     i=0;
     do
     {
-			int num_children=current_children->count();
-            for (j=0;j<num_children;j++)
-            {
-					if (current_children->at(j)->isLetterNode())
-							if (((letter_node*)current_children->at(j))->getLetter()==current_letter)
-                            {
-									current=current_children->at(j);
-                                    current_children=current->getChildren();
-                                    i++;
-                                    current_letter=letters[i];
-                                    break;
-                            }
-            }
-            if (j>=num_children)//old num_children is required in case previous if statement was successful
-                    break;
+		matching_letter_node=current->getLetterChild(current_letter);
+		if (matching_letter_node!=NULL)
+		{
+				current=matching_letter_node;
+				i++;
+				current_letter=letters[i];
+		}
+		else
+			break;
     }while(i<letters.count());
     if (letters.count()==0 && i==0)
     {
-            //add null letter
-            letter_node* new_node=new letter_node('\0');
-            current->addChild(new_node);
-            current=new_node;
-            letter_nodes++;
+		//add null letter
+		letter_node* new_node=new letter_node('\0');
+		current->addChild(new_node);
+		current=new_node;
+		letter_nodes++;
     }
     for (;i<letters.count();i++)
     {
-            //add necessary letters
-            letter_node* new_node=new letter_node(letters[i]);
-            current->addChild(new_node);
-            current=new_node;
-            letter_nodes++;
+		//add necessary letters
+		letter_node* new_node=new letter_node(letters[i]);
+		current->addChild(new_node);
+		current=new_node;
+		letter_nodes++;
     }
-result:	node * old_result;
-	foreach (old_result,*current->getChildren()) //check if this result node is already present
+result:
+	int size=current->getResultChildren()->size();
+	for (int i=0;i<size;i++) //check if this result node is already present
     {
-            if (((result_node*)old_result)->get_previous_category_id()==category_id && ((result_node*)old_result)->get_resulting_category_id()==resulting_category_id && ((result_node*)old_result)->get_affix_id()==affix_id)
-            {
+		result_node * old_result=current->getResultChildren()->at(i);
+		if (old_result->get_previous_category_id()==category_id && old_result->get_resulting_category_id()==resulting_category_id && old_result->get_affix_id()==affix_id)
+		{
 #ifdef MEMORY_EXHAUSTIVE
-                    ((result_node*)old_result)->addPair(raw_data,description);
+			((result_node*)old_result)->addPair(raw_data,description);
 #elif defined(REDUCE_THRU_DIACRITICS)
-                    ((result_node*)old_result)->add_raw_data(raw_data);
+			old_result->add_raw_data(raw_data);
 #endif
-                    return old_result;
-            }
+			return old_result;
+		}
     }
 #ifdef MEMORY_EXHAUSTIVE
     result_node * result=new result_node(affix_id,category_id,resulting_category_id,raw_data,description);

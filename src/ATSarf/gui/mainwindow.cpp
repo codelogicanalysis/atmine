@@ -62,10 +62,10 @@ void MainWindow::on_pushButton_clicked()
 #endif
 }
 
-void MainWindow::on_destroyed()
+/*void MainWindow::on_destroyed()
 {
 	close_connection();
-}
+}*/
 
 
 int main(int argc, char *argv[])

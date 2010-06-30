@@ -2,8 +2,8 @@ TOP = ../..
 INCLUDEPATH += $$QTDIR/include/QtSql \
     $$QTDIR/include/Qt
 INCLUDEPATH += $$TOP/datrie/
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.2/datrie
+INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.3
+INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.3/datrie
 HEADERS += utilities/text_handling.h \
     utilities/diacritics.h \
     utilities/dbitvec.h \
@@ -37,7 +37,8 @@ HEADERS += utilities/text_handling.h \
     ATMProgressIFC.h \
     utilities/Math_functions.h \
     caching_structures/Search_by_item_locally.h \
-    utilities/Triplet.h
+    utilities/Triplet.h \
+    Ptr.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -73,7 +74,7 @@ SOURCES += utilities/text_handling.cpp \
     caching_structures/Search_by_item_locally.cpp
 
 # LIBS += -ldatrie
-LIBS += -L$$TOP/datrie/libdatrie-0.2.2/datrie/.libs/ \
+LIBS += -L$$TOP/datrie/libdatrie-0.2.3/datrie/.libs/ \
     -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
@@ -81,10 +82,9 @@ CONFIG += debug_and_release
 # debug
 QT += sql
 FORMS += gui/mainwindow.ui
-#RESOURCES +=
 
-#-Q suppresses the call graph data
-
-QMAKE_CFLAGS+=-pg
-QMAKE_CXXFLAGS+=-pg
-QMAKE_LFLAGS+=-pg
+# RESOURCES +=
+# -Q suppresses the call graph data
+#QMAKE_CFLAGS += -pg
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS += -pg

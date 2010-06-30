@@ -34,7 +34,7 @@
         set_resulting_category_id(resulting_category_id);
         set_affix_id(affix_id);
     }
-    bool result_node::isLetterNode()
+	bool result_node::isLetterNode() const
     {
         return false;
     }
