@@ -81,7 +81,7 @@ CONFIG += debug_and_release
 # debug
 QT += sql
 FORMS += gui/mainwindow.ui
-RESOURCES += 
+#RESOURCES +=
 
 #-Q suppresses the call graph data
 
