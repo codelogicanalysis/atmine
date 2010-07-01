@@ -3,29 +3,14 @@
 #include "../sql-interface/Search_Compatibility.h"
 #include "../sql-interface/Search_by_category.h"
 #include "../sql-interface/Search_by_item.h"
-#include "assert.h"
 
-void tree::delete_helper(node * current)
-{
-	QList<result_node*>* children1=current->getResultChildren();
-	for(int i=0;i<children1->count();i++)
-    {
-		delete_helper(children1->at(i));
-		delete children1->at(i);
-    }
-	QVector< Ptr<letter_node> >* children2=current->letter_children;
-	for(int i=0;i<children2->count();i++)
-	{
-		delete_helper(children2->at(i).p);
-		delete children2->at(i).p;
-	}
-}
+
 void tree::print_tree_helper(node * current_node, int level)
 {
     out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
-	QVector<letter_node* >* list=current_node->getLetterChildren();
-	for(int i=0;i<list->count();i++)
-		print_tree_helper(list->at(i),level+1);
+	QVector<letter_node* > list=current_node->getLetterChildren();
+	for(int i=0;i<list.count();i++)
+		print_tree_helper(list.at(i),level+1);
 	QList<result_node*>* list2=current_node->getResultChildren();
 	for(int i=0;i<list2->count();i++)
 		print_tree_helper(list2->at(i),level+1);
@@ -279,8 +264,7 @@ int tree::build_affix_tree(item_types type)
 }
 void tree::reset()
 {
-    delete_helper(base);
-    base->removeChildren();
+	base->resetChildren();
     letter_nodes=1;
     result_nodes=0;
     isAffix=false;

@@ -21,6 +21,7 @@ enum wordType { NAME, NRC,NMC};
 enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
 QString hadath;
+long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -130,6 +131,13 @@ void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
 #ifdef REFINEMENTS
+	abstract_NAME=get_abstractCategory_id("Male Names");
+#else
+	abstract_NAME=get_abstractCategory_id("Name of Person");
+#endif
+	abstract_POSSESSIVE=get_abstractCategory_id("POSSESSIVE");
+	abstract_PLACE=get_abstractCategory_id("Name of Place");
+#ifdef REFINEMENTS
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
@@ -232,11 +240,7 @@ public:
 			int abstract_category_id=get_abstractCategory_id(i);
 			if (stem_info->abstract_categories[i] && abstract_category_id>=0)
 			{
-#ifdef REFINEMENTS
-				if (abstract_category_id==get_abstractCategory_id("Male Names"))
-#else
-				if (abstract_category_id==get_abstractCategory_id("Name of Person"))
-#endif
+				if (abstract_category_id==abstract_NAME)
 				{
 					name=true;
 					if (finish>finish_pos)
@@ -248,7 +252,7 @@ public:
 					}
 					return true;
 				}
-				else if (abstract_category_id==get_abstractCategory_id("POSSESSIVE"))
+				else if (abstract_category_id==abstract_POSSESSIVE)
 				{
 					possessive=true;
 					if (place)
@@ -261,7 +265,7 @@ public:
 						return false;
 					}
 				}
-				else if (abstract_category_id==get_abstractCategory_id("Name of Place"))
+				else if (abstract_category_id==abstract_PLACE)
 				{
 				#ifdef STATS
 					stem=temp_stem;

@@ -38,7 +38,7 @@ HEADERS += utilities/text_handling.h \
     utilities/Math_functions.h \
     caching_structures/Search_by_item_locally.h \
     utilities/Triplet.h \
-    Ptr.h
+	utilities/Ptr.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -83,8 +83,10 @@ CONFIG += debug_and_release
 QT += sql
 FORMS += gui/mainwindow.ui
 
-# RESOURCES +=
 # -Q suppresses the call graph data
-#QMAKE_CFLAGS += -pg
-#QMAKE_CXXFLAGS += -pg
-#QMAKE_LFLAGS += -pg
+#CONFIG(debug, debug|release)
+#{
+QMAKE_CFLAGS += -pg
+QMAKE_CXXFLAGS += -pg
+QMAKE_LFLAGS += -pg
+#}
