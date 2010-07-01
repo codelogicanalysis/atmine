@@ -4,8 +4,12 @@
 #include <QList>
 #include <QString>
 #include <QVector>
+#include <QHash>
 #include "common.h"
-#include "Ptr.h"
+#include "../utilities/Ptr.h"
+
+//#define BINARY_SEARCH
+#define HASH_TABLE
 
 class node;
 
@@ -14,9 +18,14 @@ class result_node;
 
 class node
 {
-	public:
+	private:
 		QList<result_node*>* result_children;
+#ifdef BINARY_SEARCH
 		QVector<Ptr<letter_node> >* letter_children;
+#elif defined(HASH_TABLE)
+		QHash<QChar,letter_node*>* letter_children;
+#endif
+		void removeChildren();
 	public:
 #ifdef PARENT
 		node * parent; //public member and can be defined by other classes such as treesearch upon traversal.
@@ -26,10 +35,10 @@ class node
 		virtual QString to_string(bool isAffix=false)=0;
 		bool hasChildren();
 		QList<result_node *>* getResultChildren();
-		QVector<letter_node *>* getLetterChildren();
+		QVector<letter_node* > getLetterChildren(); //inefficient copy constructor, this function's use should be avoided
 		letter_node* getLetterChild(QChar letter);
 		void addChild(node* child);
-		void removeChildren();//just remove references
+		void resetChildren();
 		virtual ~node();
 };
 
