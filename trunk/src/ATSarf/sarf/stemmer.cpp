@@ -94,7 +94,7 @@ bool Stemmer::on_match()
 		count++;
 		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
 		out<<" [ ";
-		for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
+		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
 			if (stem_info->abstract_categories[i])
 				if (get_abstractCategory_id(i)>=0)
 					out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
@@ -140,7 +140,6 @@ Stemmer::Stemmer(QString *text,int start_pos, bool get_info)
 	finish=start_pos;
 	this->diacritic_text=text;
 	this->get_all_details=get_info;
-	//this->text=removeDiacritics(text);
 	Prefix=new PrefixSearch(this,start_pos);
 	Stem=NULL;
 	Suffix=NULL;

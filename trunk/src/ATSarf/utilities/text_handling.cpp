@@ -69,7 +69,7 @@ bool equal(QChar c1, QChar c2)
 		return true;
 	return false;
 }
-bool equal(QString word1,QString word2)// is diacritics tolerant
+bool equal(QString &word1,QString &word2)// is diacritics tolerant
 {
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
@@ -125,6 +125,35 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 	{
 		for (int i=i1+1;i<length1;i++)
 			if (!isDiacritic(word1[i]))
+				return false;
+	}
+	return true;
+}
+bool equal_ignore_diacritics(QString &word1,QString &word2)
+{
+	int length1=word1.length(),length2=word2.length();
+	int i=0,j=0;
+	while(i<length1 && j<length2)
+	{
+		if (isDiacritic(word1[i]))
+			i++;
+		if (isDiacritic(word2[j]))
+			j++;
+		if (word1[i]!=word2[j])
+			return false;
+		i++;
+		j++;
+	}
+	if (length1-(i+1)==0)
+	{
+		for (int f=j+1;f<length2;f++)
+			if (!isDiacritic(word2[f]))
+				return false;
+	}
+	else
+	{
+		for (int f=i+1;f<length1;f++)
+			if (!isDiacritic(word1[f]))
 				return false;
 	}
 	return true;

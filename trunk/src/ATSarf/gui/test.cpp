@@ -9,7 +9,7 @@
 #include "../builders/functions.h"
 #include "../sarf/stemmer.h"
 #include "../caching_structures/database_info_block.h"
-
+#include "../utilities/text_handling.h"
 #include "../utilities/diacritics.h"
 
 int word_sarf_test(QString input_str)
@@ -45,6 +45,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	hadith_out.setCodec("utf-8");
 
 #ifndef AUGMENT_DICTIONARY
+#if 0
 	if (first_time)
 	{
 		initialize_variables();
@@ -52,17 +53,17 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		first_time=false;
 		hadith_initialize();
 	}
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
+#endif
 #if 1
+	out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	if (had && hadith(input_str,prg))
 		return -1;
 	if (!had && word_sarf_test(input_str))
 		return -1;
 #else //testing
-	int i,j;
-	QString s;
-	in >>s>>i>>j;
-	out <<addlastDiacritics(i,j,&s);
+	QString s1,s2;
+	in >>s1>>s2;
+	out <<equal_ignore_diacritics(s1,s2);
 #endif
 #else
 	if (augment()<0)

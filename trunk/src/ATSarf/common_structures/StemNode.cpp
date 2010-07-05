@@ -115,7 +115,7 @@ bool StemNode::exists(const long cat_id)
 			return false;
 	}
 #ifdef REDUCE_THRU_DIACRITICS
-	bool Search_StemNode::retrieve(minimal_item_info & info)
+	bool Search_StemNode::retrieve(StemNode_info & info)
 	{
 		if (cat_index<node->category_ids.size())
 		{
@@ -123,10 +123,12 @@ bool StemNode::exists(const long cat_id)
 			{
 				info.category_id=node->category_ids[cat_index];
 				info.raw_data=node->raw_datas[cat_index][rawdata_index];
+#if 0
 				info.type=STEM;
 				info.POS=QString::null;
 				info.abstract_categories=INVALID_BITSET;
 				info.description=QString::null;
+#endif
 				rawdata_index++;
 				return true;
 			}

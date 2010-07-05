@@ -8,10 +8,11 @@
 #include <QString>
 #include <QDateTime>
 #include "../utilities/Triplet.h"
+#include "../utilities/dbitvec.h"
 #include "../logger/ATMProgressIFC.h"
 
 typedef Triplet<long long, long, QString> Map_key;
-typedef Triplet<bitset<max_sources>,QString,QString> Map_entry;
+typedef Triplet<dbitvec,QString,QString> Map_entry;
 class database_info_block
 {
     public:
@@ -21,11 +22,7 @@ class database_info_block
 		ATTrie * Stem_Trie;
 		QVector<StemNode> * trie_nodes;
 #endif
-        compatibility_rules * rules_AA;
-        compatibility_rules * rules_AB;
-        compatibility_rules * rules_AC;
-        compatibility_rules * rules_BC;
-        compatibility_rules * rules_CC;
+		compatibility_rules * comp_rules;
 
 		QHash<Map_key,Map_entry > * map_prefix;
 		QHash<Map_key,Map_entry > * map_stem;

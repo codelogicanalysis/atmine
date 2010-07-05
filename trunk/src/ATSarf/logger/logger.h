@@ -2,7 +2,7 @@
 #define _LOGGER_
 
 #include <QTextStream>
-#include <bitset>
+//#include <bitset>
 
 extern QTextStream out;
 extern QTextStream in;

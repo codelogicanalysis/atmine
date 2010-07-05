@@ -214,7 +214,7 @@ bool TreeSearch::operator ()()
 	return (!stop);
 }
 #ifdef REDUCE_THRU_DIACRITICS
-void TreeSearch::get_all_possibilities(int i, QList< QString>  raw_datas)
+void TreeSearch::get_all_possibilities(int i, QList< QString>  &raw_datas)
 {
 	if (i>possible_raw_datasOFCurrentMatch.count() || i<0)
 		return;

@@ -55,7 +55,7 @@ int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, 
 	//insert possessive form of the word
 	if (!pos)
 	{
-		abstract_possessive=insert_category("POSSESSIVE",STEM,bitset<max_sources>(),true);
+		abstract_possessive=insert_category("POSSESSIVE",STEM,dbitvec(max_sources),true);
 		pos=true;
 	}
 	abstract_categories->append(abstract_possessive);
@@ -221,8 +221,8 @@ int insert_propernames()
 		out << "Invalid Folder\n";
 		return -1;
 	}
-	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,bitset<max_sources>(),true); //returns id if already present
-	long abstract_people_names=insert_category("Name of Person",STEM,bitset<max_sources>(),true); //returns id if already present
+	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,dbitvec(max_sources),true); //returns id if already present
+	long abstract_people_names=insert_category("Name of Person",STEM,dbitvec(max_sources),true); //returns id if already present
 	QString file_name;
 	long abstract_category_id;
 	foreach (file_name,folder.entryList())
@@ -301,11 +301,11 @@ int insert_placenames() //not yet complete
 	}
 	int folders_source_id=insert_source("ar.wikipedia.org/","direct copy from html and dividing them into folders and subfiles according to continents and cities/towns","Hamza Harkous");
 
-	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,bitset<max_sources>(),true);////returns id if already present
-	long abstract_place_names=insert_category("Name of Place",STEM,bitset<max_sources>(),true);////returns id if already present
-	long abstract_continent_name=insert_category("Continent",STEM,bitset<max_sources>(),true);////returns id if already present
-	long abstract_country_name=insert_category("Country",STEM,bitset<max_sources>(),true);////returns id if already present
-	long abstract_city_name=insert_category("City/Town",STEM,bitset<max_sources>(),true);////returns id if already present
+	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,dbitvec(max_sources),true);////returns id if already present
+	long abstract_place_names=insert_category("Name of Place",STEM,dbitvec(max_sources),true);////returns id if already present
+	long abstract_continent_name=insert_category("Continent",STEM,dbitvec(max_sources),true);////returns id if already present
+	long abstract_country_name=insert_category("Country",STEM,dbitvec(max_sources),true);////returns id if already present
+	long abstract_city_name=insert_category("City/Town",STEM,dbitvec(max_sources),true);////returns id if already present
 	QString file_name;
 	QStringList h=folder.entryList();
 	//qDebug()<<"size: "<<h.size();
@@ -389,7 +389,7 @@ int insert_placenames() //not yet complete
 				if (insert_NProp(continent_arabic, abstract_categories,folders_source_id,continent_english)<0)
 				{/*return -1*/;}
 			}
-			bitset<max_sources> sources;
+			dbitvec sources(max_sources);
 			sources.reset();
 			long continent_id=insert_category(continent_english,STEM,folders_source_id,true);
 			QString file_name2;
