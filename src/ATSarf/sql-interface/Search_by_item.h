@@ -27,7 +27,7 @@ public:
 	int retrieve(minimal_item_info info[], int size_of_array);
 	int retrieve(all_item_info info[], int size_of_array);
 	QString getGrammarStem(); //just for stems
-	bitset<max_sources> getGrammarStem_sources(); //just for stems
+	dbitvec getGrammarStem_sources(); //just for stems
 };
 
 

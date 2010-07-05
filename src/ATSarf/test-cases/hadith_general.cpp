@@ -22,6 +22,7 @@ enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 QStringList compound_words;
 QString hadath;
 long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
+int bit_NAME, bit_POSSESSIVE, bit_PLACE;
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -137,6 +138,9 @@ void hadith_initialize()
 #endif
 	abstract_POSSESSIVE=get_abstractCategory_id("POSSESSIVE");
 	abstract_PLACE=get_abstractCategory_id("Name of Place");
+	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
+	bit_POSSESSIVE=get_bitindex(abstract_POSSESSIVE,abstract_category_ids);
+	bit_PLACE=get_bitindex(abstract_PLACE,abstract_category_ids);
 #ifdef REFINEMENTS
 	QFile input("test-cases/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
@@ -208,7 +212,7 @@ public:
 	#ifdef STATS
 		QString temp_stem=removeDiacritics(diacritic_text->mid(Stem->starting_pos, Suffix->startingPos-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 	#endif
-		if (removeDiacritics(stem_info->raw_data)==hadath)
+		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
 			stem=temp_stem;
@@ -235,49 +239,42 @@ public:
 			finish_pos=finish;
 			return false;
 		}
-		for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
+		if (stem_info->abstract_categories.getBit(bit_NAME))
 		{
-			int abstract_category_id=get_abstractCategory_id(i);
-			if (stem_info->abstract_categories[i] && abstract_category_id>=0)
+			name=true;
+			if (finish>finish_pos)
 			{
-				if (abstract_category_id==abstract_NAME)
-				{
-					name=true;
-					if (finish>finish_pos)
-					{
-						finish_pos=finish;
-					#ifdef STATS
-						stem=temp_stem;
-					#endif
-					}
-					return true;
-				}
-				else if (abstract_category_id==abstract_POSSESSIVE)
-				{
-					possessive=true;
-					if (place)
-					{
-					#ifdef STATS
-						stem=temp_stem;
-					#endif
-						nmc=true;
-						finish_pos=finish;
-						return false;
-					}
-				}
-				else if (abstract_category_id==abstract_PLACE)
-				{
-				#ifdef STATS
-					stem=temp_stem;
-				#endif
-					place=true;
-					if (possessive)
-					{
-						nmc=true;
-						finish_pos=finish;
-						return false;
-					}
-				}
+				finish_pos=finish;
+			#ifdef STATS
+				stem=temp_stem;
+			#endif
+			}
+			return true;
+		}
+		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE))
+		{
+			possessive=true;
+			if (place)
+			{
+			#ifdef STATS
+				stem=temp_stem;
+			#endif
+				nmc=true;
+				finish_pos=finish;
+				return false;
+			}
+		}
+		if (stem_info->abstract_categories.getBit(bit_PLACE))
+		{
+		#ifdef STATS
+			stem=temp_stem;
+		#endif
+			place=true;
+			if (possessive)
+			{
+				nmc=true;
+				finish_pos=finish;
+				return false;
 			}
 		}
 		#ifdef STATS
@@ -699,7 +696,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		return true;
 	}
 }
-
+#ifdef STATS
 void show_according_to_frequency(QList<int> freq,QList<QString> words)
 {
 	QList<QPair<int, QString> > l;
@@ -709,7 +706,7 @@ void show_according_to_frequency(QList<int> freq,QList<QString> words)
 	for (int i=l.size()-1;i>=0;i--)
 		displayed_error <<"("<<l[i].first<<") "<<l[i].second<<"\n";
 }
-
+#endif
 int hadith(QString input_str,ATMProgressIFC *prg)
 {
 

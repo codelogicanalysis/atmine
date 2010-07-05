@@ -137,11 +137,11 @@ void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
 		QString raw_data=query.value(2).toString();
 		QString POS=query.value(3).toString();
 		QString description=query.value(4).toString();
-		bitset<max_sources> abstract_categories;
+		dbitvec abstract_categories(max_sources);
 		if (type==STEM)
-				abstract_categories=string_to_bitset(query.value(5));
+			abstract_categories=string_to_bitset(query.value(5));
 		else
-				abstract_categories.reset();
+			abstract_categories.reset();
 		Map_key key(item_id,category_id,raw_data);
 		Map_entry entry(abstract_categories,description,POS);
 		map->insertMulti(key,entry);
@@ -156,11 +156,7 @@ database_info_block::database_info_block()
 	Stem_Trie= new ATTrie();
 	trie_nodes=new QVector<StemNode>();
 #endif
-    rules_AA=new compatibility_rules(AA);
-    rules_AB=new compatibility_rules(AB);
-    rules_AC=new compatibility_rules(AC);
-    rules_BC=new compatibility_rules(BC);
-    rules_CC=new compatibility_rules(CC);
+	comp_rules=new compatibility_rules();
 
 	map_prefix=new QHash<Map_key,Map_entry>;
 	map_stem=new QHash<Map_key,Map_entry>;
@@ -174,11 +170,7 @@ void database_info_block::fill(ATMProgressIFC *p)
 #ifdef USE_TRIE
 	buildTrie();
 #endif
-    rules_AA->fill();
-    rules_AB->fill();
-    rules_AC->fill();
-    rules_BC->fill();
-    rules_CC->fill();
+	comp_rules->fill();
 
 	fillMap(PREFIX,map_prefix);
 	fillMap(STEM,map_stem);
@@ -194,11 +186,7 @@ database_info_block::~database_info_block()
 	delete Stem_Trie;
 	delete trie_nodes;
 #endif
-    delete rules_AA;
-    delete rules_AB;
-    delete rules_AC;
-    delete rules_BC;
-    delete rules_CC;
+	delete comp_rules;
 
 	delete map_stem;
 	delete map_prefix;

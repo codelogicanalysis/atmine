@@ -225,7 +225,7 @@ QString Search_by_item::getGrammarStem() //just for stems
                 return "";
         }
 }
-bitset<max_sources> Search_by_item::getGrammarStem_sources() //just for stems
+dbitvec Search_by_item::getGrammarStem_sources() //just for stems
 {
         if (type==STEM)
                 return getSources("stem",id);

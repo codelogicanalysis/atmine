@@ -24,7 +24,7 @@ class TreeSearch
     protected:
         bool a_branch_returned_false; //needed by get_all_possibilities() to stop when a false is retuned
         QList<QList <QString > > possible_raw_datasOFCurrentMatch;
-        void get_all_possibilities(int i, QList<QString> raw_datas);
+		void get_all_possibilities(int i, QList<QString> &raw_datas);
 #endif
     protected:
         tree* Tree;

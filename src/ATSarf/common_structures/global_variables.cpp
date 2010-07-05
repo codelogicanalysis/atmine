@@ -6,7 +6,7 @@
 #include "../utilities/letters.h"
 #include "../sql-interface/sql_queries.h"
 
-bitset<max_sources> INVALID_BITSET;
+dbitvec INVALID_BITSET(max_sources);
 
 QSqlDatabase db;
 
@@ -20,6 +20,9 @@ bool KEEP_OLD=true;
 bool warn_about_automatic_insertion =false;
 bool display_errors=true;
 bool display_warnings=true;
+
+int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
+int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 
 QString trie_path="stem_trie.dat";
 QString trie_list_path="stem_list.dat";
@@ -37,8 +40,10 @@ void initialize_variables()
 	alefs[2]=alef_hamza_below;
 	alefs[3]=alef_madda_above;
 	alefs[4]=alef_wasla;
+	generate_bit_order("source",source_ids);
+	generate_bit_order("category",abstract_category_ids,"abstract");
 	INVALID_BITSET.reset();
-	INVALID_BITSET.set(max_sources-1);
+	INVALID_BITSET.setBit(max_sources-1);
 }
 
 bool filling=true;

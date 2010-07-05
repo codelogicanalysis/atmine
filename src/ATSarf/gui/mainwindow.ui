@@ -566,7 +566,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>10</y>
+      <y>0</y>
       <width>92</width>
       <height>28</height>
      </rect>
@@ -681,6 +681,19 @@
     </property>
     <property name="text">
      <string>exit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fill">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>30</y>
+      <width>90</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Fill</string>
     </property>
    </widget>
   </widget>

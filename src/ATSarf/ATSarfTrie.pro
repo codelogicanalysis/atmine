@@ -30,7 +30,6 @@ HEADERS += utilities/text_handling.h \
     sql-interface/Retrieve_Template.h \
     common_structures/StemNode.h \
     common_structures/atmTrie.h \
-    common_structures/Item_Structures.h \
     test-cases/hadith.h \
     utilities/letters.h \
     test-cases/narrator_abstraction.h \
@@ -38,7 +37,7 @@ HEADERS += utilities/text_handling.h \
     utilities/Math_functions.h \
     caching_structures/Search_by_item_locally.h \
     utilities/Triplet.h \
-	utilities/Ptr.h
+    utilities/Ptr.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += utilities/text_handling.cpp \
@@ -66,7 +65,6 @@ SOURCES += utilities/text_handling.cpp \
     common_structures/global_variables.cpp \
     common_structures/StemNode.cpp \
     common_structures/atmTrie.cpp \
-    common_structures/Item_Structures.cpp \
     test-cases/hadith_general.cpp \
     test-cases/hadith_1.cpp \
     test-cases/narrator_abstraction.cpp \
@@ -83,10 +81,8 @@ CONFIG += debug_and_release
 QT += sql
 FORMS += gui/mainwindow.ui
 
-# -Q suppresses the call graph data
-#CONFIG(debug, debug|release)
-#{
-QMAKE_CFLAGS += -pg
-QMAKE_CXXFLAGS += -pg
-QMAKE_LFLAGS += -pg
-#}
+#-Q suppresses the call graph data
+
+#QMAKE_CFLAGS+=-pg
+#QMAKE_CXXFLAGS+=-pg
+#QMAKE_LFLAGS+=-pg

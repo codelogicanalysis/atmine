@@ -6,103 +6,110 @@
 #include <QVector>
 #include <QHash>
 #include <QtAlgorithms>
+#include <assert.h>
 #include "../sql-interface/sql_queries.h"
 #include "../utilities/dbitvec.h"
 #include "../sql-interface/Retrieve_Template.h"
 
 using namespace std;
 
-void compatibility_rules::generate_bit_order(rules rule)
-{
-    item_types t[2];
-    get_types_of_rule(rule,t[0],t[1]);
-    for (int i=0;i<2;i++)
-    {
-		Retrieve_Template order(QString("category"),QString("id"),QString("abstract=0 AND type=%1 ORDER BY id ASC").arg((int)(t[i])));
-		int j=0;
-		while (order.retrieve())
-		{
-			bool ok;
-			//bitorder[i].append(order.get(0).toLongLong(&ok));
-			bitorder[i].insert(order.get(0).toLongLong(&ok),j);
-			if (ok==false)
-			{
-					error << "Unexpected Error: Non-integer ID\n";
-					return; //must not reach here
-			}
-			j++;
-		}
-    }
-}
-long compatibility_rules::get_bitindex(int order,long id)
-{
-	/*QVector<long>::iterator i = qBinaryFind(bitorder[order].begin(), bitorder[order].end(), id);
-	if (*i==id)
-		return i-bitorder[order].begin();
-	else
-	{
-		error<<"Unexpected Error: id "<<id<< " is not part of the ids array\n";
-		throw 1; //Not found
-	}*/
-	return bitorder[order].value(id,-1);
-}
-compatibility_rules::compatibility_rules(rules rule)
-{
-        this->rule=rule;
-}
 void compatibility_rules::fill()
 {
-        generate_bit_order(rule);
-        int length[2];
-		length[0]=bitorder[0].count();
-        length[1]=bitorder[1].count();
-        for (int i = 0; i < length[0]; i++) {
-                rules_info.push_back( dbitvec() );
-                rules_info[i].resize(length[1]);
-        }
-		Retrieve_Template order("compatibility_rules", "category_id1", "category_id2", "resulting_category",QString("type=%1").arg((int)(rule)));
+	int size=0;
+	{//get max_id
+		Retrieve_Template max_id("category","max(id)","");
+		if (max_id.retrieve())
+			size=max_id.get(0).toInt()+1;
+	}
+	{//initialize the double array
+		Retrieve_Template category_table("category","id","type","abstract","");
+		crlTable.resize(size);
+		for (int i=0;i<size;i++)
+			crlTable[i]=QVector<comp_rule_t> (size);
+		int row=0, id=0;
+		assert (category_table.retrieve());
+		while(row<size) //just in case some ID's are not there we fill them invalid
+		{
+			if (row==id+1)
+				assert (category_table.retrieve());
+			id=category_table.get(0).toLongLong();
+			item_types t;
+			unsigned int abstract;
+			if (row==id)
+			{
+				t=(item_types)category_table.get(1).toInt();
+				abstract=category_table.get(2).toInt();
+			}
+			else
+			{
+				t=ITEM_TYPES_LAST_ONE;//INVALID
+				abstract=0;
+			}
+			for (int i=0;i<size;i++)
+			{
+				comp_rule_t & crule=crlTable[row][i];
+				crule.abstract1=abstract;
+				crule.typecat1=t;
+				crule.valid=0;
+
+				crule=crlTable[i][row];
+				crule.abstract2=abstract;
+				crule.typecat2=t;
+				crule.valid=0;
+			}
+			row++;
+		}
+	}
+	{//fill with valid rules
+		QVector<QString> cols(4);
+		cols[0]="category_id1";
+		cols[1]="category_id2";
+		cols[2]="resulting_category";
+		cols[3]="type";
+		Retrieve_Template order("compatibility_rules",cols,"");
 		while (order.retrieve())
-        {
-				int i1=this->get_bitindex(0,order.get(0).toLongLong());
-				int i2=this->get_bitindex(1,order.get(1).toLongLong());
-                if (rule==AA || rule==CC)
-                {
-						bool isValueNull = order.get(2).isNull();
-                        resulting_category[ResultingCategoryKey(i1,i2)]= isValueNull ?
-																						  order.get(1).toLongLong() :
-																						  order.get(2).toLongLong();
-                }
-                rules_info[i1][i2]=true;
-                /*if (ok==false)
-                {
-                        error << "Unexpected Error: Non-integer ID\n";
-                        return; //must not reach here
-                }*/
-        }
+		{
+			unsigned int c1=order.get(0).toLongLong();
+			unsigned int c2=order.get(1).toLongLong();
+			unsigned int rc=order.get(2).toLongLong();
+			rules rule=(rules)order.get(3).toLongLong();
+			comp_rule_t & crule=crlTable[c1][c2];
+
+			crule.valid=1;
+			crule.rule_t=rule;
+			if (rule==AA || rule==CC)
+			{
+				bool isValueNull = order.get(2).isNull();
+				crule.rc= isValueNull ? c2 : rc;
+			}
+			item_types t1,t2;
+			assert(get_types_of_rule(rule,t1,t2));
+			crule.typecat1=(item_types)t1;
+			crule.typecat2=(item_types)t2;
+			crule.abstract1=0;
+			crule.abstract2=0;
+		}
+	}
 }
 bool compatibility_rules::operator()(int id1,int id2)
 {
-        try{
-                int i1=get_bitindex(0,id1);
-                int i2=get_bitindex(1,id2);
-                return rules_info[i1][i2];
-        }catch(int i) {
-                return false;
-        }
+	try{
+		return crlTable[id1][id2].valid;
+	}catch(int i) {
+		return false;
+	}
 }
 bool compatibility_rules::operator()(int id1,int id2, long & id_r)//-1 is invalid
 {
-        try{
-                int i1=get_bitindex(0,id1);
-                int i2=get_bitindex(1,id2);
-                if (rule==AA || rule==CC)
-                {
-                        ResultingCategoryKey k(i1,i2);
-                        if (resulting_category.contains(k))
-                                 id_r=resulting_category[k];
-                }
-                return rules_info[i1][i2];
-        }catch(int i) {
-                return false;
-        }
+	try{
+		comp_rule_t & crule=crlTable[id1][id2];
+		if (crule.rule_t==AA || crule.rule_t==CC)
+		{
+			//more than one category!!!!!!!!!
+			id_r=crule.rc;
+		}
+		return crule.valid;
+	}catch(int i) {
+		return false;
+	}
 }

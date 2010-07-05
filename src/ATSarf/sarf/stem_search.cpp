@@ -182,76 +182,57 @@ bool StemSearch::operator()()
 bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode s1)
 {
 #ifdef REDUCE_THRU_DIACRITICS
-	minimal_item_info inf;
+	StemNode_info inf;
 	while(s1.retrieve(inf))
 	{
-		//qDebug() << inf.raw_data;
-		/*if (!false_returned)
-		{*/
-			if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))
-			{
-				category_of_currentmatch=inf.category_id;
-				raw_data_of_currentmatch=inf.raw_data;
+		if (database_info.comp_rules->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))//check rules AB
+		{
+			category_of_currentmatch=inf.category_id;
+			raw_data_of_currentmatch=inf.raw_data;
 #ifndef USE_TRIE_WALK
-				currentMatchPos=i-1;
-				QString subword=getDiacriticword(i-1,starting_pos,*info->diacritic_text);
+			currentMatchPos=i-1;
+			QString subword=getDiacriticword(i-1,starting_pos,*info->diacritic_text);
 #else
-				//currentMatchPos=i;
-				int last;
-				QString subword=addlastDiacritics(starting_pos,last_letter_index,info->diacritic_text,last);
-						//info->diacritic_text->mid(starting_pos,i-starting_pos+1);
-				currentMatchPos=last>0?last-1:0;
+			int last;
+			QString subword=addlastDiacritics(starting_pos,last_letter_index,info->diacritic_text,last);
+					//info->diacritic_text->mid(starting_pos,i-starting_pos+1);
+			currentMatchPos=last>0?last-1:0;
 #endif
-				//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
-				if (equal(subword,raw_data_of_currentmatch))
-				{
-					//out<<"yes\n";
-					if (info->called_everything)
-					{
-						if (!onMatch())
-						{
-							/*false_returned=true;
-							break;*/
-							return false;
-						}
-					}
-					else
-					{
-						if (!info->on_match_helper())
-						{
-							/*false_returned=true;
-							break;*/
-							return false;
-						}
-					}
-				}
-			}
-		//}
-	}
-#else
-	long cat_id;
-	while(s1.retrieve(cat_id))
-	{
-		/*if (!false_returned)
-		{*/
-			if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+			//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
+			if (equal(subword,raw_data_of_currentmatch))
 			{
-				category_of_currentmatch=cat_id;
-				currentMatchPos=i-1;
 				if (info->called_everything)
 				{
 					if (!onMatch())
-						//false_returned=true;
 						return false;
 				}
 				else
 				{
 					if (!info->on_match_helper())
-						//false_returned=true;
 						return false;
 				}
 			}
-		//}
+		}
+	}
+#else
+	long cat_id;
+	while(s1.retrieve(cat_id))
+	{
+		if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+		{
+			category_of_currentmatch=cat_id;
+			currentMatchPos=i-1;
+			if (info->called_everything)
+			{
+				if (!onMatch())
+					return false;
+			}
+			else
+			{
+				if (!info->on_match_helper())
+					return false;
+			}
+		}
 	}
 #endif
 	return true;
