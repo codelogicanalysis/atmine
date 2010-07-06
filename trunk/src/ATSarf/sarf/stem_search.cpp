@@ -153,27 +153,6 @@ bool StemSearch::operator()()
 	ATTrie::Position pos = trie->startWalk();
 	stop=false;
 	traverse(starting_pos,pos);
-#ifdef USE_TRIE_WALK
-	/*if (i == info->diacritic_text->length())
-	{
-		if (trie->isTerminal(pos))
-		{
-			trie->walk(pos, '\0');
-			node = trie->getData(pos);
-			if (node != NULL)
-			{
-				id_of_currentmatch=node->stem_id;
-				s1.setNode(node);
-			}
-			else
-				continue;
-		}
-		else
-			continue;
-	}
-	else
-		continue;*/
-#endif
 	trie->freePosition(pos);
 	return !stop;
 }

@@ -1,5 +1,4 @@
 #include <QFile>
-#include <QRegExp>
 #include <QStringList>
 #include <QString>
 #include <QDateTime>

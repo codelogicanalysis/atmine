@@ -8,7 +8,9 @@
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
-//#define REFINEMENTS
+#define REFINEMENTS
+#define PREPROCESS_DESCRIPTIONS
+
 int hadith(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
 
