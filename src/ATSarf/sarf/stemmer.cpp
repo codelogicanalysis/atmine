@@ -81,7 +81,7 @@ bool Stemmer::on_match()
 			if (count>0)
 					out << " OR ";
 			count++;
-			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description;
+			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description();
 		}
 		out <<")-";
 	}
@@ -92,7 +92,7 @@ bool Stemmer::on_match()
 		if (count>0)
 				out << " OR ";
 		count++;
-		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
+		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description();
 		out<<" [ ";
 		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
 			if (stem_info->abstract_categories[i])
@@ -114,7 +114,7 @@ bool Stemmer::on_match()
 			if (count>0)
 					out << " OR ";
 			count++;
-			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description;
+			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description();
 		}
 		out <<")";
 	}

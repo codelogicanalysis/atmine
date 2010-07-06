@@ -43,7 +43,8 @@ void initialize_variables()
 	generate_bit_order("source",source_ids);
 	generate_bit_order("category",abstract_category_ids,"abstract");
 	INVALID_BITSET.reset();
-	INVALID_BITSET.setBit(max_sources-1);
+	INVALID_BITSET.setBit(max_sources-1,true);
+	//INVALID_BITSET.show();
 }
 
 bool filling=true;

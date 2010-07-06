@@ -22,14 +22,16 @@ bool Search_by_item::retrieve_internal(all_item_info &info)
         info.raw_data=query.value(3).toString();
         info.POS=query.value(4).toString();
         if (query.value(5).isNull())
-                info.description="";
+				info.description_id=-1;
         else
         {
-				long long description_id=query.value(5).toULongLong();
+				info.description_id=query.value(5).toULongLong();
+#if 0
 				if (description_id<0)
 					info.description="";
 				else
 					info.description=getColumn("description","name",description_id);  //uses global query
+#endif
         }
         if (type==STEM)
         {
@@ -50,7 +52,7 @@ bool Search_by_item::retrieve_internal(minimal_item_info &minimal)
                 return false;
         minimal.abstract_categories=all.abstract_categories;
         minimal.category_id=all.category_id;
-        minimal.description=all.description;
+		minimal.description_id=all.description_id;
         minimal.POS=all.POS;
         minimal.raw_data=all.raw_data;
         return true;

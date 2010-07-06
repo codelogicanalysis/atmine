@@ -4,7 +4,6 @@
 #include <QString>
 #include "../utilities/dbitvec.h"
 
-
 #define USE_TRIE
 #define TRIE_FROM_FILE
 #define USE_TRIE_WALK
@@ -44,30 +43,36 @@ void initialize_variables(); //must be called at the start
 enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
 enum item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};
 
-typedef struct minimal_item_info_
+typedef class minimal_item_info_
 {
+public:
 	item_types type;
 	long category_id;
 	dbitvec abstract_categories; //only for STEMS
 	QString raw_data;
-	QString description;
+	long description_id;
 	QString POS;
+
+	QString description() const;
 
 	minimal_item_info_()
 	{
 		abstract_categories.resize(max_sources);
 	}
 } minimal_item_info;
-typedef struct all_item_info_
+typedef class all_item_info_
 {
+public:
 	unsigned long long item_id;
 	long category_id;
 	dbitvec abstract_categories; //only for STEMS
 	dbitvec sources;
 	QString raw_data;
-	QString description;
+	long description_id;
 	QString POS;
 	QString lemma_ID; //only for STEMs
+
+	QString description() const;
 
 	all_item_info_()
 	{
