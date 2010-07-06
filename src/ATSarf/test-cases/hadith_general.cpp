@@ -15,6 +15,8 @@
 #include "../logger/ATMProgressIFC.h"
 #include "../utilities/Math_functions.h"
 #include "../sql-interface/sql_queries.h"
+#include "../sql-interface/Retrieve_Template.h"
+#include "../caching_structures/Search_by_item_locally.h"
 #include <assert.h>
 
 enum wordType { NAME, NRC,NMC};
@@ -23,6 +25,10 @@ QStringList compound_words;
 QString hadath;
 long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
 int bit_NAME, bit_POSSESSIVE, bit_PLACE;
+#ifdef PREPROCESS_DESCRIPTIONS
+QHash<long,bool> NMC_descriptions;
+QHash<long,bool> NRC_descriptions;
+#endif
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -161,6 +167,15 @@ void hadith_initialize()
 	stat.name_per_narrator.clear();
 	stat.narrator_per_chain.clear();
 #endif
+#ifdef PREPROCESS_DESCRIPTIONS
+	//preprocessing descriptions:
+	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
+	while (nrc_s.retrieve())
+		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
+	Retrieve_Template nmc_s("description","id","name='son'");
+	while (nmc_s.retrieve())
+		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);
+#endif
 }
 
 void initializeStateData()
@@ -192,7 +207,7 @@ public:
 	QList<QString> stems;
 #endif
 
-	hadith_stemmer(QString * word, int start):Stemmer(word,start/*,false*/)
+	hadith_stemmer(QString * word, int start):Stemmer(word,start,false)
 	{
 		name=false;
 		nmc=false;
@@ -209,10 +224,26 @@ public:
 #if 1
 	bool on_match()
 	{
+		Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);
+		if (!called_everything)
+			finish=Stem->currentMatchPos;
+		stem_info=new minimal_item_info;
+		while(s.retrieve(*stem_info))
+		{
+			if (!analyze())
+				return false;
+		}
+		return true;
+	}
+
+	bool analyze()
+	{
 	#ifdef STATS
 		QString temp_stem=removeDiacritics(diacritic_text->mid(Stem->starting_pos, Suffix->startingPos-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 	#endif
+	#ifndef PREPROCESS_DESCRIPTIONS
 		QString description=stem_info->description();
+	#endif
 		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
@@ -222,7 +253,11 @@ public:
 			finish_pos=finish;
 			return false;
 		}
+	#ifndef PREPROCESS_DESCRIPTIONS
 		else if (description=="son")
+	#else
+		else if (NMC_descriptions.contains(stem_info->description_id))
+	#endif
 		{
 		#ifdef STATS
 			stem=temp_stem;
@@ -231,7 +266,11 @@ public:
 			finish_pos=finish;
 			return false;
 		}
+	#ifndef PREPROCESS_DESCRIPTIONS
 		else if (description=="said" || description=="say" || description=="notify/communicate" || description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") || description.contains("narrate"))
+	#else
+		else if (NRC_descriptions.contains(stem_info->description_id))
+	#endif
 		{
 		#ifdef STATS
 			stem=temp_stem;
@@ -708,9 +747,78 @@ void show_according_to_frequency(QList<int> freq,QList<QString> words)
 		displayed_error <<"("<<l[i].first<<") "<<l[i].second<<"\n";
 }
 #endif
+
+#ifdef IMAN_CODE
+class adjective_stemmer: public Stemmer
+{
+public:
+	bool adj ;
+	long long finish_pos;
+
+	adjective_stemmer(QString * word, int start):Stemmer(word,start/*,false*/)
+	{
+		adj=false;
+		finish_pos=start;
+	}
+	bool on_match()
+	{
+		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
+			if (stem_info->abstract_categories[i] && get_abstractCategory_id(i)>=0)
+			{
+				if (getColumn("category","name",get_abstractCategory_id(i))=="ADJ")
+				{
+					adj=true;
+					finish_pos=finish;
+					return false;
+				}
+			}
+		return true;
+	}
+};
+
+int adjective_detector(QString input_str)
+{
+	QFile input(input_str.split("\n")[0]);
+	if (!input.open(QIODevice::ReadWrite))
+	{
+		out << "File not found\n";
+		return 1;
+	}
+	QTextStream file(&input);
+	file.setCodec("utf-8");
+	text=new QString(file.readAll());
+	if (text->isNull())
+	{
+		out<<"file error:"<<input.errorString()<<"\n";
+	}
+	if (text->isEmpty()) //ignore empty files
+	{
+		out<<"empty file\n";
+		return 0;
+	}
+	long long text_size=text->size();
+
+	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
+		current_pos++;
+	for (;current_pos<text_size;)
+	{
+		long long start=current_pos;
+		long long next;
+		adjective_stemmer s(text,current_pos);
+		s();
+		long long finish=max(s.finish,s.finish_pos);
+		if (s.adj )
+			out <<text->mid(current_pos,finish-current_pos+1)+":ADJECTIVE\n";
+		current_pos=next_positon(finish);;//here current_pos is changed
+	}
+	return 0;
+}
+#endif
 int hadith(QString input_str,ATMProgressIFC *prg)
 {
-
+#ifdef IMAN_CODE
+	return adjective_detector(input_str);
+#endif
 	QFile chainOutput("test-cases/chainOutput");
 
 	chainOutput.remove();
@@ -752,10 +860,8 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #else
 	chainData *currentChain=NULL;
 #endif
-
 	long long  sanadEnd;
-
-	   int hadith_Counter=1;
+	int hadith_Counter=1;
 
 	for (;current_pos<text_size;)
 	{
@@ -770,9 +876,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			if (currentData.narratorCount>=currentData.narratorThreshold)
 			{
 				sanadEnd=currentData.narratorEndIndex;
+#if 1
 				newHadithStart=currentData.sanadStartIndex;
 				long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
-#if 1
 				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
 				out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
 			#ifdef CHAIN_BUILDING
