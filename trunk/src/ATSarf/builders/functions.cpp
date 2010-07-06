@@ -75,10 +75,10 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-	const QString item_files[3]= {"../buckwalter scripts/list_of_stems.txt", \
-								  "../buckwalter scripts/list_of_prefixes.txt", \
-								  "../buckwalter scripts/list_of_suffixes.txt"};
-	const item_types types[3] ={ STEM, PREFIX, SUFFIX};
+	const QString item_files[3]= {	"../buckwalter scripts/list_of_prefixes.txt",
+									"../buckwalter scripts/list_of_suffixes.txt",
+									"../buckwalter scripts/list_of_stems.txt"};
+	const item_types types[3] ={ PREFIX, SUFFIX,STEM};
 	for (int j=0;j<3;j++)
 	{
 		int num_entries=6;

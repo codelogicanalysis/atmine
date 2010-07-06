@@ -11,8 +11,8 @@
 #include "../utilities/dbitvec.h"
 #include "../logger/ATMProgressIFC.h"
 
-typedef Triplet<long long, long, QString> Map_key;
-typedef Triplet<dbitvec,QString,QString> Map_entry;
+typedef Triplet<long long, long, QString> Map_key;  //(item_id,category_id,raw_data)
+typedef Triplet<dbitvec,long,QString> Map_entry; //(abstract_categories,description_id,POS)
 class database_info_block
 {
     public:
@@ -27,6 +27,8 @@ class database_info_block
 		QHash<Map_key,Map_entry > * map_prefix;
 		QHash<Map_key,Map_entry > * map_stem;
 		QHash<Map_key,Map_entry > * map_suffix;
+
+		QVector<QString>* descriptions;
 
         database_info_block();
 		void fill(ATMProgressIFC *p_ifc);

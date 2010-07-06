@@ -48,7 +48,6 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 #if 0
 	if (first_time)
 	{
-		initialize_variables();
 		database_info.fill(prg);
 		first_time=false;
 		hadith_initialize();
@@ -66,6 +65,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	out <<equal_ignore_diacritics(s1,s2);
 #endif
 #else
+	initialize_variables();
 	if (augment()<0)
 		return -1;
 #endif

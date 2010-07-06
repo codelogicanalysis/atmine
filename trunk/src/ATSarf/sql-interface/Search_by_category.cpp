@@ -21,11 +21,13 @@ bool Search_by_category::retrieve_internal(all_item_info & info)
         info.raw_data=query.value(3).toString();
         info.POS=query.value(4).toString();
         if (query.value(5).isNull())
-                info.description="";
+				info.description_id=-1;
         else
         {
-				long long description_id=query.value(5).toULongLong();
+				info.description_id=query.value(5).toULongLong();
+#if 0
                 info.description=getColumn("description","name",description_id);  //uses global query
+#endif
         }
         if (type==STEM)
         {

@@ -212,6 +212,7 @@ public:
 	#ifdef STATS
 		QString temp_stem=removeDiacritics(diacritic_text->mid(Stem->starting_pos, Suffix->startingPos-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 	#endif
+		QString description=stem_info->description();
 		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
@@ -221,7 +222,7 @@ public:
 			finish_pos=finish;
 			return false;
 		}
-		else if (stem_info->description=="son")
+		else if (description=="son")
 		{
 		#ifdef STATS
 			stem=temp_stem;
@@ -230,7 +231,7 @@ public:
 			finish_pos=finish;
 			return false;
 		}
-		else if (stem_info->description=="said" || stem_info->description=="say" || stem_info->description=="notify/communicate" || stem_info->description.split(QRegExp("[ /]")).contains("listen") || stem_info->description.contains("from/about")||stem_info->description.contains("narrate"))
+		else if (description=="said" || description=="say" || description=="notify/communicate" || description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") || description.contains("narrate"))
 		{
 		#ifdef STATS
 			stem=temp_stem;

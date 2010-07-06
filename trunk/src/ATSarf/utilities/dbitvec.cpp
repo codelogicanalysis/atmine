@@ -111,7 +111,17 @@ dbitvec::Byte dbitvec::operator [] (unsigned int bit) {
 
 bool operator == (const dbitvec d1, const dbitvec d2)
 {
+#if 0
 	return strcmp((const char*)d1._data(),(const char *)d2._data())==0;
+#else
+	unsigned int bytes1=d1.getNumBytes();
+	if (bytes1!=d2.getNumBytes())
+		return false;
+	for (unsigned int i=0;i<bytes1;i++)
+		if (d1._data()[i]!=d2._data()[i])
+			return false;
+	return true;
+#endif
 }
 bool operator != (const dbitvec d1, const dbitvec d2)
 {
@@ -131,7 +141,7 @@ dbitvec& dbitvec::operator=(const dbitvec& v1)
 	memcpy(data, v1._data(), bytes);
 	return *this;
 }
-#if 0
+#if 1
 #include <QString>
 #include <QDebug>
 void dbitvec::show()

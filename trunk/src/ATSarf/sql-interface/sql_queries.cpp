@@ -422,7 +422,7 @@ dbitvec set_index_bitset(QString table,QString column_name, int index, long long
 	dbitvec old_bitset(max_sources);
 	old_bitset.reset();
 	old_bitset=get_bitset_column(table,column_name,id,additional_condition,has_id);
-	assert (old_bitset!=INVALID_BITSET);
+	assert(old_bitset!=INVALID_BITSET);
 	old_bitset.setBit(index);//it became new now
 	QString str1=bitset_to_string(old_bitset);
 	assert (string_to_bitset(str1)==old_bitset);
@@ -620,7 +620,7 @@ long insert_category(QString name, item_types type, dbitvec sources, bool isAbst
 }
 long insert_category(QString name, item_types type, int source_id, bool isAbstract)//returns its id if already present
 {
-	dbitvec sources;
+	dbitvec sources(max_sources);
 	sources.reset();
 	int bit_index=get_bitindex(source_id,source_ids);
 	if (bit_index>=0 && bit_index<max_sources)
@@ -636,7 +636,7 @@ long insert_category(QString name, item_types type, int source_id, bool isAbstra
 }
 long long insert_description(QString name,item_types type)
 {
-	if (!existsEntry("description",-1,QString("name= \"%1\" AND type=%2").arg(name).arg((int)type)))
+	if (!existsEntry("description",-1,QString("name= \"%1\" AND type=%2").arg(name).arg((int)type),false))
 	{
 		QString stmt( "INSERT INTO description(name,type) VALUES('%1',%2)");
 		stmt=stmt.arg(name).arg((int)type);

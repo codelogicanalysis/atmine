@@ -69,7 +69,8 @@ SOURCES += utilities/text_handling.cpp \
     test-cases/hadith_1.cpp \
     test-cases/narrator_abstraction.cpp \
     utilities/Math_functions.cpp \
-    caching_structures/Search_by_item_locally.cpp
+    caching_structures/Search_by_item_locally.cpp \
+	common_structures/common.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/libdatrie-0.2.3/datrie/.libs/ \
@@ -80,9 +81,3 @@ CONFIG += debug_and_release
 # debug
 QT += sql
 FORMS += gui/mainwindow.ui
-
-#-Q suppresses the call graph data
-
-#QMAKE_CFLAGS+=-pg
-#QMAKE_CXXFLAGS+=-pg
-#QMAKE_LFLAGS+=-pg
