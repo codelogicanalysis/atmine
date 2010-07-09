@@ -43,6 +43,6 @@ class dbitvec {
 	dbitvec& operator=(const dbitvec& vec2);
 	void show();
 };
-bool operator == (const dbitvec d1, const dbitvec d2);
-bool operator != (const dbitvec d1, const dbitvec d2);
+bool operator == (const dbitvec & d1, const dbitvec & d2);
+bool operator != (const dbitvec & d1, const dbitvec &d2);
 #endif

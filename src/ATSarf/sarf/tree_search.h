@@ -35,7 +35,6 @@ class TreeSearch
         node * reached_node;
 #endif
         int position;//note that provided position is 1+last_letter after traversal
-        //int number_of_matches;
 
         virtual bool shouldcall_onmatch(int);
 		bool on_match_helper();

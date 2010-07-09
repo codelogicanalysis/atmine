@@ -109,7 +109,7 @@ dbitvec::Byte dbitvec::operator [] (unsigned int bit) {
 
 // by Jad:
 
-bool operator == (const dbitvec d1, const dbitvec d2)
+bool operator == (const dbitvec & d1, const dbitvec & d2)
 {
 #if 0
 	return strcmp((const char*)d1._data(),(const char *)d2._data())==0;
@@ -123,7 +123,7 @@ bool operator == (const dbitvec d1, const dbitvec d2)
 	return true;
 #endif
 }
-bool operator != (const dbitvec d1, const dbitvec d2)
+bool operator != (const dbitvec & d1, const dbitvec & d2)
 {
 	return !(d1==d2);
 }

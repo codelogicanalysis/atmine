@@ -13,8 +13,8 @@ class Ptr{
 		inline bool operator!= (const Ptr<T> & rhs) const {
 			return (*p) != (*(rhs.p));
 		}
-		//inline T* operator -> () { return p;}
-		//inline T& operator * () { return *p;}
+		inline T* operator -> () { return p;}
+		inline T& operator * () { return *p;}
 };
 
 #endif // PTR_H

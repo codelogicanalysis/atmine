@@ -22,7 +22,7 @@
         rawdata_description.clear();
         addPair(raw_data,description);
 #elif defined (REDUCE_THRU_DIACRITICS)
-    result_node::result_node(long affix_id,long previous_category_id,long resulting_category_id,QString raw_data)
+	result_node::result_node(long affix_id,long previous_category_id,long resulting_category_id,QString raw_data):node()
     {
         this->raw_datas.clear();
         add_raw_data(raw_data);
@@ -34,6 +34,24 @@
         set_resulting_category_id(resulting_category_id);
         set_affix_id(affix_id);
     }
+	void result_node::initialize(const result_node & n)
+	{
+		#ifdef REDUCE_THRU_DIACRITICS
+				raw_datas=n.raw_datas;
+		#endif
+		set_previous_category_id(n.previous_category_id);
+		set_resulting_category_id(n.resulting_category_id);
+		set_affix_id(n.affix_id);
+	}
+	result_node::result_node(const result_node & n):node(n)
+	{
+		initialize(n);
+	}
+	result_node& result_node::operator=(const result_node& n)
+	{
+		initialize(n);
+		return operator =(n);
+	}
 	bool result_node::isLetterNode() const
     {
         return false;

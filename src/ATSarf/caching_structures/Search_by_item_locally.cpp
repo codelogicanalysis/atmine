@@ -1,7 +1,7 @@
 #include "Search_by_item_locally.h"
 #include "../sql-interface/sql_queries.h"
 
-Search_by_item_locally::Search_by_item_locally(item_types type,long long id, long category_id, QString raw_data)
+Search_by_item_locally::Search_by_item_locally(item_types type,long long id, long category_id, QString & raw_data)
 {
 	if (type==PREFIX)
 		map=database_info.map_prefix;
