@@ -8,6 +8,8 @@ class letter_node:public node
     private:
         QChar letter;
     public:
+		letter_node(const letter_node & n);
+		letter_node& operator=(const letter_node& n);
         letter_node(QChar letter);
 		bool isLetterNode() const;
 		QChar getLetter() const;

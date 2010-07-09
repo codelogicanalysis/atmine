@@ -1,8 +1,18 @@
 #include "letter_node.h"
 
-letter_node::letter_node(QChar letter)
+
+letter_node::letter_node(const letter_node & n):node(n)
 {
-    setLetter(letter);
+	letter=n.letter;
+}
+letter_node& letter_node::operator=(const letter_node& n)
+{
+	letter=n.letter;
+	return operator =(n);
+}
+letter_node::letter_node(QChar letter):node()
+{
+	setLetter(letter);
 }
 bool letter_node::isLetterNode() const
 {

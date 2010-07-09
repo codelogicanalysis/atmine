@@ -9,6 +9,8 @@ class result_node:public node
         long previous_category_id;
         long affix_id;
         long resulting_category_id;
+
+		void initialize(const result_node & n);
     public:
 
     #ifdef REDUCE_THRU_DIACRITICS
@@ -37,6 +39,8 @@ class result_node:public node
 	#else
 		result_node(long affix_id,long previous_category_id,long resulting_category_id);
 	#endif
+		result_node(const result_node & n);
+		result_node& operator=(const result_node& n);
 		bool isLetterNode() const;
         long get_previous_category_id();
         void set_previous_category_id(long id);

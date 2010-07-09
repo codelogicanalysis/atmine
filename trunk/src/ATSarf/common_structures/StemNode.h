@@ -22,9 +22,9 @@ public:
 		typedef QList<QString> RawDatasEntry;
 		typedef QVector<RawDatasEntry> RawDatas;
 
-		void add_info(long cat_id,QString raw_data);
-		void add_info(long cat_id,RawDatasEntry raw_data_entry);
-		bool exists(long cat_id, QString raw_data);
+		void add_info(long cat_id,QString & raw_data);
+		void add_info(long cat_id,RawDatasEntry & raw_data_entry);
+		bool exists(long cat_id, QString & raw_data); //by reference just to reduce copy constructors
 		bool get(long cat_id, RawDatasEntry &raw_datas_entry);
 	//private:
 		RawDatas raw_datas;

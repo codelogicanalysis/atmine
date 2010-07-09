@@ -3,10 +3,6 @@
 
 #include <QtCore/qdatastream.h>
 
-//QT_BEGIN_HEADER
-
-//QT_BEGIN_NAMESPACE
-
 template <class T1, class T2, class T3>
 struct Triplet
 {
@@ -63,9 +59,5 @@ Q_INLINE_TEMPLATE uint qHash ( Triplet<long long, long, QString> t)
 {
 	return uint(qHash(t.first));//+qHash(t.second)+qHash(t.third));
 }
-
-//QT_END_NAMESPACE
-
-//QT_END_HEADER
 
 #endif // TRIPLET_H

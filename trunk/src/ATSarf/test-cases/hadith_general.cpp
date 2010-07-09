@@ -76,10 +76,10 @@ inline void display(QString t)
 	//qDebug() <<t;
 }
 #else
-inline void display(wordType) {}
-inline void display(stateType){}
-inline void display(QString)  {}
+#define display(c) ;
 #endif
+
+
 
 #define display_letters 30
 typedef struct chainData_ {

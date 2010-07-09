@@ -49,7 +49,7 @@ Notes:
 -asma2 el mourakaba according to last word
   */
 
-bool equal_strict(QList<QChar> list1,QList<QChar> list2)
+bool equal_strict(QList<QChar> & list1,QList<QChar> & list2)
 {
 	int l1=list1.count(),l2=list2.count();
 	if (l1!=l2)
@@ -59,7 +59,7 @@ bool equal_strict(QList<QChar> list1,QList<QChar> list2)
 			return false;
 	return true;
 }
-bool equal(QChar c1, QChar c2)
+bool equal(const QChar & c1, const QChar & c2)
 {
 	if (c1==c2)
 		return true;
@@ -69,7 +69,7 @@ bool equal(QChar c1, QChar c2)
 		return true;
 	return false;
 }
-bool equal(QString &word1,QString &word2)// is diacritics tolerant
+bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
 {
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
@@ -129,7 +129,7 @@ bool equal(QString &word1,QString &word2)// is diacritics tolerant
 	}
 	return true;
 }
-bool equal_ignore_diacritics(QString &word1,QString &word2)
+bool equal_ignore_diacritics(const QString &word1,const QString &word2)
 {
 	int length1=word1.length(),length2=word2.length();
 	int i=0,j=0;
@@ -139,7 +139,7 @@ bool equal_ignore_diacritics(QString &word1,QString &word2)
 			i++;
 		if (isDiacritic(word2[j]))
 			j++;
-		if (word1[i]!=word2[j])
+		if (i<length1 && j<length2 && word1[i]!=word2[j])
 			return false;
 		i++;
 		j++;
@@ -158,7 +158,7 @@ bool equal_ignore_diacritics(QString &word1,QString &word2)
 	}
 	return true;
 }
-bool startsWithAL( QString word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
+bool startsWithAL( const QString & word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	if (word.length()<=2)
 		return false;
