@@ -1,0 +1,40 @@
+#
+# file:      binMakefile
+# author:    F. Zaraket
+# created:   Apr 8, 2010
+#-------------------------------------
+# description: 
+#    In this file we have rules to build the application binary file
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Apr 8, 2010    fadi   initial creation
+
+APPLICATION=ATSarf
+TARGET=$(APPLICATION)
+
+# the following macro defines the top directory relative to the
+# current directory
+ifndef TOP
+TOP:=$(shell X=..; until stat $$X/$(APPLICATION)topstamp 1>/dev/null 2>/dev/null;do X=$$X/..; done;echo $$X)
+endif
+#echotop:
+#	@echo $(TOP)
+
+include $(TOP)/scripts/macrosMakefile
+
+#ATSarf_LIBS+=$(ANTLR_LIBS)
+#ATSarf_LIBS_LINKFLAGS+=$(ANTLR_LIB_LDDFLAGS)
+
+DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
+DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
+
+ATSarf_LIBS_LINKFLAGS+=$(QT_LIBS_LDDFLAGS) 
+ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
+
+$(APPLICATION): $(ATSarf_LIBS)
+	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
+
+#--------------------------------------------------
+include $(TOP)/scripts/rulesMakefile

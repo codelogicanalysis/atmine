@@ -1,0 +1,44 @@
+# file:      antlrMacrosMakefile
+# author:    F. Zaraket
+# created:   April 8, 2010
+#-------------------------------------
+# description: 
+#    This file contains macros to handle antlr grammar files 
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Feb 12,2010    fadi   initial creation
+
+ANTLRDIR=third/antlr
+
+#program needed to generate code
+ANTLR_JAR=$(TOP)/$(ANTLRDIR)/antlr-3.2.jar
+
+#library and linking flags
+ANTLR_LIB_LDDFLAGS=-L$(TOP)/$(ANTLRDIR)/libantlr3c-3.2/.libs -lantlr3c
+ANTLR_LIBS=$(TOP)/$(ANTLRDIR)/libantlr3c-3.2/.libs/libantlr3c.so
+
+#original source code
+ANTLR_GRAMMARS=${wildcard *.g}
+
+#code that antler will generate
+ANTLR_LEX_SOURCES=$(patsubst %.g,%Lexer.c, $(ANTLR_GRAMMARS))
+ANTLR_PRS_SOURCES=$(patsubst %.g,%Parser.c, $(ANTLR_GRAMMARS))
+ANTLR_SOURCES=$(ANTLR_LEX_SOURCES) $(ANTLR_PRS_SOURCES)
+
+#dependency files for the code antler generates
+ANTLR_DEPENDENCIES=$(ANTLR_SOURCES:.c=.d)
+
+#echoG:
+#	@echo $(ANTLR_GRAMMARS)
+#	@echo $(ANTLR_SOURCES)
+#	@echo $(INCLUDEDIRS)
+#	@echo $(ANTLR_SOURCES)
+#	@echo $(SOURCE_DEPENDENCIES)
+
+# add the antler include directories to INCLUDEDIRS where appropriate
+ifneq ($(strip $(ANTLR_SOURCES)),)
+    INCLUDEDIRS+= $(ANTLRDIR)/libantlr3c-3.2
+    INCLUDEDIRS+= $(ANTLRDIR)/libantlr3c-3.2/include
+endif
