@@ -1,0 +1,33 @@
+#
+# file:      sharedobjectMakefile
+# author:    F. Zaraket
+# created:    feb 12, 2010
+#-------------------------------------
+# description: 
+#    In this file we have rules to build a shared object library from
+#    a directory. The directory name is in BASE and the object
+#    files are in BASEOBJECTS.
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Feb 12,2010    fadi   initial creation
+
+APPLICATION=ATSarf
+TARGET=$(TOP)/lib/lib$(BASE).so
+
+# the following macro defines the top directory relative to the
+# current directory
+ifndef TOP
+TOP:=$(shell X=..; until stat $$X/$(APPLICATION)topstamp 1>/dev/null 2>/dev/null;do X=$$X/..; done;echo $$X)
+endif
+#echotop:
+#	@echo $(TOP)
+
+include $(TOP)/scripts/macrosMakefile
+
+$(TARGET): $(GSOURCES) $(BASEOBJECTS)
+	$(CXX) -shared -o $@ $(BITS) -Wl,-soname,$@ $(BASEOBJECTS)
+
+#--------------------------------------------------
+include $(TOP)/scripts/rulesMakefile
