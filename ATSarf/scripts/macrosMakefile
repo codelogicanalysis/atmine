@@ -91,7 +91,7 @@ CXXFLAGS+=$(OPT_DEBUG)
 CFLAGS+=$(OPT_DEBUG)
 LDDFLAGS+=$(OPT_DEBUG)
 
-ifneq ($(findstring 64,$(MAKECMDGOALS)),32)
+ifneq ($(findstring 32,$(MAKECMDGOALS)),32)
     BITS=-m64
 else
     BITS=-m32
