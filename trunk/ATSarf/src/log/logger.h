@@ -2,7 +2,7 @@
 #define _LOGGER_
 
 #include <QTextStream>
-#include <bitset>
+//#include <QDebug>
 
 extern QTextStream out;
 extern QTextStream in;
@@ -15,7 +15,7 @@ extern bool display_errors;
 extern bool display_warnings;
 
 #define error \
-	if (display_errors) displayed_error << "ERROR! "
+	if (display_errors)  displayed_error << "ERROR! "
 			//... pay attention to put such statements between {..} in if-else structures, otherwise next else would be to this if and not as intended
 #define warning \
 	if (display_errors && display_warnings) displayed_error << "WARNING! "

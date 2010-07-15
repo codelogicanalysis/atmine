@@ -1,7 +1,7 @@
 #include "Search_by_item_locally.h"
 #include "sql_queries.h"
 
-Search_by_item_locally::Search_by_item_locally(item_types type,long long id, long category_id, QString raw_data)
+Search_by_item_locally::Search_by_item_locally(item_types type,long long id, long category_id, QString & raw_data)
 {
 	if (type==PREFIX)
 		map=database_info.map_prefix;
@@ -21,7 +21,7 @@ bool Search_by_item_locally::retrieve(minimal_item_info &info)
 	if (index<list.size())
 	{
 		info.abstract_categories=list[index].first;
-		info.description=list[index].second;
+		info.description_id=list[index].second;
 		info.POS=list[index].third;
 		info.category_id=category_id;
 		info.raw_data=raw_data;

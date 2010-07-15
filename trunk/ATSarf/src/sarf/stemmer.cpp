@@ -4,10 +4,122 @@
 #include "diacritics.h"
 #include "stemmer.h"
 
-bool Stemmer::on_match_helper() //needed just to count matches till now
+void TreeMachine::get_all_possibilities(int i, QList< QString>  &raw_datas)
+{
+	if (i>possible_raw_datasOFCurrentMatch.count() || i<0)
+		return;
+	else if (i==possible_raw_datasOFCurrentMatch.count())
+	{
+		if (!a_branch_returned_false)
+		{
+			raw_datasOFCurrentMatch=raw_datas;
+			if (controller->called_everything)
+			{
+				if (!postMatch())
+					a_branch_returned_false=true;
+			}
+			else
+			{
+				if (!controller->on_match_helper())
+					a_branch_returned_false=true;
+			}
+		}
+	}
+	else
+	{
+		for (int j=0;j<possible_raw_datasOFCurrentMatch[i].count();j++)
+		{
+			if (!a_branch_returned_false)
+			{
+				QList< QString> raw_datas_modified=raw_datas;
+				raw_datas_modified.append(possible_raw_datasOFCurrentMatch[i][j]);
+				get_all_possibilities(i+1,raw_datas_modified);
+			}
+			else
+				break;
+		}
+	}
+}
+
+bool TreeMachine::onMatch()
+{
+#ifdef REDUCE_THRU_DIACRITICS
+	QList<QString> raw_datas;
+	raw_datas.clear();
+	a_branch_returned_false=false;
+	get_all_possibilities(0, raw_datas);
+	return !a_branch_returned_false;
+#else
+	if (controller->called_everything)
+		return postMatch();
+	else
+		return controller->on_match_helper();
+	return true;
+#endif
+}
+
+TreeMachine::TreeMachine(item_types type,Stemmer * controller,int start):TreeSearch(type,controller->info.text,start)
+{
+	this->controller =controller;
+}
+
+bool PrefixMachine::postMatch()
+{
+	//out<<"p:"<<info->word.mid(0,position)<<"\n";
+	controller->Prefix=this;
+	StemMachine *Stem=new StemMachine(controller,position);
+	return Stem->operator ()();
+}
+
+StemMachine::StemMachine(Stemmer * controller,int start):StemSearch(controller->info.text,start)
+{
+	this->controller =controller;
+}
+
+bool StemMachine::shouldcall_onmatch(int)
+{//check rules AB
+	return (database_info.comp_rules->operator ()(controller->Prefix->getFinalResultingCategory(),category_of_currentmatch));
+}
+
+bool StemMachine::onMatch()
+{
+	if (controller->called_everything)
+	{
+	#ifdef DEBUG
+		out<<"s:"<<info.text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
+	#endif
+		controller->Stem=this;
+		SuffixMachine * Suffix= new SuffixMachine(controller,currentMatchPos+1);
+		return Suffix->operator ()();
+	}
+	else
+	{
+		if (!controller->on_match_helper())
+			return false;
+	}
+	return true;
+}
+
+bool SuffixMachine::postMatch()
+{
+	//out<<"S:"<<info->word.mid(startingPos)<<"\n";
+	controller->Suffix=this;
+	return controller->on_match_helper();
+}
+
+bool SuffixMachine::shouldcall_onmatch(int position)
+{
+	if (position>=info.text->length() || delimiters.contains(info.text->at(position)))
+		if (database_info.comp_rules->operator ()(controller->Prefix->getFinalResultingCategory(),getFinalResultingCategory()) && database_info.comp_rules->operator ()(controller->Stem->category_of_currentmatch,getFinalResultingCategory()))
+			return true;//check first is AC and second is BC
+	return false;
+}
+
+bool Stemmer::on_match_helper()
 {
 	if (get_all_details)
 	{
+
 		if (called_everything || type==PREFIX)
 		{
 			prefix_infos=new QVector<minimal_item_info>();
@@ -19,12 +131,10 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 				Search_by_item_locally s(PREFIX,Prefix->idsOFCurrentMatch[i],Prefix->catsOFCurrentMatch[i],Prefix->raw_datasOFCurrentMatch[i]);
 				minimal_item_info prefix_info;
 				while(s.retrieve(prefix_info))//TODO: results with incorrect behaviour assuming more than 1 category works for any affix, but assuming just one match this works
-				{
 					prefix_infos->append(prefix_info);
-				}
 			}
 			if (!called_everything)
-				finish=Prefix->sub_positionsOFCurrentMatch.last();
+				info.finish=Prefix->sub_positionsOFCurrentMatch.last();
 		}
 		if (called_everything || type==SUFFIX)
 		{
@@ -37,17 +147,15 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 				Search_by_item_locally s(SUFFIX,Suffix->idsOFCurrentMatch[i],Suffix->catsOFCurrentMatch[i],Suffix->raw_datasOFCurrentMatch[i]);
 				minimal_item_info suffix_info;
 				while(s.retrieve(suffix_info))
-				{
 					suffix_infos->append(suffix_info);
-				}
 			}
-			finish=Suffix->sub_positionsOFCurrentMatch.last();
+			info.finish=Suffix->sub_positionsOFCurrentMatch.last();
 		}
 		if (called_everything || type==STEM)
 		{
 			Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);
 			if (!called_everything)
-				finish=Stem->currentMatchPos;
+				info.finish=Stem->currentMatchPos;
 			stem_info=new minimal_item_info;
 			while(s.retrieve(*stem_info))
 			{
@@ -60,9 +168,7 @@ bool Stemmer::on_match_helper() //needed just to count matches till now
 			return on_match();
 	}
 	else
-	{
 		return on_match();
-	}
 }
 bool Stemmer::on_match()
 {
@@ -79,7 +185,8 @@ bool Stemmer::on_match()
 			if (count>0)
 					out << " OR ";
 			count++;
-			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ prefix_infos->at(i).description;
+			const minimal_item_info & rmii = prefix_infos->at(i);
+			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ rmii.description();
 		}
 		out <<")-";
 	}
@@ -90,9 +197,9 @@ bool Stemmer::on_match()
 		if (count>0)
 				out << " OR ";
 		count++;
-		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description;
+		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description();
 		out<<" [ ";
-		for (unsigned int i=0;i<stem_info->abstract_categories.size();i++)
+		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
 			if (stem_info->abstract_categories[i])
 				if (get_abstractCategory_id(i)>=0)
 					out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
@@ -112,7 +219,7 @@ bool Stemmer::on_match()
 			if (count>0)
 					out << " OR ";
 			count++;
-			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description;
+			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description();
 		}
 		out <<")";
 	}
@@ -126,53 +233,6 @@ bool Stemmer::on_match()
 			word.append(suffix_infos->at(i).raw_data);
 		out <<" "<<word<<" ";
 	}
-	out<<" "<<finish+1<<"\n";
+	out<<" "<<info.finish+1<<"\n";
 	return true;
 }
-Stemmer::Stemmer(QString *text,int start_pos, bool get_info)
-{
-	prefix_infos=NULL;
-	stem_info=NULL;
-	suffix_infos=NULL;
-	start=start_pos;
-	finish=start_pos;
-	this->diacritic_text=text;
-	this->get_all_details=get_info;
-	//this->text=removeDiacritics(text);
-	Prefix=new PrefixSearch(this,start_pos);
-	Stem=NULL;
-	Suffix=NULL;
-}
-bool Stemmer::operator()()//if returns true means there was a match
-{
-        called_everything=true;
-		//total_matches_till_now=0;
-		return Prefix->operator ()();
-		//return (total_matches_till_now>0);
-}
-bool Stemmer::operator()(item_types type)//if returns true means there was a match
-{
-        called_everything=false;
-        this->type=type;
-		//total_matches_till_now=0;
-        if (type==PREFIX)
-				return Prefix->operator ()();
-        else if (type==STEM)
-				return Stem->operator ()();
-        else if (type==SUFFIX)
-				return Suffix->operator ()();
-		else
-			return false;
-		//return (total_matches_till_now>0);
-}
-Stemmer::~Stemmer()
-{
-        if (Suffix)
-                delete Suffix;
-        if (Stem)
-                delete Stem;
-        if (Prefix)
-                delete Prefix;
-}
-
-

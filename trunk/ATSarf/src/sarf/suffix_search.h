@@ -3,14 +3,11 @@
 
 #include "tree_search.h"
 
-class Stemmer;
-
 class SuffixSearch : public TreeSearch
 {
     public:
-        SuffixSearch(Stemmer * info,int position);
-        virtual bool shouldcall_onmatch(int position);
-        virtual bool onMatch();
+		SuffixSearch(QString * text,int start);
+		virtual bool onMatch()=0;
 		virtual ~SuffixSearch();
 };
 

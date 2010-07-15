@@ -4,6 +4,7 @@
 #include <QChar>
 
 //constantletters
+const QChar hamza=QChar(0x0621);
 const QChar ya2=QChar(0x064A);
 const QChar alef=QChar(0x0627);
 const QChar alef_madda_above= QChar(0x0622);

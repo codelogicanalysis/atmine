@@ -2,17 +2,6 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "stem_search.h"
-#include "stemmer.h"
-
-StemSearch::StemSearch(Stemmer * info,int pos)
-{
-    this->info=info;
-    starting_pos=pos;
-#ifdef USE_TRIE
-	trie=database_info.Stem_Trie;
-#endif
-}
-StemSearch::~StemSearch(){	}
 
 #ifdef USE_TRIE_WALK
 bool StemSearch::check_for_terminal(int letter_index,ATTrie::Position pos)
@@ -46,12 +35,12 @@ bool StemSearch::check_for_terminal(int letter_index,ATTrie::Position pos)
 
 void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 {
-	int length=info->diacritic_text->length();
+	int length=info.text->length();
 	for (int i=letter_index;i<length && !stop;i++)
 	{
 #ifdef USE_TRIE
 #ifdef USE_TRIE_WALK
-		QChar current_letter=info->diacritic_text->at(i);
+		QChar current_letter=info.text->at(i);
 		//qDebug()<<"s:"<<current_letter;
 		if (isDiacritic(current_letter))
 			continue;
@@ -77,11 +66,9 @@ void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 				}
 			}
 			break;
-			/*if (!trie->walk(pos, alef))
-				break;*/
 		}
 #else
-		QString name=info->diacritic_text.mid(starting_pos,i-starting_pos);
+		QString name=info.text.mid(starting_pos,i-starting_pos);
 		const StemNode * node = NULL;
 		trie->retreive(name,&node);
 		if (node == NULL)
@@ -148,120 +135,54 @@ void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 	}
 }
 
-bool StemSearch::operator()()
-{
-	ATTrie::Position pos = trie->startWalk();
-	stop=false;
-	traverse(starting_pos,pos);
-#ifdef USE_TRIE_WALK
-	/*if (i == info->diacritic_text->length())
-	{
-		if (trie->isTerminal(pos))
-		{
-			trie->walk(pos, '\0');
-			node = trie->getData(pos);
-			if (node != NULL)
-			{
-				id_of_currentmatch=node->stem_id;
-				s1.setNode(node);
-			}
-			else
-				continue;
-		}
-		else
-			continue;
-	}
-	else
-		continue;*/
-#endif
-	trie->freePosition(pos);
-	return !stop;
-}
-
-
-bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode s1)
+bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 {
 #ifdef REDUCE_THRU_DIACRITICS
-	minimal_item_info inf;
+	StemNode_info inf;
 	while(s1.retrieve(inf))
 	{
-		//qDebug() << inf.raw_data;
-		/*if (!false_returned)
-		{*/
-			if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,inf.category_id))
-			{
-				category_of_currentmatch=inf.category_id;
-				raw_data_of_currentmatch=inf.raw_data;
+		category_of_currentmatch=inf.category_id;
+		if (shouldcall_onmatch(last_letter_index))
+		{
 #ifndef USE_TRIE_WALK
-				currentMatchPos=i-1;
-				QString subword=getDiacriticword(i-1,starting_pos,*info->diacritic_text);
+			currentMatchPos=i-1;
+			QString subword=getDiacriticword(i-1,starting_pos,*info.text);
 #else
-				//currentMatchPos=i;
-				int last;
-				QString subword=addlastDiacritics(starting_pos,last_letter_index,info->diacritic_text,last);
-						//info->diacritic_text->mid(starting_pos,i-starting_pos+1);
-				currentMatchPos=last>0?last-1:0;
+			int last;
+			QStringRef subword=addlastDiacritics(starting_pos,last_letter_index,info.text,last);
+			currentMatchPos=last>0?last-1:0;
+			info.finish=currentMatchPos;
 #endif
-				//out<<"subword:"<<subword<<"-"<<raw_data_of_currentmatch<<currentMatchPos<<"\n";
-				if (equal(subword,raw_data_of_currentmatch))
-				{
-					//out<<"yes\n";
-					if (info->called_everything)
-					{
-						if (!onMatch())
-						{
-							/*false_returned=true;
-							break;*/
-							return false;
-						}
-					}
-					else
-					{
-						if (!info->on_match_helper())
-						{
-							/*false_returned=true;
-							break;*/
-							return false;
-						}
-					}
-				}
+			raw_data_of_currentmatch=inf.raw_data;
+			if (!reduce_thru_diacritics ||(reduce_thru_diacritics && equal(subword,raw_data_of_currentmatch)))
+			{
+				if (!onMatch())
+					return false;
 			}
-		//}
+		}
 	}
 #else
 	long cat_id;
 	while(s1.retrieve(cat_id))
 	{
-		/*if (!false_returned)
-		{*/
-			if (database_info.rules_AB->operator ()(info->Prefix->resulting_category_idOFCurrentMatch,cat_id))
+		if (shouldcall_onmatch(last_letter_index))
+		{
+			category_of_currentmatch=cat_id;
+			currentMatchPos=i-1;
+			/*if (info->called_everything)
 			{
-				category_of_currentmatch=cat_id;
-				currentMatchPos=i-1;
-				if (info->called_everything)
-				{
-					if (!onMatch())
-						//false_returned=true;
-						return false;
-				}
-				else
-				{
-					if (!info->on_match_helper())
-						//false_returned=true;
-						return false;
-				}
+				if (!onMatch())
+					return false;
 			}
-		//}
+			else
+			{
+				if (!info->on_match_helper())
+					return false;
+			}*/
+			if (!onMatch())
+				return false;
+		}
 	}
 #endif
 	return true;
-}
-bool StemSearch::onMatch()
-{
-#ifdef DEBUG
-	out<<"s:"<<info->diacritic_text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
-#endif
-	info->Stem=this;
-	SuffixSearch * Suffix= new SuffixSearch(info,currentMatchPos+1);
-	return Suffix->operator ()();
 }

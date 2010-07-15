@@ -3,13 +3,11 @@
 
 #include "tree_search.h"
 
-class Stemmer;
-
 class PrefixSearch : public TreeSearch
 {
     public:
-		PrefixSearch(Stemmer * info,int start_pos);
-        virtual bool onMatch();
+		PrefixSearch(QString * text,int start);
+		virtual bool onMatch()=0;
 		virtual ~PrefixSearch();
 };
 

@@ -9,7 +9,7 @@ typedef QVector<QVariant> Elements;
 class Retrieve_Template
 {
 private:
-	QSqlQuery query;
+	QSqlQuery * query;
 	QVector<QString> columns;
 	bool err;
 
@@ -24,6 +24,11 @@ public:
 	bool retrieve();
 	QVariant get(int index);
 	QVariant get(QString name);
+	~Retrieve_Template()
+	{
+		if (query!=NULL)
+			delete query;
+	}
 };
 
 

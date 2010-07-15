@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QRegExp>
 #include <QStringList>
-#include "logger/logger.h"
+#include "logger.h"
 #include "Search_by_item.h"
 #include "stemmer.h"
 #include "letters.h"
