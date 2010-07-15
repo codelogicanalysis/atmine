@@ -4,6 +4,7 @@
 #include "sql_queries.h"
 #include "ui_mainwindow.h"
 #include "database_info_block.h"
+#include "hadith.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -61,13 +62,12 @@ void MainWindow::on_pushButton_clicked()
 	}
 #endif
 }
-
-void MainWindow::on_destroyed()
+void MainWindow::on_fill_clicked()
 {
-	close_connection();
+	initialize_variables();
+	database_info.fill(this);
+	hadith_initialize();
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -80,3 +80,7 @@ int main(int argc, char *argv[])
 	return app.exec();
 }
 
+void MainWindow::on_exit_clicked()
+{
+	exit(0);
+}

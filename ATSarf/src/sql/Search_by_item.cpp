@@ -14,56 +14,50 @@ bool Search_by_item::retrieve_internal(long &category_id) //returns just a categ
 }
 bool Search_by_item::retrieve_internal(all_item_info &info)
 {
-//#define toLL() toULongLong(&ok); if (!ok) { error << "Unexpected Error: Non-integer field\n"; return false; }
-
-		info.item_id=query.value(0).toULongLong();
-		info.category_id =query.value(1).toULongLong();
-        info.sources=string_to_bitset(query.value(2));
-        info.raw_data=query.value(3).toString();
-        info.POS=query.value(4).toString();
-        if (query.value(5).isNull())
-                info.description="";
-        else
-        {
-				long long description_id=query.value(5).toULongLong();
-				if (description_id<0)
-					info.description="";
-				else
-					info.description=getColumn("description","name",description_id);  //uses global query
-        }
-        if (type==STEM)
-        {
-                info.abstract_categories=string_to_bitset(query.value(6));
-                info.lemma_ID=query.value(7).toString();
-        }
-        else
-        {
-                info.abstract_categories.reset();
-                info.lemma_ID="";
-        }
-        return true;
+	info.item_id=query.value(0).toULongLong();
+	info.category_id =query.value(1).toULongLong();
+	info.sources=string_to_bitset(query.value(2));
+	info.raw_data=query.value(3).toString();
+	info.POS=query.value(4).toString();
+	if (query.value(5).isNull())
+			info.description_id=-1;
+	else
+	{
+			info.description_id=query.value(5).toULongLong();
+#if 0
+			if (description_id<0)
+				info.description="";
+			else
+				info.description=getColumn("description","name",description_id);  //uses global query
+#endif
+	}
+	if (type==STEM)
+	{
+			info.abstract_categories=string_to_bitset(query.value(6));
+			info.lemma_ID=query.value(7).toString();
+	}
+	else
+	{
+			info.abstract_categories.reset();
+			info.lemma_ID="";
+	}
+	return true;
 }
-bool Search_by_item::retrieve_internal(minimal_item_info &minimal)
+bool Search_by_item::retrieve_internal(minimal_item_info &info)
 {
-        all_item_info all;
-        if (!retrieve_internal(all))
-                return false;
-        minimal.abstract_categories=all.abstract_categories;
-        minimal.category_id=all.category_id;
-        minimal.description=all.description;
-        minimal.POS=all.POS;
-        minimal.raw_data=all.raw_data;
-        return true;
+	info.category_id =query.value(1).toULongLong();
+	info.raw_data=query.value(3).toString();
+	info.POS=query.value(4).toString();
+	if (query.value(5).isNull())
+		info.description_id=-1;
+	else
+		info.description_id=query.value(5).toULongLong();
+	if (type==STEM)
+		info.abstract_categories=string_to_bitset(query.value(6));
+	else
+		info.abstract_categories.reset();
+	return true;
 }
-/*bool Search_by_item::execute_query(QString stmt) //just a copy of the global one, bc we need to use the local query and not the global
-{
-        if (!query.exec(stmt))
-        {
-                error <<query.lastError().text()<<"\n";
-                return false;
-        }
-        return true;
-}*/
 Search_by_item::Search_by_item(item_types type,long long id)
 {
         QSqlQuery temp(db);
@@ -225,7 +219,7 @@ QString Search_by_item::getGrammarStem() //just for stems
                 return "";
         }
 }
-bitset<max_sources> Search_by_item::getGrammarStem_sources() //just for stems
+dbitvec Search_by_item::getGrammarStem_sources() //just for stems
 {
         if (type==STEM)
                 return getSources("stem",id);

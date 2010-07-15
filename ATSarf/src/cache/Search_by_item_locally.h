@@ -18,7 +18,7 @@ private:
 	QList<Map_entry > list;
 	int index;
 public:
-	Search_by_item_locally(item_types type,long long id, long category_id, QString raw_data);
+	Search_by_item_locally(item_types type,long long id, long category_id, QString & raw_data);
 	bool retrieve(minimal_item_info &info);
 };
 

@@ -2,7 +2,7 @@
 #define _COMMON_H
 
 #include <QString>
-#include <bitset>
+#include "dbitvec.h"
 
 #define USE_TRIE
 #define TRIE_FROM_FILE
@@ -34,34 +34,57 @@ using namespace std;
 
 extern bool filling;
 
-extern bitset<max_sources> INVALID_BITSET;
+extern dbitvec INVALID_BITSET;
 extern QString delimiters;
 extern QVector<QChar> alefs;
 
-void initializa_variables(); //must be called at the start
+void initialize_variables(); //must be called at the start
 
-enum rules { AA,AB,AC,BC,CC };
-enum item_types { PREFIX, STEM, SUFFIX};
+enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
+enum item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};
 
-typedef struct minimal_item_info_
+typedef class minimal_item_info_
 {
+public:
 	item_types type;
 	long category_id;
-	bitset<max_sources> abstract_categories; //only for STEMS
+	dbitvec abstract_categories; //only for STEMS
 	QString raw_data;
-	QString description;
+	long description_id;
 	QString POS;
+
+	QString description() const;
+
+	minimal_item_info_()
+	{
+		abstract_categories.resize(max_sources);
+	}
 } minimal_item_info;
-typedef struct all_item_info_
+typedef class all_item_info_
 {
+public:
 	unsigned long long item_id;
 	long category_id;
-	bitset<max_sources> abstract_categories; //only for STEMS
-	bitset<max_sources> sources;
+	dbitvec abstract_categories; //only for STEMS
+	dbitvec sources;
 	QString raw_data;
-	QString description;
+	long description_id;
 	QString POS;
 	QString lemma_ID; //only for STEMs
+
+	QString description() const;
+
+	all_item_info_()
+	{
+		abstract_categories.resize(max_sources);
+		sources.resize(max_sources);
+	}
 } all_item_info;
+
+typedef struct text_info_
+{
+	QString *text;
+	long long start,finish;
+}text_info;
 
 #endif

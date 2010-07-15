@@ -21,7 +21,7 @@ bool StemNode::exists(const long cat_id)
 	return (i!=category_ids.end());
 }
 #ifdef REDUCE_THRU_DIACRITICS
-	void StemNode::add_info(long cat_id,QString raw_data)
+	void StemNode::add_info(long cat_id,QString & raw_data)
 	{
 		QVector<long>::iterator i = qLowerBound(category_ids.begin(),category_ids.end(), cat_id);
 		int index=i-category_ids.begin();//maybe does not work for 64-bit machine
@@ -39,7 +39,7 @@ bool StemNode::exists(const long cat_id)
 				raw_datas[index].append(raw_data);
 		}
 	}
-	void StemNode::add_info(long cat_id,RawDatasEntry raw_data_entry)
+	void StemNode::add_info(long cat_id,RawDatasEntry & raw_data_entry)
 	{
 		QVector<long>::iterator i = qLowerBound(category_ids.begin(),category_ids.end(), cat_id);
 		int index=i-category_ids.begin();//maybe does not work for 64-bit machine
@@ -57,7 +57,7 @@ bool StemNode::exists(const long cat_id)
 				raw_datas[index].append(raw_data_entry[j]);
 		}
 	}
-	bool StemNode::exists(long cat_id, QString raw_data)
+	bool StemNode::exists(long cat_id, QString & raw_data)
 	{
 		QVector<long>::iterator i = qBinaryFind(category_ids.begin(),category_ids.end(), cat_id);
 		if (i!=category_ids.end())
@@ -115,7 +115,7 @@ bool StemNode::exists(const long cat_id)
 			return false;
 	}
 #ifdef REDUCE_THRU_DIACRITICS
-	bool Search_StemNode::retrieve(minimal_item_info & info)
+	bool Search_StemNode::retrieve(StemNode_info & info)
 	{
 		if (cat_index<node->category_ids.size())
 		{
@@ -123,10 +123,12 @@ bool StemNode::exists(const long cat_id)
 			{
 				info.category_id=node->category_ids[cat_index];
 				info.raw_data=node->raw_datas[cat_index][rawdata_index];
+#if 0
 				info.type=STEM;
 				info.POS=QString::null;
 				info.abstract_categories=INVALID_BITSET;
 				info.description=QString::null;
+#endif
 				rawdata_index++;
 				return true;
 			}

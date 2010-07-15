@@ -22,9 +22,9 @@ public:
 		typedef QList<QString> RawDatasEntry;
 		typedef QVector<RawDatasEntry> RawDatas;
 
-		void add_info(long cat_id,QString raw_data);
-		void add_info(long cat_id,RawDatasEntry raw_data_entry);
-		bool exists(long cat_id, QString raw_data);
+		void add_info(long cat_id,QString & raw_data);
+		void add_info(long cat_id,RawDatasEntry & raw_data_entry);
+		bool exists(long cat_id, QString & raw_data); //by reference just to reduce copy constructors
 		bool get(long cat_id, RawDatasEntry &raw_datas_entry);
 	//private:
 		RawDatas raw_datas;
@@ -36,6 +36,14 @@ QDataStream &operator<<(QDataStream &out, const StemNode &node);
 
 QDataStream &operator>>(QDataStream &in, StemNode* &node);
 QDataStream &operator<<(QDataStream &out, const StemNode* &node);
+
+#ifdef REDUCE_THRU_DIACRITICS
+typedef struct StemNode_info_
+{
+	long category_id;
+	QString raw_data;
+} StemNode_info;
+#endif
 
 class Search_StemNode
 {
@@ -52,7 +60,7 @@ public:
 	void setNode(const StemNode *);
 	bool retrieve(long &category_id);
 #ifdef REDUCE_THRU_DIACRITICS
-	bool retrieve(minimal_item_info & info);
+	bool retrieve(StemNode_info & info);
 #endif
 };
 

@@ -49,7 +49,7 @@ Notes:
 -asma2 el mourakaba according to last word
   */
 
-bool equal_strict(QList<QChar> list1,QList<QChar> list2)
+bool equal_strict(QList<QChar> & list1,QList<QChar> & list2)
 {
 	int l1=list1.count(),l2=list2.count();
 	if (l1!=l2)
@@ -59,17 +59,9 @@ bool equal_strict(QList<QChar> list1,QList<QChar> list2)
 			return false;
 	return true;
 }
-bool equal(QChar c1, QChar c2)
-{
-	if (c1==c2)
-		return true;
-	if (alefs.contains(c1) && alefs.contains(c2))
-		return true;
-	if ((c1==veh && c2==feh) || (c2==veh && c1==feh))
-		return true;
-	return false;
-}
-bool equal(QString word1,QString word2)// is diacritics tolerant
+
+//equal functions are just copy-paste of each other
+bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
 {
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
@@ -83,7 +75,7 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 		i2++;
 		diacritics1.clear();
 		diacritics2.clear();
-		while (isDiacritic(word1[i1]))
+		while (i1<length1 && isDiacritic(word1[i1]))
 		{
 			if (word1[i1]!=shadde && word1[i1]!=aleft_superscript)
 				diacritics1.append(word1[i1]);
@@ -93,7 +85,7 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 			letter1=word1[i1];
 		else
 			letter1='\0';
-		while (isDiacritic(word2[i2]))
+		while (i2<length2 && isDiacritic(word2[i2]))
 		{
 			if (word2[i2]!=shadde && word2[i2]!=aleft_superscript)
 				diacritics2.append(word2[i2]);
@@ -129,18 +121,154 @@ bool equal(QString word1,QString word2)// is diacritics tolerant
 	}
 	return true;
 }
-bool startsWithAL( QString word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
+
+bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tolerant
 {
-	if (word.length()<=2)
+	//qDebug() << word1<<"-"<<word2;
+	int length1=word1.count();
+	int length2=word2.count();
+	int i1=-1,i2=-1;
+	QList<QChar> diacritics1,diacritics2;
+	QChar letter1,letter2;
+	while (i1+1<length1 && i2+1<length2)
+	{
+		i1++;
+		i2++;
+		diacritics1.clear();
+		diacritics2.clear();
+		while (i1<length1 && isDiacritic(word1.at(i1)))
+		{
+			if (word1.at(i1)!=shadde && word1.at(i1)!=aleft_superscript)
+				diacritics1.append(word1.at(i1));
+			i1++;
+		}
+		if (i1<length1)
+			letter1=word1.at(i1);
+		else
+			letter1='\0';
+		while (i2<length2 && isDiacritic(word2.at(i2)))
+		{
+			if (word2.at(i2)!=shadde && word2.at(i2)!=aleft_superscript)
+				diacritics2.append(word2.at(i2));
+			i2++;
+		}
+		if (i2<length2)
+			letter2=word2.at(i2);
+		else
+			letter2='\0';
+		//now comparison first diacritics then next_letter
+		if (diacritics1.count()==0 || diacritics2.count()==0 || equal_strict(diacritics1,diacritics2))
+		{
+			if (equal(letter1,letter2))
+				continue;
+			else
+				return false;
+		}
 		return false;
-	if (word[0]==alef && word[1]==lam)//TODO: whenever it is changed to include diactrics in-between it must notice that only some combinations of diactrics imply AL (definite article) else is part of the word
+	}
+	if (length1-(i1+1)==0 && length2-(i2+1)==0)
 		return true;
-	return false;
+	if (length1-(i1+1)==0)
+	{
+		for (int i=i2+1;i<length2;i++)
+			if (!isDiacritic(word2.at(i)))
+				return false;
+	}
+	else
+	{
+		for (int i=i1+1;i<length1;i++)
+			if (!isDiacritic(word1.at(i)))
+				return false;
+	}
+	return true;
 }
-bool removeAL( QString &word) //does not take in account cases were Diacritics may be present on the alef and lam of "al"
+
+bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolerant
 {
-	if (!startsWithAL(word))
+	int length1=word1.count();
+	int length2=word2.count();
+	int i1=-1,i2=-1;
+	QList<QChar> diacritics1,diacritics2;
+	QChar letter1,letter2;
+	while (i1+1<length1 && i2+1<length2)
+	{
+		i1++;
+		i2++;
+		diacritics1.clear();
+		diacritics2.clear();
+		while (i1<length1 && isDiacritic(word1.at(i1)))
+		{
+			if (word1.at(i1)!=shadde && word1.at(i1)!=aleft_superscript)
+				diacritics1.append(word1.at(i1));
+			i1++;
+		}
+		if (i1<length1)
+			letter1=word1.at(i1);
+		else
+			letter1='\0';
+		while (i2<length2 && isDiacritic(word2.at(i2)))
+		{
+			if (word2.at(i2)!=shadde && word2.at(i2)!=aleft_superscript)
+				diacritics2.append(word2.at(i2));
+			i2++;
+		}
+		if (i2<length2)
+			letter2=word2.at(i2);
+		else
+			letter2='\0';
+		//now comparison first diacritics then next_letter
+		if (diacritics1.count()==0 || diacritics2.count()==0 || equal_strict(diacritics1,diacritics2))
+		{
+			if (equal(letter1,letter2))
+				continue;
+			else
+				return false;
+		}
 		return false;
-	word=word.right(word.length()-2);
+	}
+	if (length1-(i1+1)==0 && length2-(i2+1)==0)
+		return true;
+	if (length1-(i1+1)==0)
+	{
+		for (int i=i2+1;i<length2;i++)
+			if (!isDiacritic(word2.at(i)))
+				return false;
+	}
+	else
+	{
+		for (int i=i1+1;i<length1;i++)
+			if (!isDiacritic(word1.at(i)))
+				return false;
+	}
+	return true;
+}
+
+bool equal_ignore_diacritics(const QString &word1,const QString &word2)
+{
+	int length1=word1.length(),length2=word2.length();
+	int i=0,j=0;
+	while(i<length1 && j<length2)
+	{
+		if (isDiacritic(word1[i]))
+			i++;
+		if (isDiacritic(word2[j]))
+			j++;
+		if (i<length1 && j<length2 && word1[i]!=word2[j])
+			return false;
+		i++;
+		j++;
+	}
+	if (length1-(i+1)==0)
+	{
+		for (int f=j+1;f<length2;f++)
+			if (!isDiacritic(word2[f]))
+				return false;
+	}
+	else
+	{
+		for (int f=i+1;f<length1;f++)
+			if (!isDiacritic(word1[f]))
+				return false;
+	}
 	return true;
 }

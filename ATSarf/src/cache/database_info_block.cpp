@@ -6,6 +6,7 @@
 #include "sql_queries.h"
 #include "Search_by_item.h"
 #include "ATMProgressIFC.h"
+#include "Retrieve_Template.h"
 #include <assert.h>
 #include <QDebug>
 
@@ -127,7 +128,7 @@ void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
-	QString stmt( "SELECT %1_id, category_id, raw_data, POS, description.name %2 FROM %1_category,description WHERE %1_category.description_id=description.id");
+	QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
 	stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":""));
 	assert (execute_query(stmt,query)) ;
 	while (query.next())
@@ -136,14 +137,14 @@ void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
 		long category_id =query.value(1).toULongLong();
 		QString raw_data=query.value(2).toString();
 		QString POS=query.value(3).toString();
-		QString description=query.value(4).toString();
-		bitset<max_sources> abstract_categories;
+		long description_id=query.value(4).toULongLong();
+		dbitvec abstract_categories(max_sources);
 		if (type==STEM)
-				abstract_categories=string_to_bitset(query.value(5));
+			abstract_categories=string_to_bitset(query.value(5));
 		else
-				abstract_categories.reset();
+			abstract_categories.reset();
 		Map_key key(item_id,category_id,raw_data);
-		Map_entry entry(abstract_categories,description,POS);
+		Map_entry entry(abstract_categories,description_id,POS);
 		map->insertMulti(key,entry);
 	}
 }
@@ -156,16 +157,41 @@ database_info_block::database_info_block()
 	Stem_Trie= new ATTrie();
 	trie_nodes=new QVector<StemNode>();
 #endif
-    rules_AA=new compatibility_rules(AA);
-    rules_AB=new compatibility_rules(AB);
-    rules_AC=new compatibility_rules(AC);
-    rules_BC=new compatibility_rules(BC);
-    rules_CC=new compatibility_rules(CC);
+	comp_rules=new compatibility_rules();
 
 	map_prefix=new QHash<Map_key,Map_entry>;
 	map_stem=new QHash<Map_key,Map_entry>;
 	map_suffix=new QHash<Map_key,Map_entry>;
+
+	descriptions=new QVector<QString>;
 }
+
+void fillDescriptions()
+{
+	int size=0;
+	{//get max_id
+		Retrieve_Template max_id("description","max(id)","");
+		if (max_id.retrieve())
+			size=max_id.get(0).toInt()+1;
+	}
+	delete database_info.descriptions;
+	database_info.descriptions=new QVector<QString>(size);
+	Retrieve_Template desc("description","id","name","");
+	int row=0, id=0;
+	assert (desc.retrieve());
+	while(row<size) //just in case some ID's are not there we fill them invalid
+	{
+		if (row==id+1)
+			assert (desc.retrieve());
+		id=desc.get(0).toLongLong();
+		if (row==id)
+			database_info.descriptions->operator [](row)=desc.get(1).toString();
+		else
+			database_info.descriptions->operator [](row)="";
+		row++;
+	}
+}
+
 void database_info_block::fill(ATMProgressIFC *p)
 {
     Prefix_Tree->build_affix_tree(PREFIX);
@@ -174,11 +200,9 @@ void database_info_block::fill(ATMProgressIFC *p)
 #ifdef USE_TRIE
 	buildTrie();
 #endif
-    rules_AA->fill();
-    rules_AB->fill();
-    rules_AC->fill();
-    rules_BC->fill();
-    rules_CC->fill();
+	comp_rules->fill();
+
+	fillDescriptions();
 
 	fillMap(PREFIX,map_prefix);
 	fillMap(STEM,map_stem);
@@ -194,15 +218,12 @@ database_info_block::~database_info_block()
 	delete Stem_Trie;
 	delete trie_nodes;
 #endif
-    delete rules_AA;
-    delete rules_AB;
-    delete rules_AC;
-    delete rules_BC;
-    delete rules_CC;
+	delete comp_rules;
 
 	delete map_stem;
 	delete map_prefix;
 	delete map_suffix;
+	delete descriptions;
 }
 
 database_info_block database_info;

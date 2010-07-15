@@ -10,7 +10,7 @@
 #
 # Feb 12,2010    fadi   initial creation
 
-QTDIR=third/qt-4.6.2
+QTDIR=third/qt
 
 #programs needed to generate code
 QTMOC_BIN=$(TOP)/$(QTDIR)/bin/moc

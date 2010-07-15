@@ -7,8 +7,7 @@ typedef QVector<QVariant> Elements;
 
 void Retrieve_Template::intitialize(QString table,Columns columns,QString where)
 {
-	QSqlQuery temp(db);
-	this->query=temp;
+	this->query=new QSqlQuery (db);
 	QString cols;
 	for(int i=0;i<columns.count();i++)
 	{
@@ -18,7 +17,7 @@ void Retrieve_Template::intitialize(QString table,Columns columns,QString where)
 	}
 	QString stmt( "SELECT %2 FROM %1 %3");
 	stmt=stmt.arg(table).arg(cols).arg(where==""?"":QString("WHERE ").append(where) );
-	err= (!execute_query(stmt,this->query));
+	err= (!execute_query(stmt,*(this->query)));
 	if (!err)
 		this->columns=columns;
 }
@@ -53,11 +52,11 @@ Retrieve_Template::Retrieve_Template(QString table,QString column1, QString colu
 }
 bool Retrieve_Template::retrieve(Elements &elements) //returns just a category but can contain redundancy
 {
-	if (!err && this->query.next())
+	if (!err && this->query->next())
 	{
 		elements.clear();
 		for (int i=0;i<columns.count();i++)
-			elements.append(this->query.value(i));
+			elements.append(this->query->value(i));
 		return true;
 	}
 	else
@@ -65,7 +64,7 @@ bool Retrieve_Template::retrieve(Elements &elements) //returns just a category b
 }
 bool Retrieve_Template::retrieve()
 {
-	if (!err && this->query.next())
+	if (!err && this->query->next())
 	{
 		return true;
 	}
@@ -74,16 +73,16 @@ bool Retrieve_Template::retrieve()
 }
 int Retrieve_Template::size()
 {
-	return query.size();
+	return query->size();
 }
 QVariant Retrieve_Template::get(int index)
 {
 	assert (index>=0 && index<size());
-	return this->query.value(index);
+	return this->query->value(index);
 }
 QVariant Retrieve_Template::get(QString col)
 {
 	int index=columns.indexOf(col);
 	assert (index>=0 && index<size());
-	return this->query.value(index);
+	return this->query->value(index);
 }

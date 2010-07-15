@@ -1,30 +1,29 @@
 #ifndef _COMPATIBILITY_RULES_H
 #define	_COMPATIBILITY_RULES_H
 
-
-#include <QPair>
 #include <QVector>
-#include <QHash>
 #include "dbitvec.h"
 #include "common.h"
 
-typedef QVector<dbitvec> bitvec2d;
-typedef QVector<long> index2id_map;
-typedef QPair<long,long> ResultingCategoryKey;
-typedef QHash< ResultingCategoryKey,long> ResultingCategoryMap;
+typedef struct
+  {
+	int rc:16;		//currently <500 => more than enough
+	unsigned int rule_t:3;// if valid : redundant with typecat1, typecat2
+	unsigned int valid:1;
+	unsigned int abstract1:1;
+	unsigned int abstract2:1;
+	unsigned int typecat1:2;
+	unsigned int typecat2:2;
+	unsigned int unused:6;
+  } comp_rule_t;
+
+typedef QVector <QVector <comp_rule_t> > CompRuleLookupTable;
 
 class compatibility_rules
 {
     private:
-        rules rule;
-        bitvec2d rules_info;
-        index2id_map  bitorder[2];
-        ResultingCategoryMap resulting_category;
-
-		void generate_bit_order(rules rule);
-		long get_bitindex(int order,long id);
+		CompRuleLookupTable crlTable;
     public:
-        compatibility_rules(rules rule);
         void fill();
         bool operator()(int id1,int id2);
         bool operator()(int id1,int id2, long & id_r);//-1 is invalid

@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "common.h"
 
-#include <bitset>
+#include "dbitvec.h"
 #include <QString>
 #include <QSqlDatabase>
 #include <QTextStream>
@@ -21,19 +21,24 @@ extern QSqlDatabase db;
 	if (!execute_query(stmt)) \
 		return -1;
 
+extern int source_ids[max_sources+1];//here last element stores number of filled entries in the array
+extern int abstract_category_ids[max_sources+1];//here last element stores number of filled entries in the array
+
 bool execute_query(QString stmt);
 bool execute_query(QString stmt, QSqlQuery &query);
 
 QString interpret_type(item_types t);
 QString interpret_type(rules r);
-bitset<max_sources> bigint_to_bitset(unsigned long long ll);
-bitset<max_sources> bigint_to_bitset(char * val);
-bitset<max_sources> bigint_to_bitset(QVariant val);
-bitset<max_sources> string_to_bitset(QString val);
-bitset<max_sources> string_to_bitset(QVariant val);
-QString bitset_to_string(bitset<max_sources> b);
+dbitvec bigint_to_bitset(unsigned long long ll);
+dbitvec bigint_to_bitset(char * val);
+dbitvec bigint_to_bitset(QVariant val);
+dbitvec string_to_bitset(QString val);
+dbitvec string_to_bitset(QVariant val);
+QString bitset_to_string(dbitvec b);
+int get_bitindex(int id,int array[]);//very slow, implement differently later
 bool start_connection(ATMProgressIFC *); //and do other initializations
 void close_connection();
+int generate_bit_order(QString table,int array[],QString filter_column="");
 long get_abstractCategory_id(int bit);
 int get_abstractCategory_id(QString abstract_category);
 long get_source_id(int bit);
@@ -41,12 +46,12 @@ bool existsID(QString table,unsigned long long id,QString additional_condition =
 long long getID(QString table, QString name, QString additional_condition="", QString column_name="name");
 QString getColumn(QString table, QString column_name, long long id, QString additional_condition="",bool has_id=true);
 bool existsSOURCE(int source_id);
-bitset<max_sources> getSources(QString table,unsigned long long id=-1, QString additional_condition ="", bool has_id=true);
+dbitvec getSources(QString table,unsigned long long id=-1, QString additional_condition ="", bool has_id=true);
 int get_type_of_category(long category_id, item_types & type);
 bool get_types_of_rule(rules rule, item_types &t1, item_types &t2);
-bitset<max_sources> addSource(QString table, int source_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
-bitset<max_sources> addAbstractCategory(QString table, int abstract_category_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
-long insert_category(QString name, item_types type, bitset<max_sources> sources, bool isAbstract=false);//returns its id if already present and if names are equal but others are not, -1 is returned
+dbitvec addSource(QString table, int source_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
+dbitvec addAbstractCategory(QString table, int abstract_category_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
+long insert_category(QString name, item_types type, dbitvec sources, bool isAbstract=false);//returns its id if already present and if names are equal but others are not, -1 is returned
 long insert_category(QString name, item_types type, int source_id, bool isAbstract=false);//returns its id if already present
 long long insert_description(QString name,item_types type);
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
