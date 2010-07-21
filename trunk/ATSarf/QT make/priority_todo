@@ -1,0 +1,9 @@
+done --forest of prefixes,suffixes
+stack of resulting nodes which is a class with functions
+partially done--library with settings
+every accept state should be reported once and user can query for all features (raw_data, description, abstract_categories,..) or on_match is called on every accept state on each feature and user can command to skip on every feature or all (skip ALL POS, ALL RawData) using return value of on_match()
+one-hot encoding
+
+
+
+smart node {node*, pos, index}
