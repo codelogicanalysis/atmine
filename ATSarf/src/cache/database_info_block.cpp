@@ -159,9 +159,9 @@ database_info_block::database_info_block()
 #endif
 	comp_rules=new compatibility_rules();
 
-	map_prefix=new QHash<Map_key,Map_entry>;
-	map_stem=new QHash<Map_key,Map_entry>;
-	map_suffix=new QHash<Map_key,Map_entry>;
+	map_prefix=new ItemCatRaw2PosDescAbsMap;
+	map_stem=new ItemCatRaw2PosDescAbsMap;
+	map_suffix=new ItemCatRaw2PosDescAbsMap;
 
 	descriptions=new QVector<QString>;
 }

@@ -6,9 +6,13 @@
 class PrefixSearch : public TreeSearch
 {
     public:
-		PrefixSearch(QString * text,int start);
+		PrefixSearch(QString * text,int start):TreeSearch(PREFIX,text,start) { }
 		virtual bool onMatch()=0;
-		virtual ~PrefixSearch();
+		virtual ~PrefixSearch(){}
+		/*static PrefixSearch * createPrefixSearch(QString * text,int start)
+		{
+			return new PrefixSearch(text,start);
+		}*/
 };
 
 #endif	/* _PREFIX_SEARCH_H */

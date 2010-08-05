@@ -7,36 +7,67 @@
 #include "common.h"
 #include <QVector>
 
-typedef struct multiply_params_
+
+class multiply_params
 {
-	int raw_data:1;
-	int description:1;
-	int POS:1;
-} multiply_params;
+	bool raw_data:1;
+	bool description:1;
+	bool POS:1;
+	bool abstract_category:1;
+public:
+	multiply_params()
+	{
+		raw_data=true;
+		description=true;
+		POS=true;
+		abstract_category=true;
+	}
+};
+
+static multiply_params M_ALL;
 
 class Stemmer;
-
+#if 0
 class TreeMachine: public TreeSearch
 {
 public:
 	Stemmer * controller;
 #ifdef REDUCE_THRU_DIACRITICS
 	QList<QString > raw_datasOFCurrentMatch;
+#if 0
+#ifdef MULTIPLICATION
+	QVector<minimal_item_info> * affix_info;
+#endif
 protected:
-	bool a_branch_returned_false; //needed by get_all_possibilities() to stop when a false is retuned
+#ifdef MULTIPLICATION
+	multiply_params m_params;
+	QList<result_node *> * result_nodes;
+	void get_all_possibilities(int i);
+#else
 	void get_all_possibilities(int i, QList<QString> &raw_datas);
 #endif
+	bool a_branch_returned_false; //needed by get_all_possibilities() to stop when a false is retuned
+#endif
+#endif
 public:
-	TreeMachine(item_types type,Stemmer * controller,int start);
+	TreeMachine(item_types type,Stemmer * controller,int start/*,multiply_params params=M_ALL */);
 	virtual bool onMatch();
 	virtual bool postMatch()=0;
-	virtual ~TreeMachine(){}
+	virtual ~TreeMachine()
+	{
+		/*if (affix_info!=NULL)
+			delete affix_info;*/
+	}
 };
+#endif
 
-class PrefixMachine: public TreeMachine
+class PrefixMachine: public PrefixSearch//TreeMachine
 {
 public:
-	PrefixMachine(Stemmer * controller,int start):TreeMachine(PREFIX,controller,start){}
+	Stemmer * controller;
+
+	PrefixMachine(Stemmer * controller,int start);
+	bool onMatch();
 	bool postMatch();
 	virtual ~PrefixMachine(){}
 };
@@ -46,24 +77,27 @@ class StemMachine: public StemSearch
 public:
 	Stemmer * controller;
 
-	StemMachine(Stemmer * controller,int start);
-	bool shouldcall_onmatch(int position);
+	StemMachine(Stemmer * controller,int start,long prefix_category);
+	//bool shouldcall_onmatch(int position);
 	bool onMatch();
 	virtual ~StemMachine(){}
 };
 
-class SuffixMachine: public TreeMachine
+class SuffixMachine: public SuffixSearch
 {
 public:
-	SuffixMachine(Stemmer * controller,int start):TreeMachine(SUFFIX,controller,start) { }
+	Stemmer * controller;
+
+	SuffixMachine(Stemmer * controller,int start, long prefix_category,long stem_category);
 	bool shouldcall_onmatch(int position);
+	bool onMatch();
 	bool postMatch();
 	virtual ~SuffixMachine(){}
 };
 
 class Stemmer
 {
-protected:
+public://protected:
 	item_types type;
 	bool get_all_details;
 	//for use in on_match()
