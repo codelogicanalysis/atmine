@@ -27,14 +27,27 @@ class tree
 		tree();
 		tree(item_types type);
 		bool getAffixType(item_types &type);
-		node* getFirstNode();
+		node* getFirstNode()
+		{
+			return base;
+		}
 #if !defined(MEMORY_EXHAUSTIVE) && !defined(REDUCE_THRU_DIACRITICS)
 		void sample();
 #endif
 		int build_affix_tree(item_types type);
-		void reset();
+		void reset()
+		{
+			base->resetChildren();
+			letter_nodes=1;
+			result_nodes=0;
+			isAffix=false;
+		}
 		void print_tree();
-		virtual ~tree();
+		virtual ~tree()
+		{
+			reset();
+			delete base;
+		}
 };
 
 

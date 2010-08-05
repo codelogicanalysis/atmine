@@ -10,6 +10,7 @@
 //#define QUEUE
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
+#define MULTIPLICATION
 
 //#define DEBUG
 

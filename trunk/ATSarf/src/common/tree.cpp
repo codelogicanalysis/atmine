@@ -161,10 +161,6 @@ bool tree::getAffixType(item_types &type)
 	else
 		return false;
 }
-node* tree::getFirstNode()
-{
-    return base;
-}
 #if !defined(MEMORY_EXHAUSTIVE) && !defined(REDUCE_THRU_DIACRITICS)
 void tree::sample()
 {
@@ -265,13 +261,6 @@ int tree::build_affix_tree(item_types type)
     }
     return 0;
 }
-void tree::reset()
-{
-	base->resetChildren();
-    letter_nodes=1;
-    result_nodes=0;
-    isAffix=false;
-}
 void tree::print_tree()
 {
     if (isAffix)
@@ -284,10 +273,3 @@ void tree::print_tree()
             <<"result nodes count= "<<result_nodes<<"\n"
             <<QString().fill('-',40)<<"\n";
 }
-tree::~tree()
-{
-    reset();
-    delete base;
-}
-
-

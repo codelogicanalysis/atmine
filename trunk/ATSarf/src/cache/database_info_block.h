@@ -13,6 +13,11 @@
 
 typedef Triplet<long long, long, QString> Map_key;  //(item_id,category_id,raw_data)
 typedef Triplet<dbitvec,long,QString> Map_entry; //(abstract_categories,description_id,POS)
+
+typedef QMultiHash<Map_key,Map_entry > ItemCatRaw2PosDescAbsMap;//change all uses of this map
+typedef ItemCatRaw2PosDescAbsMap * ItemCatRaw2PosDescAbsMapPtr;
+typedef ItemCatRaw2PosDescAbsMap::iterator ItemCatRaw2PosDescAbsMapItr;
+
 class database_info_block
 {
     public:
@@ -24,9 +29,9 @@ class database_info_block
 #endif
 		compatibility_rules * comp_rules;
 
-		QHash<Map_key,Map_entry > * map_prefix;
-		QHash<Map_key,Map_entry > * map_stem;
-		QHash<Map_key,Map_entry > * map_suffix;
+		ItemCatRaw2PosDescAbsMapPtr map_prefix;
+		ItemCatRaw2PosDescAbsMapPtr map_stem;
+		ItemCatRaw2PosDescAbsMapPtr map_suffix;
 
 		QVector<QString>* descriptions;
 

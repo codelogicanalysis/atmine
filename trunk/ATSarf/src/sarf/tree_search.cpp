@@ -11,6 +11,7 @@
 #include "database_info_block.h"
 #include <QDebug>
 #include <assert.h>
+#include <QString>
 
 void TreeSearch::fill_details() //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
 {
@@ -184,13 +185,11 @@ bool TreeSearch::operator ()()
 			reached_node=current_child;
 #endif
 			resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
-			if (shouldcall_onmatch(position) && !(on_match_helper()))
-			{
-				stop=true;
-				break;
-			}
-			else
-			{
+			if ( shouldcall_onmatch_ex(position) &&
+				 !(on_match_helper())) {
+					stop=true;
+					break;
+			} else {
 				let_node=current_child->getLetterChild(future_letter);///
 				if (let_node!=NULL)
 				{
@@ -242,7 +241,7 @@ bool TreeSearch::on_match_helper()
 					}
 				}
 			#ifdef DEBUG
-				out<<"p-S:"<<subword<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
+				out<<"p-S:"<<subword.toString()<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			#endif
 				if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
 				{
@@ -261,7 +260,7 @@ bool TreeSearch::on_match_helper()
 #else
 	last=getLastDiacritic(position-1,info.text);
 #endif
-	info.finish=last;
+	info.finish=last-1;
 	position=last;
 	if (!onMatch())
 		return false;

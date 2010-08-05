@@ -142,7 +142,7 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 	while(s1.retrieve(inf))
 	{
 		category_of_currentmatch=inf.category_id;
-		if (shouldcall_onmatch(last_letter_index))
+		if (isPrefixStemCompatible())
 		{
 #ifndef USE_TRIE_WALK
 			currentMatchPos=i-1;
@@ -156,6 +156,10 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 			raw_data_of_currentmatch=inf.raw_data;
 			if (!reduce_thru_diacritics ||(reduce_thru_diacritics && equal(subword,raw_data_of_currentmatch)))
 			{
+				qDebug()<<category_of_currentmatch;
+
+				/*if (!isPrefixStemCompatible())
+					return true;//continue other analysis if pref-stem categories not compatible*/
 				if (!onMatch())
 					return false;
 			}
@@ -186,3 +190,6 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 #endif
 	return true;
 }
+
+
+
