@@ -21,10 +21,18 @@ public:
 	virtual void serialize(QDataStream &chainOut) const=0;
 	virtual void deserialize(QDataStream &chainOut)=0;
 	virtual void serialize(QTextStream &chainOut) const=0;
+
+    virtual QString getString() const {
+        return hadith_text->mid(getStart(), getLength());
+    }
+    virtual int getStart() const = 0;
+    virtual int getLength() const = 0;
+    virtual int getEnd() const = 0;
  //   virtual int startPosition() const=0;
  //   virtual int lastPosition() const=0;
 
 };
+
 class NarratorPrim: public ChainNarratorPrim {
 public:
     long long m_start;
@@ -38,6 +46,13 @@ public:
 	virtual void serialize(QDataStream &chainOut) const=0;
 	virtual void deserialize(QDataStream &chainOut)=0;
 	virtual void serialize(QTextStream &chainOut) const=0;
+    virtual int getStart() const {
+        return m_start;}
+    virtual int getLength() const {
+        return m_end - m_start + 1;}
+    virtual int getEnd() const {
+        return m_end;}
+
 };
 class ChainPrim :public ChainNarratorPrim {
 public:
@@ -47,6 +62,9 @@ public:
 	virtual void serialize(QDataStream &chainOut) const=0;
 	virtual void deserialize(QDataStream &chainOut)=0;
 	virtual void serialize(QTextStream &chainOut) const=0;
+    virtual int getStart() const = 0;
+    virtual int getLength() const =0;
+    virtual int getEnd() const = 0;
 };
 class NamePrim :public NarratorPrim {
 public:
@@ -99,8 +117,16 @@ public:
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
+
+    virtual int getStart() const {
+        return m_start;}
+    virtual int getLength() const {
+        return m_end - m_start + 1;}
+    virtual int getEnd() const {
+        return m_end;}
 };
-class Narrator :public ChainPrim {
+
+class Narrator : public ChainPrim {
 public:
 	Narrator(QString * hadith_text);
  //   QList <ChainNarratorPrim *> m_narrator; //modify back to here
@@ -115,7 +141,25 @@ public:
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
+
+    virtual int getStart() const {
+        return m_narrator[0]->m_start;}
+
+    virtual int getLength() const {
+        int last = m_narrator.size() - 1;
+        int start = getStart();
+        return m_narrator[last]->m_end - start + 1;}
+
+    virtual int getEnd() const {
+        int last = m_narrator.size() - 1;
+        return m_narrator[last]->m_end;}
+
+    virtual bool operator == (Narrator & rhs) const {
+        return getString() == rhs.getString(); }
+
+    virtual double equals(Narrator & rhs) const;
 };
+
 class Chain: public ChainNarratorPrim {
 public:
 	Chain(QString * hadith_text);
@@ -124,6 +168,18 @@ public:
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
+
+    virtual int getStart() const {
+        return m_chain[0]->getStart(); }
+
+    virtual int getLength() const {
+        int last = m_chain.size() - 1;
+        int start = getStart();
+        return m_chain[last]->getEnd() - start + 1;}
+
+    virtual bool operator == (Chain & rhs) const {
+        return getString() == rhs.getString(); }
+
 //    virtual CNPIterator first () const{
 //    //return m_chain.begin();
 //        }
