@@ -10,6 +10,7 @@
 #include "database_info_block.h"
 #include "common.h"
 #include "node_info.h"
+#include "solution_position.h"
 #include "node.h"
 #include "diacritics.h"
 //#include "Search_by_item_locally.h"
@@ -18,12 +19,12 @@ class TreeSearch
 {
 	public://private
 		bool filled_details;
+		multiply_params multi_p;
 		QList<int> sub_positionsOFCurrentMatch;//end of last split
-	//#ifndef MULTIPLICATION
+	#ifndef MULTIPLICATION
 		QList<long> catsOFCurrentMatch;
 		QList<long> idsOFCurrentMatch;
-	#ifdef MULTIPLICATION
-		typedef QVector<minimal_item_info>  AffixSolutionVector;
+	#else
 		AffixSolutionVector * affix_info;
 		QList<result_node *> * result_nodes;
 	private:
@@ -94,80 +95,8 @@ class TreeSearch
 		}
 #ifdef MULTIPLICATION
 	private:
-		void initializeAffixInfo(solution_position * sol_pos,int start_index) //zero and initialize solutions till 'last_index' exclusive
-		{
-			for (int i=start_index;i<sub_positionsOFCurrentMatch.count();i++)
-			{
-				minimal_item_info inf;
-				inf.type=type;
-				inf.raw_data=possible_raw_datasOFCurrentMatch[i][0];
-				result_node * r_node=result_nodes->at(i);
-				inf.category_id=r_node->get_previous_category_id();
-				ItemCatRaw2PosDescAbsMapItr itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,inf.raw_data));
-				assert(itr!=map->end());
-				inf.abstract_categories=itr.value().first;
-				inf.description_id=itr.value().second;
-				inf.POS=itr.value().third;
-				sol_pos->indexes.insert(i, AffixPosition(0,itr));
-				affix_info->append(inf);
-			}
-		}
-		bool increment(solution_position * info,int index)
-		{
-			result_node * r_node=result_nodes->at(index);
-			minimal_item_info & inf=(*affix_info)[index];
-			ItemCatRaw2PosDescAbsMapItr & itr=info->indexes[index].second;
-			itr++;
-			long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
-			QString raw_data=possible_raw_datasOFCurrentMatch[index][info->indexes[index].first];
-			Map_key key=itr.key();
-			if (itr == map->end() || key != Map_key(id,catID,raw_data) )
-			{
-				if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)
-				{
-					info->indexes[index].first++;
-					inf.type=type;
-					inf.raw_data=possible_raw_datasOFCurrentMatch[index][info->indexes[index].first];
-					inf.category_id=r_node->get_previous_category_id();
-					itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,inf.raw_data));
-				}
-				else
-				{
-					if (index>0)
-					{
-						initializeAffixInfo(info,index);
-						return increment(info,index-1);
-					}
-					else
-						return false;
-				}
-
-			}
-			inf.abstract_categories=itr.value().first;
-			inf.description_id=itr.value().second;
-			inf.POS=itr.value().third;
-			return true;
-			/*if (info->indexes[index].second<s.count()-1)
-			{
-				info->indexes[index].second++;
-				assert(s.retrieve(inf,info->indexes[index].second));
-			}
-			else if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)
-			{
-				info->indexes[index].first++;
-				info->indexes[index].second=0;
-				Search_by_item_locally s2(type,r_node->get_affix_id(),r_node->get_resulting_category_id(),possible_raw_datasOFCurrentMatch[index][info->indexes[index].first]);
-				assert(s.retrieve(inf,info->indexes[index].second));
-			}
-			else
-			{
-				if (index>0)
-					return increment(info,index-1);
-				else
-					return false;
-			}
-			return true;*/
-		}
+		void initializeAffixInfo(solution_position * sol_pos,int start_index); //zero and initialize solutions till 'last_index' exclusive
+		bool increment(solution_position * info,int index);
 	public:
 		solution_position * computeFirstSolution()
 		{
@@ -210,8 +139,12 @@ class TreeSearch
 			return true;
 		}
 		bool on_match_helper();
+		void setSolutionSettings(multiply_params params)
+		{
+			multi_p=params;
+		}
     public:
-		TreeSearch(item_types type,QString* text,int start,bool reduce_thru_diacritics=true)
+		TreeSearch(item_types type,QString* text,int start,bool reduce_thru_diacritics=false)
 		{
 			info.text=text;
 			this->type=type;
@@ -223,6 +156,7 @@ class TreeSearch
 				Tree=database_info.Prefix_Tree;
 			else if (type==SUFFIX)
 				Tree=database_info.Suffix_Tree;
+			multi_p=M_ALL;
 		}
         virtual bool operator()();
 		virtual void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;

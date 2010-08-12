@@ -61,6 +61,7 @@ public:
 		abstract_categories.resize(max_sources);
 	}
 } minimal_item_info;
+
 typedef class all_item_info_
 {
 public:
@@ -87,5 +88,40 @@ typedef struct text_info_
 	QString *text;
 	long long start,finish;
 }text_info;
+
+class multiply_params
+{
+public:
+	bool raw_data:1;
+	bool description:1;
+	bool POS:1;
+	bool abstract_category:1;
+
+	void setAll()
+	{
+		raw_data=true;
+		description=true;
+		POS=true;
+		abstract_category=true;
+	}
+	bool raw_dataONLY()
+	{
+		return (raw_data && !description && !POS && !abstract_category);
+	}
+	bool NONE()
+	{
+		return (!raw_data && !description && !POS && !abstract_category);
+	}
+	bool ALL()
+	{
+		return (raw_data && description && POS && abstract_category);
+	}
+	multiply_params()
+	{
+		setAll();
+	}
+};
+
+static multiply_params M_ALL;
 
 #endif

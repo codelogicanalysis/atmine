@@ -38,7 +38,7 @@
  </data>
  <data>
   <variable>activebuildconfiguration</variable>
-  <value type="QString" >Debug</value>
+  <value type="QString" >release</value>
  </data>
  <data>
   <variable>buildConfiguration-Debug</variable>
@@ -63,7 +63,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-5vGDPysZpQ,guid=43b3c7e40d080ad96fc3c7374c569642</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-cIvhHABaVH,guid=40986f5b0d4ce86abcb6cc194c5aae14</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -71,9 +71,9 @@
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=5954</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-khG2lo/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-R3biJX/S.gpg-agent:6042:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=6083</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-WqFUT6/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-WUDnQ4/S.gpg-agent:6171:1</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/jad</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
@@ -83,16 +83,16 @@
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
     <value type="QString" >PWD=/home/jad</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5965</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/6094</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-khG2lo/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-WqFUT6/ssh</value>
     <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
     <value type="QString" >USER=jad</value>
     <value type="QString" >USERNAME=jad</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1280742977.354307-2098857606</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1281011219.2353-250528907</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >/home/jad/Desktop/ATsarf-repository/ATSarf/QT make/ATSarfTrie.pro</value>
@@ -112,7 +112,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-5vGDPysZpQ,guid=43b3c7e40d080ad96fc3c7374c569642</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-cIvhHABaVH,guid=40986f5b0d4ce86abcb6cc194c5aae14</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -120,9 +120,9 @@
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=5954</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-khG2lo/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-R3biJX/S.gpg-agent:6042:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=6083</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-WqFUT6/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-WUDnQ4/S.gpg-agent:6171:1</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/jad</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
@@ -132,16 +132,16 @@
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
     <value type="QString" >PWD=/home/jad</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5965</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/6094</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-khG2lo/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-WqFUT6/ssh</value>
     <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
     <value type="QString" >USER=jad</value>
     <value type="QString" >USERNAME=jad</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1280742977.354307-2098857606</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1281011219.2353-250528907</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >-w</value>
@@ -201,7 +201,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >release</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-A7E1f7htbd,guid=9fd475e82d4bed0fff4229c84c46cf15</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-cIvhHABaVH,guid=40986f5b0d4ce86abcb6cc194c5aae14</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -209,9 +209,9 @@
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=5914</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-mZsjuv/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-NQYJf1/S.gpg-agent:6002:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=6083</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-WqFUT6/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-WUDnQ4/S.gpg-agent:6171:1</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/jad</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
@@ -221,16 +221,16 @@
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
     <value type="QString" >PWD=/home/jad</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5925</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/6094</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-mZsjuv/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-WqFUT6/ssh</value>
     <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
     <value type="QString" >USER=jad</value>
     <value type="QString" >USERNAME=jad</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1279708947.424667-1447799978</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1281011219.2353-250528907</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >/home/jad/Desktop/ATsarf-repository/ATSarf/QT make/ATSarfTrie.pro</value>
@@ -249,7 +249,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >release</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-A7E1f7htbd,guid=9fd475e82d4bed0fff4229c84c46cf15</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-cIvhHABaVH,guid=40986f5b0d4ce86abcb6cc194c5aae14</value>
     <value type="QString" >DESKTOP_SESSION=default</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -257,9 +257,9 @@
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GDM_XSERVER_LOCATION=local</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=5914</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-mZsjuv/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-NQYJf1/S.gpg-agent:6002:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=6083</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-WqFUT6/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-WUDnQ4/S.gpg-agent:6171:1</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/jad/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/jad</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
@@ -269,16 +269,16 @@
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jad/Desktop/Downloads/ns-allinone-2.34/bin:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/unix:/home/jad/Desktop/Downloads/ns-allinone-2.34/tk8.4.18/unix</value>
     <value type="QString" >PWD=/home/jad</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/5925</value>
+    <value type="QString" >SESSION_MANAGER=local/jad-laptop:/tmp/.ICE-unix/6094</value>
     <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-mZsjuv/ssh</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-WqFUT6/ssh</value>
     <value type="QString" >TCL_LIBRARY=:/home/jad/Desktop/Downloads/ns-allinone-2.34/tcl8.4.18/library</value>
     <value type="QString" >USER=jad</value>
     <value type="QString" >USERNAME=jad</value>
     <value type="QString" >WINDOWPATH=7</value>
     <value type="QString" >XAUTHORITY=/home/jad/.Xauthority</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/local/share/:/usr/share/:/usr/share/gdm/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1279708947.424667-1447799978</value>
+    <value type="QString" >XDG_SESSION_COOKIE=29c5e94e56b2dcc77a66585f4ad72a20-1281011219.2353-250528907</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >-w</value>

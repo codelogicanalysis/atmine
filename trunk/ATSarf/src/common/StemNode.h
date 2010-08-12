@@ -19,7 +19,7 @@ public:
 	bool exists(long cat_id);
 	#ifdef REDUCE_THRU_DIACRITICS
 	public:
-		typedef QList<QString> RawDatasEntry;
+		typedef QVector<QString> RawDatasEntry;
 		typedef QVector<RawDatasEntry> RawDatas;
 
 		void add_info(long cat_id,QString & raw_data);
@@ -61,6 +61,7 @@ public:
 	bool retrieve(long &category_id);
 #ifdef REDUCE_THRU_DIACRITICS
 	bool retrieve(StemNode_info & info);
+	bool retrieve(long &category_id, QVector<QString> & raw_datas);
 #endif
 };
 

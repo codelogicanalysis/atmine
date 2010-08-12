@@ -19,15 +19,18 @@
 #include "Search_by_item_locally.h"
 #include <assert.h>
 
-enum wordType { NAME, NRC,NMC};
-enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
-QStringList compound_words;
-QString hadath;
-long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
-int bit_NAME, bit_POSSESSIVE, bit_PLACE;
+	enum wordType { NAME, NRC,NMC};
+	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
+	QStringList compound_words;
+	QString hadath;
+	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
+	int bit_NAME, bit_POSSESSIVE, bit_PLACE;
 #ifdef PREPROCESS_DESCRIPTIONS
-QHash<long,bool> NMC_descriptions;
-QHash<long,bool> NRC_descriptions;
+	QHash<long,bool> NMC_descriptions;
+	QHash<long,bool> NRC_descriptions;
+#endif
+#ifdef COMPARE_TO_BUCKWALTER
+	QTextStream * myoutPtr;
 #endif
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
@@ -148,7 +151,7 @@ void hadith_initialize()
 	bit_POSSESSIVE=get_bitindex(abstract_POSSESSIVE,abstract_category_ids);
 	bit_PLACE=get_bitindex(abstract_PLACE,abstract_category_ids);
 #ifdef REFINEMENTS
-	QFile input("case/phrases"); //contains compound words or phrases
+	QFile input("../src/case/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
 		return;
@@ -221,9 +224,10 @@ public:
 		stems.clear();
 	#endif
 	}
-#if 1
+#ifndef COMPARE_TO_BUCKWALTER
 	bool on_match()
 	{
+	#if 0
 		Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);
 		if (!called_everything)
 			info.finish=Stem->currentMatchPos;
@@ -234,6 +238,17 @@ public:
 				return false;
 		}
 		return true;
+	#else
+		solution_position * S_inf=Stem->computeFirstSolution();
+		do
+		{
+			stem_info=Stem->solution;
+			if (!analyze())
+				return false;
+		}while (Stem->computeNextSolution(S_inf));
+		delete S_inf;
+		return true;
+	#endif
 	}
 
 	bool analyze()
@@ -322,6 +337,73 @@ public:
 		#endif
 		return true;
 	}
+#else
+	bool on_match()
+	{
+		QTextStream & myout=*myoutPtr;
+		int count=0;
+		int number=0;
+		if (called_everything || type==PREFIX)
+		{
+			myout<<"(";
+			for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
+			{
+				if (number>0)
+					myout<<" + ";
+				number++;
+				if (count>0)
+					myout<<" OR ";
+				count++;
+				const minimal_item_info & rmii = prefix_infos->at(i);
+				myout<<rmii.description();
+			}
+			myout<<")-";
+		}
+		if (called_everything || type==STEM)
+		{
+			myout<<"-(";
+			count=0;
+			if (count>0)
+				myout<<" OR ";
+			count++;
+			myout<<stem_info->description();
+			myout<<" [ ";
+			for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
+				if (stem_info->abstract_categories[i])
+					if (get_abstractCategory_id(i)>=0)
+						myout<<getColumn("category","name",get_abstractCategory_id(i))<<" ";
+			myout<<"])-";
+		}
+		if (called_everything || type==SUFFIX)
+		{
+			myout<<"-(";
+			number=0;
+			count=0;
+			for (int i=0;i<suffix_infos->count();i++)
+			{
+				if (number>0)
+					myout<<" + ";
+				number++;
+				if (count>0)
+					myout<<" OR ";
+				count++;
+				myout<< suffix_infos->at(i).description();
+			}
+			myout<<")";
+		}
+		if (called_everything)
+		{
+			QString word;
+			for (int i=0;i<prefix_infos->count();i++)
+				word.append(prefix_infos->at(i).raw_data);
+			word.append(stem_info->raw_data);
+			for (int i=0;i<suffix_infos->count();i++)
+				word.append(suffix_infos->at(i).raw_data);
+			myout<<" "+word+" ";
+		}
+		myout<<" "<<info.finish+1<<"\n";
+		return true;
+	}
 #endif
 };
 
@@ -365,6 +447,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 	long long  finish;
 	isBinOrPossessive=false;
 	hadith_stemmer s(text,current_pos);
+	s.setSolutionSettings(M_ALL);
 #ifdef REFINEMENTS
 	QString c;
 	bool found,phrase=false;
@@ -819,13 +902,21 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #ifdef IMAN_CODE
 	return adjective_detector(input_str);
 #endif
-	QFile chainOutput("case/chainOutput");
+#ifdef COMPARE_TO_BUCKWALTER
+	QFile myfile("output");
+
+	myfile.remove();
+	if (!myfile.open(QIODevice::ReadWrite))
+		return 1;
+	myoutPtr= new QTextStream(&myfile);
+#else
+	QFile chainOutput("chainOutput");
 
 	chainOutput.remove();
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream chainOut(&chainOutput);
-
+#endif
 	QFile input(input_str.split("\n")[0]);
 	if (!input.open(QIODevice::ReadWrite))
 	{
@@ -870,7 +961,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		bool isBinOrPossessive=false,possessive=false;
 		currentType=getWordType(isBinOrPossessive,possessive,next);
 		current_pos=next;//here current_pos is changed
-#if 1
+#ifndef COMPARE_TO_BUCKWALTER
 		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,currentChain)==false))
 		{
 			if (currentData.narratorCount>=currentData.narratorThreshold)
@@ -966,6 +1057,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			break;
 #endif
 	}
+#ifndef COMPARE_TO_BUCKWALTER
 	if (newHadithStart<0)
 	{
 		out<<"no hadith found\n";
@@ -973,6 +1065,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		return 0;
 	}
 	chainOutput.close();
+#endif
 #ifdef CHAIN_BUILDING //just for testing deserialize
 	QFile f("hadith_chains.txt");
 	if (!f.open(QIODevice::WriteOnly))

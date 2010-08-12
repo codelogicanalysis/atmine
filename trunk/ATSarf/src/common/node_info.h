@@ -12,14 +12,4 @@ public:
 	long start;
 	long finish;
 }; 
-typedef QPair<int,ItemCatRaw2PosDescAbsMapItr> AffixPosition;
-typedef QVector<AffixPosition> InternalPositions;
-
-class solution_position
-{
-public:
-	int current_index;
-	InternalPositions indexes; //index of raw_data and of correxponding entry in map corresponding for this raw_data
-};
-
 #endif // NODE_INFO_H

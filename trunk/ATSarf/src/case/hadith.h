@@ -10,6 +10,7 @@
 //#define TENTATIVE //are decisions that we are not sure about
 #define REFINEMENTS
 #define PREPROCESS_DESCRIPTIONS
+//#define COMPARE_TO_BUCKWALTER
 
 int hadith(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
