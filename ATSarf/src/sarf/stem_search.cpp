@@ -2,6 +2,7 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "stem_search.h"
+#include <assert.h>
 
 #ifdef USE_TRIE_WALK
 bool StemSearch::check_for_terminal(int letter_index,ATTrie::Position pos)
@@ -138,33 +139,64 @@ void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 {
 #ifdef REDUCE_THRU_DIACRITICS
+#ifndef USE_TRIE_WALK
+	currentMatchPos=i-1;
+	QString subword=getDiacriticword(i-1,starting_pos,*info.text);
+#else
+	int last;
+	QStringRef subword=addlastDiacritics(starting_pos,last_letter_index,info.text,last);
+	currentMatchPos=last>0?last-1:0;
+	info.finish=currentMatchPos;
+#endif
+#if 0
+	possible_raw_datas.clear();
 	StemNode_info inf;
+	category_of_currentmatch=-1;
 	while(s1.retrieve(inf))
 	{
-		category_of_currentmatch=inf.category_id;
+		if (category_of_currentmatch!=inf.category_id)//based on fact that results of same ctaegory are displayed consecutively
+		{
+			if (category_of_currentmatch!=-1)
+				if (possible_raw_datas.count()>0)
+					if (!onMatch())
+						return false;
+			category_of_currentmatch=inf.category_id;
+			possible_raw_datas.clear();
+		}
+		if (isPrefixStemCompatible())
+			if (!reduce_thru_diacritics ||(reduce_thru_diacritics && equal(subword,inf.raw_data)))
+				possible_raw_datas.append(inf.raw_data);
+	}
+	if (category_of_currentmatch!=-1)
+		if (possible_raw_datas.count()>0)
+			if (!onMatch())
+				return false;
+#else //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
+	while(s1.retrieve(category_of_currentmatch,possible_raw_datas))
+	{
 		if (isPrefixStemCompatible())
 		{
-#ifndef USE_TRIE_WALK
-			currentMatchPos=i-1;
-			QString subword=getDiacriticword(i-1,starting_pos,*info.text);
-#else
-			int last;
-			QStringRef subword=addlastDiacritics(starting_pos,last_letter_index,info.text,last);
-			currentMatchPos=last>0?last-1:0;
-			info.finish=currentMatchPos;
-#endif
-			raw_data_of_currentmatch=inf.raw_data;
-			if (!reduce_thru_diacritics ||(reduce_thru_diacritics && equal(subword,raw_data_of_currentmatch)))
+			if (!reduce_thru_diacritics)
 			{
-				qDebug()<<category_of_currentmatch;
-
-				/*if (!isPrefixStemCompatible())
-					return true;//continue other analysis if pref-stem categories not compatible*/
 				if (!onMatch())
 					return false;
 			}
+			else
+			{
+				for (int i=0;i<possible_raw_datas.count();i++)
+					if (!equal(subword,possible_raw_datas[i]))
+					{
+						possible_raw_datas.remove(i);
+						i--;
+					}
+				if (possible_raw_datas.count()>0)
+					if (!onMatch())
+						return false;
+			}
 		}
 	}
+#endif
+
 #else
 	long cat_id;
 	while(s1.retrieve(cat_id))
@@ -191,5 +223,115 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 	return true;
 }
 
+solution_position * StemSearch::computeFirstSolution()
+{
+	if (solution==NULL)
+		solution=new minimal_item_info;
+	solution_position * first=new solution_position();
 
+	solution->type=STEM;
+	if (multi_p.raw_data)
+		solution->raw_data=possible_raw_datas[0];
+	else
+		solution->raw_data="";
+	solution->category_id=category_of_currentmatch;
+	if (!multi_p.raw_dataONLY())
+	{
+		ItemCatRaw2PosDescAbsMapItr itr = database_info.map_stem->find(Map_key(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
+		assert(itr!=database_info.map_stem->end());
+		if (multi_p.abstract_category)
+			solution->abstract_categories=itr.value().first;
+		else
+			solution->abstract_categories=INVALID_BITSET;
+		if (multi_p.description)
+			solution->description_id=itr.value().second;
+		else
+			solution->description_id=-1;
+		if (multi_p.POS)
+			solution->POS=itr.value().third;
+		else
+			solution->POS="";
+		first->indexes.append( AffixPosition(0,itr));
+	}
+	else
+	{
+		solution->abstract_categories=INVALID_BITSET;
+		solution->description_id=-1;
+		solution->POS="";
+		first->indexes.append(AffixPosition(0,database_info.map_stem->end()));
+	}
+	first->store_solution(*solution);
+	return first;
+}
 
+bool StemSearch::computeNextSolution(solution_position * current)//compute next posibility
+{
+	if (multi_p.NONE())
+		return false;
+	SolutionsCompare comp(multi_p);
+	if (!multi_p.raw_dataONLY())
+	{
+		ItemCatRaw2PosDescAbsMapItr & itr=current->indexes[0].second;
+		itr++;
+		QString raw_data=possible_raw_datas[current->indexes[0].first];
+		Map_key key=itr.key();
+		if (itr == database_info.map_stem->end() || key != Map_key(id_of_currentmatch,category_of_currentmatch,raw_data) )
+		{
+			if (current->indexes[0].first<possible_raw_datas.count()-1)//check for next time
+			{
+				current->indexes[0].first++;
+				solution->type=STEM;
+				if (multi_p.raw_data)
+					solution->raw_data=possible_raw_datas[current->indexes[0].first];
+				else
+					solution->raw_data="";
+				solution->category_id=category_of_currentmatch;
+				itr = database_info.map_stem->find(Map_key(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]));
+			}
+			else
+			{
+				//current->clear_stored_solutions();
+				return false;
+			}
+		}
+		if (multi_p.abstract_category)
+			solution->abstract_categories=itr.value().first;
+		else
+			solution->abstract_categories=INVALID_BITSET;
+		if (multi_p.description)
+			solution->description_id=itr.value().second;
+		else
+			solution->description_id=-1;
+		if (multi_p.POS)
+			solution->POS=itr.value().third;
+		else
+			solution->POS="";
+		//compare to previous solutions
+		if (comp.found(current,*solution))
+			return computeNextSolution(current);
+		current->store_solution(*solution);
+	}
+	else
+	{
+		if (current->indexes[0].first<possible_raw_datas.count()-1)
+		{
+			current->indexes[0].first++;
+			solution->type=STEM;
+			solution->raw_data=possible_raw_datas[current->indexes[0].first];
+			solution->category_id=category_of_currentmatch;
+			solution->abstract_categories=INVALID_BITSET;
+			solution->description_id=-1;
+			solution->POS="";
+		}
+		else
+		{
+			//current->clear_stored_solutions();
+			return false;
+		}
+		//compare to previous solutions
+		if (comp.found(current,*solution))
+			return computeNextSolution(current);
+		current->store_solution(*solution);
+	}
+	return true;
+}

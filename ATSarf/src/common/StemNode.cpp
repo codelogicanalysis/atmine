@@ -142,6 +142,19 @@ bool StemNode::exists(const long cat_id)
 		else
 			return false;
 	}
+	bool Search_StemNode::retrieve(long &category_id, QVector<QString> & raw_datas)
+	{
+		if (cat_index<node->category_ids.size())
+		{
+			category_id=node->category_ids[cat_index];
+			//raw_datas.clear();
+			raw_datas=node->raw_datas[cat_index];
+			cat_index++;
+			return true;
+		}
+		else
+			return false;
+	}
 #endif
 
 QDataStream &operator>>(QDataStream &in, long &l)

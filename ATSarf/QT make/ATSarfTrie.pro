@@ -47,7 +47,8 @@ HEADERS += util/text_handling.h \
     ../src/cache/Search_by_item_locally.h \
     ../src/util/Triplet.h \
     ../src/util/Ptr.h \
-    ../src/common/node_info.h
+    ../src/common/node_info.h \
+    ../src/common/solution_position.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -80,7 +81,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/narrator_abstraction.cpp \
     ../src/util/Math_functions.cpp \
     ../src/cache/Search_by_item_locally.cpp \
-    ../src/common/common.cpp
+    ../src/common/common.cpp \
+    ../src/common/solution_position.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/libdatrie-0.2.3/datrie/.libs/ \
@@ -88,6 +90,10 @@ LIBS += -L$$TOP/datrie/libdatrie-0.2.3/datrie/.libs/ \
 CONFIG += qt
 CONFIG += debug_and_release
 
+# -Q suppresses the call graph data
+# QMAKE_CFLAGS += -pg
+# QMAKE_CXXFLAGS += -pg
+# QMAKE_LFLAGS += -pg
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui

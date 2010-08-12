@@ -7,59 +7,7 @@
 #include "common.h"
 #include <QVector>
 
-
-class multiply_params
-{
-	bool raw_data:1;
-	bool description:1;
-	bool POS:1;
-	bool abstract_category:1;
-public:
-	multiply_params()
-	{
-		raw_data=true;
-		description=true;
-		POS=true;
-		abstract_category=true;
-	}
-};
-
-static multiply_params M_ALL;
-
 class Stemmer;
-#if 0
-class TreeMachine: public TreeSearch
-{
-public:
-	Stemmer * controller;
-#ifdef REDUCE_THRU_DIACRITICS
-	QList<QString > raw_datasOFCurrentMatch;
-#if 0
-#ifdef MULTIPLICATION
-	QVector<minimal_item_info> * affix_info;
-#endif
-protected:
-#ifdef MULTIPLICATION
-	multiply_params m_params;
-	QList<result_node *> * result_nodes;
-	void get_all_possibilities(int i);
-#else
-	void get_all_possibilities(int i, QList<QString> &raw_datas);
-#endif
-	bool a_branch_returned_false; //needed by get_all_possibilities() to stop when a false is retuned
-#endif
-#endif
-public:
-	TreeMachine(item_types type,Stemmer * controller,int start/*,multiply_params params=M_ALL */);
-	virtual bool onMatch();
-	virtual bool postMatch()=0;
-	virtual ~TreeMachine()
-	{
-		/*if (affix_info!=NULL)
-			delete affix_info;*/
-	}
-};
-#endif
 
 class PrefixMachine: public PrefixSearch//TreeMachine
 {
@@ -68,7 +16,6 @@ public:
 
 	PrefixMachine(Stemmer * controller,int start);
 	bool onMatch();
-	bool postMatch();
 	virtual ~PrefixMachine(){}
 };
 
@@ -91,13 +38,13 @@ public:
 	SuffixMachine(Stemmer * controller,int start, long prefix_category,long stem_category);
 	bool shouldcall_onmatch(int position);
 	bool onMatch();
-	bool postMatch();
 	virtual ~SuffixMachine(){}
 };
 
 class Stemmer
 {
 public://protected:
+	multiply_params multi_p;
 	item_types type;
 	bool get_all_details;
 	//for use in on_match()
@@ -123,6 +70,12 @@ public:
 		Prefix=new PrefixMachine(this,start);
 		Stem=NULL;
 		Suffix=NULL;
+		multi_p=M_ALL;
+	}
+	void setSolutionSettings(multiply_params params)
+	{
+		multi_p=params;
+		Prefix->setSolutionSettings(params);
 	}
 	bool operator()()//if returns true means there was a match
 	{
