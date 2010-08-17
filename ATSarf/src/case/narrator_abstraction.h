@@ -13,7 +13,7 @@ class ChainNarratorPrim;
 //#enumerate the types
 
 class ChainNarratorPrim {
-protected:
+public://protected:
 	QString * hadith_text;
 public:
 //    virtual CNPIterator first () const=0;
@@ -43,6 +43,7 @@ public:
 
  //   virtual CNPIterator first () const=0;
  //   virtual CNPIterator end () const=0;
+	virtual bool isNamePrim() const =0;
 	virtual void serialize(QDataStream &chainOut) const=0;
 	virtual void deserialize(QDataStream &chainOut)=0;
 	virtual void serialize(QTextStream &chainOut) const=0;
@@ -59,6 +60,7 @@ public:
 	ChainPrim(QString* hadith_text);
  //   virtual CNPIterator first () const=0;
 //    virtual CNPIterator end () const=0;
+	virtual bool isNarrator() const=0;
 	virtual void serialize(QDataStream &chainOut) const=0;
 	virtual void deserialize(QDataStream &chainOut)=0;
 	virtual void serialize(QTextStream &chainOut) const=0;
@@ -79,6 +81,7 @@ public:
 //    virtual CNPIterator end () const{
 //    return QList<ChainNarratorPrim*> ().end();
 //    }
+	virtual bool isNamePrim() const;
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
@@ -96,6 +99,7 @@ public:
 //    virtual CNPIterator end () const{
 //    return QList<ChainNarratorPrim*> ().end();
 //    }
+	virtual bool isNamePrim() const;
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
@@ -114,6 +118,7 @@ public:
 //    virtual CNPIterator end () const{
 //    return QList<ChainNarratorPrim*> ().end();
 //    }
+	virtual bool isNarrator() const;
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
@@ -138,6 +143,7 @@ public:
 //    virtual CNPIterator end () const{
 //    //return m_narrator.end();
 //    }
+	virtual bool isNarrator() const;
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
@@ -177,6 +183,10 @@ public:
         int start = getStart();
         return m_chain[last]->getEnd() - start + 1;}
 
+    virtual int getEnd() const {
+        int last = m_chain.size() - 1;
+        return m_chain[last]->getEnd();}
+
     virtual bool operator == (Chain & rhs) const {
         return getString() == rhs.getString(); }
 
@@ -190,6 +200,9 @@ public:
 
 };
 
-QDataStream &operator>>(QDataStream &in, ChainNarratorPrim &p);
+double equal(Narrator n1,Narrator n2);
 
+QDataStream &operator>>(QDataStream &in, ChainNarratorPrim &p);
 QDataStream &operator<<(QDataStream &out, const ChainNarratorPrim &p);
+
+int test_NarratorEquality(QString input_str);//just for testing purposes

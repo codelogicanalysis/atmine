@@ -2,6 +2,7 @@
 #define TRIPLET_H
 
 #include <QtCore/qdatastream.h>
+#include <QHash>
 
 template <class T1, class T2, class T3>
 struct Triplet
