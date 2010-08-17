@@ -181,7 +181,7 @@ void hadith_initialize()
 #endif
 }
 
-void initializeStateData()
+inline void initializeStateData()
 {
 	currentData.nmcThreshold=3;
 	currentData.nmcCount=0;
@@ -218,7 +218,7 @@ public:
 		possessive=false;
 		place=false;
 		finish_pos=start;
-
+		setSolutionSettings(M_ALL);
 	#ifdef STATS
 		stem="";
 		stems.clear();
@@ -407,7 +407,7 @@ public:
 #endif
 };
 
-long long next_positon(long long finish)
+inline long long next_positon(long long finish)
 {
 	finish++;
 	while(finish<text->length() && delimiters.contains(text->at(finish)))
@@ -415,7 +415,7 @@ long long next_positon(long long finish)
 	return finish;
 }
 
-long long getLastLetter_IN_previousWord(long long start_letter_current_word)
+inline long long getLastLetter_IN_previousWord(long long start_letter_current_word)
 {
 	start_letter_current_word--;
 	while(start_letter_current_word>=0 && delimiters.contains(text->at(start_letter_current_word)))
@@ -423,7 +423,7 @@ long long getLastLetter_IN_previousWord(long long start_letter_current_word)
 	return start_letter_current_word;
 }
 
-long long getLastLetter_IN_currentWord(long long start_letter_current_word)
+inline long long getLastLetter_IN_currentWord(long long start_letter_current_word)
 {
 	int size=text->length();
 	while(start_letter_current_word<size && !delimiters.contains(text->at(start_letter_current_word)))
@@ -447,7 +447,6 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 	long long  finish;
 	isBinOrPossessive=false;
 	hadith_stemmer s(text,current_pos);
-	s.setSolutionSettings(M_ALL);
 #ifdef REFINEMENTS
 	QString c;
 	bool found,phrase=false;
@@ -1085,6 +1084,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		s->serialize(hadith_out);
 		tester_Counter++;
 		s->serialize(file_hadith);
+#ifdef TEST_EQUAL_NARRATORS
+		QList<Narrator*> narrators;
+		for (int i=0;i<s->m_chain.count();i++)
+			if (s->m_chain[i]->isNarrator())
+				narrators.append((Narrator*)s->m_chain[i]);
+		out << equal(*narrators[0],*narrators[1])<<"\n";
+#endif
 		delete s;
 	}
 	chainOutput.close();
