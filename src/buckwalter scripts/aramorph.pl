@@ -30,7 +30,7 @@
 # were "infile" is the input text in Arabic Windows encoding (cp1256) 
 # and "outfile" is the output text with morphology analyses and POS tags
 # Not found items and related stats are written to STDERR and filename "notFound"
-use Time::HiRes qw/gettimeofday/;
+use Time::HiRes qw(gettimeofday);
 
 # load 3 compatibility tables (load these first so when we load the lexicons we can check for undeclared $cat values)
 %hash_AB = load_table("tableAB"); # load compatibility table for prefixes-stems    (AB)
@@ -50,15 +50,21 @@ use Time::HiRes qw/gettimeofday/;
 #($microseconds1,$seconds )=$t0;
 #printf STDERR "%02d.%06d \n",$seconds,$microseconds1;
 
-($epochseconds, $microseconds) = [gettimeofday];
-($second, $minute, $hour) = localtime($epochseconds);
-print STDERR sprintf("%02d:%02d:%02d.%06d\n",
-$hour, $minute, $second, $microseconds); 
+#($epochseconds, $microseconds) = [gettimeofday];
+#($second, $minute, $hour) = localtime($epochseconds);
+#print STDERR sprintf("%02d:%02d:%02d.%06d\n",
+#$hour, $minute, $second, $microseconds); 
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,
-$yday,$isdst)=localtime(time);
-printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
-$year+1900,$mon+1,$mday,$hour,$min,$sec;
+#($sec,$min,$hour,$mday,$mon,$year,$wday,
+#$yday,$isdst)=localtime(time);
+#printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
+#$year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+#$t0 = gettimeofday( );    
+## do your operation here
+#$t1 = gettimeofday( );
+#$elapsed = $t1 - $t0;
+$before = gettimeofday( );
 
 while (<STDIN>) {
 
@@ -142,16 +148,18 @@ close OUT;
 #  $t1 = [gettimeofday];
 #($microseconds1,$seconds)=$t1;
 #printf STDERR "%02d.%06d \n",$seconds,$microseconds1;
-($epochseconds, $microseconds) = [gettimeofday];
-($second, $minute, $hour) = localtime($epochseconds);
-print STDERR sprintf("%02d:%02d:%02d.%06d\n",
-$hour, $minute, $second, $microseconds); 
+#($epochseconds, $microseconds) = [gettimeofday];
+#($second, $minute, $hour) = localtime($epochseconds);
+#print STDERR sprintf("%02d:%02d:%02d.%06d\n",
+#$hour, $minute, $second, $microseconds); 
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,
-$yday,$isdst)=localtime(time);
-printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
-$year+1900,$mon+1,$mday,$hour,$min,$sec;
+#($sec,$min,$hour,$mday,$mon,$year,$wday,
+#$yday,$isdst)=localtime(time);
+#printf STDERR "%4d-%02d-%02d %02d:%02d:%02d\n",
+#$year+1900,$mon+1,$mday,$hour,$min,$sec;
 
+$elapsed = gettimeofday( ) - $before;
+print STDERR "You took $elapsed seconds.\n";
 
 sub analyze { # returns a list of 1 or more solutions
 
