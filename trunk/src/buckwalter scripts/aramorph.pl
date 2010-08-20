@@ -30,6 +30,7 @@
 # were "infile" is the input text in Arabic Windows encoding (cp1256) 
 # and "outfile" is the output text with morphology analyses and POS tags
 # Not found items and related stats are written to STDERR and filename "notFound"
+use Time::HiRes qw/gettimeofday/;
 
 # load 3 compatibility tables (load these first so when we load the lexicons we can check for undeclared $cat values)
 %hash_AB = load_table("tableAB"); # load compatibility table for prefixes-stems    (AB)
@@ -40,6 +41,19 @@
 %prefix_hash = load_dict("dictPrefixes"); # dict of prefixes (A)
 %stem_hash   = load_dict("dictStems");    # dict of stems    (B)
 %suffix_hash = load_dict("dictSuffixes"); # dict of suffixes (C)
+
+
+
+# measure elapsed time 
+  # (could also do by subtracting 2 gettimeofday return values)
+  #$t0 = [gettimeofday];
+#($microseconds1,$seconds )=$t0;
+#printf STDERR "%02d.%06d \n",$seconds,$microseconds1;
+
+($epochseconds, $microseconds) = [gettimeofday];
+($second, $minute, $hour) = localtime($epochseconds);
+print STDERR sprintf("%02d:%02d:%02d.%06d\n",
+$hour, $minute, $second, $microseconds); 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,
 $yday,$isdst)=localtime(time);
@@ -125,6 +139,13 @@ close OUT;
 
 # ============================
 
+#  $t1 = [gettimeofday];
+#($microseconds1,$seconds)=$t1;
+#printf STDERR "%02d.%06d \n",$seconds,$microseconds1;
+($epochseconds, $microseconds) = [gettimeofday];
+($second, $minute, $hour) = localtime($epochseconds);
+print STDERR sprintf("%02d:%02d:%02d.%06d\n",
+$hour, $minute, $second, $microseconds); 
 
 ($sec,$min,$hour,$mday,$mon,$year,$wday,
 $yday,$isdst)=localtime(time);

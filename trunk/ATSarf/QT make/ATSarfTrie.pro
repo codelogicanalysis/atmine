@@ -91,9 +91,10 @@ CONFIG += qt
 CONFIG += debug_and_release
 
 # -Q suppresses the call graph data
-# QMAKE_CFLAGS += -pg
-# QMAKE_CXXFLAGS += -pg
-# QMAKE_LFLAGS += -pg
+#QMAKE_CFLAGS += -pg
+#QMAKE_CXXFLAGS += -pg
+#QMAKE_LFLAGS += -pg
+
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui
