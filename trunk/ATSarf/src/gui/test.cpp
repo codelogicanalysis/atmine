@@ -53,7 +53,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		hadith_initialize();
 	}
 #endif
-	for (int i=0;i<20;i++)
+	for (int i=0;i<REPETITIONS;i++)
 	{
 		timeval tim;
 		gettimeofday(&tim,NULL);
@@ -75,7 +75,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	#endif
 		gettimeofday(&tim, NULL);
 		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-		out<<t2-t1<<"\n";
+		out<<"elapsed time="<t2-t1<<"s\n";
 	}
 	return 0;
 }
