@@ -18,15 +18,45 @@ typedef struct
   } comp_rule_t;
 
 typedef QVector <QVector <comp_rule_t> > CompRuleLookupTable;
+typedef QVector<QString> CategoryNames;
 
 class compatibility_rules
 {
     private:
 		CompRuleLookupTable crlTable;
+		CategoryNames cat_names;
     public:
         void fill();
-        bool operator()(int id1,int id2);
-        bool operator()(int id1,int id2, long & id_r);//-1 is invalid
+		bool operator()(int id1,int id2)
+		{
+			try{
+				return crlTable[id1][id2].valid;
+			}catch(int i) {
+				return false;
+			}
+		}
+		bool operator()(int id1,int id2, long & id_r)//-1 is invalid
+		{
+			try{
+				comp_rule_t & crule=crlTable[id1][id2];
+				if (crule.rule_t==AA || crule.rule_t==CC)
+				{
+					//more than one category!!!!!!!!!
+					id_r=crule.rc;
+				}
+				return crule.valid;
+			}catch(int i) {
+				return false;
+			}
+		}
+		QString getCategoryName(int id)
+		{
+			try{
+				return cat_names[id];
+			}catch(int i) {
+				return false;
+			}
+		}
 };
 
 #endif	/* _COMPATIBILITY_RULES_H */

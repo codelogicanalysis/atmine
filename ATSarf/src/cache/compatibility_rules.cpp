@@ -22,10 +22,19 @@ void compatibility_rules::fill()
 			size=max_id.get(0).toInt()+1;
 	}
 	{//initialize the double array
-		Retrieve_Template category_table("category","id","type","abstract","");
+		Columns cols;
+		cols.append("id");
+		cols.append("type");
+		cols.append("abstract");
+		cols.append("name");
+		Retrieve_Template category_table("category",cols,"");
 		crlTable.resize(size);
+		cat_names.resize(size);
 		for (int i=0;i<size;i++)
+		{
 			crlTable[i]=QVector<comp_rule_t> (size);
+			cat_names[i]="";
+		}
 		int row=0, id=0;
 		assert (category_table.retrieve());
 		while(row<size) //just in case some ID's are not there we fill them invalid
@@ -45,6 +54,7 @@ void compatibility_rules::fill()
 				t=ITEM_TYPES_LAST_ONE;//INVALID
 				abstract=0;
 			}
+			cat_names[row]=category_table.get(3).toString();
 			for (int i=0;i<size;i++)
 			{
 				comp_rule_t & crule=crlTable[row][i];
@@ -91,25 +101,4 @@ void compatibility_rules::fill()
 		}
 	}
 }
-bool compatibility_rules::operator()(int id1,int id2)
-{
-	try{
-		return crlTable[id1][id2].valid;
-	}catch(int i) {
-		return false;
-	}
-}
-bool compatibility_rules::operator()(int id1,int id2, long & id_r)//-1 is invalid
-{
-	try{
-		comp_rule_t & crule=crlTable[id1][id2];
-		if (crule.rule_t==AA || crule.rule_t==CC)
-		{
-			//more than one category!!!!!!!!!
-			id_r=crule.rc;
-		}
-		return crule.valid;
-	}catch(int i) {
-		return false;
-	}
-}
+

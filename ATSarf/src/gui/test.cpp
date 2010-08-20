@@ -10,6 +10,7 @@
 #include "database_info_block.h"
 #include "text_handling.h"
 #include "diacritics.h"
+#include <sys/time.h>
 
 int word_sarf_test(QString input_str)
 {
@@ -52,25 +53,30 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		hadith_initialize();
 	}
 #endif
-#if 1
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
-	if (had && hadith(input_str,prg))
-		return -1;
-	if (!had && word_sarf_test(input_str))
-		return -1;
-#else //testing
-	QString s1,s2;
-	in >>s1>>s2;
-	out <<equal_ignore_diacritics(s1,s2);
-#endif
-#else
-	initialize_variables();
-	if (augment()<0)
-		return -1;
-#endif
-
-	out<<QDateTime::currentDateTime().time().toString()<<"\n";
-
+	for (int i=0;i<20;i++)
+	{
+		timeval tim;
+		gettimeofday(&tim,NULL);
+		double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+	#if 1
+		if (had && hadith(input_str,prg))
+			return -1;
+		if (!had && word_sarf_test(input_str))
+			return -1;
+	#else //testing
+		QString s1,s2;
+		in >>s1>>s2;
+		out <<equal_ignore_diacritics(s1,s2);
+	#endif
+	#else
+		initialize_variables();
+		if (augment()<0)
+			return -1;
+	#endif
+		gettimeofday(&tim, NULL);
+		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+		out<<t2-t1<<"\n";
+	}
 	return 0;
 }
 

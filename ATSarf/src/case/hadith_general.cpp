@@ -209,8 +209,12 @@ public:
 	QString stem;
 	QList<QString> stems;
 #endif
-
-	hadith_stemmer(QString * word, int start):Stemmer(word,start,false)
+	hadith_stemmer(QString * word, int start)
+#ifndef COMPARE_TO_BUCKWALTER
+		:Stemmer(word,start,false)
+#else
+		:Stemmer(word,start,true)
+#endif
 	{
 		name=false;
 		nmc=false;
@@ -341,67 +345,19 @@ public:
 	bool on_match()
 	{
 		QTextStream & myout=*myoutPtr;
-		int count=0;
-		int number=0;
-		if (called_everything || type==PREFIX)
-		{
-			myout<<"(";
-			for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
-			{
-				if (number>0)
-					myout<<" + ";
-				number++;
-				if (count>0)
-					myout<<" OR ";
-				count++;
-				const minimal_item_info & rmii = prefix_infos->at(i);
-				myout<<rmii.description();
-			}
-			myout<<")-";
-		}
-		if (called_everything || type==STEM)
-		{
-			myout<<"-(";
-			count=0;
-			if (count>0)
-				myout<<" OR ";
-			count++;
-			myout<<stem_info->description();
-			myout<<" [ ";
-			for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
-				if (stem_info->abstract_categories[i])
-					if (get_abstractCategory_id(i)>=0)
-						myout<<getColumn("category","name",get_abstractCategory_id(i))<<" ";
-			myout<<"])-";
-		}
-		if (called_everything || type==SUFFIX)
-		{
-			myout<<"-(";
-			number=0;
-			count=0;
-			for (int i=0;i<suffix_infos->count();i++)
-			{
-				if (number>0)
-					myout<<" + ";
-				number++;
-				if (count>0)
-					myout<<" OR ";
-				count++;
-				myout<< suffix_infos->at(i).description();
-			}
-			myout<<")";
-		}
-		if (called_everything)
-		{
-			QString word;
-			for (int i=0;i<prefix_infos->count();i++)
-				word.append(prefix_infos->at(i).raw_data);
-			word.append(stem_info->raw_data);
-			for (int i=0;i<suffix_infos->count();i++)
-				word.append(suffix_infos->at(i).raw_data);
-			myout<<" "+word+" ";
-		}
-		myout<<" "<<info.finish+1<<"\n";
+		myout	<<"( "<<prefix_infos->at(0).description()<<" )-"
+				<<"-("<<stem_info->description()
+				<<" [ ";
+#ifndef COMPARE_WITHOUT_ABSCAT
+		for (int i=0;i<abstract_category_ids[max_sources]/*stem_info->abstract_categories.length()*/;i++)
+			if (stem_info->abstract_categories[i])
+				myout<<database_info.comp_rules->getCategoryName(get_abstractCategory_id(i))<<"/";
+		myout	<<" ][ ";
+#endif
+		myout	<<stem_info->POS
+				<<"])--("<< suffix_infos->at(0).description()<<")"
+				<<" "<<prefix_infos->at(0).raw_data<<stem_info->raw_data<<suffix_infos->at(0).raw_data<<" "
+				<<" "<<info.finish+1-info.start<<"\n";
 		return true;
 	}
 #endif
@@ -935,15 +891,14 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		return 0;
 	}
 	long long text_size=text->size();
+#ifndef COMPARE_TO_BUCKWALTER
 	stateType currentState=TEXT_S;
 	stateType nextState=TEXT_S;
 	wordType currentType;
 	long long  newHadithStart=-1;
 
 	initializeStateData();
-	current_pos=0;
-	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
-		current_pos++;
+
 #ifdef CHAIN_BUILDING
 	chainData *currentChain=new chainData();
 	initializeChainData(currentChain);
@@ -952,21 +907,24 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #endif
 	long long  sanadEnd;
 	int hadith_Counter=1;
-
+#endif
+	current_pos=0;
+	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
+		current_pos++;
 	for (;current_pos<text_size;)
 	{
+#ifndef COMPARE_TO_BUCKWALTER
 		long long start=current_pos;
 		long long next;
 		bool isBinOrPossessive=false,possessive=false;
 		currentType=getWordType(isBinOrPossessive,possessive,next);
 		current_pos=next;//here current_pos is changed
-#ifndef COMPARE_TO_BUCKWALTER
 		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,currentChain)==false))
 		{
 			if (currentData.narratorCount>=currentData.narratorThreshold)
 			{
 				sanadEnd=currentData.narratorEndIndex;
-#if 1
+			#ifdef DISPLAY_HADITH_OVERVIEW
 				newHadithStart=currentData.sanadStartIndex;
 				long long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
@@ -975,7 +933,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 				currentChain->chain->serialize(chainOut);
 				//currentChain->chain->serialize(displayed_error);
 			#endif
-#endif
+			#endif
 				hadith_Counter++;
 			#ifdef STATS
 				int additional_names=temp_names_per_narrator;
@@ -1048,15 +1006,22 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			#endif
 			}
 		}
-#endif
 		currentState=nextState;
-#if 1
+#else
+	hadith_stemmer s(text,current_pos);
+	s();
+	long long finish=max(s.info.finish,s.finish_pos);
+	if (finish==current_pos)
+		finish=getLastLetter_IN_currentWord(current_pos);
+	current_pos=next_positon(finish);
+#endif
+#ifdef PROGRESSBAR
 		prg->report((double)current_pos/text_size*100+0.5);
 		if (current_pos==text_size-1)
 			break;
 #endif
 	}
-#ifndef COMPARE_TO_BUCKWALTER
+#if  !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
 	if (newHadithStart<0)
 	{
 		out<<"no hadith found\n";
