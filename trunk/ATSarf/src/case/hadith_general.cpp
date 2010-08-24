@@ -140,16 +140,23 @@ void initializeChainData(chainData *currentChain)
 void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
-#ifdef REFINEMENTS
+#if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
 	abstract_NAME=get_abstractCategory_id("Male Names");
+#elif defined(JUST_BUCKWALTER)
+	abstract_NAME=get_abstractCategory_id("NOUN_PROP");
 #else
 	abstract_NAME=get_abstractCategory_id("Name of Person");
 #endif
+#ifndef JUST_BUCKWALTER
 	abstract_POSSESSIVE=get_abstractCategory_id("POSSESSIVE");
 	abstract_PLACE=get_abstractCategory_id("Name of Place");
-	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
 	bit_POSSESSIVE=get_bitindex(abstract_POSSESSIVE,abstract_category_ids);
 	bit_PLACE=get_bitindex(abstract_PLACE,abstract_category_ids);
+#else
+	abstract_POSSESSIVE=-1;
+	abstract_PLACE=-1;
+#endif
+	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
 #ifdef REFINEMENTS
 	QFile input("../src/case/phrases"); //contains compound words or phrases
 									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
@@ -310,6 +317,7 @@ public:
 			}
 			return true;
 		}
+#ifndef JUST_BUCKWALTER
 		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE))
 		{
 			possessive=true;
@@ -336,6 +344,7 @@ public:
 				return false;
 			}
 		}
+#endif
 		#ifdef STATS
 			stems.append(temp_stem);
 		#endif
@@ -465,14 +474,14 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 	possessive=s.possessive;
 	if (s.nrc )
 		return result(NRC);
-	else if (s.name)
-		return result(NAME);
 	else if (s.nmc)
 	{
 		display("NMC-Bin/Pos ");
 		isBinOrPossessive=true;
 		return NMC;
 	}
+	else if (s.name)
+		return result(NAME);
 	else
 		return result(NMC);
 }

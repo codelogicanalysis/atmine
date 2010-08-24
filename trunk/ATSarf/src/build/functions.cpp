@@ -75,9 +75,9 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-	const QString item_files[3]= {	"../buckwalter scripts/list_of_prefixes.txt",
-									"../buckwalter scripts/list_of_suffixes.txt",
-									"../buckwalter scripts/list_of_stems.txt"};
+	const QString item_files[3]= {	"../../src/buckwalter scripts/list_of_prefixes.txt",
+									"../../src/buckwalter scripts/list_of_suffixes.txt",
+									"../../src/buckwalter scripts/list_of_stems.txt"};
 	const item_types types[3] ={ PREFIX, SUFFIX,STEM};
 	for (int j=0;j<3;j++)
 	{
@@ -170,15 +170,18 @@ int insert_buckwalter()
 		input.close();
 	}
 	//compatibility rules
-	const QString rules_files[3]= {"../buckwalter scripts/tableAB", \
-								  "../buckwalter scripts/tableBC", \
-								  "../buckwalter scripts/tableAC"};
+	const QString rules_files[3]= {"../../src/buckwalter scripts/tableAB", \
+								  "../../src/buckwalter scripts/tableBC", \
+								  "../../src/buckwalter scripts/tableAC"};
 	const rules rule[3] ={ AB, BC, AC};
 	for (int j=0;j<3;j++)
 	{
 		QFile input(rules_files[j]);
 		if (!input.open(QIODevice::ReadWrite))
+		{
+			out << "File not found\n";
 			return 1;
+		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
 		int line_num=0;

@@ -23,12 +23,14 @@ int augment()
 {
 	if (insert_buckwalter()<0)
 		return -1;
+#ifndef JUST_BUCKWALTER
 	if (insert_rules_for_Nprop_Al())
 		return -1;
 	if (insert_propernames()<0)
 		return -1;
 	if (insert_placenames()<0)
 		return -1;
+#endif
 	return 0;
 }
 
@@ -68,15 +70,17 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 		in >>s1>>s2;
 		out <<equal_ignore_diacritics(s1,s2);
 	#endif
-	#else
+#else
 		initialize_variables();
 		if (augment()<0)
 			return -1;
-	#endif
+#endif
+#ifndef AUGMENT_DICTIONARY
 		gettimeofday(&tim, NULL);
 		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-		out<<"elapsed time="<t2-t1<<"s\n";
+		out<<"elapsed time="<<t2-t1<<"s\n";
 	}
+#endif
 	return 0;
 }
 
