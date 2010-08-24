@@ -17,6 +17,7 @@
 //#define COMPARE_TO_BUCKWALTER
 //#define COMPARE_WITHOUT_ABSCAT
 #define PROGRESSBAR
+//#define JUST_BUCKWALTER
 
 #ifdef PREPROCESS_DESCRIPTIONS
 extern QHash<long,bool> NMC_descriptions;
