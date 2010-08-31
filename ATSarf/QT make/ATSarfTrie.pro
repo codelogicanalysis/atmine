@@ -94,6 +94,10 @@ CONFIG += debug_and_release
 # QMAKE_CFLAGS += -pg
 # QMAKE_CXXFLAGS += -pg
 # QMAKE_LFLAGS += -pg
+QMAKE_CFLAGS += -O3
+QMAKE_CXXFLAGS += -O3
+QMAKE_LFLAGS += -O3
+
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui
