@@ -109,7 +109,9 @@ class TreeSearch
 				affix_info->clear();
 			else
 				affix_info=new QVector<minimal_item_info>;
-			result_nodes=getSplitList();//delete before
+			if (result_nodes!=NULL)
+				delete result_nodes;
+			result_nodes=getSplitList();
 			solution_position * first=new solution_position();
 			initializeAffixInfo(first,0);
 			return first;
@@ -157,6 +159,9 @@ class TreeSearch
 			else if (type==SUFFIX)
 				Tree=database_info.Suffix_Tree;
 			multi_p=M_ALL;
+		#ifdef MULTIPLICATION
+			result_nodes=NULL;
+		#endif
 		}
         virtual bool operator()();
 		virtual void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;

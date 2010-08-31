@@ -32,24 +32,3 @@ bool Search_by_item_locally::retrieve(minimal_item_info &info)
 	else
 		return false;
 }
-
-bool Search_by_item_locally::retrieve(minimal_item_info & info, int index)
-{
-	if (index<list.size())
-	{
-		info.abstract_categories=list[index].first;
-		info.description_id=list[index].second;
-		info.POS=list[index].third;
-		info.category_id=category_id;
-		info.raw_data=raw_data;
-		info.type=type;
-		return true;
-	}
-	else
-		return false;
-}
-
-int Search_by_item_locally::count()
-{
-	return list.size();
-}

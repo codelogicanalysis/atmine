@@ -78,7 +78,11 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 #ifndef AUGMENT_DICTIONARY
 		gettimeofday(&tim, NULL);
 		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-		out<<"elapsed time="<<t2-t1<<"s\n";
+#if REPETITIONS<2
+		out	<<"elapsed time="<<t2-t1<<"s\n";
+#else
+		out	<<t2-t1<<"\n";
+#endif
 	}
 #endif
 	return 0;

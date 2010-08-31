@@ -32,6 +32,10 @@
 #ifdef COMPARE_TO_BUCKWALTER
 	QTextStream * myoutPtr;
 #endif
+#ifdef COUNT_AVERAGE_SOLUTIONS
+	long long total_solutions=0;
+	long stemmings=0;
+#endif
 #ifdef HADITHDEBUG
 inline QString type_to_text(wordType t)
 {
@@ -119,7 +123,7 @@ QString current_exact,current_stem;
 
 stateData currentData;
 QString * text;
-int current_pos;
+long current_pos;
 #ifdef CHAIN_BUILDING
 void initializeChainData(chainData *currentChain)
 {
@@ -209,6 +213,9 @@ class hadith_stemmer: public Stemmer
 {
 private:
 	bool place;
+#ifdef TEST_WITHOUT_SKIPPING
+	bool finished;
+#endif
 public:
 	bool name, nrc, nmc,possessive;
 	long long finish_pos;
@@ -234,6 +241,12 @@ public:
 		stem="";
 		stems.clear();
 	#endif
+	#ifdef TEST_WITHOUT_SKIPPING
+		finished=false;
+	#endif
+	#ifdef COUNT_AVERAGE_SOLUTIONS
+		stemmings++;
+	#endif
 	}
 #ifndef COMPARE_TO_BUCKWALTER
 	bool on_match()
@@ -254,8 +267,32 @@ public:
 		do
 		{
 			stem_info=Stem->solution;
-			if (!analyze())
-				return false;
+		#ifdef GET_AFFIXES_ALSO
+			solution_position * p_inf=Prefix->computeFirstSolution();
+			do
+			{
+				prefix_infos=Prefix->affix_info;
+				solution_position * s_inf=Suffix->computeFirstSolution();
+				do
+				{
+					suffix_infos=Suffix->affix_info;
+		#endif
+				#ifdef COUNT_AVERAGE_SOLUTIONS
+					total_solutions++;
+				#endif
+				#ifndef TEST_WITHOUT_SKIPPING
+					if (!analyze())
+						return false;
+				#else
+					if (!finished && !analyze())
+						finished=true;
+				#endif
+		#ifdef GET_AFFIXES_ALSO
+				}while (Suffix->computeNextSolution(s_inf));
+				delete s_inf;
+			}while (Prefix->computeNextSolution(p_inf));
+			delete p_inf;
+		#endif
 		}while (Stem->computeNextSolution(S_inf));
 		delete S_inf;
 		return true;
@@ -407,6 +444,7 @@ inline QString choose_stem(QList<QString> stems) //rule can be modified later
 			result=stems[i];
 	return result;
 }
+#ifndef BUCKWALTER_INTERFACE
 wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next_pos)
 {
 	long long  finish;
@@ -485,6 +523,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 	else
 		return result(NMC);
 }
+#endif
 
 bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,bool possessive,chainData *currentChain)
 {
@@ -815,7 +854,7 @@ public:
 				if (getColumn("category","name",get_abstractCategory_id(i))=="ADJ")
 				{
 					adj=true;
-					finish_pos=finish;
+					finish_pos=info.finish;
 					return false;
 				}
 			}
@@ -837,6 +876,7 @@ int adjective_detector(QString input_str)
 	if (text->isNull())
 	{
 		out<<"file error:"<<input.errorString()<<"\n";
+		return 1;
 	}
 	if (text->isEmpty()) //ignore empty files
 	{
@@ -849,11 +889,9 @@ int adjective_detector(QString input_str)
 		current_pos++;
 	for (;current_pos<text_size;)
 	{
-		long long start=current_pos;
-		long long next;
 		adjective_stemmer s(text,current_pos);
 		s();
-		long long finish=max(s.finish,s.finish_pos);
+		long long finish=max(s.info.finish,s.finish_pos);
 		if (s.adj )
 			out <<text->mid(current_pos,finish-current_pos+1)+":ADJECTIVE\n";
 		current_pos=next_positon(finish);;//here current_pos is changed
@@ -861,6 +899,116 @@ int adjective_detector(QString input_str)
 	return 0;
 }
 #endif
+
+#ifdef BUCKWALTER_INTERFACE
+class machine_info
+{
+public:
+	bool name:1;
+	bool nrc:1;
+	bool nmc:1;
+
+	machine_info()
+	{
+		name=false;
+		nrc=false;
+		nmc=false;
+	}
+};
+
+inline QString getnext()
+{
+	long next_pos=text->indexOf('\n',current_pos);
+	QString line=text->mid(current_pos,next_pos-current_pos);
+	current_pos=next_pos+1;
+	//qDebug()<<line;
+	return line;
+}
+#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
+#define check(n) ;
+#else
+#define check(n) assert(n)
+#endif
+machine_info readNextWord()
+{
+	machine_info info;
+	QString line;
+	line=getnext();
+	if (line=="")
+	{
+		current_pos=text->size();
+		return info;
+	}
+	check(line.contains("INPUT STRING"));
+	line=getnext();
+	if (line.contains("Non-Alphabetic Data"))
+	{
+		line=getnext();
+		check (line=="");
+		return info;
+	}
+	check(line.contains("LOOK-UP WORD"));
+	while(1)
+	{
+		line=getnext();
+		if (line=="")
+			break;
+		while (line.contains("NOT FOUND"))
+		{
+			line=getnext();
+			if (line=="")
+				return info;
+			else if (line.contains("ALTERNATIVE"))
+			{
+				line=getnext();
+				if (line=="")
+					return info;
+			}
+		}
+		check(line.contains("SOLUTION"));
+		QString raw_data=line.split('(').at(1).split(')').at(0);
+		/*line=getnext();
+		check(line.startsWith(']'));*/
+		if (line.contains("NOUN_PROP"))
+			info.name=true;
+		line=getnext();
+		check(line.contains("(GLOSS)"));
+		QString description=line.split(" + ").at(1);
+		if (raw_data.contains("Hdv"))
+			info.nrc=true;
+		else if (description=="son")
+			info.nmc=true;
+		else if (description=="said" || description=="say" || description=="notify/communicate" || description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") || description.contains("narrate"))
+			info.nrc=true;
+	}
+	return info;
+}
+
+wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next_pos)
+{
+	isBinOrPossessive=false;
+	possessive=false;
+	machine_info s=readNextWord();
+	next_pos=current_pos;
+	if (s.nrc )
+		return result(NRC);
+	else if (s.nmc)
+	{
+		display("NMC-Bin/Pos ");
+		isBinOrPossessive=true;
+		return NMC;
+	}
+	else if (s.name)
+		return result(NAME);
+	else
+		return result(NMC);
+}
+#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
+#undef check
+#endif
+#include <sys/time.h>
+#endif
+
 int hadith(QString input_str,ATMProgressIFC *prg)
 {
 #ifdef IMAN_CODE
@@ -872,7 +1020,8 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	myfile.remove();
 	if (!myfile.open(QIODevice::ReadWrite))
 		return 1;
-	myoutPtr= new QTextStream(&myfile);
+	QByteArray output_to_file;
+	myoutPtr= new QTextStream(&output_to_file);
 #else
 	QFile chainOutput("chainOutput");
 
@@ -880,6 +1029,11 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	if (!chainOutput.open(QIODevice::ReadWrite))
 		return 1;
 	QDataStream chainOut(&chainOutput);
+#endif
+#ifdef BUCKWALTER_INTERFACE
+	timeval tim;
+	gettimeofday(&tim,NULL);
+	double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 #endif
 	QFile input(input_str.split("\n")[0]);
 	if (!input.open(QIODevice::ReadWrite))
@@ -893,6 +1047,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	if (text->isNull())
 	{
 		out<<"file error:"<<input.errorString()<<"\n";
+		return 1;
 	}
 	if (text->isEmpty()) //ignore empty files
 	{
@@ -900,6 +1055,15 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		return 0;
 	}
 	long long text_size=text->size();
+#ifdef BUCKWALTER_INTERFACE
+	gettimeofday(&tim,NULL);
+	double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+	out	<<"="<<t2-t1<<"-";
+#endif
+#ifdef COUNT_AVERAGE_SOLUTIONS
+	total_solutions=0;
+	stemmings=0;
+#endif
 #ifndef COMPARE_TO_BUCKWALTER
 	stateType currentState=TEXT_S;
 	stateType nextState=TEXT_S;
@@ -918,8 +1082,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	int hadith_Counter=1;
 #endif
 	current_pos=0;
+#ifndef BUCKWALTER_INTERFACE
 	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
 		current_pos++;
+#else
+	QString line =getnext();//just for first line
+	assert(line=="");
+#endif
 	for (;current_pos<text_size;)
 	{
 #ifndef COMPARE_TO_BUCKWALTER
@@ -1017,12 +1186,12 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		}
 		currentState=nextState;
 #else
-	hadith_stemmer s(text,current_pos);
-	s();
-	long long finish=max(s.info.finish,s.finish_pos);
-	if (finish==current_pos)
-		finish=getLastLetter_IN_currentWord(current_pos);
-	current_pos=next_positon(finish);
+		hadith_stemmer s(text,current_pos);
+		s();
+		long long finish=max(s.info.finish,s.finish_pos);
+		if (finish==current_pos)
+			finish=getLastLetter_IN_currentWord(current_pos);
+		current_pos=next_positon(finish);
 #endif
 #ifdef PROGRESSBAR
 		prg->report((double)current_pos/text_size*100+0.5);
@@ -1107,6 +1276,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	temp=stat.nrc_exact.values();
 	for (int i=0;i<temp.size();i++)
 		delete temp[i];
+#endif
+#ifdef COMPARE_TO_BUCKWALTER
+	myfile.write(output_to_file);
+#endif
+#ifdef COUNT_AVERAGE_SOLUTIONS
+	displayed_error	<< (double)(total_solutions/(long double)stemmings)<<"\n"
+					<<stemmings<<"\n";
 #endif
 	return 0;
 }

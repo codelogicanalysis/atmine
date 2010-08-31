@@ -15,11 +15,13 @@ void StemNode::add_info(const long cat_id)
 		add_info(cat_id,key);
 	#endif
 }
+/*
 bool StemNode::exists(const long cat_id)
 {
 	QVector<long>::iterator i = qBinaryFind(category_ids.begin(),category_ids.end(), cat_id);
 	return (i!=category_ids.end());
 }
+*/
 #ifdef REDUCE_THRU_DIACRITICS
 	void StemNode::add_info(long cat_id,QString & raw_data)
 	{
@@ -57,6 +59,7 @@ bool StemNode::exists(const long cat_id)
 				raw_datas[index].append(raw_data_entry[j]);
 		}
 	}
+	/*
 	bool StemNode::exists(long cat_id, QString & raw_data)
 	{
 		QVector<long>::iterator i = qBinaryFind(category_ids.begin(),category_ids.end(), cat_id);
@@ -83,8 +86,10 @@ bool StemNode::exists(const long cat_id)
 		else
 			return false;
 	}
+	*/
 #endif
 //Search_StemNode
+/*
 	Search_StemNode::Search_StemNode()
 	{
 		//implement later
@@ -156,7 +161,8 @@ bool StemNode::exists(const long cat_id)
 			return false;
 	}
 #endif
-
+*/
+/*
 QDataStream &operator>>(QDataStream &in, long &l)
 {
 	qint64 s;
@@ -190,3 +196,4 @@ QDataStream &operator<<(QDataStream &out, const StemNode &node)
 #endif
 	return out;
 }
+*/

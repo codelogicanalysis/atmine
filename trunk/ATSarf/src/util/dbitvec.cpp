@@ -10,8 +10,9 @@ brief: provides a bitvector with [] access and dynamic size
 #include <string.h> // for memset
 
 
+/*
 dbitvec::dbitvec() : size(0), bytes(0), data(0) { }
-
+*/
 void dbitvec::resize(unsigned int length)  {
 	unsigned int newbytes = (length+7) >> 3;
 	unsigned char * newdata =  new unsigned char [newbytes];
@@ -35,7 +36,7 @@ void dbitvec::resize(unsigned int length)  {
 
 	data = newdata;
 }
-
+/*
 dbitvec::dbitvec(unsigned int length) : size(length) {
 	bytes = (size+7) >> 3; // (ceiling(size/8))
 	data = new unsigned char [bytes];
@@ -127,11 +128,13 @@ bool operator != (const dbitvec & d1, const dbitvec & d2)
 {
 	return !(d1==d2);
 }
+*/
 bool dbitvec::NothingSet()
 {
 	dbitvec temp(length());
 	return *this==temp;
 }
+/*
 dbitvec& dbitvec::operator=(const dbitvec& v1)
 {
 	bytes = v1.getNumBytes();
@@ -141,6 +144,7 @@ dbitvec& dbitvec::operator=(const dbitvec& v1)
 	memcpy(data, v1._data(), bytes);
 	return *this;
 }
+*/
 #if 1
 #include <QString>
 #include <QDebug>
@@ -154,4 +158,3 @@ void dbitvec::show()
 #else
 void dbitvec::show(){}
 #endif
-

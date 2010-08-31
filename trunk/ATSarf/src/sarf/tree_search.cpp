@@ -69,7 +69,7 @@ bool TreeSearch::operator ()()
 	QList <long> catsOFCurrentMatch;
 	QList<int> sub_positionsOFCurrentMatch;
 	QList<long> idsOFCurrentMatch;
-	QQueue<QList<int> > all_positions;
+	QQueue<QList<int > > all_positions;
 	QQueue<QList<long> > all_categories;
 	QQueue<QList<long> > all_ids;
 	all_categories.clear();
@@ -92,7 +92,7 @@ bool TreeSearch::operator ()()
 #endif
 	queue.enqueue((letter_node*)Tree->getFirstNode());
 #ifdef QUEUE
-	QList  <int> temp_partition;
+	QList  <int > temp_partition;
 	QList  <long> temp_ids;
 	QList  <long> temp_categories;
 #ifdef REDUCE_THRU_DIACRITICS
@@ -275,39 +275,48 @@ bool TreeSearch::on_match_helper()
 void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index) //zero and initialize solutions till 'last_index' exclusive
 {
 	minimal_item_info inf;
-	for (int i=start_index;i<sub_positionsOFCurrentMatch.count();i++)
+	int count=sub_positionsOFCurrentMatch.count();
+	for (int i=start_index;i<count;i++)
 	{
 		inf.type=type;
+		QString & raw_data=possible_raw_datasOFCurrentMatch[i][0];
 		if (multi_p.raw_data)
-			inf.raw_data=possible_raw_datasOFCurrentMatch[i][0];
+			inf.raw_data=raw_data;
 		else
 			inf.raw_data="";
 		result_node * r_node=result_nodes->at(i);
 		inf.category_id=r_node->get_previous_category_id();
 		if (!multi_p.raw_dataONLY())
 		{
-			ItemCatRaw2PosDescAbsMapItr itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,possible_raw_datasOFCurrentMatch[i][0]));
+			ItemCatRaw2PosDescAbsMapItr itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,raw_data));
 			assert(itr!=map->end());
+			Map_entry & ITRvalue=itr.value();
 			if (multi_p.abstract_category)
-				inf.abstract_categories=itr.value().first;
+				inf.abstract_categories=ITRvalue.first;
 			else
 				inf.abstract_categories=INVALID_BITSET;
 			if (multi_p.description)
-				inf.description_id=itr.value().second;
+				inf.description_id=ITRvalue.second;
 			else
 				inf.description_id=-1;
 			if (multi_p.POS)
-				inf.POS=itr.value().third;
+				inf.POS=ITRvalue.third;
 			else
 				inf.POS="";
-			sol_pos->indexes.insert(i, AffixPosition(0,itr));
+			if (i<sol_pos->indexes.count())
+				sol_pos->indexes[i]= AffixPosition(0,itr);
+			else
+				sol_pos->indexes.insert(i, AffixPosition(0,itr));
 		}
 		else
 		{
 			inf.abstract_categories=INVALID_BITSET;
 			inf.description_id=-1;
 			inf.POS="";
-			sol_pos->indexes.insert(i, AffixPosition(0,map->end()));
+			if (i<sol_pos->indexes.count())
+				sol_pos->indexes[i]= AffixPosition(0,map->end());
+			else
+				sol_pos->indexes.insert(i, AffixPosition(0,map->end()));
 		}
 		affix_info->append(inf);
 	}
@@ -325,20 +334,22 @@ bool TreeSearch::increment(solution_position * info,int index)
 		ItemCatRaw2PosDescAbsMapItr & itr=info->indexes[index].second;
 		itr++;
 		long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
-		QString raw_data=possible_raw_datasOFCurrentMatch[index][info->indexes[index].first];
+		int & raw_index=info->indexes[index].first;
+		QString & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
 		Map_key key=itr.key();
 		if (itr == map->end() || key != Map_key(id,catID,raw_data) )
 		{
 			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)//check for next time
 			{
-				info->indexes[index].first++;
+				raw_index++;
 				inf.type=type;
+				raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
 				if (multi_p.raw_data)
-					inf.raw_data=possible_raw_datasOFCurrentMatch[index][info->indexes[index].first];
+					inf.raw_data=raw_data;
 				else
 					inf.raw_data="";
 				inf.category_id=r_node->get_previous_category_id();
-				itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,possible_raw_datasOFCurrentMatch[index][info->indexes[index].first]));
+				itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,raw_data));
 			}
 			else
 			{
@@ -373,9 +384,10 @@ bool TreeSearch::increment(solution_position * info,int index)
 	{
 		if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)
 		{
-			info->indexes[index].first++;
+			int & raw_index=info->indexes[index].first;
+			raw_index++;
 			inf.type=type;
-			inf.raw_data=possible_raw_datasOFCurrentMatch[index][info->indexes[index].first];
+			inf.raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
 			inf.category_id=r_node->get_previous_category_id();
 			inf.abstract_categories=INVALID_BITSET;
 			inf.description_id=-1;
