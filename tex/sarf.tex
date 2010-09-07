@@ -1,4 +1,3 @@
-%
 % File naaclhlt2010.tex
 %
 % Contact: nasmith@cs.cmu.edu
@@ -28,17 +27,17 @@
 \usepackage{utf8}
 \setarab
 \fullvocalize
-%\transtrue
+\transtrue
 \arabtrue
 
 \newcommand{\CharCodeIn}[1]{`\CodeIn{#1}'}
 \newcommand{\CodeIn}[1]{{\small\texttt{#1}}}
+\newcommand{\frl}[1]{\fbox{\RL{#1}}} 
 
 \setlength\titlebox{6.5cm}    % Expanding the titlebox
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
-\title{Case based Arabic Morphological Analysis with 
-    Compositional Non-deterministic Automata }
+\title{Case-based Arabic Morphological Analysis }
 
 %\author{ Jad Makhlouta \\
 %  \And
@@ -94,7 +93,7 @@ An affix can be a {\em prefix, suffix, } or an {\em infix}.
 The analysis of one word may lead to several possible
 morphological solutions.
 \vocalize
-For instance, the word \RL{'a.hmadH} 
+For instance, the word \RL{'a.hmadH}~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
 may have two valid morphological analyses. 
 The letter \RL{'a} may be prefix and the word means ``I praise him''.
 The letter \RL{'a} may also be part of the stem 
@@ -111,11 +110,11 @@ Another difficulty is that  Arabic letters can have up to
 four different forms
 corresponding to their position in a word, i.e, beginning,
 middle, end of word forms and separate forms. 
-This allows the phrase 
-\RL{almdrsT}\RL{al_A}
+This allows the phrase \transfalse
+\RL{il_A\nospace almdrsT} \transtrue
 to be visually recognizable
-as two separate words \RL{al_A} and \RL{almdrsT} without 
-the need of a delimiter such as a space in between. 
+as two separate words \RL{il_A} (to) and \RL{almdrsT} (the school) 
+without the need of a delimiter such as a space in between. 
 This happens because the first word \RL{almdrsT} ends with
 \RL{T} a non-connecting letter. 
 These words occur often in text and greatly increase the
@@ -143,9 +142,10 @@ to enhance the accuracy of the morphological analysis at the expense
 of performance.
 
 We hypothesize that many NLP case studies need the 
-morphological analyzer to answer simple queries that do not need 
-high complexity and accuracy at the low morphological analysis level 
-and that can often compensate at higher level for tolerable inaccuracy at low levels. 
+morphological analyzer to answer queries that do not need 
+high accuracy at the low morphological analysis level 
+and that can often compensate at higher levels for tolerable inaccuracy 
+at low levels. 
 For example, if a query concerns proper names and the 
 prefix in question in the analysis connects only to a verb, 
 we do not need to further analyze the rest of the word 
@@ -187,6 +187,19 @@ refinement.
 Sarf introduces recursive affixes in order to
 retain better part of speech information and enhance the 
 efficiency of affix matching. 
+
+
+\transfalse
+\begin{figure}[tb]
+\center{
+\resizebox{.9\columnwidth}{!}
+{ \input{psfigs/exhadith.pstex_t}}
+\caption{Hadith abstraction example.}
+\label{f:exhadith}
+}
+\end{figure}
+% the FSMs for the three words
+\transtrue
 
 We validate our hypothesis using a case study from the Islamic 
 literature. 
@@ -369,6 +382,7 @@ Then we discuss how Sarf builds and composes the different FSAs.
 \subsection{Sarf example}
 \label{sec:example}
 
+\transfalse
 \begin{figure*}[tb]
 \center{
 \resizebox{1.7\columnwidth}{!}
@@ -378,6 +392,7 @@ Then we discuss how Sarf builds and composes the different FSAs.
 }
 \end{figure*}
 % the FSMs for the three words
+\transtrue
 
 The compositional FSA diagram in Figure~\ref{f:example}
 illustrates the operation of Sarf when parsing the
