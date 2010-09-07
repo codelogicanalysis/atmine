@@ -6,7 +6,7 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 #define GENERAL_HADITH
-//#define STATS
+#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 //#define REFINEMENTS
@@ -21,8 +21,8 @@
 //#define TEST_WITHOUT_SKIPPING
 //#define GET_AFFIXES_ALSO
 //#define COUNT_AVERAGE_SOLUTIONS
-//#define BUCKWALTER_INTERFACE
-//#define OPTIMIZED_BUCKWALTER_TEST_CASE
+#define BUCKWALTER_INTERFACE
+#define OPTIMIZED_BUCKWALTER_TEST_CASE
 #define IMAN_CODE
 
 #ifdef PREPROCESS_DESCRIPTIONS

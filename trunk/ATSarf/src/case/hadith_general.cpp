@@ -302,7 +302,7 @@ public:
 	bool analyze()
 	{
 	#ifdef STATS
-		QString temp_stem=removeDiacritics(diacritic_text->mid(Stem->starting_pos, Suffix->startingPos-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
+		QString temp_stem=removeDiacritics(info.text->mid(Stem->starting_pos, Suffix->info.start-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 	#endif
 	#ifndef PREPROCESS_DESCRIPTIONS
 		QString description=stem_info->description();
