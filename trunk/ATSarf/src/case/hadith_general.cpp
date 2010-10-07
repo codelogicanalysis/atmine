@@ -86,15 +86,17 @@ inline void display(QString t)
 #define display(c) ;
 #endif
 
-
+typedef QList<NameConnectorPrim *> TempConnectorPrimList;
 
 #define display_letters 30
 typedef struct chainData_ {
     NamePrim *namePrim;
     NameConnectorPrim *nameConnectorPrim;
     NarratorConnectorPrim *narratorConnectorPrim;
+	TempConnectorPrimList * temp_nameConnectors;
     Narrator *narrator;
     Chain *chain;
+
 } chainData;
 typedef struct stateData_ {
 	long long  sanadStartIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold,;
@@ -132,11 +134,15 @@ void initializeChainData(chainData *currentChain)
 	delete currentChain->narratorConnectorPrim;
 	delete currentChain->narrator;
 	delete currentChain->chain;
+	/*for (int i=0;i<currentChain->temp_nameConnectors->count()-1;i++)
+		delete (*currentChain->temp_nameConnectors)[i];*/
+	delete currentChain->temp_nameConnectors;
 	currentChain-> namePrim=new NamePrim(text);
 	currentChain-> nameConnectorPrim=new NameConnectorPrim(text);
 	currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text) ;
 	currentChain->  narrator=new Narrator (text);
 	currentChain->  chain=new Chain(text);
+	currentChain->temp_nameConnectors=new TempConnectorPrimList();
 	display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 }
 #endif
@@ -603,6 +609,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
 			currentChain->narrator->m_narrator.append(currentChain->namePrim);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+			/*for (int i=0;i<currentChain->temp_nameConnectors->count()-1;i++)
+				delete (*currentChain->temp_nameConnectors)[i];*/
+			delete currentChain->temp_nameConnectors;
+			currentChain->temp_nameConnectors= new TempConnectorPrimList();
 		#endif
 		#ifdef STATS
 			map_entry * entry=new map_entry;
@@ -677,8 +687,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentData.nrcStartIndex=start_index;
 		#ifdef CHAIN_BUILDING
 			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
-
+			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
+				currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
 			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,start_index);
 			currentChain->chain->m_chain.append(currentChain->narrator);
 			currentChain->narrator=new Narrator(text);
@@ -689,7 +700,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			nextState=NAME_S;
 		#ifdef CHAIN_BUILDING
 			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
-			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
+				currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
 			currentChain->namePrim=new NamePrim(text,start_index);
 		#endif
 		#ifdef STATS
@@ -709,7 +722,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				nextState=TEXT_S;
 			#ifdef CHAIN_BUILDING
 				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
-				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);//check to see if we should also add the narrator to chain
+				currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
+					currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));//check to see if we should also add the narrator to chain
 				currentChain->chain->m_chain.append(currentChain->narrator);
 			#endif
 				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
@@ -720,6 +735,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		}
 		else if (currentType==NMC)
 		{
+			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
 			currentData.nmcCount++;
 			if (isBinOrPossessive)
 				currentData.nmcValid=true;
@@ -736,6 +754,9 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		else
 		{
 			nextState=NMC_S; //maybe modify later
+			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
 		#ifdef STATS
 			map_entry * entry=new map_entry;
 			entry->exact=current_exact;
@@ -758,6 +779,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			//currentData.nameStartIndex=start_index;
 		#ifdef CHAIN_BUILDING
 			//currentChain->namePrim->m_start=start_index;
+
 			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 			currentChain->namePrim=new NamePrim(text,start_index);
