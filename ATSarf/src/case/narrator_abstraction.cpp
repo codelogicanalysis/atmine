@@ -6,6 +6,16 @@
 #include "stemmer.h"
 #include <QPair>
 
+#ifdef EQUALITYDEBUG
+inline void display(QString t)
+{
+	out<<t;
+	//qDebug() <<t;
+}
+#else
+#define display(c) ;
+#endif
+
 qint8 getType(const NarratorPrim *)
 {
 	return 'n';
@@ -289,23 +299,41 @@ inline bool has_equal_stems(StemList l1,StemList l2)
 	return false;
 }
 
+inline bool has_common_element(QList<QString> l1,QList<QString> l2)
+{
+	for (int i=0;i<l1.count();i++)
+	{
+		for (int j=0;j<l2.count();j++)
+		{
+			//qDebug()<<l1[i]<<"-"<<l2[j];
+			if (l1[i]==l2[j])
+				return true;
+		}
+	}
+	return false;
+}
+
 class IbnStemsDetector: public Stemmer
 {
 private:
 	int forced_finish_pos;
 public:
-	bool ibn;
+	bool ibn, place, city,country;
+	QList<QString> country_names,city_names;
 	StemList stems;
 
 	IbnStemsDetector(QString * text, int start,int finish):Stemmer(text,start,false)
 	{
 		stems.clear();
 		forced_finish_pos=finish;
-		multi_p.abstract_category=false;
-		multi_p.POS=false;
+		multi_p.abstract_category=true;
+		multi_p.POS=true;
 		multi_p.description=true;
-		multi_p.raw_data=false;
+		multi_p.raw_data=true;
 		ibn=false;
+		city=false;
+		place=false;
+		country=false;
 		setSolutionSettings(multi_p);
 	}
 	bool on_match()
@@ -326,6 +354,25 @@ public:
 #endif
 					{
 						ibn=true;
+						break;
+					}
+					else if (Stem->solution->abstract_categories.getBit(bit_PLACE))
+					{
+						place=true;
+						//display (Stem->solution->raw_data +":"+Stem->solution->description().append("\n"));
+						if (Stem->solution->abstract_categories.getBit(bit_CITY))
+						{
+							city=true;
+							//display("{city}\n");
+							city_names.append(Stem->solution->raw_data);
+							country_names.append(Stem->solution->description().split("city/town in ").at(1));
+						}
+						if (Stem->solution->abstract_categories.getBit(bit_COUNTRY))
+						{
+							//display("{country}\n");
+							country=true;
+							country_names.append(Stem->solution->description().split("possessive form of ").at(1));
+						}
 						break;
 					}
 				}while(Stem->computeNextSolution(stem_sol));
@@ -353,6 +400,22 @@ double getdistance(Narrator & n1,Narrator & n2)
 			Names2.append(*(NamePrim*)n2.m_narrator[i]);
 		else
 			Conns2.append(*(NameConnectorPrim*)n2.m_narrator[i]);
+
+#ifdef EQUALITYDEBUG
+	for (int i=0;i<Names1.count();i++)
+		display(Names1[i].getString()+" - ");
+	display("\n");
+	for (int i=0;i<Conns1.count();i++)
+		display(Conns1[i].getString()+" - ");
+	display("\n");
+	for (int i=0;i<Names2.count();i++)
+		display(Names2[i].getString()+" - ");
+	display("\n");
+	for (int i=0;i<Conns2.count();i++)
+		display(Conns2[i].getString()+" - ");
+	display("\n");
+#endif
+
 	QList<EqualNamesStruct> equal_names;
 	for (int i=0;i<Names1.count();i++)
 	{
@@ -369,10 +432,14 @@ double getdistance(Narrator & n1,Narrator & n2)
 	if (equal_names.count()==0)
 		return dist;
 	if (equal_names.count()==min(Names1.count(),Names2.count()))
+	{
+		display("equal names \\ ");
 		dist-=delta;
+	}
 	for (int i=1;i<equal_names.count();i++)
 		if (equal_names[i-1].third>equal_names[i].third)
 			return dist;
+	display("same order of names \\ ");
 	dist-=delta; //if reaches here it means names are in correct order, otherwise it would have returned before
 	QList<EqualConnsStruct> equal_conns;
 	for (int i=0;i<Conns1.count();i++)
@@ -384,12 +451,74 @@ double getdistance(Narrator & n1,Narrator & n2)
 			IbnStemsDetector stemsD2(Conns2[j].hadith_text,Conns2[j].m_start,Conns2[j].m_end);//TODO: later for efficiency, perform in a seperate loop, save them then use them
 			stemsD2();
 			//TODO: here check if mutually exclusive and if so, punish
+			if (stemsD1.city && stemsD2.city )
+			{
+				if (!has_common_element(stemsD1.country_names,stemsD2.country_names))
+				{
+					display("cities located in different countries \\ ");
+					dist+=delta;
+				}
+				else
+				{
+					if (!has_common_element(stemsD1.city_names,stemsD2.city_names))
+					{
+						display("different cities located in same country \\ ");
+						dist+=delta;
+					}
+					else
+					{
+						display("same city \\ ");
+						dist-=delta;
+					}
+				}
+				continue;
+			}
+			else if ((stemsD1.city && stemsD2.country) || (stemsD2.city && stemsD1.country))
+			{
+				if (!has_common_element(stemsD1.country_names,stemsD2.country_names))
+				{
+					display(QString("city and country mutually exclusive \\")); // %1 VS %2\\ ").arg(stemsD1.country_names[0]).arg(stemsD2.country_names[0]));
+					dist+=delta;
+				}
+				else
+				{
+					display("city contained in country \\ ");
+					dist-=delta/2;
+				}
+				continue;
+			}
+			else if (stemsD2.country && stemsD1.country)
+			{
+				if (!has_common_element(stemsD1.country_names,stemsD2.country_names))
+				{
+					display("different countries \\ ");
+					dist+=delta;
+				}
+				else
+				{
+					display("same countries \\ ");
+					dist-=delta;
+				}
+				continue;
+			}
+			//TODO: maybe punish more and also add more different rules other than places
 			if (has_equal_stems(stemsD1.stems,stemsD2.stems) && !stemsD1.ibn && !stemsD2.ibn)
 				equal_conns.append(EqualConnsStruct(Conns1[i],Conns2[j],j));
 			//TODO: ibn must have a seperate rule which is inter-related to names
 		}
 	}
-	return max(dist-equal_conns.count()*delta/2,0.0);
+	if (equal_names.count()>0)
+	{
+		display(QString("%1 identical connectors :{ ").arg(equal_conns.count()));
+	#ifdef EQUALITYDEBUG
+		for (int i=0;i<equal_conns.count();i++)
+			display(equal_conns[i].first.getString()+" - ");
+		display("} \\");
+	#endif
+		dist-=delta*equal_conns.count(); //reward as much as there are identical connectors other than ibn
+	}
+
+	return min(max(dist-equal_conns.count()*delta/2,0.0),1.0);
 }
 double equal(Narrator n1,Narrator n2)
 {
