@@ -23,8 +23,8 @@
 	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 	QStringList compound_words;
 	QString hadath;
-	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE;
-	int bit_NAME, bit_POSSESSIVE, bit_PLACE;
+	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
+	int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 #ifdef PREPROCESS_DESCRIPTIONS
 	QHash<long,bool> NMC_descriptions;
 	QHash<long,bool> NRC_descriptions;
@@ -154,11 +154,17 @@ void hadith_initialize()
 #ifndef JUST_BUCKWALTER
 	abstract_POSSESSIVE=get_abstractCategory_id("POSSESSIVE");
 	abstract_PLACE=get_abstractCategory_id("Name of Place");
+	abstract_CITY=get_abstractCategory_id("City/Town");
+	abstract_COUNTRY=get_abstractCategory_id("Country");
 	bit_POSSESSIVE=get_bitindex(abstract_POSSESSIVE,abstract_category_ids);
 	bit_PLACE=get_bitindex(abstract_PLACE,abstract_category_ids);
+	bit_CITY=get_bitindex(abstract_CITY,abstract_category_ids);
+	bit_COUNTRY=get_bitindex(abstract_COUNTRY,abstract_category_ids);
 #else
 	abstract_POSSESSIVE=-1;
 	abstract_PLACE=-1;
+	abstract_CITY=-1;
+	abstract_COUNTRY=-1;
 #endif
 	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
 #ifdef REFINEMENTS
@@ -489,7 +495,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 		if (finish==current_pos)
 			finish=getLastLetter_IN_currentWord(current_pos);
 		#ifdef STATS
-			current_exact=removeDiacritics(s.diacritic_text->mid(current_pos,finish-current_pos+1));
+			current_exact=removeDiacritics(s.info.text->mid(current_pos,finish-current_pos+1));
 			current_stem=s.stem;
 			if (current_stem=="")
 				current_stem=choose_stem(s.stems);
