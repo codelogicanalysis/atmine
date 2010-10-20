@@ -7,10 +7,11 @@
    * http://dev.mysql.com/downloads/connector/cpp/#downloads
  * QT libraries
    - http://qt.nokia.com/downloads
+ * SVN
 
 == Details ==
 
- * Get our latest version of source code from the following page http://code.google.com/p/atmine/downloads/list
- * Open datrie/libdatrie-0.2.3 & "./configure" & "make"
- * Build the source code using QT for the file src/ATSarf/ATSarfTrie.pro 
+ * Get our latest version of source code from the following page http://code.google.com/p/atmine/source/checkout
+ * Download datrie from http://linux.thai.net/~thep/datrie/datrie.html#Download then open datrie/libdatrie-0.2.3 & "./configure" & "make"
+ * Build the source code using QT for the file ATSarf/QT Make/ATSarfTrie.pro 
  * Run the resulting Executable generated. *Enjoy!*
