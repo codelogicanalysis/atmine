@@ -1,0 +1,3 @@
+upon equality of chainNodes=> create a new if gnode pointer is not null
+parentGNode: if null GNode get parent else getparent thru Gnode getParent
+chain order and chain node in chainnarratorNode

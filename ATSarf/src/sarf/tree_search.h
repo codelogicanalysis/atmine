@@ -146,7 +146,7 @@ class TreeSearch
 			multi_p=params;
 		}
     public:
-		TreeSearch(item_types type,QString* text,int start,bool reduce_thru_diacritics=false)
+		TreeSearch(item_types type,QString* text,int start,bool reduce_thru_diacritics=true)
 		{
 			info.text=text;
 			this->type=type;
