@@ -60,27 +60,128 @@ use this node structure when merging the 2 hadith chains
 hash them according to wither elements or string stripped and so on (for testing)
   */
 
-class GHGNarratorNode;
+class NarratorNode;
+class ChainNarratorNode;
 
-typedef QPair<GHGNarratorNode*,CNarratorNodePtr*> NodeAddress;
+typedef QPair<NarratorNode *, ChainNarratorNode *> NodeAddress;
 
-class GHGNarratorNode
+NarratorNode //abstract interface
+{
+	NarratorNode * firstChild()=0;
+	NarratorNode * nextChild(NarratorNode * current)=0;
+	NarratorNode * firstParent()=0;
+	NarratorNode * nextParent(NarratorNode * current)=0;
+
+	ChainNarratorNode * firstNarrator()=0;
+	ChainNarratorNode * nextNarrator(ChainNarratorNode * current)=0;
+
+	<NarratorNode *, ChainNarratorNode *> prevInChain(ChainNarratorNode *)=0;
+	<NarratorNode *, ChainNarratorNode *> nextInChain(ChainNarratorNode *)=0;
+
+	QString CanonicalName()=0;
+};
+
+ChainNarratorNode: public NarratorNode //TODO: merge this with Narrator class
 {
 private:
-	QList<CNarratorNodePtr*> equalNarrators;
+	NarratorNode * narrNode;
 public:
-	GHGNarratorNode();
-	int addNarrator(Narrator * n);
-	QList<NodeAddress> getParents();
-	QList<NodeAddress> getChildren();
-	QList<CNarratorNodePtr *> getEqualNarrators();
-	QString getCanonicalName();
-	NodeAddress getParent(Narrator* narrator);
-	NodeAddress getChild(Narrator* narrator);
-	Narrator* getNarrator (int index);
-	NodeAddress getParentAddress(int index);
-	NodeAddress getChildAddress (int index);
-	~GHGNarratorNode();
+
+	NarratorNode * firstChild()
+	{
+		return  nextInChain();
+	}
+	NarratorNode * nextChild(NarratorNode * current)
+	{
+		return null;
+	}
+
+	NarratorNode * firstParent()
+	{
+		return  prevInChain();
+	}
+	NarratorNode * nextParent(NarratorNode * current)
+	{
+		return null;
+	}
+
+	ChainNarratorNode * firstNarrator()
+	{
+		return this;
+	}
+	ChainNarratorNode * nextNarrator(ChainNarratorNode * current)
+	{
+		return null;
+	}
+
+	<NarratorNode *, ChainNarratorNode *> prevInChain(ChainNarratorNode * node)
+	{
+		assert (node==this);
+		ChainNarratorNode * prev=node.prevInChain();
+		return NodeAddress(prev.getCorrespondingNarratorNode(), prev);
+	}
+	<NarratorNode *, ChainNarratorNode *> nextInChain(ChainNarratorNode * node)
+	{
+		assert (node==this);
+		ChainNarratorNode * next=node.nextInChain();
+		return NodeAddress(next.getCorrespondingNarratorNode (), next);
+	}
+
+	<ChainNarratorNode *> prevInChain();
+	<ChainNarratorNode *> nextInChain();
+
+	NarratorNode *  getCorrespondingNarratorNode()
+	{
+		if ( narrNode==NULL)
+			return this;
+		else
+			return narrNode;
+	}
+
+	QString CanonicalName()
+	{
+		return this.getText();//change to get Narrator text
+	}
 };
+
+	GraphNarratorNode: public NarratorNode
+{
+private:
+	Qlist<ChainNarratorNode> * equalnarrators;
+public:
+
+	NarratorNode * firstChild() //return iterator instead of NarratorNode
+	{
+		return  equalnarrators[0].getPrevInChain().getCorrespondingNarratorNode();
+	}
+	NarratorNode * nextChild(NarratorNode * current)
+	{
+		return qualnarrators[equalnarrators.find(current).getIndex()+1]
+				.getPrevInChain().getCorrespondingNarratorNode(); //inefficient
+	}
+
+	NarratorNode * firstParent();
+	NarratorNode * nextParent(NarratorNode * current);//similar to above
+
+	ChainNarratorNode * firstNarrator(); //similar to above
+	ChainNarratorNode * nextNarrator(ChainNarratorNode * current);
+
+	<NarratorNode *, ChainNarratorNode *> prevInChain(ChainNarratorNode * node)
+	{
+		ChainNarratorNode * prev=node.prevInChain();
+		return NodeAddress(prev.getCorrespondingNarratorNode(), prev);
+	}
+	<NarratorNode *, ChainNarratorNode *> nextInChain(ChainNarratorNode * node)
+	{
+		ChainNarratorNode * next=node.nextInChain();
+		return NodeAddress(next.getCorrespondingNarratorNode (), next);
+	}
+
+		QString CanonicalName()
+	{
+	//return smallest among names
+	}
+
+}
 
 #endif // CHAIN_GRAPH_H
