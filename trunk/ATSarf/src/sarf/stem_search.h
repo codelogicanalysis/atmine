@@ -27,7 +27,7 @@ class StemSearch
 		bool reduce_thru_diacritics;
 		QVector<QString> possible_raw_datas;
 	public:
-		StemSearch(QString * text,int start, long prefix_category,bool reduce_thru_diacritics=false)
+		StemSearch(QString * text,int start, long prefix_category,bool reduce_thru_diacritics=true)
 		{
 			info.text=text;
 			starting_pos=start;

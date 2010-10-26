@@ -371,7 +371,11 @@ public:
 						{
 							//display("{country}\n");
 							country=true;
-							country_names.append(Stem->solution->description().split("possessive form of ").at(1));
+							QString desc=Stem->solution->description();
+							if (Stem->solution->abstract_categories.getBit(bit_POSSESSIVE))
+								country_names.append(desc.split("possessive form of ").at(1));
+							else
+								country_names.append(desc);
 						}
 						break;
 					}
@@ -446,10 +450,20 @@ double getdistance(Narrator & n1,Narrator & n2)
 	{
 		IbnStemsDetector stemsD1(Conns1[i].hadith_text,Conns1[i].m_start,Conns1[i].m_end);
 		stemsD1();
+		if (stemsD1.ibn)
+		{
+			Conns1.removeAt(i);
+			i--;
+		}
 		for (int j=0;j<Conns2.count();j++)
 		{
 			IbnStemsDetector stemsD2(Conns2[j].hadith_text,Conns2[j].m_start,Conns2[j].m_end);//TODO: later for efficiency, perform in a seperate loop, save them then use them
 			stemsD2();
+			if (stemsD2.ibn)
+			{
+				Conns2.removeAt(j);
+				j--;
+			}
 			//TODO: here check if mutually exclusive and if so, punish
 			if (stemsD1.city && stemsD2.city )
 			{
@@ -501,13 +515,19 @@ double getdistance(Narrator & n1,Narrator & n2)
 				}
 				continue;
 			}
+
 			//TODO: maybe punish more and also add more different rules other than places
-			if (has_equal_stems(stemsD1.stems,stemsD2.stems) && !stemsD1.ibn && !stemsD2.ibn)
+			if (has_equal_stems(stemsD1.stems,stemsD2.stems) && !stemsD1.ibn && !stemsD2.ibn) //ibn checks redundant removed before
 				equal_conns.append(EqualConnsStruct(Conns1[i],Conns2[j],j));
 			//TODO: ibn must have a seperate rule which is inter-related to names
 		}
 	}
-	if (equal_names.count()>0)
+	if (Conns1.count()==0 || Conns2.count()==0)
+	{
+		display("No connectors \\ ");
+		dist-=delta;
+	}
+	if (equal_conns.count()>0)
 	{
 		display(QString("%1 identical connectors :{ ").arg(equal_conns.count()));
 	#ifdef EQUALITYDEBUG
@@ -517,7 +537,7 @@ double getdistance(Narrator & n1,Narrator & n2)
 	#endif
 		dist-=delta*equal_conns.count(); //reward as much as there are identical connectors other than ibn
 	}
-
+	display("\n");
 	return min(max(dist-equal_conns.count()*delta/2,0.0),1.0);
 }
 double equal(Narrator n1,Narrator n2)

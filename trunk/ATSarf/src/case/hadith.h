@@ -8,13 +8,13 @@
 #define GENERAL_HADITH
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
-#define EQUALITYDEBUG
 //#define TENTATIVE //are decisions that we are not sure about
 #define REFINEMENTS
 #define PREPROCESS_DESCRIPTIONS
 #define DISPLAY_HADITH_OVERVIEW
 #define CHAIN_BUILDING
-#define TEST_EQUAL_NARRATORS
+//#define TEST_EQUAL_NARRATORS
+//#define EQUALITYDEBUG
 //#define COMPARE_TO_BUCKWALTER
 //#define COMPARE_WITHOUT_ABSCAT
 #define PROGRESSBAR

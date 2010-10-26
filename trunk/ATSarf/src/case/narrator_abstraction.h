@@ -200,6 +200,7 @@ public:
 
 };
 
+
 double equal(Narrator n1,Narrator n2);
 
 QDataStream &operator>>(QDataStream &in, ChainNarratorPrim &p);
