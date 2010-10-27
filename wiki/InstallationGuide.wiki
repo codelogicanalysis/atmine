@@ -2,12 +2,13 @@
 
 == Prerequisites ==
 
- * MYSQL
-   * http://dev.mysql.com/downloads/mysql/
-   * http://dev.mysql.com/downloads/connector/cpp/#downloads
- * QT libraries
-   - http://qt.nokia.com/downloads
- * SVN
+ * Install the following packages using the "Synaptic Package Manager":
+    * mysql-client
+    * mysql-server
+    * libmysqlcppconn
+    * libmysqlcppconn-dev
+    * subversion
+    * qtcreator
 
 == Details ==
 
