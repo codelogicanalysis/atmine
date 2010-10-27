@@ -18,6 +18,10 @@ class ChainNarratorNode;
 class ChainNarratorNodePtr;
 class GraphNarratorNode;
 
+class Chain;
+class Narrator;
+class ChainPrim;
+
 typedef QPair<NarratorNode *, ChainNarratorNodePtr> NodeAddress;
 
 class NarratorNode //abstract interface
@@ -37,12 +41,47 @@ public:
 	virtual QString CanonicalName()=0;
 };
 
-class ChainNarratorNode: public NarratorNode //TODO: merge this with Narrator class
+class ChainNarratorNode //TODO: merge this with Narrator class
 {
 private:
 	GraphNarratorNode * narrNode;
 public:
+	NarratorNode * getCorrespondingNarratorNode()
+	{
+		return (NarratorNode *)narrNode;
+	}
+	void  setCorrespondingNarratorNode(GraphNarratorNode * narrNode)
+	{
+		this->narrNode=narrNode;
+	}
+	QString CanonicalName();
+};
 
+class ChainNarratorNodePtr:public QList<ChainPrim *>::iterator, public NarratorNode
+{
+private:
+	ChainPrim* getChainPrimPtr()
+	{
+		return (ChainPrim*)(*(QList<ChainPrim *>::iterator)*this);
+	}
+	ChainPrim & getChainPrim()
+	{
+		return *(ChainPrim*)(*(QList<ChainPrim *>::iterator)*this);
+	}
+public:
+	ChainNarratorNodePtr(){}
+	ChainNarratorNodePtr(Chain *ch, Narrator * n);
+	ChainNarratorNode & operator*();
+	ChainNarratorNode * operator->()
+	{
+		return &this->operator *();
+	}
+	ChainNarratorNodePtr & operator++();
+	ChainNarratorNodePtr & operator--();
+	ChainNarratorNodePtr & prevInChain()
+	{
+		return (this->operator --());
+	}
 	NarratorNode * firstChild();
 	NarratorNode * nextChild(NarratorNode * )
 	{
@@ -57,40 +96,21 @@ public:
 	ChainNarratorNodePtr nextNarrator(ChainNarratorNodePtr);
 	NodeAddress prevInChain(ChainNarratorNodePtr node);
 	NodeAddress nextInChain(ChainNarratorNodePtr node);
-	virtual ChainNarratorNodePtr & prevInChain()=0;
-	virtual ChainNarratorNodePtr & nextInChain()=0;
-	NarratorNode *  getCorrespondingNarratorNode();
-	QString CanonicalName();
-};
-
-class ChainPrim;
-
-class ChainNarratorNodePtr:public QList<ChainPrim *>::iterator, public ChainNarratorNode
-{
-private:
-	ChainPrim* getChainPrimPtr()
-	{
-		return (ChainPrim*)(*(QList<ChainPrim *>::iterator)*this);
-	}
-	ChainPrim & getChainPrim()
-	{
-		return *(ChainPrim*)(*(QList<ChainPrim *>::iterator)*this);
-	}
-public:
-	ChainNarratorNode & operator*();
-	ChainNarratorNode * operator->()
-	{
-		return &this->operator *();
-	}
-	ChainNarratorNodePtr & operator++();
-	ChainNarratorNodePtr & operator--();
-	virtual ChainNarratorNodePtr & prevInChain()
-	{
-		return (this->operator --());
-	}
-	virtual ChainNarratorNodePtr & nextInChain()
+	ChainNarratorNodePtr & nextInChain()
 	{
 		return (this->operator ++());
+	}
+	QString CanonicalName()
+	{
+		return this->operator *().CanonicalName();
+	}
+	NarratorNode *  getCorrespondingNarratorNode()
+	{
+		NarratorNode * narrNode=this->operator *().getCorrespondingNarratorNode();
+		if ( narrNode==NULL)
+			return this;
+		else
+			return narrNode;
 	}
 	bool isFirst();
 	bool isLast();
@@ -110,43 +130,81 @@ public:
 	}
 };
 
-
 class GraphNarratorNode: public NarratorNode
 {
 private:
 	QList<ChainNarratorNodePtr>  equalnarrators;
 public:
-
+	GraphNarratorNode(ChainNarratorNodePtr nar1,ChainNarratorNodePtr nar2);
+	GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2);
+	void addNarrator(Chain * chain1, Narrator * nar1);
+	void addNarrator(ChainNarratorNodePtr nar1);
 	NarratorNode * firstChild() //return iterator instead of NarratorNode
 	{
-		return (*(equalnarrators.begin()))->prevInChain()->getCorrespondingNarratorNode();
+		return (*((*(equalnarrators.begin())).nextInChain())).getCorrespondingNarratorNode();
 	}
 	NarratorNode * nextChild(NarratorNode * current)
 	{
-		/*return qualnarrators[equalnarrators.find(current).getIndex()+1]
-				.getPrevInChain().getCorrespondingNarratorNode(); //inefficient*/
+		assert(current->firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
+		//check if end reached
+		if (!(((ChainNarratorNodePtr *)current)->isLast()))
+			return current->nextNarrator(*(ChainNarratorNodePtr*)current).nextInChain().getCorrespondingNarratorNode();
+		else
+			return NULL;
 	}
 
-	NarratorNode * firstParent();
-	NarratorNode * nextParent(NarratorNode * current);//similar to above
-
-	ChainNarratorNodePtr firstNarrator(); //similar to above
-	ChainNarratorNodePtr nextNarrator(ChainNarratorNode * current);
-
-	NodeAddress prevInChain(ChainNarratorNode * node)
+	NarratorNode * firstParent()
 	{
-		ChainNarratorNodePtr prev=node->prevInChain();
+		return (*((*(equalnarrators.begin())).prevInChain())).getCorrespondingNarratorNode();
+	}
+	NarratorNode * nextParent(NarratorNode * current)
+	{
+		assert(current->firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
+		//check if end reached
+		if (!(((ChainNarratorNodePtr *)current)->isFirst()))
+			return current->nextNarrator(*(ChainNarratorNodePtr*)current).prevInChain().getCorrespondingNarratorNode();
+		else
+			return NULL;
+	}
+	ChainNarratorNodePtr firstNarrator()
+	{
+		return *equalnarrators.begin();
+	}
+	ChainNarratorNodePtr nextNarrator(ChainNarratorNodePtr current)
+	{
+		if (!(current.isLast()))
+			return current.nextNarrator(current);
+		else
+			return NULLChainNarratorNodePtr();
+	}
+
+	NodeAddress prevInChain(ChainNarratorNodePtr node)
+	{
+		ChainNarratorNodePtr prev=node.prevInChain();
 		return NodeAddress(prev->getCorrespondingNarratorNode(), prev);
 	}
-	NodeAddress nextInChain(ChainNarratorNode * node)
+	NodeAddress nextInChain(ChainNarratorNodePtr node)
 	{
-		ChainNarratorNodePtr next=node->nextInChain();
+		ChainNarratorNodePtr next=node.nextInChain();
 		return NodeAddress(next->getCorrespondingNarratorNode (), next);
 	}
 
 	QString CanonicalName()
 	{
-	//return smallest among names
+		int smallestsize=0, index=-1;
+		for (int i=0;i<equalnarrators.size();i++)
+		{
+			int size=equalnarrators[i].CanonicalName().size();
+			if (smallestsize>size)
+			{
+				smallestsize=size;
+				index=i;
+			}
+		}
+		if (index>0)
+			return equalnarrators[index].CanonicalName();
+		else
+			return "";
 	}
 
 };

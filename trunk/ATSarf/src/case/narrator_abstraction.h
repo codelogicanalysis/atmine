@@ -140,7 +140,7 @@ typedef struct Rank_
 	int unused:22; //maybe use for chain number
 } Rank;
 
-class Narrator : public ChainPrim, private ChainNarratorNodePtr {
+class Narrator : public ChainPrim, private ChainNarratorNode {
 private:
 	Rank rank; //to be used in ChainNarratorNodePtr
 	friend void fillRank(Narrator n);

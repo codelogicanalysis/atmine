@@ -39,46 +39,63 @@ int ChainNarratorNodePtr::getIndex()
 	return ((Narrator*)getChainPrimPtr())->getRank().index;
 }
 
-ChainNarratorNodePtr ChainNarratorNode::firstNarrator()
+ChainNarratorNodePtr ChainNarratorNodePtr::firstNarrator()
 {
 	return NULLChainNarratorNodePtr();
 }
-ChainNarratorNodePtr ChainNarratorNode::nextNarrator(ChainNarratorNodePtr current)
+ChainNarratorNodePtr ChainNarratorNodePtr::nextNarrator(ChainNarratorNodePtr)
 {
 	return NULLChainNarratorNodePtr();
 }
 
-NarratorNode * ChainNarratorNode::firstChild()
+NarratorNode * ChainNarratorNodePtr::firstChild()
 {
-	return  &(nextInChain().operator *());
+	return  &nextInChain();
 }
-NarratorNode * ChainNarratorNode::firstParent()
+NarratorNode * ChainNarratorNodePtr::firstParent()
 {
-	return  &(prevInChain().operator *());
+	return  &prevInChain();
 }
-NodeAddress ChainNarratorNode::prevInChain(ChainNarratorNodePtr node)
+NodeAddress ChainNarratorNodePtr::prevInChain(ChainNarratorNodePtr node)
 {
-	assert (&(*node)==this);
+	assert (node==*this);
 	ChainNarratorNodePtr prev=--node;
 	if (!prev.isNULL())
 		return NodeAddress(prev->getCorrespondingNarratorNode(), prev);
 	else
 		return NodeAddress(NULL,NULLChainNarratorNodePtr());
 }
-NodeAddress ChainNarratorNode::nextInChain(ChainNarratorNodePtr node)
+NodeAddress ChainNarratorNodePtr::nextInChain(ChainNarratorNodePtr node)
 {
-	assert (&(*node)==this);
+	assert (node==*this);
 	ChainNarratorNodePtr next=--node;
 	if (!next.isNULL())
 		return NodeAddress(next->getCorrespondingNarratorNode (), next);
 	else
 		return NodeAddress(NULL,NULLChainNarratorNodePtr());
 }
-
-NarratorNode *  ChainNarratorNode::getCorrespondingNarratorNode()
+ChainNarratorNodePtr::ChainNarratorNodePtr(Chain *ch, Narrator * n):QList<ChainPrim *>::iterator(ch->m_chain.begin()+n->getRank().index)
 {
-	if ( narrNode==NULL)
-		return this;
-	else
-		return narrNode;
+
+}
+GraphNarratorNode::GraphNarratorNode(ChainNarratorNodePtr nar1,ChainNarratorNodePtr nar2)
+{
+	equalnarrators.append(nar1);
+	equalnarrators.append(nar2);
+}
+GraphNarratorNode::GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2)
+{
+	ChainNarratorNodePtr c1(chain1,nar1);
+	ChainNarratorNodePtr c2(chain2,nar2);
+	equalnarrators.append(c1);
+	equalnarrators.append(c2);
+}
+void GraphNarratorNode::addNarrator(Chain * chain, Narrator * nar)
+{
+	ChainNarratorNodePtr c(chain,nar);
+	equalnarrators.append(c);
+}
+void GraphNarratorNode::addNarrator(ChainNarratorNodePtr nar)
+{
+	equalnarrators.append(nar);
 }
