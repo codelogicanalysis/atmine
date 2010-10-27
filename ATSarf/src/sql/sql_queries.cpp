@@ -267,7 +267,7 @@ bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 		if (!tried_once)
 		{
 			system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
-                        system("mysql --user=\"root\" --password=\"\" atm <\"../../src/sql design/atm_filled.sql\"");
+			system("mysql --user=\"root\" --password=\"\" atm <\"../../src/sql design/atm_filled.sql\"");
 			tried_once=true;
 			start_connection(p_ifc);
 		}

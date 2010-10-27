@@ -2,6 +2,7 @@
 #include <QTextStream>
 #include <QFile>
 #include "logger.h"
+#include "chain_graph.h"
 
 #define SHOW_AS_TEXT
 
@@ -131,8 +132,23 @@ public:
         return m_end;}
 };
 
-class Narrator : public ChainPrim {
+typedef struct Rank_
+{
+	bool first:1;
+	bool last:1;
+	int index:8;
+	int unused:22; //maybe use for chain number
+} Rank;
+
+class Narrator : public ChainPrim, private ChainNarratorNodePtr {
+private:
+	Rank rank; //to be used in ChainNarratorNodePtr
+	friend void fillRank(Narrator n);
 public:
+	Rank getRank()
+	{
+		return rank;
+	}
 	Narrator(QString * hadith_text);
  //   QList <ChainNarratorPrim *> m_narrator; //modify back to here
    QList <NarratorPrim *> m_narrator;
@@ -199,7 +215,6 @@ public:
 //    }
 
 };
-
 
 double equal(Narrator n1,Narrator n2);
 
