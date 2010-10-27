@@ -8,6 +8,7 @@
     * libmysqlcppconn
     * libmysqlcppconn-dev
     * subversion
+    * qt-sdk
     * qtcreator
 
 == Details ==
