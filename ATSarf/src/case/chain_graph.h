@@ -5,50 +5,77 @@
 #include <assert.h>
 #include <QList>
 
-
-/*
-GHGNarratorNode
-{list of equal narrators pointer, cannonical_name, functions for:{(parent,children)}
-use this node structure when merging the 2 hadith chains
-hash them according to wither elements or string stripped and so on (for testing)
-  */
-
-class NarratorNode;
+class NarratorNodeIfc;
 class ChainNarratorNode;
-class ChainNarratorNodePtr;
+class ChainNarratorNodeIterator;
 class GraphNarratorNode;
 
 class Chain;
 class Narrator;
 class ChainPrim;
 
-typedef QPair<NarratorNode *, ChainNarratorNodePtr> NodeAddress;
+typedef QList<Chain *> ChainsContainer;
+typedef QPair<NarratorNodeIfc &, ChainNarratorNodeIterator &> NodeAddress;
 
-class NarratorNode //abstract interface
+
+#define nullNodeAddress NodeAddress(nullNarratorNodeIfc,nullChainNarratorNodeIterator)
+extern ChainsContainer chains;
+
+void fillRank(Narrator &n, int index, bool last);
+void fillRanks();
+
+class NarratorNodeIfc //abstract interface
 {
 public:
-	virtual NarratorNode * firstChild()=0;
-	virtual NarratorNode * nextChild(NarratorNode * current)=0;
-	virtual NarratorNode * firstParent()=0;
-	virtual NarratorNode * nextParent(NarratorNode * current)=0;
+	virtual NarratorNodeIfc & firstChild()=0; //TODO: change to return a reference
+	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & current)=0;
+	virtual NarratorNodeIfc & firstParent()=0;
+	virtual NarratorNodeIfc & nextParent(NarratorNodeIfc & current)=0;
 
-	virtual ChainNarratorNodePtr firstNarrator()=0;
-	virtual ChainNarratorNodePtr nextNarrator(ChainNarratorNodePtr current)=0;
+	virtual ChainNarratorNodeIterator & firstNarrator()=0;
+	virtual ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current)=0;
 
-	virtual NodeAddress prevInChain(ChainNarratorNodePtr)=0;
-	virtual NodeAddress nextInChain(ChainNarratorNodePtr)=0;
+	virtual NodeAddress prevInChain(ChainNarratorNodeIterator &)=0;
+	virtual NodeAddress nextInChain(ChainNarratorNodeIterator &)=0;
 
 	virtual QString CanonicalName()=0;
+
+	virtual bool isNull(){return false;}
+
+	NarratorNodeIfc & operator*()
+	{
+		return *this;
+	}
 };
 
-class ChainNarratorNode //TODO: merge this with Narrator class
+class NULLNarratorNodeIfc: public NarratorNodeIfc
+{
+	NarratorNodeIfc & firstChild();
+	NarratorNodeIfc & nextChild(NarratorNodeIfc & current);
+	NarratorNodeIfc & firstParent();
+	NarratorNodeIfc & nextParent(NarratorNodeIfc & current);
+
+	ChainNarratorNodeIterator & firstNarrator();
+	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current);
+
+	NodeAddress prevInChain(ChainNarratorNodeIterator &);
+	NodeAddress nextInChain(ChainNarratorNodeIterator &);
+
+	QString CanonicalName(){return QString::null;}
+
+	virtual bool isNull(){return true;}
+};
+
+extern NULLNarratorNodeIfc nullNarratorNodeIfc;
+
+class ChainNarratorNode
 {
 private:
 	GraphNarratorNode * narrNode;
 public:
-	NarratorNode * getCorrespondingNarratorNode()
+	NarratorNodeIfc & getCorrespondingNarratorNode()
 	{
-		return (NarratorNode *)narrNode;
+		return *(NarratorNodeIfc *)narrNode;
 	}
 	void  setCorrespondingNarratorNode(GraphNarratorNode * narrNode)
 	{
@@ -57,7 +84,7 @@ public:
 	QString CanonicalName();
 };
 
-class ChainNarratorNodePtr:public QList<ChainPrim *>::iterator, public NarratorNode
+class ChainNarratorNodeIterator:public QList<ChainPrim *>::iterator, public NarratorNodeIfc //Maybe later form by composition instead of inheretence
 {
 private:
 	ChainPrim* getChainPrimPtr()
@@ -69,34 +96,40 @@ private:
 		return *(ChainPrim*)(*(QList<ChainPrim *>::iterator)*this);
 	}
 public:
-	ChainNarratorNodePtr(){}
-	ChainNarratorNodePtr(Chain *ch, Narrator * n);
+	ChainNarratorNodeIterator(){}
+	ChainNarratorNodeIterator(Chain *ch, Narrator * n);
+	ChainNarratorNodeIterator(QList<ChainPrim *>::iterator it);
+	ChainNarratorNodeIterator & firstNarratorInChain();//TODO: create firstNarrator() equivalent to begin
+	Narrator & getNarrator()
+	{
+		return (Narrator &)getChainPrim();
+	}
 	ChainNarratorNode & operator*();
 	ChainNarratorNode * operator->()
 	{
 		return &this->operator *();
 	}
-	ChainNarratorNodePtr & operator++();
-	ChainNarratorNodePtr & operator--();
-	ChainNarratorNodePtr & prevInChain()
+	ChainNarratorNodeIterator & operator++();
+	ChainNarratorNodeIterator & operator--();
+	ChainNarratorNodeIterator & prevInChain()
 	{
 		return (this->operator --());
 	}
-	NarratorNode * firstChild();
-	NarratorNode * nextChild(NarratorNode * )
+	NarratorNodeIfc & firstChild();
+	NarratorNodeIfc & nextChild(NarratorNodeIfc & )
 	{
-		return NULL;
+		return nullNarratorNodeIfc;
 	}
-	NarratorNode * firstParent();
-	NarratorNode * nextParent(NarratorNode * )
+	NarratorNodeIfc & firstParent();
+	NarratorNodeIfc & nextParent(NarratorNodeIfc & )
 	{
-		return NULL;
+		return nullNarratorNodeIfc;
 	}
-	ChainNarratorNodePtr firstNarrator();
-	ChainNarratorNodePtr nextNarrator(ChainNarratorNodePtr);
-	NodeAddress prevInChain(ChainNarratorNodePtr node);
-	NodeAddress nextInChain(ChainNarratorNodePtr node);
-	ChainNarratorNodePtr & nextInChain()
+	ChainNarratorNodeIterator & firstNarrator();
+	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator &);
+	NodeAddress prevInChain(ChainNarratorNodeIterator & node);
+	NodeAddress nextInChain(ChainNarratorNodeIterator & node);
+	ChainNarratorNodeIterator & nextInChain()
 	{
 		return (this->operator ++());
 	}
@@ -104,13 +137,13 @@ public:
 	{
 		return this->operator *().CanonicalName();
 	}
-	NarratorNode *  getCorrespondingNarratorNode()
+	NarratorNodeIfc &  getCorrespondingNarratorNode()
 	{
-		NarratorNode * narrNode=this->operator *().getCorrespondingNarratorNode();
-		if ( narrNode==NULL)
-			return this;
+		NarratorNodeIfc & narrNode=this->operator *().getCorrespondingNarratorNode();
+		if ( narrNode.isNull())
+			return *this;
 		else
-			return narrNode;
+			return *narrNode;
 	}
 	bool isFirst();
 	bool isLast();
@@ -121,7 +154,7 @@ public:
 	}
 };
 
-class NULLChainNarratorNodePtr: public ChainNarratorNodePtr
+class NULLChainNarratorNodeIterator: public ChainNarratorNodeIterator
 {
 public:
 	virtual bool isNULL()
@@ -130,62 +163,64 @@ public:
 	}
 };
 
-class GraphNarratorNode: public NarratorNode
+extern NULLChainNarratorNodeIterator nullChainNarratorNodeIterator;
+
+class GraphNarratorNode: public NarratorNodeIfc
 {
 private:
-	QList<ChainNarratorNodePtr>  equalnarrators;
+	QList<ChainNarratorNodeIterator>  equalnarrators;
 public:
-	GraphNarratorNode(ChainNarratorNodePtr nar1,ChainNarratorNodePtr nar2);
+	GraphNarratorNode(ChainNarratorNodeIterator nar1,ChainNarratorNodeIterator nar2);
 	GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2);
 	void addNarrator(Chain * chain1, Narrator * nar1);
-	void addNarrator(ChainNarratorNodePtr nar1);
-	NarratorNode * firstChild() //return iterator instead of NarratorNode
+	void addNarrator(ChainNarratorNodeIterator nar1);
+	NarratorNodeIfc & firstChild() //return iterator instead of NarratorNode
 	{
 		return (*((*(equalnarrators.begin())).nextInChain())).getCorrespondingNarratorNode();
 	}
-	NarratorNode * nextChild(NarratorNode * current)
+	NarratorNodeIfc & nextChild(NarratorNodeIfc & current)
 	{
-		assert(current->firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
+		assert(current.firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
 		//check if end reached
-		if (!(((ChainNarratorNodePtr *)current)->isLast()))
-			return current->nextNarrator(*(ChainNarratorNodePtr*)current).nextInChain().getCorrespondingNarratorNode();
+		if (!(((ChainNarratorNodeIterator &)current).isLast()))
+			return current.nextNarrator((ChainNarratorNodeIterator&)current).nextInChain().getCorrespondingNarratorNode();
 		else
-			return NULL;
+			return nullNarratorNodeIfc;
 	}
 
-	NarratorNode * firstParent()
+	NarratorNodeIfc & firstParent()
 	{
 		return (*((*(equalnarrators.begin())).prevInChain())).getCorrespondingNarratorNode();
 	}
-	NarratorNode * nextParent(NarratorNode * current)
+	NarratorNodeIfc & nextParent(NarratorNodeIfc & current)
 	{
-		assert(current->firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
+		assert(current.firstNarrator().isNULL());//=>  is ChainNarratorNodePtr
 		//check if end reached
-		if (!(((ChainNarratorNodePtr *)current)->isFirst()))
-			return current->nextNarrator(*(ChainNarratorNodePtr*)current).prevInChain().getCorrespondingNarratorNode();
+		if (!(((ChainNarratorNodeIterator &)current).isFirst()))
+			return current.nextNarrator((ChainNarratorNodeIterator &)current).prevInChain().getCorrespondingNarratorNode();
 		else
-			return NULL;
+			return nullNarratorNodeIfc;
 	}
-	ChainNarratorNodePtr firstNarrator()
+	ChainNarratorNodeIterator & firstNarrator()
 	{
 		return *equalnarrators.begin();
 	}
-	ChainNarratorNodePtr nextNarrator(ChainNarratorNodePtr current)
+	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current)
 	{
 		if (!(current.isLast()))
 			return current.nextNarrator(current);
 		else
-			return NULLChainNarratorNodePtr();
+			return nullChainNarratorNodeIterator;
 	}
 
-	NodeAddress prevInChain(ChainNarratorNodePtr node)
+	NodeAddress prevInChain(ChainNarratorNodeIterator & node)
 	{
-		ChainNarratorNodePtr prev=node.prevInChain();
+		ChainNarratorNodeIterator prev=node.prevInChain();
 		return NodeAddress(prev->getCorrespondingNarratorNode(), prev);
 	}
-	NodeAddress nextInChain(ChainNarratorNodePtr node)
+	NodeAddress nextInChain(ChainNarratorNodeIterator & node)
 	{
-		ChainNarratorNodePtr next=node.nextInChain();
+		ChainNarratorNodeIterator next=node.nextInChain();
 		return NodeAddress(next->getCorrespondingNarratorNode (), next);
 	}
 

@@ -1,6 +1,10 @@
+#ifndef _NarrAbs_h
+#define _NarrAbs_h
+
 #include <QList>
 #include <QTextStream>
 #include <QFile>
+#include <QDebug>
 #include "logger.h"
 #include "chain_graph.h"
 
@@ -138,12 +142,19 @@ typedef struct Rank_
 	bool last:1;
 	int index:8;
 	int unused:22; //maybe use for chain number
+
+	void printRank()
+	{
+		out<<first<<"-"<<index<<"-"<<last<<"\n";
+		//qDebug()<<first<<"-"<<index<<"-"<<last<<"\n";
+	}
 } Rank;
 
 class Narrator : public ChainPrim, private ChainNarratorNode {
 private:
 	Rank rank; //to be used in ChainNarratorNodePtr
-	friend void fillRank(Narrator n);
+	friend void fillRank(Narrator & n, int index, bool last);
+
 public:
 	Rank getRank()
 	{
@@ -222,3 +233,4 @@ QDataStream &operator>>(QDataStream &in, ChainNarratorPrim &p);
 QDataStream &operator<<(QDataStream &out, const ChainNarratorPrim &p);
 
 int test_NarratorEquality(QString input_str);//just for testing purposes
+#endif
