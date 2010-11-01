@@ -17,6 +17,7 @@
 #include "sql_queries.h"
 #include "Retrieve_Template.h"
 #include "Search_by_item_locally.h"
+#include "chain_graph.h"
 #include <assert.h>
 
 	enum wordType { NAME, NRC,NMC};
@@ -1250,6 +1251,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #ifdef TEST_EQUAL_NARRATORS
 	QList<QList<Narrator *> > all_narrators;
 #endif
+	chains.clear();
 	while (!tester.atEnd())
 	{
 		Chain * s=new Chain(text);
@@ -1260,16 +1262,20 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			if (s->m_chain[i]->isNarrator())
 				chain_narrators.append((Narrator*)s->m_chain[i]);
 		all_narrators.append(chain_narrators);
+		chains.append(s);
 	#endif
 		hadith_out<<tester_Counter<<" ";
 		s->serialize(hadith_out);
 		tester_Counter++;
 		s->serialize(file_hadith);
+	#ifndef TEST_EQUAL_NARRATORS
 		delete s;
+	#endif
 	}
 	chainOutput.close();
 	f.close();
 #ifdef TEST_EQUAL_NARRATORS
+	fillRanks();
 	QList <QList< QList< QList<double> > > > equality_value;
 	for (int c1=0;c1<all_narrators.count();c1++)
 	{

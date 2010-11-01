@@ -1,101 +1,173 @@
 #include "chain_graph.h"
 #include "narrator_abstraction.h"
 
+NULLChainNarratorNodeIterator nullChainNarratorNodeIterator;
+NULLNarratorNodeIfc nullNarratorNodeIfc;
+ChainsContainer chains;
+
+NarratorNodeIfc & NULLNarratorNodeIfc::firstChild()
+{
+	return nullNarratorNodeIfc;
+}
+NarratorNodeIfc & NULLNarratorNodeIfc::nextChild(NarratorNodeIfc &)
+{
+	return nullNarratorNodeIfc;
+}
+NarratorNodeIfc & NULLNarratorNodeIfc::firstParent()
+{
+	return nullNarratorNodeIfc;
+}
+NarratorNodeIfc & NULLNarratorNodeIfc::nextParent(NarratorNodeIfc & )
+{
+	return nullNarratorNodeIfc;
+}
+ChainNarratorNodeIterator & NULLNarratorNodeIfc::firstNarrator()
+{
+	return nullChainNarratorNodeIterator;
+}
+ChainNarratorNodeIterator & NULLNarratorNodeIfc::nextNarrator(ChainNarratorNodeIterator & )
+{
+	return nullChainNarratorNodeIterator;
+}
+NodeAddress NULLNarratorNodeIfc::prevInChain(ChainNarratorNodeIterator &)
+{
+	return nullNodeAddress;
+}
+NodeAddress NULLNarratorNodeIfc::nextInChain(ChainNarratorNodeIterator &)
+{
+	return nullNodeAddress;
+}
 QString ChainNarratorNode::CanonicalName()
 {
 	return ((Narrator*)this)->getString();
 }
-
-ChainNarratorNode & ChainNarratorNodePtr::operator*()
+ChainNarratorNode & ChainNarratorNodeIterator::operator*()
 {
 	ChainPrim & curr=getChainPrim();
 	assert (curr.isNarrator());
 	return (ChainNarratorNode &)curr;
 }
-ChainNarratorNodePtr & ChainNarratorNodePtr::operator++()
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator++()
 {
 	while (getChainPrimPtr()->isNarrator() && !isLast())
 		++(*this);
 	return *this;//check if this calls operator *() or not
 }
 
-ChainNarratorNodePtr & ChainNarratorNodePtr::operator--()
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator--()
 {
 	while (getChainPrimPtr()->isNarrator() && !isLast())
 		--(*this);
 	return *this;//check if this calls operator *() or not
 }
-bool ChainNarratorNodePtr::isFirst()
+bool ChainNarratorNodeIterator::isFirst()
 {
 	return ((Narrator*)getChainPrimPtr())->getRank().first;
 }
 
-bool ChainNarratorNodePtr::isLast()
+bool ChainNarratorNodeIterator::isLast()
 {
 	return ((Narrator*)getChainPrimPtr())->getRank().last;
 }
-int ChainNarratorNodePtr::getIndex()
+int ChainNarratorNodeIterator::getIndex()
 {
 	return ((Narrator*)getChainPrimPtr())->getRank().index;
 }
 
-ChainNarratorNodePtr ChainNarratorNodePtr::firstNarrator()
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::firstNarrator()
 {
-	return NULLChainNarratorNodePtr();
+	return nullChainNarratorNodeIterator;
 }
-ChainNarratorNodePtr ChainNarratorNodePtr::nextNarrator(ChainNarratorNodePtr)
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::nextNarrator(ChainNarratorNodeIterator &)
 {
-	return NULLChainNarratorNodePtr();
+	return nullChainNarratorNodeIterator;
 }
 
-NarratorNode * ChainNarratorNodePtr::firstChild()
+NarratorNodeIfc & ChainNarratorNodeIterator::firstChild()
 {
-	return  &nextInChain();
+	return  nextInChain();
 }
-NarratorNode * ChainNarratorNodePtr::firstParent()
+NarratorNodeIfc & ChainNarratorNodeIterator::firstParent()
 {
-	return  &prevInChain();
+	return  prevInChain();
 }
-NodeAddress ChainNarratorNodePtr::prevInChain(ChainNarratorNodePtr node)
+NodeAddress ChainNarratorNodeIterator::prevInChain(ChainNarratorNodeIterator & node)
 {
 	assert (node==*this);
-	ChainNarratorNodePtr prev=--node;
+	ChainNarratorNodeIterator prev=--node;
 	if (!prev.isNULL())
 		return NodeAddress(prev->getCorrespondingNarratorNode(), prev);
 	else
-		return NodeAddress(NULL,NULLChainNarratorNodePtr());
+		return nullNodeAddress;
 }
-NodeAddress ChainNarratorNodePtr::nextInChain(ChainNarratorNodePtr node)
+NodeAddress ChainNarratorNodeIterator::nextInChain(ChainNarratorNodeIterator & node)
 {
 	assert (node==*this);
-	ChainNarratorNodePtr next=--node;
+	ChainNarratorNodeIterator next=--node;
 	if (!next.isNULL())
 		return NodeAddress(next->getCorrespondingNarratorNode (), next);
 	else
-		return NodeAddress(NULL,NULLChainNarratorNodePtr());
+		return nullNodeAddress;
 }
-ChainNarratorNodePtr::ChainNarratorNodePtr(Chain *ch, Narrator * n):QList<ChainPrim *>::iterator(ch->m_chain.begin()+n->getRank().index)
+ChainNarratorNodeIterator::ChainNarratorNodeIterator(Chain *ch, Narrator * n)//change to refernce
 {
-
+	QList<ChainPrim *>::iterator (ch->m_chain.begin()+n->getRank().index);
 }
-GraphNarratorNode::GraphNarratorNode(ChainNarratorNodePtr nar1,ChainNarratorNodePtr nar2)
+ChainNarratorNodeIterator::ChainNarratorNodeIterator(QList<ChainPrim *>::iterator itr):QList<ChainPrim *>::iterator (itr)
+{
+}
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::firstNarratorInChain()
+{
+	if (getChainPrim().isNarrator())
+		return *this;
+	else
+		return this->operator ++();
+}
+GraphNarratorNode::GraphNarratorNode(ChainNarratorNodeIterator nar1,ChainNarratorNodeIterator nar2)
 {
 	equalnarrators.append(nar1);
 	equalnarrators.append(nar2);
 }
 GraphNarratorNode::GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2)
 {
-	ChainNarratorNodePtr c1(chain1,nar1);
-	ChainNarratorNodePtr c2(chain2,nar2);
+	ChainNarratorNodeIterator c1(chain1,nar1);
+	ChainNarratorNodeIterator c2(chain2,nar2);
 	equalnarrators.append(c1);
 	equalnarrators.append(c2);
 }
 void GraphNarratorNode::addNarrator(Chain * chain, Narrator * nar)
 {
-	ChainNarratorNodePtr c(chain,nar);
+	ChainNarratorNodeIterator c(chain,nar);
 	equalnarrators.append(c);
 }
-void GraphNarratorNode::addNarrator(ChainNarratorNodePtr nar)
+void GraphNarratorNode::addNarrator(ChainNarratorNodeIterator nar)
 {
 	equalnarrators.append(nar);
+}
+
+void fillRank(Narrator &n, int index, bool last)
+{
+	n.rank.index=index;
+	n.rank.last=last;
+	n.rank.first=(index==0);
+}
+void fillRanks()
+{
+	for (int i=0;i<chains.count();i++)
+	{
+		int size=chains.at(i)->m_chain.count(),index=0;
+		Narrator* n;
+		for (int j=0;j<size;j++)
+		{
+			if (chains.at(i)->m_chain[j]->isNarrator())
+			{
+				//qDebug()<<chains.at(i)->m_chain[j]->getString()<<"\n";
+				n=(Narrator *)(chains.at(i)->m_chain[j]);
+				fillRank(*n,index,j==size-1);
+				n->getRank().printRank();
+				index++;
+			}
+		}
+		fillRank(*n,index-1,true);
+	}
 }
