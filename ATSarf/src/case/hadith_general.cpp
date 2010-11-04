@@ -1276,6 +1276,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	f.close();
 #ifdef TEST_EQUAL_NARRATORS
 	fillRanks();
+#if 0
 	QList <QList< QList< QList<double> > > > equality_value;
 	for (int c1=0;c1<all_narrators.count();c1++)
 	{
@@ -1308,6 +1309,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			out <<equality_value[0][1][n1][n2]<<" ";
 		out<<"\n";
 	}
+#else
+	test_NarratorEquality("");
+#endif
 #endif
 
 #endif
