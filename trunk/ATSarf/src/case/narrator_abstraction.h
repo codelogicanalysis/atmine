@@ -141,11 +141,11 @@ typedef struct Rank_
 	bool first:1;
 	bool last:1;
 	int index:8;
-	int unused:22; //maybe use for chain number
+	int chain_num:22; //maybe use for chain number
 
 	void printRank()
 	{
-		out<<first<<"-"<<index<<"-"<<last<<"\n";
+		out<<first<<"-"<<index<<"-"<<last<<"-"<<chain_num<<"\n";
 		//qDebug()<<first<<"-"<<index<<"-"<<last<<"\n";
 	}
 } Rank;
@@ -153,7 +153,7 @@ typedef struct Rank_
 class Narrator : public ChainPrim, private ChainNarratorNode {
 private:
 	Rank rank; //to be used in ChainNarratorNodePtr
-	friend void fillRank(Narrator & n, int index, bool last);
+	friend void fillRank(Narrator & n, int index, bool last, int chain_num);
 
 public:
 	Rank getRank()
@@ -190,7 +190,7 @@ public:
     virtual bool operator == (Narrator & rhs) const {
         return getString() == rhs.getString(); }
 
-    virtual double equals(Narrator & rhs) const;
+	virtual double equals(const Narrator & rhs) const;
 };
 
 class Chain: public ChainNarratorPrim {
@@ -227,10 +227,8 @@ public:
 
 };
 
-double equal(Narrator n1,Narrator n2);
+double equal(const Narrator & n1,const Narrator & n2);
 
 QDataStream &operator>>(QDataStream &in, ChainNarratorPrim &p);
 QDataStream &operator<<(QDataStream &out, const ChainNarratorPrim &p);
-
-int test_NarratorEquality(QString input_str);//just for testing purposes
 #endif

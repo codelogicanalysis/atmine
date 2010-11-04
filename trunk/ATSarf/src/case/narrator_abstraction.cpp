@@ -389,7 +389,7 @@ public:
 
 typedef Triplet<NamePrim,NamePrim, int> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
-double getdistance(Narrator & n1,Narrator & n2)
+double getdistance(const Narrator & n1,const Narrator & n2)
 {
 	double dist=1, delta=0.4;
 	QList<NamePrim> Names1,Names2;
@@ -540,17 +540,12 @@ double getdistance(Narrator & n1,Narrator & n2)
 	display("\n");
 	return min(max(dist-equal_conns.count()*delta/2,0.0),1.0);
 }
-double equal(Narrator n1,Narrator n2)
+double equal(const Narrator & n1,const  Narrator  & n2)
 {
 	return 1 - getdistance(n1,n2);
 }
 
-double Narrator::equals(Narrator & rhs) const
+double Narrator::equals(const Narrator & rhs) const
 {
     return equal(*this,rhs);
-}
-
-int test_NarratorEquality(QString input_str)
-{
-	return 0;
 }

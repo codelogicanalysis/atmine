@@ -111,6 +111,8 @@ public:
 	}
 	ChainNarratorNodeIterator & operator++();
 	ChainNarratorNodeIterator & operator--();
+	ChainNarratorNodeIterator & operator+(int);
+	ChainNarratorNodeIterator & operator-(int);
 	ChainNarratorNodeIterator & prevInChain()
 	{
 		return (this->operator --());
@@ -148,6 +150,7 @@ public:
 	bool isFirst();
 	bool isLast();
 	int getIndex();
+	int getChainNum();
 	virtual bool isNULL()
 	{
 		return false;
@@ -170,10 +173,10 @@ class GraphNarratorNode: public NarratorNodeIfc
 private:
 	QList<ChainNarratorNodeIterator>  equalnarrators;
 public:
-	GraphNarratorNode(ChainNarratorNodeIterator nar1,ChainNarratorNodeIterator nar2);
+	GraphNarratorNode(ChainNarratorNodeIterator & nar1,ChainNarratorNodeIterator & nar2);
 	GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2);
 	void addNarrator(Chain * chain1, Narrator * nar1);
-	void addNarrator(ChainNarratorNodeIterator nar1);
+	void addNarrator(ChainNarratorNodeIterator & nar1);
 	NarratorNodeIfc & firstChild() //return iterator instead of NarratorNode
 	{
 		return (*((*(equalnarrators.begin())).nextInChain())).getCorrespondingNarratorNode();
@@ -243,5 +246,7 @@ public:
 	}
 
 };
+
+int test_NarratorEquality(QString input_str);//just for testing purposes
 
 #endif // CHAIN_GRAPH_H
