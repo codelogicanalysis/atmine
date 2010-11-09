@@ -42,10 +42,11 @@ public:
 
 	virtual bool isNull(){return false;}
 
-	NarratorNodeIfc & operator*()
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num)=0;
+	/*NarratorNodeIfc & operator*()
 	{
 		return *this;
-	}
+	}*/
 };
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
@@ -64,6 +65,7 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc
 	QString CanonicalName(){return QString::null;}
 
 	virtual bool isNull(){return true;}
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num);
 };
 
 extern NULLNarratorNodeIfc nullNarratorNodeIfc;
@@ -99,7 +101,7 @@ public:
 	ChainNarratorNodeIterator(){}
 	ChainNarratorNodeIterator(Chain *ch, Narrator * n);
 	ChainNarratorNodeIterator(QList<ChainPrim *>::iterator it);
-	ChainNarratorNodeIterator & firstNarratorInChain();//TODO: create firstNarrator() equivalent to begin
+	ChainNarratorNodeIterator & nearestNarratorInChain(bool next=true);//TODO: create firstNarrator() equivalent to begin
 	Narrator & getNarrator()
 	{
 		return (Narrator &)getChainPrim();
@@ -145,7 +147,7 @@ public:
 		if ( narrNode.isNull())
 			return *this;
 		else
-			return *narrNode;
+			return narrNode;
 	}
 	bool isFirst();
 	bool isLast();
@@ -155,6 +157,7 @@ public:
 	{
 		return false;
 	}
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num);
 };
 
 class NULLChainNarratorNodeIterator: public ChainNarratorNodeIterator
@@ -243,6 +246,13 @@ public:
 			return equalnarrators[index].CanonicalName();
 		else
 			return "";
+	}
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num)
+	{
+		for (int i=0;i<equalnarrators.size();i++)
+			if (equalnarrators[i].getChainNum()==chain_num)
+				return equalnarrators[i];
+		return nullChainNarratorNodeIterator;
 	}
 
 };

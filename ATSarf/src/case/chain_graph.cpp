@@ -1,6 +1,8 @@
 #include "chain_graph.h"
 #include "narrator_abstraction.h"
 
+#define min(a,b) a>b?b:a
+
 NULLChainNarratorNodeIterator nullChainNarratorNodeIterator;
 NULLNarratorNodeIfc nullNarratorNodeIfc;
 ChainsContainer chains;
@@ -37,6 +39,10 @@ NodeAddress NULLNarratorNodeIfc::nextInChain(ChainNarratorNodeIterator &)
 {
 	return nullNodeAddress;
 }
+ChainNarratorNodeIterator & NULLNarratorNodeIfc::getChainNodeItrInChain(int)
+{
+	return nullChainNarratorNodeIterator;
+}
 QString ChainNarratorNode::CanonicalName()
 {
 	return ((Narrator*)this)->getString();
@@ -47,17 +53,17 @@ ChainNarratorNode & ChainNarratorNodeIterator::operator*()
 	assert (curr.isNarrator());
 	return (ChainNarratorNode &)curr;
 }
-ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator++()
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator++() //TODO: note this is recursive and as wanted
 {
 	while (getChainPrimPtr()->isNarrator() && !isLast())
-		++(*this);
+		++(*(QList<ChainPrim*>::iterator *)this);
 	return *this;//check if this calls operator *() or not
 }
 
 ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator--()
 {
 	while (getChainPrimPtr()->isNarrator() && !isLast())
-		--(*this);
+		--(*(QList<ChainPrim*>::iterator*)this);
 	return *this;//check if this calls operator *() or not
 }
 
@@ -98,7 +104,13 @@ ChainNarratorNodeIterator & ChainNarratorNodeIterator::nextNarrator(ChainNarrato
 {
 	return nullChainNarratorNodeIterator;
 }
-
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::getChainNodeItrInChain(int chain_num)
+{
+	if (getChainNum()==chain_num)
+		return *this;
+	else
+		return nullChainNarratorNodeIterator;
+}
 NarratorNodeIfc & ChainNarratorNodeIterator::firstChild()
 {
 	return  nextInChain();
@@ -132,12 +144,24 @@ ChainNarratorNodeIterator::ChainNarratorNodeIterator(Chain *ch, Narrator * n)//c
 ChainNarratorNodeIterator::ChainNarratorNodeIterator(QList<ChainPrim *>::iterator itr):QList<ChainPrim *>::iterator (itr)
 {
 }
-ChainNarratorNodeIterator & ChainNarratorNodeIterator::firstNarratorInChain()
+ChainNarratorNodeIterator & ChainNarratorNodeIterator::nearestNarratorInChain(bool next)
 {
 	if (getChainPrim().isNarrator())
 		return *this;
 	else
-		return this->operator ++();
+	{
+		if (next)
+			if (!isLast())
+				this->operator ++();
+			else
+				return nullChainNarratorNodeIterator;
+		else
+			if (!isFirst())
+				this->operator --();
+			else
+				return nullChainNarratorNodeIterator;
+		return nearestNarratorInChain(next);
+	}
 }
 GraphNarratorNode::GraphNarratorNode(ChainNarratorNodeIterator & nar1,ChainNarratorNodeIterator & nar2)
 {
@@ -205,7 +229,7 @@ public:
 	//int traversal_num;
 	bool checkStepEqualChains(ChainNarratorNodeIterator & it)
 	{
-		for (int j=0;j<radius && j<chains.at(curr_itr.getChainNum())->m_chain.size();j++)
+		for (int j=0;j<radius && (QList<ChainPrim*>::iterator)(curr_itr+j)!=chains.at(curr_itr.getChainNum())->m_chain.end();j++)
 		{
 			if (equal((curr_itr+j).getNarrator(),it.getNarrator())>=threshold)
 			{
@@ -240,8 +264,27 @@ public:
 	}
 };
 
+void mergeNodes(ChainNarratorNodeIterator & n1,ChainNarratorNodeIterator & n2)
+{
+	if (n1.getCorrespondingNarratorNode().isNull() && n2.getCorrespondingNarratorNode().isNull())
+		new GraphNarratorNode(n1,n2); //dont delete
+	else if (!n1.getCorrespondingNarratorNode().isNull())
+		((GraphNarratorNode &)(n1.getCorrespondingNarratorNode())).addNarrator(n2);
+	else if (!n2.getCorrespondingNarratorNode().isNull())
+		((GraphNarratorNode &)(n2.getCorrespondingNarratorNode())).addNarrator(n1);
+	else if (&n2.getCorrespondingNarratorNode()!=&n1.getCorrespondingNarratorNode())
+	{
+		GraphNarratorNode & g_node=(GraphNarratorNode &)(n2.getCorrespondingNarratorNode());
+		GraphNarratorNode * dlt_g_node= &(GraphNarratorNode &)(n1.getCorrespondingNarratorNode());
+		for (ChainNarratorNodeIterator & c_node=n1.firstNarrator();!c_node.isNULL();c_node=n1.nextNarrator(c_node))
+			g_node.addNarrator(c_node);
+		delete dlt_g_node;
+	}
+}
+
 int test_NarratorEquality(QString)
 {
+#if 0
 	//find the max_size of chains
 	int max_size=0;
 	for (int i=0;i<chains.size();i++)
@@ -336,5 +379,56 @@ int test_NarratorEquality(QString)
 			}
 		}
 	}*/
+#else
+	int needle=0, offset=-1;
+	for (int i=0;i<<chains.size();i++)
+	{
+		Chain & c1= *chains.at(i);
+		for (int k=i+1;k<chains.size();k++)
+		{
+			Chain & c2= *chains.at(k);
+			needle=0;
+			offset=-1;
+			int j=0;
+			ChainNarratorNodeIterator n1(c1.m_chain.begin());
+			ChainNarratorNodeIterator c1_end=ChainNarratorNodeIterator(c1.m_chain.end()).nearestNarratorInChain(false);
+			for (n1=n1.nearestNarratorInChain();n1!=c1_end;++n1)
+			{
+				int u=min(offset+1,needle-radius);
+				u=u>0?u:0;
+				bool match=false;
+				ChainNarratorNodeIterator n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
+				if (!n3.isNull())
+				{
+					k++; //TODO: check if k or u??
+					n1=ChainNarratorNodeIterator(c1.m_chain.begin()).nearestNarratorInChain()+k;
+					u=n3.getIndex()+1;
+					needle=u;
+					offset=u-1;
+				}
+				ChainNarratorNodeIterator n2(c2.m_chain.begin());
+				n2=n2.nearestNarratorInChain();
+				ChainNarratorNodeIterator c2_end=ChainNarratorNodeIterator(c2.m_chain.end()).nearestNarratorInChain(false);
+				for (n2=n2+u;n2!=c2_end && u<needle +radius;u++)
+				{
+					if (equal(n1.getNarrator(),n2.getNarrator())>=threshold)
+					{
+						mergeNodes(n1,n2);
+						offset=u;
+						needle=++u; //TODO: check if correct
+						match=true;
+						++n2;
+						break;
+					}
+					++n2;
+				}
+				if (!match)
+					needle++;
+				j++;
+			}
+
+		}
+	}
+#endif
 	return 0;
 }
