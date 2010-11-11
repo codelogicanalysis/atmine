@@ -150,7 +150,7 @@ typedef struct Rank_
 	}
 } Rank;
 
-class Narrator : public ChainPrim, private ChainNarratorNode {
+class Narrator : public ChainPrim, public ChainNarratorNode {
 private:
 	Rank rank; //to be used in ChainNarratorNodePtr
 	friend void fillRank(Narrator & n, int index, bool last, int chain_num);

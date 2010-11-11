@@ -60,7 +60,7 @@ NarratorPrim::NarratorPrim(QString * hadith_text,long long m_start){
 //Narrator::Narrator(){
 //m_narrator=new  QList <NarratorPrim *> ();
 //}
-Narrator::Narrator(QString * hadith_text):ChainPrim(hadith_text){}
+Narrator::Narrator(QString * hadith_text):ChainPrim(hadith_text), ChainNarratorNode(){}
 bool Narrator::isNarrator() const
 {
 	return true;
