@@ -1,0 +1,4 @@
+-casting a pointer??
+-dynamic linking does not work except with pointers and references
+-children as indices
+-maybe 2 narrators result in same child or parent, in this case must not return same child twice on different indicies

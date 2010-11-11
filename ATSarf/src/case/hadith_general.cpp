@@ -1249,7 +1249,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	QDataStream tester(&chainOutput);
 	int tester_Counter=1;
 #ifdef TEST_EQUAL_NARRATORS
+#if 0
 	QList<QList<Narrator *> > all_narrators;
+#endif
 #endif
 	chains.clear();
 	while (!tester.atEnd())
@@ -1257,11 +1259,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		Chain * s=new Chain(text);
 		s->deserialize(tester);
 	#ifdef TEST_EQUAL_NARRATORS
+	#if 0
 		QList<Narrator*> chain_narrators;
 		for (int i=0;i<s->m_chain.count();i++)
 			if (s->m_chain[i]->isNarrator())
 				chain_narrators.append((Narrator*)s->m_chain[i]);
 		all_narrators.append(chain_narrators);
+	#endif
 		chains.append(s);
 	#endif
 		hadith_out<<tester_Counter<<" ";
@@ -1275,7 +1279,6 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	chainOutput.close();
 	f.close();
 #ifdef TEST_EQUAL_NARRATORS
-	fillRanks();
 #if 0
 	QList <QList< QList< QList<double> > > > equality_value;
 	for (int c1=0;c1<all_narrators.count();c1++)
