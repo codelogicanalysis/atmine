@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow)
 {
 	m_ui->setupUi(this);
-	m_ui->label_5->setPixmap(QPixmap("./sarf33.bmp"));
+	//m_ui->hadith_chain->setPixmap(QPixmap("./sarf33.bmp"));
 	//m_ui->pushButton->setAutoDefault(false);
 	//connect((QObject*)m_ui->MainWindow,SIGNAL(destroyed())),(QObject*)m_ui,SLOT(do_it()));
 }
@@ -43,10 +43,24 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-	start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
+	if (!m_ui->chk_testing->isChecked())
+		start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
+	else
+		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
+#ifdef TEST_EQUAL_NARRATORS
+if (m_ui->checkBox->isChecked())
+{
+	try{
+		system("dot -Tsvg graph.dot -o graph.svg");
+		m_ui->hadith_chain->setPixmap(QPixmap("./graph.svg"));
+	}
+	catch(int i)
+	{}
+}
+#endif
 #if 0
 	if (hadith_str.length()>200)
 	{

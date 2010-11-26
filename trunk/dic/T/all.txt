@@ -1,0 +1,11 @@
+يوم	يَوْم	Ndu	day	yawom/NOUN	yawom_1
+أيام	أَيّام	N	days	>ay~Am/NOUN	yawom_1
+ايام	أَيّام	N	days	>ay~Am/NOUN	yawom_1
+يوما	يَوْماً	FW-Wa	some day	yawomAF/ADV	yawom_2
+اليوم	الْيَوْمَ	FW-Wa	today	Aloyawoma/ADV	yawom_3
+يوم	يَوْم	N0	Youm	yawom/NOUN_PROP	yawom_4
+يومئذ	يَوْمَئِذٍ	FW-Wa	on that day	yawoma}i*K/ADV	yawoma}i*K_1
+يومذاك	يَوْمَذاك	FW-Wa	on that day	yawoma*Ak/ADV	yawoma*Ak_1
+يومي	يَوْمِيّ	NF	daily/per diem/on a daily basis	yawomiy~/ADV	yawomiy~_1
+يومي	يَوْمِيّ	N-ap	daily	yawomiy~/ADJ	yawomiy~_1
+

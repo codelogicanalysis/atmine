@@ -8,6 +8,8 @@
 #include <QPair>
 #include <QFile>
 #include "logger.h"
+#include <QDebug>
+#include "reference.h"
 
 
 class NarratorNodeIfc;
@@ -25,6 +27,7 @@ class ChainPrim;
 typedef QList<Chain *> ChainsContainer;
 typedef QPair<NarratorNodeIfc &, ChainNarratorNodeIterator &> NodeAddress;
 typedef QList<GraphNarratorNode *> NarratorNodesList;
+typedef Reference<NarratorNodeIfc> NarratorNodeIfcRfc;
 
 
 #define nullNodeAddress NodeAddress(nullNarratorNodeIfc,nullChainNarratorNodeIterator)
@@ -41,13 +44,13 @@ void buildGraph(ChainsContainer & chs);
 class NarratorNodeIfc //abstract interface
 {
 public:
-	virtual NarratorNodeIfc & firstChild()=0; //TODO: change to return a reference
+	virtual NarratorNodeIfc & firstChild()=0;
 	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & current)=0;
 	virtual NarratorNodeIfc & firstParent()=0;
 	virtual NarratorNodeIfc & nextParent(NarratorNodeIfc & current)=0;
 
 	virtual int getNumChildren()=0;
-	virtual NarratorNodeIfc & getChild(int index)=0;
+	virtual NarratorNodeIfcRfc getChild(int index)=0;
 
 	virtual ChainNarratorNodeIterator & firstNarrator()=0;
 	virtual ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current)=0;
@@ -71,7 +74,7 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc
 	NarratorNodeIfc & nextParent(NarratorNodeIfc & current);
 
 	int getNumChildren();
-	NarratorNodeIfc & getChild(int index);
+	NarratorNodeIfcRfc getChild(int index);
 
 	ChainNarratorNodeIterator & firstNarrator();
 	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current);
@@ -104,7 +107,7 @@ public:
 	QString CanonicalName();
 	virtual QString toString()
 	{
-		return "(\""+CanonicalName()+"\"-narrNode:"+(long)narrNode+")";
+		return "("+CanonicalName()+")";
 	}
 };
 
@@ -120,6 +123,7 @@ private:
 	{
 		return *getChainPrimPtr();
 	}
+	friend class GraphNarratorNode;
 public:
 	ChainNarratorNodeIterator(){}
 	ChainNarratorNodeIterator(Chain *ch, Narrator * n);
@@ -155,10 +159,10 @@ public:
 		else
 			return 0;
 	}
-	NarratorNodeIfc & getChild(int index)
+	NarratorNodeIfcRfc getChild(int index)
 	{
 		assert(index==0);
-		return nextInChain();
+		return NarratorNodeIfcRfc(nextInChain(),true);
 	}
 
 	NarratorNodeIfc & firstParent();
@@ -170,10 +174,10 @@ public:
 	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator &);
 	NodeAddress prevInChain(ChainNarratorNodeIterator & node);
 	NodeAddress nextInChain(ChainNarratorNodeIterator & node);
-	ChainNarratorNodeIterator & nextInChain()
-	{
+	ChainNarratorNodeIterator & nextInChain();
+	/*{
 		return (this->operator ++());
-	}
+	}*/
 	QString CanonicalName()
 	{
 		return (*this)->CanonicalName();
@@ -231,18 +235,17 @@ public:
 		else
 			return nullNarratorNodeIfc;
 	}
-
 	int getNumChildren()
 	{
 		return equalnarrators.size();
 	}
-	NarratorNodeIfc & getChild(int index)
+	NarratorNodeIfcRfc getChild(int index)
 	{
 		assert(index>=0 && index<getNumChildren());
-		ChainNarratorNodeIterator & c=equalnarrators[index].nextInChain();
-		return (c.isNull()?c:c.getCorrespondingNarratorNode());
+		ChainNarratorNodeIterator & c=*(new ChainNarratorNodeIterator(equalnarrators[index]));
+		++c;
+		return (c.isNull()?NarratorNodeIfcRfc(c,true):NarratorNodeIfcRfc(c.getCorrespondingNarratorNode(),false));
 	}
-
 	NarratorNodeIfc & firstParent()
 	{
 		return (*((*(equalnarrators.begin())).prevInChain())).getCorrespondingNarratorNode();
@@ -267,7 +270,6 @@ public:
 		else
 			return nullChainNarratorNodeIterator;
 	}
-
 	NodeAddress prevInChain(ChainNarratorNodeIterator & node)
 	{
 		ChainNarratorNodeIterator prev=node.prevInChain();
@@ -278,21 +280,26 @@ public:
 		ChainNarratorNodeIterator next=node.nextInChain();
 		return NodeAddress(next.getCorrespondingNarratorNode (), next);
 	}
-
 	QString CanonicalName()
 	{
-		int smallestsize=0, index=-1;
-		for (int i=0;i<equalnarrators.size();i++)
+		//qDebug()<<"---";
+		int smallestsize=equalnarrators[0].CanonicalName().size(), index=0;
+		//qDebug()<<"("<<equalnarrators[0].CanonicalName();
+		for (int i=1;i<equalnarrators.size();i++)
 		{
 			int size=equalnarrators[i].CanonicalName().size();
+			//qDebug()<<equalnarrators[i].CanonicalName();
 			if (smallestsize>size)
 			{
 				smallestsize=size;
 				index=i;
 			}
 		}
-		if (index>0)
+		if (index>=0)
+		{
+			//qDebug()<<")=>{"<<equalnarrators[index].CanonicalName()<<"}";
 			return equalnarrators[index].CanonicalName();
+		}
 		else
 			return "";
 	}
@@ -306,7 +313,7 @@ public:
 	}
 	virtual QString toString()
 	{
-		QString s=QString("[")+(long)this+":";
+		QString s=QString("[");
 		for (int i=0;i<equalnarrators.size();i++)
 			s+=equalnarrators[i].toString();
 		s+="]";
@@ -328,7 +335,11 @@ class NarratorNodeVisitor
 {
 private:
 	typedef QMap<GraphNarratorNode*,int> IDMap;
+	typedef QPair<ChainNarratorNode *,GraphNarratorNode*> Edge;
+	typedef QMap<Edge, bool> EdgeMap; //(chain, graph)
 	IDMap GraphNodesID;
+	EdgeMap edgeMap;
+
 	int last_id;
 	QFile * file;
 	QTextStream * dot_out;
@@ -344,7 +355,7 @@ private:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\", shape=box];\n"; //
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<</*n.toString()<<*/"\", shape=box];\n"; //
 			}
 			else
 				curr_id=it.value();
@@ -356,6 +367,20 @@ private:
 		return QString("c%1").arg(curr_id);
 	}
 public:
+	bool previouslyVisited( NarratorNodeIfc * g_node)//only for graph nodes
+	{
+		if (!g_node->isGraphNode())
+			return false; //No info
+		IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
+		return !(it==GraphNodesID.end());
+	}
+	bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
+	{
+		if (!n2->isGraphNode() || n1->isGraphNode())
+			return false; //No info
+		EdgeMap::iterator it=edgeMap.find(Edge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
+		return !(it==edgeMap.end());
+	}
 	virtual void initialize()
 	{
 		file=new QFile("graph.dot");
@@ -374,7 +399,10 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
 	{
 		QString s1=getID(n1), s2=getID(n2);
+		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
 		d_out<<s1<<"->"<<s2<<";\n";
+		if (n2.isGraphNode() && !n1.isGraphNode())
+			edgeMap.insert(Edge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
 	}
 	virtual void finish()
 	{
@@ -395,10 +423,13 @@ private:
 	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
+		//qDebug()<<"parent:"<<n.CanonicalName();
 		for (int i=0;i<size;i++)
 		{
-			NarratorNodeIfc & c=n.getChild(i);
-			if (!c.isNull())
+			NarratorNodeIfcRfc r=n.getChild(i);
+			NarratorNodeIfc & c=r.Rfc();
+			//qDebug()<<"child:"<<c.CanonicalName();
+			if (!c.isNull() && !visitor.previouslyVisited(&n, &c))
 			{
 				visitor.visit(n,c);
 				traverse(c,visitor);
