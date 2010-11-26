@@ -475,19 +475,138 @@ dbitvec addSource(QString table, int source_id, long long id , QString additiona
 		return INVALID_BITSET;
 	}
 }
-dbitvec addAbstractCategory(QString table, int abstract_category_id, long long id , QString additional_condition ,bool has_id)
+dbitvec addAbstractCategory(QString primary_condition,int abstract_category_id)
 {
 	if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
 		return INVALID_BITSET;
 	int bit_index=get_bitindex(abstract_category_id,abstract_category_ids);
 	if (bit_index>=0 && bit_index<max_sources)
-		return set_index_bitset(table,"abstract_categories",bit_index,id,additional_condition,has_id);
+		return set_index_bitset("stem_category","abstract_categories",bit_index,-1,primary_condition,false);
 	else
 	{
 		error << "Unexpected Error: abstract_category_id ="<<abstract_category_id<<"\n";
 		return INVALID_BITSET;
 	}
 
+}
+bool addAbstractCategory(QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description, QString POS)
+{
+#if 1 //if alef is first word and different form of alef the rawdata dont insert
+	if (raw_data.length()<name.length())
+		raw_data=name;
+	int i=0;
+	if (name.length()>0)
+		do
+		{
+			//qDebug()<<"o:"<<name;
+			if (alefs.contains(name[i]))
+			{
+				QString corresponding_part=getDiacriticword(i,i,raw_data);//must be one letter
+				assert(corresponding_part.length()>0);
+				if (name[i]!=corresponding_part[0])
+				{
+					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
+					assert(alefs.contains(corresponding_part[0]));
+					name[i]=corresponding_part[0];
+				}
+			}
+			//qDebug()<<"n:"<<name;
+		}while ((i=name.indexOf(' ',i)+1)>0 && i<name.length());
+#endif
+	QString table="stem";
+	QString item_category=QString("%1_category").arg(table);
+	if (table=="--")
+		return false; //must not reach here
+	if (!existsSOURCE(source_id))
+		return false;
+	if (abstract_ids!=NULL)
+	{
+		for (int i=0; i<abstract_ids->count();i++)
+			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(STEM))))
+			{
+				if (abstract_ids->operator [](i)!=-1)
+					warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
+				abstract_ids->removeAt(i);
+				i--;
+			}
+	}
+	QString stmt;
+	dbitvec cat_sources(max_sources),sources(max_sources),abstract_categories(max_sources);
+	cat_sources.reset();
+	sources.reset();
+	abstract_categories.reset();
+	long long item_id=getID(table,name);
+	long category_id =getID("category",category, QString("type=%1").arg((int)(STEM)));
+	long long description_id=getID("description",description,QString("type=%1").arg((int)(STEM)));
+	//update sources of category or insert it altogether if not there
+	//bool new_category=false;
+	if (category_id==-1)
+	{
+		error << "Category does not exist\n";
+		return false;
+	}
+	else
+	{
+		cat_sources=addSource("category",source_id,category_id);
+		if (cat_sources==INVALID_BITSET)
+		{
+			error << "Unexpected Error: Category must exist but this seems not the case\n";
+			return false;
+		}
+	}
+
+	int bit_index=get_bitindex(source_id,source_ids);
+	sources.setBit(bit_index);
+
+	// if item is there or not
+	if (item_id==-1)
+	{
+		error << "Item does not exist\n";
+		return false;
+	}
+	else
+	if (abstract_ids!=NULL)
+	{
+		for (int i=0; i<abstract_ids->count();i++)
+		{
+			int bit_index=get_bitindex(abstract_ids->operator [](i),abstract_category_ids);
+			if (!(bit_index>=0 && bit_index<max_sources))
+			{
+				error << "Unexpected Error: abstract_id ="<<abstract_ids->operator [](i)<<"\n";
+				return false;
+			}
+			abstract_categories.setBit(bit_index);
+		}
+	}
+	else
+	{
+		error<< "No categories provided\n";
+		return false;
+	}
+
+	QString primary_condition=QString("%1_id = '%2' AND category_id = '%3' AND raw_data='%4' AND description_id = %5 AND POS=\"%6\"").arg(table).arg(item_id).arg(category_id).arg(raw_data).arg(description_id).arg(POS);
+	if (existsEntry(item_category,-1,primary_condition,false))
+	{
+		sources=addSource(item_category,source_id,-1,primary_condition,false);
+		for (int i=0; i<abstract_ids->count();i++)
+			abstract_categories=addAbstractCategory(primary_condition,abstract_ids->at(i));
+		assert (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/); //assumed to mean row was modified
+		{
+			addSource(item_category,source_id,-1,primary_condition,false);
+			update_dates(source_id);
+			return true;
+		}
+	}
+	else //row does not exist
+	{
+		error<< "Entry does not exist\n";
+		return false;
+	}
+	//add a description entry first
+	description_id=insert_description(description,STEM);
+	perform_query(stmt);
+	update_dates(source_id);
+	return true;
 }
 /*long long getGrammarStem_id(QString table,int stem_id)
 {
@@ -790,7 +909,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
 		if (type==STEM)
 			for (int i=0; i<abstract_ids->count();i++)
-				abstract_categories=addAbstractCategory(item_category,abstract_ids->at(i),-1,primary_condition,false);
+				abstract_categories=addAbstractCategory(primary_condition,abstract_ids->at(i));
 		assert (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/); //assumed to mean row was modified
 		{
 			if (type==STEM)

@@ -50,7 +50,8 @@ dbitvec getSources(QString table,unsigned long long id=-1, QString additional_co
 int get_type_of_category(long category_id, item_types & type);
 bool get_types_of_rule(rules rule, item_types &t1, item_types &t2);
 dbitvec addSource(QString table, int source_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
-dbitvec addAbstractCategory(QString table, int abstract_category_id, long long id=-1 , QString additional_condition ="",bool has_id=true);
+dbitvec addAbstractCategory(QString primary_condition, int abstract_category_id);
+bool addAbstractCategory(QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description="", QString POS="");
 long insert_category(QString name, item_types type, dbitvec sources, bool isAbstract=false);//returns its id if already present and if names are equal but others are not, -1 is returned
 long insert_category(QString name, item_types type, int source_id, bool isAbstract=false);//returns its id if already present
 long long insert_description(QString name,item_types type);

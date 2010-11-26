@@ -168,14 +168,23 @@
      <string>GO!</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_5">
+   <widget class="QLabel" name="hadith_chain">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>550</x>
       <y>60</y>
-      <width>421</width>
-      <height>191</height>
+      <width>441</width>
+      <height>391</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+      <horstretch>255</horstretch>
+      <verstretch>255</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
      <string/>
@@ -187,7 +196,7 @@
      <bool>true</bool>
     </property>
     <property name="alignment">
-     <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox">
@@ -214,18 +223,18 @@
    <widget class="QTextBrowser" name="hadith_display">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>290</y>
-      <width>421</width>
-      <height>331</height>
+      <x>550</x>
+      <y>470</y>
+      <width>441</width>
+      <height>151</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>260</y>
+      <x>780</x>
+      <y>40</y>
       <width>121</width>
       <height>18</height>
      </rect>
@@ -279,6 +288,27 @@
     </property>
     <property name="text">
      <string>Fill</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chk_testing">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>40</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Bitstream Charter</family>
+      <pointsize>12</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Testing</string>
     </property>
    </widget>
   </widget>

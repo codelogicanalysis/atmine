@@ -88,4 +88,62 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	return 0;
 }
 
+int test(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith,ATMProgressIFC *m_ui)
+{
+	out.setString(&output_str);
+	out.setCodec("utf-8");
+	in.setString(&input_str);
+	in.setCodec("utf-8");
+	displayed_error.setString(&error_str);
+	displayed_error.setCodec("utf-8");
+	hadith_out.setString(&hadith_str);
+	hadith_out.setCodec("utf-8");
+
+	int source_id=insert_source("Lama and Kawthar Time Categories","Manual Work","Kawthar Ali & Lama Ghusn");
+	long abstract_Time=insert_category("TIME",STEM,dbitvec(max_sources),true); //returns id if already present
+	QString file_name="../../dic/T/all.txt";
+	QFile input(file_name);
+	if (!input.open(QIODevice::ReadWrite))
+	{
+		out << "Unexpected Error: File not found\n";
+		return 1;
+	}
+	QTextStream file(&input);
+	file.setCodec("utf-8");
+	int line_num=0;
+	while (!file.atEnd())
+	{
+		line_num++;
+		QString line=file.readLine(0);
+		if (line.isNull())
+		{
+			line_num--; //finished
+			break;
+		}
+		if (line.isEmpty()) //ignore empty lines if they exist
+			continue;
+		QList<long> * abstract_categories=new QList<long>();
+		abstract_categories->append(abstract_Time);
+		QStringList entries=line.split("\t",QString::KeepEmptyParts);
+		if (entries.size()!=6)
+		{
+			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			return -1;
+		}
+		QString item=entries[0];
+		QString raw_data=entries[1];
+		QString category=entries[2];
+		QString description=entries[3];
+		QString POS=entries[4];
+		if (!addAbstractCategory(item,raw_data,category,source_id,abstract_categories,description,POS))
+		{
+			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			return -1;
+		}
+	}
+	out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+	input.close();
+	return 0;
+}
+
 

@@ -49,7 +49,8 @@ HEADERS += util/text_handling.h \
     ../src/util/Ptr.h \
     ../src/common/node_info.h \
     ../src/common/solution_position.h \
-    ../src/case/chain_graph.h
+    ../src/case/chain_graph.h \
+	../src/util/reference.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -99,7 +100,6 @@ CONFIG += debug_and_release
 # QMAKE_CFLAGS += -O3
 # QMAKE_CXXFLAGS += -O3
 # QMAKE_LFLAGS += -O3
-
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed Nov 10 21:59:08 2010
+** Created: Fri Nov 26 17:27:06 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -38,13 +38,14 @@ public:
     QLabel *label_3;
     QLabel *label_2;
     QPushButton *pushButton;
-    QLabel *label_5;
+    QLabel *hadith_chain;
     QCheckBox *checkBox;
     QTextBrowser *hadith_display;
     QLabel *label_6;
     QProgressBar *progressBar;
     QPushButton *exit;
     QPushButton *fill;
+    QCheckBox *chk_testing;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -97,22 +98,28 @@ public:
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setGeometry(QRect(520, 0, 92, 28));
         pushButton->setFont(font1);
-        label_5 = new QLabel(centralwidget);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(570, 60, 421, 191));
-        label_5->setPixmap(QPixmap(QString::fromUtf8("../sarf33.bmp")));
-        label_5->setScaledContents(true);
-        label_5->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+        hadith_chain = new QLabel(centralwidget);
+        hadith_chain->setObjectName(QString::fromUtf8("hadith_chain"));
+        hadith_chain->setGeometry(QRect(550, 60, 441, 391));
+        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy.setHorizontalStretch(255);
+        sizePolicy.setVerticalStretch(255);
+        sizePolicy.setHeightForWidth(hadith_chain->sizePolicy().hasHeightForWidth());
+        hadith_chain->setSizePolicy(sizePolicy);
+        hadith_chain->setFrameShape(QFrame::NoFrame);
+        hadith_chain->setPixmap(QPixmap(QString::fromUtf8("../sarf33.bmp")));
+        hadith_chain->setScaledContents(true);
+        hadith_chain->setAlignment(Qt::AlignCenter);
         checkBox = new QCheckBox(centralwidget);
         checkBox->setObjectName(QString::fromUtf8("checkBox"));
         checkBox->setGeometry(QRect(620, 10, 91, 23));
         checkBox->setFont(font1);
         hadith_display = new QTextBrowser(centralwidget);
         hadith_display->setObjectName(QString::fromUtf8("hadith_display"));
-        hadith_display->setGeometry(QRect(570, 290, 421, 331));
+        hadith_display->setGeometry(QRect(550, 470, 441, 151));
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
-        label_6->setGeometry(QRect(570, 260, 121, 18));
+        label_6->setGeometry(QRect(780, 40, 121, 18));
         label_6->setFont(font1);
         progressBar = new QProgressBar(centralwidget);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
@@ -124,6 +131,10 @@ public:
         fill = new QPushButton(centralwidget);
         fill->setObjectName(QString::fromUtf8("fill"));
         fill->setGeometry(QRect(520, 30, 90, 27));
+        chk_testing = new QCheckBox(centralwidget);
+        chk_testing->setObjectName(QString::fromUtf8("chk_testing"));
+        chk_testing->setGeometry(QRect(430, 40, 91, 23));
+        chk_testing->setFont(font1);
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -138,11 +149,12 @@ public:
         label_3->setText(QApplication::translate("MainWindow", "Issues:", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("MainWindow", "Output:", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("MainWindow", "GO!", 0, QApplication::UnicodeUTF8));
-        label_5->setText(QString());
+        hadith_chain->setText(QString());
         checkBox->setText(QApplication::translate("MainWindow", "Hadith", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "Hadith Chains:", 0, QApplication::UnicodeUTF8));
         exit->setText(QApplication::translate("MainWindow", "exit", 0, QApplication::UnicodeUTF8));
         fill->setText(QApplication::translate("MainWindow", "Fill", 0, QApplication::UnicodeUTF8));
+        chk_testing->setText(QApplication::translate("MainWindow", "Testing", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
