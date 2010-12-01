@@ -43,7 +43,7 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-	if (!m_ui->chk_testing->isChecked())
+        if (!m_ui->chk_testing->isChecked())
 		start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
 	else
 		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);

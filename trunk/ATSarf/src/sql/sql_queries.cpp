@@ -477,7 +477,7 @@ dbitvec addSource(QString table, int source_id, long long id , QString additiona
 }
 dbitvec addAbstractCategory(QString primary_condition,int abstract_category_id)
 {
-	if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
+        if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
 		return INVALID_BITSET;
 	int bit_index=get_bitindex(abstract_category_id,abstract_category_ids);
 	if (bit_index>=0 && bit_index<max_sources)
