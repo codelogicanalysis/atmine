@@ -243,8 +243,18 @@ public:
 	{
 		assert(index>=0 && index<getNumChildren());
 		ChainNarratorNodeIterator & c=*(new ChainNarratorNodeIterator(equalnarrators[index]));
-		++c;
-		return (c.isNull()?NarratorNodeIfcRfc(c,true):NarratorNodeIfcRfc(c.getCorrespondingNarratorNode(),false));
+		if((++c).isNull())
+		{
+			delete &c;
+			return NarratorNodeIfcRfc(nullChainNarratorNodeIterator,false);
+		}
+		else
+		{
+			NarratorNodeIfc & n=c.getCorrespondingNarratorNode();
+			if (n.isGraphNode())
+				delete &c;
+			return NarratorNodeIfcRfc(n,!n.isGraphNode());
+		}
 	}
 	NarratorNodeIfc & firstParent()
 	{
@@ -334,11 +344,16 @@ public:
 class NarratorNodeVisitor
 {
 private:
-	typedef QMap<GraphNarratorNode*,int> IDMap;
-	typedef QPair<ChainNarratorNode *,GraphNarratorNode*> Edge;
-	typedef QMap<Edge, bool> EdgeMap; //(chain, graph)
-	IDMap GraphNodesID;
-	EdgeMap edgeMap;
+	typedef QMap<GraphNarratorNode*,int> G_IDMap;
+	typedef QMap<ChainNarratorNode*,int> C_IDMap;
+	typedef QPair<ChainNarratorNode *,GraphNarratorNode*> CGEdge;
+	typedef QPair<GraphNarratorNode *,GraphNarratorNode*> GGEdge;
+	typedef QMap<CGEdge, bool> CGEdgeMap; //(chain, graph)
+	typedef QMap<GGEdge, bool> GGEdgeMap; //(graph, graph)
+	G_IDMap GraphNodesID;
+	C_IDMap ChainNodesID;
+	CGEdgeMap cgEdgeMap;
+	GGEdgeMap ggEdgeMap;
 
 	int last_id;
 	QFile * file;
@@ -350,7 +365,7 @@ private:
 		int curr_id;
 		if (n.isGraphNode())
 		{
-			IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)&n);
+			G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)&n);
 			if (it==GraphNodesID.end())
 			{
 				curr_id=++last_id;
@@ -362,24 +377,42 @@ private:
 			return QString("g%1").arg(curr_id);
 		}
 		else
-			curr_id=++last_id;
-		d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\"]"<<";\n";
-		return QString("c%1").arg(curr_id);
+		{
+			C_IDMap::iterator it=ChainNodesID.find(&*(ChainNarratorNodeIterator&)n);
+			if (it==ChainNodesID.end())
+			{
+				curr_id=++last_id;
+				ChainNodesID.insert(&*(ChainNarratorNodeIterator&)n,curr_id);
+				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\"]"<<";\n";
+			}
+			else
+				curr_id=it.value();
+			return QString("c%1").arg(curr_id);
+		}
+
 	}
 public:
 	bool previouslyVisited( NarratorNodeIfc * g_node)//only for graph nodes
 	{
 		if (!g_node->isGraphNode())
 			return false; //No info
-		IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
+		G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
 		return !(it==GraphNodesID.end());
 	}
 	bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
 	{
-		if (!n2->isGraphNode() || n1->isGraphNode())
+		if (!n2->isGraphNode() )
 			return false; //No info
-		EdgeMap::iterator it=edgeMap.find(Edge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
-		return !(it==edgeMap.end());
+		if (!n1->isGraphNode())
+		{
+			CGEdgeMap::iterator it=cgEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
+			return !(it==cgEdgeMap.end());
+		}
+		else
+		{
+			GGEdgeMap::iterator it=ggEdgeMap.find(GGEdge((GraphNarratorNode*)n1,(GraphNarratorNode*)n2));
+			return !(it==ggEdgeMap.end());
+		}
 	}
 	virtual void initialize()
 	{
@@ -401,8 +434,13 @@ public:
 		QString s1=getID(n1), s2=getID(n2);
 		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
 		d_out<<s1<<"->"<<s2<<";\n";
-		if (n2.isGraphNode() && !n1.isGraphNode())
-			edgeMap.insert(Edge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+		if (n2.isGraphNode())
+		{
+			if (!n1.isGraphNode())
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+			else
+				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2),true);
+		}
 	}
 	virtual void finish()
 	{
@@ -428,7 +466,7 @@ private:
 		{
 			NarratorNodeIfcRfc r=n.getChild(i);
 			NarratorNodeIfc & c=r.Rfc();
-			//qDebug()<<"child:"<<c.CanonicalName();
+			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
 			if (!c.isNull() && !visitor.previouslyVisited(&n, &c))
 			{
 				visitor.visit(n,c);

@@ -88,7 +88,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	return 0;
 }
 
-int test(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith,ATMProgressIFC *m_ui)
+int test(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool /*hadith*/,ATMProgressIFC * /*m_ui*/)
 {
 	out.setString(&output_str);
 	out.setCodec("utf-8");

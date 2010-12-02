@@ -74,7 +74,10 @@ ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator++() //TODO: note
 	if (!isLast())
 		++(*(QList<ChainPrim*>::iterator *)this);
 	else
+	{
+		//TODO:check how to transform this to NULL else will remain as is
 		return nullChainNarratorNodeIterator;
+	}
 	while (!getChainPrimPtr()->isNarrator())
 		++(*(QList<ChainPrim*>::iterator *)this);
 	return *this;//check if this calls operator *() or not
@@ -324,19 +327,19 @@ public:
 void mergeNodes(ChainNarratorNodeIterator & n1,ChainNarratorNodeIterator & n2)
 {
 	if (n1->getCorrespondingNarratorNode().isNull() && n2->getCorrespondingNarratorNode().isNull())
-		//out<<(
+		out<<(
 			new GraphNarratorNode(n1,n2)
-				//)->toString()<<"\n"
+				)->toString()<<"\n"
 					; //dont delete
 	else if (!n1->getCorrespondingNarratorNode().isNull())
 	{
 		((GraphNarratorNode &)(n1.getCorrespondingNarratorNode())).addNarrator(n2);
-		//out<<((GraphNarratorNode &)(n1.getCorrespondingNarratorNode())).toString()<<"\n";
+		out<<((GraphNarratorNode &)(n1.getCorrespondingNarratorNode())).toString()<<"\n";
 	}
 	else if (!n2->getCorrespondingNarratorNode().isNull())
 	{
 		((GraphNarratorNode &)(n2.getCorrespondingNarratorNode())).addNarrator(n1);
-		//out<<((GraphNarratorNode &)(n2.getCorrespondingNarratorNode())).toString()<<"\n";
+		out<<((GraphNarratorNode &)(n2.getCorrespondingNarratorNode())).toString()<<"\n";
 	}
 	else if (&n2->getCorrespondingNarratorNode()!=&n1->getCorrespondingNarratorNode())
 	{
@@ -344,7 +347,7 @@ void mergeNodes(ChainNarratorNodeIterator & n1,ChainNarratorNodeIterator & n2)
 		GraphNarratorNode * dlt_g_node= &dynamic_cast<GraphNarratorNode &>(n1.getCorrespondingNarratorNode());
 		for (ChainNarratorNodeIterator & c_node=n1.firstNarrator();!c_node.isNull();c_node=n1.nextNarrator(c_node))
 			g_node.addNarrator(c_node);
-		//out<<g_node.toString()<<"\n";
+		out<<g_node.toString()<<"\n";
 		delete dlt_g_node;
 	}
 }
