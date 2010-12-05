@@ -71,6 +71,7 @@
 
 \begin{document}
 
+
 \pagestyle{fancy}
 %\lhead{}
 \chead{}
@@ -262,7 +263,8 @@ MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09}
 use machine learning and support vector machines (SVM) 
 to enhance the accuracy at the expense of efficiency.
 
-{\bf Hypothesis 1.} We hypothesize that many case studies, in particular relational
+{\bf Hypothesis 1.} We hypothesize that many case studies, 
+in particular relational
 case studies, do not require high accuracy from the 
 low level morphological analysis.
 The sophistication of the sought higher level query can eliminate 
@@ -351,7 +353,7 @@ captured by the formal rules,
 it is computationally expensive and enumerates all the possible
 solutions. 
 
-{\bf Contributions.} Up to our knowledge, CATARM will be the 
+{\bf Goals.} Up to our knowledge, CATARM will be the 
 first framework that tends to relational Arabic morphology 
 and text mining. 
 {\bf (1.)} CATARM will build a novel parametrized linguistic 
@@ -377,20 +379,25 @@ presented in Section~\ref{s:design:casestudies}.
 \section{Objectives and significance (max of 1 page) } 
 \label{s:objectives}
 
-This proposal aims at building  a relational Arabic text mining 
-framework with the following objectives.
+The current prevailing direction in research 
+in Arabic text mining and NLP focuses on machine translation from 
+Arabic to English. 
+A little attention is given to native Arabic text mining 
+problems and applications. 
+CATARM is a relational Arabic text mining 
+framework that tends to Arabic users 
+with the following objectives.
+
 \begin{itemize}\itemsep0pt
-\item CATARM tends to Arabic users and solves the
-problem of finding relations between Arabic documents. 
-\item CATARM builds a formal Arabic computational model
+\item CATARM will build a formal Arabic computational model
 using efficient and configurable data structures such as 
 finite state machines (FSM). 
-\item The framework will provide the user with a visual query 
+\item CATARM will provide the user with a visual query 
 language that makes it easy to enter relational queries. 
 The query language will also allow the framework to extract Arabic
 specific features from the query to simplify the linguistic 
 computational model. 
-\item The framework will use statistical models and techniques
+\item CATARM will use statistical models and techniques
 to infer language independent features from the text documents
 that will further simplify the computational model. 
 \item During the project, we will augment current Arabic digital 
@@ -402,49 +409,62 @@ CATARM components.
 The components will be the linguistic computational model,
 statistical, set arithmetic, logic,
 and graph analysis techniques, and  text algorithms.
+\item We will use CATARM to solve several realistic case studies.
+We will look at the hadith literature and build a system using
+CATARM to relate the hadith literature to the biographies of the
+narrators and extract an authenticity graph for the narrators.
+We will look at investigation and interrogation security reports
+and build a CATARM system that looks for relations between suspects
+in the reports. 
+We will look at clinical reports and relate them to pharmaceutical 
+records and find relations between sicknesses and prescribed medication. 
+Finally, we will build a system using CATARM to check the strength
+of the relations between internet documents viewed by a minor and
+a set of Arabic text documents containing unrated or unwanted 
+material. If the relation is strong, the system will flag access to
+the document. 
+All components and parts built during the development of solutions
+to the case studies will be generalized and added to CATARM as 
+library computational components. 
 \end{itemize}
 
 
-CATARM will be measured and validated against several 
-case studies and will contain  
-all the components needed to 
-address the following case studies.
-
-\begin{itemize}\itemsep0pt
-\item {\bf The literature case study.}
-We are given a set of books of historical accounts where
-a chain of narrators precedes each account,
-and a second set of books of biographies where
-a biography includes an evaluation of the authenticity 
-of the narrator therein.
-CATARM will allow the user to automatically and exhaustively query 
-all accounts related to a subject important to Islamic jurispudence 
-(for example women and travel),
-and extract a graph where nodes represent narrators and edges
-are labeled with the authenticity of the narrators. 
-A similar manual query takes ages to answer and is error prone.
-\item {\bf The security case study.}
-Given two sets of reports consisting of crime scene investigation 
-and suspect interrogation reports, 
-an officer may query CATARM 
-for relations between suspects in terms of 
-criminal action, locality, or third party persons unknown to the 
-officer.
-Such a query is very hard to answer manually.
-\item {\bf The net traffic case study.}
-Given a set of undesired internet content for minors
-such as violent text, and a set of documents requested by internet
-minor users, 
-CATARM can discover whether there is a relation between 
-the document and the violent content and flag the document if the
-relation is strong enough. 
-\end{itemize}
-
+%\begin{itemize}\itemsep0pt
+%\item {\bf The literature case study.}
+%We are given a set of books of historical accounts where
+%a chain of narrators precedes each account,
+%and a second set of books of biographies where
+%a biography includes an evaluation of the authenticity 
+%of the narrator therein.
+%CATARM will allow the user to automatically and exhaustively query 
+%all accounts related to a subject important to Islamic jurispudence 
+%(for example women and travel),
+%and extract a graph where nodes represent narrators and edges
+%are labeled with the authenticity of the narrators. 
+%A similar manual query takes ages to answer and is error prone.
+%\item {\bf The security case study.}
+%Given two sets of reports consisting of crime scene investigation 
+%and suspect interrogation reports, 
+%an officer may query CATARM 
+%for relations between suspects in terms of 
+%criminal action, locality, or third party persons unknown to the 
+%officer.
+%Such a query is very hard to answer manually.
+%\item {\bf The net traffic case study.}
+%Given a set of undesired internet content for minors
+%such as violent text, and a set of documents requested by internet
+%minor users, 
+%CATARM can discover whether there is a relation between 
+%the document and the violent content and flag the document if the
+%relation is strong enough. 
+%\end{itemize}
  
-{\bf Significance.} 
+\subsection{Significance} 
+
 CATARM will discover relations between Arabic text documents that 
 are hard to discover by humans and will have direct live and
-cost saving benefits in cases similar to the above case studies. 
+cost saving benefits in cases similar to the above mentioned 
+case studies. 
 CATARM will qualitatively enhance research in the cultural and 
 literature fields. 
 It may also help investors analyze Arabic news and data from Arab 
@@ -467,66 +487,216 @@ open the way for investments in the field and provide work
 opportunities for native workers.
 
 \pagebreak
-u
+
 \section{Preliminary data or studies}
 \label{s:prelim}
 
-Our preliminary studies are promising. With a small manually entered dictionary, few programmed grammar rules and patterns, and two hardcoded queries we were able to solve selected samples from the literature and security case studies presented in Section "Significance". 
-These preliminary results serve as a good proof of concept to our hypothesis. They also confirm that our approach performs better than currently existing techniques from Sakhr (Sakhr Inc. 2009) and Basis (Basis technology 2009) as well as from open source tools (Columbia's Arabic Dialect Modeling Group 2009).
+The PI and his team at the American University of Beirut (AUB)
+started work on an Arabic text mining framework~\cite{ATMine09}
+that is available now online.
+They have successfully developped ATSarf, a case-based morphological 
+analyzer, and applied it on the hadith literature case study. 
+
+A \RL{.hady_t} is a narration related to the prophet Mohammad
+through a \RL{sanad} or a sequence of narrators. 
+Figure~\ref{f:exhadith} shows an example \noArRL{.hady_t} in Arabic with its 
+transliteration and translation. 
+The authentication of a \noArRL{.hady_t} highly depends on the credibility
+of each of the narrators as reported in separate biography 
+books. 
+In this paper we consider the problem of automatically segmenting
+a \noArRL{.hady_t} book into narrations, then segmenting each 
+narration into
+its content or \RL{matn} and its \noArRL{sanad}.
+We also partition the sanad accurately into the 
+separate narrators so that we can later look each one of them 
+up in the biography books. 
+For example, the boxes in Figure~\ref{f:exhadith} are proper names 
+and once
+connected toghether they form complex names of narrators. 
+Narrator $n_1$ has the first name \noTrRL{qtybT} and his father 
+name is \noTrRL{s`yd} as the word in between 
+\noTrRL{bn} (son of) indicates. 
+
+\transfalse
+\begin{figure}[tb]
+\center{
+\resizebox{.7\columnwidth}{!}
+{ \input{figs/exhadith.pdftex_t}}
+\caption{Hadith abstraction example.}
+\label{f:exhadith}
+}
+\end{figure}
+\transtrue
+
+The framework now comprises a state of the art
+case-based morphological analyzer, ATSarf, 
+and computational components that allow the user to
+specify his queries as one or more FSM
+controlling the morphological analyser.
+We explain this approach in details in Section~\ref{s:design:fsm}.
+ATSarf along with other computational components, 
+extract the chains of narrators from a set of narrations
+with above 95 percent accuracy and in less than two minutes. 
+
+\begin{figure}[tb]
+\center{
+\resizebox{.75\columnwidth}{!}
+{\includegraphics{figs/narrator_chain_output.pdf}
+\label{f:narrators} } 
+\caption{Directed acyclic graph representing a partial order 
+    relation between narrators extracted using ATSarf}
+}
+\end{figure}
+
+The directed acyclic graph (DAG) 
+in Figure~\ref{f:narrators} shows a partial order relation between
+narrators that was automatically extracted from hadith text 
+documents.
+Given a set of chains of narrators similar to 
+Figure~\ref{f:exhadith} we formed the DAG using graph algorithms 
+that merged equal names in the chains. 
+This partial order graph is instrumental to automatically
+locate narrators in biography documents and automatically
+segment biography documents.
+
+These preliminary results serve as a good proof of concept to our 
+hypothesis. They also confirm that our approach performs better than 
+currently existing techniques from Sakhr~\cite{Sak09},
+Basis~\cite{Bas09} and open source 
+tools~\cite{Col09,Otakar:07,Tim04}.
+
+We find evidence in our current results that features 
+of the Arabic language such as the hierarchical structure of
+names can be used to simplify the morphological analysis
+needed to extract the partial order graph. 
+Publications about these results are pending acceptance in 
+related NLP conferences. 
+
+The Co-Lead PI published extensively in this domain. 
+A selected list of her recent publications follows. 
+\begin{itemize}\itemsep0pt
+\item Rehab Duwairi, Mohammad Al-Refai, Natheer Khasawneh, 
+"Feature Reduction Techniques for Arabic Text Categorization". 
+Journal of the American Society for Information Science and Technology 
+(JASIST), Volume 60, Issue 11, pages: 2347-2352, 2009. 
+\item Rehab M. Duwairi, "Arabic Text Categorization", 
+International Arab Journal for Information Technology (IAJIT), 
+Volume 4, Number 2, pages 125  132, 2007.
+\item Rehab M. Duwairi, "Machine Learning for Arabic Text Categorization". 
+Journal of the American Society for Information Science and Technology 
+(JASIST), Vol. 57, Issue 8, pages 1005-1010, 2006.
+\end{itemize}
 
 
-The Co-Lead PI worked and published extensively in this domain. A selected list of her recent publications follows. 
-    Rehab Duwairi, Mohammad Al-Refai, Natheer Khasawneh, "Feature Reduction Techniques for Arabic Text Categorization". Journal of the American Society for Information Science and Technology (JASIST), Volume 60, Issue 11, pages: 2347-2352, 2009. 
-        R. M. Duwairi, "Arabic Text Categorization", International Arab Journal for Information Technology (IAJIT), Volume 4, Number 2, pages 125  132, 2007.
-            R. M. Duwairi, "Machine Learning for Arabic Text Categorization". Journal of the American Society for Information Science and Technology (JASIST), Vol. 57, Issue 8, pages 1005-1010, 2006.
-
-
-The Lead PI worked in the area of software arabization since 1996 as he worked on developing Arabization modules for Windows NT and an Arabic string manipulation library (Zaraket, Zbib and Khalil, Yaraah: Arabization module for Windows NT 1996). The Lead PI is also involved in working on an open source project that aims at comprehensive automation of authenticity checks against a corpus of literature heritage (Zaraket, Zeineddine, et al. 2006). The Lead PI is leading an effort at AUB to introduce Computational Arabic in the curriculum of the ECE program. He is also leading a team of students in an effort to place the infrastructure needed for this project to start. 
-            The lead PI worked and published about relational logic and logic solvers applied to structured languages as follows.
-                Sequential circuits for relational analysis. F. Zaraket, A. Aziz, and S. Khurshid. International Conference on Software Engineering, Minneapolis MN, 2007. 
-                    Sequential circuits for program analysis. F. Zaraket, A. Aziz, and S. Khurshid. Automated Software Engineering, Atlanta GA, 2007. 
-
+%The Lead PI worked in the area of software arabization since 1996 
+%as he worked on developing Arabization modules for Windows NT and 
+%an 
+%Arabic string manipulation library~\cite{Zar96}. 
+%The Lead PI is also involved in working on an open source 
+%project that aims at comprehensive automation of authenticity 
+%checks against a corpus of literature heritage~\cite{Zaraket06}.
+%The Lead PI is leading an effort at AUB to introduce 
+%Computational Arabic in the curriculum of the ECE program. 
+%He is also leading a team of students in an effort to place 
+%the infrastructure needed for this project to start. 
+%The lead PI worked and published about relational logic and 
+%logic solvers applied to structured languages as follows.
+%\begin{itemize}
+%\item Sequential circuits for relational analysis. F. Zaraket, A. Aziz, and S. Khurshid. International Conference on Software Engineering, Minneapolis MN, 2007. 
+%\item Sequential circuits for program analysis. F. Zaraket, A. Aziz, and S. Khurshid. Automated Software Engineering, Atlanta GA, 2007. 
+%\end{itemize}
 
 \section{Research design and methods}
 \label{s:designmethods}
 
+
+%\begin{figure}[tb]
+\begin{figure}
+\center{
+\resizebox{.75\columnwidth}{!}
+{\includegraphics{figs/literature_case-study1.pdf}
+\label{f:literature}
+} 
+\caption{CATARM diagram for the literature case study }
+}
+\end{figure}
+
+%\begin{figure}[tb]
+\begin{figure}
+\center{
+\resizebox{.8\columnwidth}{!}
+{\includegraphics{figs/security_case-study.pdf}
+\label{f:security}
+}
+\caption{CATARM diagram for the security case study}
+}
+\end{figure}
+
+%\begin{figure}[tb]
+\begin{figure}
+\center{
+\resizebox{.8\columnwidth}{!}
+{\includegraphics{figs/detailed_submachine.pdf}
+\label{f:chain}
+}
+\caption{CATARM detailed diagram for the chain of narrators extractor}
+}
+\end{figure}
+
 We see more and more Arabic documents such as texts,
- books,
- publications,
- hospital and governmental records emerging every day.
- Most of the newly generated documents are produced in digital textual form while also old paper documents are ported to digital form.
- These documents include huge amounts of information that is qualitatively different than structured information such as that contained in database entries.
- Text mining is the technology that automates the discovery of information in non structured text.
+books, publications, hospital and governmental records emerging 
+every day.
+Most of the newly generated documents are produced in digital 
+textual form while also old paper documents are ported to digital 
+form.
+These documents include huge amounts of information that is 
+qualitatively different than structured information such as that 
+contained in database entries.
+Text mining is the technology that automates the discovery of 
+information in non structured text.
 
 Text mining concerns the partitioning of text segments into classes,
- the clustering of text segments,
- the extraction of concepts and entities from text,
- and the discovery and modeling of relations between text entities and classes.
- Text mining techniques perform natural language processing (NLP) to analyze text and perform information extraction (IE) to extract information into data structures.
- Fundamental to IE are the name entity (NE) and the name entity relation (NER) extraction techniques which capture features from sentences and phrases.
- A key challenge to NE and NER is that sentence structures and words are often ambiguous in natural languages.
- While research to address ambiguity in Latin languages is still lagging behind~\cite{Red08},
- not much has been done to address NE and NER in the context of the Arabic language.
+the clustering of text segments,
+the extraction of concepts and entities from text,
+and the discovery and modeling of relations between text entities 
+and classes.
+Text mining techniques perform NLP to analyze text and perform 
+IE to extract information into data structures.
+Fundamental to IE are the name entity (NE) and the name entity 
+relation (NER) extraction techniques which capture features from 
+sentences and phrases.
+A key challenge to NE and NER is that sentence structures and 
+words are often ambiguous in natural languages.
+While research to address ambiguity in Latin languages is still 
+lagging behind~\cite{Red08},
+not much has been done to address NE and NER in the context of 
+the Arabic language.
 
-The application of text mining techniques to Arabic text documents will result in great benefits to many research fields such as Arabic literature,
- Islamic studies,
- Hadith authentication,
- and Arabic history and culture in general.
- Arabic text mining will also benefit sectors where Arabic text documents are key such as the security sector,
- the government personal records,
- the taxation department,
- the health sector,
- as well as the trading floor of a stock exchange.
+The application of text mining techniques to Arabic text documents 
+will result in great benefits to many research fields such as 
+Arabic literature,
+Islamic studies, Hadith authentication, and Arabic history and 
+culture in general.
+Arabic text mining will also benefit sectors where Arabic text 
+documents are key such as the security sector,
+the government personal records,
+the taxation department,
+the health sector,
+as well as the trading floor of a stock exchange.
  
-The difficulty of applying text mining techniques to Arabic text documents lays in the absence of automated tools that understand the unique features of the Arabic language.
- We will make use of an example to illustrate the process.
- Given an Arabic text document we want a tool that can segment and isolate all names,
- dates,
- time of the day occurrences,
- tool names,
- and locations as entities.
- Then we want another tool to identify identities amongst these entities,
- and relate them in their order of appearance in the document.
+The difficulty of applying text mining techniques to Arabic text 
+documents lays in the absence of automated tools that understand 
+the unique features of the Arabic language.
+We will make use of an example to illustrate the process.
+Given an Arabic text document we want a tool that can segment 
+and isolate all names, dates, time of the day occurrences,
+tool names, and locations as entities.
+Then we want another tool to identify relations amongst 
+these entities such as identities and orders.
+An order between two entities can be simply 
+their order of appearance in the document, or their
+numerical 
  We want another tool to look at the verbs and actions in the sentences and try to build relations between the identified entities based on these verbs.
  If we were successful to do that,
  we now want to order all entities associated with dates based on a chronological order.
