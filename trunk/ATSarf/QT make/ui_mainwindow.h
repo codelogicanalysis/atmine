@@ -1,15 +1,10 @@
 /********************************************************************************
-** Form generated from reading ui file 'mainwindow.ui'
+** Form generated from reading UI file 'mainwindow.ui'
 **
-<<<<<<< .mine
-** Created: Thu Dec 2 03:00:56 2010
+** Created: Thu Dec 2 09:58:14 2010
 **      by: Qt User Interface Compiler version 4.6.2
-=======
-** Created: Wed Dec 1 15:03:02 2010
-**      by: Qt User Interface Compiler version 4.5.2
->>>>>>> .r274
 **
-** WARNING! All changes made in this file will be lost when recompiling ui file!
+** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
 #ifndef UI_MAINWINDOW_H
@@ -160,7 +155,6 @@ public:
         exit->setText(QApplication::translate("MainWindow", "exit", 0, QApplication::UnicodeUTF8));
         fill->setText(QApplication::translate("MainWindow", "Fill", 0, QApplication::UnicodeUTF8));
         chk_testing->setText(QApplication::translate("MainWindow", "Testing", 0, QApplication::UnicodeUTF8));
-        Q_UNUSED(MainWindow);
     } // retranslateUi
 
 };
