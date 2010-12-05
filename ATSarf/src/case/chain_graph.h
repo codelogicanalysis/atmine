@@ -370,7 +370,7 @@ private:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<</*n.toString()<<*/"\", shape=box];\n"; //
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\"];\n"; //"\", shape=box];\n";
 			}
 			else
 				curr_id=it.value();
@@ -433,7 +433,7 @@ public:
 	{
 		QString s1=getID(n1), s2=getID(n2);
 		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
-		d_out<<s1<<"->"<<s2<<";\n";
+		d_out<<s2<<"->"<<s1<<";\n";
 		if (n2.isGraphNode())
 		{
 			if (!n1.isGraphNode())
