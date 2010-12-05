@@ -5,6 +5,10 @@
 %  $Date: 2007/06/12 15:29:41 $
 %  $Revision: 1.4 $
 %
+%TECHREPORT citation_key,
+%            required_fields [, optional_fields] 
+% Required fields: author, title, institution, year
+% Optional fields: type, number, address, month, note, key 
 
 @misc{blind,
 title  = "{Omitted for Blind Review.}",
@@ -39,13 +43,14 @@ title  = "{Omitted for Blind Review.}",
 @misc{Hadithopaedia:08,
     author = {Zeineddine, Marwan},
     title={Platform for Automated Authentication of Islamic Traditions and Hadiths},
-    howpublished="\url{http://code.google.com/p/hadithopaedia}",
+    howpublished={\url{http://code.google.com/p/hadithopaedia}},
+    url={http://code.google.com/p/hadithopaedia},
     year={2008},
 }
 
 @inproceedings{Habash:06,
     author = {Habash, Nizar and Sadat, Fatiha},
-    title = {Arabic preprocessing schemes for statistical machine translation},
+    title = {{A}rabic preprocessing schemes for statistical machine translation},
     booktitle = {Proceedings of the North American Chapter of the Association for Computational Linguistics(NAACL)},
     year = {2006},
     pages = {49--52},
@@ -53,36 +58,46 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Darwish:02,
     author = {Darwish, Kareem},
-    title = {Building a shallow Arabic Morphological Analyzer in one day},
+    title = {Building a shallow {A}rabic Morphological Analyzer in one day},
     booktitle = {Proceedings of the ACL-02 workshop on Computational approaches to semitic languages},
     year = {2002},
 }
 
 @inproceedings{Khoja:01,
     author = {Khoja, Shereen},
-    title = {APT: Arabic Part of Speech Tagger},
+    title = {APT: {A}rabic Part of Speech Tagger},
     booktitle = {NAACL student research workshop},
     year = {2001},
 }
 
 @book{IbnHanbal,
-	author= {Ibn Hanbal, Ahmad},
-    title={Musnad Ahmad Ibn Hanbal},
+	author= {Ibn Hanbal, Ahmad (780-855 Baghdad)},
+    title={Musnad },
+    publisher={Noor Foundation},
+    year={2005},
+    month={August}
 }
 
 @book{AlTousi,
-    author={Al Tousi, Mohammad bin Hasan bin Ali},
-    title="Al Istibsar",
+    author={Al Tousi, Mohammad bin Hasan (996-1068)},
+    title={Al Istibsar},
+    publisher={Taaruf},
+    year={1995},
+    month={June}
+
 }
 
 @book{AlKulayni,
-    author= {Al Kulayni,  Muhammad ibn Yaaqub},
-    title={Kitab al-Kafi} ,
+    author= {Al Kulayni,  Muhammad ibn Yaaqub(850s-941)},
+    title={Kitab al-Kafi},
+    publisher={Taaruf},
+    year={1996},
+    month={May}
 }
 
 @book{Badawi:04,
-	author= {Badawi, Elsaid and  Carter, Mike G. and Gully, Adrian},
-    title={Modern Written Arabic: A Comprehensive Grammar},
+	author= {Badawi, Elsaid and Carter, Mike G. and Gully, Adrian},
+    title={Modern Written {A}rabic: A Comprehensive Grammar},
     year={2004},
 	publisher = {Routledge},
     address={New York},
@@ -90,7 +105,7 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Kulick:10,
     author = {Kulick, Seth and Bies, Ann and Maamouri, Mohamed},
-    title = {Consistent and Flexible Integration of Morphological Annotation in the Arabic Treebank},
+    title = {Consistent and Flexible Integration of Morphological Annotation in the {A}rabic Treebank},
     booktitle = {Proceedings of the Seventh conference on International Language Resources and Evaluation (LREC'10)},
     year = {2010},
     month = {May},
@@ -99,7 +114,7 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Benajiba:07,
     author = {Benajiba, Yassine and Diab, Mona and Rosso, Paolo},
-    title = {Arabic named entity recognition using optimized feature sets},
+    title = {{A}rabic named entity recognition using optimized feature sets},
     booktitle = {EMNLP '08: Proceedings of the Conference on Empirical Methods in Natural Language Processing},
     year = {2008},
     pages = {284--293},
@@ -108,7 +123,7 @@ title  = "{Omitted for Blind Review.}",
 
 @article{Sughaiyer:04,
     author = {Al-Sughaiyer, Imad A. and Al-Kharashi, Ibrahim A.},
-    title = {Arabic morphological analysis techniques: a comprehensive survey},
+    title = {{A}rabic morphological analysis techniques: a comprehensive survey},
     journal = {American Society for Information Science and Technology},
     volume = {55},
     number = {3},
@@ -120,15 +135,15 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Maamouri:04,
     author = {Maamouri, Mohamed and Bies, Ann},
-    title = {Developing an Arabic treebank: methods, guidelines, procedures, and tools},
-    booktitle = {Semitic '04: Proceedings of the Workshop on Computational Approaches to Arabic Script-based Languages},
+    title = {Developing an {A}rabic treebank: methods, guidelines, procedures, and tools},
+    booktitle = {Semitic '04: Proceedings of the Workshop on Computational Approaches to {A}rabic Script-based Languages},
     year = {2004},
     pages = {2--9},
 }
 
 @techreport{Buckwalter:02,
     author="Timothy Buckwalter",
-    title="Buckwalter Arabic Morphological Analyzer Version 1.0",
+    title="Buckwalter {A}rabic Morphological Analyzer Version 1.0",
     year = "2002",
     publisher = "LDC catalog number LDC2002L49",
     institution = "LDC catalog number LDC2002L49",
@@ -136,8 +151,8 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Beesley:01,
     author = "Keneth R. Beesley", 
-    title = "Finite-State Morphological Analysis and Generation of Arabic at Xerox Research: Status and Plans",
-    booktitle = {Workshop Proceedings on Arabic Language Processing: Status and Prospects},
+    title = "Finite-State Morphological Analysis and Generation of {A}rabic at Xerox Research: Status and Plans",
+    booktitle = {Workshop Proceedings on {A}rabic Language Processing: Status and Prospects},
     year = {2001},
     pages = {1--8},
     address = {Toulouse, France},
@@ -146,7 +161,7 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Otakar:07,
     author = {Smr\v{z}, Otakar},
-    title = {ElixirFM: implementation of functional Arabic morphology},
+    title = {ElixirFM: implementation of functional {A}rabic morphology},
     booktitle = {Semitic '07: Proceedings of the 2007 Workshop on Computational Approaches to Semitic Languages},
     year = {2007},
     pages = {1--8},
@@ -156,7 +171,7 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Habash:05,
     author = {Habash, Nizar and Rambow, Owen and Kiraz, George},
-    title = {Morphological analysis and generation for Arabic dialects},
+    title = {Morphological analysis and generation for {A}rabic dialects},
     booktitle = {Semitic '05: Proceedings of the ACL Workshop on Computational Approaches to Semitic Languages},
     year = {2005},
     pages = {17--24},
@@ -166,8 +181,8 @@ title  = "{Omitted for Blind Review.}",
 
 @inproceedings{Buckwalter:04,
     author = {Buckwalter, Timothy},
-    title = {Issues in Arabic orthography and morphology analysis},
-    booktitle = {Semitic '04: Proceedings of the Workshop on Computational Approaches to Arabic Script-based Languages},
+    title = {Issues in {A}rabic orthography and morphology analysis},
+    booktitle = {Semitic '04: Proceedings of the Workshop on Computational Approaches to {A}rabic Script-based Languages},
     year = {2004},
     pages = {31--34},
     address = {Morristown, NJ, USA},
@@ -175,8 +190,8 @@ title  = "{Omitted for Blind Review.}",
 
 @INBOOK{Issues:07,
     author = "Timothy Buckwalter",
-    title = "Issues in Arabic Morphological Analysis",
-    series = "Arabic Computational Morphology",
+    title = "Issues in {A}rabic Morphological Analysis",
+    series = "{A}rabic Computational Morphology",
     publisher = "Addison-Wesley",
     year = "2007",
     chapter = "3.4",
@@ -187,7 +202,7 @@ title  = "{Omitted for Blind Review.}",
 @INBOOK{Diab:07,
 author={Mona Diab, Kadri Hacioglu and Daniel Jurafsky},
 year={2007},
-title={Arabic Computational Morphology: Knowledge-based and Empirical Methods},
+title={{A}rabic Computational Morphology: Knowledge-based and Empirical Methods},
 chapter={9}, 
 pages={159--179},
 publisher={Springer},
@@ -197,7 +212,7 @@ editor={Abdelhadi Soudi, Antal van den Bosch and Gunter Neumann},
 
 @INPROCEEDINGS{Larkey02improvingstemming,
     author = {Leah S. Larkey and Lisa Ballesteros},
-    title = {Improving Stemming for Arabic Information Retrieval: Light Stemming and Co-occurrence Analysis},
+    title = {Improving Stemming for {A}rabic Information Retrieval: Light Stemming and Co-occurrence Analysis},
     booktitle = {In SIGIR 2002},
     year = {2002},
     pages = {275--282}
@@ -205,8 +220,8 @@ editor={Abdelhadi Soudi, Antal van den Bosch and Gunter Neumann},
 
 @InProceedings{Habash:09,
     author = {Habash, Nizar and Rambow, Owen and Roth, Ryan},
-    title = {MADA+TOKAN: A Toolkit for Arabic Tokenization, Diacritization, Morphological Disambiguation, POS Tagging, Stemming and Lemmatization},
-    booktitle = {Proceedings of the Second International Conference on Arabic Language Resources and Tools},
+    title = {MADA+TOKAN: A Toolkit for {A}rabic Tokenization, Diacritization, Morphological Disambiguation, POS Tagging, Stemming and Lemmatization},
+    booktitle = {Proceedings of the Second International Conference on {A}rabic Language Resources and Tools},
     year = {2009},
     month = {April},
     address = {Cairo, Egypt},
@@ -217,10 +232,266 @@ editor={Abdelhadi Soudi, Antal van den Bosch and Gunter Neumann},
 @InProceedings{Maamouri:10,
     author = {Maamouri, Mohamed and Bies, Ann and Kulick, Seth and Zaghouani, Wajdi and Graff, David and Michael Ciul },
     year = {2010},
-    title = {From Speech to Trees: Applying Treebank Annotation to Arabic Broadcast News},
+    title = {From Speech to Trees: Applying Treebank Annotation to {A}rabic Broadcast News},
     booktitle = {Proceedings of the Seventh conference on International Language Resources and Evaluation (LREC'10)},
     month = {May},
     address = {Valletta, Malta},
 }
+
+
+@article{JNi06,
+    author={ Nightingale, J.},
+    title={Digging for data that can change our world},
+    year={10 January, 2006},
+    journal={The Guardian},
+}
+
+@inproceedings{Osm08,
+    author={Al-Fawareh, H. and Jusoh, S. and Sheikh Osman, W.},
+    title={Ambiguity in Text mining},
+    city={KualaLampur},
+    year={2008},
+    journal={IEEE international conference on computer and communication engineering},
+    booktitle={IEEE international conference on computer and communication engineering},
+    month={May},
+}
+
+@book{JHa05,
+    author={Kamber, M. and Han, J. },
+    title={Data mining concepts and techniques},
+    year={2005},
+    publisher={University of Illinois at Urbana Champaign},
+}
+
+@book{ASr09,
+    author={ Sahami, M. and Srivastavaand, A.},
+    title={Text Mining: Classification, Clustering, and Applications},
+    year={2009},
+    publisher={Chapman \& Hall},
+}
+
+@article{MEl03,
+    author={Eldost, M.  },
+    year={2003},
+    title={{A}rabic text data mining: A root-based hierarchical indexing model},
+    journal={International journal of modelling and simulation},
+    volume={23},
+}
+
+@inproceedings{Rot08,
+    author={Roth, Ryan and Rambow, Owen and Habash, Nizar and Diab, Mona and Rudin, Cynthia},
+    year={2008},
+    title={{A}rabic Morphological Tagging, Diacritization, and Lemmatization Using Lexeme Models and Feature Ranking},
+    booktitle={Association for Computational Linguistics (ACL)},
+    city={Columbus, Ohio},
+}
+
+@inproceedings{RAl09,
+    author={Al-Shalabi, Riyad and Kanaan, Ghassan and Yaseen, Mustafa and Al-Sarayreh, Bashar  and Al-Naji, Nada A.},
+    title={{A}rabic Query Expansion Using Interactive Word Sense Disambiguation},
+    year={2009},
+    booktitle={International Conference on {A}rabic Language Resources \& Tools},
+    city={cairo},
+}
+
+@misc{QTC09,
+    title={QT C++ Library},
+    howpublsihed={\url{http://www.qtsoftware.com}},
+    url={http://www.qtsoftware.com},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+}
+
+
+@article{Duw07,
+    author={Duwairi, Rehab M.},
+    year={2007},
+    title={{A}rabic Text Categorization},
+    journal={International Arab Journal on Information Technology},
+    volume={4},
+    issue={2},
+}
+
+@book{Sha73,
+    author={Shartouni, R.  },
+    title={The principles of {A}rabic/Mabaadi al-Arabiyah},
+    year={1973},
+    city={Beirut},
+    publisher={Le Levant},
+}
+
+@book{Sou07,
+    author={Soudi, Abdelhadi and van den Bosch, Antal and Neumann, Guenter},
+    title={{A}rabic Computational Morphology: Knowledge-based and Empirical Methods},
+    year={2007},
+    publisher={Springer},
+}
+
+@inproceedings{Een03,
+    author    = {Niklas E{\'e}n and Niklas S{\"o}rensson},
+    title     = {An Extensible SAT-solver},
+    booktitle = {SAT},
+    year      = {2003},
+    pages     = {502-518},
+}
+
+@techreport{Zar96,
+    author={ Zaraket, Fadi and Zbib, Rabih and Khalil, Monah},
+    title={Yaraah: Arabization module for Windows NT},
+    year={1996},
+    institution={AUB},
+    booktitle={Technical FYP},
+}
+
+@misc{Zar06,
+    author={ Zaraket, Fadi and Zeineddine, Marwan and AlAsadi, Hussein and al., et },
+    year={2006},
+    misctitle={Hadithopedia: comprehensive hadith encylopedia},
+    title={Hadithopedia: comprehensive hadith encylopedia},
+    howpublsihed={\url{http://code.google.com/p/hadithopaedia/}},
+    url={http://code.google.com/p/hadithopaedia/},
+}
+
+@misc{Bas09,
+    title={Basis technology},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    howpublsihed={\url{http://www.basistech.com/base-linguistics/arabic/}},
+    url={http://www.basistech.com/base-linguistics/arabic/},
+    year={2009},
+}
+
+@misc{Dok09,
+    title={DokuWiki},
+    howpublsihed={\url{http://www.dokuwiki.org}},
+    url={http://www.dokuwiki.org},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    year={2009},
+}
+
+@misc{Int09,
+    title={International Journal of {Arabic-English}  Studies},
+    howpublsihed={\url{http://www.ijaes.org/}},
+    url={http://www.ijaes.org/},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    year={2009},
+}
+
+@misc{Sak09,
+    title={Sakhr Inc.},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    howpublsihed={\url{http://www.sakhr.com/products/Mining}},
+    url={http://www.sakhr.com/products/Mining},
+    title={Sakhr Inc.},
+    year={2009},
+    month={September},
+}
+
+@misc{Sub09,
+    misctitle={Subversion},
+    title={Subversion},
+    howpublsihed={\url{http://subversion.tigris.org/}},
+    url={http://subversion.tigris.org/},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    year={2009},
+}
+
+@misc{Col09,
+    title={Columbia's {A}rabic Dialect Modeling Group},
+    howpublsihed={\url{http://www1.ccls.columbia.edu/~cadim/}},
+    url={http://www1.ccls.columbia.edu/~cadim/},
+    yearAccessed={2009},
+    monthAccessed={September},
+    DayAccessed={11},
+    year={2009},
+}
+
+@inproceedings{Abd07,
+    author={ Abdelwadood, Mesleh },
+    title={Support vector machines based {A}rabic language text classification system: feature selection comparative study},
+    year={2007},
+    booktitle={12th WSEAS International Conference on Applied Mathematics},
+}
+
+@inproceedings{Bee89,
+    author={ Beesley, K. and Buckwalter, T. and Newton, S.},
+    year={1989},
+    title={Two-level finite-state analysis of {A}rabic morphology},
+    journal={Seminar on Bilingual Computing in {A}rabic and English},
+    booktitle={Seminar on Bilingual Computing in {A}rabic and English},
+    city={Cambridge, England},
+}
+
+@Book{Abd00,
+    author={ AlRajehi, Abdeh},
+    title={The morphological practice/At-tatbiq Assarfi},
+    year={2000},
+    publisher={Renaissance (An-nahda)},
+    Edition={first},
+    city={Beirut},
+}
+
+@Book{Abd001,
+    author={ AlRajehi, Abdeh },
+    title={Semantical Practice/At-tatbiq Alnahawi},
+    year={2000},
+    publisher={Renaissance (nahda)},
+    Edition={first},
+    city={Beirut},
+}
+
+@techreport{Tim04,
+    author={ Buckwalter, Tim },
+    title={Buckwalter {A}rabic morphological analyzer version 2.0},
+    year={2004},
+    institution={Linguistic Data Consortium (LDC) },
+    number={LDC2004L02},
+}
+
+@article{AEL07,
+    author={ EL-Halees, A. },
+    title={{A}rabic Text Classification. Using Maximum Entropy},
+    year={2007},
+    city={Gaza},
+    journal={Islamic University journal },
+}
+
+@inproceedings{Ham07,
+    author={Al-Zoghby, Aya  SharafEldin, A.  and Ismail, N.  and Hamza, T.},
+    title={Mining {A}rabic Text Using Soft-Matching},
+    year={2007},
+    booktitle={ Computer Engineering and Systems},
+}
+
+@article{Red08,
+    author={Redfearn, Judy},
+    title={Text Mining},
+    year={2008},
+    journal={Joint Information Systems Committee},
+    month={September },
+}
+
+@inproceedings{LSI89,
+    author={ Deerwester, Scott },
+    title={Improving Information Retrieval with Latent Semantic Indexing},
+    booktitle={51st Annual Meeting of the American Society for Information Science },
+    year={1988},
+    month={October},
+    volume={25},
+}
+
+
+
+
 
 %author = {Mohamed Maamouri, Ann Bies, Seth Kulick, Wajdi Zaghouani, Dave Graff and Mike Ciul},
