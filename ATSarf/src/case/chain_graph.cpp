@@ -94,6 +94,23 @@ ChainNarratorNodeIterator & ChainNarratorNodeIterator::nextInChain()
 		++it;
 	return *(new ChainNarratorNodeIterator(it));//check if this calls operator *() or not
 }
+NarratorNodeIfcRfc ChainNarratorNodeIterator::getChild(int index)
+{
+	assert(index==0);
+	ChainNarratorNodeIterator & c=*(new ChainNarratorNodeIterator(*this));
+	if((++c).isNull())
+	{
+		delete &c;
+		return NarratorNodeIfcRfc(nullChainNarratorNodeIterator,false);
+	}
+	else
+	{
+		NarratorNodeIfc & n=c.getCorrespondingNarratorNode();
+		if (n.isGraphNode())
+			delete &c;
+		return NarratorNodeIfcRfc(n,!n.isGraphNode());
+	}
+}
 ChainNarratorNodeIterator & ChainNarratorNodeIterator::operator--()
 {
 	assert(getChainPrimPtr()->isNarrator());
