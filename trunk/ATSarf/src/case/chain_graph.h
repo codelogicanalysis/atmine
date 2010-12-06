@@ -159,11 +159,7 @@ public:
 		else
 			return 0;
 	}
-	NarratorNodeIfcRfc getChild(int index)
-	{
-		assert(index==0);
-		return NarratorNodeIfcRfc(nextInChain(),true);
-	}
+	NarratorNodeIfcRfc getChild(int index);
 
 	NarratorNodeIfc & firstParent();
 	NarratorNodeIfc & nextParent(NarratorNodeIfc & )
@@ -370,7 +366,7 @@ private:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\"];\n"; //"\", shape=box];\n";
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\", shape=box];\n";//"\"];\n";
 			}
 			else
 				curr_id=it.value();
@@ -432,7 +428,7 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
 	{
 		QString s1=getID(n1), s2=getID(n2);
-		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
+		qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
 		d_out<<s2<<"->"<<s1<<";\n";
 		if (n2.isGraphNode())
 		{
@@ -461,16 +457,18 @@ private:
 	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
-		//qDebug()<<"parent:"<<n.CanonicalName();
+		qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
 		for (int i=0;i<size;i++)
 		{
 			NarratorNodeIfcRfc r=n.getChild(i);
 			NarratorNodeIfc & c=r.Rfc();
-			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
+			qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
 			if (!c.isNull() && !visitor.previouslyVisited(&n, &c))
 			{
+				bool prev_visited=visitor.previouslyVisited( &c);
 				visitor.visit(n,c);
-				traverse(c,visitor);
+				if (!prev_visited)
+					traverse(c,visitor);
 			}
 		}
 	}
