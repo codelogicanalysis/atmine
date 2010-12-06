@@ -504,10 +504,11 @@ transliteration and translation.
 The authentication of a \noArRL{.hady_t} highly depends on the credibility
 of each of the narrators as reported in separate biography 
 books. 
-In this paper we consider the problem of automatically segmenting
+We consider the problem of automatically segmenting
 a \noArRL{.hady_t} book into narrations, then segmenting each 
 narration into
-its content or \RL{matn} and its \noArRL{sanad}.
+its content or \RL{matn} and its \noArRL{sanad} or the
+chain of narrators.
 We also partition the sanad accurately into the 
 separate narrators so that we can later look each one of them 
 up in the biography books. 
@@ -550,15 +551,42 @@ with above 95 percent accuracy and in less than two minutes.
 \end{figure}
 
 The directed acyclic graph (DAG) 
-in Figure~\ref{f:narrators} shows a partial order relation between
-narrators that was automatically extracted from hadith text 
+in Figure~\ref{f:narrators} shows a partial order relation (POR) between
+narrators.
+We automatically extracted the POR from hadith text 
 documents.
+The nodes in boxes are the \RL{matn} of the hadith, 
+and the other nodes are the narrators.
 Given a set of chains of narrators similar to 
 Figure~\ref{f:exhadith} we formed the DAG using graph algorithms 
 that merged equal names in the chains. 
-This partial order graph is instrumental to automatically
-locate narrators in biography documents and automatically
-segment biography documents.
+This partial order graph is instrumental to automate
+localizing narrators in biography documents and
+segmenting biography documents.
+
+Given that a biography will discuss a narrator and mention
+his professors and students,
+we can segment the biographies with a graph coloring algorithm 
+that traverses the text and colors the POR whenever
+a name is found. 
+We modify the color when we move in the graph 
+far away from the last name we colored.
+
+Once the biographies are analyzed, one can annotate
+the POR with qualifiers of the narrators that reflect
+their authenticity. 
+One can also annotate the POR with the locations and 
+the time they lived in. 
+Then One can compute a time and location overlap
+check to discover inconsistent narrations.
+We can also perform several interesting checks using 
+this POR on its own such as checking for the effect of
+one narrator on the hadith literature. 
+
+We think that the ability to extract such orders
+between entities in documents can 
+
+
 
 These preliminary results serve as a good proof of concept to our 
 hypothesis. They also confirm that our approach performs better than 
@@ -609,7 +637,6 @@ Journal of the American Society for Information Science and Technology
 
 \section{Research design and methods}
 \label{s:designmethods}
-
 
 %\begin{figure}[tb]
 \begin{figure}
@@ -663,15 +690,15 @@ and the discovery and modeling of relations between text entities
 and classes.
 Text mining techniques perform NLP to analyze text and perform 
 IE to extract information into data structures.
-Fundamental to IE are the name entity (NE) and the name entity 
+Fundamental to IE are the named entity (NE) and the named entity 
 relation (NER) extraction techniques which capture features from 
 sentences and phrases.
 A key challenge to NE and NER is that sentence structures and 
 words are often ambiguous in natural languages.
-While research to address ambiguity in Latin languages is still 
-lagging behind~\cite{Red08},
-not much has been done to address NE and NER in the context of 
-the Arabic language.
+%While research to address ambiguity in Latin languages is still 
+%lagging behind~\cite{Red08},
+%not much has been done to address NE and NER in the context of 
+%the Arabic language.
 
 The application of text mining techniques to Arabic text documents 
 will result in great benefits to many research fields such as 
@@ -688,7 +715,7 @@ as well as the trading floor of a stock exchange.
 The difficulty of applying text mining techniques to Arabic text 
 documents lays in the absence of automated tools that understand 
 the unique features of the Arabic language.
-We will make use of an example to illustrate the process.
+%We will make use of an example to illustrate the process.
 Given an Arabic text document we want a tool that can segment 
 and isolate all names, dates, time of the day occurrences,
 tool names, and locations as entities.
