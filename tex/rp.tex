@@ -584,11 +584,6 @@ We can also perform several interesting checks using
 this POR on its own such as checking for the effect of
 one narrator on the hadith literature. 
 
-We think that the ability to extract such orders
-between entities in documents can 
-
-
-
 These preliminary results serve as a good proof of concept to our 
 hypothesis. They also confirm that our approach performs better than 
 currently existing techniques from Sakhr~\cite{Sak09},
@@ -639,63 +634,6 @@ Journal of the American Society for Information Science and Technology
 \section{Research design and methods}
 \label{s:designmethods}
 
-%\begin{figure}[tb]
-\begin{figure}
-\center{
-\resizebox{.75\columnwidth}{!}
-{\includegraphics{figs/literature_case-study1.pdf}
-\label{f:literature}
-} 
-\caption{CATARM diagram for the literature case study }
-}
-\end{figure}
-
-%\begin{figure}[tb]
-\begin{figure}
-\center{
-\resizebox{.8\columnwidth}{!}
-{\includegraphics{figs/security_case-study.pdf}
-\label{f:security}
-}
-\caption{CATARM diagram for the security case study}
-}
-\end{figure}
-
-
-
-%\drawline
-%\begin{figure}[tb]
-\begin{figure}
-\center{
-\resizebox{.8\columnwidth}{!}
-{\includegraphics{figs/detailed_submachine.pdf}
-\label{f:chain}
-}
-\caption{CATARM detailed diagram for the chain of narrators extractor}
-}
-\end{figure}
-Consider Figure~\ref{f:chain}, which depicts a possible rendering of a query that transforms a hadith text file into a list of chain of narrators. Note that this diagram does not faithfully translate the state machine we are currently implementing to generate our priliminary results which is represented in  Figure~\ref{f:statemachine}. Instead, it has been simplified in order not to clotter the diagram. We start first by defining the legend: we have used boxes to represent computational blocks provided by CATARM, while ovals represent structured or unstructured data which are mainly the inputs and the outputs of the computational blocks. When the data blocks are dotted they represent temporary values, while when they are solid and shaded they represent the initial input and the final output. When a data block represents an array of values, the oval will be reproduced three times to show that multiple values exist.
-
-
-This query generates the list of chains by first passing the hadith book text file into a Morphological analyzer which is controlled by an entity extraction controller which in this case detects Names (of people) and output such a word, its corresponding position in the text and its syntax category which must be a Name category. Then we "Iterate" over this list compoputing the distance between the positions of 2 consecutive words. This distance is inputed into a thresholding block which returns the appropriate values for the "Less" and "Bigger" outputs. Having "Less" as TRUE, means that the distance is less than the provided threshold $\theta_1$ (which is a modifiable parameter of the block). In that case, we add the word to a temporary data block representing a chain (i.e. a list of narrator names). Otherwise, we execute a sequential block which in order contains: (1) a "Table" block which tabulates the chain into a temporary table/array containing the list of chains. (2) a "Create" block which initializes a new "Chain" whith the output of the second iterator (i.e. the name whose distance from its previous one is larger than the threshold). Finally, the "Filter" block outputs only the chains whose cardinality is larger than some threshold  $\theta_2$.
-
-
-In this way, the above query adds names to the chain temporary variable until a name which is distant is detected. Then, we consider the valid chains as those which contain a minimum number of names. CATARM allows the librarization of this query into a user-defined computational block that can be used later in more complex queries as will be shown below. Thus, the details of the implementation of the block will be hidden and the block's interface will be only the shaded data blocks in the figure. In what follows, we assume that this query has been librarized into a "Narrator Chain Extractor" computational block to be used in Figure~\ref{f:literature}.
-
-\begin{figure}
-\center{
-\resizebox{.4\columnwidth}{!}
-{\input{figs/hadith.pdftex_t}
-\label{f:statemachine}
-}
-\caption{State-machine used to detect the chain of narrators}
-}
-\end{figure}
-
-\pagebreak
-
-
-%\drawline
 We see more and more Arabic documents such as texts,
 books, publications, hospital and governmental records emerging 
 every day.
@@ -737,163 +675,649 @@ the taxation department,
 the health sector,
 as well as the trading floor of a stock exchange.
  
-The difficulty of applying text mining techniques to Arabic text 
-documents lays in the absence of automated tools that understand 
-the unique features of the Arabic language.
+%The difficulty of applying text mining techniques to Arabic text 
+%documents lays in the absence of automated tools that understand 
+%the unique features of the Arabic language.
 %We will make use of an example to illustrate the process.
 Given an Arabic text document we want a tool that can segment 
 and isolate all names, dates, time of the day occurrences,
 tool names, and locations as entities.
 Then we want another tool to identify relations amongst 
 these entities such as identities and orders.
-An order between two entities can be simply 
-their order of appearance in the document, or their
-numerical 
- We want another tool to look at the verbs and actions in the sentences and try to build relations between the identified entities based on these verbs.
- If we were successful to do that,
- we now want to order all entities associated with dates based on a chronological order.
+We want another tool to look at the verbs and actions in 
+the sentences and try to build relations between the identified 
+entities based on these verbs.
+If we were successful to do that,
+we now want to order all entities associated with dates based 
+on a chronological order.
 
-To do the above,
- we need tools that are able to automatically differentiate between names,
- verbs,
- adjectives and other vocabulary structures.
- This is not a simple task with the Arabic language.
- For example,
- Arabic grammar allows name-based sentences or sentences with no 
-    verbs \noTrNoVocRL{^gml ismiyT} .
- Another unique feature is the possibility to have names in Arabic 
- that express action such as noun verbs 
- \noTrNoVocRL{ism f`l, f-a`l $\ldots$}.
+An order between two entities can depend on 
+their simple order of appearance in the document, their 
+numerical values in case they happened to be numbers, or
+the distance between them in case they were cities. 
+The relations can also be more sophisticated and 
+based on templates provided by users or by 
+models extracted from training data sets. 
 
- In addition to these structural differences,
- there are features in the Arabic language that need special 
- treatment such as derivatives and stems 
- \noTrNoVocRL{alm^staq-at w al^g_dwr}.
- We also need to build dictionary tools that associate words and phrases based on their meanings and their context.
- Often time,
- and depending on the application and the user of the tool,
- we need to allow the user to assign meanings and semantics for patterns in the text.
+To do the above, 
+we need tools that automatically differentiate between 
+names, verbs, adjectives and other structures.
+This is not a simple task with the Arabic language.
+For example, Arabic grammar allows name-based sentences 
+or sentences with no verbs \noTrNoVocRL{^gml ismiyT} .
+Another unique feature is the possibility to have names in Arabic 
+that express action such as noun verbs 
+\noTrNoVocRL{ism f`l, f-a`l $\ldots$}.
 
-In the following we discuss our research methodology to develop the proposed Arabic text analysis tools.
+In addition to these structural differences,
+there are features in the Arabic language that need special 
+treatment such as derivatives and stems 
+\noTrNoVocRL{alm^staq-at w al^g_dwr}.
+Simple primitive tasks such as comparing two strings need 
+special attention in Arabic since each Arabic letter has 
+four different forms depending on its position in the word; 
+isolated form, start, middle and end of a word.
+Arabic diacritics should also be ignored most of the time 
+when comparing two strings.
+We also need to build dictionary tools that associate words 
+and phrases based on their meanings and their context.
+Often time,
+and depending on the application and the user of the tool,
+we need to allow the user to assign meanings and semantics 
+for patterns in the text.
+
+\subsection{Literature authentication case study}
+\label{s:design:lit}
+
+%\begin{figure}[tb]
+\begin{figure}
+\center{
+\resizebox{.75\columnwidth}{!}
+{\includegraphics{figs/literature_case-study1.pdf}
+\label{f:literature}
+} 
+\caption{CATARM diagram for the literature case study }
+}
+\end{figure}
+
+The diagram in Figure~\ref{f:literature} describes our 
+high level vision for what the literature case study
+will look like in the CATARM framework. 
+The boxes represent 
+computational blocks provided by CATARM, 
+ovals represent data blocks which are mainly the 
+inputs and the outputs of the computational blocks. 
+Dotted data blocks represent intermediate results,
+and solid and shaded blocks represent the initial input 
+and the final output respectively. 
+
+The computational components can be direct CATARM components
+or custom user components built from other CATARM components.
+We feed the hadith books to a user Narrator Chain Extractor
+component that we will discuss later in 
+Section~\ref{s:design:chainext}. We  obtain a set of chains
+of narrators that we feed to a morphological analyzer (MA) 
+component controlled by a merger controller. 
+The merger controller will look at the morphological analysis
+of the narrator names and will decide to merge two narrators in 
+one graph node in case they were morphologicaly equal. 
+It will also give feedback to the MA component to stop the
+analysis when a it reaches a satisfactory result.
+We consider this graph as a partial order relation between 
+narrators where a narrator precedes another narrator if 
+he narrated from him. 
+
+The biography books are fed to another MA unit controlled by 
+a name and qualification pair controller that generates a 
+map consisting of pairs of narrator names associated with 
+qualifications. 
+Then the graph of narrators and the narrator qualification map
+are both processed through a locator component that computes
+a graph coloring routine to color the graph of narrators. 
+The color changes whener two consecutive narrators are far away
+from each other in the text. 
+The locator then looks at connected subgraphs of the same color,
+and finds a median node in each of them to be the narrator 
+associated with the qualifiers of the color. 
+Then the locator also annotates the narrator with the 
+corresponding qualifications. 
+The result is an annotated partial order graph of narrators
+with authentication qualification annotations. 
+
+\subsection{Security case study}
+\label{s:design:sec}
+
+%\begin{figure}[tb]
+\begin{figure}
+\center{
+\resizebox{.8\columnwidth}{!}
+{\includegraphics{figs/security_case-study.pdf}
+\label{f:security}
+}
+\caption{CATARM diagram for the security case study}
+}
+\end{figure}
+
+
+The diagram in Figure~\ref{f:security} describes our 
+high level vision for what the solution of the 
+security case study
+will look like in the CATARM framework. 
+The inputs are two separate sets of documents. 
+The first set includes crime scene investigation reports, 
+and the second set includes a 
+interrogation reports with crime suspects as well as 
+a database of previous interrogation reports. 
+The CATARM system also takes as input a database of geographical
+locations and a database of personal records. 
+The aim is to check for inconsistencies in the iterrogation
+reports and to identify possible connections between the suspects
+and the crime scene. 
+
+An MA with date, place, and name extraction controller extracts
+names, dates and places from the investigation reports. 
+We pass the dates to a sorting component to produce $G_D$ 
+a partial order graph between the dates. 
+We look up the names in the personal records database and find out
+$G_N$ a family dependency graph between the names. 
+We pass the places to a mapper that builds another $G_G$,
+a graph relating the places using a geographical database. 
+
+We pass the interrogation reports to an MA with a relation 
+extraction controller that builds $G_R$. 
+The graph $G_R$ relates the interrogated suspects
+to each other, to places, and to dates based on a simple
+neighborhood threshold computed using a statistical feature. 
+
+We feed $G_D, G_F, G_G,$ and $G_R$   
+to a consistency checker.
+The consistency checker considers the three dimensions 
+$N$ names, $G$ locations, and $D$ dates and projects $G_R$
+over each one of them.
+For each dimension $k$, it computes a local measure 
+$\alpha_k$ of how much $G_R|_k$ simulates $G_k$. 
+It flags the components in the graph where the accumelated 
+measure $\alpha= \Sigma_{k\in\{D,N,G\}} \alpha_k$ is
+below a threshold $\theta$ as inconsistent. 
+
+\subsection{CATRAM components}
+\label{s:design:components}
+
+To do the above we need CATARM to provide us with several 
+computational components such as a morphological analyzer, 
+statistical tools, graph algorithms, and other computational
+components. 
+In the following we discuss the components needed for 
+CATARM and we propose a methodology to 
+use and extend existing tools, and develop new tools to
+build the components of CATARM.
+
+\subsection{Case-based morphological analyzer}
+
+Morphological analyzers for the Arabic language
+such as Buckwalter~\cite{Buckwalter:02},
+Beesly~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
+and ElixirFM~\cite{Otakar:07} take an Arabic word as input
+and produce several valid morpholgical solution for the word. 
+Each solution is a sequence of morphemes that form the word.
+Each morpheme is associated with several tags such as 
+morphological, part of speech, grammar, and semantic tags. 
+These analyzers are essential in several text analysis tools such 
+as spell checkers as well as NLP frameworks~\cite{Col09}.
+Other morphological analyzers such as 
+Amira~\cite{Diab:07,Benajiba:07},
+MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
+use machine learning and support vector machines (SVM) 
+to enhance the accuracy at the expense of efficiency.
+
+The current use of morphological analyzers suffers from 
+several problems. 
+Analyzers that enumerate all possible partitions of a word
+and match them against concatenative rules are computationaly 
+expensive. 
+Analyzers that exhaustively enumerate all possible solutions 
+for a word may hurt performance and may
+not be necessary or appropriate in some case studies~\cite{Maamouri:10}. 
+For example, the first solution may be the one needed and 
+we may not need to list the rest of the solutions. 
+A white space delimited token may have more than one word
+as is the case with ``run-on words''.
+
+We propose to make use of the current existing morphological
+analyzers to build a flexible and more efficient
+morphological analyzer. 
+The analyzer will be an essential
+component in the CATARM framework. 
+It will be a case-based analyzer as it will make guided decisions
+based on feedback from the NLP case study and it will prune
+invalid solutions on the fly. 
+
+Case-based analysis can guide the morphological analysis
+to prune lots of the solutions and to bias the order of considered
+decisions. 
+For example, in the hadith literature case study pesented above, 
+amongst other things, we are intersted in checking whether a 
+word is a name.  
+We can bias the order of considered decisions to consider the 
+morphemes that can be names first. 
+If one of them matches, we can ignore the rest of the solutions. 
+In case a prefix is decided to be of a morphological category
+that does not connect with a name, then we can just ignore
+the analysis of the rest of the word. 
+This is more efficient than generating all possible partitionings
+of the word, checking for morphological correctness of each 
+partition, and then inspecting the part of speech tags of each
+correct solution. 
+We desire to build a morphological analyzer that allows a 
+case-based controller to intervene at every single decision
+without much overhead. 
+
+\subsection{CATARM Query language}
+\label{s:design:query}
+
+We propose the CATARM query language with a user friendly
+visual representation similar to that in Figures~\ref{f:literature} and
+~\ref{f:security}. 
+The basic elements in the query language will be entities, relations
+and tags similar to those reported by a morphological analyzer. 
+The query language will also have connectives such as set operations, 
+relational operations, 
+scalar and Boolean arithmetic operations, 
+statistical computations, graph algorithms, and text algorithms
+form terms and predicates that specify the desired computation
+by the user. 
+We will specify the CATARM query language in a formal grammar.
+
+\subsection{Arabic linguistic computational model }
+\label{s:design:lcm}
+
+Several techniques~\cite{AEL07,Ham07,Abd07,MEl03} 
+preprocessed the Arabic text and then used known text 
+mining techniques that tend to Latin text and queries
+to solve classification, indexing, named entity 
+extraction and other problems.
+We think that these techniques do not make use 
+of Arabic language specific features.
+
+We think that we can discover such features by building
+a linguistic computational model of the Arabic language
+based on its formal grammar and formal morphology
+as defined in several Arabic linguistic 
+sources~\cite{Sha73,Abd00,Abd001}.
+We will build our morphological analyzer on top 
+of this linguistic model in addition to the current existing
+concatenative-based analysis techniques. 
+
+Let $L_q$ be the query language grammar, 
+$L_A$ be the grammar that expresses the Arabic linguistic
+computational model, and let $q$ be a user query.
+We compute $\rho_q$, the grammar path that matches 
+the query $q$ in $L_q$. 
+We will explore methods that use $\rho_q$ to simplify 
+$L_A$ before we start the morphological analysis. 
+We think the possible simplifications that we can perform
+here are Language specific as they will reflect the 
+correspondence between the formal query language definition $L_q$, 
+the usage patterns of $L_q$  by Arabic users, 
+and $L_A$ the formal LCM for Arabic. 
+
+
+\subsection{Methodology}
+
+\begin{figure}
+\center{
+\resizebox{.4\columnwidth}{!}
+{\input{figs/hadith.pdftex_t}
+\label{f:statemachine}
+}
+\caption{State-machine used to detect the chain of narrators}
+}
+\end{figure}
+
+{\bf Case-based morphological analyzer.}
+We experimented with several morphological analyzers.
+We think that using finite state machines for morphological analysis
+can be implemented in a more efficient way compared to other 
+approaches. 
+For example the concatenative rules used in Buckwalter~\cite{Tim04}
+can be encoded in three FSM with linear execution time using 
+the trie~\cite{datries} data structure. 
+
+The use of FSMs also suits our case-based approach. 
+The controller can be a FSM machine on its own and its decision
+will be another input into the internal morphological FSM structures. 
+This also suits our choice of enriching the concatenative analysis
+with a formal linguistic model that can also be encoded into FSMs. 
+FSM can also be easily integrated with hidden Markov models (HMM)
+extracted from the sets of documents the MA will consider. 
+
+The state machine in Firgure~\ref{f:statemachine} controls 
+the concatenation based state machines of the morphological
+analyzer.
+The transitions are excited
+by inputs from the morphological analyzer. 
+A NAME label represents a proper name, 
+an NRC label represents a narrator connector such as
+\RL{`an} "on behalf of", \RL{qaal} "said", 
+or one of their derivations. 
+The IBN label corresponds to the word \RL{ibn} 
+``the son of'' and represents a name connector.
+
+The symbol $\tau_{\mbox{NMC}}$ is a threshold
+that corresponds to the number of tolerated name connectors 
+that may occur between two names. 
+The symbol LIST$_{\mbox{NMC}}$ corresponds to the list 
+of name connectors collected since the controller
+started looping in the state NMC\_S. 
+The symbol $\lambda_{\mbox{NMC}}$ is a parameter 
+that corresponds to a relaxed tolerance measure that
+the controller resorts to in case the words separating
+two names were longer than $\tau_{\mbox{NMC}}$ but 
+contained a name connector word such as IBN or NISBA.
+
+The controller has four states that correspond to 
+an abstract position in text relative to the next sanad. 
+State TEXT\_S is the initial state and denotes that
+the controller is outside the context of a sanad.
+The controller moves to the state NAME\_S whenever
+NAME is reported.
+State NRC\_S means that the controller thinks it is in the context
+of a narrator name after an NRC is reported.
+State NMC\_S
+indicates that the controller expects a name to appear within 
+a tolerance threshold expressed by 
+$\tau_{\mbox{NMC}}$ and $\lambda_{\mbox{NMC}}$.
+
+Similarly, the NRC\_S state tolerates $\tau_{\mbox{NRC}}$ words 
+before it gives up on its expectations. 
+
+We reach the NAME\_S state only when a
+valid NAME is detected and we leave when no more NAME's 
+are detected. 
+The NRC\_S state can only be reached if an NRC is detected.
+NMC\_S can only be reached from a NAME\_S state.
+
+The controller reports a valid chain of narrators when a 
+sequence of names
+connected by narrator connectors appears. 
+It marks the beginning of the hadith with the beginning of the 
+current sequence,
+and marks the end of the hadith with the beginning of the next 
+sequence. 
+It also marks the chain of narrators as the sequence itself. 
+The definition of input labels such as NAME and IBN depends on 
+the morphological analyzer. 
+We readily implemented the above approach and confirmed its 
+accuracy and efficiency compared to existing morphological
+analyzers. 
+
+We will investigate enhancing our current case-based morphological
+analyzer.
+We will investigate methods to extend the internal structures 
+of our analyzer to be able to represent a formal linguistic
+computational model of the Arabic language. 
+
+{\bf Linguistic computational model of Arabic.}
+We think that a linguistic computational model for the Arabic
+language will perform better in applications where
+relations between Arabic text documents are involved. 
+Such a model helps capture features unique and specific 
+to the Arabic language and make use of that in the analysis.
+
+ElixirFM~\cite{Otakar:07} builds on the lexicon
+of the Buckwalter analyzer and the annotations of the 
+Prague Arabic dependency databank to build a formal 
+computational model of the Arabic language.
+The models is a set of formulas and rules. 
+ElixirFM uses the computational model in a functional
+morphology framework that uses Haskell and functional
+programming. 
+The analyzer works by generating morphological trees of 
+decisions and then uses a disambiguation decision procedure 
+to annotate the trees with contextual elements. 
+
+We will explore extracting our model from formal text book
+definitions of the Arabic language~\cite{Abd00,Abd001} and seek
+help from Arabic linguists to relax these formal rules to
+allow common mistakes. 
+We will encode the model in a grammar that we can synthesize
+into an FSM and incorporate that with our current FSM 
+morphological analyzer. 
+
+
+{\bf User query language. }
+In Figure~\ref{f:statemachine} we showed an FSM 
+that controls the morphological analysis and generates a
+list of chains of narrators out of hadith text.
+We think that it is overwhelming to ask a user who is not 
+versed in FSM and in computational sciences in general 
+to design such a controller. 
+
+The diagram in Figure~\ref{f:chain} depicts our vision of 
+an equivalent query.
+This query generates the list of chains by first passing the 
+hadith text into the morphological analyzer which 
+extracts names and their position in text. 
+We iterate over the extracted names and compute the distance.
+Whenever the distance is less than a threshold $\theta_1$
+we add the word to a temporary chain of names. 
+Otherwise, we execute a sequential block to 
+{\bf 1.} tabulate the chain into a temporary table containing 
+the list of chains. 
+{\bf 2.} Create a new chain whith the last element.
+Finally, we filter those chains whose cardinality 
+is less than some threshold  $\theta_2$.
+
+This query can be saved to a library of computational components
+and invoked directly in another query 
+as we saw in Figure~\ref{f:literature}.
+
+\begin{figure}
+\center{
+\resizebox{.8\columnwidth}{!}
+{\includegraphics{figs/detailed_submachine.pdf}
+\label{f:chain}
+}
+\caption{CATARM detailed diagram for the chain of narrators extractor}
+}
+\end{figure}
+
+The CATARM query language will be expressed in a grammar 
+where the atomic elements are user defined constants, or
+entities and tags extracted by the morphological analyzer. 
+The language will define terms, expressions, and predicates
+using several connectives that express set operations, 
+relational operations, Boolean operations, scalar operations, 
+statistical tools, text algorithms, and graph algorithms. 
+We need to provide a front end tool to support this query
+language.
+
+{\bf Simplify LCM based on the query.}
+Given
+L$L_q$ the query language, 
+$L_A$ the Arabic linguistic
+computational model, and  $q$ a user query
+we compute $\rho_q$, the grammar path that matches 
+the query $q$ in $L_q$. 
+We plan to inspect methods to overapproximate 
+the morphemes and the transitions in $L_A$ 
+that can be satisfied by morphemes and transitions
+in $\rho_q$. 
+This can simplify the number of states we need to 
+look at under $L_A$. 
+
+This task is not trivial though, since $\rho_q$ may contain
+states and transitions that are not always morphemes and 
+transition between morphemes. 
+We will consider a hierarchical methodology that follows 
+the hierarchical structure of the Arabic language expressed
+in $L_A$. For example,
+we may consider sets of connected states in $\rho_q$ 
+containing a single morpheme as a state in one hierarchy level 
+in $L_A$.
+We will perform this simplification before starting the 
+morphological analysis since we already have to analyze
+the query $q$ and compute $\rho_q$ before we start
+the analysis. 
+
+{\bf Simplify LCM and MA based on set of documents.}
+We will analyze the set of input documents given to a
+morphological analyzer component and use the analysis
+to further improve the morphological analysis. 
+We will extract statistical features from these documents 
+to help order the solutions considered by the analyzer
+to consider the most probable first. 
+
+We will consider the use of HMM models 
+built on the fly while processing the documents.
+We will also consider the use of
+latent semantic indexing~\cite{LSI89} techniques. 
+We are considering these two techniques as they are 
+both language independent and can both be computed and
+adapted on the fly.
+
+{\bf Entity and relational extractor.}
+We will build a set of entity and relational extractors. 
+The entities can be proper names, dates, locations,
+and qualification adjectives. 
+We will explore the use of pairing techniques to establish 
+relations between the extracted entities.
+The relations will form graphs as in the case studies presented
+so far. The nodes represent the entities and the previously 
+extracted relations and the edges represent the newly discovered 
+relations.
+
+The entity and relational extraction components 
+may take as input a template for an expected relation and 
+may return a graph that describes whether and where 
+this relation exists between the subject documents.
+
+We will need to augment the tags in the lexicons of the 
+morphological analyzer to allow for better entity and relational
+extractors. 
+We plan to make use of existing annotated tree banks and of
+modern Arabic dictionaries to do that. 
+
+{\bf Statistical components.}
+We will make use and build statistical components that can be used
+in CATARM. 
+We will need statistical components to rank solutions, compute 
+probable decisions, estimating good thresholds. 
+
+{\bf Graph algorithms.}
+The relations extracted from the text documents will often 
+be expressed in terms of graphs.
+We will need textbook graph algorithms such as traversals, 
+topological sorts, spanning trees, strongly connected 
+components, minimum flow  and other algorithms.
+For example, in the literature case study, the discovery
+of articulation vertices may point to important narrators 
+who may have an insignificant number of narrations 
+but still connect narrator communities.
+
+{\bf Query solver.}
+This is a logical solver that will solve query expressions to \
+resolve matching text and relations.
+We will need to use existing off the shelf constraint solvers 
+and set theory satisfiability solvers to address our queries. 
+The solver should return and rank approximate matches.
+That is if a three entities out of four required in a relation are
+found, the solution is still worth reporting. 
+
+The solver will call the morphological analyzer to compute 
+morphological matches to the atomic elements of the query. 
+Then each operation in the query such as a set intersection
+operation will correspond to a computational component. 
+The solver will call these components and integrate their
+results. 
+
+The solver may make use of existing propositional~\cite{MiniSAT} or
+higher order logic~\cite{Z3} solvers if needed. 
+These solvers can solve satisfiability questions.
+We will explore the feasibility and utility 
+of extracting a necessary set of 
+constraints from the query and answering that with an off-the-shelf
+logic solver. 
+
+{\bf Case studies.}
+We will work on developing the necessary components to complete 
+the solution for the hadith literature and the security case 
+studies.
+We will also work on the health and network traffic case studies.
+While working on the case studies, we will add the components
+we build to our library of components. 
+This will enrich CATARM with a useful set of computational 
+components. 
+
+{\bf Development methodology.}
+We will integrate all the mentioned techniques in a scalable 
+framework for Arabic text analysis.
+The framework as a whole will allow for exhausting Arabic text 
+analysis and allow for extensions of the framework.
+A user should be able to iteratively and repetitively apply the 
+abode techniques on his input text.
+
+We will follow an eXtreme Programming 
+methodology in the process of building CATARM.
+We will use open source tools, libraries, and frameworks to 
+build our libraries.
+We will build on existing open source programming and text 
+mining tools as well as open source Arabic text analysis tools 
+based on NLP such as MADA+TOKAN~\cite{Rot08}, 
+NEMLAR~\cite{RAl09}, and IJAES~\cite{Int09}.
+
+We will use a dokuwiki based website~\cite{Dok09} 
+to document the progress online and will use 
+subversion~\cite{Sub09} as a source control tool.
+
+
  
-Lexical analysis library: We need a library of routines that enables primitive lexical analysis of Arabic text.
- For example,
- simple primitive tasks such as comparing two strings need special attention in Arabic since each Arabic letter has four different forms depending on its position in the word; isolated form,
- start,
- middle and end of a word.
- Arabic diacritics should also be ignored most of the time when comparing two strings.
- These lexical analysis routines should also pay attention to the form of a letter when used in tokenization as a letter in and end of word form denotes the end of the word even if it was not followed with a space.
- Such a library can benefit from existing Unicode enabled string libraries such as Qt.
- It also can provide a layer of abstraction that hides the details of the encoding of Arabic letters used in the text documents.
- 
-Syntax analysis library: This library should allow sentence structure understanding.
- We will explore the best way to develop this library.
- Several options exist such as pattern based matching,
- tokenization and dictionary based lookups,
- or a language grammar that allows more than one matching rule.
- This library needs to be extendible to allow additions of new rules or patterns.
+{\bf Visualization.} 
+We will build a visualization tool that allows fast 
+and guided inspection and correction mechanism. 
+The CATARM visualization aid will be a tag and relation color
+sensitive browser.
+The interface will allow a fast and guided inspection and 
+correction mechanism.
 
- (Note the ElixirFM does this)
- We will explore Arabic grammar books such as The Principles of Arabic~\cite{Sha73} and others~\cite{Abd00,Abd001}
- to augment current morphological analyzers~\cite{Tim04} and syntax analysis tools~\cite{Col09}.
- We will use relaxed NLP techniques to overapproximate results.
- Then and after a relational query,
- we will apply statistical analysis techniques to rank the matching results.
+\subsection{Research team}
 
-Dynamic modern Arabic dictionary: The dictionary will allow identities based on semantics,
- derivation rules,
- as well as user assigned rules.
- The dictionary will return modern grammatical categories for words classifying them as nouns,
- verbs,
- and adjectives instead of the classical Arabic categories that specify how the word is derived from an original radix.
- It remains to be explored how to represent these categories without exploding the size of the dictionaries with redundant words of multiple categories.
- This work will augment existing open source Arabic dictionaries and will allow for better morphological analysis and entity extraction.
+\subsection{Work plan}
 
-An entity extraction library: We will explore building a library that allows extraction of entities from Arabic text.
- These entities can be proper names,
- dates,
- locations,
- and qualification adjectives to list few possibilities.
- The extractor will use the dynamic modern Arabic dictionary as well as the syntax library to extract entities from a sentence and to establish identity between entities across sentences.
-
-A relation extraction library: We will explore building a library that allows extraction of relations from Arabic text.
- We will explore the use of pairing techniques to establish relations between the extracted entities.
- The relations will form graphs where the nodes are the entities and the previously extracted relations and the edges are the newly discovered relations.
- The routines in this library will take as input a template for an expected relation and will return a graph that describes whether this relation exists between the subject documents and where.
- These relations will be ranked using statistical analysis.
- The statistical criterion and the ranking methods remain to be decided.
-
-A logic solver: This is a logical solver that will solve query expressions to resolve matching text and relations.
- We will explore the proposal of a logical query language that is restricted enough to be computable and expressive enough to allow interesting properties.
- We will use of the shelf solvers and matches from the entity and relation extractors to evaluate the expression.
- The choice of solvers remains to be decided after the query language is formed.
- 
-Tagger: We will explore the development of an automatic tagging interface that allows fast and guided inspection and correction mechanism.
- 
-We will integrate all the mentioned techniques in a scalable framework for Arabic text analysis.
- The framework as a whole will allow for exhausting Arabic text analysis and allow for extensions of the framework.
- A user should be able to iteratively and repetitively apply the abode techniques on his input text.
-
-
-In the development cycle, we will use an Extreme programming methodology in the process of building the Arabic text mining framework.
- We will use open source tools, libraries, and frameworks to build our libraries.
- 
-Our research will concentrate on NLP techniques native to the Arabic language to analyze the Arabic text and we will avoid preprocessing that feeds common text and data mining techniques.
- We will build on existing open source programming and text mining tools as well as open source Arabic text analysis tools based on NLP such as MADA+TOKAN~\cite{Rot08}, NEMLAR~\cite{RAl09}, and IJAES~\cite{Int09}.
-
-We will use a dokuwiki based website~\cite{Dok09} to document the progress online and will use subversion~\cite{Sub09} as a source control tool.
-
-
+\subsection{Budget}
 
 
 \section{Anticipated results and evaluation criteria}
 \label{s:results}
 
+We anticipate that the research will lead to the production of 
+CATARM, an Arabic text analysis framework that allows relational 
+queries between Arabic text documents.
+The components of the framework are listed and discussed
+in details in Section~\ref{s:design}. 
 
-We anticipate that the research will lead to the production of an Arabic text analysis framework that allows relational queries between Arabic text documents.
- The components of the framework are listed in Section "Research Design and Methods" and are repeated for convenience as follows.
- \begin{enumerate}
- \item Lexical analysis library 
- \item Syntax analysis library
-\item Dynamic modern Arabic dictionary
-\item An entity extraction library
-\item A relation extraction library
-\item A logic solver 
-\item Tagger
+The following is a list of the anticipated components They are and are repeated for convenience as follows.
+\begin{enumerate}
+\item Case-based morphological analyzer 
+\item Linguistic computational model for Arabic
+\item User query language
+\item Optimization methodologies
+\begin{enumerate}
+\item Use of language specific features 
+\item Use of data in question specific features
 \end{enumerate}
-
-We will use these tools to handle several case studies from different fields.
- In the following we discuss three case studies that we anticipate our proposed framework to solve.
- 
-{\bf The literature case study}
-Assume we have two sets of texts.
- The first set is several books of historical accounts where each account is preceded by a chain of narrators who narrated the account.
- The second set is several books of biographies where each biography of a person may include an evaluation of the authenticity of that person.
- We want a tool that can answer a complex query such as relating all historical accounts in the first set that discuss women and vehicles (such as tamed animals) to the narrators of the accounts, and then relate these narrators to the second set of books of biographies with an emphasis on authenticity evaluations.
-
-We need tools that can search and index the historical accounts to return a subset that relates to women and travel.
- Then we need tools that can identify names, and succession relations between names to build a chain of narrators for each historical account in the subset.
- We need tools that can identify the names in the biographies and detect evaluation adjectives.
- 
-Provided we have these tools we can exhaustively at the click of a button visualize the authenticity of all the historical accounts that may allow or forbid women from driving according to Islamic laws.
- We can go one step further to detect locations and dates and relations based on chronological orders and further question the consistency of the historical accounts.
- Such query takes currently huge amounts of manual effort that is also prone for error and far from being exhaustive.
- 
-We here envision that text mining applied to the authenticity of historical accounts will have a huge impact in the field.
-
-Note that most of the Islamic history and Hadith books as well as a huge library of Arabic literature books are already digitized and available on the internet.
-
-{\bf The security case study}
-
-Given a huge set of investigation reports, an officer may throw a list of names of convicted people and check all the reports for possible relations between them in terms of criminal action, locality, or third party names unknown to the officer who happen to know the convicts.
- The query may return at the click of a button, two convicted people who had no direct relation in the reports, but who are related only through a third person unknown to the investigator.
- Such a query is very hard to answer manually.
-
-{\bf The health case study}
-
-Given a set of clinical reports gathered by the Order of Medical Doctors, the ministry of health may query to relate all reports on a specific sickness to the doctors treating it and evaluate the response to the different types of medications as classified in different areas in the country each with a different climate.
- Such query, while possible at a click of a button with text mining tools if the data is available in digital form, would take a huge manual effort to conduct surveys, collect and gather the data.
- In this case, digitizing the data may be a less expensive effort.
+\item Entity and relational extractors
+\item Statistical tools
+\item Graph and text algorithms
+\item Query solver
+\item Case studies 
+\begin{enumerate}
+\item Hadith literature
+\item Security
+\item Health
+\item Network content
+\end{enumerate}
+\end{enumerate}
 
 \subsection{Evaluation Criteria}
 
