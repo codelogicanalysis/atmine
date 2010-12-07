@@ -46,6 +46,7 @@
 \newcommand{\noArRL}[1]{\arabfalse\RL{#1}\arabtrue} 
 \newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue} 
 \newcommand{\noTrNoVocRL}[1]{\novocalize\transfalse\RL{#1}\transtrue\vocalize} 
+%\newcommand{\drawline}{\begin{picture}(6,.1) \put(0,0) {\line(1,0){6.25}}\end{picture}}
 
 \usepackage{setspace}
 %\doublespacing
@@ -660,6 +661,9 @@ Journal of the American Society for Information Science and Technology
 }
 \end{figure}
 
+
+
+%\drawline
 %\begin{figure}[tb]
 \begin{figure}
 \center{
@@ -670,7 +674,28 @@ Journal of the American Society for Information Science and Technology
 \caption{CATARM detailed diagram for the chain of narrators extractor}
 }
 \end{figure}
+Consider Figure~\ref{f:chain}, which depicts a possible rendering of a query that transforms a hadith text file into a list of chain of narrators. Note that this diagram does not faithfully translate the state machine we are currently implementing to generate our priliminary results which is represented in  Figure~\ref{f:statemachine}. Instead, it has been simplified in order not to clotter the diagram. We start first by defining the legend: we have used boxes to represent computational blocks provided by CATARM, while ovals represent structured or unstructured data which are mainly the inputs and the outputs of the computational blocks. When the data blocks are dotted they represent temporary values, while when they are solid and shaded they represent the initial input and the final output. When a data block represents an array of values, the oval will be reproduced three times to show that multiple values exist.
 
+
+This query generates the list of chains by first passing the hadith book text file into a Morphological analyzer which is controlled by an entity extraction controller which in this case detects Names (of people) and output such a word, its corresponding position in the text and its syntax category which must be a Name category. Then we "Iterate" over this list compoputing the distance between the positions of 2 consecutive words. This distance is inputed into a thresholding block which returns the appropriate values for the "Less" and "Bigger" outputs. Having "Less" as TRUE, means that the distance is less than the provided threshold $\theta_1$ (which is a modifiable parameter of the block). In that case, we add the word to a temporary data block representing a chain (i.e. a list of narrator names). Otherwise, we execute a sequential block which in order contains: (1) a "Table" block which tabulates the chain into a temporary table/array containing the list of chains. (2) a "Create" block which initializes a new "Chain" whith the output of the second iterator (i.e. the name whose distance from its previous one is larger than the threshold). Finally, the "Filter" block outputs only the chains whose cardinality is larger than some threshold  $\theta_2$.
+
+
+In this way, the above query adds names to the chain temporary variable until a name which is distant is detected. Then, we consider the valid chains as those which contain a minimum number of names. CATARM allows the librarization of this query into a user-defined computational block that can be used later in more complex queries as will be shown below. Thus, the details of the implementation of the block will be hidden and the block's interface will be only the shaded data blocks in the figure. In what follows, we assume that this query has been librarized into a "Narrator Chain Extractor" computational block to be used in Figure~\ref{f:literature}.
+
+\begin{figure}
+\center{
+\resizebox{.4\columnwidth}{!}
+{\input{figs/hadith.pdftex_t}
+\label{f:statemachine}
+}
+\caption{State-machine used to detect the chain of narrators}
+}
+\end{figure}
+
+\pagebreak
+
+
+%\drawline
 We see more and more Arabic documents such as texts,
 books, publications, hospital and governmental records emerging 
 every day.
