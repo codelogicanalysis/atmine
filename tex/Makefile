@@ -34,7 +34,7 @@ echo:
 	@echo $(SRCS_PS_TEX)
 
 _mmpfig:
-	cd mmpfigs; make
+	#cd mmpfigs; make
 
 figures: $(SRCS_PS_TEX_T) $(SRCS_PDF_TEX_T) _mmpfig
 
