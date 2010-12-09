@@ -1269,8 +1269,6 @@ NEMLAR~\cite{RAl09}, and IJAES~\cite{Int09}.
 We will use a dokuwiki based website~\cite{Dok09} 
 to document the progress online and will use 
 subversion~\cite{Sub09} as a source control tool.
-
-
  
 {\bf Visualization.} 
 We will build a visualization tool that allows fast 
@@ -1282,9 +1280,41 @@ correction mechanism.
 
 \subsection{Research team}
 
+The team will be formed by the two main PIs, Dr. Fadi Zaraket (LPI)
+and Dr. Rehab Duwairi (Co-LPI) and three research assistants.
+Currently the LPI is working with one research assistant 
+and two senior students on an Arabic morphological analyzer. 
+
+The LPI offers a course on computational Arabic attended
+by excellent senior and graduate students at AUB. 
+Once funded, the team can be directly formed and work can start
+with productive team members. 
+
 \subsection{Work plan}
 
-\subsection{Budget}
+\subsection{Budget items}
+
+In the following we list the budget items. 
+Monatary values are provided in more details on the QNRF submission 
+website. 
+
+\begin{itemize}
+\item One research assistant at QU
+\item Two research assistants at AUB, one of them will 
+work partially from QU. 
+\item Two month salary per year for the Co-LPI
+\item Two month salary per year for the LPI
+\item One course buy out per year for the Co-LPI
+\item Two weeks consultant for the second and the third years
+\item Licensing and membership fees to acquire digital libraries and corpora
+\item High performance computer and storage devices
+\item One conference for each PI per year
+\item One conference for one RA from QU per year
+\item One conference for one RA from AUB per year
+\item Site visit to AUB 
+\item Site visit to QU 
+\item Other miscellanous items
+\end{itemize}
 
 
 \section{Anticipated results and evaluation criteria}
@@ -1295,12 +1325,42 @@ CATARM, an Arabic text analysis framework that allows relational
 queries between Arabic text documents.
 The components of the framework are listed and discussed
 in details in Section~\ref{s:design}. 
+In the following we will discuss what to anticipate and 
+how to evaluate the different components of CATARM. 
 
-The following is a list of the anticipated components They are and are repeated for convenience as follows.
-\begin{enumerate}
-\item Case-based morphological analyzer 
-\item Linguistic computational model for Arabic
-\item User query language
+\subsection{Case-based morphological analyzer} 
+
+We will deliver a case-based morphological analyzer. 
+The analyzer will be compared to other available analyzers such as
+Buckwalter~\cite{Tim04} and ElixirFM~\cite{Otakar:07} in terms
+of accuracy and efficiency of analysis.
+We will adopt two comparison methodologies. 
+First, we will compare the analyzers in an exhaustive analysis mode
+which is the only way current analyzers perform. 
+Second, we will compare the analyzers under several case-studies
+and show how a case-based morphological analyzer can benefit
+from case-based optimizations.
+
+\subsection{Linguistic computational model for Arabic}
+
+We will build a linguistic computational model for Arabic 
+based on an understanding of the formal Arabic grammar 
+and on an abstraction of the current existing concatenation
+based lexicons.
+We will compare our LCM with that of ElixirGM~\cite{Otakar:07}.
+We will study how much such a model can affect the analysis
+in terms of accuracy and efficiency as well. 
+
+\subsection{User query language}
+
+We will build a query language for relational Arabic text mining 
+and a front-end to compile a user query into an optimized
+computation. 
+We will check how user friendly and how expressive the language is.
+We will compare our query language with the sophisticated 
+interface of the MADA+TOKAN toolkit~\cite{Habash:09} and we will
+look for other attempts in the industry . 
+
 \item Optimization methodologies
 \begin{enumerate}
 \item Use of language specific features 
