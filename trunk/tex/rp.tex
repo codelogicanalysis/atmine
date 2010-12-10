@@ -213,7 +213,7 @@ This happens because the first word \RL{almdrsT} ends with
 These words occur often in text and greatly increase the
 difficulty of tokenization and are referred to as 
 ``run-on'' words~\cite{Buckwalter:04}.
-Such difficulties are inherrent to the 
+Such difficulties are inherent to the 
 morphological analysis of the Arabic language and
 render the solutions inaccurate.
 
@@ -335,7 +335,7 @@ and text mining.
 computational model of Arabic. 
 The model will be implemented using efficient structures. 
  {\bf (2.)} It will be amenable to Arabic specific simplifications 
-inferred from the correspondence between the fromal Arabic rules
+inferred from the correspondence between the formal Arabic rules
 and the relational user queries.
 {\bf (3.)} The model will also be amenable to simplifications 
 inferred from statistical features extracted from the document 
@@ -394,7 +394,7 @@ in the reports.
 We will look at clinical reports and relate them to pharmaceutical 
 records and find relations between sicknesses and prescribed medication. 
 Finally, we will build a system using CATARM to check the strength
-of the relations between internet documents viewed by a minor and
+of the relations between Internet documents viewed by a minor and
 a set of Arabic text documents containing unrated or unwanted 
 material. If the relation is strong, the system will flag access to
 the document. 
@@ -469,7 +469,7 @@ opportunities for native workers.
 The PI and his team at the American University of Beirut (AUB)
 started work on an Arabic text mining framework~\cite{ATMine09}
 that is available now online.
-They have successfully developped ATSarf, a case-based morphological 
+They have successfully developed ATSarf, a case-based morphological 
 analyzer, and applied it on the hadith literature case study. 
 
 A \RL{.hady_t} is a narration related to the prophet Mohammad
@@ -489,7 +489,7 @@ separate narrators so that we can later look each one of them
 up in the biography books. 
 For example, the boxes in Figure~\ref{f:exhadith} are proper names 
 and once
-connected toghether they form complex names of narrators. 
+connected together they form complex names of narrators. 
 Narrator $n_1$ has the first name \noTrRL{qtybT} and his father 
 name is \noTrRL{s`yd} as the word in between 
 \noTrRL{bn} (son of) indicates. 
@@ -509,7 +509,7 @@ The framework now comprises a state of the art
 case-based morphological analyzer, ATSarf, 
 and computational components that allow the user to
 specify his queries as one or more FSM
-controlling the morphological analyser.
+controlling the morphological analyzer.
 We explain this approach in details in 
 Section~\ref{s:design:method}.
 ATSarf along with other computational components, 
@@ -577,7 +577,7 @@ related NLP conferences.
 The Co-LPI, Rehab Duwairi, has several years of experience 
 working on data mining for Arabic documents. 
 She initially targeted Arabic text categorization where a 
-dataset of 1000 documents where used to train and test 
+data set of 1000 documents where used to train and test 
 classifiers~\cite{Duw06,Duw07}.
 Word morphology comes to the surface when extracting the 
 feature vectors of documents. 
@@ -595,7 +595,7 @@ Therefore, every document is represented using four different
 feature vectors, the result revealed that light-stemming is the 
 best representation as it preserves the meaning of the words 
 and yet reduces the dimensions of feature vectors. 
-The dataset size was 15,000 documents that belong to three 
+The data set size was 15,000 documents that belong to three 
 categories. 
 
 In recent research efforts, the CO-LPI is investigating 
@@ -794,7 +794,7 @@ of narrators that we feed to a morphological analyzer (MA)
 component controlled by a merger controller. 
 The merger controller will look at the morphological analysis
 of the narrator names and will decide to merge two narrators in 
-one graph node in case they were morphologicaly equal. 
+one graph node in case they were morphologically equal. 
 It will also give feedback to the MA component to stop the
 analysis when a it reaches a satisfactory result.
 We consider this graph as a partial order relation between 
@@ -808,7 +808,7 @@ qualifications.
 Then the graph of narrators and the narrator qualification map
 are both processed through a locator component that computes
 a graph coloring routine to color the graph of narrators. 
-The color changes whener two consecutive narrators are far away
+The color changes when two consecutive narrators are far away
 from each other in the text. 
 The locator then looks at connected subgraphs of the same color,
 and finds a median node in each of them to be the narrator 
@@ -844,7 +844,7 @@ interrogation reports with crime suspects as well as
 a database of previous interrogation reports. 
 The CATARM system also takes as input a database of geographical
 locations and a database of personal records. 
-The aim is to check for inconsistencies in the iterrogation
+The aim is to check for inconsistencies in the interrogation
 reports and to identify possible connections between the suspects
 and the crime scene. 
 
@@ -870,7 +870,7 @@ $N$ names, $G$ locations, and $D$ dates and projects $G_R$
 over each one of them.
 For each dimension $k$, it computes a local measure 
 $\alpha_k$ of how much $G_R|_k$ simulates $G_k$. 
-It flags the components in the graph where the accumelated 
+It flags the components in the graph where the accumulated 
 measure $\alpha= \Sigma_{k\in\{D,N,G\}} \alpha_k$ is
 below a threshold $\theta$ as inconsistent. 
 
@@ -892,7 +892,7 @@ Morphological analyzers for the Arabic language
 such as Buckwalter~\cite{Buckwalter:02},
 Beesly~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
 and ElixirFM~\cite{Otakar:07} take an Arabic word as input
-and produce several valid morpholgical solution for the word. 
+and produce several valid morphological solution for the word. 
 Each solution is a sequence of morphemes that form the word.
 Each morpheme is associated with several tags such as 
 morphological, part of speech, grammar, and semantic tags. 
@@ -907,7 +907,7 @@ to enhance the accuracy at the expense of efficiency.
 The current use of morphological analyzers suffers from 
 several problems. 
 Analyzers that enumerate all possible partitions of a word
-and match them against concatenative rules are computationaly 
+and match them against concatenative rules are computationally 
 expensive. 
 Analyzers that exhaustively enumerate all possible solutions 
 for a word may hurt performance and may
@@ -929,8 +929,8 @@ invalid solutions on the fly.
 Case-based analysis can guide the morphological analysis
 to prune lots of the solutions and to bias the order of considered
 decisions. 
-For example, in the hadith literature case study pesented above, 
-amongst other things, we are intersted in checking whether a 
+For example, in the hadith literature case study presented above, 
+amongst other things, we are interested in checking whether a 
 word is a name.  
 We can bias the order of considered decisions to consider the 
 morphemes that can be names first. 
@@ -938,7 +938,7 @@ If one of them matches, we can ignore the rest of the solutions.
 In case a prefix is decided to be of a morphological category
 that does not connect with a name, then we can just ignore
 the analysis of the rest of the word. 
-This is more efficient than generating all possible partitionings
+This is more efficient than generating all possible partitions
 of the word, checking for morphological correctness of each 
 partition, and then inspecting the part of speech tags of each
 correct solution. 
@@ -946,7 +946,7 @@ We desire to build a morphological analyzer that allows a
 case-based controller to intervene at every single decision
 without much overhead. 
 
-\subsection{CATARM Query language}
+\subsection{CATARM query language}
 \label{s:design:query}
 
 We propose the CATARM query language with a user friendly
@@ -1026,7 +1026,7 @@ with a formal linguistic model that can also be encoded into FSMs.
 FSM can also be easily integrated with hidden Markov models (HMM)
 extracted from the sets of documents the MA will consider. 
 
-The state machine in Firgure~\ref{f:statemachine} controls 
+The state machine in Figure~\ref{f:statemachine} controls 
 the concatenation based state machines of the morphological
 analyzer.
 The transitions are excited
@@ -1139,7 +1139,7 @@ we add the word to a temporary chain of names.
 Otherwise, we execute a sequential block to 
 {\bf 1.} tabulate the chain into a temporary table containing 
 the list of chains. 
-{\bf 2.} Create a new chain whith the last element.
+{\bf 2.} Create a new chain with the last element.
 Finally, we filter those chains whose cardinality 
 is less than some threshold  $\theta_2$.
 
@@ -1174,7 +1174,7 @@ $L_A$ the Arabic linguistic
 computational model, and  $q$ a user query
 we compute $\rho_q$, the grammar path that matches 
 the query $q$ in $L_q$. 
-We plan to inspect methods to overapproximate 
+We plan to inspect methods to over-approximate 
 the morphemes and the transitions in $L_A$ 
 that can be satisfied by morphemes and transitions
 in $\rho_q$. 
@@ -1399,7 +1399,7 @@ increase productivity.
 While a item is delivered, it will still be subject to work,
 enhancements, and maintenance. 
 
-We detailed an agressive work plan in Table~\ref{t:workplan}. 
+We detailed an aggressive work plan in Table~\ref{t:workplan}. 
 The plan spans over three years and projects a timeline
 of work per quarter. 
 The row headers describe work items, and the column headers
@@ -1411,14 +1411,14 @@ and stand for
 {\bf P:} {\em planning phase}, 
 {\bf W:} {\em work in progress}, 
 {\bf D:} {\em deliverable}, 
-{\bf M:}  {\em maintainance}, 
+{\bf M:}  {\em maintenance}, 
 and 
 {\bf E: } {\em enhance} respectively. 
 
 The $1,2,3,$ and $4$
 superscripts of the deliverables in the 
 in case studies row refer to the four 
-case studies described in the propoal. 
+case studies described in the proposal. 
 
 We will use open source tools, libraries, and frameworks to 
 build our libraries.
@@ -1440,7 +1440,7 @@ post updates on the progress of the project.
 \subsection{Budget items}
 
 In the following we list the budget items. 
-Monatary values are provided in more details on the QNRF 
+Monetary values are provided in more details on the QNRF 
 submission website. 
 
 \begin{itemize}
@@ -1458,7 +1458,7 @@ work partially from QU.
 \item One conference for one RA from AUB per year
 \item Site visit to AUB 
 \item Site visit to QU 
-\item Other miscellanous items
+\item Other miscellaneous items
 \end{itemize}
 
 
@@ -1505,9 +1505,9 @@ We will check how user friendly and how expressive the language is.
 We will compare our query language with the sophisticated 
 interface of the MADA+TOKAN toolkit~\cite{Habash:09}.
 We will look for other attempts to formalize Arabic text 
-mining queries and we will also compare agains 
+mining queries and we will also compare against 
 formal text mining queries from other text mining domains such
-as the gene ontolgy domain~\cite{GeneOntology10},
+as the gene ontology domain~\cite{GeneOntology10},
 
 \subsection{Optimizations}
 
@@ -1536,7 +1536,7 @@ that we discussed previously and that are listed below.
 \end{enumerate}
 
 We anticipate CATARM to be able to successfully solve all the case
-studies with resonable computational resources available to the 
+studies with reasonable computational resources available to the 
 average user. 
 We will also generalize the components we will develop to solve
 the case studies into a library of components that can be used
@@ -1599,7 +1599,7 @@ continually add accuracy to the morphological solutions.
 that can help simplify and the analysis. 
 \item We will explore generalizing our results to languages 
 that resemble the Arabic language. 
-Some semetic languages, such as the Amharic, cyrillic, and Hebrew,
+Some Semitic languages, such as the Amharic, Cyrillic, and Hebrew,
 share common features with the Arabic 
 language. Some other languages are written using the 
 Arabic script like Persian, Kurdish, Urdu, and Pashto. 
