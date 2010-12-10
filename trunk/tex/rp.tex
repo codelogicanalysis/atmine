@@ -24,7 +24,8 @@
 %\usepackage[colorlinks=false]{color,hyperref}
 \usepackage{color,hyperref}
 %\usepackage{amsthm}
-%\usepackage{booktabs}
+\usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{natbib}
 \bibpunct{[}{]}{,}{n}{}{;}
 
@@ -174,33 +175,6 @@ components.
 %language and that can be parametrized and relaxed to fit a case 
 %study. 
 
-%IR tools are similar to a Google search 
-%engine where documents of interest are selected based on the 
-%relevance to a set of keywords of interest to the user.
-%NLP targets the automation of understanding human languages.
-%This task is the oldest and most difficult task in the artificial 
-%intelligence domain.
-%The main difficulty behind NLP comes from the ambiguity of 
-%natural languages~\cite{Osm08}.
-%While NLP techniques cannot deliver their final target yet, they 
-%can deliver analysis of sentences into nouns, verbs, and adjectives.
-%They can also narrow the meaning of a word or a phrase based on 
-%the context to one of its possible meanings.
-%Finally they can parse a sentence into a relation between the 
-%discovered entities using abstractions such as verb-name 
-%abstractions~\cite{Osm08}.
-
-%Information extraction (IE) targets forming data structures and 
-%instances of these data structures out of a collection of documents.
-%IE tries to fit the output of IR and NLP to templates of 
-%interest to the user.
-%Data mining can be applied at the end on the output of the 
-%IE process to answer user queries about the input 
-%documents~\cite{JHa05}.
-
-%\subsection{Arabic text mining in academy }
-%In the following we review the major works on Arabic text mining 
-%in academy and industry.
 
 Arabic morphological analyzers~\cite{Sughaiyer:04}
 consider an Arabic word and its internal structure composed of 
@@ -373,7 +347,7 @@ indexing~\cite{LSI89} and hidden Markov models (HMM).
 document and then uses set arithmetic and graph analysis techniques
 to establish relations between these graphs. {\bf (5.)} CATARM will 
 solve at least three interesting relational Arabic text case studies 
-presented in Section~\ref{s:design:casestudies}.
+presented in Sections~\ref{s:design:sec} and~\ref{s:design:lit}.
 
 \pagebreak
 
@@ -536,7 +510,8 @@ case-based morphological analyzer, ATSarf,
 and computational components that allow the user to
 specify his queries as one or more FSM
 controlling the morphological analyser.
-We explain this approach in details in Section~\ref{s:design:fsm}.
+We explain this approach in details in 
+Section~\ref{s:design:method}.
 ATSarf along with other computational components, 
 extract the chains of narrators from a set of narrations
 with above 95 percent accuracy and in less than two minutes. 
@@ -544,10 +519,10 @@ with above 95 percent accuracy and in less than two minutes.
 \begin{figure}[tb]
 \center{
 \resizebox{.75\columnwidth}{!}
-{\includegraphics{figs/narrator_chain_output.pdf}
-\label{f:narrators} } 
+{\includegraphics{figs/narrator_chain_output.pdf}}
 \caption{Directed acyclic graph representing a partial order 
     relation between narrators extracted using ATSarf}
+\label{f:narrators} 
 }
 \end{figure}
 
@@ -597,6 +572,35 @@ needed to extract the partial order graph.
 Publications about these results are pending acceptance in 
 related NLP conferences. 
 
+\subsection{PI related work}
+
+The Co-LPI, Rehab Duwairi, has several years of experience 
+working on data mining for Arabic documents. 
+She initially targeted Arabic text categorization where a 
+dataset of 1000 documents where used to train and test 
+classifiers~\cite{Duw06,Duw07}.
+Word morphology comes to the surface when extracting the 
+feature vectors of documents. 
+In that work, words were stemmed before using them as features. 
+Also, word frequency and inverted term frequency were used to 
+quantify the importance of features. 
+
+In a recent work, Duwairi, Refae and Khasawneh~\cite{Duw09}
+have addressed text categorization again. 
+This research investigated possible word forms that can be 
+used to create feature vectors of documents in particular: 
+original word, stem of the word, light-stem (shallow stemming) 
+of the word, and word augmented with a list of synonyms. 
+Therefore, every document is represented using four different 
+feature vectors, the result revealed that light-stemming is the 
+best representation as it preserves the meaning of the words 
+and yet reduces the dimensions of feature vectors. 
+The dataset size was 15,000 documents that belong to three 
+categories. 
+
+In recent research efforts, the CO-LPI is investigating 
+keyphrase extraction fro Arabic documents.
+
 The Co-Lead PI published extensively in this domain. 
 A selected list of her recent publications follows. 
 \begin{itemize}\itemsep0pt
@@ -613,23 +617,26 @@ Journal of the American Society for Information Science and Technology
 \end{itemize}
 
 
-%The Lead PI worked in the area of software arabization since 1996 
-%as he worked on developing Arabization modules for Windows NT and 
-%an 
-%Arabic string manipulation library~\cite{Zar96}. 
-%The Lead PI is also involved in working on an open source 
-%project that aims at comprehensive automation of authenticity 
-%checks against a corpus of literature heritage~\cite{Zaraket06}.
-%The Lead PI is leading an effort at AUB to introduce 
-%Computational Arabic in the curriculum of the ECE program. 
-%He is also leading a team of students in an effort to place 
-%the infrastructure needed for this project to start. 
-%The lead PI worked and published about relational logic and 
-%logic solvers applied to structured languages as follows.
-%\begin{itemize}
-%\item Sequential circuits for relational analysis. F. Zaraket, A. Aziz, and S. Khurshid. International Conference on Software Engineering, Minneapolis MN, 2007. 
-%\item Sequential circuits for program analysis. F. Zaraket, A. Aziz, and S. Khurshid. Automated Software Engineering, Atlanta GA, 2007. 
-%\end{itemize}
+The Lead PI worked in the area of software arabization since 1996 
+as he worked on developing Arabization modules for Windows NT 
+and an Arabic string manipulation library~\cite{Zar96}. 
+The Lead PI is also involved in working on an open source 
+project that aims at comprehensive automation of authenticity 
+checks against a corpus of literature heritage~\cite{Zaraket06}.
+The Lead PI is leading an effort at AUB to introduce 
+Computational Arabic in the curriculum of the ECE program. 
+He is also leading a team of students in an effort to place 
+the infrastructure needed for this project to start. 
+
+The lead PI holds several approved patents and has several 
+patents pending approval in the area of logic verification 
+and synthesis.
+The lead PI worked and published about relational logic and 
+logic solvers applied to structured languages as follows.
+\begin{itemize}
+\item Sequential circuits for relational analysis. F. Zaraket, A. Aziz, and S. Khurshid. International Conference on Software Engineering, Minneapolis MN, 2007. 
+\item Sequential circuits for program analysis. F. Zaraket, A. Aziz, and S. Khurshid. Automated Software Engineering, Atlanta GA, 2007. 
+\end{itemize}
 
 \section{Research design and methods}
 \label{s:designmethods}
@@ -646,7 +653,8 @@ contained in database entries.
 Text mining is the technology that automates the discovery of 
 information in non structured text.
 
-Text mining concerns the partitioning of text segments into classes,
+Text mining concerns the partitioning of text segments 
+into classes,
 the clustering of text segments,
 the extraction of concepts and entities from text,
 and the discovery and modeling of relations between text entities 
@@ -662,6 +670,32 @@ words are often ambiguous in natural languages.
 %lagging behind~\cite{Red08},
 %not much has been done to address NE and NER in the context of 
 %the Arabic language.
+
+IR tools are similar to a Google search 
+engine where documents of interest are selected based on the 
+relevance to a set of keywords of interest to the user.
+NLP targets the automation of understanding human languages.
+This task is the oldest and most difficult task in the artificial 
+intelligence domain.
+The main difficulty behind NLP comes from the ambiguity of 
+natural languages~\cite{Osm08}.
+While NLP techniques cannot deliver their final target yet, they 
+can deliver analysis of sentences into nouns, verbs, 
+and adjectives.
+They can also narrow the meaning of a word or a phrase based on 
+the context to one of its possible meanings.
+Finally they can parse a sentence into a relation between the 
+discovered entities using abstractions such as verb-name 
+abstractions~\cite{Osm08}.
+
+IE targets forming data structures and instances of these 
+data structures out of a collection of documents.
+IE tries to fit the output of IR and NLP to templates of 
+interest to the user.
+Data mining can be applied at the end on the output of the 
+IE process to answer user queries about the input 
+documents~\cite{JHa05}.
+
 
 The application of text mining techniques to Arabic text documents 
 will result in great benefits to many research fields such as 
@@ -734,9 +768,9 @@ for patterns in the text.
 \center{
 \resizebox{.75\columnwidth}{!}
 {\includegraphics{figs/literature_case-study1.pdf}
-\label{f:literature}
 } 
 \caption{CATARM diagram for the literature case study }
+\label{f:literature}
 }
 \end{figure}
 
@@ -755,7 +789,7 @@ The computational components can be direct CATARM components
 or custom user components built from other CATARM components.
 We feed the hadith books to a user Narrator Chain Extractor
 component that we will discuss later in 
-Section~\ref{s:design:chainext}. We  obtain a set of chains
+Section~\ref{s:design:method}. We  obtain a set of chains
 of narrators that we feed to a morphological analyzer (MA) 
 component controlled by a merger controller. 
 The merger controller will look at the morphological analysis
@@ -792,9 +826,9 @@ with authentication qualification annotations.
 \center{
 \resizebox{.8\columnwidth}{!}
 {\includegraphics{figs/security_case-study.pdf}
-\label{f:security}
 }
 \caption{CATARM diagram for the security case study}
+\label{f:security}
 }
 \end{figure}
 
@@ -840,7 +874,7 @@ It flags the components in the graph where the accumelated
 measure $\alpha= \Sigma_{k\in\{D,N,G\}} \alpha_k$ is
 below a threshold $\theta$ as inconsistent. 
 
-\subsection{CATRAM components}
+\subsection{CATARM components}
 \label{s:design:components}
 
 To do the above we need CATARM to provide us with several 
@@ -963,14 +997,15 @@ and $L_A$ the formal LCM for Arabic.
 
 
 \subsection{Methodology}
+\label{s:design:method}
 
 \begin{figure}
 \center{
 \resizebox{.4\columnwidth}{!}
 {\input{figs/hadith.pdftex_t}
-\label{f:statemachine}
 }
 \caption{State-machine used to detect the chain of narrators}
+\label{f:statemachine}
 }
 \end{figure}
 
@@ -981,7 +1016,7 @@ can be implemented in a more efficient way compared to other
 approaches. 
 For example the concatenative rules used in Buckwalter~\cite{Tim04}
 can be encoded in three FSM with linear execution time using 
-the trie~\cite{datries} data structure. 
+the trie~\cite{Aoe:89} data structure. 
 
 The use of FSMs also suits our case-based approach. 
 The controller can be a FSM machine on its own and its decision
@@ -1116,9 +1151,9 @@ as we saw in Figure~\ref{f:literature}.
 \center{
 \resizebox{.8\columnwidth}{!}
 {\includegraphics{figs/detailed_submachine.pdf}
-\label{f:chain}
 }
 \caption{CATARM detailed diagram for the chain of narrators extractor}
+\label{f:chain}
 }
 \end{figure}
 
@@ -1231,8 +1266,9 @@ operation will correspond to a computational component.
 The solver will call these components and integrate their
 results. 
 
-The solver may make use of existing propositional~\cite{MiniSAT} or
-higher order logic~\cite{Z3} solvers if needed. 
+The solver may make use of existing 
+propositional~\cite{MiniSAT04} or
+higher order logic~\cite{Z308} solvers if needed. 
 These solvers can solve satisfiability questions.
 We will explore the feasibility and utility 
 of extracting a necessary set of 
@@ -1249,27 +1285,6 @@ we build to our library of components.
 This will enrich CATARM with a useful set of computational 
 components. 
 
-{\bf Development methodology.}
-We will integrate all the mentioned techniques in a scalable 
-framework for Arabic text analysis.
-The framework as a whole will allow for exhausting Arabic text 
-analysis and allow for extensions of the framework.
-A user should be able to iteratively and repetitively apply the 
-abode techniques on his input text.
-
-We will follow an eXtreme Programming 
-methodology in the process of building CATARM.
-We will use open source tools, libraries, and frameworks to 
-build our libraries.
-We will build on existing open source programming and text 
-mining tools as well as open source Arabic text analysis tools 
-based on NLP such as MADA+TOKAN~\cite{Rot08}, 
-NEMLAR~\cite{RAl09}, and IJAES~\cite{Int09}.
-
-We will use a dokuwiki based website~\cite{Dok09} 
-to document the progress online and will use 
-subversion~\cite{Sub09} as a source control tool.
- 
 {\bf Visualization.} 
 We will build a visualization tool that allows fast 
 and guided inspection and correction mechanism. 
@@ -1288,14 +1303,139 @@ and two senior students on an Arabic morphological analyzer.
 The LPI offers a course on computational Arabic attended
 by excellent senior and graduate students at AUB. 
 Once funded, the team can be directly formed and work can start
-with productive team members. 
+with readily productive team members. 
 
 \subsection{Work plan}
+\label{s:design:plan}
 
+
+%\begin{table}[bt]
+\begin{table}[bt]
+\centering
+\caption{Three year quarter based work plan.}
+%\begin{tabular}{|p{1.5cm}||c|c||c|c||c|c|} \hline
+%\begin{tabular}{lp{.2cm}ccp{.2cm}ccp{.2cm}cc} %\cline{2-10}
+\small
+\begin{tabular}{lp{.1cm}ccccp{.1cm}ccccp{.1cm}cccc} \\
+& & \multicolumn{4}{c}{Year 1} & & \multicolumn{4}{c}{Year 2} & & \multicolumn{4}{c}{Year 3} \\ \cline{3-6} \cline{8-11} \cline{13-16} %\\
+    %\cline{2-13} \\ 
+& & Q1 & Q2 & Q3 & Q4 & & Q1 & Q2 & Q3 & Q4 & & Q1 & Q2 & Q3 & Q4 \\ \bottomrule
+
+Case based & & 
+W & W & W & E & & E & E & E & E & & E & E & E & E \\ 
+morphological analyzer & & 
+ &  & D & DM & &   & M & M & M & & M & M & M & M \\  \hline
+
+\multirow{2}{*}{Arabic LCM} & & 
+P & W & W & W & & W & E & E & E & & E & E & E & E \\ 
+& & 
+ &  &  &  & & D & DM & M & M & & M & M & M & M \\ \hline
+
+\multirow{2}{*}{Query language} & & 
+P & P & W & W & & W & W & E & E & & E & E & E & E \\ 
+& & 
+  &  &  &  & &  & D & DM & M & & M & M & M & M \\ \hline
+
+Language & & 
+P & P & P & W & & W & W & W & W & & E & W & W & W \\ 
+optimizations & & 
+ &  &  &  & &  &  &  & D & & DM & M & M & D \\ \hline
+
+Data  & & 
+P & P & P & W & & W & W & W & W & & E & W & W & W \\ 
+optimizations & & 
+ &  &  &  & &  &  &  & D & & DM & M & M & D \\ \hline
+
+\multirow{2}{*}{E/R extractors} & & 
+W & W & W &  & & E & E & E & W & & W & W &  & E \\ 
+& & 
+ &  & D & DM & & M & M & M & M & & M & D & DM & M \\ \hline
+
+Statistical & & 
+W & W & W & E & & WE & WE & WE & E & & WE & WE & WE & WE \\ 
+components & & 
+ &  & D & DM & & M & M & M & DM & & M & M & M & M \\ \hline
+
+Graph  & & 
+W & W & W & E & & WE & WE & WE & E & & WE & WE & WE & WE \\ 
+components & & 
+ &  & D & DM & & M & M & M & DM & & M & M & M & M \\ \hline
+
+\multirow{2}{*}{Query solver} & & 
+P & P & W & W & & W & W & W & E & & E & E & E & E \\ 
+& & 
+ &  &  &  & &  &  & D & DM & & M & M & DM & M \\ \hline
+
+\multirow{2}{*}{Case studies} & & 
+W & W & W & W & & W & W & W & W & & W & W & WE & E \\ 
+& & 
+ &  & D$^1$ &  & &  &  & D$^2$ &  & &  & D$^3$ & D$^4$ M & M \\ \hline
+
+\multirow{2}{*}{Visualization} & & 
+P & W & W & W & & E & E & E & E & & E & E & E & E \\ 
+& & 
+ &  &  & D & & M & M & M & M & & M & M & M & M \\ \hline
+
+\multirow{2}{*}{Integration} & & 
+P & W & W & W & & W & W & W & W & & W & W & W & E \\ 
+& & 
+ &  &  & D & & D & D & D & D & & D & D & D & M \\  \hline
+
+Validation & & 
+W & W & W & W & & W & W & W & W & & W & W & W & W \\  \bottomrule
+        %\cline{2-13} \\
+\end{tabular}
+\normalsize
+\label{t:workplan}
+\end{table}
+
+We will follow an eXtreme Programming 
+methodology in the process of building CATARM.
+This means that we will define refined incremental items of 
+work that allows for more frequent deliverables. 
+This also means that the code base will always be subject
+to maintenance and refactoring to enhance reuse and 
+increase productivity. 
+While a item is delivered, it will still be subject to work,
+enhancements, and maintenance. 
+
+We detailed an agressive work plan in Table~\ref{t:workplan}. 
+The plan spans over three years and projects a timeline
+of work per quarter. 
+The row headers describe work items, and the column headers
+describe quarters in the corresponding year of the project.
+The legends {\bf P, W, D, M, } 
+and {\bf E} 
+describe the status of the items 
+and stand for 
+{\bf P:} {\em planning phase}, 
+{\bf W:} {\em work in progress}, 
+{\bf D:} {\em deliverable}, 
+{\bf M:}  {\em maintainance}, 
+and 
+{\bf E: } {\em enhance} respectively. 
+
+The $1,2,3,$ and $4$
+superscripts of the deliverables in the 
+in case studies row refer to the four 
+case studies described in the propoal. 
+
+We will use open source tools, libraries, and frameworks to 
+build our libraries.
+We will build on existing open source programming and text 
+mining tools as well as open source Arabic text analysis tools 
+based on NLP such as MADA+TOKAN~\cite{Rot08}, 
+NEMLAR~\cite{RAl09}, and IJAES~\cite{Int09}.
+
+We will use a dokuwiki based website~\cite{Dok09} 
+to document the progress online and will use 
+subversion~\cite{Sub09} as a source control tool.
+ 
 The Lead PI will conduct biweekly meetings to track progress 
 on the project.
 The team will maintain a dokuwiki based website to continuously 
 post updates on the progress of the project.
+
 
 \subsection{Budget items}
 
@@ -1329,7 +1469,7 @@ We anticipate that the research will lead to the production of
 CATARM, an Arabic text analysis framework that allows relational 
 queries between Arabic text documents.
 The components of the framework are listed and discussed
-in details in Section~\ref{s:design}. 
+in details in Section~\ref{s:designmethods}.
 In the following we will discuss what to anticipate and 
 how to evaluate the different components of CATARM. 
 
@@ -1402,7 +1542,7 @@ We will also generalize the components we will develop to solve
 the case studies into a library of components that can be used
 in other case studies. 
 
-\subsection{CATRAM evaluation } 
+\subsection{CATARM evaluation } 
 
 The team will seek the assistance and help of an independent 
 consultant in the middle of the second and third years of 
@@ -1432,14 +1572,42 @@ expected to maintain and advance the framework.
 
 \subsection{Future work}
 
-Completion of the above goals would result in a significant contribution to the research community of NLP in general and Arabic Analysis in particular. However, as already noted, text mining is a wide problem that cannot be expected to saturate in the near future especially when it comes to the arabic language where much work is lacking. Consequently, we look forward for additional contributions to the field such as the following:
+The completion of the CATARM framework will result in a 
+significant contribution to the research community of 
+NLP in general and Arabic Analysis in particular. 
+The CATARM framework will act as vehicle to enhance and advance 
+research in the area. 
+We look forward for additional contributions to the field 
+such as the following.
 \begin{itemize}
-\item Enhance morphological analysis: It is always the case, that the lexicon upon which the morphological analyzer can be augmented with useful categorization and entity tags that reflect semantical meanings. These modifications would give CATARM additional capabilities in terms of allowing users to extract and use a greater variety of entities when building instructive queries. The feedback of experts in the field of arabic linguistics can continually add accuracy to the morphological solutions.  
-\item Look for other optimizations: From our priliminery research and results we were able to envision some optimizations to current tools; that's why it is expected that as we develop the complete framework to stumble at much more ideas and suggestions for improving the text mining process we are conducting expecially in terms of efficency and accuracy.
-\item Generalize the framework to other Arabic-like languages: Some sematic languages share many common features to the Arabic language such as the Amharic, Hebrew, etc... or even are written using the Arabic script like Persian, Kurdish, Urdu, Pashto. Accordingly, one may consider porting our techniques to them, or even generalizing the framework to support for languages other than Arabic.
-\item Generalize the case-based approach: ??
-\item Integrate other text mining techniques such as vocalization. Vocalization refers to the process of adding diacritics to an unvocalized text. The prerequisites of a successful vocalizer are the accuracy of the morphological analyzer in addition to grammatical analyzers. Such tools are especially useful in the academic sector where fully vocalized texts may be of high utility. 
-\item Maintenance: We should never forget that for any software to remain useful, it must be continuously monitored to correct bugs, improve its interface, and enrich its capabilities. That's why CATARM should undergo extensive testing, fixes, and enhancements even after launching. 
+\item We will explore developing and integrating vocalization
+techniques. 
+Vocalization techniques assign diacritics to unvocalized text. 
+The prerequisites of a successful vocalizer are the accuracy of 
+the morphological analyzer in addition to grammatical analyzers. 
+\item We will explore the use of CATARM with more case studies
+such as market analysis and opinion mining.
+\item We will explore augmenting the lexicon of the
+morphological analyzer with useful categorization and entity 
+tags that reflect semantical meanings. 
+These modifications would give CATARM additional capabilities in 
+terms of allowing users to extract and use a greater variety of 
+entities when building queries. 
+The feedback of experts in the field of Arabic linguistics can 
+continually add accuracy to the morphological solutions.  
+\item We will explore further optimization techniques
+that can help simplify and the analysis. 
+\item We will explore generalizing our results to languages 
+that resemble the Arabic language. 
+Some semetic languages, such as the Amharic, cyrillic, and Hebrew,
+share common features with the Arabic 
+language. Some other languages are written using the 
+Arabic script like Persian, Kurdish, Urdu, and Pashto. 
+\item We will also investigate the case-based approach with
+Latin languages and check how that compares with current techniques
+in terms of accuracy and efficiency.
+\item We will maintain CATARM and provide support to users and 
+researchers of CATARM.
 \end{itemize}
 
 
@@ -1454,8 +1622,9 @@ tools once the tools are available.
 The Arabic text analysis framework will be partially based on 
 existing work in the open source domain and will thus be available 
 as an open source tool. 
-Interested researchers and users will be able to download the tools 
-for free and use them for non-profit non-commercial purposes.  
+Interested researchers and users will be able to download the 
+tools for free and use them for non-profit non-commercial 
+purposes.  
 
 \pagebreak
 %\bibliography{adnan_refs}
