@@ -121,7 +121,9 @@ American University of Beirut \\
 \end{center}
 
 
-This report describes the progress of the work carried out in the LNCSR funded project entitled: {\bf ``Relational Queries for Arabic Text Mining"}. 
+In this report we discuss our progress and work on the 
+{\bf Relational Queries for Arabic Text Mining} project 
+funded by LNCSR.
 \\
 
 This document is organized as follows:
@@ -129,7 +131,7 @@ This document is organized as follows:
 \item Summary of work conducted during the first year of the project
 \item Goals for next year
 \item Budget for year 2011
-\item Submission to: ``ACL/HTL 2011"
+\item Attached submission to ``ACL/HTL 2011"
 \end{enumerate}
 \pagebreak
 
@@ -138,14 +140,64 @@ This document is organized as follows:
 
 At the American University of Beirut (AUB), we
 started work on an Arabic text mining framework~\cite{ATMine09}
-that is available now online. The source for this framework comprises code of the order of tens of thousands lines.
+that is available now online. 
+ATMine is around 20K lines of C++, perl, and sql code and uses 
+middleware from the open source community such as MySQL, Qt, and 
+double array trie.
+
+
+Arabic morphological analyzers~\cite{Sughaiyer:04}
+consider an Arabic word and its internal structure composed of 
+several {\em morphemes}. 
+A morpheme is a {\em stem} or an {\em affix}.
+An affix is a {\em prefix, suffix,} or an {\em infix}.
+The analysis of one word may lead to several possible
+solutions.
+\vocalize
+For instance, the word 
+\RL{'a.hmadH}~\footnote{In this document, we use the default 
+ArabTeX transliteration style ZDMG.}
+may have two valid morphological analyses. 
+The word means ``I praise him'' when
+the letter \RL{'a} is a prefix and  it means
+``his Ahmad'' when 
+the letter \RL{'a} is part of the proper noun stem 
+\RL{'a.hmad}.
+
+Current morphological analyzers such as 
+Buckwalter~\cite{Buckwalter:02},
+Beesely~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
+and ElixirFM~\cite{Otakar:07} exist.
+These analyzers are used in several open source spell checkers as 
+well as NLP frameworks~\cite{Col09}.
+They take as input white space delimited tokens~\cite{Kulick:10},
+consider them as words,
+and enumerate all possible solutions. 
+This approach has several problems. 
+First, a white space delimited token may have 
+more than one word.
+Second, the exhaustive enumeration may hurt performance and may
+not be necessary or appropriate
+in some case studies~\cite{Maamouri:10}. 
+Other morphological analyzers such as 
+Amira~\cite{Diab:07,Benajiba:07},
+MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
+use machine learning and support vector machines (SVM) 
+to enhance the accuracy at the expense of efficiency.
+
 We have successfully developed ``SARF", a case-based morphological 
-analyzer, which constitutes capabilities of both Lexical and Syntax Analysis. We have been able to verify that both in terms of speed and accuracy our analyzer outperformed 2 state-of-art analyzers: Buckwalter ~\cite{Buckwalter:02} and ElixirFM~\cite{Otakar:07}. Supporting statistics are present in the attached paper described in Section~\ref{s:paper}. In addition, we have applied SARF on a literature hadith case study.
+analyzer with lexical and syntax analysis capabilities. 
+SARF outperforms in terms of efficiency and accuracy 
+the Buckwalter~\cite{Tim04} and the ElixirFM~\cite{Otakar:07} 
+analyzers. 
+We report on the detailed results in the attached manuscript.
+We discuss the attached manuscript in Section~\ref{s:paper}. 
+In addition, we have applied SARF on a hadith literature case study.
 
 A \RL{.hady_t} is a narration related to the prophet Mohammad
 through a \RL{sanad} or a sequence of narrators. 
-Figure~\ref{f:exhadith} shows an example \noArRL{.hady_t} in Arabic with its 
-transliteration and translation. 
+Figure~\ref{f:exhadith} shows an example \noArRL{.hady_t} in Arabic with 
+its transliteration and translation. 
 The authentication of a \noArRL{.hady_t} highly depends on the credibility
 of each of the narrators as reported in separate biography 
 books. 
@@ -244,8 +296,20 @@ related NLP conferences.
 \section{Goals for next year}
 \label{s:nextyear}
 
-It is clear that our first year of research on this topic has been fruitful. For next year, we expect to complete the hadith literature case study and to start and complete the security case study. We will package the components built during the development of these case studies as independent text mining entity and relational extractors to be included in the framework to be completed. Moreover, we expect to be able to enhance the morphological analyzer in terms of speed and accuracy. We will also investigate methods to extend the internal structures of our analyzer to be able to represent a formal linguistic
-computational model of the Arabic language. In what follows we describe our expectations in terms of each case-study.
+Our first year of research on 
+Arabic text mining proved to be 
+fruitful. 
+For the next year, we expect to complete the hadith literature case 
+study and to start and complete the security case study. 
+We will package the components built during the development of these 
+case studies as independent text mining entity and relational 
+extractors to be included in the framework.
+Moreover, we expect to be able to enhance the morphological analyzer in 
+terms of speed, accuracy, and semantic capabilities. 
+We will also investigate methods to extend the internal structures 
+of our analyzer to be able to represent a formal linguistic
+computational model of the Arabic language. 
+In what follows we describe our expectations in terms of each case-study.
 
 \subsection{Literature authentication case study}
 \label{s:design:lit}
@@ -329,6 +393,11 @@ The first set includes crime scene investigation reports,
 and the second set includes a 
 interrogation reports with crime suspects as well as 
 a database of previous interrogation reports. 
+We will first try our system on dummy data with seeded relations.
+Once the system is ready, we will deliver it to local police
+and intelligence agencies to try it out on real digitized 
+reports. 
+
 The system also takes as input a database of geographical
 locations and a database of personal records. 
 The aim is to check for inconsistencies in the interrogation
@@ -364,14 +433,14 @@ below a threshold $\theta$ as inconsistent.
 \section{Budget for year 2011}
 \label{s:budget}
 
-In the table below we summarize our itemized budget for next year:
+In the table below we summarize our itemized budget for year 2011. 
 
 \begin{table}[ht]
 \begin{tabular}{l r}
 
  \hline
  One part-time research assistant for 8 month: LL. 750K/month  & LL. 6000K  \\
- Arabic Corpus Lisence & LL. 1500K \\
+ Arabic Corpus License & LL. 1500K \\
 Miscellaneous  & LL. 500K \\
 \hline
  Total  & LL. 8000K \\
@@ -383,7 +452,7 @@ Miscellaneous  & LL. 500K \\
 \section{Submission to: ``ACL/HTL 2011"}
 \label{s:paper}
 
-We have submitted the attached paper to the “The 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies (ACL/HLT 2011)”. The paper is entitled: “Case-based Arabic Morphological Analysis”.
+We have submitted the attached paper to the “The 49h Annual Meeting of the Association for Computational Linguistics: Human Language Technologies (ACL/HLT 2011)”. The paper is entitled: “Case-based Arabic Morphological Analysis”.
 
 %\bibliography{adnan_refs}
 %\bibliographystyle{ieeetr}
