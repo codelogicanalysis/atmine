@@ -71,7 +71,8 @@ to better preserve part of speech information.
 We automated the analysis of three books of Islamic
 narrations (hadith) using Sarf where we
 abstracted each book into a vector of complex structures.
-Our results show high accuracy and efficiency.
+Our results show higher accuracy and better efficiency
+compared to current analyzers.
 \end{quote}
 \end{abstract}
 
@@ -107,7 +108,7 @@ This greatly increases the ambiguity of Arabic text.
 Another difficulty is that  Arabic letters can have up to 
 four different forms
 corresponding to their position in a word, i.e, beginning,
-middle, end of word forms and separate forms. 
+middle, end of word and separate forms. 
 This allows the phrase \transfalse
 \RL{il_A\nospace almdrsT} \transtrue
 to be visually recognizable
@@ -115,39 +116,74 @@ as two separate words \RL{il_A} (to) and \RL{almdrsT} (the school)
 without the need of a delimiter such as a space in between. 
 This happens because the first word \RL{il_A} ends with
 \RL{_A} a non-connecting letter. 
-These words occur often in text and greatly increase the
-difficulty of tokenization and are referred to as 
-``run-on'' words~\cite{Buckwalter:04}.
+These words,
+referred to as ``run-on'' words~\cite{Buckwalter:04},
+occur often in text, and greatly increase the
+difficulty of tokenization.
 
 Current morphological analyzers such as 
 Buckwalter~\shortcite{Buckwalter:02},
-Beesly~\shortcite{Beesley:01}, SAMA~\cite{Kulick:10},
+Beesley~\shortcite{Beesley:01},
+SAMA~\cite{Kulick:10},
 and ElixirFM~\cite{Otakar:07} exist.
 They take as input white space delimited tokens~\cite{Kulick:10},
 consider them as words,
 and enumerate all possible solutions. 
 This approach has several problems. 
-First, 
-a white space delimited token may have 
+First, a white space delimited token may have 
 more than one word.
 Second, the exhaustive enumeration may hurt performance and may
 not be necessary or appropriate
 in some case studies as noted in~\cite{Maamouri:10}. 
-Other morphological analyzers such as Amira~\cite{Diab:07,Benajiba:07},
+Other morphological analyzers such as 
+Amira~\cite{Diab:07,Benajiba:07},
 MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
 also use machine learning and support vector machines (SVM) 
 to enhance the accuracy of the morphological analysis at the expense 
 of performance.
+Xerox rules can be compiled into specialized finite state
+machine (FSM) based analyzers as described in~\cite{Beesley:03}.
+The efficiency of the resulting analyzer highly depends on the
+way the Xerox rules are written. 
+This requires deep knowledge and insight from the user
+in morphological analysis as well as skills in writing 
+context free grammar rules that can be automatically compiled
+into efficient non-deterministic finite state Automata (NDFSA). 
 
 We hypothesize that many NLP case studies need the 
 morphological analyzer to answer queries that do not need 
-high accuracy at the low morphological analysis level 
-and that can often compensate at higher levels for tolerable inaccuracy 
-at low levels. 
+high accuracy at the low morphological analysis level.
+The analysis at the higher levels can often compensate for 
+tolerable inaccuracy at low levels. 
 For example, if a query concerns proper names and the 
 prefix in question in the analysis connects only to a verb, 
 we do not need to further analyze the rest of the word 
 to provide an answer.
+
+We find evidence to our hypothesis in~\cite{Maamouri:10} where 
+a new corpus was added to the Arabic Tree Bank 
+(ATB)~\cite{Maamouri:04}. 
+The addition required compliance with the DARPA GALE program 
+including several NLP tasks such as English translation 
+annotations and word-level alignment of Arabic and English. 
+The new genre of data challenged the existing data processing and 
+annotation guidelines. 
+Alternative guidelines came to place where the high level NLP 
+task interacted with the morphological analyzer. 
+This led to refining SAMA~\cite{Kulick:10}. 
+The work of Habash~\shortcite{Habash:06} reports that different 
+types of morphological analyses behave differently on the same case 
+study. 
+For one, the analyzers may find different solutions. 
+The analyzers may present the solutions in different orders. 
+The presented solutions and the order of presentation may not be 
+appropriate for the case study. 
+We find strong evidence in our results 
+that a case-based morphological analyzer that allows a case-based 
+controller to intervene at every decision to guide, use, order, and 
+refine the morphological analysis is of high utility.
+
+
 We find evidence to our hypothesis in~\cite{Maamouri:10} where the 
 addition of a new corpus to the Arabic Tree Bank~\cite{Maamouri:04}
 with features demanding resolution at an abstraction level
