@@ -13,7 +13,7 @@ TODAY=$(shell date +%m-%d)
 TODAY1=$(shell date +"%B %d, %Y")
 STAMP=$(shell cat thesis.stamp)
 
-all: rp.pdf
+all: sarf.aclhlt.pdf
 
 slides: slidesthesis.pdf
 
@@ -41,13 +41,16 @@ figures: $(SRCS_PS_TEX_T) $(SRCS_PDF_TEX_T) _mmpfig
 slides%.pdf: slides%.tex figures refstrings.sty slidesMacros.sty
 	pdflatex slides$*.tex
 
-%.bbl: my.bib
-	latex $*.tex
+%.bbl: fzAr.bib my.bib
+	pdflatex $*.tex
+	-bibtex $*
 	-bibtex $*
 
-%.pdf: %.ps
-#	pdflatex $*.tex
-	ps2pdf $*.ps 
+%.ps.pdf: %.ps %.bbl
+	ps2pdf $*.ps $*.ps.pdf
+
+%.pdf: %.tex figures %.bbl
+	pdflatex $*.tex
 
 %.ps: %.tex figures %.bbl
 	latex $*.tex
