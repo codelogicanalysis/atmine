@@ -137,43 +137,66 @@ Text mining involves information retrieval (IR), natural language
 processing (NLP), information extraction (IE), 
 and data mining~\cite{ASr09}.
 
-Most of academic research in the field of Arabic text mining 
-is covered in the almost comprehensive book 
-``Arabic Computational Morphology''~\cite{Sou07}.
-The book summarizes recent work, and presents strong evidence of 
+The almost comprehensive book 
+``Arabic Computational Morphology''~\cite{Sou07}
+covers most academic research work on Arabic text mining.
+It summarizes recent work, and presents strong evidence of 
 shortage of historic research. It also highlights  an emerging 
-interest in this area with a specific application to machine 
+interest with a specific application to machine 
 translation from Arabic to English after 2001.
 The research community showed little interest in 
 automating Arabic text analysis that may serve
 the Arabic user.
-While a non-Arabic user is interested in machine translation to 
-help him understand an Arabic document, 
+While machine translation is of gneral interest, 
 an Arabic user is more interested in 
-information hard to discover manually such as 
-the relation between clinical records, pharmaceutical 
-prescriptions and sales, and a specific sickness. 
-Another Arabic user may be interested in looking at the relation
-between stock prices and political news or the 
-relation between suspect profiles in interrogation reports 
+information hard to discover manually.
+Examples are {the relation between clinical records, pharmaceutical 
+prescriptions and sales, and a specific sickness,
+the relation
+between stock prices and political news, or the 
+relation between interrogation reports with suspects
 and investigative reports from the crime scenes. 
 
-We propose to build a 
+We propose to build a framework for
 %{\em relational text mining 
 %of Arabic using morphological and case-based analysis}. 
-{\em case-based Arabic text analysis using relations and morphology}(CATARM) framework. 
-CATARM will take as input sets of documents, each of a specific
-type, and provides the user with a visual query language that
-allows him to build a flow of Arabic text mining
-modules and discover desired relations between documents. 
-CATARM will translate the query into a netlist of computational 
-components, it will also extract parameters from the query and 
-the document sets and use them to simplify the computational 
+{\em case-based Arabic text analysis using relations and morphology}(CATARM). 
+CATARM takes as input several sets of documents, each of a specific
+type, and a user query. % expressed in a visual language.
+The query, expressed in a visual language, allows the user 
+to build a flow of Arabic text mining
+components and discover desired relations between documents. 
+CATARM compiles the query into a netlist of computational 
+components. It also uses features extracted from the query and 
+the document sets to simplify the computational 
 components. 
 %The main CATRAM computational components will be finite 
 %state machines (FSM) that express a linguistic model of the Arabic 
 %language and that can be parametrized and relaxed to fit a case 
 %study. 
+
+\novocalize
+%The accuracy of the solutions suffer due to inherent difficulties
+%of morphological analysis of the Arabic language. 
+It is common practice to write Arabic text
+without short vowels. 
+This greatly increases the ambiguity of Arabic text. 
+Arabic letters can have up to 
+four different forms
+corresponding to their position in a word, i.e, beginning,
+middle, end of word and separate forms. 
+This allows the phrase
+\noTrRL{il_A\nospace almdrsT}  with no delimiter within
+to be visually recognizable
+as two separate words \RL{il_A} (to) and \RL{almdrsT} (the school).
+This happens because the first word \RL{il_A} ends with
+\RL{_A} a non-connecting letter. 
+These words occur often in text and greatly increase the
+difficulty of tokenization and are referred to as 
+``run-on'' words~\cite{Buckwalter:04}.
+Such difficulties are inherent to the 
+morphological analysis of the Arabic language and
+render the solutions inaccurate.
 
 
 Arabic morphological analyzers~\cite{Sughaiyer:04}
@@ -195,33 +218,11 @@ the letter \RL{'a} is part of the proper noun stem
 \RL{'a.hmad}.
 \novocalize
 
-%The accuracy of the solutions suffer due to inherent difficulties
-%of morphological analysis of the Arabic language. 
-It is common practice to write Arabic text
-without short vowels. 
-This greatly increases the ambiguity of Arabic text. 
-Arabic letters can have up to 
-four different forms
-corresponding to their position in a word, i.e, beginning,
-middle, end of word and separate forms. 
-This allows the phrase
-\noTrRL{il_A\nospace almdrsT}  with no delimiter within
-to be visually recognizable
-as two separate words \RL{il_A} (to) and \RL{almdrsT} (the school).
-This happens because the first word \RL{almdrsT} ends with
-\RL{T} a non-connecting letter. 
-These words occur often in text and greatly increase the
-difficulty of tokenization and are referred to as 
-``run-on'' words~\cite{Buckwalter:04}.
-Such difficulties are inherent to the 
-morphological analysis of the Arabic language and
-render the solutions inaccurate.
-
 Current morphological analyzers such as 
 Buckwalter~\cite{Buckwalter:02},
-Beesly~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
-and ElixirFM~\cite{Otakar:07} exist.
-These analyzers are used in several open source spell checkers as 
+Beesley~\cite{Beesley:01}, SAMA~\cite{Kulick:10},
+and ElixirFM~\cite{Otakar:07} exist
+and are used in several open source spell checkers as 
 well as NLP frameworks~\cite{Col09}.
 They take as input white space delimited tokens~\cite{Kulick:10},
 consider them as words,
@@ -239,37 +240,45 @@ use machine learning and support vector machines (SVM)
 to enhance the accuracy at the expense of efficiency.
 
 {\bf Hypothesis 1.} We hypothesize that many case studies, 
-in particular relational
-case studies, do not require high accuracy from the 
+in particular relational ones, 
+do not require high accuracy from the 
 low level morphological analysis.
-The sophistication of the sought higher level query can eliminate 
-many of the ambiguous low level solutions at a lower computational 
+The sophistication of the higher level query can eliminate 
+many ambiguous low level solutions at a lower computational 
 cost.
 For example, if a query concerns proper names and the 
 prefix in question in the analysis connects only to a verb, 
-we do not need to further analyze the rest of the word 
-to provide an answer.
+we no further need to analyze the rest of the word.
 
-We find evidence to our hypothesis in~\cite{Maamouri:10}. The 
-addition of a new corpus to the Arabic Tree Bank~\cite{Maamouri:04}
-required the high NLP task to interact with the low 
-level morphological analyzer.
+We find evidence to our hypothesis in~\cite{Maamouri:10} where
+a new corpus was added to the Arabic Tree Bank~\cite{Maamouri:04}.
+The addition requires compliance with 
+the DARPA GALE program including several NLP tasks such as 
+English translation annotations and word-level alignment
+of Arabic and English. 
+The new genre of data challenged the existing data processing 
+and annotation guidelines. 
+Alternative guidelines came to place where the 
+high level NLP task interacted with the 
+morphological analyzer.% along with other concurrent tasks. 
 This led to a refined analyzer~\cite{Kulick:10}.  
 We also find evidence in~\cite{Habash:06} that different types of 
 morphological analyses behave differently on the same case study. 
-We strongly believe and we find evidence in our preliminary
+For example, the analyzers may find different solutions, and may 
+present the same solutions in different orders.
+We find strong evidence in our preliminary
 results that a 
-case-based morphological analyzer that allows a high level 
+case-based morphological analyzer that allows a 
 case-based controller to intervene at every decision to 
-guide, use, prune, and refine the morphological analysis
+guide, use, and refine the morphological analysis
 is of high utility.
 
 %Prior work in Arabic text mining addressed the classification and 
 %categorization of Arabic text and made little use of features 
 %unique to the Arabic language.
 Researchers in~\cite{AEL07,Ham07,Abd07,MEl03} 
-preprocessed the Arabic text to make it presentable to known text 
-mining techniques that tend to Latin text and queries.
+preprocessed the Arabic text and presented it to known 
+techniques that tend to Latin text and queries.
 %Buckwalter~\cite{Bee89,Tim04} uses morphological analysis to enable 
 %relaxed stemming of Arabic words.
 El-Halees used statistical analysis to address the problem of 
@@ -285,8 +294,8 @@ Al-Zoghby~\cite{Ham07}
 %slightly different names via 
 used the derivation feature in 
 the Arabic language as a similarity measurement.
-This work is limited to the names of the fields in the data 
-structures extracted from Arabic texts.
+%This work is limited to the names of the fields in the data 
+%structures extracted from Arabic texts.
 
 {\bf Hypothesis 2.} This approach does not tend directly to 
 the Arabic users who write their 
@@ -305,14 +314,15 @@ speech recognition in Arabic.
 
 
 %\subsection{\bf Arabic text mining in industry}
-Few companies in the industry provide primitive Arabic text 
+Few companies in the industry provide Arabic text 
 analysis tools.
 Sakhr~\cite{Sak09} provides a categorization 
-tool with a limited number of predefined categories, and a summary 
-generator that selects sentences from text.
+tool with a limited number of predefined categories.
+Sakhr also provides a summary 
+generator that selects important sentences from text.
 Basis technology~\cite{Bas09} provides Rosette, a lexical 
 analysis tool that normalizes Arabic text as a pre-processing step 
-for indexers and other general purpose data mining 
+for general purpose data mining 
 tools.  Basis also provides REX; an entity extractor.
 
 ElixirFM~\cite{Otakar:07} uses an {\em inferential-realizational}
@@ -328,26 +338,26 @@ captured by the formal rules,
 it is computationally expensive and enumerates all the possible
 solutions. 
 
-{\bf Goals.} Up to our knowledge, CATARM will be the 
-first framework that tends to relational Arabic morphology 
-and text mining. 
-{\bf (1.)} CATARM will build a novel parametrized linguistic 
-computational model of Arabic. 
-The model will be implemented using efficient structures. 
- {\bf (2.)} It will be amenable to Arabic specific simplifications 
+{\bf Goals.} CATARM 
+tends to relational Arabic text mining using morphological analysis.
+{\bf (1.)} CATARM will build a novel parametrized 
+linguistic computational model (LCM) of Arabic. 
+The LCM will be implemented using efficient structures. 
+ {\bf (2.)} The LCM will be amenable to Arabic specific simplifications 
 inferred from the correspondence between the formal Arabic rules
 and the relational user queries.
-{\bf (3.)} The model will also be amenable to simplifications 
+{\bf (3.)} The LCM will be amenable to simplifications 
 inferred from statistical features extracted from the document 
-sets using language independent techniques such as latent semantic 
-indexing~\cite{LSI89} and hidden Markov models (HMM).
+sets using language independent techniques such as 
+hidden Markov models (HMM)  and 
+latent semantic indexing~\cite{LSI89}.
 %CATARM will augment current digital dictionaries to resolve 
 %entity semantics and targeted qualificationsl.
-{\bf (4.)} CATARM extracts semantic graphs from each text 
-document and then uses set arithmetic and graph analysis techniques
-to establish relations between these graphs. {\bf (5.)} CATARM will 
-solve at least three interesting relational Arabic text case studies 
-presented in Sections~\ref{s:design:sec} and~\ref{s:design:lit}.
+{\bf (4.)} CATARM extracts semantic graphs from text 
+documents and uses set arithmetic and graph analysis techniques
+to establish relations between the graphs. {\bf (5.)} CATARM will 
+solve at least three interesting case studies such as those
+presented in Sections~\ref{s:design:lit} and~\ref{s:design:sec}.
 
 \pagebreak
 
@@ -598,31 +608,17 @@ and yet reduces the dimensions of feature vectors.
 The data set size was 15,000 documents that belong to three 
 categories. 
 
+The Co-Lead PI published extensively in the 
+domain~\cite{Duw06, Duw07, Duw09}.
 In recent research efforts, the CO-LPI is investigating 
 keyphrase extraction fro Arabic documents.
-
-The Co-Lead PI published extensively in this domain. 
-A selected list of her recent publications follows. 
-\begin{itemize}\itemsep0pt
-\item Rehab Duwairi, Mohammad Al-Refai, Natheer Khasawneh, 
-"Feature Reduction Techniques for Arabic Text Categorization". 
-Journal of the American Society for Information Science and Technology 
-(JASIST), Volume 60, Issue 11, pages: 2347-2352, 2009. 
-\item Rehab M. Duwairi, "Arabic Text Categorization", 
-International Arab Journal for Information Technology (IAJIT), 
-Volume 4, Number 2, pages 125  132, 2007.
-\item Rehab M. Duwairi, "Machine Learning for Arabic Text Categorization". 
-Journal of the American Society for Information Science and Technology 
-(JASIST), Vol. 57, Issue 8, pages 1005-1010, 2006.
-\end{itemize}
-
 
 The Lead PI worked in the area of software arabization since 1996 
 as he worked on developing Arabization modules for Windows NT 
 and an Arabic string manipulation library~\cite{Zar96}. 
 The Lead PI is also involved in working on an open source 
 project that aims at comprehensive automation of authenticity 
-checks against a corpus of literature heritage~\cite{Zaraket06}.
+checks against a corpus of literature heritage~\cite{Zar06}.
 The Lead PI is leading an effort at AUB to introduce 
 Computational Arabic in the curriculum of the ECE program. 
 He is also leading a team of students in an effort to place 
@@ -632,11 +628,7 @@ The lead PI holds several approved patents and has several
 patents pending approval in the area of logic verification 
 and synthesis.
 The lead PI worked and published about relational logic and 
-logic solvers applied to structured languages as follows.
-\begin{itemize}
-\item Sequential circuits for relational analysis. F. Zaraket, A. Aziz, and S. Khurshid. International Conference on Software Engineering, Minneapolis MN, 2007. 
-\item Sequential circuits for program analysis. F. Zaraket, A. Aziz, and S. Khurshid. Automated Software Engineering, Atlanta GA, 2007. 
-\end{itemize}
+logic solvers applied to structured languages~\cite{seraICSE07,Zara05}
 
 \section{Research design and methods}
 \label{s:designmethods}
