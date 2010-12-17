@@ -39,7 +39,7 @@
 \newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue} 
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
-\title{Case-based Arabic Morphological Analysis }
+\title{Case-based Arabic Morphological Analyzer for Arabic Text Mining}
 
 %\author{ Jad Makhlouta \\\And
 %Hamza Harkous \\
@@ -188,7 +188,9 @@ refine the morphological analysis is of high utility.
 \subsection{Sarf}
 \label{sec:intro:sarf}
 
-In this paper, we present Sarf, a {\em novel case-based efficient
+In this paper, we present Sarf\footnote{Sarf (name modified for blind review purposes) 
+will be available online as an open source tool.},
+ a {\em novel case-based efficient
 morphological analyzer} that uses 
 non-deterministic finite state Automata 
 driven by a case based controller.
@@ -205,10 +207,8 @@ performs tokenization on the fly based on morphological correctness.
 Up to our knowledge, this is the first morphological analyzer that 
 handles the ``run-on'' words problem. 
 
-Sarf uses 
-concatenative analysis with a novel 
-{\em recursive} 
-refinement. 
+Sarf uses concatenative analysis with a novel 
+{\em recursive affixes} refinement. 
 Sarf introduces recursive affixes in order to
 better retain part of speech information and enhance the 
 efficiency of affix matching. 
@@ -243,7 +243,7 @@ separate narrators so that we can later look each one of them
 up in the biography books. 
 For example, the boxes in 
 Figure~\ref{f:exhadith} are proper names and once
-connected toghether they form complex names of narrators. 
+connected together they form complex names of narrators. 
 For example, narrator $n_1$ has the first name 
 \noTrRL{qtybT} and his father name is
 \noTrRL{s`yd} as the word in between \noTrRL{bn} (son of) indicates. 
@@ -340,7 +340,7 @@ from Xerox rules can not be controlled and also reports a difficulty to
 compose the FSAs into a single FSA framework. 
 Sarf solves the problem with an FSA that is constructed from 
 the controller and 
-the prefix, stem, and suffix deterministic tansducers. 
+the prefix, stem, and suffix deterministic transducers. 
 Sarf differs in that it uses recursive affixes in the 
 affix transducers, and in that the transducers consider
 input from the controller. 
@@ -414,7 +414,7 @@ three linear transducers and uses a non-deterministic construction
 of the three to compute all valid morphological analyses.
 We first present a running example of Sarf.
 The running example explains how Sarf works,
-implememts recursive affixes, and
+implements recursive affixes, and
 handles ``run-on'' words.
 %Then we discuss how Sarf builds and composes the different FSAs.
 
@@ -464,7 +464,7 @@ states respectively.
 The edges are transitions with labels corresponding to
 the input letters.
 The reject states are omitted for clarity and are denoted
-by the abscence of corresponding transitions. 
+by the absence of corresponding transitions. 
 
 Subfigures (a), (b), and (c) in Figure~\ref{f:example}
 represent ${\cal P}$ the prefix ,
@@ -905,7 +905,7 @@ We also evaluate our hypothesis of the utility of a case-based
 morphological analyzer.
 We validate that the high-level analysis of the output 
 of low-level morphological analysis can compensate for accuracy.
-To acheive that we ran Sarf in two modes, simple and refined.
+To achieve that we ran Sarf in two modes, simple and refined.
 In the simple mode, we used Sarf as discussed in 
 Section~\ref{sec:sarf} with the 
 controller of Section~\ref{sec:controller}.
@@ -997,7 +997,7 @@ In the second phase, we fed the annotations to
 the hadith controller as if they were coming from Sarf. 
 We measured the time it took to produce the annotations
 and the time it took the controller to process the 
-annotations whithout the time spent streaming the annotations.
+annotations without the time spent streaming the annotations.
 We used the same setup for ElixirFM. 
 
 Sarf outperforms both Buckwalter and ElixirFM in terms of 
@@ -1020,9 +1020,9 @@ terms of running time,
 while ElixirFM outperformed Buckwalter in terms of accuracy.
 %This is up to 
 %our knowledge the first comparison of these two tools and 
-We think the big difference is due to the sofistication of 
+We think the big difference is due to the sophistication of 
 grammar based functional morphological analysis ElixirFM 
-uses and its reliance on additional annotations extracted from both ATB~\cite{Maamouri:04} and the Pragbank~\cite{Prague04}.
+uses and its reliance on additional annotations extracted from both ATB~\cite{Maamouri:04} and the Prague Arabic Dependency Treebank~\cite{Prague04}.
 
 \section{Conclusion and Future Work}
 \label{sec:future}
@@ -1047,7 +1047,7 @@ connector stop phrases that our case study extracted to create a
 learning system that can learn more names. 
 We also plan on developing an Arabic linguistic computational model 
 similar to that of ElixirFM~\cite{Otakar:07} but that can be 
-explored partialy based on the case study. 
+explored partially based on the case study. 
 
 %\section{Acknoledgements}
 %\label{sec:acc}
