@@ -1,0 +1,92 @@
+#
+# file:      makeRules
+# author:    F. Zaraket
+# created:   feb 12, 2010
+#-------------------------------------
+# description: 
+#    In this file we specify custom rules to build object files 
+#    from source code.
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Feb 12,2010    fadi   initial creation
+
+ifneq ($(findstring clean,$(MAKECMDGOALS)),clean)
+-include $(SOURCE_DEPENDENCIES)
+endif
+
+#rules to extract dependency files
+%.d: %.cpp
+	@echo "CXX CXXFLAGS -M $< > $@"
+	@$(CXX) $(CXXFLAGS) -M $< > $@
+
+%.d: %.cxx
+	@echo "CXX CXXFLAGS -M $< > $@"
+	@$(CXX) $(CXXFLAGS) -M $< > $@
+
+%.d: %.C
+	@echo "CXX CXXFLAGS -M $< > $@"
+	@$(CXX) $(CXXFLAGS) -M $< > $@
+
+%.d: %.c
+	@echo "CC CFLAGS -M $< > $@"
+	@$(CC) $(CFLAGS) -M $< > $@
+
+#rules to make object files from c/cplusplus code
+%.o: %.cpp %.d
+	@echo "CXX CXXFLAGS -c -o $@ $<"
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.o: %.cxx %.d
+	@echo "CXX CXXFLAGS -c -o $@ $<"
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.o: %.C %.d
+	@echo "CXX CXXFLAGS -c -o $@ $<"
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%Lexer.o: %Lexer.c %Lexer.d
+	@echo "CC Lexer CFLAGS -c -o $@ $<"
+	@$(CC) $(CFLAGS) -Wno-unused -c -o $@ $<
+
+%Parser.o: %Parser.c %Parser.d
+	@echo "CC Parser CFLAGS -c -o $@ $<"
+	@$(CC) $(CFLAGS) -Wno-unused -Wno-pointer-sign -Wno-missing-braces -c -o $@ $<
+
+%.o: %.c %.d
+	@echo "CC CFLAGS -c -o $@ $<"
+	@$(CC) $(CFLAGS) -c -o $@ $<
+
+clean: cleanaux
+	@rm -rf $(TARGET)
+
+cleanaux:
+	@rm -rf *.o *.d *.so *.a
+	@rm -rf moc_*.cpp *Lexer.c *Lexer.h *.tokens
+	@rm -rf *Parser.c *Parser.h
+
+#empty rules to allow parametrized make
+opt: all
+
+64: all
+
+32: all
+
+#rules to make C code from antler grammar
+%Lexer.c %Parser.c: %.g
+	@echo "java -jar $(ANTLR_JAR) $<"
+	@java -jar $(ANTLR_JAR) $<
+
+#rules to make CPP code from Qt Q_OBJECT files
+moc_%.cpp: %.h
+	@echo "MOC $< -o $@"
+	@$(QTMOC_BIN) $(QT_MOCFLAGS) $< -o $@
+
+moc_%.moc: %.cpp
+	@echo "MOC $< -o $@"
+	@$(QTMOC_BIN) $(QT_MOCFLAGS) -i $< -o $@
+
+ui_%.h: %.ui
+	@echo "UIC $< -o $@"
+	@$(QTUIC_BIN) $(QT_UICFLAGS) $< -o $@

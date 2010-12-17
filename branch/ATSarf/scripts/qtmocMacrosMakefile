@@ -1,0 +1,57 @@
+# file:      qtmocMacrosMakefile
+# author:    F. Zaraket
+# created:   April 8, 2010
+#-------------------------------------
+# description: 
+#    This file contains macros to handle Qt moc files 
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Feb 12,2010    fadi   initial creation
+
+QTDIR=third/qt
+
+#programs needed to generate code
+QTMOC_BIN=$(TOP)/$(QTDIR)/bin/moc
+QTUIC_BIN=$(TOP)/$(QTDIR)/bin/uic
+
+#libraries and linking flags
+#QT_LIBS=QtHelp QtSvg QtAssistantClient QtMultimedia QtTest \
+#        QtCLucene QtNetwork QtWebKit QtCore QtOpenGL \
+#        QtXmlPatterns QtDesignerComponents QtScript \
+#        QtXml QtDesigner QtScriptTools QtGui QtSql
+QT_LIBS=QtCore QtGui QtSql
+QT_LIB_DIR=$(TOP)/$(QTDIR)/lib
+QT_LIBS_LDDFLAGS=-L$(QT_LIB_DIR)
+QT_LIBS_LDDFLAGS+=$(patsubst %,-l%,$(QT_LIBS))
+
+#original source code
+QTMOC_H_FILES=${shell grep -l Q_OBJECT *.h}
+
+#code that Qt moc and uic will generate
+QTMOC_H_CXX=${patsubst %.h,moc_%.cpp,$(QTMOC_H_FILES)}
+
+#QTMOC_C_FILES=${shell grep -l Q_OBJECT *.cpp}
+#QTMOC_C_CXX=${patsubst %.cpp,moc_%.moc,$(QTMOC_C_FILES)}
+QTMOC_SOURCES= $(QTMOC_H_CXX) $(QTMOC_C_CXX)
+
+#dependency files for the code generated from Qt
+QTMOC_DEPENDENCIES=$(QTMOC_SOURCES:.cpp=.d)
+
+QTUIC_H_FILES=${wildcard *.ui}
+#QTUIC_DEPENDENCIES=$(QTUIC_H_FILES:.h=.d)
+
+#echoMoc:
+#	@echo $(QTMOC_BIN)
+#	@echo $(QTMOC_DEPENDENCIES)
+#	@echo $(QT_INCLUDEDIRS)
+
+# add the Qt include directories to INCLUDEDIRS where appropriate
+#ifneq ($(strip $(QTMOC_SOURCES)),)
+    QT_INCLUDEDIRS= $(QTDIR)/include $(QTDIR)/include/Qt
+    QT_INCLUDEDIRS+= $(patsubst %,$(QTDIR)/include/%,$(QT_LIBS))
+#endif
+INCLUDEDIRS+=$(QT_INCLUDEDIRS)
+
+QT_MOCFLAGS=$(INCLUDEFLAGS) -nw

@@ -1,0 +1,108 @@
+#
+# file:      makeMacros
+# author:    F. Zaraket
+# created:    feb 12, 2010
+#-------------------------------------
+# description: 
+#    In this file we have macros that set necessary directives needed
+#    to build code in a directory.
+#-------------------------------------
+# Kindly add below your modification stamps in the following format.
+# Month Day,Year    Name    comment for modification
+#
+# Feb 12,2010    fadi   initial creation
+
+APP_VERSION=0.1
+
+BASE:=$(shell pwd | xargs basename)
+#echobase:
+#	@echo $(BASE)
+
+DATRIE=third/datrie
+
+INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
+INCLUDEDIRS+= src/case src/build src/gui
+INCLUDEDIRS+= include
+INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
+INCLUDEFLAGS=-I.
+INCLUDEFLAGS+=$(patsubst %,-I$(TOP)/%, $(INCLUDEDIRS))
+#echoinclude:
+#	@echo $(INCLUDEFLAGS)
+
+include $(TOP)/scripts/antlrMacrosMakefile
+include $(TOP)/scripts/qtmocMacrosMakefile
+
+CPPSOURCES=${wildcard *.cpp}
+CPP_FILTER_SOURCES=${filter-out moc_%.cpp,$(CPPSOURCES)}
+
+CSOURCES=${wildcard *.c}
+C_FILTER_SOURCES=${filter-out %Lexer.c %Parser.c,$(CSOURCES)}
+
+CCSOURCES=${wildcard *.C}
+CXXSOURCES=${wildcard *.cxx}
+#echoSources:
+#	@echo $(CPP_FILTER_SOURCES)
+#	@echo $(C_FILTER_SOURCES)
+
+SOURCE_DEPENDENCIES=$(CPP_FILTER_SOURCES:.cpp=.d) \
+                    $(CCSOURCES:.C=.d) \
+                    $(CXXSOURCES:.cxx=.d) \
+                    $(C_FILTER_SOURCES:.c=.d) \
+                    $(ANTLR_DEPENDENCIES) \
+                    $(QTMOC_DEPENDENCIES) \
+                    $(QTUIC_DEPENDENCIES)
+
+#antlrMacrosMakefile and qtmocMacrosMakefile can also contribute    
+#echodep:
+#	@echo $(SOURCE_DEPENDENCIES)
+
+BASEOBJECTS=$(SOURCE_DEPENDENCIES:.d=.o)
+#echoobj:
+#	@echo $(BASEOBJECTS)
+
+ARCHIVE_MAKEFILES=${shell find $(TOP)/src -type l -lname "*archiveMakefile"}
+ATSarfLIB_DIRS=$(patsubst $(TOP)/src/%/makefile,%, $(ARCHIVE_MAKEFILES))
+ATSarf_LIBS=$(patsubst %,$(TOP)/lib/lib%.a, $(ATSarfLIB_DIRS))
+ATSarf_LIBS_LINKFLAGS=$(patsubst %,-l%, $(ATSarfLIB_DIRS))
+#echoArchives:
+#	@echo $(ARCHIVE_MAKEFILES)
+#	@echo $(ATSarf_LIBS)
+#	@echo $(ATSarf_LIBS_LINKFLAGS)
+
+SO_MAKEFILES=${shell find $(TOP)/src -type l -lname "*sharedobjectMakefile"}
+SO_DIRS=$(patsubst $(TOP)/src/%/makefile,%, $(SO_MAKEFILES))
+SO_LIBS=$(patsubst %,$(TOP)/lib/lib%.so, $(SO_DIRS))
+#echoSO:
+#	@echo $(SO_MAKEFILES)
+#	@echo $(SO_LIBS)
+#	@echo $(SO_DIRS)
+
+#Macros to control the C/C++ compiler flags
+CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
+CFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
+LDDFLAGS=-L$(TOP)/lib -fPIC -Wall
+
+ifneq ($(findstring opt,$(MAKECMDGOALS)),opt)
+    OPT_DEBUG=-g
+else
+    OPT_DEBUG=-O3
+endif
+CXXFLAGS+=$(OPT_DEBUG)
+CFLAGS+=$(OPT_DEBUG)
+LDDFLAGS+=$(OPT_DEBUG)
+
+ifneq ($(findstring 32,$(MAKECMDGOALS)),32)
+    BITS=-m64
+else
+    BITS=-m32
+endif
+CXXFLAGS+=$(BITS)
+CFLAGS+=$(BITS)
+LDDFLAGS+=$(BITS)
+
+#echoflags:
+#	@echo $(CXXFLAGS)
+#	@echo $(CFLAGS)
+
+# this is placed here to allow testing echo targets above
+all: $(TARGET)
