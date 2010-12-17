@@ -899,106 +899,155 @@ Running time (secs.)& & 6.65 & 2.78$\times60^2$& &4.55 & 2.3$\times60^2$ & & .66
 \label{t:hadithresallresults}
 \end{table*}
 
-In section we present results that compare Sarf to existing 
+In this section we present results that compare Sarf to existing 
 morphological analyzers such as Buckwalter and ElixirFM. 
 We also evaluate our hypothesis of the utility of a case-based 
-morphological analyzer,
-by running our case study in two modes, simple and refined.
+morphological analyzer.
+We validate that the high-level analysis of the output 
+of low-level morphological analysis can compensate for accuracy.
+To acheive that we ran Sarf in two modes, simple and refined.
+In the simple mode, we used Sarf as discussed in 
+Section~\ref{sec:sarf} with the 
+controller of Section~\ref{sec:controller}.
+In the refined mode, we applied several low-level morphological 
+refinements to Sarf such as disambiguation of 
+female proper names so that the controller can ignore them. 
+We also added a refinement that detected compound proper names 
+such as \RL{`bd alr.hmn} 
+as they are common in narrator names.
+%Finally, we consider a possessive form as a reference to 
+%a person and treat
+%it as a narrator.
+
 We ran our experiments using a dual core 2.66 Ghz 64-bit processor 
 with 4GB of memory using a Linux operating system. 
 
-In the simple mode, Sarf is controlled by the hadith controller.
-In the refined mode, we apply several refinements to Sarf.
-The first refinement ignore female proper names except at the end of
-a chain since they do not occur often in narrator names in hadith while
-they can be common in early narrators such as the wives of the prophet.
-We also add a refinement that detects compound proper names 
-such as \RL{`bd alr.hmn} 
-as they are common in narrator names.
-Finally, we consider a possessive form as a reference to a person and treat
-it as a narrator.
-
-
-We report our results in Table~\ref{t:hadithresallresults} on the three hadith books.
-The word count row is an indicator of the size of data.
-The number of names, narrators, and chains reflect a hierarchical structure where a chain contains
-narrators, and a narrator contains names.
-In general, we observe that the refinements slightly improved performance and accuracy at
+We report our results in Table~\ref{t:hadithresallresults} on the 
+three hadith books.
+In general, we observe that the refinements slightly 
+improved performance and accuracy at
 the lowest level of abstraction by reducing false positives.
-However, the refinements had little to no effect on the high accuracy measures at higher
-levels of abstraction.
-We believe that this is a strong supporting evidence to our hypothesis.
+However, the refinements had little to no effect on the high 
+accuracy measures at higher levels of abstraction.
+We believe that this is a strong supporting evidence to our 
+hypothesis.
 
-The names row reports the total number of detected names. The names/narrator row reports the average
-number of names per narrator structure. The narrators row reports the number of narrators detected.
-The narrators/chain row reports the number of narrators per chain structure. And the chain row reports
-the number of detected chains in the book.
-The ignored names row reports the number of names detected outside the chains and thus irrelevant to
+The row for ``word count'' is an indicator of the size of the data.
+The %numbers in 
+rows ``names'', ``narrators'', and ``chains'' denote the total
+number of the corresponding entity per book.
+The relative magnitudes of these rows
+reflect the hierarchical structure where 
+a chain contains
+narrators, and a narrator contains names.
+The row ``ignored names'' reports the number of names detected 
+outside the chains and thus are irrelevant to
 the case study.
-The segmentation accuracy reports on the accuracy of segmentation of the book into separate hadiths.
-The metric is computed manually over a representative sample of each text. The same applies to all other accuracy measures.
-The chain accuracy reflects the percentage of correct narrators covered by extracted chains.
-The narrator name accuracy row reflects the percentage of correct proper names detected within
+In addition, the rows ``names/narrator'' and ``narrators/chain'' 
+report the average
+number of names per narrator and 
+the average number of narrators per chain respectively. 
+
+The segmentation accuracy reports on the accuracy of 
+segmentation of the book into separate hadiths.
+The metric is computed manually over a representative sample 
+of each book.
+The same applies to all other accuracy measures.
+The chain accuracy reflects the percentage of correct narrators 
+covered by extracted chains.
+The ``narrator name accuracy'' row reflects the percentage of 
+correct proper names detected within
 narrator structures.
 
-The name false positives row reports the percentage of words recognized as names while they should not.
-We notice that the low level metric of name false positives improved dramatically with the refined
-analysis without substantially affecting the high abstract measures such as chain and segmentation
+The row ``name false positives'' reports the percentage of words 
+recognized as names while they should not.
+We notice that this low level metric improved dramatically 
+with the refined analysis without substantially affecting the 
+high abstract measures such as chain and segmentation
 accuracy.
-We notice that the controller in the simple analysis ignored more names and thus the case-based
-controller compensated for the inaccuracy of the low level analysis with a simple heuristic and
-without the need of the fancy refinements.
 
-We investigated the case of Al Kafi where the accuracy of the simple analysis was significantly lower than that of the refined
-analysis. We  discovered that the chains detected by the refined analysis were a subset of those detected by the simple
+We notice that the controller in the simple analysis ignored 
+more names and thus the case-based
+controller compensated with a simple heuristic
+for the inaccuracy of the low level 
+analysis.
+%and without the need of the low-level refinements.
+
+We investigated the case of Al-Kafi where the accuracy of 
+the simple analysis was significantly lower than that of the 
+refined analysis. 
+We discovered that the chains detected by the refined analysis 
+were a subset of those detected by the simple
 analysis. 
-The reason for the lower accuracy is false positive chains. 
-The simple analysis did not miss important information. 
-We hypothesize that a higher level of abstraction such as intersecting the narrators from the hadith books with the narrators 
-in the biographies can reduce the false positives in the chains.
+The reason for the lower accuracy is false positive chains, 
+implying that the simple analysis did not miss important 
+information. 
+
+We hypothesize that a higher level of abstraction such as 
+intersecting the narrators from the hadith books with the narrators 
+in the biographies can reduce the false positives in the chains
+in this case.
 
 \subsection{Comparison with Buckwalter and ElixirFM}
 
 We implemented our case study with Buckwalter in two phases. 
-In phase one, we process the entire text with Buckwalter and
-obtain annotations to locations in text. 
-Then in the second phase we feed these annotations to 
-our controller as if they were coming from Sarf. 
-We measure the time it took to produce the annotations
+In phase one, we processed the entire text with Buckwalter and
+obtained annotations to text. 
+In the second phase, we fed the annotations to 
+the hadith controller as if they were coming from Sarf. 
+We measured the time it took to produce the annotations
 and the time it took the controller to process the 
 annotations whithout the time spent streaming the annotations.
 We used the same setup for ElixirFM. 
 
-Sarf outperforms both Buckwalter and ElixirFM in runing time. 
+Sarf outperforms both Buckwalter and ElixirFM in terms of 
+running time. 
 It also produces higher accuracy measures. 
 We think this is mainly due to the extended
 lexicon as well as to the fact that Sarf reduces false positive
 names by ignoring prefixes and suffixes that can not form
-names even if the stem was a name. 
+names even if one possible alternative of the stem is a name. 
 Doing the same with Buckwalter and ElixirFM requires  
-expanding the annotations resulting from one affix to reflect
-its multiple composing affixes.
-This is easily done with the way we defined affixes recursively.
+expanding the annotations resulting from one simple affix to be 
+reflected in all the composite affixes that contain it.
+%expanding the annotations resulting from one affix to reflect
+%its multiple composing affixes.
+%However, this was easily performed using our recursive definition 
+%of the affixes.
 
-Buckwalter performed much better than ElixirFM. This is up to 
-our knowledge the first comparison of these two tools and 
-we think the big difference is due to the more exact 
-and grammar based functional morphological analysis ElixirFM 
-uses. 
+Buckwalter performed much better than ElixirFM in 
+terms of running time, 
+while ElixirFM outperformed Buckwalter in terms of accuracy.
+%This is up to 
+%our knowledge the first comparison of these two tools and 
+We think the big difference is due to the sofistication of 
+grammar based functional morphological analysis ElixirFM 
+uses and its reliance on additional annotations extracted from both ATB~\cite{Maamouri:04} and the Pragbank~\cite{Prague04}.
 
 \section{Conclusion and Future Work}
 \label{sec:future}
 
-In the future, we plan to complete the hadith case study 
+We presented Sarf, a novel case-based morphological analyzer,
+and validated its utility using the hadith literature
+case study. 
+Sarf uses non-deterministic finite state Automata with 
+concatenative analysis and recursive affixes to analyze 
+Arabic text. 
+Our results showed that Sarf with the hadith controller
+is faster and more accurate than
+current morphological analyzers.
+
+In the future, 
+we will try Sarf with other interesting case studies.
+We plan to complete the hadith case study 
 and automate narrator discovery and authentication in the 
 biography books. 
 We plan to make use of the name connector and narrator
 connector stop phrases that our case study extracted to create a 
 learning system that can learn more names. 
-We also plan on developing a domain specific language similar 
-to ElexirFM~\cite{Otakar:07}
-that allows users to easily specify their case-based controller
-to interact with Sarf.
+We also plan on developing an Arabic linguistic computational model 
+similar to that of ElixirFM~\cite{Otakar:07} but that can be 
+explored partialy based on the case study. 
 
 %\section{Acknoledgements}
 %\label{sec:acc}
