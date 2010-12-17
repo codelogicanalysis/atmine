@@ -60,13 +60,13 @@ Often times,
 annotations resulting from 
 a branch of morphological analysis may not be
 appropriate for the case study at hand. 
-In this paper we present Sarf, a case based morphological 
+In this paper we present Sarf, a case-based morphological 
 analyzer for Arabic. 
 Sarf allows a case-based controller to control and refine
 the state of the analysis on the fly. 
 It uses non-deterministic finite state Automata
 to analyze a stream of text. 
-Each alive machine corresponds to a valid analysis. 
+%Each machine corresponds to a valid analysis. 
 Sarf uses concatenative analysis based on recursive affixes 
 to better preserve part of speech information.
 We automated the analysis of three books of Islamic
@@ -200,11 +200,15 @@ will be available online as an open source tool.},
 morphological analyzer} that uses 
 non-deterministic finite state Automata 
 driven by a case-based controller.
-Each alive machine in Sarf represents a valid morphological analysis
+Each machine in Sarf represents a valid morphological analysis
 and takes as input one letter at a time.
 The case-based controller prunes false positives
 early in the run by making a decision at every input letter
-to control the alive machines.
+to control the machines.
+The controller we present in Section~\ref{sec:controller}
+is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
+it can be a logical entity of any type. 
+
 %Each alive machine in Sarf takes as input one letter at a time 
 %from a text stream. 
 Sarf does not assume that the word at hand is a token and
@@ -214,6 +218,11 @@ handles the ``run-on'' words problem.
 
 Sarf uses concatenative analysis with a novel 
 {\em recursive affixes} refinement. 
+An atomic affix $a$ is a standalone affix
+that is not the concatenation of other affixes. 
+We define an affix $f: a | a f$ to be either
+an atomic affix $a$ or an atomic affix concatenated
+with an affix. 
 Sarf introduces recursive affixes in order to
 better retain part of speech information and enhance the 
 efficiency of affix matching. 
@@ -351,7 +360,7 @@ transducers to solve the problem.
 Sarf differs in that it uses recursive affixes in the 
 affix transducers, and in that the transducers consider
 input from the controller to modify their behavior. 
-%With Sarf it is easy to control the FSA with a case based
+%With Sarf it is easy to control the FSA with a case-based
 %controller. 
 Beesley requires recompilation.% of the Xerox rules.
 
@@ -525,11 +534,11 @@ If the category of \RL{l`b} is compatible with the category of
 \RL{wsy} then \RL{b} will move $\Phi$ to an accept state. 
 Otherwise, it will move it to a regular or a reject state. 
        
-Since $\Phi$ is now in an accept state in ${\cal S}$, it will
-spawn $\Xi$. $\Xi$ transitions to the root of ${\cal X}$. 
-$\Phi$ die when it consumes \RL{h} since
-no edge from the current state is labeled with \RL{h}. 
-$\Xi$ represents a valid analysis and can proceed.
+Since $\Phi$ is now in an accept state in ${\cal S}$, it 
+spawns $\Xi$ which transitions to the root of ${\cal X}$. 
+After it consumes \RL{h--} $\Phi$ dies since there is no
+\noTrRL{h--}-edge from the current state.
+$\Xi$ represents a valid analysis and proceeds.
        
 Note that $\Xi$ reports a full word at any accept state
 by spawning a new FSA using the $\epsilon$ transition
@@ -592,11 +601,6 @@ for the $L_{pp}$ and  $L_{xx}$ resulting morphemes.
 %The resulting category in all practical cases
 %is that of the second morpheme in the pair. 
 
-Atomic affixes are standalone affixes
-that are not the concatenation of other affixes. 
-Formally, we define an affix $f: a | a f$ to be either
-an atomic affix $a$ or an atomic affix concatenated
-with an affix. 
 %Sarf only keeps atomic affixes and their categories.
 
 \subsection{Affix transducers}
@@ -991,14 +995,12 @@ analysis.
 The reason for the lower accuracy is false positive chains, 
 implying that the simple analysis did not miss important 
 information. 
-
 We hypothesize that a higher level of abstraction such as 
-intersecting the narrators from the hadith books with the narrators 
-in the biographies can reduce the false positives in the chains
-in this case.
+intersecting narrators from the hadith books with those from
+the biographies can reduce the false positives in the chains.
 
-\subsection{Buckwalter and ElixirFM}
-
+%\subsection{Buckwalter and ElixirFM}
+{\bf Buckwalter and ElixirFM.~~~}
 We implemented our case study with Buckwalter in two phases. 
 In phase one, we processed the entire text with Buckwalter and
 obtained annotations to text. 
@@ -1015,9 +1017,9 @@ mainly due to the extended
 lexicon as well as to the fact that Sarf reduces false positive
 names by ignoring affixes that can not form
 names even if one possible solution of the stem is a name. 
-Doing the same with Buckwalter and ElixirFM requires  
-expanding the annotations resulting from one simple affix to be 
-reflected in all the composite affixes that contain it.
+%Doing the same with Buckwalter and ElixirFM requires  
+%expanding the annotations resulting from one simple affix to be 
+%reflected in all the composite affixes that contain it.
 %expanding the annotations resulting from one affix to reflect
 %its multiple composing affixes.
 %However, this was easily performed using our recursive definition 
