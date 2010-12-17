@@ -471,7 +471,7 @@ represent ${\cal P}$ the prefix ,
 ${\cal S}$ the stem, and ${\cal X}$ the suffix
 transducers respectively. 
 The symbol $\epsilon$ represents an empty string and is 
-the source of non-determinism in this example. 
+the source of non-determinism.
 
 We start with $\Phi$ at the root square state in 
 ${\cal P}$ which is an accept state. 
@@ -538,7 +538,7 @@ It may also decide to correct the analysis of one FSA
 based on the decision of the others. 
 The controller uses the output of the transducers as input
 to make its decision. 
-It does not produce any external output and therefore 
+It does not produce external output and therefore 
 the three transducers with the 
 controller compose an FSA.
 
@@ -585,12 +585,11 @@ We also introduce a {\em resulting category}
 for the $L_{pp}$ and  $L_{xx}$ resulting morphemes.
 The resulting category in all practical cases
 is that of the second morpheme in the pair. 
-
 Atomic affixes are standalone affixes
 that are not the concatenation of other affixes. 
-Formally, we define an affix $f$ to be either
+Formally, we define an affix $f: a | a f$ to be either
 an atomic affix $a$ or an atomic affix concatenated
-with an affix. We write $f: a | a f$. 
+with an affix. 
 %Sarf only keeps atomic affixes and their categories.
 
 \subsection{Affix transducers}
@@ -605,8 +604,8 @@ This transducer is deterministic and thus
 its traversal is linear.
 This is computationally superior to the 
 approach of Buckwalter where the analyzer considers
-all possible substrings of the word in question
-and looks it up in the affix tables. 
+all possible substrings %of the word in question
+and looks them up in the affix tables. 
 
 The affix transducers encode $L_{pp}$ and
 $L_{xx}$.
@@ -670,12 +669,15 @@ For each $\Phi$ in $M$,
 if $\Phi$ is in an accept state and it is in the suffix
 phase, then the algorithm checks whether it should report
 a full word. 
-This happens when $c$ is a white space or a delimiter, 
-or when the last letter leading to the current state
+This happens when $c$ is a white space, a delimiter, 
+or when the preceding letter %leading to the current state
 was a non-connecting letter. 
 
 In all cases, if $\Phi$ is in an accept state, 
 it spawns another machine $\Psi$ and adds it to $M$. 
+Notice that spawning a new machine requires only keeping
+the state of the machine and all machines share the
+structures of the three transducers.
 If $c$ leads to a reject state, then $\Phi$ dies 
 and we remove it from $M$. 
 Otherwise, $\Phi$ transitions using the $c$ edge.
@@ -794,8 +796,8 @@ A NAME label denotes a proper name.
 An NRC label denotes a narrator connector such as
 \RL{`an} ``on behalf of'', \RL{.hada_t} ``narrated'', \RL{qaal} ``said'', 
 \RL{'a_hbar} ``told'' or one of their derivations. 
-The IBN label corresponds to the word \RL{ibn} ``the son of'' and is a name connector.
-The NISBA label corresponds to an adjective that points to a person such 
+An IBN label denotes the word \RL{ibn} ``the son of'' and is a name connector.
+A NISBA label is a possessive adjective that qualifies a person such 
 as \RL{alma.sriy} ``the Egyptian''. 
 
 The symbol $\tau_{\mbox{NMC}}$ is a threshold
@@ -995,18 +997,17 @@ In phase one, we processed the entire text with Buckwalter and
 obtained annotations to text. 
 In the second phase, we fed the annotations to 
 the hadith controller as if they were coming from Sarf. 
-We measured the time it took to produce the annotations
-and the time it took the controller to process the 
-annotations without the time spent streaming the annotations.
-We used the same setup for ElixirFM. 
+We measured the time it took to accomplish both tasks
+less the time spent streaming the annotations.
+We did the same for ElixirFM. 
 
 Sarf outperforms both Buckwalter and ElixirFM in terms of 
 running time. 
-It also produces higher accuracy measures. 
-We think this is mainly due to the extended
+It also produces higher accuracy measures 
+mainly due to the extended
 lexicon as well as to the fact that Sarf reduces false positive
-names by ignoring prefixes and suffixes that can not form
-names even if one possible alternative of the stem is a name. 
+names by ignoring affixes that can not form
+names even if one possible solution of the stem is a name. 
 Doing the same with Buckwalter and ElixirFM requires  
 expanding the annotations resulting from one simple affix to be 
 reflected in all the composite affixes that contain it.
@@ -1021,8 +1022,9 @@ while ElixirFM outperformed Buckwalter in terms of accuracy.
 %This is up to 
 %our knowledge the first comparison of these two tools and 
 We think the big difference is due to the sophistication of 
-grammar based functional morphological analysis ElixirFM 
-uses and its reliance on additional annotations extracted from both ATB~\cite{Maamouri:04} and the Prague Arabic Dependency Treebank~\cite{Prague04}.
+the formal functional morphological analysis of ElixirFM 
+and its reliance on additional annotations extracted from 
+both ATB~\cite{Maamouri:04} and the Prague Arabic Dependency Treebank~\cite{Prague04}.
 
 \section{Conclusion and Future Work}
 \label{sec:future}
@@ -1033,7 +1035,7 @@ case study.
 Sarf uses non-deterministic finite state Automata with 
 concatenative analysis and recursive affixes to analyze 
 Arabic text. 
-Our results showed that Sarf with the hadith controller
+Results show that Sarf with the hadith controller
 is faster and more accurate than
 current morphological analyzers.
 
@@ -1042,12 +1044,12 @@ we will try Sarf with other interesting case studies.
 We plan to complete the hadith case study 
 and automate narrator discovery and authentication in the 
 biography books. 
-We plan to make use of the name connector and narrator
-connector stop phrases that our case study extracted to create a 
-learning system that can learn more names. 
-We also plan on developing an Arabic linguistic computational model 
-similar to that of ElixirFM~\cite{Otakar:07} but that can be 
-explored partially based on the case study. 
+%We plan to make use of the name connector and narrator
+%connector stop phrases that our case study extracted to create a 
+%learning system that can learn more names. 
+%We also plan on developing an Arabic linguistic computational model 
+%similar to that of ElixirFM~\cite{Otakar:07} but that can be 
+%explored partially based on the case study. 
 
 %\section{Acknoledgements}
 %\label{sec:acc}
