@@ -53,7 +53,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Natural language processing uses morphological 
+Natural language processing (NLP) uses morphological 
 analysis to abstract and annotate text.
 Often times, 
 %      and in particular in the context of the Arabic language, 
@@ -85,10 +85,10 @@ compared to current analyzers.
 Morphological analysis is key in current automated 
 analysis techniques for Arabic text. 
 Current morphological analyzers~\cite{Sughaiyer:04}
-use concatenative analysis
-consider the internal structure 
+use concatenative analysis when
+considering the internal structure 
 of an Arabic word and
-compose it into several {\em morphemes}. 
+composing it into several {\em morphemes}. 
 A morpheme can be a {\em stem}, or an {\em affix}.
 An affix can be a {\em prefix, suffix, } or an {\em infix}.
 The analysis of one word may lead to several possible
@@ -146,7 +146,7 @@ to enhance the accuracy of the morphological analysis at the expense
 of performance.
 Xerox rules can be compiled into specialized finite state
 machine (FSM) based analyzers as described in~\cite{Beesley:03}.
-The efficiency of the resulting analyzer depends on the
+However, the efficiency of the resulting analyzer depends on the
 way the Xerox rules are written. 
 This requires deep knowledge and insight from the user
 in compilation techniques, context free grammars, 
@@ -162,8 +162,10 @@ tolerable inaccuracy at low levels.
 For example, if a query concerns proper names and the 
 analyzer is considering a 
 prefix that connects only to a verb,
-the analyzer can answer without considering the 
-rest of the word.
+%the analyzer can answer without considering the 
+%rest of the word.
+we do not need to further analyze the rest of the word 
+to provide an answer.
 
 We find evidence to our hypothesis in~\cite{Maamouri:10}.
 The addition of a new corpus to the Arabic Tree Bank 
@@ -181,12 +183,12 @@ task interacted with the morphological analyzer.
 The work of Habash~\shortcite{Habash:06} reports that different 
 types of morphological analyses behave differently on the same case 
 study. 
-The analyzers may find different solutions or 
+The analyzers may report different solutions or 
 may present the solutions in different orders. 
 The presented solutions and the order of presentation may not be 
 appropriate for the case study. 
-We find strong evidence in our results 
-that a case-based morphological analyzer that allows a case-based 
+Moreover, our results strongly support our claim that
+a case-based morphological analyzer that allows a case-based 
 controller to intervene at every decision to guide, use, order, and 
 refine the morphological analysis is of high utility.
 
@@ -195,13 +197,13 @@ refine the morphological analysis is of high utility.
 
 {\bf Sarf.~~~}
 In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
-will be available online as an open source tool.},
+has been submitted with the paper and will be available online as an open source tool.},
  a {\em novel case-based efficient
 morphological analyzer} that uses 
 non-deterministic finite state Automata 
 driven by a case-based controller.
-Each machine in Sarf represents a valid morphological analysis
-and takes as input one letter at a time.
+Each machine in Sarf takes one letter at a time as input
+and represents a valid morphological analysis.
 The case-based controller prunes false positives
 early in the run by making a decision at every input letter
 to control the machines.
@@ -253,7 +255,7 @@ In this paper, we consider the problem of automatically segmenting
 a \noArRL{.hady_t} book into narrations, each 
 narration into its \RL{matn} (content) and its \noArRL{sanad},
 and each sanad into the 
-separate narrators. Now, we can look each narrator 
+separate narrators. Later, we can look each narrator 
 up in the biography books. 
 For example, 
 Figure~\ref{f:exhadith} shows proper names in boxes connected
@@ -269,7 +271,7 @@ The hadith case study is interesting to Sarf since the controller
 considers %most of the analyses where we have a concentration
 proper names and ignores text where
 proper names occur rarely.% as long %as the text is valid.
-We are also interested in discovering a words 
+We are also interested in discovering words 
 that relate names to each other such as \RL{bin} or ``the son of''
 and words that mean narrate such as \RL{qaal} or ``said''. 
 
@@ -281,7 +283,8 @@ that are three level deep in hierarchy.
 %abstraction
 %results of the case-based analysis was not affected by a major
 %refinement to the analyzer that increased low level analysis accuracy. 
-We make the following key contributions. 
+
+We make the following key contributions: 
 \begin{enumerate}
 \item {\bf Case-based analysis:}  We designed and implemented
 a case-based morphological analyzer where a controller
@@ -336,8 +339,9 @@ prunes these solutions.
 
 Sarf builds upon the lexicon of Buckwalter\shortcite{Buckwalter:02}.
 It differs from Buckwalter in that it defines a shorter list of affixes
-and a longer list of affix compatibility rules to allow recursive 
-affixes so that we can have prefix-prefix an suffix-suffix 
+and a longer list of affix compatibility rules to allow 
+affixes to be defined recursively
+so that we can have prefix-prefix an suffix-suffix 
 concatenations.
 This allows Sarf to better maintain and propagate 
 the POS tags associated with affixes. 
@@ -354,15 +358,15 @@ finite state Automata (FSA).
 It reports that the number of Automata generated by a compiler
 for Xerox rules can not be controlled and also reports a difficulty 
 to compose the FSAs into a single framework. 
-Sarf constructs an NDFSA from
+Sarf however constructs an NDFSA from
 the controller and the prefix, stem, and suffix deterministic 
 transducers to solve the problem.
-Sarf differs in that it uses recursive affixes in the 
+Sarf also differs in that it uses recursive affixes in the 
 affix transducers, and in that the transducers consider
 input from the controller to modify their behavior. 
 %With Sarf it is easy to control the FSA with a case-based
 %controller. 
-Beesley requires recompilation.% of the Xerox rules.
+Beesley requires recompilation of the Xerox rules.
 
 Similar to The MADA+TOKAN toolkit, Sarf thinks of
 the several valid morphological analyses as a richness that 
@@ -455,7 +459,8 @@ handles ``run-on'' words.
 The diagram in Figure~\ref{f:example}
 illustrates the operation of $\Phi$, the Sarf FSA,
 when parsing the
-string \RL{al-lA`bwn}\RL{wsyl`b-h-aa}.
+string \RL{wsyl`b-h-aa al-lA`bwn}.
+%\RL{al-lA`bwn}\RL{wsyl`b-h-aa}.
 \footnote{ 
 \RL{n}%
 \RL{w}
@@ -525,7 +530,7 @@ state.
 Before moving with the letter \RL{b} to the accept state,
 $\Phi$ needs to make sure that the stem \RL{l`b} is compatible
 with the prefix \RL{wsy}. 
-Sarf keeps a compatibility category values as part
+Sarf keeps compatibility category values as part
 of the accept states. 
 %Sarf considers the value of the category as part of the state.
 Thus each accept state in Figure~\ref{f:example} represents
@@ -655,7 +660,7 @@ represents accept states and the triangle represents
 reject states. 
 Note that the concrete prefix, stem and suffix transducers
 are all deterministic and cycle free as discussed 
-is Sections~\ref{sec:stemFSA} and~\ref{sec:affixFSA}.
+is Sections~\ref{sec:affixFSA} and~\ref{sec:stemFSA}.
 The cycles are introduced in the abstract machine
 for pedagogical purposes.
 
@@ -668,7 +673,7 @@ for pedagogical purposes.
 }
 \end{figure}
 
-The algorithm \CodeIn{NDSarf} 
+The algorithm \CodeIn{NDSarf} (detailed below)
 takes as input a text string $L$ and a case-based controller
 $A$. 
 It starts with one machine $\Phi_1$ similar to the one in 
@@ -687,7 +692,7 @@ was a non-connecting letter.
 In all cases, if $\Phi$ is in an accept state, 
 it spawns another machine $\Psi$ and adds it to $M$. 
 Notice that spawning a new machine requires only keeping
-the state of the machine and all machines share the
+the state of the machine since all machines share the
 structures of the three transducers.
 If $c$ leads to a reject state, then $\Phi$ dies 
 and we remove it from $M$. 
@@ -744,7 +749,7 @@ A hadith in Islamic literature is a narration from the prophet Mohammad
 related by multiple narrators.
 Establishing the authenticity of a hadith is an important task
 in Islamic studies. 
-Based on that Islamic scholars issue rules that affect the life
+Based on them Islamic scholars issue rules that affect the life
 of people around the world. 
 The literature lacks an exhaustive mechanism of authentication
 checks. This is currently manual work prone to error and almost
@@ -774,7 +779,7 @@ arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
 Our analysis accepts a book as input
 and segments it into a vector of hadiths. 
 We segment each individual hadith into two parts. 
-The first part is the sanad and it
+The first part is the sanad which
 contains the chain of narrators who related the hadith
 from Mohammad. 
 The second part is the matn or the content
@@ -961,12 +966,12 @@ report the average
 number of names per narrator and 
 the average number of narrators per chain respectively. 
 
-The segmentation accuracy reports on the accuracy of 
+The ``segmentation accuracy'' reports on the accuracy of 
 segmentation of the book into separate hadiths.
 The metric is computed manually over a representative sample 
 of each book.
 The same applies to all other accuracy measures.
-The chain accuracy reflects the percentage of correct narrators 
+The ``chain accuracy'' reflects the percentage of correct narrators 
 covered by extracted chains.
 The ``narrator name accuracy'' row reflects the percentage of 
 correct proper names detected within
@@ -1007,7 +1012,7 @@ obtained annotations to text.
 In the second phase, we fed the annotations to 
 the hadith controller as if they were coming from Sarf. 
 We measured the time it took to accomplish both tasks
-less the time spent streaming the annotations.
+ignoring the time spent streaming the annotations.
 We did the same for ElixirFM. 
 
 Sarf outperforms both Buckwalter and ElixirFM in terms of 
