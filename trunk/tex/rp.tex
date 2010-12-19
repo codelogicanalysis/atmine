@@ -346,22 +346,23 @@ all the possible solutions.
 CATARM tends to relational Arabic text mining using 
 {\bf (1.)} a novel case-based morphological analyzer.
 {\bf (2.)} CATARM will build a novel and efficient 
-linguistic computational model (LCM) of Arabic. 
+linguistic computational model (LCM) for Arabic. 
 %The LCM will be implemented using efficient structures. 
-The LCM will be amenable to {\bf (3.)} Arabic specific simplifications 
+The LCM will be amenable to novel 
+{\bf (3.)} Arabic specific simplifications 
 inferred from the correspondence between the formal Arabic rules
-and the relational user queries, and 
-{\bf (4.)} to simplifications 
-inferred from statistical features extracted from the documents 
+and the user queries, and 
+{\bf (4.)} language independent simplifications
+inferred from statistical features %extracted from the documents 
 using language independent techniques such as 
-hidden Markov models (HMM)  and 
-latent semantic indexing~\cite{LSI89}.
+hidden Markov models (HMM)~\cite{JanHMM06}
+and latent semantic indexing (LSI)~\cite{LSI89}.
 %CATARM will augment current digital dictionaries to resolve 
 %entity semantics and targeted qualificationsl.
 {\bf (5.)} CATARM extracts semantic graphs 
 and uses set arithmetic and graph analysis techniques
-to establish relations between the graphs. {\bf (5.)} CATARM will 
-solve the case studies 
+to establish relations between the graphs. 
+{\bf (6.)} CATARM will solve the case studies 
 presented in Sections~\ref{s:design:lit}--\ref{s:design:med}.
 
 \pagebreak
@@ -459,12 +460,14 @@ the libraries of CATARM.
 
 CATARM will discover relations between Arabic text documents that 
 are hard to discover by humans and will have direct live and
-cost saving benefits in cases similar to the above mentioned 
-case studies. 
+cost saving benefits.% in cases similar to the above mentioned 
+%case studies. 
 CATARM will qualitatively enhance research in the cultural and 
 literature fields. 
 It may also help investors analyze Arabic news and data from Arab 
 markets prior to making important decisions.
+CATARM may be used to flag spammers 
+posting biased reviews in Arabic web forums.
 
 The use of Arabic text mining  will 
 have a high impact on the prosperity and safety of the Arab world 
@@ -550,10 +553,14 @@ with above 95 percent accuracy and in less than two minutes.
 \end{figure}
 
 The directed acyclic graph (DAG) 
-in Figure~\ref{f:narrators} shows a partial order relation (POR) between
-narrators.
-We automatically extracted the POR from hadith text 
-documents.
+in Figure~\ref{f:narrators} shows a partial order relation (POR) 
+between narrators.
+We automatically extracted the POR from three books of hadith 
+selected arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}
+\footnote{We obtained
+  the digitized books from online sources such as 
+  \href{http://www.yasoob.com/}{http://www.yasoob.com/} and 
+  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }.
 The nodes in boxes are the \RL{matn} of the hadith, 
 and the other nodes are the narrators.
 Given a set of chains of narrators similar to 
@@ -631,7 +638,7 @@ as he worked on developing Arabization modules for Windows NT
 and an Arabic string manipulation library~\cite{Zar96}. 
 The Lead PI is also involved in working on an open source 
 project that aims at comprehensive automation of authenticity 
-checks against a corpus of literature heritage~\cite{Zar06}.
+checks against a corpus of hadith literature~\cite{Zar06}.
 The Lead PI is leading an effort at AUB to introduce 
 Computational Arabic in the curriculum of the ECE program. 
 He is also leading a team of students in an effort to place 
@@ -804,7 +811,11 @@ and depending on the application and the user of the tool,
 we need to allow the user to assign meanings and semantics 
 for patterns in the text.
 
-\subsection{Literature authentication case study}
+We describe CATARM using four case studies and then move
+to describe the different tools needed to build
+CATARM.
+
+\subsection{Hadith authentication case study}
 \label{s:design:lit}
 
 %\begin{figure}[tb]
@@ -813,13 +824,13 @@ for patterns in the text.
 \resizebox{.9\columnwidth}{!}
 {\includegraphics{figs/literature_case-study1.pdf}
 } 
-\caption{CATARM diagram for the literature case study }
+\caption{CATARM diagram for the hadith case study }
 \label{f:literature}
 }
 \end{figure}
 
 The diagram in Figure~\ref{f:literature} describes our 
-high level vision for what the literature case study
+high level vision for what the hadith case study
 will look like in the CATARM framework. 
 The boxes represent 
 computational blocks provided by CATARM, 
@@ -1111,7 +1122,7 @@ and $L_A$ the formal LCM for Arabic.
 }
 \end{figure}
 
-{\bf Case-based morphological analyzer.}
+{\bf Case-based morphological analyzer.~~}
 We experimented with several morphological analyzers.
 We think that using finite state machines for morphological analysis
 can be implemented in a more efficient way compared to other 
@@ -1194,7 +1205,7 @@ We will investigate methods to extend the internal structures
 of our analyzer to be able to represent a formal linguistic
 computational model of the Arabic language. 
 
-{\bf Linguistic computational model of Arabic.}
+{\bf Linguistic computational model of Arabic.~~}
 We think that a linguistic computational model for the Arabic
 language will perform better in applications where
 relations between Arabic text documents are involved. 
@@ -1222,7 +1233,7 @@ into an FSM and incorporate that with our current FSM
 morphological analyzer. 
 
 
-{\bf User query language. }
+{\bf User query language.~~}
 In Figure~\ref{f:statemachine} we showed an FSM 
 that controls the morphological analysis and generates a
 list of chains of narrators out of hadith text.
@@ -1269,9 +1280,8 @@ statistical tools, text algorithms, and graph algorithms.
 We need to provide a front end tool to support this query
 language.
 
-{\bf Simplify LCM based on the query.}
-Given
-L$L_q$ the query language, 
+{\bf Simplify LCM based on the query.~~}
+Given $L_q$ the query language, 
 $L_A$ the Arabic linguistic
 computational model, and  $q$ a user query
 we compute $\rho_q$, the grammar path that matches 
@@ -1285,35 +1295,61 @@ look at under $L_A$.
 
 This task is not trivial though, since $\rho_q$ may contain
 states and transitions that are not always morphemes and 
-transition between morphemes. 
+transitions between morphemes. 
 We will consider a hierarchical methodology that follows 
 the hierarchical structure of the Arabic language expressed
-in $L_A$. For example,
-we may consider sets of connected states in $\rho_q$ 
-containing a single morpheme as a state in one hierarchy level 
-in $L_A$.
+in $L_A$. 
+Consider $\Phi$ the state machine representing the grammar 
+rules for $L_A$ and consider $\phi$ the parse graph 
+representing $\rho_q$, in particular consider the atomic nodes 
+representing lexical entries in $\phi$. 
+Consider $S$ to be the set of states in $\Phi$ that 
+correspond to these nodes. 
+Consider simplifying $\Phi$ using techniques that remove 
+states and transitions that do not lead to $S$. 
+An optimal reduction requires expensive reachability 
+analysis, however, we can apply simpler reductions such 
+as structural cone of influence reduction,
+constant propagation reduction that overapproximate
+reachability analysis. 
+%For example, we may consider sets of connected states in $\rho_q$ 
+%containing a single morpheme as a state in one hierarchy level 
+%in $L_A$.
 We will perform this simplification before starting the 
 morphological analysis since we already have to analyze
 the query $q$ and compute $\rho_q$ before we start
 the analysis. 
 
-{\bf Simplify LCM and MA based on set of documents.}
+{\bf Simplify LCM and MA based on documents.~~}
 We will analyze the set of input documents given to a
 morphological analyzer component and use the analysis
 to further improve the morphological analysis. 
 We will extract statistical features from these documents 
 to help order the solutions considered by the analyzer
-to consider the most probable first. 
+and consider the most probable first. 
 
-We will consider the use of HMM models 
-built on the fly while processing the documents.
+We will consider the use of HMM~\cite{JanHMM06}
+models built on the fly while processing the documents.
+A high level HMM model of the document builds an HMM state
+model where the HMM states are morphemes or partial 
+morphemes and the HMM edges represent transitions between
+the HMM states. 
+The HMM edges are labeled with weights that reflect the
+We will look at building a correspondence between 
+the HMM model and the LCM and then simplify the 
+LCM where the aggregated probabilities happen to be
+below a certain threshold. 
+The work in~\cite{JanHMM06} uses a similar approach
+to correspond English text to tags corresponding to the 
+Unified Medical Language System (UMLS).
+
 We will also consider the use of
 latent semantic indexing~\cite{LSI89} techniques. 
 We are considering these two techniques as they are 
 both language independent and can both be computed and
 adapted on the fly.
 
-{\bf Entity and relational extractor.}
+{\bf Entity and relational extractor.~~}
 We will build a set of entity and relational extractors. 
 The entities can be proper names, dates, locations,
 and qualification adjectives. 
@@ -1335,49 +1371,64 @@ extractors.
 We plan to make use of existing annotated tree banks and of
 modern Arabic dictionaries to do that. 
 
-{\bf Statistical components.}
+{\bf Statistical components.~~}
 We will make use and build statistical components that can be used
 in CATARM. 
 We will need statistical components to rank solutions, compute 
 probable decisions, estimating good thresholds. 
 
-{\bf Graph algorithms.}
+{\bf Graph algorithms.~~}
 The relations extracted from the text documents will often 
 be expressed in terms of graphs.
 We will need textbook graph algorithms such as traversals, 
 topological sorts, spanning trees, strongly connected 
 components, minimum flow  and other algorithms.
-For example, in the literature case study, the discovery
+For example, in the hadith literature case study, the discovery
 of articulation vertices may point to important narrators 
 who may have an insignificant number of narrations 
 but still connect narrator communities.
 
-{\bf Query solver.}
-This is a logical solver that will solve query expressions to \
-resolve matching text and relations.
-We will need to use existing off the shelf constraint solvers 
-and set theory satisfiability solvers to address our queries. 
-The solver should return and rank approximate matches.
+{\bf Query solver.~~}
+The query solver considers query expressions and resolves them 
+into matching text and relations. 
+The solver returns and ranks approximate matches.
 That is if a three entities out of four required in a relation are
 found, the solution is still worth reporting. 
 
-The solver will call the morphological analyzer to compute 
-morphological matches to the atomic elements of the query. 
-Then each operation in the query such as a set intersection
-operation will correspond to a computational component. 
-The solver will call these components and integrate their
-results. 
-
+The solver passes the query to a front end that builds
+a parse graph of the query. 
+It uses the parse graph to simplify the LCM and the MA
+as discussed before. 
+Then it traverses the resulting parse graph. 
+When the solver meets an atomic element of the query, 
+it will call the morphological analyzer to compute 
+morphological matches to the atomic element.
+When the solver meets an operation of the query, 
+it will call the corresponding computational component 
+and passes to it the solutions computed so far from children
+nodes. 
+The solver will use existing off the shelf constraint solvers 
+and set theory satisfiability solvers to address the queries. 
 The solver may make use of existing 
 propositional~\cite{MiniSAT04} or
 higher order logic~\cite{Z308} solvers if needed. 
 These solvers can solve satisfiability questions.
-We will explore the feasibility and utility 
-of extracting a necessary set of 
-constraints from the query and answering that with an off-the-shelf
-logic solver. 
 
-{\bf Case studies.}
+We explain the ranking aspect of the solver with a simple
+example. 
+Consider $q$ the parse graph of a query with $n$ nodes where 
+each node corresponds to either a detected entity or
+to an operation that can be computed with one of CATARM components. 
+We define the rank of a solution to be the ratio of  the 
+satisfied nodes in $q$ over the possible satisfied
+nodes in $q$. 
+
+%We will explore the feasibility and utility 
+%of extracting a necessary set of 
+%constraints from the query and answering that with an off-the-shelf
+%logic solver. 
+
+{\bf Case studies.~~}
 We will work on developing the necessary components to complete 
 the solution for the hadith literature  case study. 
 We will also work on the security, health and network traffic case studies.
@@ -1386,7 +1437,7 @@ we build to our library of components.
 This will enrich CATARM with a useful set of computational 
 components. 
 
-{\bf Visualization.} 
+{\bf Visualization.~~}
 We will build a visualization tool that allows fast 
 and guided inspection and correction mechanism. 
 The CATARM visualization aid will be a tag and relation color
@@ -1501,28 +1552,51 @@ While a item is delivered, it will still be subject to work,
 enhancements, and maintenance. 
 
 We detailed an aggressive work plan in Table~\ref{t:workplan}. 
-The plan spans over three years and projects a timeline
-of work per quarter. 
+The plan spans over three years each with four quarters. 
 The row headers describe work items, and the column headers
 describe quarters in the corresponding year of the project.
 The legends {\bf P, W, D, M, } 
 and {\bf E} 
-describe the status of the items 
+describe the type of activity taking place 
 and stand for 
-{\bf P:} {\em planning phase}, 
-{\bf W:} {\em work in progress}, 
-{\bf D:} {\em deliverable}, 
-{\bf M:}  {\em maintenance}, 
+{\bf P:} {\em plan}, 
+{\bf W:} {\em work }, 
+{\bf D:} {\em deliver}, 
+{\bf M:}  {\em maintain}, 
 and 
 {\bf E: } {\em enhance} respectively. 
 
 The $1,2,3,$ and $4$
 superscripts of the deliverables in the 
-in case studies row refer to the four 
+row of case studies refer to the four 
 case studies described in the proposal. 
 
+Work can happen on all items in parallel. 
+Planing and research work can start on items that depend
+on other items. 
+For example, the LCM optimization items will be under 
+active planing and do not need to be totally idle 
+while the LCM is being built. 
+That will allow better chances to build the LCM data structures
+in a flexible way that requires less modifications if any
+when the optimizations take place. 
+
+That said, we describe the dependency of the items on 
+each other as follows. 
+The work on language optimizations and data optimizations 
+depend on the Arabic LCM item. 
+The work on language optimizations depends on the design
+of the query language as well. 
+The work on the query solver depends on the design of the 
+query language. 
+The entity and relation extractors depend on the morphological 
+analyzer. 
+However, they can start since we have already
+developed an working analyzer as a preliminary step. 
+The rest of the items can all work in parallel. 
+
 We will use open source tools, libraries, and frameworks to 
-build our libraries.
+build our componenets.
 We will build on existing open source programming and text 
 mining tools as well as open source Arabic text analysis tools 
 based on NLP such as MADA+TOKAN~\cite{Rot08}, 
@@ -1628,8 +1702,8 @@ and compare the results in terms of accuracy and efficiency.
 \subsection{CATARM and case studies }
 
 We will evaluate CATARM against the case studies
-that we discussed in Section~\ref{s:design} and 
-that are listed below. 
+that we discussed in Section~\ref{s:designmethods}
+and that are listed below. 
 \begin{enumerate}
 \item Hadith literature
 \item Security
@@ -1644,7 +1718,7 @@ We will also generalize the components we will develop to solve
 the case studies into a library of components that can be used
 in other case studies. 
 
-\subsection{CATARM evaluation } 
+\subsection{External evaluation }
 
 The team will seek the assistance and help of an independent 
 consultant in the middle of the second and third years of 
@@ -1723,6 +1797,8 @@ of refereed conference and journal papers as well as tool papers
 addressing each of the tools. 
 The team will also hold workshops to educate possible users on the 
 tools once the tools are available.
+Graduate students such as Masters and PhD students are examplary t
+target audience for such workshops.
 The Arabic text analysis framework will be partially based on 
 existing work in the open source domain and will thus be available 
 as an open source tool. 

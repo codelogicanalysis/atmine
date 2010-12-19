@@ -1,0 +1,136 @@
+%\documentstyle{llncs}
+%\documentclass[12pt,fullpage]{llncs}
+\documentclass[12pt]{article}
+%\usepackage[left=3cm,top=1.2cm,right=3cm,nohead,nofoot]{geometry}
+%\usepackage[letter,left=.25in,right=.25in,top=.17in,textwidth=7.5in,textheight=9in]{geometry}
+%\usepackage[left=0cm]{geometry}
+
+%\documentclass[12pt]{report}
+%\usepackage {utthesis2}              %% Preamble.
+
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+\usepackage{arabtex}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{times}
+\usepackage{caption}
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{color}
+\usepackage{rotate}
+\usepackage{rotating}
+\usepackage{multirow}
+%\usepackage[colorlinks=false]{color,hyperref}
+\usepackage{color,hyperref}
+%\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{natbib}
+\bibpunct{[}{]}{,}{n}{}{;}
+
+\usepackage{url}
+
+\usepackage{relsize}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr,lastpage}
+
+\usepackage{utf8}
+\setarab
+\fullvocalize
+\transtrue
+\arabtrue
+
+\newcommand{\CharCodeIn}[1]{`\CodeIn{#1}'}
+\newcommand{\CodeIn}[1]{{\small\texttt{#1}}}
+\newcommand{\frl}[1]{\fbox{\RL{#1}}} 
+\newcommand{\noArRL}[1]{\arabfalse\RL{#1}\arabtrue} 
+\newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue} 
+\newcommand{\noTrNoVocRL}[1]{\novocalize\transfalse\RL{#1}\transtrue\vocalize} 
+%\newcommand{\drawline}{\begin{picture}(6,.1) \put(0,0) {\line(1,0){6.25}}\end{picture}}
+
+\usepackage{setspace}
+%\doublespacing
+\renewcommand{\baselinestretch}{1.15}
+\setlength{\parindent}{0in}
+%\parskip 6pt
+%\parindent 0pt
+%\setlength{\parskip}{.05in}
+%\oddsidemargin 0in
+%\evensidemargin 0in
+\oddsidemargin .0in
+\evensidemargin .0in
+\hoffset -.75in
+\voffset -.83in
+\textwidth 7.5in
+\textheight 9.5in
+
+\topsep 0in
+\topmargin 0.17in
+
+%\usepackage{arabtex}
+%\usepackage{utf8}
+
+\begin{document}
+
+
+\pagestyle{fancy}
+%\lhead{}
+\chead{}
+\rhead{NPRP No.~:~~~~4-484-1-075}
+
+\lfoot{QNRF Form}
+\cfoot{}
+\rfoot{Page \thepage~of~\pageref{LastPage} }
+\renewcommand{\footrulewidth}{0.2pt}
+\renewcommand{\headrulewidth}{0.2pt}
+
+%\begin{titlepage}
+
+\begin{center}
+{\Large \bf Relational Arabic Text Mining Framework using 
+    Morphological
+    and Case-Based Analysis }
+
+%\setlength{\unitlength}{1in}
+%\setlength{\unitlength}{1in}
+%\vspace{1.5in}
+
+\renewcommand{\arraystretch}{.6}
+\begin{tabular}{cc}
+Fadi Zaraket & Rehab Duwairi \\
+%Electrical and Computer Engineering &  Computer Science and Engineering Department \\
+American University of Beirut & University of Qatar \\
+{\tt fadi.zaraket@aub.edu.lb} & {\tt Rehab.Duwairi@qu.edu.qa}
+\end{tabular}
+
+%\vspace{1.5in}
+
+\renewcommand{\arraystretch}{.6}
+\begin{tabular}{c}
+{\small Rebuttle to PR comments } \\
+\end{tabular}
+\vspace{.5in}
+
+\date{\today}
+%\pagebreak
+\end{center}
+
+%\section{Background (max of 2 pages)}
+%\label{s:background}
+In this document we discuss the changes made to the 
+Arabic text mining framework proposal. 
+We changed the proposal based on the comments of the respected reviewers
+and on the progress we made during last year on this project. 
+
+\pagebreak
+%\bibliography{adnan_refs}
+%\bibliographystyle{ieeetr}
+\bibliographystyle{abbrvnat}
+%\bibliographystyle{ieeetr}
+{\small
+\bibliography{fzAr}  
+}
+
+
+\end{document}
