@@ -95,6 +95,7 @@
 %\setlength{\unitlength}{1in}
 %\setlength{\unitlength}{1in}
 %\vspace{1.5in}
+\vspace{.1in}
 
 \renewcommand{\arraystretch}{.6}
 \begin{tabular}{cc}
@@ -104,13 +105,13 @@ American University of Beirut & University of Qatar \\
 {\tt fadi.zaraket@aub.edu.lb} & {\tt Rehab.Duwairi@qu.edu.qa}
 \end{tabular}
 
-%\vspace{1.5in}
+\vspace{.1in}
 
 \renewcommand{\arraystretch}{.6}
 \begin{tabular}{c}
-{\small Rebuttle to PR comments } \\
+{\small Response to PR comments } \\
 \end{tabular}
-\vspace{.5in}
+\vspace{.1in}
 
 \date{\today}
 %\pagebreak
@@ -118,10 +119,249 @@ American University of Beirut & University of Qatar \\
 
 %\section{Background (max of 2 pages)}
 %\label{s:background}
-In this document we discuss the changes made to the 
-Arabic text mining framework proposal. 
-We changed the proposal based on the comments of the respected reviewers
-and on the progress we made during last year on this project. 
+We detail in this document our responses to the comments of
+the respected reviewers of our previous Arabic text mining
+framework proposal.
+We rewrote the proposal to reflect changes that address the 
+comments of the reviewers and changes that reflect the substantial
+progress we made after submitting the initial proposal in December 
+2009.
+We managed to build ATSarf~\cite{ATMine09}, 
+a novel case-based morphological analyzer 
+and used it to automate the analysis of 
+hadith literature books. 
+We extracted directed acyclic graphs that 
+represent a partial order relation between narrators and narrations,
+and we are looking at investigaive and interrogative police reports.
+This work led us to modify our approach and build the framework 
+thorugh solving several case studies.
+For each case study we will visit the computational components we 
+needed to make it work and generalize them as library components. 
+We will refine these components to make them general enough
+while working on the next case study.
+We adopted a case-based approach to build a flexible
+low level analysis infrastructure.
+The research plan document explains the approach in more details. 
+This work led to manuscripts submitted for publication in 
+renowned conferences. 
+We hope that this addresses the {\em concern of 
+the reviewers about the experience of the LPI in the area
+of Arabic text mining}. 
+
+%In the following we address the comments of the reviewers.
+%We start by addressing the common concerns and
+%The positive comments of most of the reviewers concerning the novelty
+%of our approach encouraged us to continue 
+{\bf Concern 1.Specific Arabic features.(PR1,PR2,PR3,PR4,PR5)~~}
+Reviewers liked the idea that we are going to use 
+features specific to the Arabic language in our analysis and had
+a concern that we did not explain how we are going to do that in 
+detail. 
+We mentioned previously that we are going to build relaxed
+Arabic grammar rules and use them in the analysis. 
+We describe how to do that by building a grammar 
+that formalizes the Arabic language similar to 
+ElixirFM~\cite{Otakar:07}.
+Our grammar will be novel in that it will follow a relational 
+morphological approach rather than a functional morphological 
+approach. 
+That is the solutions will be expressed in a directed acyclic graph
+representing a hierarchy of relations between the morphemes 
+rather than moprhological trees mapping the morphemes to the 
+solutions.
+We think this is better since it provides a more succint
+representation for the solutions and because interesting relations 
+between morphemes can be computed statically before
+the input is presented to the analyzer.
+Morphological trees are traversals of these DAGs and are expensive 
+to compute statically. 
+
+We will compile this formalization into finite state machines that
+compute solutions of input text strings.
+We will simplify these FSMs before starting the analysis 
+based on the user input query.
+We consider the parse graph of the user input query 
+which has atomic elements corresonding to a state variables
+in the FSM.
+We use this correspondence and use simple structural analysis 
+techniques such as constant propagation and cone of influence
+reductions to simplify the FSM. 
+We think that this simplification is Arabic specific since
+the query language will be designed to match the
+structure of question sentences in common standard Arabic,
+and the query itself reflects the way an Arabic user
+himself thinks and searches. 
+
+{\bf Concern 2. Details about case studies(PR1,PR2,.~~}
+Peer reviewer 1 (PR1) shared a common concern with other reviewers
+about missing details of the case studies. 
+We addressed this concern by providing extensive details to the
+hadith and security case studies and by explaining our
+approach to solve the health and network content case studies.
+We named the literature case study the hadith case study as 
+PR1 suggested. 
+We explained how the authenticity will be represented as annotations
+to the graph of Figure 2 of the research document. 
+We leave the quantification of the annotations to the expert
+scholars %to avoid the controversy of hadith interpretation
+and provide a partial order of the annotations of each narrator.
+The subject scholar can decide where to draw his thresholds. 
+We hope that addresses PR1's question on evaluation and quantification
+of authenticity.
+PR1 commented that a contradiction may not mean non authentication.
+This is true and this is why the role of the tool is to flag 
+inconsistencies and leave it to the expert to decide. 
+As for additional sample queries, they are definitely welcome.
+For example, the graph in Figure 2 allows 
+for measuring the effect of one narrator 
+against a certain subject covered in the hadith. 
+PR1 asks for the details of how the solver will work, we address that 
+in Section 4.10 as well as in the explanation of Figures 3-6 including
+the diagrams of the case studies. 
+PR1 also suggests involving experts in the project, the LPI is 
+working with volunteers including experts in the hadith~\cite{Zar06},
+health and security subjects. 
+PR2 and PR5 asked how the data will be gathered, we 
+addressed that in Sections
+4.2--4.5 for each of the case studies. 
+PR4 was concerned about the relevance and semantical intricacy 
+of the case studies and suggests other case studies such as
+web mining, economy, and intelligence. 
+We kept our case studies as other PRs were favorable of them,
+we added a web based case study and we explained how the same 
+components can be used to analyze the market.
+Intelligence (in the sense of machine learning) is on our future 
+work list.
+We understand the semantical intricacy concern of PR4 and we hope
+that our preliminary results show that we can overcome 
+the semantical complexities that concerned PR4. 
+
+
+{\bf Concern 3. Strengthen literature review (PR1,PR2,PR3,PR4,PR5).~~}
+%@inproceedings{AlSham08,
+%We hope this addresses the concern of PR4 on the shortcomings
+%of previous approaches and the potentials of ours. 
+We went over the literature suggested by the reviewers. 
+We compared our approach to current and previous approaches in the
+reseach plan document. 
+Here we refer to the references cited by PR5 and illustrate how
+we made great use of them.
+We hope this addresses the concern of PR4 on the shortcomings
+of previous approaches and the potentials of ours. 
+
+We validated our case-based approach by the observation of 
+Daoud Daoud~\cite{Dao09} that the pipeline model is not 
+adequate for Arabic. 
+He suggests a synchronized syntactic and morphological
+approach while we take the argument further to 
+allow a tighter integration between the pipeline
+levels up to the query in question by providing a case-based
+morphological analyzer. 
+%However, Mr. Daoud makes a mistake when he assumes that a noun
+%cannot be followed by a preposition in Arabic to resolve
+%an ambiguity in his example~\noTrNoVocRL{.s-a.hb-aa s-amy _dhb-aa 
+%il_A alswq} (Sami's two companions went to the market) and decide 
+%that \noTrNoVocRL{_dhb-aa} is a verb (they went)
+%and not a noun since it is followed by \noTrNoVocRL{il_A}.
+%Surely, one can say~\noTrNoVocRL{a_h_d  .s-a.hb-aa s-amy _dhb-aa 
+%il_A alswq} (Sami's two companions took gold to the market) and 
+%now \noTrNoVocRL{_dhb-aa} is a noun (gold stressed with double 
+%diactric).
+The work~\cite{AlSham08} reports a similar result where
+the automated addition of syntax knowledge improved steeming
+in terms of accuracy and efficiency. 
+
+The work of Rogati in~\cite{Rog03} builds a stemmer based on
+a parallel corpus with a document containing Arabic and English
+text and another document containing only English with the
+translation of the Arabic embedded in place. 
+The translation is done manually and an English stemmer is used. 
+This approach works for parallel corpora which is not the case
+for our data of interest. 
+It is also highly dependent on the accuracy of the manual translation.
+Several interpretations of a word may be omitted if the context
+of the corpus happened to bias one meaning.
+
+Toutanova in~\cite{Tou09} suggested that using 
+a joint model to do lemmatization and POS tagging performs better
+than the direct and the pipelined approach. 
+We take the first argument further to suggest a full joint NLP task 
+model via using the NLP query to simplify and render the analysis
+more accurate at the low level morphological analysis.
+
+Later, Toutanova, in joint work with Smith and others~\cite{Smi10},
+suggested better extraction quality from comparable or related
+corpora. 
+They consider two sets of documents of the same nature from
+two different languages and extract parallel structures. 
+We are actually considering the same genre of analysis in 
+our proposal and case studies only in the same language. 
+For example, the hadith narrations are comparable to the hadith 
+biographies as far as the researcher is concerned with authenticity.
+The same applies to the clinical reports and the pharmaceutical 
+records, and the investigative reports from the crime scenes
+and the interrogative reports with suspects.
+
+We benefited a lot from the work of Maamouri~\cite{Maamouri:10}
+and the SAMA~\cite{Kulick:10} analyzer. 
+In~\cite{Maamouri:10} Maamouri considering adding a new corpus
+to the Arabic Tree Bank and the addition challenged existing
+annotation guidelines. 
+The solution was to refine SAMA and have it interact with the
+high level NLP task.
+We find strong evidence in that to support our approach of
+a case-based morphological analyzer integrated
+with the linguistic computational model.
+
+%@inproceedings{AlSham08,
+%We hope this addresses the concern of PR4 on the shortcomings
+%of previous approaches and the potentials of ours. 
+
+{\bf Concern 4. Charging model.~~}
+
+{\bf Concern 5. Budget issues (PR1,PR2,PR4)~~}
+
+{\bf Concern 6. List of outcomes (PR1, PR2, ).~~}
+
+{\bf Concern 7. Web based case studies (PR2, ).~~}
+We addressed the concern of PR2 by adding a case study that 
+analyzes web traffic. 
+The opinion mining track suggested by PR2 is also of interest and 
+can be another application we consider.
+Opinion classification and detection of spam opinions
+can make use of the traffic classification modules of the network
+content casey study, and the span opinion detection can 
+make use of the inconsistency checkers of the hadith case study.
+
+
+{\bf Concern 8. Improve evaluation (PR3).~~}
+
+{\bf Concern 9. Team involved (PR3).~~}
+
+{\bf Concern 10. Novelty (PR4).~~}
+
+{\bf Concern 11. Plan for dissemination.(PR4).~~}
+
+
+
+we explain the term relational (PR3) in .. 
+why extreme programming (PR4)
+what existing techniques (PR5)
+
+types of documents (PR5): comparable documents
+
+logic solver (PR5)
+size of documents (PR5)
+
+
+
+
+
+
+
+
+
+
 
 \pagebreak
 %\bibliography{adnan_refs}

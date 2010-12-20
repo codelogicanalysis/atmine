@@ -639,6 +639,8 @@ and an Arabic string manipulation library~\cite{Zar96}.
 The Lead PI is also involved in working on an open source 
 project that aims at comprehensive automation of authenticity 
 checks against a corpus of hadith literature~\cite{Zar06}.
+Volunteers including experts in the field of Islamic hadith
+are involved in the project.
 The Lead PI is leading an effort at AUB to introduce 
 Computational Arabic in the curriculum of the ECE program. 
 He is also leading a team of students in an effort to place 
@@ -743,9 +745,9 @@ IE targets forming data structures and instances of these
 data structures out of a collection of documents.
 IE tries to fit the output of IR and NLP to templates of 
 interest to the user.
-Data mining can be applied at the end on the output of the 
-IE process to answer user queries about the input 
-documents~\cite{JHa05}.
+%Data mining can be applied at the end on the output of the 
+%IE process to answer user queries about the input 
+%documents~\cite{JHa05}.
 
 
 The application of text mining techniques to Arabic text documents 
@@ -1059,6 +1061,26 @@ We desire to build a morphological analyzer that allows a
 case-based controller to intervene at every single decision
 without much overhead. 
 
+Toutanova in~\cite{Tou09} suggested that using 
+a joint model to do lemmatization and POS tagging performs better
+than the direct and the pipelined approach. 
+We take the first argument further to suggest a full joint NLP task 
+model via using the NLP query to simplify and render the analysis
+more accurate at the low level morphological analysis.
+
+Later, Toutanova, in joint work with Smith and others~\cite{Smi10},
+suggested better extraction quality from comparable or related
+corpora. 
+They consider two sets of documents of the same nature from
+two different languages and extract parallel structures. 
+We are actually considering the same genre of analysis in 
+our proposal and case studies only in the same language. 
+For example, the hadith narrations are comparable to the hadith 
+biographies as far as the researcher is concerned with authenticity.
+The same applies to the clinical reports and the pharmaceutical 
+records, and the investigative reports from the crime scenes
+and the interrogative reports with suspects.
+
 \subsection{CATARM query language}
 \label{s:design:query}
 
@@ -1087,13 +1109,31 @@ We think that these techniques do not make use
 of Arabic language specific features.
 
 We think that we can discover such features by building
-a linguistic computational model of the Arabic language
+a linguistic computational model (LCM) of the Arabic language
 based on its formal grammar and formal morphology
 as defined in several Arabic linguistic 
 sources~\cite{Sha73,Abd00,Abd001}.
 We will build our morphological analyzer on top 
-of this linguistic model in addition to the current existing
+of this LCM addition to the current existing
 concatenative-based analysis techniques. 
+
+Our LCM will differ from ElixirFM~\cite{Otakar:07}
+in that it will follow a relational approach rather 
+than a functional morphological approach. 
+That is the solutions will be expressed in a directed acyclic graph 
+(DAG)
+representing a hierarchy of relations between the morphemes 
+rather than moprhological trees mapping the morphemes to the 
+solutions.
+We think this is better since it provides a more succint
+representation for the solutions and because interesting relations 
+between morphemes can be computed statically before
+the input is presented to the analyzer.
+Morphological trees are traversals of these DAGs, are expensive 
+to exhaustively compute and store statically, 
+and are expensive to compute dynamically. 
+Our intuition is that Arabic allows relational strcutures
+such as noun sentences and complex hierarchical entities.
 
 Let $L_q$ be the query language grammar, 
 $L_A$ be the grammar that expresses the Arabic linguistic
@@ -1101,7 +1141,7 @@ computational model, and let $q$ be a user query.
 We compute $\rho_q$, the grammar path that matches 
 the query $q$ in $L_q$. 
 We will explore methods that use $\rho_q$ to simplify 
-$L_A$ before we start the morphological analysis. 
+$L_A$ before we start the analysis. 
 We think the possible simplifications that we can perform
 here are Language specific as they will reflect the 
 correspondence between the formal query language definition $L_q$, 
@@ -1223,6 +1263,40 @@ programming.
 The analyzer works by generating morphological trees of 
 decisions and then uses a disambiguation decision procedure 
 to annotate the trees with contextual elements. 
+
+In ~\cite{Dao09}, Daoud observes that the pipeline model,
+where morphology is performed first and syntactic and other
+processes follow, is not adequate for Arabic. 
+He suggests a synchronized syntactic and morphological
+approach.  
+We take the argument further to 
+allow a tighter integration between the several pipeline
+levels up to the NLP query in question by providing a 
+case-based morphological analyzer, a linguistic computational
+model of Arabic, and a query language that can all be expressed
+as FSMs. 
+The work~\cite{AlSham08} reports a similar result where
+the automated addition of syntax knowledge improved steeming
+in terms of accuracy and efficiency. 
+
+Here we point to a subtletie that shows how complex 
+low level Arabic morphology is. 
+The work in~\cite{Dao09} assumes that a noun
+cannot be followed by a preposition in Arabic and uses that 
+to resolve an ambiguity in the 
+example~\noTrNoVocRL{.s-a.hb-aa s-amy _dhb-aa il_A alswq} 
+(Sami's two companions went to the market) 
+    and decides that \noTrNoVocRL{_dhb-aa} 
+is a verb (they went)
+and not a noun since it is followed by \noTrNoVocRL{il_A}.
+One can 
+say~\noTrNoVocRL{a_h_d  .s-a.hb-aa s-amy _dhb-aa il_A alswq} 
+(Sami's two companions took gold to the market) and 
+now \noTrNoVocRL{_dhb-aa} is a noun (gold stressed with double 
+diactric).
+This shows that even complex and advanced techniques such as
+~\cite{Dao09} can be misled by ambiguous compatibility
+rules. 
 
 We will explore extracting our model from formal text book
 definitions of the Arabic language~\cite{Abd00,Abd001} and seek
