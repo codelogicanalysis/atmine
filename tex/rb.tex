@@ -79,9 +79,10 @@
 \chead{}
 \rhead{NPRP No.~:~~~~4-484-1-075}
 
-\lfoot{QNRF Form}
+\lfoot{QNRF Form -- response to PR comments}
 \cfoot{}
-\rfoot{Page \thepage~of~\pageref{LastPage} }
+%\rfoot{Page \thepage~of~\pageref{LastPage} }
+\rfoot{Page \thepage~of~3}
 \renewcommand{\footrulewidth}{0.2pt}
 \renewcommand{\headrulewidth}{0.2pt}
 
@@ -109,7 +110,7 @@ American University of Beirut & University of Qatar \\
 
 \renewcommand{\arraystretch}{.6}
 \begin{tabular}{c}
-{\small Response to PR comments } \\
+{\small Response to PR comments --- maximum of 3 pages} \\
 \end{tabular}
 \vspace{.1in}
 
@@ -119,122 +120,135 @@ American University of Beirut & University of Qatar \\
 
 %\section{Background (max of 2 pages)}
 %\label{s:background}
-We detail in this document our responses to the comments of
-the respected reviewers of our previous Arabic text mining
+We highlight in this document the important responses to the 
+excellent comments of
+the respected peer reviewers (PR) of our previous Arabic text mining
 framework proposal.
-We rewrote the proposal to reflect changes that address the 
-comments of the reviewers and changes that reflect the substantial
-progress we made after submitting the initial proposal in December 
-2009.
-We managed to build ATSarf~\cite{ATMine09}, 
-a novel case-based morphological analyzer 
+More detailed responses can be found in the research plan document. 
+The excellent comments were instrumental in the 
+progress we made and helped us bring the proposal to a far better 
+quality.
+We start by the changes to the proposal 
+that reflect our progress after December 2009.
+With that we hope to address the concern of PR2, PR3, PR4,
+and PR5 on the adequacy of the research team. 
+
+We built ATSarf~\cite{ATMine09}, 
+a novel case-based morphological analyzer,
 and used it to automate the analysis of 
 hadith literature books. 
-We extracted directed acyclic graphs that 
-represent a partial order relation between narrators and narrations,
-and we are looking at investigaive and interrogative police reports.
-This work led us to modify our approach and build the framework 
-thorugh solving several case studies.
-For each case study we will visit the computational components we 
-needed to make it work and generalize them as library components. 
-We will refine these components to make them general enough
-while working on the next case study.
+We extracted directed acyclic graphs (DAG) that 
+represent a partial order relation between narrators and narrations.
+We are currently looking at investigative and interrogative police 
+reports.
+We explain this work in details in Section 3 of the research document.
+
+Our experience led us to slightly modify our approach and 
+build the framework through solving several case studies.
+For each case study we will visit its computational components 
+and generalize them as library components. 
+We will refine the components built for other case studies
+and make them general enough to be used with the current case study.
 We adopted a case-based approach to build a flexible
-low level analysis infrastructure.
+low level morphological analysis infrastructure.
 The research plan document explains the approach in more details. 
 This work led to manuscripts submitted for publication in 
 renowned conferences. 
-We hope that this addresses the {\em concern of 
-the reviewers about the experience of the LPI in the area
-of Arabic text mining}. 
 
-%In the following we address the comments of the reviewers.
-%We start by addressing the common concerns and
-%The positive comments of most of the reviewers concerning the novelty
-%of our approach encouraged us to continue 
-{\bf Concern 1.Specific Arabic features.(PR1,PR2,PR3,PR4,PR5)~~}
+In the following we address the comments of the reviewers.
+
+{\bf Concern 1. Specific Arabic features.(PR1,PR2,PR3,PR4,PR5)~~}
 Reviewers liked the idea that we are going to use 
 features specific to the Arabic language in our analysis and had
 a concern that we did not explain how we are going to do that in 
 detail. 
 We mentioned previously that we are going to build relaxed
-Arabic grammar rules and use them in the analysis. 
-We describe how to do that by building a grammar 
-that formalizes the Arabic language similar to 
+Arabic grammar rules.
+We describe how to do that in Sections 4.7 and 4.9. 
+We build a grammar that formalizes the Arabic language similar to 
 ElixirFM~\cite{Otakar:07}.
-Our grammar will be novel in that it will follow a relational 
-morphological approach rather than a functional morphological 
-approach. 
-That is the solutions will be expressed in a directed acyclic graph
-representing a hierarchy of relations between the morphemes 
-rather than moprhological trees mapping the morphemes to the 
-solutions.
-We think this is better since it provides a more succint
-representation for the solutions and because interesting relations 
+Our grammar will be novel in that it will build relations between
+morphological entities rather than
+functional maps from morphological entities to solutions
+using morphological trees. 
+%In our approach the solutions will be expressed in a directed 
+%acyclic graph
+%representing a hierarchy of relations between the morphemes.
+We think this provides a more succinct
+representation for the solutions. Also interesting relations 
 between morphemes can be computed statically before
 the input is presented to the analyzer.
-Morphological trees are traversals of these DAGs and are expensive 
-to compute statically. 
+%Morphological trees are traversals of these DAGs and are expensive 
+%to compute statically. 
 
-We will compile this formalization into finite state machines that
-compute solutions of input text strings.
-We will simplify these FSMs before starting the analysis 
-based on the user input query.
-We consider the parse graph of the user input query 
-which has atomic elements corresonding to a state variables
-in the FSM.
+We explain further in Section 4.10 page 16 how we will
+use language specific features to simplify the linguistic model. 
+Briefly, we will compile the formalization into finite state 
+machines.
+We consider the parse graph of the user input query with
+elements that correspond to state variables in the FSMs of
+the linguistic model. 
+%The query has atomic elements corresonding to a state variables
+%in the FSM.
 We use this correspondence and use simple structural analysis 
 techniques such as constant propagation and cone of influence
-reductions to simplify the FSM. 
-We think that this simplification is Arabic specific since
-the query language will be designed to match the
-structure of question sentences in common standard Arabic,
-and the query itself reflects the way an Arabic user
-himself thinks and searches. 
+reductions to simplify the FSMs. 
+This simplification is Arabic specific since
+the query language matches the structure of question sentences 
+in common standard Arabic.
+%and the query itself reflects the way an Arabic user
+%himself thinks and searches. 
 
-{\bf Concern 2. Details about case studies(PR1,PR2,.~~}
-Peer reviewer 1 (PR1) shared a common concern with other reviewers
+{\bf Concern 2. Details about case studies (PR1,PR2,PR4,PR5).~~}
+PR1 shared a common concern with other reviewers
 about missing details of the case studies. 
 We addressed this concern by providing extensive details to the
-hadith and security case studies and by explaining our
-approach to solve the health and network content case studies.
-We named the literature case study the hadith case study as 
-PR1 suggested. 
-We explained how the authenticity will be represented as annotations
+hadith case study in Sections 3, 4.2 and 4.10.
+We also discussed the security case study with more details in 
+Section 4.3.
+We elaborated on the health case study in Section 4.4. 
+
+We renamed the hadith case study study as PR1 suggested. 
+We explained how authenticity will be represented as annotations
 to the graph of Figure 2 of the research document. 
 We leave the quantification of the annotations to the expert
 scholars %to avoid the controversy of hadith interpretation
 and provide a partial order of the annotations of each narrator.
-The subject scholar can decide where to draw his thresholds. 
-We hope that addresses PR1's question on evaluation and quantification
+The expert can decide where to draw his thresholds. 
+We hope this addresses PR1's question on evaluation and quantification
 of authenticity.
 PR1 commented that a contradiction may not mean non authentication.
 This is true and this is why the role of the tool is to flag 
 inconsistencies and leave it to the expert to decide. 
-As for additional sample queries, they are definitely welcome.
+PR1 also asked about additional sample queries, 
+they are definitely welcome.
 For example, the graph in Figure 2 allows 
 for measuring the effect of one narrator 
 against a certain subject covered in the hadith. 
-PR1 asks for the details of how the solver will work, we address that 
-in Section 4.10 as well as in the explanation of Figures 3-6 including
-the diagrams of the case studies. 
+
+We address the question of PR1 about how the solver works, 
+in Section 4.10 as well as in the explanation of Figures 3-6 that
+include the computational diagrams. 
 PR1 also suggests involving experts in the project, the LPI is 
 working with volunteers including experts in the hadith~\cite{Zar06},
-health and security subjects. 
-PR2 and PR5 asked how the data will be gathered, we 
-addressed that in Sections
-4.2--4.5 for each of the case studies. 
-PR4 was concerned about the relevance and semantical intricacy 
-of the case studies and suggests other case studies such as
+health and security areas.
+
+We addressed the question of
+PR2 and PR5 about data gathering and data
+in Sections 4.2--4.5 for each case study. 
+
+PR4 was concerned about the relevance and semantic intricacy 
+of the case studies and suggested other case studies such as
 web mining, economy, and intelligence. 
-We kept our case studies as other PRs were favorable of them,
-we added a web based case study and we explained how the same 
-components can be used to analyze the market.
+%We kept our case studies as other PRs were favorable of them,
+We added a web based case study in Section 4.5
+and we explained how the components from the case studies 
+can be used to analyze the market.
 Intelligence (in the sense of machine learning) is on our future 
 work list.
-We understand the semantical intricacy concern of PR4 and we hope
+We understand the semantic intricacy concern of PR4 and we hope
 that our preliminary results show that we can overcome 
-the semantical complexities that concerned PR4. 
+the semantic complexities that concerned PR4. 
 
 
 {\bf Concern 3. Strengthen literature review (PR1,PR2,PR3,PR4,PR5).~~}
@@ -243,19 +257,22 @@ the semantical complexities that concerned PR4.
 %of previous approaches and the potentials of ours. 
 We went over the literature suggested by the reviewers. 
 We compared our approach to current and previous approaches in the
-reseach plan document. 
+research plan document. 
 Here we refer to the references cited by PR5 and illustrate how
 we made great use of them.
 We hope this addresses the concern of PR4 on the shortcomings
 of previous approaches and the potentials of ours. 
 
-We validated our case-based approach by the observation of 
-Daoud Daoud~\cite{Dao09} that the pipeline model is not 
+Daoud Daoud in~\cite{Dao09} observed that the pipeline model is not 
 adequate for Arabic. 
-He suggests a synchronized syntactic and morphological
-approach while we take the argument further to 
+He suggested a synchronized syntactic and morphological
+approach. 
+The work~\cite{AlSham08} reports a similar result where
+the automated addition of syntax knowledge improved stemming
+in terms of accuracy and efficiency. 
+We take their arguments further to 
 allow a tighter integration between the pipeline
-levels up to the query in question by providing a case-based
+levels up to the NLP query in question by providing a case-based
 morphological analyzer. 
 %However, Mr. Daoud makes a mistake when he assumes that a noun
 %cannot be followed by a preposition in Arabic to resolve
@@ -267,103 +284,172 @@ morphological analyzer.
 %il_A alswq} (Sami's two companions took gold to the market) and 
 %now \noTrNoVocRL{_dhb-aa} is a noun (gold stressed with double 
 %diactric).
-The work~\cite{AlSham08} reports a similar result where
-the automated addition of syntax knowledge improved steeming
-in terms of accuracy and efficiency. 
 
 The work of Rogati in~\cite{Rog03} builds a stemmer based on
-a parallel corpus with a document containing Arabic and English
-text and another document containing only English with the
-translation of the Arabic embedded in place. 
-The translation is done manually and an English stemmer is used. 
+the English stemming of 
+a parallel corpus with documents containing Arabic and English
+text and parallel documents containing only English with the
+manual translation of Arabic. 
 This approach works for parallel corpora which is not the case
-for our data of interest. 
+for our case studies.
 It is also highly dependent on the accuracy of the manual translation.
-Several interpretations of a word may be omitted if the context
-of the corpus happened to bias one meaning.
+%Several interpretations of a word may be omitted if the context
+%of the corpus happened to bias one meaning.
 
 Toutanova in~\cite{Tou09} suggested that using 
-a joint model to do lemmatization and POS tagging performs better
+a joint model to do lemmatization and POS tagging performed better
 than the direct and the pipelined approach. 
-We take the first argument further to suggest a full joint NLP task 
+We take the argument further to suggest a full joint NLP task 
 model via using the NLP query to simplify and render the analysis
 more accurate at the low level morphological analysis.
 
 Later, Toutanova, in joint work with Smith and others~\cite{Smi10},
 suggested better extraction quality from comparable or related
 corpora. 
-They consider two sets of documents of the same nature from
-two different languages and extract parallel structures. 
-We are actually considering the same genre of analysis in 
-our proposal and case studies only in the same language. 
+%They consider two sets of documents of the same nature from
+%two different languages and extract parallel structures. 
+This is similar to our selection of the case studies
+except that our documents are in the same language.
 For example, the hadith narrations are comparable to the hadith 
-biographies as far as the researcher is concerned with authenticity.
-The same applies to the clinical reports and the pharmaceutical 
-records, and the investigative reports from the crime scenes
-and the interrogative reports with suspects.
+biographies.
+%as far as the researcher is concerned with authenticity.
+%The same applies to the clinical reports and the pharmaceutical 
+%records, and the investigative reports from the crime scenes
+%and the interrogative reports with suspects.
 
 We benefited a lot from the work of Maamouri~\cite{Maamouri:10}
 and the SAMA~\cite{Kulick:10} analyzer. 
-In~\cite{Maamouri:10} Maamouri considering adding a new corpus
-to the Arabic Tree Bank and the addition challenged existing
+In~\cite{Maamouri:10} Maamouri considers adding a new corpus
+to the Arabic Tree Bank. The addition challenged existing
 annotation guidelines. 
 The solution was to refine SAMA and have it interact with the
 high level NLP task.
-We find strong evidence in that to support our approach of
-a case-based morphological analyzer integrated
-with the linguistic computational model.
+%We find strong evidence in that to support our approach of
+%a case-based morphological analyzer integrated
+%with the linguistic computational model.
 
 %@inproceedings{AlSham08,
 %We hope this addresses the concern of PR4 on the shortcomings
 %of previous approaches and the potentials of ours. 
 
-{\bf Concern 4. Charging model.~~}
+%{\bf Concern 4. Continuity and charging model (PR1).~~}
+%We suggested to charge on support for the framework as a partial
+%means to sustain the work and not as a sole source of funds. 
+%This model works fine for many open source tools as the cost 
+%of open source contributions is not expensive. 
+%Note that the continuation of the project does not solely depend
+%on the charging model as it mostly depends on contributions to 
+%research in the area from around the world.
+%We will also charge on custom expertise to set up new applications.
 
-{\bf Concern 5. Budget issues (PR1,PR2,PR4)~~}
+{\bf Concern 4. Budget issues (PR1,PR2,PR4)~~}
+We addressed the budget issues by reducing the requested budget.
+Note that the travel and consultant expenses were noted inline 
+with the itemized expense guidelines at the American
+University of Beirut and at Qatar University as provided
+by the corresponding research offices. 
 
-{\bf Concern 6. List of outcomes (PR1, PR2, ).~~}
+{\bf Concern 5. List of outcomes and novelty (PR1, PR2, PR4).~~}
+We refined our outcomes and detailed what is novel. 
+We claim the novelty of our case-based morphological analyzer, 
+a flexible linguistic computational analysis that can be loaded 
+partially, the language specific optimization techniques, 
+the application of language independent statistical techniques
+to the simplification of the linguistic model, and the 
+application of CATARM to the case studies considered. 
 
-{\bf Concern 7. Web based case studies (PR2, ).~~}
-We addressed the concern of PR2 by adding a case study that 
+{\bf Concern 6. Web based case studies (PR2,PR4).~~}
+We addressed the concern of PR2 and PR4 by adding a case study that 
 analyzes web traffic. 
 The opinion mining track suggested by PR2 is also of interest and 
-can be another application we consider.
+can be another application we will consider.
 Opinion classification and detection of spam opinions
 can make use of the traffic classification modules of the network
-content casey study, and the span opinion detection can 
+content case study, and the spam opinion detection can 
 make use of the inconsistency checkers of the hadith case study.
 
 
-{\bf Concern 8. Improve evaluation (PR3).~~}
+{\bf Concern 7. Improve evaluation (PR3).~~}
+We improved the evaluation section to list how each component will 
+be evaluated and what it will be compared with. 
 
-{\bf Concern 9. Team involved (PR3).~~}
+{\bf Concern 8. Team involved (PR3).~~}
+Our current team is the LPI, Co-LPI, one RA, 
+and two seniors. % undergraduate students.
+Once funded, the team will readily expand to 
+free the students from other work and 
+attract PhD and graduate students.
 
-{\bf Concern 10. Novelty (PR4).~~}
+%{\bf Concern 10. Novelty (PR4).~~}
 
-{\bf Concern 11. Plan for dissemination.(PR4).~~}
+{\bf Concern 9. Plan for dissemination.(PR2,PR4).~~}
+We devised a detailed plan to disseminate the results
+to address the comments of PR4 including 
+workshops and tutorial sessions to 
+interest graduate students as PR2 suggested. 
+
+{\bf Concern 10. Types of documents. (PR5)~~}
+PR5 noted that analysis for documents differing in genre and 
+type requires different techniques. 
+We agree with that statement. 
+In our case studies we target comparable documents such as 
+hadith and biography and extract relations between them. 
+This is similar to the work of Al-Shammari~\cite{AlSham08} that
+takes as input comparable documents from two languages. 
+We differ in that we consider comparable documents in the same
+language.
+
+{\bf Concern 11. Logic solvers. (PR5)~~}
+PR5 asks about the role of the logic solver. 
+The logic solvers will work as constraint solvers to answer 
+satisfiability queries and return models from sets of solutions
+when set arithmetic or logic operations are applied over
+sets of morphological solutions. 
+The integration of the logic solver may be deferred to later 
+as PR5 suggested until the entity and relation extractors are 
+available. We note that when we discuss dependency between 
+work items in Section 4.12. 
+However, as PR5 noted, logic solvers are close to the expertise of
+the LPI and integrating them into the framework will not be
+a challenging task.
 
 
+{\bf Concern 12. Choice of eXtreme programming. (PR4)~~}
+We explained well in our work plan in Section 4.12 why we chose 
+eXtreme Programming as a methodology in response to PR4. 
+For one, pair programming, encouraged by XP, 
+works well in the context of academy and research to keep
+expertise in the team. 
+As senior students graduate, their junior partners in the pair
+will keep the knowledge. 
 
-we explain the term relational (PR3) in .. 
-why extreme programming (PR4)
-what existing techniques (PR5)
+{\bf Concern 13. Use of existing techniques. (PR5)~~}
+We address this concern by citing the Buckwalter and ElixirFM 
+morphological analyzer we have worked with and used so far. 
+We also refer to possible use of the CADIM toolkit from Columbia
+university. 
+We cite all relevant techniques we plan to use including the use 
+of hidden Markov models in text mining and the use of latent semantic
+indexing. 
 
-types of documents (PR5): comparable documents
+{\bf Concern 14. Relational text mining. (PR3)~~}
+We explain the term {\em relational text mining} as the task of 
+looking at sets of comparable documents with an expected set 
+of relations between the documents. 
+%Figures 1 and 2 are good examples of the relations.
+A user query expresses the expected relations and can
+%will be given as user queries and can 
+be a complex structure of other relations and entities. 
+%We gave explain that with the part
 
-logic solver (PR5)
-size of documents (PR5)
-
-
-
-
-
-
-
-
-
-
+We hope we have addressed most of the concerns of the PRs in this
+document and we highly appreciate their excellent and beneficial
+feedback that helped us bring the proposal to a far better quality
+as it stands now. 
+We look forward to their positive feedback. 
 
 \pagebreak
+\rfoot{Page \thepage~of~\pageref{LastPage} }
 %\bibliography{adnan_refs}
 %\bibliographystyle{ieeetr}
 \bibliographystyle{abbrvnat}

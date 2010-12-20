@@ -81,7 +81,8 @@
 
 \lfoot{QNRF Form}
 \cfoot{}
-\rfoot{Page \thepage~of~\pageref{LastPage} }
+%\rfoot{Page \thepage~of~\pageref{LastPage} }
+\rfoot{Page \thepage~of~23}
 \renewcommand{\footrulewidth}{0.2pt}
 \renewcommand{\headrulewidth}{0.2pt}
 
@@ -139,7 +140,7 @@ and data mining~\cite{ASr09}.
 
 The almost comprehensive book 
 ``Arabic Computational Morphology''~\cite{Sou07}
-covers most academic research work on Arabic text mining.
+covers substantial academic research work on Arabic text mining.
 It summarizes recent work, and presents strong evidence of 
 shortage of historic research. It also highlights  an emerging 
 interest with a specific application to machine 
@@ -164,14 +165,15 @@ We propose to build a framework for
 CATARM will apply novel algorithms and tools
 to answer queries seeking relations amongst
 Arabic text documents.
-CATARM takes as input several sets of documents, each of a specific
+CATARM takes as input several sets of comparable documents, 
+each of a specific
 type, and a user query. % expressed in a visual language.
 The query, expressed in a visual language, allows the user 
 to build a flow of Arabic text mining
 components and discover desired relations between documents. 
 CATARM compiles the query into a netlist of computational 
 components. It also uses features extracted from the query and 
-the document sets to simplify the computational 
+the document sets to simplify the %computational 
 components. 
 %The main CATRAM computational components will be finite 
 %state machines (FSM) that express a linguistic model of the Arabic 
@@ -337,8 +339,8 @@ and considers the form of the word
 \noTrRL{.sarf}  instead of its segments. 
 Formal rules express the relations between 
 the root of the lexeme and the fully inflected word. 
-While the rules capture features unique to the 
-the Arabic language and its linguistic description~\cite{Badawi:04},
+While the rules capture features unique to 
+the linguistic description of Arabic~\cite{Badawi:04},
 the approach is computationally expensive and enumerates 
 all the possible solutions. 
 
@@ -678,6 +680,7 @@ text minining case studies
 \item Build a visualization tool to showcase the results 
 \end{itemize}
 
+
 In the rest of this section, we will introduce Arabic text mining in 
 details, then we will discuss the case studies in 
 Sections~\ref{s:design:lit}--~\ref{s:design:med}. 
@@ -816,6 +819,10 @@ for patterns in the text.
 We describe CATARM using four case studies and then move
 to describe the different tools needed to build
 CATARM.
+We chose our case studies to be documents of comparable
+content. 
+Our intuition is that this is more 
+adequate to a relational text mining approach.
 
 \subsection{Hadith authentication case study}
 \label{s:design:lit}
@@ -874,6 +881,17 @@ Then the locator also annotates the narrator with the
 corresponding qualifications. 
 The result is an annotated partial order graph of narrators
 with authentication qualification annotations. 
+The digitized hadith and biography books are available 
+online~ \footnote{We obtained
+  the digitized books from online sources such as 
+  \href{http://www.yasoob.com/}{http://www.yasoob.com/} and 
+  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }.
+The books are considered open Islamic heritage and access to
+them is granted without considerable IP constraints. 
+We are looking at processing around 60 books of hadith and
+biographies each in several volumes. 
+The total data size is in the order of 30MB worth of digital 
+data.
 
 \subsection{Security case study}
 \label{s:design:sec}
@@ -944,6 +962,9 @@ enough set of reports (in the order of hundreds).
 We will mutate the entities in these documents and seed the mutated
 set with relations we wish to discover and that are hard to discover
 manually. 
+We are looking at processing original documents in the order
+of hundreds, and at generating few tens of thousands of dummy 
+documents.
 Later on, we will use our contacts with the Lebanese and Qatari 
 security authorities
 to validate our system on their real data. 
@@ -951,17 +972,23 @@ to validate our system on their real data.
 \subsection{Network content case study}
 \label{s:design:net}
 
-Parental controls help parents allow their kids to benefit from the internet 
+Parental controls help parents allow their kids to benefit 
+from the Internet 
 without fearing the danger of violent and obscene material. 
-These controls partially rely on processing the content to detect and rate 
-the target material. 
+These controls partially rely on processing the content to detect 
+and rate the target material. 
 Control mechanisms for Arabic traffic as currently mostly manual. 
 In this case study we will detect the bad content. 
-Given a set of undesired internet content 
-and a set of requests by internet users, 
+Given a set of undesired Internet content 
+and a set of requests by Internet users, 
 CATARM can discover whether there is a relation between 
 the requested documents and the undesired content and flag the 
 requested document with strong enough relation. 
+The undesired content is available online and is in the 
+order of thousands of documents. 
+We will look at Arabic Internet traffic five times larger to
+validate our case study. 
+
 
 \subsection{Health case study}
 \label{s:design:med}
@@ -969,7 +996,8 @@ requested document with strong enough relation.
 Clinical reports contain diagnosis information, observations about 
 patient progress, prescriptions, and patient response to prescribed 
 medications. 
-In countries, like Lebanon, where medical doctors graduate and specialize 
+In countries, like Lebanon, where medical doctors graduate and 
+specialize 
 in several distinct practices around the world it is interesting to 
 check for common practices and emerging trends to gain insight
 about local and regional health and diagnosis features. 
@@ -987,6 +1015,9 @@ appropriate medical supervision.
 We will work with our contacts at the American University
 Hospital (AUH) at Beirut to analyze this data and relate it
 to nearby pharmaceutical records. 
+The data available is in the order of few thousand clinical reports
+and comparable pharmaceutical records. 
+
 
 \subsection{CATARM components}
 \label{s:design:components}
@@ -1062,7 +1093,8 @@ case-based controller to intervene at every single decision
 without much overhead. 
 
 Toutanova in~\cite{Tou09} suggested that using 
-a joint model to do lemmatization and POS tagging performs better
+a joint model to do lemmatization and part of speech (POS
+tagging performs better
 than the direct and the pipelined approach. 
 We take the first argument further to suggest a full joint NLP task 
 model via using the NLP query to simplify and render the analysis
@@ -1123,16 +1155,17 @@ than a functional morphological approach.
 That is the solutions will be expressed in a directed acyclic graph 
 (DAG)
 representing a hierarchy of relations between the morphemes 
-rather than moprhological trees mapping the morphemes to the 
+rather than morphological trees mapping the morphemes to the 
 solutions.
-We think this is better since it provides a more succint
-representation for the solutions and because interesting relations 
+We think this provides a more succinct
+representation for the solutions.
+Also interesting relations 
 between morphemes can be computed statically before
 the input is presented to the analyzer.
 Morphological trees are traversals of these DAGs, are expensive 
 to exhaustively compute and store statically, 
 and are expensive to compute dynamically. 
-Our intuition is that Arabic allows relational strcutures
+Our intuition is that Arabic allows relational structures
 such as noun sentences and complex hierarchical entities.
 
 Let $L_q$ be the query language grammar, 
@@ -1276,10 +1309,10 @@ case-based morphological analyzer, a linguistic computational
 model of Arabic, and a query language that can all be expressed
 as FSMs. 
 The work~\cite{AlSham08} reports a similar result where
-the automated addition of syntax knowledge improved steeming
+the automated addition of syntax knowledge improved stemming
 in terms of accuracy and efficiency. 
 
-Here we point to a subtletie that shows how complex 
+Here we point to a subtlety that shows how complex 
 low level Arabic morphology is. 
 The work in~\cite{Dao09} assumes that a noun
 cannot be followed by a preposition in Arabic and uses that 
@@ -1383,9 +1416,14 @@ Consider simplifying $\Phi$ using techniques that remove
 states and transitions that do not lead to $S$. 
 An optimal reduction requires expensive reachability 
 analysis, however, we can apply simpler reductions such 
-as structural cone of influence reduction,
-constant propagation reduction that overapproximate
+as structural cone of influence and
+constant propagation reductions that overapproximate
 reachability analysis. 
+This simplification is Arabic specific since
+the query language matches the structure of question sentences 
+in common standard Arabic.
+In addition, the query itself reflects the way an Arabic user
+himself thinks and searches. 
 %For example, we may consider sets of connected states in $\rho_q$ 
 %containing a single morpheme as a state in one hierarchy level 
 %in $L_A$.
@@ -1615,15 +1653,25 @@ W & W & W & W & & W & W & W & W & & W & W & W & W \\  \bottomrule
 \label{t:workplan}
 \end{table}
 
-We will follow an eXtreme Programming 
+We will follow a relaxed  eXtreme Programming 
 methodology in the process of building CATARM.
 This means that we will define refined incremental items of 
 work that allows for more frequent deliverables. 
 This also means that the code base will always be subject
 to maintenance and refactoring to enhance reuse and 
 increase productivity. 
-While a item is delivered, it will still be subject to work,
+While an item is delivered, it will still be subject to work,
 enhancements, and maintenance. 
+We selected eXtreme Programming as this fits well in the 
+context of research where the clients are at close 
+contact with the developers.
+It accomodates the high dependency amongst the 
+modules of CATARM. 
+The pair programming practice in eXtreme Programming 
+works well in the context of academy and research to keep
+expertise in the team. 
+As senior students graduate, their junior partners in the pair
+will keep the knowledge in. 
 
 We detailed an aggressive work plan in Table~\ref{t:workplan}. 
 The plan spans over three years each with four quarters. 
@@ -1662,7 +1710,8 @@ depend on the Arabic LCM item.
 The work on language optimizations depends on the design
 of the query language as well. 
 The work on the query solver depends on the design of the 
-query language. 
+query language and on the availability of the entity and relation
+extractors. 
 The entity and relation extractors depend on the morphological 
 analyzer. 
 However, they can start since we have already
@@ -1670,7 +1719,7 @@ developed an working analyzer as a preliminary step.
 The rest of the items can all work in parallel. 
 
 We will use open source tools, libraries, and frameworks to 
-build our componenets.
+build our components.
 We will build on existing open source programming and text 
 mining tools as well as open source Arabic text analysis tools 
 based on NLP such as MADA+TOKAN~\cite{Rot08}, 
@@ -1685,6 +1734,18 @@ on the project.
 The team will maintain a dokuwiki based website to continuously 
 post updates on the progress of the project.
 
+\subsection{Novelty}
+
+We claim the novelty of the following items
+\begin{itemize}
+\item the case-based morphological analyzer,
+\item the flexible and partial linguistic computational model,
+\item the language specific LCM simplification techniques,
+\item the application of language independent statistical techniques
+to simplify the LCM,
+\item the solutions of the four proposed case studies,
+\item and the CATRAM framework as an integration of all the above techniques.
+\end{itemize}
 
 \subsection{Budget items}
 
@@ -1794,8 +1855,8 @@ in other case studies.
 
 \subsection{External evaluation }
 
-The team will seek the assistance and help of an independent 
-consultant in the middle of the second and third years of 
+The team will seek the assistance and help of independent 
+consultants  in the middle of the second and third years of 
 the duration of the project to evaluate and validate the results.
 
 \section{Strategy for project continuation}
@@ -1808,11 +1869,17 @@ Once completed, the Arabic text analysis framework will be
 an open source contribution and developers from the Arabic 
 world in the open source community are expected to join 
 efforts to keep it going.
-Furthermore, the Arabic text analysis framework 
-can sustain itself by charging on support or expert use.
 
-The framework or service on the framework can easily be 
-commercialized to tend to the security, health, insurance, market,
+
+The PIs will continue soliciting funds for the development
+of extensions and enhancements of this work as well. 
+
+Furthermore, the Arabic text analysis framework 
+can partially sustain itself by charging on support or expert use
+similar to other similar projects such as the ATB.
+The framework or service of the framework can be 
+commercialized to tend to commercial usage from 
+the security, health, insurance, market,
 news, media, or literature business sectors.
  
 The area of Arabic text analysis will be a research area for 
@@ -1841,7 +1908,7 @@ the morphological analyzer in addition to grammatical analyzers.
 such as market analysis and opinion mining.
 \item We will explore augmenting the lexicon of the
 morphological analyzer with useful categorization and entity 
-tags that reflect semantical meanings. 
+tags that reflect semantic meanings. 
 These modifications would give CATARM additional capabilities in 
 terms of allowing users to extract and use a greater variety of 
 entities when building queries. 
@@ -1866,21 +1933,39 @@ researchers of CATARM.
 \section{Plans for disseminating research results}
 \label{s:dissem}
 
-The team will publish the results of the research in the form 
-of refereed conference and journal papers as well as tool papers 
-addressing each of the tools. 
-The team will also hold workshops to educate possible users on the 
-tools once the tools are available.
-Graduate students such as Masters and PhD students are examplary t
-target audience for such workshops.
 The Arabic text analysis framework will be partially based on 
 existing work in the open source domain and will thus be available 
 as an open source tool. 
 Interested researchers and users will be able to download the 
 tools for free and use them for non-profit non-commercial 
 purposes.  
+The tools we have developed so far are readily available 
+online under the {\em atmine} project~\cite{ATMine09}.
+
+The team will publish the results of the research in the form 
+of refereed conference and journal papers as well as tool papers 
+addressing each of the tools. 
+We already submitted one manuscript describing the case-based
+morphological analyzer. 
+We have a ready to publish manuscript on the hadith authentication
+case study. 
+We plan to have publications on each of the 
+linguistic computational model, the language specific techniques
+to simplify it, and the language independent techniques to simplify
+it. 
+We also plan to have a publication on each of the separate case 
+studies. 
+We plan to have technical reports, tool papers, and user
+guides describing
+the whole CATARM framework and its use. 
+
+The team will also hold workshops to educate possible users of the
+tools at AUB, QU, and in other places of interest. 
+Masters,  PhD, and senior undergraduate students are 
+exemplary target audience for such workshops.
 
 \pagebreak
+\rfoot{Page \thepage~of~\pageref{LastPage} }
 %\bibliography{adnan_refs}
 %\bibliographystyle{ieeetr}
 \bibliographystyle{abbrvnat}
