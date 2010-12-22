@@ -7,8 +7,9 @@
 #include "ATMProgressIFC.h"
 #define GENERAL_HADITH
 //#define STATS
-//#define HADITHDEBUG  //just for additional debugging statements displayed
+#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
+#define IBN_START
 #define REFINEMENTS
 #define PREPROCESS_DESCRIPTIONS
 #define DISPLAY_HADITH_OVERVIEW
