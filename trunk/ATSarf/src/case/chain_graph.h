@@ -11,6 +11,7 @@
 #include <QDebug>
 #include "reference.h"
 
+#define SMALLEST_CANONICAL
 
 class NarratorNodeIfc;
 class ChainNarratorNode;
@@ -288,6 +289,7 @@ public:
 	}
 	QString CanonicalName()
 	{
+	#ifdef SMALLEST_CANONICAL
 		//qDebug()<<"---";
 		int smallestsize=equalnarrators[0].CanonicalName().size(), index=0;
 		//qDebug()<<"("<<equalnarrators[0].CanonicalName();
@@ -301,6 +303,21 @@ public:
 				index=i;
 			}
 		}
+	#else
+		//qDebug()<<"---";
+		int largestsize=equalnarrators[0].CanonicalName().size(), index=0;
+		//qDebug()<<"("<<equalnarrators[0].CanonicalName();
+		for (int i=1;i<equalnarrators.size();i++)
+		{
+			int size=equalnarrators[i].CanonicalName().size();
+			//qDebug()<<equalnarrators[i].CanonicalName();
+			if (largestsize<size)
+			{
+				largestsize=size;
+				index=i;
+			}
+		}
+	#endif
 		if (index>=0)
 		{
 			//qDebug()<<")=>{"<<equalnarrators[index].CanonicalName()<<"}";
@@ -428,7 +445,7 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
 	{
 		QString s1=getID(n1), s2=getID(n2);
-		qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
+		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
 		d_out<<s2<<"->"<<s1<<";\n";
 		if (n2.isGraphNode())
 		{
@@ -457,12 +474,12 @@ private:
 	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
-		qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
+		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
 		for (int i=0;i<size;i++)
 		{
 			NarratorNodeIfcRfc r=n.getChild(i);
 			NarratorNodeIfc & c=r.Rfc();
-			qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
+			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
 			if (!c.isNull() && !visitor.previouslyVisited(&n, &c))
 			{
 				bool prev_visited=visitor.previouslyVisited( &c);

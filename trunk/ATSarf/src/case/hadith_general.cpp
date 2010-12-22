@@ -199,7 +199,7 @@ void hadith_initialize()
 	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
 	while (nrc_s.retrieve())
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
-	Retrieve_Template nmc_s("description","id","name='son'");
+	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
 	while (nmc_s.retrieve())
 		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);
 #endif
@@ -581,16 +581,30 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nrc_count=1;
 		#endif
 		}
-#ifdef TENTATIVE//needed in case a hadith starts by ibn such as "ibn yousef qal..."
+#ifdef IBN_START//needed in case a hadith starts by ibn such as "ibn yousef qal..."
 		else if (currentType==NMC && isBinOrPossessive)
 		{
-			initializeStateData(currentData);
-			initializeChainData(currentChain);
-			currentData.narratorStartIndex=start_index;
+			display("<IBN1>");
+			initializeStateData();
 			currentData.sanadStartIndex=start_index;
 			currentData.nmcStartIndex=start_index;
+			currentData.narratorStartIndex=start_index;
+			currentData.nmcCount=1;
+			nextState=NMC_S;
+			currentData.nmcValid=true;
+		#ifdef CHAIN_BUILDING
+			initializeChainData(currentChain);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
-			nextState=NAME_S;
+		#endif
+		#ifdef STATS
+			temp_nmc_s.clear();
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count=1;
+		#endif
 		}
 #endif
 		else
@@ -722,10 +736,11 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			{
 				nextState=TEXT_S;
 			#ifdef CHAIN_BUILDING
-				currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
+				/*currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);//later check for out of bounds
 				currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 					currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));//check to see if we should also add the narrator to chain
+				*/
 				currentChain->chain->m_chain.append(currentChain->narrator);
 			#endif
 				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
@@ -734,11 +749,47 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
 
 		}
-		else if (currentType==NMC)
+/*
+#ifdef IBN_START//needed in case a hadith starts by ibn such as "ibn yousef qal..."
+		else if (currentType==NMC && isBinOrPossessive)
 		{
+			display("<IBN2>");
+			//currentData.narratorCount++;
+		#ifdef STATS
+			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+			temp_names_per_narrator=0;
+
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count=0;
+			temp_nmc_count=1;
+		#endif
+			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nmcCount++;
+			nextState=NMC_S;
+
+			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+			//currentData.nrcStartIndex=start_index;
+		#ifdef CHAIN_BUILDING
 			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+		#endif
+			//currentData.narratorStartIndex=start_index;
+			//currentData.nmcStartIndex=start_index;
+		}
+#endif
+*/
+		else if (currentType==NMC)
+		{
+		#ifdef CHAIN_BUILDING
+			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+		#endif
 			currentData.nmcCount++;
 			if (isBinOrPossessive)
 				currentData.nmcValid=true;
@@ -784,6 +835,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
 			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 			currentChain->namePrim=new NamePrim(text,start_index);
+
 		#endif
 			currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
 		#ifdef STATS
@@ -833,6 +885,40 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			}
 		}
 #endif
+#ifdef IBN_START
+		else if (currentType==NMC && isBinOrPossessive)
+		{
+			display("<IBN3>");
+		#ifdef CHAIN_BUILDING
+			/*currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+			for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
+				currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));*/
+			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+			if (currentChain->narrator!=NULL)
+				delete currentChain->narrator;
+			currentChain->narrator=new Narrator(text);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+			currentChain->temp_nameConnectors->clear();
+			//currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+		#endif
+			currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+			currentData.nmcValid=true;
+			currentData.nmcCount=1;
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count++;
+		#endif
+			currentData.narratorStartIndex=start_index;
+			currentData.nmcStartIndex=start_index;
+			nextState=NMC_S;
+		}
+#endif
+
 		else
 		{
 			nextState=NRC_S;
