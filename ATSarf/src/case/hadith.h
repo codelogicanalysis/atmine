@@ -2,6 +2,7 @@
 #define HADITH_H
 
 #include <QString>
+#include <QStringList>
 #include <QHash>
 #include "common.h"
 #include "ATMProgressIFC.h"
@@ -29,6 +30,11 @@
 
 #ifdef PREPROCESS_DESCRIPTIONS
 extern QHash<long,bool> NMC_descriptions;
+#endif
+
+#ifdef REFINEMENTS
+extern QStringList rasoul_words;
+extern QString alrasoul;
 #endif
 extern int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 

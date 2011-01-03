@@ -79,7 +79,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-zvfDPk6flX,guid=4f6768777234cb2347c4c20f4d11b881</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-ObV6cJksML,guid=0e822f108157c2d5ea25e9a74d2075a5</value>
     <value type="QString">DEFAULTS_PATH=/usr/share/gconf/gnome.default.path</value>
     <value type="QString">DESKTOP_SESSION=gnome</value>
     <value type="QString">DISPLAY=:0.0</value>
@@ -87,7 +87,7 @@
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_US.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-vPnJJD</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-GBMxAh</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">HOME=/home/jad</value>
     <value type="QString">LANG=en_US.utf8</value>
@@ -98,17 +98,17 @@
     <value type="QString">PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString">PWD=/home/jad</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
-    <value type="QString">SESSION_MANAGER=local/jad-laptop:@/tmp/.ICE-unix/1791,unix/jad-laptop:/tmp/.ICE-unix/1791</value>
+    <value type="QString">SESSION_MANAGER=local/jad-laptop:@/tmp/.ICE-unix/1797,unix/jad-laptop:/tmp/.ICE-unix/1797</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SPEECHD_PORT=7560</value>
-    <value type="QString">SSH_AGENT_PID=1825</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-vPnJJD/ssh</value>
+    <value type="QString">SSH_AGENT_PID=1831</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-GBMxAh/ssh</value>
     <value type="QString">USER=jad</value>
     <value type="QString">USERNAME=jad</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-jad-qyN2d7/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-jad-7ZAUV2/database</value>
     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-gnome:/etc/xdg</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=d582f270e12209ca30f4d8b54c65dc9a-1293006976.689540-1328571780</value>
+    <value type="QString">XDG_SESSION_COOKIE=d582f270e12209ca30f4d8b54c65dc9a-1293972900.251470-1811365129</value>
     <value type="QString">ftp_proxy=ftp://proxya.aub.edu.lb:3128/</value>
     <value type="QString">http_proxy=http://proxya.aub.edu.lb:3128/</value>
     <value type="QString">https_proxy=https://proxya.aub.edu.lb:3128/</value>
@@ -131,7 +131,7 @@
   <valuemap type="QVariantMap">
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList">
-    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-zvfDPk6flX,guid=4f6768777234cb2347c4c20f4d11b881</value>
+    <value type="QString">DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-ObV6cJksML,guid=0e822f108157c2d5ea25e9a74d2075a5</value>
     <value type="QString">DEFAULTS_PATH=/usr/share/gconf/gnome.default.path</value>
     <value type="QString">DESKTOP_SESSION=gnome</value>
     <value type="QString">DISPLAY=:0.0</value>
@@ -139,7 +139,7 @@
     <value type="QString">GDM_KEYBOARD_LAYOUT=us</value>
     <value type="QString">GDM_LANG=en_US.utf8</value>
     <value type="QString">GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-vPnJJD</value>
+    <value type="QString">GNOME_KEYRING_CONTROL=/tmp/keyring-GBMxAh</value>
     <value type="QString">GTK_MODULES=canberra-gtk-module</value>
     <value type="QString">HOME=/home/jad</value>
     <value type="QString">LANG=en_US.utf8</value>
@@ -150,17 +150,17 @@
     <value type="QString">PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString">PWD=/home/jad</value>
     <value type="QString">QTDIR=/usr/share/qt4</value>
-    <value type="QString">SESSION_MANAGER=local/jad-laptop:@/tmp/.ICE-unix/1791,unix/jad-laptop:/tmp/.ICE-unix/1791</value>
+    <value type="QString">SESSION_MANAGER=local/jad-laptop:@/tmp/.ICE-unix/1797,unix/jad-laptop:/tmp/.ICE-unix/1797</value>
     <value type="QString">SHELL=/bin/bash</value>
     <value type="QString">SPEECHD_PORT=7560</value>
-    <value type="QString">SSH_AGENT_PID=1825</value>
-    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-vPnJJD/ssh</value>
+    <value type="QString">SSH_AGENT_PID=1831</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/keyring-GBMxAh/ssh</value>
     <value type="QString">USER=jad</value>
     <value type="QString">USERNAME=jad</value>
-    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-jad-qyN2d7/database</value>
+    <value type="QString">XAUTHORITY=/var/run/gdm/auth-for-jad-7ZAUV2/database</value>
     <value type="QString">XDG_CONFIG_DIRS=/etc/xdg/xdg-gnome:/etc/xdg</value>
     <value type="QString">XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString">XDG_SESSION_COOKIE=d582f270e12209ca30f4d8b54c65dc9a-1293006976.689540-1328571780</value>
+    <value type="QString">XDG_SESSION_COOKIE=d582f270e12209ca30f4d8b54c65dc9a-1293972900.251470-1811365129</value>
     <value type="QString">ftp_proxy=ftp://proxya.aub.edu.lb:3128/</value>
     <value type="QString">http_proxy=http://proxya.aub.edu.lb:3128/</value>
     <value type="QString">https_proxy=https://proxya.aub.edu.lb:3128/</value>

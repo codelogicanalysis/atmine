@@ -27,6 +27,7 @@ done---check for 2 consequitive diacritics in the following recursive affix in o
 done---about timestamp and staleness of data of in .dat files
 done---solve the bug of diacritics at the end of prefix, stem or suffix eg: بِرد was not working previously
 done---solve problem of incompatibe formats of caching structures when using or not using REDUCE_THRU_DIACRITICS
+done---understand "ابن" in "عن أبن" as part of the narrator name
 make a loop after suffix is over and delimiter not yet encountered: back to prefix (non-space seperation of words) and make reporting when delimeter is found
 consider the ه in أبيه as referring to the on before him so express the relation...
 also عنه to be considered
@@ -47,5 +48,5 @@ patterns to handle infix
 caching structure for new additions to database
 find numbers
 find time/Date
--understand "ابن" in "عن أبن" as part of the narrator name
+
 

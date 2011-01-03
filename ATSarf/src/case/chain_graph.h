@@ -11,6 +11,8 @@
 #include <QDebug>
 #include "reference.h"
 
+#include "hadith.h"
+
 #define SMALLEST_CANONICAL
 
 class NarratorNodeIfc;
@@ -289,6 +291,10 @@ public:
 	}
 	QString CanonicalName()
 	{
+	#ifdef REFINEMENTS
+		if (rasoul_words.contains(equalnarrators[0].CanonicalName()))
+			return alrasoul;
+	#endif
 	#ifdef SMALLEST_CANONICAL
 		//qDebug()<<"---";
 		int smallestsize=equalnarrators[0].CanonicalName().size(), index=0;
