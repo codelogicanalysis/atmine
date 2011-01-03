@@ -20,6 +20,8 @@
 #include "chain_graph.h"
 #include <assert.h>
 
+HadithParameters parameters;
+
 #ifndef REFINEMENTS
 	enum wordType { NAME, NRC,NMC};
 #else
@@ -105,7 +107,7 @@ typedef struct chainData_ {
 
 } chainData;
 typedef struct stateData_ {
-	long long  sanadStartIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold,;
+	long long  sanadStartIndex, narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
 	long long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
 	bool nmcValid;
 	bool ibn_or_3abid;
@@ -226,10 +228,6 @@ void hadith_initialize()
 
 inline void initializeStateData()
 {
-	currentData.nmcThreshold=3; //TODO: set thru GUI
-	currentData.narratorThreshold=3;
-	currentData.nrcThreshold=5;
-
 	currentData.nmcCount=0;
 	currentData.narratorCount=0;
 	currentData.nrcCount=0;
@@ -857,7 +855,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_names_per_narrator++;//found another name name
 		#endif
 		}
-		else if (currentData.nmcCount>currentData.nmcThreshold)
+		else if (currentData.nmcCount>parameters.nmc_max)
 		{
 			if (currentData.nmcValid)
 			{
@@ -1052,7 +1050,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_names_per_narrator++;//found another name name
 		#endif
 		}
-		else if (currentData.nrcCount>=currentData.nrcThreshold)
+		else if (currentData.nrcCount>=parameters.nrc_max)
 		{
 			nextState=TEXT_S;
 		#ifdef STATS
@@ -1431,7 +1429,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		long long last_letter=next>=text_size?text_size-1:getLastLetter_IN_previousWord(next);
 		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,ibn_or_3abid,last_letter,currentChain)==false))
 		{
-			if (currentData.narratorCount>=currentData.narratorThreshold)
+			if (currentData.narratorCount>=parameters.narr_min)
 			{
 				sanadEnd=currentData.narratorEndIndex;
 			#ifdef DISPLAY_HADITH_OVERVIEW

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu Dec 23 10:01:28 2010
+** Created: Mon Jan 3 20:06:09 2011
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,6 +47,12 @@ public:
     QPushButton *fill;
     QCheckBox *chk_testing;
     QPushButton *cmd_browse;
+    QTextEdit *NMC;
+    QTextEdit *NRC;
+    QTextEdit *NARRATOR;
+    QLabel *label_4;
+    QLabel *label_5;
+    QLabel *label_7;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -113,14 +119,14 @@ public:
         hadith_chain->setAlignment(Qt::AlignCenter);
         checkBox = new QCheckBox(centralwidget);
         checkBox->setObjectName(QString::fromUtf8("checkBox"));
-        checkBox->setGeometry(QRect(620, 10, 91, 23));
+        checkBox->setGeometry(QRect(420, 40, 91, 23));
         checkBox->setFont(font1);
         hadith_display = new QTextBrowser(centralwidget);
         hadith_display->setObjectName(QString::fromUtf8("hadith_display"));
         hadith_display->setGeometry(QRect(550, 470, 441, 151));
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
-        label_6->setGeometry(QRect(780, 40, 121, 18));
+        label_6->setGeometry(QRect(550, 60, 121, 18));
         label_6->setFont(font1);
         progressBar = new QProgressBar(centralwidget);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
@@ -128,17 +134,45 @@ public:
         progressBar->setValue(100);
         exit = new QPushButton(centralwidget);
         exit->setObjectName(QString::fromUtf8("exit"));
-        exit->setGeometry(QRect(620, 30, 92, 28));
+        exit->setGeometry(QRect(620, 10, 92, 28));
         fill = new QPushButton(centralwidget);
         fill->setObjectName(QString::fromUtf8("fill"));
-        fill->setGeometry(QRect(520, 30, 90, 27));
+        fill->setGeometry(QRect(520, 30, 91, 27));
         chk_testing = new QCheckBox(centralwidget);
         chk_testing->setObjectName(QString::fromUtf8("chk_testing"));
-        chk_testing->setGeometry(QRect(430, 40, 91, 23));
+        chk_testing->setGeometry(QRect(320, 40, 91, 23));
         chk_testing->setFont(font1);
         cmd_browse = new QPushButton(centralwidget);
         cmd_browse->setObjectName(QString::fromUtf8("cmd_browse"));
-        cmd_browse->setGeometry(QRect(620, 30, 93, 27));
+        cmd_browse->setGeometry(QRect(620, 10, 93, 27));
+        NMC = new QTextEdit(centralwidget);
+        NMC->setObjectName(QString::fromUtf8("NMC"));
+        NMC->setGeometry(QRect(960, 40, 31, 21));
+        NMC->setInputMethodHints(Qt::ImhDigitsOnly);
+        NMC->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        NMC->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        NRC = new QTextEdit(centralwidget);
+        NRC->setObjectName(QString::fromUtf8("NRC"));
+        NRC->setGeometry(QRect(840, 40, 31, 21));
+        NRC->setInputMethodHints(Qt::ImhDigitsOnly);
+        NRC->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        NRC->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        NARRATOR = new QTextEdit(centralwidget);
+        NARRATOR->setObjectName(QString::fromUtf8("NARRATOR"));
+        NARRATOR->setGeometry(QRect(720, 40, 31, 21));
+        NARRATOR->setInputMethodHints(Qt::ImhDigitsOnly);
+        NARRATOR->setFrameShape(QFrame::StyledPanel);
+        NARRATOR->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        NARRATOR->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        label_4 = new QLabel(centralwidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(640, 40, 81, 17));
+        label_5 = new QLabel(centralwidget);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+        label_5->setGeometry(QRect(760, 40, 81, 17));
+        label_7 = new QLabel(centralwidget);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setGeometry(QRect(880, 40, 81, 17));
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -160,6 +194,24 @@ public:
         fill->setText(QApplication::translate("MainWindow", "Fill", 0, QApplication::UnicodeUTF8));
         chk_testing->setText(QApplication::translate("MainWindow", "Testing", 0, QApplication::UnicodeUTF8));
         cmd_browse->setText(QApplication::translate("MainWindow", "Browse", 0, QApplication::UnicodeUTF8));
+        NMC->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3</p></body></html>", 0, QApplication::UnicodeUTF8));
+        NRC->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">5</p></body></html>", 0, QApplication::UnicodeUTF8));
+        NARRATOR->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3</p></body></html>", 0, QApplication::UnicodeUTF8));
+        label_4->setText(QApplication::translate("MainWindow", "NARR min=", 0, QApplication::UnicodeUTF8));
+        label_5->setText(QApplication::translate("MainWindow", "NRC max=", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("MainWindow", "NMC max=", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

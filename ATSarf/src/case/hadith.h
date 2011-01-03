@@ -36,9 +36,27 @@ extern QHash<long,bool> NMC_descriptions;
 extern QStringList rasoul_words;
 extern QString alrasoul;
 #endif
+
 extern int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 
 int hadith(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
+
+class HadithParameters
+{
+public:
+	unsigned int nmc_max:5;
+	unsigned int nrc_max:5;
+	unsigned int narr_min:5;
+	unsigned int unused:17;
+	HadithParameters()
+	{
+		nmc_max=3;
+		narr_min=3;
+		nrc_max=5;
+	}
+};
+
+extern HadithParameters parameters;
 
 #endif // HADITH_H
