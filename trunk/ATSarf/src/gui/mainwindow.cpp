@@ -44,7 +44,16 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-        if (!m_ui->chk_testing->isChecked())
+	bool v1,v2,v3;
+	parameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
+	parameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
+	parameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
+	if (m_ui->checkBox->isChecked() && (!v1 || !v2 || !v3))
+	{
+		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers!\n");
+		return;
+	}
+	if (!m_ui->chk_testing->isChecked())
 		start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
 	else
 		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
@@ -52,28 +61,14 @@ void MainWindow::on_pushButton_clicked()
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
 #ifdef TEST_EQUAL_NARRATORS
-if (m_ui->checkBox->isChecked())
-{
-	try{
-		system("dot -Tsvg graph.dot -o graph.svg");
-		m_ui->hadith_chain->setPixmap(QPixmap("./graph.svg"));
-	}
-	catch(int i)
-	{}
-}
-#endif
-#if 0
-	if (hadith_str.length()>200)
+	if (m_ui->checkBox->isChecked())
 	{
-		QFile f("hadith_chains.txt");
-		if (!f.open(QIODevice::WriteOnly))
-		{
-			throw "Unable to open file";
+		try{
+			system("dot -Tsvg graph.dot -o graph.svg");
+			m_ui->hadith_chain->setPixmap(QPixmap("./graph.svg"));
 		}
-		QTextStream file(&f);
-		file.setCodec("utf-8");
-		file<<hadith_str;
-		f.close();
+		catch(int i)
+		{}
 	}
 #endif
 }
