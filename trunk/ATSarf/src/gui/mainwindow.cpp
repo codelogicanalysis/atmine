@@ -5,6 +5,7 @@
 #include "ui_mainwindow.h"
 #include "database_info_block.h"
 #include "hadith.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -81,6 +82,14 @@ void MainWindow::on_fill_clicked()
 	initialize_variables();
 	database_info.fill(this);
 	hadith_initialize();
+}
+
+void MainWindow::on_cmd_browse_clicked()
+{
+	QString fileName = QFileDialog::getOpenFileName(this,
+		tr("Open File"), "~/Desktop", tr("All Files (*)"));
+	if (!fileName.isEmpty())
+		m_ui->input->setText(fileName);
 }
 
 int main(int argc, char *argv[])

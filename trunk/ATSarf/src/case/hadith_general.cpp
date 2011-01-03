@@ -20,10 +20,15 @@
 #include "chain_graph.h"
 #include <assert.h>
 
+#ifndef REFINEMENTS
 	enum wordType { NAME, NRC,NMC};
+#else
+	enum wordType { NAME, NRC,NMC,STOP_WORD};
+	QStringList rasoul_words;
+#endif
 	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 	QStringList compound_words;
-	QString hadath;
+	QString hadath,abid,alrasoul;
 	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
 	int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 #ifdef PREPROCESS_DESCRIPTIONS
@@ -84,7 +89,7 @@ inline void display(QString t)
 	//qDebug() <<t;
 }
 #else
-#define display(c) ;
+#define display(c)
 #endif
 
 typedef QList<NameConnectorPrim *> TempConnectorPrimList;
@@ -103,6 +108,7 @@ typedef struct stateData_ {
 	long long  sanadStartIndex,nmcThreshold, narratorCount,nrcThreshold,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,narratorThreshold,;
 	long long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
 	bool nmcValid;
+	bool ibn_or_3abid;
 } stateData;
 
 #ifdef STATS
@@ -151,6 +157,8 @@ void initializeChainData(chainData *currentChain)
 void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
+	abid.append(_3yn).append(ba2).append(dal);
+	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
 #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
 	abstract_NAME=get_abstractCategory_id("Male Names");
 #elif defined(JUST_BUCKWALTER)
@@ -185,6 +193,17 @@ void hadith_initialize()
 	if (phrases.isNull() || phrases.isEmpty())
 		return;
 	compound_words=phrases.split("\n",QString::SkipEmptyParts);
+
+	QFile input2("../src/case/stop_words"); //words at which sanad is assumed to have finished
+									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
+	if (!input2.open(QIODevice::ReadOnly))
+		return;
+	QTextStream file2(&input2);
+	file2.setCodec("utf-8");
+	QString stopwords=file2.readAll();
+	if (stopwords.isNull() || stopwords.isEmpty())
+		return;
+	rasoul_words=stopwords.split("\n",QString::SkipEmptyParts);
 #endif
 #ifdef STATS
 	stat.chains=0;
@@ -207,17 +226,19 @@ void hadith_initialize()
 
 inline void initializeStateData()
 {
-	currentData.nmcThreshold=3;
+	currentData.nmcThreshold=3; //TODO: set thru GUI
+	currentData.narratorThreshold=3;
+	currentData.nrcThreshold=5;
+
 	currentData.nmcCount=0;
 	currentData.narratorCount=0;
-	currentData.nrcThreshold=5;
 	currentData.nrcCount=0;
 	currentData.narratorStartIndex=0;
 	currentData.narratorEndIndex=0;
 	currentData.nrcStartIndex=0;
 	currentData.nrcEndIndex=0;
-	currentData.narratorThreshold=3;
 	currentData.nmcValid=false;
+	currentData.ibn_or_3abid=false;
 	currentData.nameStartIndex=0;
 	currentData.nmcStartIndex=0;
 }
@@ -230,7 +251,7 @@ private:
 	bool finished;
 #endif
 public:
-	bool name, nrc, nmc,possessive;
+	bool name, nrc, nmc,possessive, ibn_or_3abid;
 	long long finish_pos;
 #ifdef STATS
 	QString stem;
@@ -248,6 +269,7 @@ public:
 		nrc=false;
 		possessive=false;
 		place=false;
+		ibn_or_3abid=false;
 		finish_pos=start;
 		setSolutionSettings(M_ALL);
 	#ifdef STATS
@@ -320,6 +342,9 @@ public:
 	#ifndef PREPROCESS_DESCRIPTIONS
 		QString description=stem_info->description();
 	#endif
+	#ifdef REFINEMENTS
+		ibn_or_3abid= (equal_ignore_diacritics(stem_info->raw_data,abid));
+	#endif
 		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
@@ -337,6 +362,9 @@ public:
 		{
 		#ifdef STATS
 			stem=temp_stem;
+		#endif
+		#ifdef REFINEMENTS
+			ibn_or_3abid=true;
 		#endif
 			nmc=true;
 			finish_pos=info.finish;
@@ -458,15 +486,16 @@ inline QString choose_stem(QList<QString> stems) //rule can be modified later
 	return result;
 }
 #ifndef BUCKWALTER_INTERFACE
-wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next_pos)
+wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3abid, long long &next_pos)
 {
 	long long  finish;
 	isBinOrPossessive=false;
+	ibn_or_3abid=false;
 	hadith_stemmer s(text,current_pos);
 #ifdef REFINEMENTS
 	QString c;
-	bool found,phrase=false;
-	foreach (c, compound_words)
+	bool found,phrase=false,stop_word=false;
+	foreach (c, rasoul_words)
 	{
 		found=true;
 		int pos=current_pos;
@@ -485,7 +514,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 		}
 		if (found)
 		{
-			phrase=true;
+			stop_word=true;
 			finish=pos-1;
 		#ifdef STATS
 			current_stem=c;
@@ -494,7 +523,38 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 			break;
 		}
 	}
-	if (!phrase)
+	if (!stop_word)
+	{
+		foreach (c, compound_words)
+		{
+			found=true;
+			int pos=current_pos;
+			for (int i=0;i<c.length();)
+			{
+				if (!isDiacritic(text->at(pos)))
+				{
+					if (!equal(c[i],text->at(pos)))
+					{
+						found=false;
+						break;
+					}
+					i++;
+				}
+				pos++;
+			}
+			if (found)
+			{
+				phrase=true;
+				finish=pos-1;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
+				break;
+			}
+		}
+	}
+	if (!stop_word && !phrase)
 	{
 #endif
 		s();
@@ -515,12 +575,18 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 	next_pos=next_positon(finish);
 	display(text->mid(current_pos,finish-current_pos+1)+":");
 #ifdef REFINEMENTS
+	if (stop_word)
+	{
+		display("STOP_WORD");
+		return STOP_WORD;
+	}
 	if (phrase)
 	{
 		display("PHRASE");
 		//isBinOrPossessive=true; //same behaviour as Bin
 		return NMC;
 	}
+	ibn_or_3abid=s.ibn_or_3abid;
 #endif
 	possessive=s.possessive;
 	if (s.nrc )
@@ -538,11 +604,16 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long long &next
 }
 #endif
 
-bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,bool possessive,chainData *currentChain)
+bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long long  start_index,bool isBinOrPossessive,bool possessive,bool ibn_or_3abid,long long end_pos,chainData *currentChain)
 {
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 	display(currentState);
+
+	bool return_value=true;
+#ifdef REFINEMENTS
+	bool should_stop= (currentType== STOP_WORD && !ibn_or_3abid);//stop_word not preceeded by 3abid or ibn
+#endif
 
 	switch(currentState)
 	{
@@ -611,9 +682,43 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		{
 			nextState=TEXT_S;
 		}
-		return true;
+		break;
 
 	case NAME_S:
+	#ifdef REFINEMENTS
+		if(should_stop)
+		{
+			display("<STOP1>");
+			nextState=TEXT_S;
+			currentData.narratorCount++;
+		#ifdef CHAIN_BUILDING
+			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->narrator->m_narrator.append(currentChain->namePrim);
+			delete currentChain->temp_nameConnectors;
+			currentChain->temp_nameConnectors= new TempConnectorPrimList();
+			currentChain->chain->m_chain.append(currentChain->narrator);
+
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+		#endif
+		#ifdef STATS
+			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
+			{
+				delete temp_nmc_s[i];
+				temp_nmc_s.remove(i);
+			}
+			for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
+			{
+				delete temp_nrc_s[i];
+				temp_nrc_s.remove(i);
+			}
+			temp_nmc_count=0;
+			temp_nrc_count=0;
+		#endif
+
+			return_value= false;
+			break;
+		}
+	#endif
 		if(currentType==NMC)
 		{
 			nextState=NMC_S;
@@ -676,9 +781,37 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			}
 			nextState=NAME_S;
 		}
-		return true;
+		break;
 
 	case NMC_S:
+	#ifdef REFINEMENTS
+		if(should_stop)
+		{
+			display("<STOP2>");
+		#ifdef CHAIN_BUILDING
+			currentChain->chain->m_chain.append(currentChain->narrator);
+		#endif
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
+			nextState=TEXT_S;
+			currentData.narratorCount++;
+		#ifdef STATS
+			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
+			{
+				delete temp_nmc_s[i];
+				temp_nmc_s.remove(i);
+			}
+			for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
+			{
+				delete temp_nrc_s[i];
+				temp_nrc_s.remove(i);
+			}
+			temp_nmc_count=0;
+			temp_nrc_count=0;
+		#endif
+			return_value= false;
+			break;
+		}
+	#endif
 		if (currentType==NRC)
 		{
 			currentData.narratorCount++;
@@ -743,8 +876,29 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				*/
 				currentChain->chain->m_chain.append(currentChain->narrator);
 			#endif
+
+				// TODO: added this later to the code, check if really is in correct place, but seemed necessary
+				currentData.narratorCount++;
+			#ifdef STATS
+				for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
+				{
+					delete temp_nmc_s[i];
+					temp_nmc_s.remove(i);
+				}
+				for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
+				{
+					delete temp_nrc_s[i];
+					temp_nrc_s.remove(i);
+				}
+				temp_nmc_count=0;
+				temp_nrc_count=0;
+			#endif
+				//till here was added later
+
+
 				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
-				return false;
+				return_value= false;
+				break;
 			}
 			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); check this case
 
@@ -818,14 +972,70 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_count++;
 		#endif
 		}
-		return true;
+		break;
 
 	case NRC_S:
-#ifdef REFINEMENTS
+	#ifdef REFINEMENTS
+		if(should_stop)
+		{
+			display("<STOP3>");
+			//TODO: make previous 2 should_stop checks similar to this in that the stop_word is added if necessary
+		#ifdef CHAIN_BUILDING
+			//1-first add thus stop word as NMC
+			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
+			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+			if (currentChain->narrator!=NULL)
+				delete currentChain->narrator;
+			currentChain->narrator=new Narrator(text);
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index);
+			currentChain->temp_nameConnectors->clear();
+			//currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+		#endif
+			currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+			currentData.nmcCount=1;
+		#ifdef STATS
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nmc_s.append(entry);
+			temp_nmc_count++;
+		#endif
+			currentData.narratorStartIndex=start_index;
+			currentData.nmcStartIndex=start_index;
+
+			//2-add this narrator and end lookup
+			nextState=TEXT_S;
+			currentData.narratorCount++;
+		#ifdef CHAIN_BUILDING
+			currentChain->nameConnectorPrim->m_end=end_pos;
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+			currentChain->chain->m_chain.append(currentChain->narrator);
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index);
+		#endif
+		#ifdef STATS
+			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
+			{
+				delete temp_nmc_s[i];
+				temp_nmc_s.remove(i);
+			}
+			for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
+			{
+				delete temp_nrc_s[i];
+				temp_nrc_s.remove(i);
+			}
+			temp_nmc_count=0;
+			temp_nrc_count=0;
+		#endif
+			return_value= false;
+			break;
+		}
+	#endif
+	#ifdef REFINEMENTS
 		if (currentType==NAME || possessive)
-#else
+	#else
 		if (currentType==NAME)
-#endif
+	#endif
 		{
 			nextState=NAME_S;
 			//currentData.nameStartIndex=start_index;
@@ -864,7 +1074,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			//currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
 
 			//currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
-			return false;
+			return_value= false;
+			break;
 		}
 #ifdef TENTATIVE ////needed in case 2 3an's appear after each other intervened by a name which is unknown
 		else if (currentType==NRC)
@@ -932,10 +1143,15 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nrc_count++;
 		#endif
 		}
-		return true;
+		break;
 	default:
-		return true;
+		break;
 	}
+
+#ifdef REFINEMENTS
+	currentData.ibn_or_3abid=ibn_or_3abid; //for it to be saved for next time use
+#endif
+	return return_value;
 }
 #ifdef STATS
 void show_according_to_frequency(QList<int> freq,QList<QString> words)
@@ -1209,10 +1425,11 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #ifndef COMPARE_TO_BUCKWALTER
 		long long start=current_pos;
 		long long next;
-		bool isBinOrPossessive=false,possessive=false;
-		currentType=getWordType(isBinOrPossessive,possessive,next);
+		bool isBinOrPossessive=false,possessive=false,ibn_or_3abid=false;
+		currentType=getWordType(isBinOrPossessive,possessive,ibn_or_3abid,next);
 		current_pos=next;//here current_pos is changed
-		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,currentChain)==false))
+		long long last_letter=next>=text_size?text_size-1:getLastLetter_IN_previousWord(next);
+		if((getNextState(currentState,currentType,nextState,start,isBinOrPossessive,possessive,ibn_or_3abid,last_letter,currentChain)==false))
 		{
 			if (currentData.narratorCount>=currentData.narratorThreshold)
 			{

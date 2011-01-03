@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed Dec 22 18:12:53 2010
+** Created: Thu Dec 23 10:01:28 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -46,6 +46,7 @@ public:
     QPushButton *exit;
     QPushButton *fill;
     QCheckBox *chk_testing;
+    QPushButton *cmd_browse;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -101,7 +102,7 @@ public:
         hadith_chain = new QLabel(centralwidget);
         hadith_chain->setObjectName(QString::fromUtf8("hadith_chain"));
         hadith_chain->setGeometry(QRect(550, 60, 441, 391));
-        QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
         sizePolicy.setHorizontalStretch(255);
         sizePolicy.setVerticalStretch(255);
         sizePolicy.setHeightForWidth(hadith_chain->sizePolicy().hasHeightForWidth());
@@ -135,6 +136,9 @@ public:
         chk_testing->setObjectName(QString::fromUtf8("chk_testing"));
         chk_testing->setGeometry(QRect(430, 40, 91, 23));
         chk_testing->setFont(font1);
+        cmd_browse = new QPushButton(centralwidget);
+        cmd_browse->setObjectName(QString::fromUtf8("cmd_browse"));
+        cmd_browse->setGeometry(QRect(620, 30, 93, 27));
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -155,6 +159,7 @@ public:
         exit->setText(QApplication::translate("MainWindow", "exit", 0, QApplication::UnicodeUTF8));
         fill->setText(QApplication::translate("MainWindow", "Fill", 0, QApplication::UnicodeUTF8));
         chk_testing->setText(QApplication::translate("MainWindow", "Testing", 0, QApplication::UnicodeUTF8));
+        cmd_browse->setText(QApplication::translate("MainWindow", "Browse", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

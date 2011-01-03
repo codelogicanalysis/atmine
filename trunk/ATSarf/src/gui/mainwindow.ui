@@ -178,7 +178,7 @@
      </rect>
     </property>
     <property name="sizePolicy">
-     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
       <horstretch>255</horstretch>
       <verstretch>255</verstretch>
      </sizepolicy>
@@ -309,6 +309,19 @@
     </property>
     <property name="text">
      <string>Testing</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="cmd_browse">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>30</y>
+      <width>93</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
     </property>
    </widget>
   </widget>

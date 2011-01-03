@@ -25,6 +25,7 @@ private slots:
 	void on_pushButton_clicked();
 	void on_fill_clicked();
 	void on_exit_clicked();
+	void on_cmd_browse_clicked();
 	//void on_destroyed();
 };
 

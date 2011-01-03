@@ -391,6 +391,12 @@ typedef Triplet<NamePrim,NamePrim, int> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
 double getdistance(const Narrator & n1,const Narrator & n2)
 {
+	if (n1.getString()==n2.getString())
+		return 0;
+#ifdef REFINEMENTS
+	if (rasoul_words.contains(n1.getString()) && rasoul_words.contains(n2.getString()))
+		return 0;
+#endif
 	double dist=1, delta=0.4;
 	QList<NamePrim> Names1,Names2;
 	QList<NameConnectorPrim> Conns1, Conns2;
