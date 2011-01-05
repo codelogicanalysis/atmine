@@ -8,7 +8,7 @@
 #include "ATMProgressIFC.h"
 #define GENERAL_HADITH
 //#define STATS
-#define HADITHDEBUG  //just for additional debugging statements displayed
+//#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 #define IBN_START
 #define REFINEMENTS
@@ -48,12 +48,18 @@ public:
 	unsigned int nmc_max:5;
 	unsigned int nrc_max:5;
 	unsigned int narr_min:5;
-	unsigned int unused:17;
+	unsigned int equality_radius:5;
+	unsigned int unused_int:12;
+	double equality_delta;
+	double equality_threshold;
 	HadithParameters()
 	{
 		nmc_max=3;
 		narr_min=3;
 		nrc_max=5;
+		equality_radius=3;
+		equality_delta=0.4;
+		equality_threshold=1;
 	}
 };
 

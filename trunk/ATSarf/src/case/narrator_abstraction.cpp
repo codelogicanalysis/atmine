@@ -397,7 +397,7 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 	if (rasoul_words.contains(n1.getString()) && rasoul_words.contains(n2.getString()))
 		return 0;
 #endif
-	double dist=1, delta=0.4;
+	double dist=1, delta=parameters.equality_delta;
 	QList<NamePrim> Names1,Names2;
 	QList<NameConnectorPrim> Conns1, Conns2;
 	for (int i=0;i<n1.m_narrator.count();i++)

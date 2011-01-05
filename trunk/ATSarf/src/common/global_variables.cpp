@@ -28,7 +28,8 @@ QString trie_path="stem_trie.dat";
 QString trie_list_path="stem_list.dat";
 QDateTime executable_timestamp;
 
-QString delimiters(QString("[ :.,()-><{}\\/|'\"")+fasila+"]");
+QString delimiters(QString("[ :\.,()-><{}\\/|'\"")+fasila+question_mark+semicolon+"]");
+QString punctuation(QString(":\.,()-'\"")+fasila+question_mark+semicolon);
 
 QVector<QChar> alefs(5);
 

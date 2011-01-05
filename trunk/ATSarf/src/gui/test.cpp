@@ -45,7 +45,6 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 	displayed_error.setCodec("utf-8");
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
-
 #ifndef AUGMENT_DICTIONARY
 #if 0
 	if (first_time)

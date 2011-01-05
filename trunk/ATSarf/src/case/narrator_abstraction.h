@@ -28,7 +28,10 @@ public:
 	virtual void serialize(QTextStream &chainOut) const=0;
 
     virtual QString getString() const {
-        return hadith_text->mid(getStart(), getLength());
+		int length=getLength();
+		if (length<0)
+			return "";
+		return hadith_text->mid(getStart(), length);
     }
     virtual int getStart() const = 0;
     virtual int getLength() const = 0;
@@ -180,6 +183,8 @@ public:
 
     virtual int getLength() const {
         int last = m_narrator.size() - 1;
+		if (last==-1)
+			return -1;
         int start = getStart();
         return m_narrator[last]->m_end - start + 1;}
 

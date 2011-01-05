@@ -296,8 +296,6 @@ void fillRanks()
 	}
 }
 
-const int radius=3;
-const double threshold=1;
 #if 0
 class TmpChainInfo
 {
@@ -525,6 +523,8 @@ void buildGraph(ChainsContainer & chains)
 		}
 	}*/
 #else
+	const int radius=parameters.equality_radius;
+	const double threshold=parameters.equality_threshold;
 	int needle=0, offset=-1;
 	for (int i=0;i<chains.size();i++)
 	{
