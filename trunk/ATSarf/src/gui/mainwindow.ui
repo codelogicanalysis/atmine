@@ -234,8 +234,8 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>80</y>
-      <width>121</width>
+      <y>60</y>
+      <width>61</width>
       <height>18</height>
      </rect>
     </property>
@@ -248,7 +248,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Hadith Chains:</string>
+     <string>Chains:</string>
     </property>
    </widget>
    <widget class="QProgressBar" name="progressBar">

@@ -365,19 +365,24 @@ class NarratorNodeVisitor
 private:
 	typedef QMap<GraphNarratorNode*,int> G_IDMap;
 	typedef QMap<ChainNarratorNode*,int> C_IDMap;
+	typedef QPair<ChainNarratorNode *,ChainNarratorNode*> CCEdge;
 	typedef QPair<ChainNarratorNode *,GraphNarratorNode*> CGEdge;
 	typedef QPair<GraphNarratorNode *,GraphNarratorNode*> GGEdge;
-	typedef QMap<CGEdge, bool> CGEdgeMap; //(chain, graph)
+	typedef QMap<CGEdge, bool> CGEdgeMap; //(chain, graph) , will be used for (graph,chain) also
 	typedef QMap<GGEdge, bool> GGEdgeMap; //(graph, graph)
+	typedef QMap<CCEdge, bool> CCEdgeMap; //(graph, graph)
 	G_IDMap GraphNodesID;
 	C_IDMap ChainNodesID;
 	CGEdgeMap cgEdgeMap;
+	CGEdgeMap gcEdgeMap;
 	GGEdgeMap ggEdgeMap;
+	CCEdgeMap ccEdgeMap;
 
 	int last_id;
 	QFile * file;
 	QTextStream * dot_out;
 	#define d_out (*dot_out)
+	QStringList sources,sinks;
 
 	QString getID(NarratorNodeIfc & n)
 	{
@@ -420,9 +425,17 @@ public:
 	}
 	bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
 	{
-		if (!n2->isGraphNode() )
-			return false; //No info
-		if (!n1->isGraphNode())
+		if (!n1->isGraphNode() && !n2->isGraphNode())
+		{
+			CCEdgeMap::iterator it=ccEdgeMap.find(CCEdge(&**((ChainNarratorNodeIterator*)n1),&**((ChainNarratorNodeIterator*)n2)));
+			return !(it==ccEdgeMap.end());
+		}
+		else if (n1->isGraphNode() && !n2->isGraphNode() )
+		{
+			CGEdgeMap::iterator it=gcEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n2),(GraphNarratorNode*)n1));
+			return !(it==cgEdgeMap.end());
+		}
+		else if (!n1->isGraphNode() && n2->isGraphNode())
 		{
 			CGEdgeMap::iterator it=cgEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
 			return !(it==cgEdgeMap.end());
@@ -435,6 +448,12 @@ public:
 	}
 	virtual void initialize()
 	{
+		sources.clear();
+		sinks.clear();
+		cgEdgeMap.clear();
+		gcEdgeMap.clear();
+		ggEdgeMap.clear();
+		ccEdgeMap.clear();
 		file=new QFile("graph.dot");
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite))
@@ -453,16 +472,43 @@ public:
 		QString s1=getID(n1), s2=getID(n2);
 		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
 		d_out<<s2<<"->"<<s1<<";\n";
-		if (n2.isGraphNode())
+		if (n1.isGraphNode())
 		{
-			if (!n1.isGraphNode())
-				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+			if (!n2.isGraphNode())
+				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1),true);
 			else
 				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2),true);
 		}
+		else
+		{
+			if (n2.isGraphNode())
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+			else
+				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2)),true);
+		}
+	}
+	virtual void forceAsSource(NarratorNodeIfc & n)
+	{
+		sources.append(getID(n));
+	}
+	virtual void ForceAsSource(NarratorNodeIfc & n)
+	{
+		sinks.append(getID(n));
 	}
 	virtual void finish()
 	{
+		QString s;
+	#if 1
+		d_out<<"{ rank = sink;";
+		foreach(s,sinks)
+			d_out<<s<<";";
+		d_out<<"}\n";
+	//#else
+		d_out<<"{ rank = source;";
+		foreach(s,sources)
+			d_out<<s<<";";
+		d_out<<"}\n";
+	#endif
 		d_out<<"}\n";
 		delete dot_out;
 		file->close();
@@ -480,6 +526,8 @@ private:
 	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
+		if (size==0)
+			visitor.forceAsSource(n);
 		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
 		for (int i=0;i<size;i++)
 		{
