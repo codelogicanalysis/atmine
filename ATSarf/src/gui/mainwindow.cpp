@@ -44,13 +44,16 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
-	bool v1,v2,v3;
+	bool v1,v2,v3,v4,v5,v6;
 	parameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
 	parameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
 	parameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
-	if (m_ui->checkBox->isChecked() && (!v1 || !v2 || !v3))
+	parameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
+	parameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
+	parameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
+	if (m_ui->checkBox->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
 	{
-		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers!\n");
+		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
 	if (!m_ui->chk_testing->isChecked())

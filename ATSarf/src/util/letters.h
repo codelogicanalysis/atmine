@@ -34,10 +34,14 @@ const QChar qaf=QChar(0x0642);
 const QChar _7a2=QChar(0x062D);
 const QChar dal=QChar(0x062F);
 const QChar tha2=QChar(0x062B);
-const QChar fasila=QChar(0x060C);
 const QChar aleft_superscript=QChar(0x0670);
 const QChar ha2 =QChar(0x0647);
 const QChar veh =QChar(0x06A4);
 const QChar feh =QChar(0x0641);
+
+const QChar question_mark=QChar(0x061F);
+const QChar semicolon=QChar(0x061B);
+const QChar fasila=QChar(0x060C);
+
 #endif	/* _LETTERS_H */
 

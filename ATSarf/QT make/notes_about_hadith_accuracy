@@ -1,10 +1,13 @@
 done---use "الرسول" (not preceded by a ibn, abd, abou) or "صلعم" as stop words refering to end of sanad
 done--make parameters updatable from GUI
--make use of suffixes, so if a name has complex suffixes, dont assume it is a name (like علينا)
--when in an NRC state and the number of words till NAME is reached is exceded maybe, we should backtrack and start from the next NRC on the way, or no need for backtracking, since we should have saved them as individual NRC's in the structure so we can count if the ones that follow are within threshold
 -reduce words that mean "قال"
 -maybe use numbers or punctuations
 	given 2 names without a narrator connector and with a punctuation mark, consider them as 2 different narators
-	if we get a punctuation mark in the context of a tolerance state, we break tolerance
+	done---if we get a punctuation mark in the context of a tolerance state, we break tolerance
 	use the numbers with reservation, if they happen at the beginning of a paragraph to segment hadith
+-treat with special care أبيه and جده and أمير المؤمنين.
+-assume what comes after عن without a suffix as narrator until next NRC eg: عن رجل عن, عن بعض أصحاب أبي عبد الله 
+-make use of suffixes, so if a name has complex suffixes, dont assume it is a name (like علينا)
+-when in an NRC state and the number of words till NAME is reached is exceded maybe, we should backtrack and start from the next NRC on the way, or no need for backtracking, since we should have saved them as individual NRC's in the structure so we can count if the ones that follow are within threshold
+
 
