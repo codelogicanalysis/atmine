@@ -398,12 +398,14 @@ void NarratorGraph::traverse(NarratorNodeVisitor & visitor)
 	for (int i=0; i<size;i++)
 	{
 		GraphNarratorNode * node=top_g_nodes[i];
+		visitor.ForceAsSource(*node);
 		if (!node->isNull())
 			traverse(*top_g_nodes[i],visitor);
 	}
 	for (int i=0;i<top_c_indices.size();i++)
 	{
 		ChainNarratorNodeIterator & c=ChainNarratorNodeIterator(chains[top_c_indices[i]]->m_chain.begin()).nearestNarratorInChain();
+		visitor.ForceAsSource(c);
 		traverse(c,visitor);
 	}
 	visitor.finish();
@@ -523,8 +525,8 @@ void buildGraph(ChainsContainer & chains)
 		}
 	}*/
 #else
-	const int radius=parameters.equality_radius;
-	const double threshold=parameters.equality_threshold;
+	int radius=parameters.equality_radius;
+	double threshold=parameters.equality_threshold;
 	int needle=0, offset=-1;
 	for (int i=0;i<chains.size();i++)
 	{
