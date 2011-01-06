@@ -376,16 +376,11 @@ void NarratorGraph::deduceTopNodes(ChainsContainer & chains)
 		assert(!g.isNull());
 		if (g.isGraphNode())
 		{
-			/*qDebug()<<top_g_nodes.size();
-			for (int j=0;j<top_g_nodes.size();j++)
-				qDebug()<<(long)top_g_nodes[j];*/
 			if (!top_g_nodes.contains(dynamic_cast<GraphNarratorNode*>(&g)))
 				top_g_nodes.append(dynamic_cast<GraphNarratorNode*>(&g));
 		}
 		else
 		{
-			//qDebug()<<top_g_nodes.size();
-			//top_g_nodes.append(&g);
 			top_c_indices.append(i);
 		}
 	}
@@ -398,14 +393,14 @@ void NarratorGraph::traverse(NarratorNodeVisitor & visitor)
 	for (int i=0; i<size;i++)
 	{
 		GraphNarratorNode * node=top_g_nodes[i];
-		visitor.ForceAsSource(*node);
+		//visitor.forceAsSink(*top_g_nodes[i]);
 		if (!node->isNull())
 			traverse(*top_g_nodes[i],visitor);
 	}
 	for (int i=0;i<top_c_indices.size();i++)
 	{
 		ChainNarratorNodeIterator & c=ChainNarratorNodeIterator(chains[top_c_indices[i]]->m_chain.begin()).nearestNarratorInChain();
-		visitor.ForceAsSource(c);
+		//visitor.forceAsSink(c);
 		traverse(c,visitor);
 	}
 	visitor.finish();

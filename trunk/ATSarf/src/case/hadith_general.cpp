@@ -708,6 +708,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentChain->narrator->m_narrator.append(currentChain->namePrim);
 			delete currentChain->temp_nameConnectors;
 			currentChain->temp_nameConnectors= new TempConnectorPrimList();
+
+			currentChain->nameConnectorPrim=new NameConnectorPrim(text,start_index); //we added this to previous name bc assumed this will only happen if it is muhamad and "sal3am"
+			currentChain->nameConnectorPrim->m_end=end_pos;
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 			currentChain->chain->m_chain.append(currentChain->narrator);
 		#endif
 			currentData.narratorEndIndex=end_pos;
@@ -848,9 +852,48 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		if(should_stop)
 		{
 			display("<STOP2>");
+			//1-finish old narrator and use last nmc as nrc
+			currentData.narratorCount++;
+		#ifdef STATS
+			stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
+			temp_names_per_narrator=0;
+
+			map_entry * entry=new map_entry;
+			entry->exact=current_exact;
+			entry->stem=current_stem;
+			entry->frequency=1;
+			temp_nrc_s.append(entry);
+			temp_nrc_count=0;
+			temp_nmc_count=0;
+		#endif
+			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nrcCount=1;
+			nextState=NRC_S;
+
+			currentData.narratorEndIndex=getLastLetter_IN_previousWord(currentData.nmcStartIndex);
+			currentData.nrcStartIndex=currentData.nmcStartIndex;
+			currentData.nrcEndIndex=getLastLetter_IN_previousWord(start_index);
+
 		#ifdef CHAIN_BUILDING
+			for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
+				currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+			currentChain->chain->m_chain.append(currentChain->narrator);
+			display(currentChain->narrator->getString()+"\n");
+			currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+			currentChain->narratorConnectorPrim->m_end=currentData.nrcEndIndex;
+			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+			display(currentChain->narratorConnectorPrim->getString()+"\n");
+		#endif
+		//2-create a new narrator of just this stop word as name connector
+		#ifdef CHAIN_BUILDING
+			currentChain->nameConnectorPrim->m_start=start_index;
+			currentChain->nameConnectorPrim->m_end=end_pos;
+			currentChain->narrator=new Narrator(text);
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+			display(currentChain->narrator->getString()+"\n");
 			currentChain->chain->m_chain.append(currentChain->narrator);
 		#endif
+
 			currentData.narratorEndIndex=end_pos;
 			nextState=TEXT_S;
 			currentData.narratorCount++;
@@ -956,7 +999,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				//till here was added later
 
 
-				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
+				currentData.narratorEndIndex=getLastLetter_IN_previousWord(currentData.nmcStartIndex); //check this case
 				return_value= false;
 				break;
 			}
@@ -1005,7 +1048,6 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		if(should_stop)
 		{
 			display("<STOP3>");
-			//TODO: make previous 2 should_stop checks similar to this in that the stop_word is added if necessary
 		#ifdef CHAIN_BUILDING
 			//1-first add thus stop word as NMC
 			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
