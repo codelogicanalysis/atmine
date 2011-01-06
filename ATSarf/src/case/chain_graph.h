@@ -65,6 +65,9 @@ public:
 	virtual bool isNull()=0;
 	virtual bool isGraphNode()=0;
 
+	virtual int getRank()=0;
+	virtual QString getRanks()=0;
+
 	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num)=0;
 	virtual QString toString()=0;
 };
@@ -88,6 +91,8 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc
 	QString CanonicalName(){return QString::null;}
 
 	virtual bool isNull(){return true;}
+	int getRank(){return -1;}
+	virtual QString getRanks(){return "";}
 	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num);
 	virtual bool isGraphNode() {return false;}
 	virtual QString toString() {return "NULLNarratorNodeIfc";}
@@ -185,6 +190,8 @@ public:
 	bool isFirst();
 	bool isLast();
 	int getIndex();
+	int getRank(){return getIndex();}
+	virtual QString getRanks(){ return QString("[%1]").arg(getRank());}
 	int getChainNum();
 	virtual bool isNull()
 	{
@@ -289,6 +296,25 @@ public:
 		ChainNarratorNodeIterator next=node.nextInChain();
 		return NodeAddress(next.getCorrespondingNarratorNode (), next);
 	}
+	int getRank()
+	{
+		int largest_rank=equalnarrators[0].getRank();
+		for (int i=1;i<equalnarrators.size();i++)
+		{
+			int rank=equalnarrators[i].getRank();
+			if (largest_rank<rank)
+				largest_rank=rank;
+		}
+		return largest_rank;
+	}
+	virtual QString getRanks()
+	{
+		QString ranks= "[";
+		for (int i=0;i<equalnarrators.size();i++)
+			ranks+=QString("%1,").arg(equalnarrators[i].getRank());
+		ranks+="]";
+		return ranks;
+	}
 	QString CanonicalName()
 	{
 	#ifdef REFINEMENTS
@@ -382,8 +408,14 @@ private:
 	QFile * file;
 	QTextStream * dot_out;
 	#define d_out (*dot_out)
-	QStringList sources,sinks;
+	QList<QStringList> RanksList;
 
+	void setGraphRank(int rank, QString s)
+	{
+		while(rank>=RanksList.size())
+			RanksList.append(QStringList());
+		RanksList[rank].append(s);
+	}
 	QString getID(NarratorNodeIfc & n)
 	{
 		int curr_id;
@@ -394,7 +426,8 @@ private:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\", shape=box];\n";//"\"];\n";
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<n.getRanks()<<"\", shape=box];\n";//"\"];\n";
+				setGraphRank(n.getRank(),QString("g%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
@@ -407,7 +440,8 @@ private:
 			{
 				curr_id=++last_id;
 				ChainNodesID.insert(&*(ChainNarratorNodeIterator&)n,curr_id);
-				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<"\"]"<<";\n";
+				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<n.getRanks()<<"\"]"<<";\n";
+				setGraphRank(n.getRank(),QString("c%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
@@ -429,16 +463,19 @@ public:
 		{
 			CCEdgeMap::iterator it=ccEdgeMap.find(CCEdge(&**((ChainNarratorNodeIterator*)n1),&**((ChainNarratorNodeIterator*)n2)));
 			return !(it==ccEdgeMap.end());
+			return false;
 		}
 		else if (n1->isGraphNode() && !n2->isGraphNode() )
 		{
 			CGEdgeMap::iterator it=gcEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n2),(GraphNarratorNode*)n1));
-			return !(it==cgEdgeMap.end());
+			return !(it==gcEdgeMap.end());
+			return false;
 		}
 		else if (!n1->isGraphNode() && n2->isGraphNode())
 		{
 			CGEdgeMap::iterator it=cgEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
 			return !(it==cgEdgeMap.end());
+			return false;
 		}
 		else
 		{
@@ -448,8 +485,7 @@ public:
 	}
 	virtual void initialize()
 	{
-		sources.clear();
-		sinks.clear();
+		RanksList.clear();
 		cgEdgeMap.clear();
 		gcEdgeMap.clear();
 		ggEdgeMap.clear();
@@ -487,28 +523,36 @@ public:
 				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2)),true);
 		}
 	}
-	virtual void forceAsSource(NarratorNodeIfc & n)
-	{
-		sources.append(getID(n));
-	}
-	virtual void ForceAsSource(NarratorNodeIfc & n)
-	{
-		sinks.append(getID(n));
-	}
 	virtual void finish()
 	{
 		QString s;
-	#if 1
 		d_out<<"{ rank = sink;";
-		foreach(s,sinks)
-			d_out<<s<<";";
+		if (RanksList.size()>0)
+		{
+			foreach(s,RanksList[0])
+				d_out<<s<<";";
+		}
 		d_out<<"}\n";
-	//#else
-		d_out<<"{ rank = source;";
-		foreach(s,sources)
-			d_out<<s<<";";
-		d_out<<"}\n";
-	#endif
+
+		for (int rank=1;rank<RanksList.size()-1;rank++)
+		{
+			if (RanksList[rank].size()>1)
+			{
+				d_out<<"{ rank = same;";
+				foreach(s,RanksList[rank])
+					d_out<<s<<";";
+				d_out<<"}\n";
+			}
+		}
+		if (RanksList.size()>2)
+		{
+			d_out<<"{ rank = source;";
+			foreach(s,RanksList[RanksList.size()-1])
+			{
+				d_out<<s<<";";
+			}
+			d_out<<"}\n";
+		}
 		d_out<<"}\n";
 		delete dot_out;
 		file->close();
@@ -526,8 +570,6 @@ private:
 	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
-		if (size==0)
-			visitor.forceAsSource(n);
 		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
 		for (int i=0;i<size;i++)
 		{
