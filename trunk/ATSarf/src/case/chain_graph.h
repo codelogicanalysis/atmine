@@ -22,10 +22,12 @@ class GraphNarratorNode;
 class NULLGraphNarratorNode;
 class NULLNarratorNodeIfc;
 class NULLChainNarratorNodeIterator;
+class RankCorrectorNodeVisitor;
 
 class Chain;
 class Narrator;
 class ChainPrim;
+
 
 typedef QList<Chain *> ChainsContainer;
 typedef QPair<NarratorNodeIfc &, ChainNarratorNodeIterator &> NodeAddress;
@@ -46,7 +48,13 @@ void buildGraph(ChainsContainer & chs);
 
 class NarratorNodeIfc //abstract interface
 {
+protected:
+	virtual void setSavedRank(int rank)=0;
+	virtual int getSavedRank()=0;
+	virtual int getAutomaticRank()=0;
+	friend class RankCorrectorNodeVisitor;
 public:
+	//NarratorNodeIfc(){setSavedRank(-1);}
 	virtual NarratorNodeIfc & firstChild()=0;
 	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & current)=0;
 	virtual NarratorNodeIfc & firstParent()=0;
@@ -65,7 +73,11 @@ public:
 	virtual bool isNull()=0;
 	virtual bool isGraphNode()=0;
 
-	virtual int getRank()=0;
+	virtual int getGraphRank()
+	{
+		int savedRank=getSavedRank();
+		return (savedRank>=0?savedRank:getAutomaticRank());
+	}
 	virtual QString getRanks()=0;
 
 	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num)=0;
@@ -74,26 +86,29 @@ public:
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
 {
-	NarratorNodeIfc & firstChild();
-	NarratorNodeIfc & nextChild(NarratorNodeIfc & current);
-	NarratorNodeIfc & firstParent();
-	NarratorNodeIfc & nextParent(NarratorNodeIfc & current);
+	NarratorNodeIfc & firstChild(){throw 1;}
+	NarratorNodeIfc & nextChild(NarratorNodeIfc & ){throw 1;}
+	NarratorNodeIfc & firstParent(){throw 1;}
+	NarratorNodeIfc & nextParent(NarratorNodeIfc & ){throw 1;}
 
-	int getNumChildren();
-	NarratorNodeIfcRfc getChild(int index);
+	int getNumChildren(){throw 1;}
+	NarratorNodeIfcRfc getChild(int ){throw 1;}
 
-	ChainNarratorNodeIterator & firstNarrator();
-	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & current);
+	ChainNarratorNodeIterator & firstNarrator(){throw 1;}
+	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator & ){throw 1;}
 
-	NodeAddress prevInChain(ChainNarratorNodeIterator &);
-	NodeAddress nextInChain(ChainNarratorNodeIterator &);
+	NodeAddress prevInChain(ChainNarratorNodeIterator &){throw 1;}
+	NodeAddress nextInChain(ChainNarratorNodeIterator &){throw 1;}
 
-	QString CanonicalName(){return QString::null;}
+	QString CanonicalName(){throw 1;}
 
-	virtual bool isNull(){return true;}
-	int getRank(){return -1;}
-	virtual QString getRanks(){return "";}
-	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num);
+	virtual bool isNull(){throw 1;}
+	void setSavedRank(int ){throw 1;}
+	int getAutomaticRank(){throw 1;}
+	int getGraphRank() {throw 1;}
+	int getSavedRank(){throw 1;}
+	virtual QString getRanks(){throw 1;}
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int){throw 1;}
 	virtual bool isGraphNode() {return false;}
 	virtual QString toString() {return "NULLNarratorNodeIfc";}
 };
@@ -102,15 +117,25 @@ class ChainNarratorNode
 {
 protected:
 	GraphNarratorNode * narrNode;
+	int savedRank;
 public:
 	ChainNarratorNode()
 	{
 		narrNode=NULL;
+		savedRank=-1;
 	}
 	GraphNarratorNode & getCorrespondingNarratorNode();
 	void  setCorrespondingNarratorNode(GraphNarratorNode * narrNode)
 	{
 		this->narrNode=narrNode;
+	}
+	int getSavedRank()
+	{
+		return savedRank;
+	}
+	void setSavedRank(int rank)
+	{
+		savedRank=rank;
 	}
 	QString CanonicalName();
 	virtual QString toString()
@@ -190,8 +215,13 @@ public:
 	bool isFirst();
 	bool isLast();
 	int getIndex();
-	int getRank(){return getIndex();}
-	virtual QString getRanks(){ return QString("[%1]").arg(getRank());}
+	int getAutomaticRank(){return getIndex();}
+	void setSavedRank(int rank)
+	{
+		(*this)->setSavedRank(rank);
+	}
+	int getSavedRank(){return (*this)->getSavedRank();}
+	QString getRanks(){ return QString("[%1](%2)").arg(getAutomaticRank()).arg(getSavedRank());}
 	int getChainNum();
 	virtual bool isNull()
 	{
@@ -208,22 +238,47 @@ public:
 class NULLChainNarratorNodeIterator: public ChainNarratorNodeIterator
 {
 public:
-	virtual bool isNull()
-	{
-		return true;
-	}
-	virtual QString toString()
-	{
-		return "NULLChainNarratorNodeIterator";
-	}
+	virtual bool isNull() {	return true;}
+	ChainNarratorNodeIterator & nearestNarratorInChain(bool =true){throw 1;}
+	Narrator & getNarrator(){throw 1;}
+	ChainNarratorNode & operator*(){throw 1;}
+	ChainNarratorNode * operator->(){throw 1;}
+	ChainNarratorNodeIterator & operator++(){throw 1;}
+	ChainNarratorNodeIterator & operator--(){throw 1;}
+	ChainNarratorNodeIterator & operator+(int){throw 1;}
+	ChainNarratorNodeIterator & operator-(int){throw 1;}
+	ChainNarratorNodeIterator & prevInChain(){throw 1;}
+	NarratorNodeIfc & firstChild(){throw 1;}
+	NarratorNodeIfc & nextChild(NarratorNodeIfc & ){throw 1;}
+	int getNumChildren() {return 0;}
+	NarratorNodeIfcRfc getChild(int){throw 1;}
+	NarratorNodeIfc & firstParent(){throw 1;}
+	NarratorNodeIfc & nextParent(NarratorNodeIfc & ){throw 1;}
+	ChainNarratorNodeIterator & firstNarrator(){throw 1;}
+	ChainNarratorNodeIterator & nextNarrator(ChainNarratorNodeIterator &){throw 1;}
+	NodeAddress prevInChain(ChainNarratorNodeIterator & ){throw 1;}
+	NodeAddress nextInChain(ChainNarratorNodeIterator & ){throw 1;}
+	ChainNarratorNodeIterator & nextInChain(){throw 1;}
+	bool isFirst(){throw 1;}
+	bool isLast(){throw 1;}
+	int getIndex(){throw 1;}
+	QString getRanks(){throw 1;}
+	void setSavedRank(int ){throw 1;}
+	int getSavedRank(){throw 1;}
+	QString CanonicalName(){throw 1;}
+	int getChainNum(){throw 1;}
+	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int ){throw 1;}
+	virtual QString toString(){	return "NULLChainNarratorNodeIterator";}
 };
 
 class GraphNarratorNode: public NarratorNodeIfc
 {
-private:
+protected:
 	QList<ChainNarratorNodeIterator>  equalnarrators;
+	int savedRank;
+	void setSavedRank(int rank){savedRank=rank;}
 public:
-	GraphNarratorNode(){}
+	GraphNarratorNode(){savedRank=-1;}
 	GraphNarratorNode(ChainNarratorNodeIterator & nar1,ChainNarratorNodeIterator & nar2);
 	GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2);
 	void addNarrator(Chain * chain1, Narrator * nar1);
@@ -296,23 +351,25 @@ public:
 		ChainNarratorNodeIterator next=node.nextInChain();
 		return NodeAddress(next.getCorrespondingNarratorNode (), next);
 	}
-	int getRank()
+	int getAutomaticRank()
 	{
-		int largest_rank=equalnarrators[0].getRank();
+		int largest_rank=equalnarrators[0].getAutomaticRank();
 		for (int i=1;i<equalnarrators.size();i++)
 		{
-			int rank=equalnarrators[i].getRank();
+			int rank=equalnarrators[i].getAutomaticRank();
 			if (largest_rank<rank)
 				largest_rank=rank;
 		}
 		return largest_rank;
 	}
-	virtual QString getRanks()
+	int getSavedRank(){return savedRank;}
+	QString getRanks()
 	{
 		QString ranks= "[";
 		for (int i=0;i<equalnarrators.size();i++)
-			ranks+=QString("%1,").arg(equalnarrators[i].getRank());
+			ranks+=QString("%1,").arg(equalnarrators[i].getAutomaticRank());
 		ranks+="]";
+		ranks+=QString("(%1)").arg(getSavedRank());
 		return ranks;
 	}
 	QString CanonicalName()
@@ -386,9 +443,19 @@ public:
 	}
 };
 
-class NarratorNodeVisitor
+class NodeVisitor
 {
-private:
+public:
+	virtual bool previouslyVisited( NarratorNodeIfc * node)=0;
+	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)=0;
+	virtual void initialize()=0;
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)=0;
+	virtual void finish()=0;
+};
+
+class NarratorNodeVisitor: public NodeVisitor
+{
+protected:
 	typedef QMap<GraphNarratorNode*,int> G_IDMap;
 	typedef QMap<ChainNarratorNode*,int> C_IDMap;
 	typedef QPair<ChainNarratorNode *,ChainNarratorNode*> CCEdge;
@@ -426,8 +493,12 @@ private:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<n.getRanks()<<"\", shape=box];\n";//"\"];\n";
-				setGraphRank(n.getRank(),QString("g%1").arg(curr_id));
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
+			#ifdef SHOW_RANKS
+				d_out<<n.getRanks();
+			#endif
+				d_out<<"\", shape=box];\n";
+				setGraphRank(n.getGraphRank(),QString("g%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
@@ -440,8 +511,12 @@ private:
 			{
 				curr_id=++last_id;
 				ChainNodesID.insert(&*(ChainNarratorNodeIterator&)n,curr_id);
-				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"")<<n.getRanks()<<"\"]"<<";\n";
-				setGraphRank(n.getRank(),QString("c%1").arg(curr_id));
+				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
+			#ifdef SHOW_RANKS
+				d_out<<n.getRanks();
+			#endif
+				d_out<<"\"]"<<";\n";
+				setGraphRank(n.getGraphRank(),QString("c%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
@@ -450,14 +525,14 @@ private:
 
 	}
 public:
-	bool previouslyVisited( NarratorNodeIfc * g_node)//only for graph nodes
+	virtual bool previouslyVisited( NarratorNodeIfc * g_node)//only for graph nodes
 	{
 		if (!g_node->isGraphNode())
 			return false; //No info
 		G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
 		return !(it==GraphNodesID.end());
 	}
-	bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
+	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
 	{
 		if (!n1->isGraphNode() && !n2->isGraphNode())
 		{
@@ -525,6 +600,7 @@ public:
 	}
 	virtual void finish()
 	{
+	#ifdef FORCE_RANKS
 		QString s;
 		d_out<<"{ rank = sink;";
 		if (RanksList.size()>0)
@@ -553,6 +629,7 @@ public:
 			}
 			d_out<<"}\n";
 		}
+	#endif
 		d_out<<"}\n";
 		delete dot_out;
 		file->close();
@@ -560,14 +637,72 @@ public:
 	}
 };
 
+#define SKIPNODES
+
+class RankCorrectorNodeVisitor:
+#ifdef SKIPNODES
+		public NarratorNodeVisitor
+#else
+		public NodeVisitor
+#endif
+{
+public:
+
+	virtual bool previouslyVisited( NarratorNodeIfc *)//get thru all path even if visited from another path
+	{
+		return false;
+	}
+#ifndef SKIPNODES
+	virtual bool previouslyVisited( NarratorNodeIfc * , NarratorNodeIfc * )//get thru all path even if visited from another path
+	{
+		return false;
+	}
+	virtual void initialize(){	}
+#endif
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
+	{
+		int rank1=n1.getGraphRank(), rank2=n2.getGraphRank();
+		if (rank1>=rank2)
+			n2.setSavedRank(rank1+1);
+		else
+			n2.setSavedRank(rank2);
+		n1.setSavedRank(rank1);
+	#ifdef SKIPNODES
+		if (n1.isGraphNode())
+		{
+			if (!n2.isGraphNode())
+				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1),true);
+			else
+				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2),true);
+		}
+		else
+		{
+			if (n2.isGraphNode())
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+			else
+				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2)),true);
+		}
+	#endif
+	}
+#ifndef SKIPNODES
+	virtual void finish(){	}
+#endif
+};
+
+
 class NarratorGraph
 {
 private:
 	NarratorNodesList top_g_nodes;
 	QList<int> top_c_indices;
 
+	void computeRanks()
+	{
+		RankCorrectorNodeVisitor r;
+		traverse(r);
+	}
 	void deduceTopNodes(ChainsContainer & chains);
-	void traverse(NarratorNodeIfc & n,NarratorNodeVisitor & visitor)
+	void traverse(NarratorNodeIfc & n,NodeVisitor & visitor)
 	{
 		int size=n.getNumChildren();
 		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
@@ -589,8 +724,9 @@ public:
 	NarratorGraph(ChainsContainer & chains)
 	{
 		deduceTopNodes(chains);
+		computeRanks();
 	}
-	void traverse(NarratorNodeVisitor & visitor);
+	void traverse(NodeVisitor & visitor);
 };
 
 void buildGraph(ChainsContainer &chs);

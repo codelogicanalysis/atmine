@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AUBSarf</string>
+   <string>Sarf</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QTextEdit" name="input">
@@ -168,37 +168,6 @@
      <string>GO!</string>
     </property>
    </widget>
-   <widget class="QLabel" name="hadith_chain">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>80</y>
-      <width>441</width>
-      <height>371</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-      <horstretch>255</horstretch>
-      <verstretch>255</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="pixmap">
-     <pixmap>../sarf33.bmp</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="checkBox">
     <property name="geometry">
      <rect>
@@ -224,9 +193,9 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>470</y>
+      <y>80</y>
       <width>441</width>
-      <height>151</height>
+      <height>541</height>
      </rect>
     </property>
    </widget>

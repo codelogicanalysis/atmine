@@ -8,50 +8,6 @@ NULLNarratorNodeIfc nullNarratorNodeIfc;
 NULLGraphNarratorNode nullGraphNarratorNode;
 ChainsContainer chains;
 
-NarratorNodeIfc & NULLNarratorNodeIfc::firstChild()
-{
-	return nullNarratorNodeIfc;
-}
-NarratorNodeIfc & NULLNarratorNodeIfc::nextChild(NarratorNodeIfc &)
-{
-	return nullNarratorNodeIfc;
-}
-int NULLNarratorNodeIfc::getNumChildren()
-{
-	return 0;
-}
-NarratorNodeIfcRfc NULLNarratorNodeIfc::getChild(int)
-{
-	return NarratorNodeIfcRfc(nullNarratorNodeIfc,false);
-}
-NarratorNodeIfc & NULLNarratorNodeIfc::firstParent()
-{
-	return nullNarratorNodeIfc;
-}
-NarratorNodeIfc & NULLNarratorNodeIfc::nextParent(NarratorNodeIfc & )
-{
-	return nullNarratorNodeIfc;
-}
-ChainNarratorNodeIterator & NULLNarratorNodeIfc::firstNarrator()
-{
-	return nullChainNarratorNodeIterator;
-}
-ChainNarratorNodeIterator & NULLNarratorNodeIfc::nextNarrator(ChainNarratorNodeIterator & )
-{
-	return nullChainNarratorNodeIterator;
-}
-NodeAddress NULLNarratorNodeIfc::prevInChain(ChainNarratorNodeIterator &)
-{
-	return nullNodeAddress;
-}
-NodeAddress NULLNarratorNodeIfc::nextInChain(ChainNarratorNodeIterator &)
-{
-	return nullNodeAddress;
-}
-ChainNarratorNodeIterator & NULLNarratorNodeIfc::getChainNodeItrInChain(int)
-{
-	return nullChainNarratorNodeIterator;
-}
 QString ChainNarratorNode::CanonicalName()
 {
 	return ((Narrator*)this)->getString();
@@ -243,6 +199,7 @@ GraphNarratorNode::GraphNarratorNode(ChainNarratorNodeIterator & nar1,ChainNarra
 		equalnarrators.append(nar2);
 		nar2->setCorrespondingNarratorNode(this);
 	}
+	savedRank=-1;
 }
 GraphNarratorNode::GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * chain2, Narrator * nar2) //TODO: check if duplicate
 {
@@ -252,6 +209,7 @@ GraphNarratorNode::GraphNarratorNode(Chain * chain1, Narrator * nar1,Chain * cha
 	equalnarrators.append(c2);
 	c1->setCorrespondingNarratorNode(this);
 	c2->setCorrespondingNarratorNode(this);
+	savedRank=-1;
 }
 void GraphNarratorNode::addNarrator(Chain * chain, Narrator * nar) //TODO check if duplicate
 {
@@ -386,7 +344,7 @@ void NarratorGraph::deduceTopNodes(ChainsContainer & chains)
 	}
 }
 
-void NarratorGraph::traverse(NarratorNodeVisitor & visitor)
+void NarratorGraph::traverse(NodeVisitor & visitor)
 {
 	visitor.initialize();
 	int size=top_g_nodes.size();
@@ -539,21 +497,28 @@ void buildGraph(ChainsContainer & chains)
 				int u=min(offset+1,needle-radius);
 				u=u>0?u:0;
 				bool match=false;
+			#if 0
 				ChainNarratorNodeIterator  & n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
-				if (!n3.isNull())
-				{
+				if (!n3.isNull() && k<chains.size()-1)
+				{//here we check if narrator n1 has a match (n3) in chain k, if so increment k
 					k++;
-					n1=ChainNarratorNodeIterator(c1.m_chain.begin())+k;
-					u=n3.getIndex()+1;
-					needle=u;
-					offset=u-1;
+					continue;
+					//n1=ChainNarratorNodeIterator(c1.m_chain.begin())+k;
+					//u=n3.getIndex()+1;
+					//needle=u;
+					//offset=u-1;
+					n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
 				}
+			#endif
 				ChainNarratorNodeIterator n2=c2.m_chain.begin();
 				n2=n2+u;
 				bool last_2=false;
 				while(true)
 				{
-					if (equal(n1.getNarrator(),n2.getNarrator())>=threshold)
+					Narrator & n1_ref=n1.getNarrator();
+					Narrator & n2_ref=n2.getNarrator();
+					double eq_val=equal(n1_ref,n2_ref);
+					if (eq_val>=threshold)
 					{
 						mergeNodes(n1,n2);
 						offset=u;
