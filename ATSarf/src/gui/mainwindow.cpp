@@ -1,4 +1,5 @@
 #include <QFileInfo>
+#include <QScrollArea>
 #include "mainwindow.h"
 #include "test.h"
 #include "sql_queries.h"
@@ -68,7 +69,13 @@ void MainWindow::on_pushButton_clicked()
 	{
 		try{
 			system("dot -Tsvg graph.dot -o graph.svg");
-			m_ui->hadith_chain->setPixmap(QPixmap("./graph.svg"));
+			QMainWindow * mw =new QMainWindow(NULL);
+			QScrollArea * sa=new QScrollArea(mw);
+			mw->setCentralWidget(sa);
+			QLabel *pic=new QLabel(sa);
+			pic->setPixmap(QPixmap("./graph.svg"));
+			sa->setWidget(pic);
+			mw->show();
 		}
 		catch(int i)
 		{}
@@ -85,7 +92,7 @@ void MainWindow::on_fill_clicked()
 void MainWindow::on_cmd_browse_clicked()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open File"), "~/Desktop", tr("All Files (*)"));
+		tr("Open File"), "/home/jad/Desktop/linux", tr("All Files (*)"));
 	if (!fileName.isEmpty())
 		m_ui->input->setText(fileName);
 }

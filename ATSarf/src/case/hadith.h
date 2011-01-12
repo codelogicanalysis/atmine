@@ -7,6 +7,8 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 #define GENERAL_HADITH
+#define FORCE_RANKS
+#define SHOW_RANKS
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
