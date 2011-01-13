@@ -447,9 +447,9 @@ class NodeVisitor
 {
 public:
 	virtual bool previouslyVisited( NarratorNodeIfc * node)=0;
-	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)=0;
+	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2, int chain_num)=0;
 	virtual void initialize()=0;
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)=0;
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)=0;
 	virtual void finish()=0;
 };
 
@@ -458,9 +458,9 @@ class NarratorNodeVisitor: public NodeVisitor
 protected:
 	typedef QMap<GraphNarratorNode*,int> G_IDMap;
 	typedef QMap<ChainNarratorNode*,int> C_IDMap;
-	typedef QPair<ChainNarratorNode *,ChainNarratorNode*> CCEdge;
-	typedef QPair<ChainNarratorNode *,GraphNarratorNode*> CGEdge;
-	typedef QPair<GraphNarratorNode *,GraphNarratorNode*> GGEdge;
+	typedef Triplet<ChainNarratorNode *,ChainNarratorNode*,int> CCEdge; //Triplet: not needed but for consistency purposes, Pair is enough
+	typedef Triplet<ChainNarratorNode *,GraphNarratorNode*,int> CGEdge;
+	typedef Triplet<GraphNarratorNode *,GraphNarratorNode*,int> GGEdge;
 	typedef QMap<CGEdge, bool> CGEdgeMap; //(chain, graph) , will be used for (graph,chain) also
 	typedef QMap<GGEdge, bool> GGEdgeMap; //(graph, graph)
 	typedef QMap<CCEdge, bool> CCEdgeMap; //(graph, graph)
@@ -532,29 +532,29 @@ public:
 		G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
 		return !(it==GraphNodesID.end());
 	}
-	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2)
+	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2,int child_num)
 	{
 		if (!n1->isGraphNode() && !n2->isGraphNode())
 		{
-			CCEdgeMap::iterator it=ccEdgeMap.find(CCEdge(&**((ChainNarratorNodeIterator*)n1),&**((ChainNarratorNodeIterator*)n2)));
+			CCEdgeMap::iterator it=ccEdgeMap.find(CCEdge(&**((ChainNarratorNodeIterator*)n1),&**((ChainNarratorNodeIterator*)n2),child_num));
 			return !(it==ccEdgeMap.end());
 			return false;
 		}
 		else if (n1->isGraphNode() && !n2->isGraphNode() )
 		{
-			CGEdgeMap::iterator it=gcEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n2),(GraphNarratorNode*)n1));
+			CGEdgeMap::iterator it=gcEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n2),(GraphNarratorNode*)n1,child_num));
 			return !(it==gcEdgeMap.end());
 			return false;
 		}
 		else if (!n1->isGraphNode() && n2->isGraphNode())
 		{
-			CGEdgeMap::iterator it=cgEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2));
+			CGEdgeMap::iterator it=cgEdgeMap.find(CGEdge(&**((ChainNarratorNodeIterator*)n1),(GraphNarratorNode*)n2,child_num));
 			return !(it==cgEdgeMap.end());
 			return false;
 		}
 		else
 		{
-			GGEdgeMap::iterator it=ggEdgeMap.find(GGEdge((GraphNarratorNode*)n1,(GraphNarratorNode*)n2));
+			GGEdgeMap::iterator it=ggEdgeMap.find(GGEdge((GraphNarratorNode*)n1,(GraphNarratorNode*)n2,child_num));
 			return !(it==ggEdgeMap.end());
 		}
 	}
@@ -578,7 +578,7 @@ public:
 		last_id=0;
 		d_out<<"digraph hadith_graph {\n";
 	}
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)
 	{
 		QString s1=getID(n1), s2=getID(n2);
 		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
@@ -586,16 +586,16 @@ public:
 		if (n1.isGraphNode())
 		{
 			if (!n2.isGraphNode())
-				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1),true);
+				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1,chain_num),true);
 			else
-				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2),true);
+				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2,chain_num),true);
 		}
 		else
 		{
 			if (n2.isGraphNode())
-				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2,chain_num),true);
 			else
-				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2)),true);
+				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2),chain_num),true);
 		}
 	}
 	virtual void finish()
@@ -653,13 +653,13 @@ public:
 		return false;
 	}
 #ifndef SKIPNODES
-	virtual bool previouslyVisited( NarratorNodeIfc * , NarratorNodeIfc * )//get thru all path even if visited from another path
+	virtual bool previouslyVisited( NarratorNodeIfc * , NarratorNodeIfc * ,int)//get thru all path even if visited from another path
 	{
 		return false;
 	}
 	virtual void initialize(){	}
 #endif
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2)
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)
 	{
 		int rank1=n1.getGraphRank(), rank2=n2.getGraphRank();
 		if (rank1>=rank2)
@@ -671,16 +671,16 @@ public:
 		if (n1.isGraphNode())
 		{
 			if (!n2.isGraphNode())
-				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1),true);
+				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1,chain_num),true);
 			else
-				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2),true);
+				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2,chain_num),true);
 		}
 		else
 		{
 			if (n2.isGraphNode())
-				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2),true);
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2,chain_num),true);
 			else
-				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2)),true);
+				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2),chain_num),true);
 		}
 	#endif
 	}
@@ -711,10 +711,10 @@ private:
 			NarratorNodeIfcRfc r=n.getChild(i);
 			NarratorNodeIfc & c=r.Rfc();
 			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
-			if (!c.isNull() && !visitor.previouslyVisited(&n, &c))
+			if (!c.isNull() && !visitor.previouslyVisited(&n, &c,1))//i
 			{
 				bool prev_visited=visitor.previouslyVisited( &c);
-				visitor.visit(n,c);
+				visitor.visit(n,c,1);//i
 				if (!prev_visited)
 					traverse(c,visitor);
 			}

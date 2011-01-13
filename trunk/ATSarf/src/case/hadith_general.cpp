@@ -265,6 +265,13 @@ public:
 		:Stemmer(word,start,true)
 #endif
 	{
+		setSolutionSettings(M_ALL);
+		init(start);
+	}
+	void init(int start)
+	{
+		this->info.start=start;
+		this->info.finish=start;
 		name=false;
 		nmc=false;
 		nrc=false;
@@ -272,7 +279,6 @@ public:
 		place=false;
 		ibn_or_3abid=false;
 		finish_pos=start;
-		setSolutionSettings(M_ALL);
 	#ifdef STATS
 		stem="";
 		stems.clear();
@@ -500,7 +506,12 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 	long long  finish;
 	isBinOrPossessive=false;
 	ibn_or_3abid=false;
-	hadith_stemmer s(text,current_pos);
+	static hadith_stemmer * s_p=NULL;
+	if (s_p==NULL)
+		s_p=new hadith_stemmer(text,current_pos);
+	else
+		s_p->init(current_pos);
+	hadith_stemmer & s=*s_p;
 #ifdef REFINEMENTS
 	QString c;
 	bool found,phrase=false,stop_word=false;
@@ -1604,7 +1615,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	{
 		out<<"no hadith found\n";
 		chainOutput.close();
-		return 0;
+		return 2;
 	}
 	chainOutput.close();
 #endif

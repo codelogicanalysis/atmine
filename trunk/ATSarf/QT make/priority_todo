@@ -4,21 +4,12 @@ partially done--library with settings
 done --every accept state should be reported once and user can query for all features (raw_data, description, abstract_categories,..) or on_match is called done(2) --on every accept state on each feature and user can command to skip on every feature or all (skip ALL POS, ALL RawData) using return value of on_match()
 done --one-hot encoding
 done --smart node {node*, pos, index}
+done---find equality between chains of narrators and start building graph
 
+-ranking using BFS
+-break cycles (save the equality vector)
+-allow for greater values than 1 if they exist (don't chop)
 
-
-
-find equality between chains of narrators and start building graph
-
-GHGNarratorNode
-{list of equal narrators pointer, cannonical_name, functions for:{(parent,children)}
-use this node structure when merging the 2 hadith chains
-hash them according to wither elements or string stripped and so on (for testing)
-
-class CNarratorNodePtr:public QList<NarratorPrim>::iterator
-{
-	nextNarrator()
-	previousNarrator()
-	next()
-	previous()
-}
+-change the testcase to make the one stemmer with a clear() function
+-make SARF database-independent
+-change the code to instantiate the stemmer(prefixMachine,StemMachine,...) only once in hadith case-study

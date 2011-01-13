@@ -57,8 +57,9 @@ void MainWindow::on_pushButton_clicked()
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
+	int rc;
 	if (!m_ui->chk_testing->isChecked())
-		start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
+		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
 	else
 		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
 	m_ui->errors->setText(error_str);
@@ -67,18 +68,21 @@ void MainWindow::on_pushButton_clicked()
 #ifdef TEST_EQUAL_NARRATORS
 	if (m_ui->checkBox->isChecked())
 	{
-		try{
-			system("dot -Tsvg graph.dot -o graph.svg");
-			QMainWindow * mw =new QMainWindow(NULL);
-			QScrollArea * sa=new QScrollArea(mw);
-			mw->setCentralWidget(sa);
-			QLabel *pic=new QLabel(sa);
-			pic->setPixmap(QPixmap("./graph.svg"));
-			sa->setWidget(pic);
-			mw->show();
+		if (rc==0)
+		{
+			try{
+				system("dot -Tsvg graph.dot -o graph.svg");
+				QMainWindow * mw =new QMainWindow(NULL);
+				QScrollArea * sa=new QScrollArea(mw);
+				mw->setCentralWidget(sa);
+				QLabel *pic=new QLabel(sa);
+				pic->setPixmap(QPixmap("./graph.svg"));
+				sa->setWidget(pic);
+				mw->show();
+			}
+			catch(int i)
+			{}
 		}
-		catch(int i)
-		{}
 	}
 #endif
 }
