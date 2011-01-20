@@ -1,5 +1,6 @@
 #include "chain_graph.h"
 #include "narrator_abstraction.h"
+#include <vector>
 
 #define min(a,b) a>b?b:a
 
@@ -325,6 +326,19 @@ void mergeNodes(ChainNarratorNodeIterator & n1,ChainNarratorNodeIterator & n2)
 	}
 }
 
+void LoopBreakingVisitor::finish()
+{
+	if (cycle_fixed)
+	{
+		cycle_fixed=false;
+		detected_cycle=false;
+		controller->initialize();
+		graph->DFS_traverse(*(this->controller),true);//retry breaking more loops
+	}
+	if (detected_cycle && ! cycle_fixed)
+		out<< "Error: Cycles detected, which were not corrected!\n";
+}
+
 void NarratorGraph::deduceTopNodes(ChainsContainer & chains)
 {
 	for (int i=0;i<chains.size();i++)
@@ -344,22 +358,82 @@ void NarratorGraph::deduceTopNodes(ChainsContainer & chains)
 	}
 }
 
-void NarratorGraph::traverse(NodeVisitor & visitor)
+void NarratorGraph::DFS_traverse(GraphVisitorController & visitor, bool detect_cycles)
 {
 	visitor.initialize();
+	if (detect_cycles)
+	{
+		visitor.detect_cycles=true;//forces VisitorController to detect cycles
+		visitor.keep_track_of_nodes=true;
+	}
 	int size=top_g_nodes.size();
 	for (int i=0; i<size;i++)
 	{
 		GraphNarratorNode * node=top_g_nodes[i];
-		//visitor.forceAsSink(*top_g_nodes[i]);
-		if (!node->isNull())
-			traverse(*top_g_nodes[i],visitor);
+		if (!node->isNull() && !(detect_cycles && visitor.stop_searching_for_cycles ))
+		{
+			DFS_traverse(*node,visitor);
+			if (detect_cycles)
+				visitor.initialize();
+		}
 	}
 	for (int i=0;i<top_c_indices.size();i++)
 	{
 		ChainNarratorNodeIterator & c=ChainNarratorNodeIterator(chains[top_c_indices[i]]->m_chain.begin()).nearestNarratorInChain();
-		//visitor.forceAsSink(c);
-		traverse(c,visitor);
+		if (!(detect_cycles && visitor.stop_searching_for_cycles ))
+		{
+			DFS_traverse(c,visitor);
+			if (detect_cycles)
+				visitor.initialize();
+		}
+	}
+	visitor.finish();
+}
+
+void NarratorGraph::BFS_traverse(GraphVisitorController & visitor)
+{
+	visitor.initialize();
+	QQueue<NarratorNodeIfcRfc *> queue;
+	int size=top_g_nodes.size();
+	for (int i=0; i<size;i++)
+	{
+		GraphNarratorNode * node=top_g_nodes[i];
+		NarratorNodeIfcRfc * r= new NarratorNodeIfcRfc(*node,false);
+		if (!node->isNull())
+			queue.enqueue(r);
+	}
+	for (int i=0;i<top_c_indices.size();i++)
+	{
+		ChainNarratorNodeIterator & c=ChainNarratorNodeIterator(chains[top_c_indices[i]]->m_chain.begin()).nearestNarratorInChain();
+		NarratorNodeIfcRfc * r= new NarratorNodeIfcRfc(c,true);
+		queue.enqueue(r);
+	}
+	while (!queue.isEmpty())
+	{
+		NarratorNodeIfcRfc * n_r=queue.dequeue();
+		NarratorNodeIfc & n=n_r->Rfc();
+		visitor.visit(n);
+		int size=n.getNumChildren();
+		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
+		for (int i=0;i<size;i++)
+		{
+			NarratorNodeIfcRfc r=n.getChild(i);
+			NarratorNodeIfc & c=r.Rfc();
+			NarratorNodeIfcRfc *r_p;
+			if (!c.isGraphNode())
+				r_p=new NarratorNodeIfcRfc(*new ChainNarratorNodeIterator((ChainNarratorNodeIterator&)c),true);
+			else
+				r_p=new NarratorNodeIfcRfc(c,false);
+			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
+			if (!c.isNull() && !visitor.isPreviouslyVisited(&n, &c,1))//i
+			{
+				bool prev_visited=visitor.isPreviouslyVisited( &c);
+				visitor.visit(n,c,1);//i
+				if (!prev_visited)
+					queue.enqueue(r_p);
+			}
+		}
+		//delete n_r; //TODO: solve memory leak
 	}
 	visitor.finish();
 }
@@ -369,8 +443,10 @@ int test_NarratorEquality(QString)
 	fillRanks();
 	buildGraph(chains);
 	NarratorGraph graph(chains);
-	NarratorNodeVisitor visitor;
-	graph.traverse(visitor);
+	NarratorNodeVisitor *visitor=new NarratorNodeVisitor(graph.getDeapestRank());
+	GraphVisitorController c(visitor);
+	graph.DFS_traverse(c);
+	delete visitor;
 	return 0;
 }
 
@@ -484,6 +560,9 @@ void buildGraph(ChainsContainer & chains)
 	for (int i=0;i<chains.size();i++)
 	{
 		Chain & c1= *chains.at(i);
+		vector<int> lastC1MatchInC2Vec;
+		lastC1MatchInC2Vec.assign(chains.size(),0);
+
 		for (int k=i+1;k<chains.size();k++)
 		{
 			Chain & c2= *chains.at(k);
@@ -494,25 +573,29 @@ void buildGraph(ChainsContainer & chains)
 			bool last_1=false;
 			while(true)
 			{
-				int u=min(offset+1,needle-radius);
-				u=u>0?u:0;
+//				int u=min(offset+1,needle-radius);
+//				u=u>0?u:0;
+				u = lastC1MatchInC2Vec[k];
 				bool match=false;
-			#if 0
-				ChainNarratorNodeIterator  & n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
+			#if 1
+				NarratorNodeIfc & g_node=n1.getCorrespondingNarratorNode();//get the graph node corresponding to n1, or n1 if no such exists
+				ChainNarratorNodeIterator  & n3=g_node.getChainNodeItrInChain(k);//return the chain k node in the graph node if it exists
 				if (!n3.isNull() && k<chains.size()-1)
 				{//here we check if narrator n1 has a match (n3) in chain k, if so increment k
+					lastC1MatchInC2Vec[k]=n3.getIndex()+1;
 					k++;
 					continue;
 					//n1=ChainNarratorNodeIterator(c1.m_chain.begin())+k;
 					//u=n3.getIndex()+1;
 					//needle=u;
 					//offset=u-1;
-					n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
+					//n3=n1.getCorrespondingNarratorNode().getChainNodeItrInChain(k);
 				}
 			#endif
 				ChainNarratorNodeIterator n2=c2.m_chain.begin();
 				n2=n2+u;
 				bool last_2=false;
+				int countToRadius = 0;
 				while(true)
 				{
 					Narrator & n1_ref=n1.getNarrator();
@@ -521,13 +604,15 @@ void buildGraph(ChainsContainer & chains)
 					if (eq_val>=threshold)
 					{
 						mergeNodes(n1,n2);
-						offset=u;
+						lastC1MatchInC2Vec[k]= offset=u;
 						needle=++u; //TODO: check if correct
 						match=true;
 						break;
 					}
 					++n2;
 					u++;
+					if (countToRadius == radius)
+						break;
 					if (last_2)
 						break;
 					if (n2.isLast())

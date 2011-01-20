@@ -37,6 +37,7 @@ HadithParameters parameters;
 #ifdef PREPROCESS_DESCRIPTIONS
 	QHash<long,bool> NMC_descriptions;
 	QHash<long,bool> NRC_descriptions;
+	QHash<long,bool> IBN_descriptions;
 #endif
 #ifdef COMPARE_TO_BUCKWALTER
 	QTextStream * myoutPtr;
@@ -223,7 +224,10 @@ void hadith_initialize()
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
 	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
 	while (nmc_s.retrieve())
-		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);
+		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
+	Retrieve_Template ibn_s("description","id","name='son'");
+	while (ibn_s.retrieve())
+		IBN_descriptions.insert(ibn_s.get(0).toULongLong(),true);
 #endif
 	non_punctuation_delimiters=delimiters;
 	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]"));
@@ -506,12 +510,15 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 	long long  finish;
 	isBinOrPossessive=false;
 	ibn_or_3abid=false;
+#if 0
 	static hadith_stemmer * s_p=NULL;
 	if (s_p==NULL)
 		s_p=new hadith_stemmer(text,current_pos);
 	else
 		s_p->init(current_pos);
 	hadith_stemmer & s=*s_p;
+#endif
+	hadith_stemmer s(text,current_pos);
 #ifdef REFINEMENTS
 	QString c;
 	bool found,phrase=false,stop_word=false;

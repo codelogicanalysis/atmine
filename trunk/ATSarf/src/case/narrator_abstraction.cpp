@@ -348,7 +348,7 @@ public:
 				do
 				{
 #ifdef PREPROCESS_DESCRIPTIONS
-					if (NMC_descriptions.contains(Stem->solution->description_id))
+					if (IBN_descriptions.contains(Stem->solution->description_id))
 #else
 					if (Stem->solution->description()=="son")
 #endif
@@ -387,9 +387,25 @@ public:
 	}
 };
 
-typedef Triplet<NamePrim,NamePrim, int> EqualNamesStruct;
+
+class Int2
+{
+public:
+	int first:16;
+	int second:16;
+	Int2(int f,int s): first(f), second(s)
+	{	}
+	int difference()
+	{
+		int d=first-second;
+		return (d>=0?d:-d);
+	}
+};
+typedef Triplet<NamePrim,NamePrim, Int2> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
-double getdistance(const Narrator & n1,const Narrator & n2)
+
+static const double max_distance=3;
+double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
 {
 	if (n1.getString()==n2.getString())
 		return 0;
@@ -397,21 +413,54 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 	if (rasoul_words.contains(n1.getString()) && rasoul_words.contains(n2.getString()))
 		return 0;
 #endif
-	double dist=1, delta=parameters.equality_delta;
-	QList<NamePrim> Names1,Names2;
-	QList<NameConnectorPrim> Conns1, Conns2;
+	double dist=max_distance, delta=parameters.equality_delta;
+	QList<NamePrim > Names1,Names2;
+	QList<NameConnectorPrim > Conns1, Conns2;
+#ifdef EQUALITY_REFINEMENTS
+	bool first_ibn1=false, first_ibn2=false;//means that the corresponding chain starts with ibn before any name
+#endif
 	for (int i=0;i<n1.m_narrator.count();i++)
 		if (n1.m_narrator[i]->isNamePrim())
 			Names1.append(*(NamePrim*)n1.m_narrator[i]);
 		else
-			Conns1.append(*(NameConnectorPrim*)n1.m_narrator[i]);
+		{
+			NameConnectorPrim & c=*(NameConnectorPrim*)n1.m_narrator[i];
+			Conns1.append(c);
+		#ifdef EQUALITY_REFINEMENTS
+			if (Names1.size()==0)
+			{
+				IbnStemsDetector d(c.hadith_text,c.m_start,c.m_end);
+				d();
+				if (d.ibn)
+					first_ibn1=true;
+			}
+		#endif
+		}
 	for (int i=0;i<n2.m_narrator.count();i++)
 		if (n2.m_narrator[i]->isNamePrim())
 			Names2.append(*(NamePrim*)n2.m_narrator[i]);
 		else
-			Conns2.append(*(NameConnectorPrim*)n2.m_narrator[i]);
+		{
+			NameConnectorPrim & c=*(NameConnectorPrim*)n2.m_narrator[i];
+			Conns2.append(c);
+		#ifdef EQUALITY_REFINEMENTS
+			if (Names2.size()==0)
+			{
+				IbnStemsDetector d(c.hadith_text,c.m_start,c.m_end);
+				d();
+				if (d.ibn)
+					first_ibn2=true;
+			}
+		#endif
+		}
 
 #ifdef EQUALITYDEBUG
+	display("<");
+	display(n1.getString());
+	display(" VS ");
+	display(n2.getString());
+	display(">\n");
+#if 0
 	for (int i=0;i<Names1.count();i++)
 		display(Names1[i].getString()+" - ");
 	display("\n");
@@ -425,6 +474,7 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 		display(Conns2[i].getString()+" - ");
 	display("\n");
 #endif
+#endif
 
 	QList<EqualNamesStruct> equal_names;
 	for (int i=0;i<Names1.count();i++)
@@ -436,22 +486,35 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 			StemsDetector stemsD2(Names2[j].hadith_text,Names2[j].m_start,Names2[j].m_end);//TODO: later for efficiency, perform in a seperate loop, save them then use them
 			stemsD2();
 			if (has_equal_stems(stemsD1.stems,stemsD2.stems))
-				equal_names.append(EqualNamesStruct(Names1[i],Names2[j],j));
+				equal_names.append(EqualNamesStruct(Names1[i],Names2[j],Int2(i,j)));
 		}
 	}
 	if (equal_names.count()==0)
 		return dist;
 	if (equal_names.count()==min(Names1.count(),Names2.count()))
 	{
-		display("equal names \\ ");
+		display("equal names \\ ");//may be wrong will be refined later when we used EQUALITY_REFINEMENTS
 		dist-=delta;
 	}
+#ifdef EQUALITY_REFINEMENTS
+	int number_skipped_names=equal_names[0].third.difference();//start by number of skipped items
+#endif
 	for (int i=1;i<equal_names.count();i++)
-		if (equal_names[i-1].third>equal_names[i].third)
+	{
+	#ifdef EQUALITY_REFINEMENTS
+		int diff=equal_names[i].third.difference();
+		if (diff !=number_skipped_names)
+			number_skipped_names=-1;
+	#endif
+		if (equal_names[i-1].third.second>equal_names[i].third.second)
 			return dist;
+	}
 	display("same order of names \\ ");
 	dist-=delta; //if reaches here it means names are in correct order, otherwise it would have returned before
 	QList<EqualConnsStruct> equal_conns;
+#ifdef EQUALITY_REFINEMENTS
+	int num_ibn1=0, num_ibn2=0;
+#endif
 	for (int i=0;i<Conns1.count();i++)
 	{
 		IbnStemsDetector stemsD1(Conns1[i].hadith_text,Conns1[i].m_start,Conns1[i].m_end);
@@ -459,6 +522,9 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 		if (stemsD1.ibn)
 		{
 			Conns1.removeAt(i);
+		#ifdef EQUALITY_REFINEMENTS
+			num_ibn1++;
+		#endif
 			i--;
 		}
 		for (int j=0;j<Conns2.count();j++)
@@ -468,6 +534,9 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 			if (stemsD2.ibn)
 			{
 				Conns2.removeAt(j);
+			#ifdef EQUALITY_REFINEMENTS
+				num_ibn2++;
+			#endif
 				j--;
 			}
 			//TODO: here check if mutually exclusive and if so, punish
@@ -528,6 +597,34 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 			//TODO: ibn must have a seperate rule which is inter-related to names
 		}
 	}
+#ifdef EQUALITY_REFINEMENTS
+	int min_names=min(Names1.count(),Names2.count()),
+		min_ibn_cnt=min(num_ibn1,num_ibn2);
+	bool one_ibn_first=((!first_ibn1 && first_ibn2)|| (!first_ibn2 && first_ibn1));
+	bool correctly_skipped=one_ibn_first && ((first_ibn1 &&  num_ibn1==min_ibn_cnt && Names1.count()==min_names) ||
+						   (first_ibn2 &&  num_ibn2==min_ibn_cnt && Names2.count()==min_names));
+	if ((min_ibn_cnt+1==min_names) || (one_ibn_first && min_ibn_cnt==min_names && correctly_skipped))
+	{
+		if (number_skipped_names==0 && !one_ibn_first)
+		{
+			display("all names are there\\ ");//if all detected names are correct
+			dist-=delta;//reward when all names are there
+		}
+		if (number_skipped_names==1 && one_ibn_first)
+		{
+			display("all names are there except the first and skipped by ibn \\ ");
+			dist-=delta/2;//reward when starts by ibn, i.e. one name of the list is skipped
+		}
+	}
+	else
+	{//revert wrong decision previosuly if needed
+		if (equal_names.count()==min(Names1.count(),Names2.count()))
+		{
+			display("-{equal names} \\ ");//some names are not detected and from the number of ibn, we deduce they are not equal
+			dist+=delta;
+		}
+	}
+#endif
 	if (Conns1.count()==0 || Conns2.count()==0)
 	{
 		display("No connectors \\ ");
@@ -544,11 +641,11 @@ double getdistance(const Narrator & n1,const Narrator & n2)
 		dist-=delta*equal_conns.count(); //reward as much as there are identical connectors other than ibn
 	}
 	display("\n");
-	return min(max(dist-equal_conns.count()*delta/2,0.0),1.0);
+	return min(max(dist-equal_conns.count()*delta/2,0.0),max_distance);
 }
 double equal(const Narrator & n1,const  Narrator  & n2)
 {
-	return 1 - getdistance(n1,n2);
+	return max_distance - getdistance(n1,n2);
 }
 
 double Narrator::equals(const Narrator & rhs) const

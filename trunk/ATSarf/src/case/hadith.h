@@ -9,6 +9,7 @@
 #define GENERAL_HADITH
 #define FORCE_RANKS
 #define SHOW_RANKS
+//#define SHOW_VERBOSE_RANKS
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
@@ -18,6 +19,7 @@
 #define DISPLAY_HADITH_OVERVIEW
 #define CHAIN_BUILDING
 #define TEST_EQUAL_NARRATORS
+#define EQUALITY_REFINEMENTS
 //#define EQUALITYDEBUG
 //#define COMPARE_TO_BUCKWALTER
 //#define COMPARE_WITHOUT_ABSCAT
@@ -31,7 +33,7 @@
 //#define IMAN_CODE
 
 #ifdef PREPROCESS_DESCRIPTIONS
-extern QHash<long,bool> NMC_descriptions;
+extern QHash<long,bool> IBN_descriptions;
 #endif
 
 #ifdef REFINEMENTS

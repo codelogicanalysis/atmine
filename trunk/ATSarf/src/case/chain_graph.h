@@ -9,6 +9,7 @@
 #include <QFile>
 #include "logger.h"
 #include <QDebug>
+#include <QQueue>
 #include "reference.h"
 
 #include "hadith.h"
@@ -54,7 +55,6 @@ protected:
 	virtual int getAutomaticRank()=0;
 	friend class RankCorrectorNodeVisitor;
 public:
-	//NarratorNodeIfc(){setSavedRank(-1);}
 	virtual NarratorNodeIfc & firstChild()=0;
 	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & current)=0;
 	virtual NarratorNodeIfc & firstParent()=0;
@@ -81,7 +81,7 @@ public:
 	virtual QString getRanks()=0;
 
 	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int chain_num)=0;
-	virtual QString toString()=0;
+	virtual QString toString() =0;
 };
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
@@ -110,7 +110,7 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc
 	virtual QString getRanks(){throw 1;}
 	virtual ChainNarratorNodeIterator & getChainNodeItrInChain(int){throw 1;}
 	virtual bool isGraphNode() {return false;}
-	virtual QString toString() {return "NULLNarratorNodeIfc";}
+	virtual QString toString()   {return "NULLNarratorNodeIfc";}
 };
 
 class ChainNarratorNode
@@ -137,7 +137,7 @@ public:
 	{
 		savedRank=rank;
 	}
-	QString CanonicalName();
+	QString CanonicalName() ;
 	virtual QString toString()
 	{
 		return "("+CanonicalName()+")";
@@ -221,7 +221,15 @@ public:
 		(*this)->setSavedRank(rank);
 	}
 	int getSavedRank(){return (*this)->getSavedRank();}
-	QString getRanks(){ return QString("[%1](%2)").arg(getAutomaticRank()).arg(getSavedRank());}
+	QString getRanks()
+	{
+	#ifdef SHOW_VERBOSE_RANKS
+		return QString("[%1](%2)").arg(getAutomaticRank()).arg(getSavedRank());
+	#else
+		return QString("(%1)").arg(getSavedRank());
+	#endif
+
+	}
 	int getChainNum();
 	virtual bool isNull()
 	{
@@ -271,12 +279,15 @@ public:
 	virtual QString toString(){	return "NULLChainNarratorNodeIterator";}
 };
 
+class LoopBreakingVisitor;
+
 class GraphNarratorNode: public NarratorNodeIfc
 {
 protected:
 	QList<ChainNarratorNodeIterator>  equalnarrators;
 	int savedRank;
 	void setSavedRank(int rank){savedRank=rank;}
+	friend class LoopBreakingVisitor;
 public:
 	GraphNarratorNode(){savedRank=-1;}
 	GraphNarratorNode(ChainNarratorNodeIterator & nar1,ChainNarratorNodeIterator & nar2);
@@ -365,10 +376,13 @@ public:
 	int getSavedRank(){return savedRank;}
 	QString getRanks()
 	{
-		QString ranks= "[";
+		QString ranks;
+	#ifdef SHOW_VERBOSE_RANKS
+		ranks="[";
 		for (int i=0;i<equalnarrators.size();i++)
 			ranks+=QString("%1,").arg(equalnarrators[i].getAutomaticRank());
 		ranks+="]";
+	#endif
 		ranks+=QString("(%1)").arg(getSavedRank());
 		return ranks;
 	}
@@ -443,17 +457,31 @@ public:
 	}
 };
 
+void mergeNodes(ChainNarratorNodeIterator & n1,ChainNarratorNodeIterator & n2);
+double equal(const Narrator & n1,const Narrator & n2);
+
+class GraphVisitorController;
+
 class NodeVisitor
 {
+protected:
+	GraphVisitorController  * controller;
+	friend class GraphVisitorController;
 public:
-	virtual bool previouslyVisited( NarratorNodeIfc * node)=0;
-	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2, int chain_num)=0;
 	virtual void initialize()=0;
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)=0;
+	virtual void visit(NarratorNodeIfc & n)=0;
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)=0;
 	virtual void finish()=0;
+
+	virtual void cycle_detected(){}//any cycle of length larger than 1 or 2 detected
+	virtual void cycle_detected(NarratorNodeIfc &){}//any cycle of length larger than 1 or 2 detected
+	virtual void cycle_detected(NarratorNodeIfc & ,NarratorNodeIfc &){}//any cycle of length larger than 1 or 2 detected
 };
 
-class NarratorNodeVisitor: public NodeVisitor
+class NarratorGraph;
+class LoopBreakingVisitor;
+
+class GraphVisitorController
 {
 protected:
 	typedef QMap<GraphNarratorNode*,int> G_IDMap;
@@ -470,20 +498,65 @@ protected:
 	CGEdgeMap gcEdgeMap;
 	GGEdgeMap ggEdgeMap;
 	CCEdgeMap ccEdgeMap;
-
+	bool keep_track_of_edges, keep_track_of_nodes,merged_edges_as_one, detect_cycles;
 	int last_id;
-	QFile * file;
-	QTextStream * dot_out;
-	#define d_out (*dot_out)
-	QList<QStringList> RanksList;
 
-	void setGraphRank(int rank, QString s)
+	bool stop_searching_for_cycles;
+
+	NodeVisitor * visitor;
+	void init()
 	{
-		while(rank>=RanksList.size())
-			RanksList.append(QStringList());
-		RanksList[rank].append(s);
+
+		cgEdgeMap.clear();
+		gcEdgeMap.clear();
+		ggEdgeMap.clear();
+		ccEdgeMap.clear();
+		GraphNodesID.clear();
+		ChainNodesID.clear();
+		last_id=0;
 	}
-	QString getID(NarratorNodeIfc & n)
+	//friend NarratorGraph::DFS_traverse(GraphVisitorController &visitor, bool detect_cycles);
+	//friend NarratorGraph::DFS_traverse(NarratorNodeIfc &n, GraphVisitorController &visitor);
+	friend class NarratorGraph;
+	friend class LoopBreakingVisitor;
+
+public:
+	GraphVisitorController(NodeVisitor * visitor,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true/*, bool detect_cycles=false*/) //removed bc cotrol will be in the DFS algorithm code
+	{
+		this->visitor=visitor;
+		assert(visitor!=NULL);
+		this->visitor->controller=this;
+		this->keep_track_of_edges=keep_track_of_edges;
+		this->keep_track_of_nodes=keep_track_of_nodes;
+		this->merged_edges_as_one=merged_edges_as_one;
+
+		this->detect_cycles=false;
+		stop_searching_for_cycles=false;
+		//this->detect_cycles=detect_cycles;
+		init();
+	}
+	int getUniqueNodeID(NarratorNodeIfc & n)//if not there returns -1
+	{
+		int curr_id;
+		if (n.isGraphNode())
+		{
+			G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)&n);
+			if (it==GraphNodesID.end())
+				return -1;
+			else
+				curr_id=it.value();
+		}
+		else
+		{
+			C_IDMap::iterator it=ChainNodesID.find(&*(ChainNarratorNodeIterator&)n);
+			if (it==ChainNodesID.end())
+				return -1;
+			else
+				curr_id=it.value();
+		}
+		return curr_id;
+	}
+	int generateUniqueNodeID(NarratorNodeIfc & n) //if not there generates one and returns it
 	{
 		int curr_id;
 		if (n.isGraphNode())
@@ -493,16 +566,9 @@ protected:
 			{
 				curr_id=++last_id;
 				GraphNodesID.insert((GraphNarratorNode*)&n,curr_id);
-				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
-			#ifdef SHOW_RANKS
-				d_out<<n.getRanks();
-			#endif
-				d_out<<"\", shape=box];\n";
-				setGraphRank(n.getGraphRank(),QString("g%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
-			return QString("g%1").arg(curr_id);
 		}
 		else
 		{
@@ -511,29 +577,33 @@ protected:
 			{
 				curr_id=++last_id;
 				ChainNodesID.insert(&*(ChainNarratorNodeIterator&)n,curr_id);
-				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
-			#ifdef SHOW_RANKS
-				d_out<<n.getRanks();
-			#endif
-				d_out<<"\"]"<<";\n";
-				setGraphRank(n.getGraphRank(),QString("c%1").arg(curr_id));
 			}
 			else
 				curr_id=it.value();
-			return QString("c%1").arg(curr_id);
 		}
-
+		return curr_id;
 	}
-public:
-	virtual bool previouslyVisited( NarratorNodeIfc * g_node)//only for graph nodes
+	bool isPreviouslyVisited( NarratorNodeIfc * node)//only for graph nodes
 	{
-		if (!g_node->isGraphNode())
-			return false; //No info
-		G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)g_node);
-		return !(it==GraphNodesID.end());
+		if (!keep_track_of_nodes)
+			return false;
+		if (!node->isGraphNode())
+		{
+			C_IDMap::iterator it=ChainNodesID.find(&**(ChainNarratorNodeIterator*)node);
+			return !(it==ChainNodesID.end());
+		}
+		else
+		{
+			G_IDMap::iterator it=GraphNodesID.find((GraphNarratorNode*)node);
+			return !(it==GraphNodesID.end());
+		}
 	}
-	virtual bool previouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2,int child_num)
+	bool isPreviouslyVisited( NarratorNodeIfc * n1, NarratorNodeIfc * n2,int child_num)
 	{
+		if (!keep_track_of_edges)
+			return false;
+		if (merged_edges_as_one)
+			child_num=1; //so that they will all be treated equally
 		if (!n1->isGraphNode() && !n2->isGraphNode())
 		{
 			CCEdgeMap::iterator it=ccEdgeMap.find(CCEdge(&**((ChainNarratorNodeIterator*)n1),&**((ChainNarratorNodeIterator*)n2),child_num));
@@ -558,13 +628,107 @@ public:
 			return !(it==ggEdgeMap.end());
 		}
 	}
+	void initialize()
+	{
+		init();
+		visitor->initialize();
+	}
+	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)
+	{
+		if (merged_edges_as_one)
+			child_num=1; //so that they will all be treated equally
+		if (!isPreviouslyVisited(&n1,&n2,child_num))
+			visitor->visit(n1,n2,child_num);
+
+		if (!keep_track_of_edges)
+			return;
+		if (n1.isGraphNode())
+		{
+			if (!n2.isGraphNode())
+				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1,child_num),true);
+			else
+				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2,child_num),true);
+		}
+		else
+		{
+			if (n2.isGraphNode())
+				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2,child_num),true);
+			else
+				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2),child_num),true);
+		}
+	}
+	void visit(NarratorNodeIfc & n)
+	{
+		if (!isPreviouslyVisited(&n))
+			visitor->visit(n);
+
+		if (!keep_track_of_nodes)
+			return ;
+		generateUniqueNodeID(n);
+	}
+	void finish()
+	{
+		visitor->finish();
+	}
+};
+
+class NarratorNodeVisitor: public NodeVisitor
+{
+protected:
+	QFile * file;
+	QTextStream * dot_out;
+	#define d_out (*dot_out)
+	QList<QStringList> RanksList;
+	int highest_rank;
+
+	void setGraphRank(int rank, QString s)
+	{
+		while(rank>=RanksList.size())
+			RanksList.append(QStringList());
+		RanksList[rank].append(s);
+	}
+	QString getID(NarratorNodeIfc & n)
+	{
+		int curr_id=controller->getUniqueNodeID(n);
+		QString name;
+		if (curr_id==-1)
+		{
+			curr_id=controller->generateUniqueNodeID(n);
+			if (n.isGraphNode())
+			{
+				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
+			#ifdef SHOW_RANKS
+				d_out<<n.getRanks();
+			#endif
+				d_out<<"\", shape=box];\n";
+				name=QString("g%1").arg(curr_id);
+			}
+			else
+			{
+				d_out<<QString("c")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
+			#ifdef SHOW_RANKS
+				d_out<<n.getRanks();
+			#endif
+				d_out<<"\"]"<<";\n";
+				name=QString("c%1").arg(curr_id);
+			}
+			if (n.getNumChildren()==0)
+				setGraphRank(highest_rank,name);
+			else
+				setGraphRank(n.getGraphRank(),name);
+			return name;
+		}
+		else
+			return QString("%1%2").arg((n.isGraphNode()?"g":"c")).arg(curr_id);
+	}
+public:
+	NarratorNodeVisitor(int deapest_rank)
+	{
+		this->highest_rank=deapest_rank;
+	}
 	virtual void initialize()
 	{
 		RanksList.clear();
-		cgEdgeMap.clear();
-		gcEdgeMap.clear();
-		ggEdgeMap.clear();
-		ccEdgeMap.clear();
 		file=new QFile("graph.dot");
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite))
@@ -575,58 +739,54 @@ public:
 
 		dot_out=new QTextStream(file);
 		d_out.setCodec("utf-8");
-		last_id=0;
 		d_out<<"digraph hadith_graph {\n";
 	}
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int /*child_num*/)
 	{
 		QString s1=getID(n1), s2=getID(n2);
-		//qDebug()<<n1.CanonicalName()<<"-->"<<n2.CanonicalName();
+		//qDebug()<<n1.CanonicalName()<<"->"<<n2.CanonicalName();
 		d_out<<s2<<"->"<<s1<<";\n";
-		if (n1.isGraphNode())
-		{
-			if (!n2.isGraphNode())
-				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1,chain_num),true);
-			else
-				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2,chain_num),true);
-		}
-		else
-		{
-			if (n2.isGraphNode())
-				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2,chain_num),true);
-			else
-				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2),chain_num),true);
-		}
+	}
+	virtual void visit(NarratorNodeIfc & n) //this is enough
+	{
+		getID(n);
 	}
 	virtual void finish()
 	{
 	#ifdef FORCE_RANKS
 		QString s;
-		d_out<<"{ rank = sink;";
 		if (RanksList.size()>0)
 		{
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(0);
+			d_out<<"{ rank = sink;";
 			foreach(s,RanksList[0])
 				d_out<<s<<";";
+			d_out<<QString("r%1;").arg(0);
+			d_out<<"}\n";
 		}
-		d_out<<"}\n";
 
 		for (int rank=1;rank<RanksList.size()-1;rank++)
 		{
-			if (RanksList[rank].size()>1)
+			if (RanksList[rank].size()>0)
 			{
+				d_out<<QString("r%1 [label=\"%1\"];\n").arg(rank);
+				d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(rank).arg(rank-1);
 				d_out<<"{ rank = same;";
 				foreach(s,RanksList[rank])
 					d_out<<s<<";";
+				d_out<<QString("r%1;").arg(rank);
 				d_out<<"}\n";
 			}
 		}
 		if (RanksList.size()>2)
 		{
+			int rank=RanksList.size()-1;
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(rank);
+			d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(rank).arg(rank-1);
 			d_out<<"{ rank = source;";
-			foreach(s,RanksList[RanksList.size()-1])
-			{
+			foreach(s,RanksList[rank])
 				d_out<<s<<";";
-			}
+			d_out<<QString("r%1;").arg(rank);
 			d_out<<"}\n";
 		}
 	#endif
@@ -637,73 +797,157 @@ public:
 	}
 };
 
-#define SKIPNODES
 
-class RankCorrectorNodeVisitor:
-#ifdef SKIPNODES
-		public NarratorNodeVisitor
-#else
-		public NodeVisitor
-#endif
+class RankCorrectorNodeVisitor:	public NodeVisitor
 {
+private:
+	int highest_rank;
 public:
-
-	virtual bool previouslyVisited( NarratorNodeIfc *)//get thru all path even if visited from another path
+	void initialize()
 	{
-		return false;
+		highest_rank=0;
 	}
-#ifndef SKIPNODES
-	virtual bool previouslyVisited( NarratorNodeIfc * , NarratorNodeIfc * ,int)//get thru all path even if visited from another path
+	int getHighestRank()
 	{
-		return false;
+		return highest_rank;
 	}
-	virtual void initialize(){	}
-#endif
-	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int chain_num)
+	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int /*child_num*/)
 	{
 		int rank1=n1.getGraphRank(), rank2=n2.getGraphRank();
 		if (rank1>=rank2)
-			n2.setSavedRank(rank1+1);
-		else
-			n2.setSavedRank(rank2);
+			rank2=rank1+1;
+		n2.setSavedRank(rank2);
 		n1.setSavedRank(rank1);
-	#ifdef SKIPNODES
-		if (n1.isGraphNode())
-		{
-			if (!n2.isGraphNode())
-				gcEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n2),&(GraphNarratorNode &)n1,chain_num),true);
-			else
-				ggEdgeMap.insert(GGEdge(&(GraphNarratorNode &)n1,&(GraphNarratorNode &)n2,chain_num),true);
-		}
-		else
-		{
-			if (n2.isGraphNode())
-				cgEdgeMap.insert(CGEdge(&*((ChainNarratorNodeIterator &)n1),&(GraphNarratorNode &)n2,chain_num),true);
-			else
-				ccEdgeMap.insert(CCEdge(&*((ChainNarratorNodeIterator &)n1),&*((ChainNarratorNodeIterator &)n2),chain_num),true);
-		}
-	#endif
+		if (rank2>highest_rank)
+			highest_rank=rank2;
+
 	}
-#ifndef SKIPNODES
+	virtual void visit(NarratorNodeIfc &) {	}
 	virtual void finish(){	}
-#endif
 };
 
+
+class LoopBreakingVisitor: public NodeVisitor
+{
+private:
+	bool cycle_fixed;
+	bool detected_cycle;
+	NarratorGraph * graph;
+	bool has_self_cycle(NarratorNodeIfc &  n)
+	{
+		int num=n.getNumChildren();
+		for (int i=0;i<num;i++)
+		{
+			NarratorNodeIfcRfc r=n.getChild(i);
+			NarratorNodeIfc & c=r.Rfc();
+			if (&c==&n)
+				return true;
+		}
+		return false;
+	}
+	bool has_dual_cycle(NarratorNodeIfc &  n1,NarratorNodeIfc &  n2) //assuming when this is called n1 is parent of n2
+	{
+		int num=n2.getNumChildren();
+		for (int i=0;i<num;i++)
+		{
+			NarratorNodeIfcRfc r=n2.getChild(i);
+			NarratorNodeIfc & c=r.Rfc();
+			if (&c==&n1)
+				return true;
+		}
+		return false;
+	}
+public:
+	LoopBreakingVisitor(NarratorGraph * graph)
+	{
+		cycle_fixed=false;
+		detected_cycle=false;
+		this->graph=graph;
+	}
+	void initialize()	{	}
+	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ) { 	}
+	virtual void visit(NarratorNodeIfc &) {	}
+	virtual void finish();
+	virtual void cycle_detected()//any cycle of length larger than 2 detected
+	{
+		detected_cycle=true;
+		controller->stop_searching_for_cycles=false;
+	}
+	virtual void cycle_detected(NarratorNodeIfc & n)//any cycle of length larger than 1 or 2 detected
+	{
+		static const double step=parameters.equality_delta/2;
+		static const int num_steps=4;
+		detected_cycle=true;
+		controller->stop_searching_for_cycles=true;
+		out<< "Error: Self cycle detected at node"<<n.CanonicalName()<<"!\n";
+		if (!n.isGraphNode())
+			return; //unable to resolve
+		GraphNarratorNode * g=(GraphNarratorNode *)&n;
+		QList<ChainNarratorNodeIterator *> narrators;
+		for (int i=0;i<g->equalnarrators.size();i++)
+		{
+			narrators.append(&(g->equalnarrators[i]));
+			(g->equalnarrators[i])->setCorrespondingNarratorNode(NULL);
+		}
+
+		double original_threshold=parameters.equality_threshold;
+		for (int i=0;i<num_steps;i++)
+		{
+			parameters.equality_threshold-=step;
+			for (int j=1;j<narrators.size();j++)
+				if (equal(narrators[j-1]->getNarrator(),narrators[j]->getNarrator()))
+					mergeNodes(*narrators[j-1],*narrators[j]);
+			bool all_fixed=true;
+			for (int j=0;j<narrators.size();j++)
+			{
+				NarratorNodeIfc & node=narrators[j]->getCorrespondingNarratorNode();
+				if (node.isGraphNode() && has_self_cycle(n))
+				{
+					all_fixed=false;
+					break;
+				}
+			}
+			cycle_fixed=all_fixed;
+		}
+		//check how to free memory correctly
+		//g->equalnarrators.clear();
+		delete g;
+		parameters.equality_threshold=original_threshold;
+	}
+	virtual void cycle_detected(NarratorNodeIfc & n1,NarratorNodeIfc & n2)//any cycle of length larger than 1 or 2 detected
+	{
+		detected_cycle=true;
+		controller->stop_searching_for_cycles=true;
+		out<< "Error: Cycle detected between nodes:"<<n1.CanonicalName()<<" and "<<n2.CanonicalName()<<"!\n";
+	}
+};
 
 class NarratorGraph
 {
 private:
 	NarratorNodesList top_g_nodes;
 	QList<int> top_c_indices;
+	int deapest_rank;//rank of the deapmost node;
 
 	void computeRanks()
 	{
-		RankCorrectorNodeVisitor r;
-		traverse(r);
+		RankCorrectorNodeVisitor *r=new RankCorrectorNodeVisitor;
+		GraphVisitorController c(r,true,false);
+		BFS_traverse(c);
+		deapest_rank=r->getHighestRank();
+		delete r;
+	}
+	void breakManageableCycles()
+	{
+		LoopBreakingVisitor *l=new LoopBreakingVisitor(this);
+		GraphVisitorController c(l,true,true);
+		DFS_traverse(c,true);
+		delete l;
 	}
 	void deduceTopNodes(ChainsContainer & chains);
-	void traverse(NarratorNodeIfc & n,NodeVisitor & visitor)
+	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
+		visitor.visit(n);
 		int size=n.getNumChildren();
 		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
 		for (int i=0;i<size;i++)
@@ -711,12 +955,41 @@ private:
 			NarratorNodeIfcRfc r=n.getChild(i);
 			NarratorNodeIfc & c=r.Rfc();
 			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
-			if (!c.isNull() && !visitor.previouslyVisited(&n, &c,1))//i
+			if (!c.isNull() && !visitor.isPreviouslyVisited(&n, &c,i))
 			{
-				bool prev_visited=visitor.previouslyVisited( &c);
-				visitor.visit(n,c,1);//i
+				if (visitor.detect_cycles && visitor.stop_searching_for_cycles )
+					return;
+				bool prev_visited=visitor.isPreviouslyVisited( &c);
+				visitor.visit(n,c,i);
 				if (!prev_visited)
-					traverse(c,visitor);
+					DFS_traverse(c,visitor);
+				else
+				{
+					//visitor.stop_searching_for_cycles=true;//stops the traversal whenever a cycle is detected
+					//detect cycles types
+					int start=(visitor.merged_edges_as_one?1:0);
+					int max=(visitor.merged_edges_as_one?2:n.getNumChildren());
+					bool found_small_cycle=false;
+					for (int j=start;j<max;j++)
+					{
+						if (visitor.isPreviouslyVisited(&c, &c,j))
+						{
+							visitor.visitor->cycle_detected(c);
+							found_small_cycle=true;
+							break;
+						}
+						if (visitor.isPreviouslyVisited(&c, &n,j))
+						{
+							visitor.visitor->cycle_detected(c,n);
+							found_small_cycle=true;
+							break;
+						}
+					}
+					if (!found_small_cycle)
+						visitor.visitor->cycle_detected();
+					return;
+
+				}
 			}
 		}
 	}
@@ -724,9 +997,16 @@ public:
 	NarratorGraph(ChainsContainer & chains)
 	{
 		deduceTopNodes(chains);
+		//breakManageableCycles();
 		computeRanks();
 	}
-	void traverse(NodeVisitor & visitor);
+	int getDeapestRank()
+	{
+		return deapest_rank;
+	}
+
+	void DFS_traverse(GraphVisitorController & visitor,bool detect_cycles=false);
+	void BFS_traverse(GraphVisitorController & visitor);
 };
 
 void buildGraph(ChainsContainer &chs);

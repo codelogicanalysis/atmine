@@ -5,11 +5,15 @@ done --every accept state should be reported once and user can query for all fea
 done --one-hot encoding
 done --smart node {node*, pos, index}
 done---find equality between chains of narrators and start building graph
+done-ranking using BFS
 
--ranking using BFS
+-recheck the meaning of needle and offset and u in commented out optimized part of narrator merging function
+-change the code to instantiate the stemmer(prefixMachine,StemMachine,...) only once in hadith case-study (i.e. change the testcase to make the one stemmer with a clear() function)
 -break cycles (save the equality vector)
 -allow for greater values than 1 if they exist (don't chop)
-
--change the testcase to make the one stemmer with a clear() function
 -make SARF database-independent
--change the code to instantiate the stemmer(prefixMachine,StemMachine,...) only once in hadith case-study
+
+-To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)
+-give more weight to order inforced by ibn
+-re-write the graph without iterators but with our version of list
+-correct graph builder to keep track of needle or u per chain
