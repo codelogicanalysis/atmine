@@ -46,7 +46,7 @@ public:
 		_d=new _data(&object,destroy,1,this);
 		next=NULL;
 	}
-	Reference<T> & operator=(Reference<T> & c)
+	Reference<T> & operator=(const Reference<T> & c)
 	{
 		_d=c._d;
 		next=_d->head;
