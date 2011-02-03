@@ -17,7 +17,7 @@
 #include "sql_queries.h"
 #include "Retrieve_Template.h"
 #include "Search_by_item_locally.h"
-#include "chain_graph.h"
+#include "graph.h"
 #include <assert.h>
 
 HadithParameters parameters;
@@ -1617,7 +1617,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 			break;
 #endif
 	}
-#if  !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
+#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
 	if (newHadithStart<0)
 	{
 		out<<"no hadith found\n";
@@ -1637,72 +1637,26 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		return 1;
 	QDataStream tester(&chainOutput);
 	int tester_Counter=1;
-#ifdef TEST_EQUAL_NARRATORS
-#if 0
-	QList<QList<Narrator *> > all_narrators;
-#endif
+#ifdef TEST_NARRATOR_GRAPH
+	ChainsContainer chains;
 #endif
 	chains.clear();
 	while (!tester.atEnd())
 	{
 		Chain * s=new Chain(text);
 		s->deserialize(tester);
-	#ifdef TEST_EQUAL_NARRATORS
-	#if 0
-		QList<Narrator*> chain_narrators;
-		for (int i=0;i<s->m_chain.count();i++)
-			if (s->m_chain[i]->isNarrator())
-				chain_narrators.append((Narrator*)s->m_chain[i]);
-		all_narrators.append(chain_narrators);
-	#endif
+	#ifdef TEST_NARRATOR_GRAPH
 		chains.append(s);
 	#endif
 		hadith_out<<tester_Counter<<" ";
 		s->serialize(hadith_out);
 		tester_Counter++;
 		s->serialize(file_hadith);
-	#ifndef TEST_EQUAL_NARRATORS
-		delete s;
-	#endif
 	}
 	chainOutput.close();
 	f.close();
-#ifdef TEST_EQUAL_NARRATORS
-#if 0
-	QList <QList< QList< QList<double> > > > equality_value;
-	for (int c1=0;c1<all_narrators.count();c1++)
-	{
-		QList< QList< QList<double> > > e1;
-		for (int c2=0;c2<all_narrators.count();c2++)
-		{
-			QList< QList<double> > e2;
-			for(int n1=0;n1<all_narrators[c1].count();n1++)
-			{
-				QList<double> e3;
-				for(int n2=0;n2<all_narrators[c2].count();n2++)
-				{
-					e3.push_back(0);
-				}
-				e2.push_back(e3);
-			}
-			e1.push_back(e2);
-		}
-		equality_value.push_back(e1);
-	}
-	for (int c1=0;c1<all_narrators.count();c1++)
-		for (int c2=0;c2<all_narrators.count();c2++)
-			for(int n1=0;n1<all_narrators[c1].count();n1++)
-				for(int n2=0;n2<all_narrators[c2].count();n2++)
-					equality_value[c1][c2][n1][n2]=equal(*all_narrators[c1][n1],*all_narrators[c2][n2]);
-	//just dis[lay values for first 2 chains
-	for(int n1=0;n1<all_narrators[0].count();n1++)
-	{
-		for(int n2=0;n2<all_narrators[1].count();n2++)
-			out <<equality_value[0][1][n1][n2]<<" ";
-		out<<"\n";
-	}
-#else
-	test_NarratorEquality("");
+#ifdef TEST_NARRATOR_GRAPH
+	test_GraphFunctionalities(chains);
 #endif
 #endif
 
@@ -1755,4 +1709,3 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	return 0;
 }
 
-#endif

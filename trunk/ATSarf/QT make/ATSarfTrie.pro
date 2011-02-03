@@ -49,8 +49,9 @@ HEADERS += util/text_handling.h \
     ../src/util/Ptr.h \
     ../src/common/node_info.h \
     ../src/common/solution_position.h \
-    ../src/case/chain_graph.h \
-    ../src/util/reference.h
+    ../src/util/reference.h \
+    ../src/case/graph_nodes.h \
+    ../src/case/graph.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -85,7 +86,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/cache/Search_by_item_locally.cpp \
     ../src/common/common.cpp \
     ../src/common/solution_position.cpp \
-    ../src/case/chain_graph.cpp
+    ../src/case/graph_nodes.cpp \
+    ../src/case/graph.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/libdatrie-0.2.4/datrie/.libs/ \

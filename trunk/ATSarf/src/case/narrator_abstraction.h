@@ -6,7 +6,6 @@
 #include <QFile>
 #include <QDebug>
 #include "logger.h"
-#include "chain_graph.h"
 
 #define SHOW_AS_TEXT
 
@@ -139,30 +138,10 @@ public:
         return m_end;}
 };
 
-typedef struct Rank_
-{
-	bool first:1;
-	bool last:1;
-	int index:8;
-	int chain_num:22; //maybe use for chain number
 
-	void printRank()
-	{
-		out<<first<<"-"<<index<<"-"<<last<<"-"<<chain_num<<"\n";
-		//qDebug()<<first<<"-"<<index<<"-"<<last<<"\n";
-	}
-} Rank;
 
-class Narrator : public ChainPrim, public ChainNarratorNode {
-private:
-	Rank rank; //to be used in ChainNarratorNodePtr
-	friend void fillRank(Narrator & n, int index, bool last, int chain_num);
-
+class Narrator : public ChainPrim{
 public:
-	Rank getRank()
-	{
-		return rank;
-	}
 	Narrator(QString * hadith_text);
  //   QList <ChainNarratorPrim *> m_narrator; //modify back to here
    QList <NarratorPrim *> m_narrator;

@@ -65,7 +65,7 @@ void MainWindow::on_pushButton_clicked()
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
-#ifdef TEST_EQUAL_NARRATORS
+#ifdef TEST_NARRATOR_GRAPH
 	if (m_ui->checkBox->isChecked())
 	{
 		if (rc==0)
