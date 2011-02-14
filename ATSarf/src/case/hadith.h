@@ -6,9 +6,11 @@
 #include <QHash>
 #include "common.h"
 #include "ATMProgressIFC.h"
+//#define DEBUG_BFS_TRAVERSAL
+//#define DEBUG_DFS_TRAVERSAL
 #define GENERAL_HADITH
 #define FORCE_RANKS
-#define SHOW_RANKS
+//#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
@@ -53,7 +55,8 @@ public:
 	unsigned int nrc_max:5;
 	unsigned int narr_min:5;
 	unsigned int equality_radius:5;
-	unsigned int unused_int:12;
+	bool display_chain_num:1;
+	unsigned int unused_int:11;
 	double equality_delta;
 	double equality_threshold;
 	HadithParameters()
@@ -64,6 +67,7 @@ public:
 		equality_radius=3;
 		equality_delta=0.4;
 		equality_threshold=1;
+		display_chain_num=true;
 	}
 };
 

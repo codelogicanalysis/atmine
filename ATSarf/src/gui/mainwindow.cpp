@@ -13,9 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow)
 {
 	m_ui->setupUi(this);
-	//m_ui->hadith_chain->setPixmap(QPixmap("./sarf33.bmp"));
-	//m_ui->pushButton->setAutoDefault(false);
-	//connect((QObject*)m_ui->MainWindow,SIGNAL(destroyed())),(QObject*)m_ui,SLOT(do_it()));
+	m_ui->pushButton->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -52,21 +50,22 @@ void MainWindow::on_pushButton_clicked()
 	parameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
 	parameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	parameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
-	if (m_ui->checkBox->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
+	parameters.display_chain_num=m_ui->chk_chainNum->isChecked();
+	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
 	{
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
 	int rc;
 	if (!m_ui->chk_testing->isChecked())
-		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
+		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
 	else
-		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->checkBox->isChecked(),this);
+		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
 	m_ui->hadith_display->setText(hadith_str);
 #ifdef TEST_NARRATOR_GRAPH
-	if (m_ui->checkBox->isChecked())
+	if (m_ui->chk_hadith->isChecked())
 	{
 		if (rc==0)
 		{
@@ -91,6 +90,8 @@ void MainWindow::on_fill_clicked()
 	initialize_variables();
 	database_info.fill(this);
 	hadith_initialize();
+	m_ui->pushButton->setVisible(true);
+	m_ui->fill->setVisible(false);
 }
 
 void MainWindow::on_cmd_browse_clicked()
