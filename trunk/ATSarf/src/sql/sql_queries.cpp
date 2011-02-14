@@ -62,7 +62,7 @@ QString interpret_type(item_types t) //TODO: switch into table
 }
 QString interpret_type(rules r)
 {
-	static char * typeNameTable[RULES_LAST_ONE]={"AA","AB","AC","BC","CC"};
+	static QString typeNameTable[RULES_LAST_ONE]={"AA","AB","AC","BC","CC"};
 #if 0
 	if (r<0 || r>=RULES_LAST_ONE)
 	{

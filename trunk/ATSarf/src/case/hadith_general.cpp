@@ -1453,7 +1453,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 #endif
 	QFile input(input_str.split("\n")[0]);
-	if (!input.open(QIODevice::ReadWrite))
+	if (!input.open(QIODevice::ReadOnly))
 	{
 		out << "File not found\n";
 		return 1;

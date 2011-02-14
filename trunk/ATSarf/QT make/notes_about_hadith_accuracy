@@ -11,5 +11,4 @@ ignored---reduce words that mean "قال"
 -make use of suffixes, so if a name has complex suffixes, dont assume it is a name (like علينا)
 -when in an NRC state and the number of words till NAME is reached is exceded maybe, we should backtrack and start from the next NRC on the way, or no need for backtracking, since we should have saved them as individual NRC's in the structure so we can count if the ones that follow are within threshold
 -words such as stop words or phrases should be parsed for prefix in some way (eg: check if the stem of a word matches the first word an if so check if the rest match from the starting position of the stem). 
--after merge, traverse the graph and re-check for equality the children of same node but with lesser threshold and in these cases make use of the order set by "ibn"
--check how does dot result in ranks with an order (i.e. not just set which are in this rank and which in another only but also that this rank must come first and this after
+

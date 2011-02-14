@@ -26,6 +26,7 @@ public:
 class NarratorGraph;
 class LoopBreakingVisitor;
 
+//make it linear using color
 class GraphVisitorController
 {
 protected:
@@ -47,13 +48,11 @@ protected:
 		nodeMap.clear();
 		last_id=0;
 	}
-	//friend NarratorGraph::DFS_traverse(GraphVisitorController &visitor, bool detect_cycles);
-	//friend NarratorGraph::DFS_traverse(NarratorNodeIfc &n, GraphVisitorController &visitor);
 	friend class NarratorGraph;
 	friend class LoopBreakingVisitor;
 
 public:
-	GraphVisitorController(NodeVisitor * visitor,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true/*, bool detect_cycles=false*/) //removed bc cotrol will be in the DFS algorithm code
+	GraphVisitorController(NodeVisitor * visitor,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true)
 	{
 		this->visitor=visitor;
 		assert(visitor!=NULL);
@@ -64,7 +63,6 @@ public:
 
 		this->detect_cycles=false;
 		stop_searching_for_cycles=false;
-		//this->detect_cycles=detect_cycles;
 		init();
 	}
 	int getUniqueNodeID(NarratorNodeIfc & n)//if not there returns -1
@@ -142,7 +140,6 @@ protected:
 	QTextStream * dot_out;
 	#define d_out (*dot_out)
 	QList<QStringList> RanksList;
-	int highest_rank;
 
 	void setGraphRank(int rank, QString s)
 	{
@@ -150,7 +147,25 @@ protected:
 			RanksList.append(QStringList());
 		RanksList[rank].append(s);
 	}
-	QString getID(NarratorNodeIfc & n)
+	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
+	{
+		if (parameters.display_chain_num)
+		{
+			for (int i=0;i<n.size();i++)
+			{
+				ChainNarratorNode & c=n[i];
+				if (c.isFirst())//bc order drawn is just inverse of what is in chains
+				{
+					int num=c.getChainNum();
+					QString ch_node=QString("ch%1").arg(num+1);
+					d_out<<ch_node<<" [label=\""<<num<<"\", shape=triangle];\n";
+					d_out<<name<<"->"<<ch_node<<";\n";
+					setGraphRank(n.getRank(),ch_node);
+				}
+			}
+		}
+	}
+	QString getAndInitializeDotNode(NarratorNodeIfc & n)
 	{
 		int curr_id=controller->getUniqueNodeID(n);
 		QString name;
@@ -175,20 +190,14 @@ protected:
 				d_out<<"\"]"<<";\n";
 				name=QString("c%1").arg(curr_id);
 			}
-			if (n.size()==0)
-				setGraphRank(highest_rank,name);
-			else
-				setGraphRank(n.getRank(),name);
+			setGraphRank(n.getRank()+1,name);
 			return name;
 		}
 		else
 			return QString("%1%2").arg((n.isGraphNode()?"g":"c")).arg(curr_id);
 	}
 public:
-	DisplayNodeVisitor(int deapest_rank)
-	{
-		this->highest_rank=deapest_rank;
-	}
+	DisplayNodeVisitor(){	}
 	virtual void initialize()
 	{
 		RanksList.clear();
@@ -206,50 +215,57 @@ public:
 	}
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int /*child_num*/)
 	{
-		QString s1=getID(n1), s2=getID(n2);
-		//qDebug()<<n1.CanonicalName()<<"->"<<n2.CanonicalName();
+		QString s1=getAndInitializeDotNode(n1), s2=getAndInitializeDotNode(n2);
 		d_out<<s2<<"->"<<s1<<";\n";
 	}
 	virtual void visit(NarratorNodeIfc & n) //this is enough
 	{
-		getID(n);
+		QString s=getAndInitializeDotNode(n);
+		displayChainNumsEndingJustAfter(n,s);
 	}
 	virtual void finish()
 	{
 	#ifdef FORCE_RANKS
 		QString s;
+		int startingRank=(parameters.display_chain_num?0:1);
+		int currRank=startingRank,lastRank=startingRank;
 		if (RanksList.size()>0)
 		{
-			d_out<<QString("r%1 [label=\"%1\"];\n").arg(0);
+			while (RanksList[currRank].size()==0)
+				currRank++;
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
 			d_out<<"{ rank = sink;";
-			foreach(s,RanksList[0])
+			foreach(s,RanksList[currRank])
 				d_out<<s<<";";
-			d_out<<QString("r%1;").arg(0);
+			d_out<<QString("r%1;").arg(lastRank);
 			d_out<<"}\n";
+			lastRank++;
 		}
 
-		for (int rank=1;rank<RanksList.size()-1;rank++)
+		for (int rank=currRank+1;rank<RanksList.size()-1;rank++)
 		{
 			if (RanksList[rank].size()>0)
 			{
-				d_out<<QString("r%1 [label=\"%1\"];\n").arg(rank);
-				d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(rank).arg(rank-1);
+				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+				d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(lastRank).arg(lastRank-1);
 				d_out<<"{ rank = same;";
 				foreach(s,RanksList[rank])
 					d_out<<s<<";";
-				d_out<<QString("r%1;").arg(rank);
+				d_out<<QString("r%1;").arg(lastRank);
 				d_out<<"}\n";
+				lastRank++;
 			}
 		}
-		if (RanksList.size()>2)
+
+		int rank=RanksList.size()-1;
+		if (rank!=startingRank)
 		{
-			int rank=RanksList.size()-1;
-			d_out<<QString("r%1 [label=\"%1\"];\n").arg(rank);
-			d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(rank).arg(rank-1);
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+			d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(lastRank).arg(lastRank-1);
 			d_out<<"{ rank = source;";
 			foreach(s,RanksList[rank])
 				d_out<<s<<";";
-			d_out<<QString("r%1;").arg(rank);
+			d_out<<QString("r%1;").arg(lastRank);
 			d_out<<"}\n";
 		}
 	#endif
@@ -259,7 +275,6 @@ public:
 		delete file;
 	}
 };
-
 
 class RankCorrectorNodeVisitor:	public NodeVisitor
 {
@@ -288,7 +303,6 @@ public:
 	virtual void visit(NarratorNodeIfc &) {	}
 	virtual void finish(){	}
 };
-
 
 class LoopBreakingVisitor: public NodeVisitor
 {
@@ -343,12 +357,13 @@ public:
 	}
 };
 
-class NarratorGraph
+class NarratorGraph //fill the lists
 {
 private:
 	NarratorNodesList	top_nodes,
 						bottom_nodes, all_nodes; //not used yet, TODO: a seperate function to fill them
 	int deapest_rank;//rank of the deapmost node;
+	int getDeapestRank(){return deapest_rank;}
 
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2)
 	{
@@ -418,8 +433,8 @@ private:
 				}
 			}
 		}
-		//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
-		//				 chains and top_nodes stores the link to the first node of each chain
+	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
+	//				 chains and top_nodes stores the link to the first node of each chain
 	}
 	void buildGraph()
 	{ //note: compares chain by chain then moves to another
@@ -474,33 +489,56 @@ private:
 	}
 	void computeRanks()
 	{
-		//TODO: if cycles exist find all strongly connected components and treat them as 1 node
-		//		and that results in an acyclic graph then use it when visiting nodes
-		//  OR  create a visitor that notices cycles and acts accordingly not to get into an infinite loop
-		//		but still a correct ranking scheme.
-		RankCorrectorNodeVisitor *r=new RankCorrectorNodeVisitor;
-		GraphVisitorController c(r,true,false);
+		RankCorrectorNodeVisitor r;
+		GraphVisitorController c(&r);
 		BFS_traverse(c);
-		deapest_rank=r->getHighestRank();
-		delete r;
+		BFS_traverse(c);
+		deapest_rank=r.getHighestRank();
 	}
 	void breakManageableCycles() //not re-looked at
 	{
-		LoopBreakingVisitor *l=new LoopBreakingVisitor(this);
-		GraphVisitorController c(l,true,true);
+		LoopBreakingVisitor l(this);
+		GraphVisitorController c(&l,true,true);
 		DFS_traverse(c,true);
-		delete l;
 	}
-	void correctTopNodesList();
+	void correctTopNodesList()
+	{
+		NarratorNodesList & new_top_list=*(new NarratorNodesList);
+		for (int i=0;i<top_nodes.size();i++)
+		{
+			ChainNarratorNode & c=(ChainNarratorNode &)*top_nodes[i];
+			NarratorNodeIfc * g=&c.getCorrespondingNarratorNode();
+			assert(!g->isNull());//it can only be null if c was not a ChainNarratorNode, anyways, does not hurt to check
+			if (g->isGraphNode())
+			{
+				if (!new_top_list.contains(g)) //might have been already added
+					new_top_list.append(g);
+			}
+			else
+				new_top_list.append(g);
+		}
+		top_nodes=new_top_list; //TODO: try reduce copy cost
+		/*&delete &top_nodes; //we do this to reduce a copy operation
+		NarratorNodesList *& temp=&top_nodes;
+		temp=&new_top_list;*/
+	}
+	void fillNodesLists()
+	{
+
+	}
 	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
 		visitor.visit(n);
 		int size=n.size();
-		//qDebug()<<"parent:"<<n.CanonicalName()<<" "<<size;
+	#ifdef DEBUG_DFS_TRAVERSAL
+		out<<"parent:"<<n.toString()<<" "<<size<<"\n";
+	#endif
 		for (int i=0;i<size;i++)
 		{
 			NarratorNodeIfc & c=n.getChild(i);
-			//qDebug()<<"child:"<<(!c.isNull()?c.CanonicalName():"null");
+		#ifdef DEBUG_DFS_TRAVERSAL
+			out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+		#endif
 			if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i))
 			{
 				if (visitor.detect_cycles && visitor.stop_searching_for_cycles )
@@ -509,7 +547,7 @@ private:
 				visitor.visit(n,c,i);
 				if (!prev_visited)
 					DFS_traverse(c,visitor);
-				else
+				else if (visitor.detect_cycles)
 				{
 					//visitor.stop_searching_for_cycles=true;//stops the traversal whenever a cycle is detected
 					//detect cycles types
@@ -545,18 +583,76 @@ public:
 		transform2ChainNodes(chains);
 		buildGraph();
 		correctTopNodesList();
+		fillNodesLists();
 		//breakManageableCycles();
 		computeRanks();
 	}
-	int getDeapestRank()
+	void DFS_traverse(GraphVisitorController & visitor,bool detect_cycles=false)
 	{
-		return deapest_rank;
+		visitor.initialize();
+		if (detect_cycles)
+		{
+			visitor.detect_cycles=true;//forces VisitorController to detect cycles
+			visitor.keep_track_of_nodes=true;
+		}
+		int size=top_nodes.size();
+		for (int i=0; i<size;i++)
+		{
+			NarratorNodeIfc * node=top_nodes[i];
+			if (!(detect_cycles && visitor.stop_searching_for_cycles ))
+			{
+				DFS_traverse(*node,visitor);
+				if (detect_cycles)
+					visitor.initialize();
+			}
+		}
+		visitor.finish();
 	}
-
-	void DFS_traverse(GraphVisitorController & visitor,bool detect_cycles=false);
-	void BFS_traverse(GraphVisitorController & visitor);
+	void BFS_traverse(GraphVisitorController & visitor)
+	{
+		visitor.initialize();
+		QQueue<NarratorNodeIfc *> queue;
+		int size=top_nodes.size();
+		for (int i=0; i<size;i++)
+		{
+			NarratorNodeIfc * node=top_nodes[i];
+			queue.enqueue(node);
+		}
+		while (!queue.isEmpty())
+		{
+			NarratorNodeIfc & n=*(queue.dequeue());
+			visitor.visit(n);
+			int size=n.size();
+		#ifdef DEBUG_BFS_TRAVERSAL
+			out<<"parent:"<<n.toString()<<" "<<size<<"\n";
+		#endif
+			for (int i=0;i<size;i++)
+			{
+				NarratorNodeIfc & c=n.getChild(i);
+			#ifdef DEBUG_BFS_TRAVERSAL
+				out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+			#endif
+				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i))
+				{
+					bool prev_visited=visitor.isPreviouslyVisited( c);
+					visitor.visit(n,c,i);
+					if (!prev_visited)
+						queue.enqueue(&c);
+				}
+			}
+		}
+		visitor.finish();
+	}
 };
 
-int test_GraphFunctionalities(ChainsContainer &chs);
+inline int test_GraphFunctionalities(ChainsContainer &chains)
+{
+	NarratorGraph graph(chains);
+	DisplayNodeVisitor *visitor=new DisplayNodeVisitor();
+	GraphVisitorController c(visitor);
+	graph.DFS_traverse(c);
+	delete visitor;
+	return 0;
+}
 
 #endif // GRAPH_H

@@ -34,17 +34,27 @@ extern NULLGraphNarratorNode nullGraphNarratorNode;
 extern NULLChainNarratorNode nullChainNarratorNode;
 
 class RankCorrectorNodeVisitor;
-class LoopBreakingVisitor;
-double equal(const Narrator & n1,const Narrator & n2);
+class NarratorGraph;
+class GraphVisitorController;
 
 
 class NarratorNodeIfc //abstract interface
 {
+private:
+	unsigned int color;
 protected:
 	virtual void setRank(int rank)=0;
 	virtual int getSavedRank()=0;
 	virtual int getAutomaticRank()=0;
 	friend class RankCorrectorNodeVisitor;
+
+	virtual void setVisited(unsigned int bit) {	color |= 1 << bit; }
+	virtual void resetVisited(unsigned int bit) {color &= (~(1 << bit)); }
+	virtual bool isVisited(unsigned int bit) {return (color & (1 << bit)) != 0; }
+	virtual void resetColor() {	color = 0; }
+	NarratorNodeIfc(){resetColor();}
+	friend class NarratorGraph;
+	friend class GraphVisitorController;
 public:
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode()=0; //if used on a graphNode returns null
 
@@ -69,6 +79,8 @@ public:
 
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)=0;
 	virtual QString toString() =0;
+
+
 };
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
@@ -97,6 +109,10 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc
 	virtual ChainNarratorNode & getChainNodeInChain(int){throw 1;}
 	virtual bool isGraphNode() {return false;}
 	virtual QString toString()   {return "NULLNarratorNodeIfc";}
+	void setVisited(unsigned int ) { throw 1;}
+	void resetVisited(unsigned int ) { throw 1; }
+	bool isVisited(unsigned int ) { throw 1; }
+	void resetColor() { throw 1; }
 };
 
 class ChainContext
@@ -152,7 +168,14 @@ private:
 protected:
 	ChainNarratorNode() {} //to be used by NULLChainNarratorNode
 	virtual int getSavedRank(){	return savedRank;}
-	virtual int getAutomaticRank(){return getIndex();}
+	virtual int getAutomaticRank()
+	{
+		int r=getIndex();
+		if (savedRank>r)
+			return savedRank;
+		else
+			return r;
+	}
 	virtual void setRank(int rank) {savedRank=rank;}
 	friend class GraphNarratorNode;
 public:
@@ -278,6 +301,10 @@ public:
 	int getChainNum(){throw 1;}
 	ChainNarratorNode & getChainNodeInChain(int ){throw 1;}
 	QString toString(){	return "NULLChainNarratorNodeIterator";}
+	void setVisited(unsigned int ) { throw 1;}
+	void resetVisited(unsigned int ) { throw 1; }
+	bool isVisited(unsigned int ) { throw 1; }
+	void resetColor() { throw 1; }
 };
 
 class GraphNarratorNode: public NarratorNodeIfc
@@ -285,7 +312,11 @@ class GraphNarratorNode: public NarratorNodeIfc
 protected:
 	QList<ChainNarratorNode *>  equalChainNodes;
 	int savedRank;
-	virtual void setRank(int rank){savedRank=rank;}
+	virtual void setRank(int rank){
+		savedRank=rank;
+		for (int i=0;i<equalChainNodes.size();i++)
+			equalChainNodes[i]->setRank(rank);
+	}
 	virtual int getAutomaticRank()
 	{
 		int largest_rank=equalChainNodes[0]->getAutomaticRank();
@@ -451,6 +482,10 @@ public:
 	QString CanonicalName(){throw 1;}
 	ChainNarratorNode & getChainNodeInChain(int ){throw 1;}
 	QString toString(){	return "NULLChainNarratorNodeIterator";}
+	void setVisited(unsigned int ) { throw 1;}
+	void resetVisited(unsigned int ) { throw 1; }
+	bool isVisited(unsigned int ) { throw 1; }
+	void resetColor() { throw 1; }
 };
 
 

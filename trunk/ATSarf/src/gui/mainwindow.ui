@@ -151,7 +151,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>0</y>
+      <y>10</y>
       <width>92</width>
       <height>28</height>
      </rect>
@@ -168,34 +168,13 @@
      <string>GO!</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
-    <property name="geometry">
-     <rect>
-      <x>420</x>
-      <y>40</y>
-      <width>91</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Bitstream Charter</family>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Hadith</string>
-    </property>
-   </widget>
    <widget class="QTextBrowser" name="hadith_display">
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>80</y>
+      <y>100</y>
       <width>441</width>
-      <height>541</height>
+      <height>521</height>
      </rect>
     </property>
    </widget>
@@ -203,7 +182,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>60</y>
+      <y>80</y>
       <width>61</width>
       <height>18</height>
      </rect>
@@ -250,34 +229,13 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>30</y>
+      <y>10</y>
       <width>91</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
      <string>Fill</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="chk_testing">
-    <property name="geometry">
-     <rect>
-      <x>320</x>
-      <y>40</y>
-      <width>91</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Bitstream Charter</family>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>Testing</string>
     </property>
    </widget>
    <widget class="QPushButton" name="cmd_browse">
@@ -531,6 +489,61 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>EQ delta:</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_hadith">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>40</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hadith</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_morphology">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>40</y>
+      <width>101</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Morphology</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_testing">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>40</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Testing</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="chk_chainNum">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>80</y>
+      <width>181</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Display Chain Numbers</string>
     </property>
    </widget>
   </widget>
