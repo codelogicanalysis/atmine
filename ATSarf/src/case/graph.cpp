@@ -1,6 +1,22 @@
 #include <QQueue>
 #include "graph.h"
 
+#ifdef LINEAR_CHECK_FOR_VISITED
+ColorIndices * ColorIndices::instance=NULL;
+void ColorIndices::unUse(unsigned int bit, NarratorGraph * graph)//unuse and clear color bit for all nodes in graph
+{
+	unUse(bit);
+	int max=graph->all_nodes.size();
+	for (int i=0;i<max;i++)
+	{
+		graph->all_nodes[i]->resetVisited(bit);
+		int size=graph->all_nodes[i]->size();
+		for (int j=0;j<size;j++)
+			(*graph->all_nodes[i])[j].resetVisited(bit);
+	}
+}
+#endif
+
 void LoopBreakingVisitor::finish() //not re-looked at
 {
 	if (cycle_fixed)
@@ -56,4 +72,3 @@ void LoopBreakingVisitor::cycle_detected(NarratorNodeIfc & n)//any cycle of leng
 	delete g;
 	parameters.equality_threshold=original_threshold;
 }
-

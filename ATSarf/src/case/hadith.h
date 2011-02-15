@@ -6,8 +6,9 @@
 #include <QHash>
 #include "common.h"
 #include "ATMProgressIFC.h"
-//#define DEBUG_BFS_TRAVERSAL
-//#define DEBUG_DFS_TRAVERSAL
+//#define LINEAR_CHECK_FOR_VISITED
+#define DEBUG_BFS_TRAVERSAL
+#define DEBUG_DFS_TRAVERSAL
 #define GENERAL_HADITH
 #define FORCE_RANKS
 //#define SHOW_RANKS
