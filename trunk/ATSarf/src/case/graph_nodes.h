@@ -36,6 +36,7 @@ extern NULLChainNarratorNode nullChainNarratorNode;
 class RankCorrectorNodeVisitor;
 class NarratorGraph;
 class GraphVisitorController;
+class ColorIndices;
 
 
 class NarratorNodeIfc //abstract interface
@@ -50,10 +51,10 @@ protected:
 
 	virtual void setVisited(unsigned int bit) {	color |= 1 << bit; }
 	virtual void resetVisited(unsigned int bit) {color &= (~(1 << bit)); }
-	virtual bool isVisited(unsigned int bit) {return (color & (1 << bit)) != 0; }
 	virtual void resetColor() {	color = 0; }
 	NarratorNodeIfc(){resetColor();}
 	friend class NarratorGraph;
+	friend class ColorIndices;
 	friend class GraphVisitorController;
 public:
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode()=0; //if used on a graphNode returns null
@@ -79,7 +80,7 @@ public:
 
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)=0;
 	virtual QString toString() =0;
-
+	virtual bool isVisited(unsigned int bit) {return (color & (1 << bit)) != 0; }
 
 };
 
