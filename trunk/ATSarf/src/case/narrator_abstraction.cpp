@@ -168,7 +168,7 @@ bool NarratorConnectorPrim::isNarrator() const
 void NarratorConnectorPrim::serialize(QTextStream &chainOut) const{
 	chainOut<<"\tNarrator Connector: ";//<<m_start<<" "<<m_end<<"";
 	chainOut<<"\t\t";
-	chainOut<<hadith_text->mid(this->m_start,this->m_end-this->m_start+1)<<" ";
+	chainOut<<getString()<<" ";
 	chainOut<<"\n";
 }
 void NarratorConnectorPrim::serialize(QDataStream &chainOut) const{

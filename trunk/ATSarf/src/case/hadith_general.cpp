@@ -113,6 +113,7 @@ typedef struct stateData_ {
 	long long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
 	bool nmcValid;
 	bool ibn_or_3abid;
+	bool nrcPunctuation;
 } stateData;
 
 #ifdef STATS
@@ -246,6 +247,7 @@ inline void initializeStateData()
 	currentData.ibn_or_3abid=false;
 	currentData.nameStartIndex=0;
 	currentData.nmcStartIndex=0;
+	currentData.nrcPunctuation=false;
 }
 
 class hadith_stemmer: public Stemmer
@@ -661,6 +663,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator=1;
 		#endif
+			if (has_punctuation)
+			{
+				display("<punc1>");
+				currentData.narratorCount++;
+				nextState=NRC_S;
+				currentData.narratorEndIndex=end_pos;
+				currentData.nrcStartIndex=next_positon(end_pos,has_punctuation);
+			#ifdef CHAIN_BUILDING
+				currentChain->namePrim->m_end=end_pos;
+				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=new Narrator(text);
+			#endif
+			}
 		}
 		else if (currentType==NRC)
 		{
@@ -776,34 +793,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_count++;
 		#endif
 			if (has_punctuation)
-			{
-				nextState=TEXT_S;
-			#ifdef CHAIN_BUILDING
-				currentChain->chain->m_chain.append(currentChain->narrator);
-			#endif
-
-				// TODO: added this later to the code, check if really is in correct place, but seemed necessary
-				currentData.narratorCount++;
-			#ifdef STATS
-				for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
-				{
-					delete temp_nmc_s[i];
-					temp_nmc_s.remove(i);
-				}
-				for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
-				{
-					delete temp_nrc_s[i];
-					temp_nrc_s.remove(i);
-				}
-				temp_nmc_count=0;
-				temp_nrc_count=0;
-			#endif
-				//till here was added later
-
-				currentData.narratorEndIndex=getLastLetter_IN_previousWord(start_index); //check this case
-				return_value= false;
-				break;
-			}
+				currentData.nmcCount=parameters.nmc_max+1;
 		}
 		else if (currentType==NRC)
 		{
@@ -833,25 +823,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentChain->narrator=new Narrator(text);
 		#endif
 			if (has_punctuation)
-			{
-				nextState=TEXT_S;
-			#ifdef STATS
-				for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
-				{
-					delete temp_nmc_s[i];
-					temp_nmc_s.remove(i);
-				}
-				for (int i=temp_nrc_s.count()-temp_nrc_count;i<temp_nrc_s.count();i++)
-				{
-					delete temp_nrc_s[i];
-					temp_nrc_s.remove(i);
-				}
-				temp_nmc_count=0;
-				temp_nrc_count=0;
-			#endif
-				return_value= false;
-				break;
-			}
+				currentData.nrcCount=parameters.nrc_max;
 		}
 		else
 		{
@@ -862,6 +834,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			}
 		#endif
 			nextState=NAME_S;
+			if (has_punctuation)
+			{
+				display("<punc2>");
+				currentData.narratorCount++;
+				nextState=NRC_S;
+				currentData.narratorEndIndex=end_pos;
+				currentData.nrcStartIndex=next_positon(end_pos,has_punctuation);
+			#ifdef CHAIN_BUILDING
+				currentChain->namePrim->m_end=end_pos;
+				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=new Narrator(text);
+			#endif
+			}
 		}
 		break;
 
@@ -949,6 +936,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_count=0;
 		#endif
 			display(QString("counter%1\n").arg(currentData.narratorCount));
+			currentData.nmcCount=0;
 			currentData.nrcCount=1;
 			nextState=NRC_S;
 
@@ -966,6 +954,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		}
 		else if(currentType==NAME)
 		{
+			currentData.nmcCount=0;
 			nextState=NAME_S;
 		#ifdef CHAIN_BUILDING
 			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(start_index);
@@ -977,8 +966,29 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator++;//found another name name
 		#endif
+			if (has_punctuation)
+			{
+				display("<punc3>");
+				currentData.narratorCount++;
+				nextState=NRC_S;
+				currentData.narratorEndIndex=end_pos;
+				currentData.nrcStartIndex=next_positon(end_pos,has_punctuation);
+			#ifdef CHAIN_BUILDING
+				currentChain->namePrim->m_end=end_pos;
+				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=new Narrator(text);
+			#endif
+			}
 		}
-		else if (currentData.nmcCount>parameters.nmc_max || has_punctuation) //TODO: if punctuation check is all what is required
+		else if (has_punctuation) //TODO: if punctuation check is all what is required
+		{
+			nextState=NMC_S;
+			currentData.nmcCount=parameters.nmc_max+1;
+			currentData.nmcValid=false;
+		}
+		else if (currentData.nmcCount>parameters.nmc_max)
 		{
 			if (currentData.nmcValid)
 			{
@@ -1117,6 +1127,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			break;
 		}
 	#endif
+		if(currentType==NAME || currentType ==NRC)
+			currentData.nrcPunctuation=false;
 	#ifdef REFINEMENTS
 		if (currentType==NAME || possessive)
 	#else
@@ -1124,6 +1136,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 	#endif
 		{
 			nextState=NAME_S;
+			currentData.nrcCount=0;
 			//currentData.nameStartIndex=start_index;
 		#ifdef CHAIN_BUILDING
 			//currentChain->namePrim->m_start=start_index;
@@ -1137,8 +1150,24 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator++;//found another name name
 		#endif
+			if (has_punctuation)
+			{
+				display("<punc4>");
+				currentData.narratorCount++;
+				nextState=NRC_S;
+				currentData.narratorEndIndex=end_pos;
+				currentData.nrcStartIndex=next_positon(end_pos,has_punctuation);
+			#ifdef CHAIN_BUILDING
+				currentChain->namePrim->m_end=end_pos;
+				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=new Narrator(text);
+			#endif
+				break;
+			}
 		}
-		else if (currentData.nrcCount>=parameters.nrc_max || has_punctuation)
+		else if (currentData.nrcCount>=parameters.nrc_max || currentData.nrcPunctuation)
 		{
 			nextState=TEXT_S;
 		#ifdef STATS
@@ -1215,7 +1244,6 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			nextState=NMC_S;
 		}
 #endif
-
 		else
 		{
 			nextState=NRC_S;
@@ -1229,6 +1257,8 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nrc_count++;
 		#endif
 		}
+		if (has_punctuation && nextState==NRC_S)
+			currentData.nrcPunctuation=true;
 		break;
 	default:
 		break;

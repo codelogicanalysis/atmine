@@ -7,14 +7,14 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 //#define LINEAR_CHECK_FOR_VISITED
-#define DEBUG_BFS_TRAVERSAL
-#define DEBUG_DFS_TRAVERSAL
+//#define DEBUG_BFS_TRAVERSAL
+//#define DEBUG_DFS_TRAVERSAL
 #define GENERAL_HADITH
 #define FORCE_RANKS
 //#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
-//#define HADITHDEBUG  //just for additional debugging statements displayed
+#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 #define IBN_START
 #define REFINEMENTS
