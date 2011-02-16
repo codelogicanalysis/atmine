@@ -6,7 +6,7 @@ done --one-hot encoding
 done --smart node {node*, pos, index}
 done---find equality between chains of narrators and start building graph
 done---ranking using BFS
-done-recheck the meaning of needle and offset and u in commented out optimized part of narrator merging function
+done---recheck the meaning of needle and offset and u in commented out optimized part of narrator merging function
 done---allow for greater values than 1 if they exist (don't chop)
 done---re-write the graph without iterators but with our version of list
 done---correct graph builder to keep track of needle or u per chain (not needed)

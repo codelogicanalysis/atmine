@@ -294,7 +294,7 @@ protected:
 				{
 					int num=c.getChainNum();
 					QString ch_node=QString("ch%1").arg(num+1);
-					d_out<<ch_node<<" [label=\""<<num<<"\", shape=triangle];\n";
+					d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
 					d_out<<name<<"->"<<ch_node<<";\n";
 					setGraphRank(n.getRank(),ch_node);
 				}
