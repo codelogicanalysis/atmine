@@ -1,8 +1,8 @@
 done---use "الرسول" (not preceded by a ibn, abd, abou) or "صلعم" as stop words refering to end of sanad
 done--make parameters updatable from GUI
 ignored---reduce words that mean "قال"
--maybe use numbers or punctuations
-	given 2 names without a narrator connector and with a punctuation mark, consider them as 2 different narators
+done---maybe use numbers or punctuations
+	done---given 2 names without a narrator connector and with a punctuation mark, consider them as 2 different narators
 	done---if we get a punctuation mark in the context of a tolerance state, we break tolerance
 	ignored---use the numbers with reservation, if they happen at the beginning of a paragraph to segment hadith
 -treat with special care أبيه and جده 

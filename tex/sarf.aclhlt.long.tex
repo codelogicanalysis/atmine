@@ -39,7 +39,7 @@
 \newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue} 
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
-\title{Application Specific Arabic Morphological Analyzer for Arabic Text Mining}
+\title{Case-based Arabic Morphological Analyzer for Arabic Text Mining}
 
 %\author{ Jad Makhlouta \\\And
 %Hamza Harkous \\
@@ -132,22 +132,18 @@ and ElixirFM~\cite{Otakar:07}
 take as input white space delimited tokens~\cite{Kulick:10},
 consider them as words,
 and enumerate all possible solutions. 
-%This approach has several problems. 
-However, we note the following points that deserve consideration:
-%(We need not to mention especially point 2 as a problem according to reviewer comments)
+This approach has several problems. 
 First, a white space delimited token may have 
 more than one word.
-%Second, the exhaustive enumeration may hurt performance and may
-%not be necessary or appropriate
-%in some case studies as noted in~\cite{Maamouri:10}. 
-Second, in many applications, the exhaustive enumeration may not be needed or appropriate as noted in~\cite{Maamouri:10}; consequently, adding unnecessary running time.
+Second, the exhaustive enumeration may hurt performance and may
+not be necessary or appropriate
+in some case studies as noted in~\cite{Maamouri:10}. 
 Other morphological analyzers such as 
 Amira~\cite{Diab:07,Benajiba:07},
 MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
-% (reviewer wants to distinguish MADA as a tool for morphological disambiguation instead of analysis)
 use machine learning and support vector machines (SVM) 
 to enhance the accuracy of the morphological analysis at the expense 
-of performance. % (we should stress that we mean performance in time and not accuracy although evident since some reviewers did not get)
+of performance.
 Xerox rules can be compiled into specialized finite state
 machine (FSM) based analyzers as described in~\cite{Beesley:03}.
 However, the efficiency of the resulting analyzer depends on the
@@ -161,44 +157,38 @@ and morphological analysis.
 We hypothesize that many NLP case studies need the 
 morphological analyzer to answer queries that do not need 
 high accuracy at the low morphological analysis level.
-The analysis at the higher levels 
-(i.e. answering the application-specific query)
-can often compensate for 
-tolerable inaccuracy at lower morphological levels. 
+The analysis at the higher levels can often compensate for 
+tolerable inaccuracy at low levels. 
 For example, if a query concerns proper names and the 
 analyzer is considering a 
 prefix that connects only to a verb,
 %the analyzer can answer without considering the 
 %rest of the word.
 we do not need to further analyze the rest of the word 
-to provide a negative answer.
+to provide an answer.
 
 We find evidence to our hypothesis in~\cite{Maamouri:10}.
 The addition of a new corpus to the Arabic Tree Bank 
 (ATB)~\cite{Maamouri:04}
-%required compliance with the DARPA GALE program 
-%including several NLP tasks such as English translation 
-%annotations and word-level alignment of Arabic and English. 
-%The new data 
-challenged the existing processing and 
+required compliance with the DARPA GALE program 
+including several NLP tasks such as English translation 
+annotations and word-level alignment of Arabic and English. 
+The new data challenged the existing processing and 
 annotation guidelines. 
 This led to refining 
 SAMA~\cite{Kulick:10} with 
-alternative guidelines only after the NLP 
-task interacted with the morphological analyzer,
-a flexibility our analyzer is designed to provide on the run. %(check if this sentence makes sense)
-In addition, 
-the work of Habash~\shortcite{Habash:06} reports that different 
-types of morphological analyses behave differently on the same %case study. 
-data set.
+alternative guidelines where the NLP 
+task interacted with the morphological analyzer. 
+
+The work of Habash~\shortcite{Habash:06} reports that different 
+types of morphological analyses behave differently on the same case 
+study. 
 The analyzers may report different solutions or 
 may present the solutions in different orders. 
-Clearly, some of 
-the presented solutions and their order of presentation may not be 
-appropriate for the %case study.
-application needs, which is an issue our work tackles.
+The presented solutions and the order of presentation may not be 
+appropriate for the case study. 
 Moreover, our results strongly support our claim that
-an application-specific morphological analyzer that allows a application-specific 
+a case-based morphological analyzer that allows a case-based 
 controller to intervene at every decision to guide, use, order, and 
 refine the morphological analysis is of high utility.
 
@@ -211,7 +201,7 @@ has been submitted with the paper and will be available online as an open source
  a {\em novel case-based efficient
 morphological analyzer} that uses 
 non-deterministic finite state Automata 
-driven by an application-specific controller.
+driven by a case-based controller.
 Each machine in Sarf takes one letter at a time as input
 and represents a valid morphological analysis.
 The case-based controller prunes false positives
@@ -229,13 +219,12 @@ Up to our knowledge, this is the first morphological analyzer that
 handles the ``run-on'' words problem. 
 
 Sarf uses concatenative analysis with a novel 
-{\em recursive affixes} refinement,
-where an affix can be a sequence of other affixes which are concatenatively compatible.
-%An atomic affix $a$ is a standalone affix
-%that is not the concatenation of other affixes. 
-%We define an affix $f: a | a f$ to be either
-%an atomic affix $a$ or an atomic affix concatenated
-%with an affix. 
+{\em recursive affixes} refinement. 
+An atomic affix $a$ is a standalone affix
+that is not the concatenation of other affixes. 
+We define an affix $f: a | a f$ to be either
+an atomic affix $a$ or an atomic affix concatenated
+with an affix. 
 Sarf introduces recursive affixes in order to
 better retain part of speech information and enhance the 
 efficiency of affix matching. 
@@ -334,7 +323,7 @@ and conclude with future work in Section~\ref{sec:future}.
 %\section{Background}
 % TODO: nondeterministic finite-state automata
 
-\section{Related work } %maybe must be removed as a section and merged with things stated at introduction
+\section{Related work }
 \label{sec:related}
 
 The survey in~\cite{Sughaiyer:04} compares
