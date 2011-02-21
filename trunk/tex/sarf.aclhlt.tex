@@ -108,7 +108,7 @@ of morphological analysis of the Arabic language.
 For example, it is common practice to write Arabic text
 without short vowels. 
 This greatly increases the ambiguity of Arabic text. 
-Arabic letters can have up to 
+Arabic letters can have up to %(maybe reduce this sentence)
 four different forms
 corresponding to their position in a word, i.e, beginning,
 middle, end of word and separate forms. 
@@ -123,6 +123,120 @@ These words,
 referred to as ``run-on'' words~\cite{Buckwalter:04},
 occur often, and greatly increase the
 difficulty of tokenization.
+
+{\bf Sarf.~~~}
+In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
+has been submitted with the paper and will be available online as an open source tool.},
+ a {\em novel case-based efficient
+morphological analyzer} that uses 
+non-deterministic finite state Automata 
+driven by an application-specific controller.
+Each machine in Sarf takes one letter at a time as input
+and represents a valid morphological analysis.
+The application-specific controller prunes false positives
+early in the run by making a decision at every input letter
+to control the machines.
+The controller we present in Section~\ref{sec:controller}
+is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
+it can be a logical entity of any type. 
+
+%Each alive machine in Sarf takes as input one letter at a time 
+%from a text stream. 
+Sarf does not assume that the word at hand is a token and
+performs tokenization on the fly based on morphological correctness.
+Up to our knowledge, this is the first morphological analyzer that 
+handles the ``run-on'' words problem. 
+
+Sarf uses concatenative analysis with a novel 
+{\em recursive affixes} refinement,
+where an affix can be a sequence of other affixes which are concatenatively compatible.
+%An atomic affix $a$ is a standalone affix
+%that is not the concatenation of other affixes. 
+%We define an affix $f: a | a f$ to be either
+%an atomic affix $a$ or an atomic affix concatenated
+%with an affix. 
+Sarf introduces recursive affixes in order to
+better retain part of speech information and enhance the 
+efficiency of affix matching. 
+
+
+Our main focus when building Sarf, was not on improving the semantical rules and expanding the morphological alternatives, instead we worked on adding support for higher level control by the specific application utilizing the lower level morphological analyzer. In other words, application-specific controller, has full control over and directs the morphological analysis of Sarf. % (sentence should be reworded differently, but is needed to explain why we mention higher and lower accuracy hypothesis, which seems vague otherwise)
+
+We hypothesize that many NLP case studies need the 
+morphological analyzer to answer queries that do not need 
+high accuracy at the low morphological analysis level.
+The analysis at the higher levels 
+(i.e. answering the application-specific query)
+can often compensate for 
+tolerable inaccuracy at lower morphological levels. 
+For example, if a query concerns proper names and the 
+analyzer is considering a 
+prefix that connects only to a verb,
+%the analyzer can answer without considering the 
+%rest of the word.
+we do not need to further analyze the rest of the word 
+to provide a negative answer.
+
+We find evidence to our hypothesis in~\cite{Maamouri:10}.
+The addition of a new corpus to the Arabic Tree Bank 
+(ATB)~\cite{Maamouri:04}
+%required compliance with the DARPA GALE program 
+%including several NLP tasks such as English translation 
+%annotations and word-level alignment of Arabic and English. 
+%The new data 
+challenged the existing processing and 
+annotation guidelines. 
+This led to refining 
+SAMA~\cite{Kulick:10} with 
+alternative guidelines. 
+This refinement was achieved only after the NLP 
+task interacted with the morphological analyzer,
+a flexibility our analyzer is designed to provide for the application-specific controller on the run. %(check if this sentence makes sense)
+In addition, 
+the work of Habash~\shortcite{Habash:06} reports that different 
+types of morphological analyses behave differently on the same %case study. 
+data set.
+The analyzers may report different solutions or 
+may present the solutions in different orders. 
+Clearly, some of 
+the presented solutions and their order of presentation may not be 
+appropriate for the %case study.
+application needs, which is an issue that Sarf tackles. % (maybe reworded)
+Moreover, our results strongly support our claim that
+an application-specific morphological analyzer that allows a application-specific 
+controller to intervene at every decision to guide, use, order, and 
+refine the morphological analysis is of high utility.
+We validate our hypothesis using a case study from the Islamic 
+literature, introduced later in Section~\ref{sec:islamic}.
+
+The rest of this paper is structured as follows. In Section~\ref{sec:related}
+we compare Sarf to related work. In Section~\ref{sec:sarf}
+we discuss Sarf and illustrate it with a running example.
+%We also explain how non-deterministic finite state Automata
+%work. 
+In Section~\ref{sec:islamic} we present the case
+study. We present our results in Section~\ref{sec:results}
+and conclude with future work in Section~\ref{sec:future}.
+
+% does not have to be a subsection, 
+%just to highlight it as an item we should not miss
+
+%\section{Background}
+% TODO: nondeterministic finite-state automata
+
+\section{Related work }
+\label{sec:related}
+
+The survey in~\cite{Sughaiyer:04} compares
+several morphological analyzers. 
+Analyzers such as~\cite{Khoja:01,Darwish:02} 
+target specific applications in the 
+analyzer itself or use a specific set of POS tags
+as their reference.
+Sarf differs in that it is a general morphological 
+analyzer that reports all possible solutions. 
+It is application-specific in the sense that a controller 
+prunes these solutions. 
 
 Current morphological analyzers such as 
 Buckwalter~\shortcite{Buckwalter:02},
@@ -158,195 +272,7 @@ and morphological analysis.
 %context free grammar rules that can be automatically compiled
 %into efficient non-deterministic finite state Automata (NDFSA). 
 
-We hypothesize that many NLP case studies need the 
-morphological analyzer to answer queries that do not need 
-high accuracy at the low morphological analysis level.
-The analysis at the higher levels 
-(i.e. answering the application-specific query)
-can often compensate for 
-tolerable inaccuracy at lower morphological levels. 
-For example, if a query concerns proper names and the 
-analyzer is considering a 
-prefix that connects only to a verb,
-%the analyzer can answer without considering the 
-%rest of the word.
-we do not need to further analyze the rest of the word 
-to provide a negative answer.
 
-We find evidence to our hypothesis in~\cite{Maamouri:10}.
-The addition of a new corpus to the Arabic Tree Bank 
-(ATB)~\cite{Maamouri:04}
-%required compliance with the DARPA GALE program 
-%including several NLP tasks such as English translation 
-%annotations and word-level alignment of Arabic and English. 
-%The new data 
-challenged the existing processing and 
-annotation guidelines. 
-This led to refining 
-SAMA~\cite{Kulick:10} with 
-alternative guidelines only after the NLP 
-task interacted with the morphological analyzer,
-a flexibility our analyzer is designed to provide on the run. %(check if this sentence makes sense)
-In addition, 
-the work of Habash~\shortcite{Habash:06} reports that different 
-types of morphological analyses behave differently on the same %case study. 
-data set.
-The analyzers may report different solutions or 
-may present the solutions in different orders. 
-Clearly, some of 
-the presented solutions and their order of presentation may not be 
-appropriate for the %case study.
-application needs, which is an issue our work tackles.
-Moreover, our results strongly support our claim that
-an application-specific morphological analyzer that allows a application-specific 
-controller to intervene at every decision to guide, use, order, and 
-refine the morphological analysis is of high utility.
-
-%\subsection{Sarf}
-%\label{sec:intro:sarf}
-
-{\bf Sarf.~~~}
-In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
-has been submitted with the paper and will be available online as an open source tool.},
- a {\em novel case-based efficient
-morphological analyzer} that uses 
-non-deterministic finite state Automata 
-driven by an application-specific controller.
-Each machine in Sarf takes one letter at a time as input
-and represents a valid morphological analysis.
-The case-based controller prunes false positives
-early in the run by making a decision at every input letter
-to control the machines.
-The controller we present in Section~\ref{sec:controller}
-is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
-it can be a logical entity of any type. 
-
-%Each alive machine in Sarf takes as input one letter at a time 
-%from a text stream. 
-Sarf does not assume that the word at hand is a token and
-performs tokenization on the fly based on morphological correctness.
-Up to our knowledge, this is the first morphological analyzer that 
-handles the ``run-on'' words problem. 
-
-Sarf uses concatenative analysis with a novel 
-{\em recursive affixes} refinement,
-where an affix can be a sequence of other affixes which are concatenatively compatible.
-%An atomic affix $a$ is a standalone affix
-%that is not the concatenation of other affixes. 
-%We define an affix $f: a | a f$ to be either
-%an atomic affix $a$ or an atomic affix concatenated
-%with an affix. 
-Sarf introduces recursive affixes in order to
-better retain part of speech information and enhance the 
-efficiency of affix matching. 
-
-
-\transfalse
-\begin{figure}[tb]
-\center{
-\resizebox{.9\columnwidth}{!}
-{ \input{figs/exhadith.pdftex_t}}
-\caption{Hadith abstraction example.}
-\label{f:exhadith}
-}
-\end{figure}
-% the FSMs for the three words
-\transtrue
-
-We validate our hypothesis using a case study from the Islamic 
-literature. 
-A \RL{.hady_t} is a narration related to the prophet Mohammad
-through a \RL{sanad} or a sequence of narrators. 
-Figure~\ref{f:exhadith} shows an example \noArRL{.hady_t} in 
-Arabic with its transliteration and translation. 
-The authenticity of a \noArRL{.hady_t} depends on 
-the credibility of the narrators as reported in 
-separate biography books. 
-In this paper, we consider the problem of automatically segmenting
-a \noArRL{.hady_t} book into narrations, each 
-narration into its \RL{matn} (content) and its \noArRL{sanad},
-and each sanad into the 
-separate narrators. Later, we can look each narrator 
-up in the biography books. 
-For example, 
-Figure~\ref{f:exhadith} shows proper names in boxes connected
-to form complex names of narrators. 
-For example, 
-\noTrRL{qtybT} is the first name 
-of narrator $n_1$, and 
-\noTrRL{s`yd} is the name of his father as 
-the word \noTrRL{bn} (son of) indicates. 
-
-
-The hadith case study is interesting to Sarf since the controller
-considers %most of the analyses where we have a concentration
-proper names and ignores text where
-proper names occur rarely.% as long %as the text is valid.
-We are also interested in discovering words 
-that relate names to each other such as \RL{bin} or ``the son of''
-and words that mean narrate such as \RL{qaal} or ``said''. 
-
-With Sarf, we successfully automated the analysis of 
-three books of Islamic narrations~\cite{IbnHanbal,AlTousi,AlKulayni}
-and extracted from each one of them a vector of complex structures 
-that are three level deep in hierarchy.
-%We also showcase that the results of the accurate high level 
-%abstraction
-%results of the case-based analysis was not affected by a major
-%refinement to the analyzer that increased low level analysis accuracy. 
-
-We make the following key contributions: 
-\begin{enumerate}
-\item {\bf Case-based analysis:}  We designed and implemented
-a case-based morphological analyzer where a controller
-guides the analysis. 
-%\item {\bf Exhaustive analysis:} Since we have a case-based 
-%controller that can decide on the fly whether an analysis is 
-%accepted or not, we can afford to keep all valid analyses modulo
-%those pruned by the case controller. 
-%We do that using non-deterministic FSAs. 
-\item {\bf Recursive affixes:}
-We refine the concatenative analysis of 
-Buckwalter~\shortcite{Buckwalter:02} and define affixes
-recursively. 
-This allows Sarf to perform better and 
-maintain compositional part of speech (POS) tags.
-\item {\bf Hadith case study:}
-%We evaluated Sarf using the hadith case study. 
-We were able to efficiently extract a complex three 
-level hierarchical 
-structure containing the chains of narrators 
-with high accuracy. 
-\end{enumerate}
-
-% does not have to be a subsection, 
-%just to highlight it as an item we should not miss
-
-The rest of this paper is structured as follows. In Section~\ref{sec:related}
-we compare Sarf to related work. In Section~\ref{sec:sarf}
-we discuss Sarf and illustrate it with a running example.
-%We also explain how non-deterministic finite state Automata
-%work. 
-In Section~\ref{sec:islamic} we present the hadith case
-study. We present our results in Section~\ref{sec:results}
-and conclude with future work in Section~\ref{sec:future}.
-
-%\section{Background}
-% TODO: nondeterministic finite-state automata
-
-\section{Related work } %maybe must be removed as a section and merged with things stated at introduction
-\label{sec:related}
-
-The survey in~\cite{Sughaiyer:04} compares
-several morphological analyzers. 
-Analyzers such as~\cite{Khoja:01,Darwish:02} 
-target specific applications in the 
-analyzer itself or use a specific set of POS tags
-as their reference.
-Sarf differs in that it is a general morphological 
-analyzer that reports all possible solutions. 
-It is case-based in the sense that a controller 
-prunes these solutions. 
 
 Sarf builds upon the lexicon of Buckwalter\shortcite{Buckwalter:02}.
 It differs from Buckwalter in that it defines a shorter list of affixes
@@ -377,7 +303,7 @@ affix transducers, and in that the transducers consider
 input from the controller to modify their behavior. 
 %With Sarf it is easy to control the FSA with a case-based
 %controller. 
-Beesley requires recompilation of the Xerox rules.
+Beesley requires recompilation of the Xerox rules. % (don't we do also for any change in the controller code?)
 
 Similar to The MADA+TOKAN toolkit, Sarf thinks of
 the several valid morphological analyses as a richness that 
@@ -403,7 +329,7 @@ new corpus.
 %about the utility of a case-based analyzer. 
 The algorithmic changes in SAMA were
 done manually and worked in integration with the ATB format. 
-Sarf is a case-based controller approach that can modify 
+Sarf is an application-specific controller approach that can modify 
 the behavior of the analyzer on the fly and can interact
 with any case study. 
 %In Sarf, the analyzer remains general, and the 
@@ -424,11 +350,12 @@ of ElixirFM
 that is highly compatible with the Arabic linguistic 
 description~\cite{Badawi:04}
 can benefit from many features unique to the Arabic language.
-Sarf leaves implementing that to the case-based controller
+Sarf leaves implementing that to the application-specific controller
 since in many cases the abstraction needs only a partial 
 linguistic model of the Arabic language. 
 %We can compare the case-based controller in Sarf to a high level
 %component in the ElixirFM domain specific language. 
+
 
 
 \section{Sarf}
@@ -756,6 +683,64 @@ NDSarf(string $L$, Controller $A$)
 \section{Islamic literature case study}
 \label{sec:islamic}
 
+
+% TODO: check how to merge this part here
+\transfalse
+\begin{figure}[tb]
+\center{
+\resizebox{.9\columnwidth}{!}
+{ \input{figs/exhadith.pdftex_t}}
+\caption{Hadith abstraction example.}
+\label{f:exhadith}
+}
+\end{figure}
+% the FSMs for the three words
+\transtrue
+
+We validate our hypothesis using a case study from the Islamic 
+literature. 
+A \RL{.hady_t} is a narration related to the prophet Mohammad
+through a \RL{sanad} or a sequence of narrators. 
+Figure~\ref{f:exhadith} shows an example \noArRL{.hady_t} in 
+Arabic with its transliteration and translation. 
+The authenticity of a \noArRL{.hady_t} depends on 
+the credibility of the narrators as reported in 
+separate biography books. 
+In this paper, we consider the problem of automatically segmenting
+a \noArRL{.hady_t} book into narrations, each 
+narration into its \RL{matn} (content) and its \noArRL{sanad},
+and each sanad into the 
+separate narrators. Later, we can look each narrator 
+up in the biography books. 
+For example, 
+Figure~\ref{f:exhadith} shows proper names in boxes connected
+to form complex names of narrators. 
+For example, 
+\noTrRL{qtybT} is the first name 
+of narrator $n_1$, and 
+\noTrRL{s`yd} is the name of his father as 
+the word \noTrRL{bn} (son of) indicates. 
+
+
+The hadith case study is interesting to Sarf since the controller
+considers %most of the analyses where we have a concentration
+proper names and ignores text where
+proper names occur rarely.% as long %as the text is valid.
+We are also interested in discovering words 
+that relate names to each other such as \RL{bin} or ``the son of''
+and words that mean narrate such as \RL{qaal} or ``said''. 
+
+With Sarf, we successfully automated the analysis of 
+three books of Islamic narrations~\cite{IbnHanbal,AlTousi,AlKulayni}
+and extracted from each one of them a vector of complex structures 
+that are three level deep in hierarchy.
+%We also showcase that the results of the accurate high level 
+%abstraction
+%results of the case-based analysis was not affected by a major
+%refinement to the analyzer that increased low level analysis accuracy.
+
+
+
 A hadith in Islamic literature is a narration from the prophet Mohammad
 related by multiple narrators.
 Establishing the authenticity of a hadith is an important task
@@ -1063,6 +1048,33 @@ Arabic text.
 Results show that Sarf with the hadith controller
 is faster and more accurate than
 current morphological analyzers.
+
+
+%TODO: merge into conclusion, taken from introduction
+We make the following key contributions: 
+\begin{enumerate}
+\item {\bf Case-based analysis:}  We designed and implemented
+a case-based morphological analyzer where a controller
+guides the analysis. 
+%\item {\bf Exhaustive analysis:} Since we have a case-based 
+%controller that can decide on the fly whether an analysis is 
+%accepted or not, we can afford to keep all valid analyses modulo
+%those pruned by the case controller. 
+%We do that using non-deterministic FSAs. 
+\item {\bf Recursive affixes:}
+We refine the concatenative analysis of 
+Buckwalter~\shortcite{Buckwalter:02} and define affixes
+recursively. 
+This allows Sarf to perform better and 
+maintain compositional part of speech (POS) tags.
+\item {\bf Hadith case study:}
+%We evaluated Sarf using the hadith case study. 
+We were able to efficiently extract a complex three 
+level hierarchical 
+structure containing the chains of narrators 
+with high accuracy. 
+\end{enumerate}
+
 
 In the future, 
 we will try Sarf with other interesting case studies.
