@@ -60,9 +60,8 @@ Often times,
 annotations resulting from 
 a branch of morphological analysis may not be
 appropriate for the case study at hand. 
-In this paper we present Sarf, a case-based morphological 
-analyzer for Arabic. 
-Sarf allows a case-based controller to control and refine
+In this paper we present Sarf, an application-specific morphological analyzer for Arabic. 
+Sarf allows an application-specific controller to control and refine
 the state of the analysis on the fly. 
 It uses non-deterministic finite state Automata
 to analyze a stream of text. 
@@ -70,7 +69,7 @@ to analyze a stream of text.
 Sarf uses concatenative analysis based on recursive affixes 
 to better preserve part of speech information.
 We automated the analysis of three books of Islamic
-narrations (hadith) using Sarf where we
+narrations (hadith) using Sarf, where we
 abstracted each book into a vector of complex structures.
 Our results show higher accuracy and better efficiency
 compared to current analyzers.
@@ -84,31 +83,32 @@ compared to current analyzers.
 %with the huge digital Arabic content available nowadays. 
 Morphological analysis is key in current automated 
 analysis techniques for Arabic text. 
-Current morphological analyzers~\cite{Sughaiyer:04}
-use concatenative analysis when
-considering the internal structure 
-of an Arabic word and
-composing it into several {\em morphemes}. 
-A morpheme can be a {\em stem}, or an {\em affix}.
-An affix can be a {\em prefix, suffix, } or an {\em infix}.
-The analysis of one word may lead to several possible
-morphological solutions.
-\vocalize
-For instance, the word \RL{'a.hmadH}~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
-may have two valid morphological analyses. 
-The letter \RL{'a} may be a prefix and the word means 
-``I praise him'', or 
-%The letter \RL{'a} may also be 
-part of the stem \RL{'a.hmad} (a proper noun)
-and the word means ``his Ahmad''.
-
-\novocalize
+%Current morphological analyzers~\cite{Sughaiyer:04}
+%use concatenative analysis when
+%considering the internal structure 
+%of an Arabic word and
+%composing it into several {\em morphemes}. 
+%A morpheme can be a {\em stem}, or an {\em affix}.
+%An affix can be a {\em prefix, suffix, } or an {\em infix}.
+%The analysis of one word may lead to several possible
+%morphological solutions.
+%\vocalize
+%For instance, the word \RL{'a.hmadH}~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
+%may have two valid morphological analyses. 
+%The letter \RL{'a} may be a prefix and the word means 
+%``I praise him'', or 
+%%The letter \RL{'a} may also be 
+%part of the stem \RL{'a.hmad} (a proper noun)
+%and the word means ``his Ahmad''.
+%
+%\novocalize
 The accuracy of the solutions suffer due to inherent difficulties
 of morphological analysis of the Arabic language. 
 For example, it is common practice to write Arabic text
-without short vowels. 
-This greatly increases the ambiguity of Arabic text. 
-Arabic letters can have up to %(maybe reduce this sentence)
+without short vowels / diacritics. 
+This greatly increases the ambiguity of Arabic text.
+%(maybe reduce the couple of sentences below)
+Moreover, Arabic letters can have up to 
 four different forms
 corresponding to their position in a word, i.e, beginning,
 middle, end of word and separate forms. 
@@ -124,10 +124,10 @@ referred to as ``run-on'' words~\cite{Buckwalter:04},
 occur often, and greatly increase the
 difficulty of tokenization.
 
-{\bf Sarf.~~~}
+%{\bf Sarf.~~~}
 In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
 has been submitted with the paper and will be available online as an open source tool.},
- a {\em novel case-based efficient
+ a {\em novel application-specific efficient
 morphological analyzer} that uses 
 non-deterministic finite state Automata 
 driven by an application-specific controller.
@@ -147,7 +147,7 @@ performs tokenization on the fly based on morphological correctness.
 Up to our knowledge, this is the first morphological analyzer that 
 handles the ``run-on'' words problem. 
 
-Sarf uses concatenative analysis with a novel 
+Sarf uses concatenative analysis with a novel %(maybe remove novel bc authors did not feel it is much)
 {\em recursive affixes} refinement,
 where an affix can be a sequence of other affixes which are concatenatively compatible.
 %An atomic affix $a$ is a standalone affix
@@ -160,63 +160,67 @@ better retain part of speech information and enhance the
 efficiency of affix matching. 
 
 
-Our main focus when building Sarf, was not on improving the semantical rules and expanding the morphological alternatives, instead we worked on adding support for higher level control by the specific application utilizing the lower level morphological analyzer. In other words, application-specific controller, has full control over and directs the morphological analysis of Sarf. % (sentence should be reworded differently, but is needed to explain why we mention higher and lower accuracy hypothesis, which seems vague otherwise)
-
-We hypothesize that many NLP case studies need the 
-morphological analyzer to answer queries that do not need 
-high accuracy at the low morphological analysis level.
-The analysis at the higher levels 
-(i.e. answering the application-specific query)
-can often compensate for 
-tolerable inaccuracy at lower morphological levels. 
-For example, if a query concerns proper names and the 
-analyzer is considering a 
-prefix that connects only to a verb,
-%the analyzer can answer without considering the 
-%rest of the word.
-we do not need to further analyze the rest of the word 
-to provide a negative answer.
-
-We find evidence to our hypothesis in~\cite{Maamouri:10}.
-The addition of a new corpus to the Arabic Tree Bank 
-(ATB)~\cite{Maamouri:04}
-%required compliance with the DARPA GALE program 
-%including several NLP tasks such as English translation 
-%annotations and word-level alignment of Arabic and English. 
-%The new data 
-challenged the existing processing and 
-annotation guidelines. 
-This led to refining 
-SAMA~\cite{Kulick:10} with 
-alternative guidelines. 
-This refinement was achieved only after the NLP 
-task interacted with the morphological analyzer,
-a flexibility our analyzer is designed to provide for the application-specific controller on the run. %(check if this sentence makes sense)
-In addition, 
-the work of Habash~\shortcite{Habash:06} reports that different 
-types of morphological analyses behave differently on the same %case study. 
-data set.
-The analyzers may report different solutions or 
-may present the solutions in different orders. 
-Clearly, some of 
-the presented solutions and their order of presentation may not be 
-appropriate for the %case study.
-application needs, which is an issue that Sarf tackles. % (maybe reworded)
-Moreover, our results strongly support our claim that
+%Our main focus when building Sarf, was not on improving the semantical rules and expanding the morphological alternatives, instead we worked on adding support for higher level control by the specific application utilizing the lower level morphological analyzer. In other words, the application-specific controller, has full control over and directs the morphological analysis of Sarf. % (sentence should be reworded differently, but is needed to explain why we mention higher and lower accuracy hypothesis, which seems vague otherwise)
+%
+%We hypothesize that many NLP case studies need the 
+%morphological analyzer to answer queries that do not need 
+%high accuracy at the low morphological analysis level.
+%The analysis at the higher levels 
+%(i.e. answering the application-specific query)
+%can often compensate for 
+%tolerable inaccuracy at lower morphological levels. 
+%For example, if a query concerns proper names and the 
+%analyzer is considering a 
+%prefix that connects only to a verb,
+%%the analyzer can answer without considering the 
+%%rest of the word.
+%we do not need to further analyze the rest of the word 
+%to provide a negative answer.
+%
+%We find evidence to our hypothesis in~\cite{Maamouri:10}.
+%%The addition of a new corpus to the Arabic Tree Bank 
+%%(ATB)~\cite{Maamouri:04}
+%%%required compliance with the DARPA GALE program 
+%%%including several NLP tasks such as English translation 
+%%%annotations and word-level alignment of Arabic and English. 
+%%%The new data 
+%%challenged the existing processing and 
+%%annotation guidelines. 
+%%This led to refining 
+%%SAMA~\cite{Kulick:10} with 
+%%alternative guidelines. 
+%%This refinement was achieved only after the NLP 
+%%task interacted with the morphological analyzer,
+%%a flexibility our analyzer is designed to provide for the application-specific controller on the run. %(check if this sentence makes sense)
+%It reports that a refined version of SAMA~\cite{Kulick:10} was achieved when NLP task interacted with the morphological analyzer.
+%%a flexibility our analyzer is designed to provide for the application-specific controller on the run.
+%In addition, 
+%the work of Habash~\shortcite{Habash:06} reports that different 
+%types of morphological analyses behave differently on the same %case study. 
+%data set.
+%The analyzers may report different solutions or 
+%may present the solutions in different orders. 
+%Clearly, some of 
+%the presented solutions and their order of presentation may not be 
+%appropriate for the %case study.
+%application needs, which is an issue that Sarf tackles. % (maybe reworded)
+%Moreover, 
+Our results strongly support our claim that
 an application-specific morphological analyzer that allows a application-specific 
 controller to intervene at every decision to guide, use, order, and 
 refine the morphological analysis is of high utility.
+
 We validate our hypothesis using a case study from the Islamic 
 literature, introduced later in Section~\ref{sec:islamic}.
 
-The rest of this paper is structured as follows. In Section~\ref{sec:related}
-we compare Sarf to related work. In Section~\ref{sec:sarf}
-we discuss Sarf and illustrate it with a running example.
-%We also explain how non-deterministic finite state Automata
-%work. 
-In Section~\ref{sec:islamic} we present the case
-study. We present our results in Section~\ref{sec:results}
-and conclude with future work in Section~\ref{sec:future}.
+%The rest of this paper is structured as follows. In Section~\ref{sec:related}
+%we compare Sarf to related work. In Section~\ref{sec:sarf}
+%we discuss Sarf and illustrate it with a running example.
+%%We also explain how non-deterministic finite state Automata
+%%work. 
+%In Section~\ref{sec:islamic} we present the case
+%study. We present our results in Section~\ref{sec:results}
+%and conclude with future work in Section~\ref{sec:future}.
 
 % does not have to be a subsection, 
 %just to highlight it as an item we should not miss
