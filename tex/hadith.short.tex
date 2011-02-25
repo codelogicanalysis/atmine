@@ -57,7 +57,7 @@ A hadith in Islamic literature is a narration from the
 prophet Mohammad related by multiple narrators.
 Establishing the authenticity of a hadith is an important task
 in Islamic studies. 
-Based on them Islamic scholars issue rules that affect the life
+Based on that Islamic scholars issue rules that affect the life
 of people around the world. 
 The literature lacks an automated exhaustive mechanism of 
 authentication checks. 
@@ -74,6 +74,7 @@ each book into a graph of narrators related to each other.
 \end{abstract}
 
 \section{Introduction}
+\novocalize
 
 \transfalse
 \begin{figure}[tb]
@@ -86,6 +87,7 @@ each book into a graph of narrators related to each other.
 \end{figure}
 % the FSMs for the three words
 \transtrue
+\vocalize
 
 A \RL{.hady_t}~\footnote{In this document, 
 we use the default ArabTeX transliteration style ZDMG.}
@@ -98,6 +100,7 @@ Arabic with its transliteration and translation.
 We show proper names in boxes connected
 to form complex names of narrators. 
 For example, 
+\novocalize
 \noTrRL{qtybT} is the first name 
 of narrator $n_1$, and 
 \noTrRL{s`yd} is the name of his father as 
@@ -107,7 +110,7 @@ constitutes the \noArRL{sanad}
 of the \noArRL{.hady_t}. 
 The second part of the \noArRL{.hady_t} is the 
 \RL{matn} (content) and constitutes the actual content 
-and tradition.
+of the tradition.
 
 Due to religious and political reasons, 
 writing the traditions was forbidden 
@@ -153,7 +156,7 @@ a book into narrations, each narration into its \noArRL{matn}
 and its \noArRL{sanad}, 
 and each sanad into its separate narrators. 
 This work will lead to 
-automate an exhaustive automated \noArRL{.hady_t} authentication 
+automate an exhaustive \noArRL{.hady_t} authentication 
 effort in the future as we plan to 
 automatically analyze the biography books.
 
@@ -413,7 +416,7 @@ analysis of three books of hadith selected
 arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained
   the digitized books from online sources such as 
   \href{http://www.yasoob.com/}{http://www.yasoob.com/} and 
-  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }
+  \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }.
 %  Our understanding is that those books are historical documents with 
  % public IP.}.
 %\setcode{utf8}
@@ -531,8 +534,8 @@ $\lambda_{\mbox{NMC}}$, and $\tau_{\mbox{NRC}}$ respectively.
 The directed acyclic graph (DAG) 
 in Figure~\ref{f:narrators} shows a partial order relation (POR) 
 between narrators.
-We automatically extracted the POR from three books of hadith 
-selected arbitrarily~\cite{IbnHanbal,AlKulayni,AlTousi}.
+We automatically extracted the POR from the three books of 
+hadith~\cite{IbnHanbal,AlKulayni,AlTousi}.
 The nodes in boxes are the \RL{matn} of the hadith, 
 and the other nodes are the narrators.
 Given a set of chains of narrators similar to 
@@ -543,8 +546,8 @@ distance function.
 We considered each narrator to have several morphological 
 components and we rewarded every morphological match with 
 a small $\delta$. 
-Then we apply a threshold $\tau$ to the sum of rewards
-decide the equality of the two narrators. 
+Then we applied a threshold $\tau$ to the sum of rewards
+and decided the equality of the narrators. 
 We omitted the details of the distance function for brevity.
 
 \section{Results}
@@ -581,10 +584,12 @@ with 4GB of memory using a Linux operating system.
 We report our results in Table~\ref{t:hadithresallresults} on the 
 three hadith books.
 NaCEMA detected narrator chains and segmented the books 
-correctly with an accuracy above 90\%
-in all cases and across all the traditions in the three books. 
+correctly with a chain accuracy above 97\% and a narrator name
+accuracy above 90\%
+in all cases and across all the 1986 traditions in the three 
+different books with different formats. 
 
-The row for ``word count'' is an indicator of the size of the data.
+The row ``word count'' is an indicator of the size of the data.
 The %numbers in 
 rows ``names'', ``narrators'', and ``chains'' denote the total
 number of the corresponding entities per book.
@@ -678,7 +683,7 @@ Given that a biography discusses a narrator
 and mentions his professors and students,
 we plan to segment the biographies with a graph 
 coloring algorithm
-that traverses the text and colors the POR whenever
+that traverses the text and colors the POR node whenever
 a name is found. 
 
 Once the biographies are analyzed, we can annotate
