@@ -62,15 +62,23 @@ Often times,
 %      and in particular in the context of the Arabic language, 
 annotations resulting from 
 a branch of morphological analysis may not be
-appropriate for the case study at hand. 
-In this paper we present Sarf, an application-specific morphological analyzer for Arabic. 
-Sarf allows an application-specific controller to control and refine
+appropriate for the application at hand. 
+In this paper we present Sarf, 
+%an application-specific morphological analyzer for Arabic. 
+an Arabic morphological analyzer, which
+%Sarf
+allows an application-specific controller to control and refine
 the state of the analysis on the fly. 
-It uses non-deterministic finite state Automata
+It uses non-deterministic finite state Automata % (NDFSA)
 to analyze a stream of text. 
 %Each machine corresponds to a valid analysis. 
-Sarf uses concatenative analysis based on recursive affixes 
-to better preserve part of speech information.
+Sarf uses concatenative analysis 
+%based on
+with  
+recursive affixes 
+to better preserve part of speech (POS) information.
+It solves the issue of ``run-on'' words 
+and utilizes diacritics for disambiguation.
 %We automated the analysis of three books of Islamic
 %narrations (hadith) using Sarf, where we
 %abstracted each book into a vector of complex structures.
@@ -105,93 +113,72 @@ analysis techniques for Arabic text.
 %and the word means ``his Ahmad''.
 %
 %\novocalize
-The accuracy of the solutions suffer due to inherent difficulties
+The accuracy of the solutions suffers due to inherent difficulties
 of morphological analysis of the Arabic language. 
 For example, it is common practice to write Arabic text
-without short vowels / diacritics. 
-This greatly increases the ambiguity of Arabic text.
-%(maybe reduce the couple of sentences below)
-Moreover, Arabic letters can have up to 
-four different forms
-corresponding to their position in a word, i.e, beginning,
-middle, end of word and separate forms. 
-This allows the phrase 
+without short vowels (diacritics) 
+which greatly increases its ambiguity.
+%This greatly increases the ambiguity of %Arabic text.
+%the text.
+%Moreover, Arabic letters can have up to 
+%four different forms
+%corresponding to their position in a word, i.e, beginning,
+%middle, end of word and separate forms. 
+%This allows the phrase
+%\noTrnoVocRL{il_A\nospace almdrsT}
+%to be visually recognizable
+Moreover, determining word boundaries is not always 
+%a trivial problem.
+trivial.
+For example,
 \noTrnoVocRL{il_A\nospace almdrsT}
-to be visually recognizable
+can be visually recognizable
 as two separate words \noVocRL{il_A} (to) and \noVocRL{almdrsT} (the school) 
 without the need of a space in between. 
-The reason is the first word \noVocRL{il_A} ends with
-\noVocRL{_A} a non-connecting letter. 
-These words,
-referred to as ``run-on'' words~\cite{Buckwalter:04},
-occur often, and greatly increase the
+%The reason is the first word %\noVocRL{il_A} 
+%ends with
+%\noTrnoVocRL{_A} a non-connecting letter. 
+The reason is that
+\noTrnoVocRL{_A} is a non-connecting letter. 
+%These words, referred to as 
+Such 
+``run-on'' words~\cite{Buckwalter:04},
+%occur often, and greatly increase the
+occur often, %greatly
+increasing the
 difficulty of tokenization.
 
 %{\bf Sarf.~~~}
 In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
-has been submitted with the paper and will be available online as an open source tool.},
- a {\em novel application-specific %efficient 
-enhanced %(instead of 'efficient' to engulf both efficiency and other refinements)
+has been submitted with the paper and will be available 
+%online
+as an open source tool.}, 
+a {\em novel application-specific efficient 
+%(maybe 'enhanced' instead of 'efficient' to engulf both efficiency and other refinements)
 morphological analyzer} that uses 
-non-deterministic finite state Automata 
+non-deterministic finite state Automata (NDFSA)
 driven by an application-specific controller.
 Each machine in Sarf takes one letter at a time as input
 and represents a valid morphological analysis.
-The application-specific controller prunes false positives
+%The application-specific controller prunes false positives
+The controller prunes false positives
 early in the run by making a decision at every input letter
 to control the machines.
 %The controller we present in Section~\ref{sec:controller}
 %is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
 %it can be a logical entity of any type.
-The controller can be an FSA or any other %logical entity 
-programming entity of any type,
-since Automatas may be a very complex solution for some simple applications.
-  %(maybe re-word this sentence) 
+The controller can be a Finite State Automaton (FSA) or any other %logical entity 
+programming entity, % of any type,
+%since Automatas may be a %very complex
+%non-necessary solution for some simple applications.
+%(maybe re-word this sentence)
+depending on application needs.
 
-%Each alive machine in Sarf takes as input one letter at a time 
-%from a text stream.
-In addition, to being application-specific, Sarf has introduced 
-many enhancements to the field of arabic morphological analysis. 
-For example,
-Sarf does not assume that the word at hand is a token and
-performs tokenization on the fly based on morphological correctness.
-Up to our knowledge, this is the first morphological analyzer that 
-handles the ``run-on'' words problem. 
-
-Sarf uses concatenative analysis with a novel %(maybe remove novel bc authors did not feel it is much)
-{\em recursive affixes} refinement,
-where an affix can be a sequence of other affixes which are concatenatively compatible.
-%An atomic affix $a$ is a standalone affix
-%that is not the concatenation of other affixes. 
-%We define an affix $f: a | a f$ to be either
-%an atomic affix $a$ or an atomic affix concatenated
-%with an affix. 
-Sarf introduces recursive affixes in order to
-better retain part of speech information and enhance the 
-efficiency of affix matching. 
-
-In addition, Sarf supports disambiguation using diacritics when they are available.
-This feature, to the best of our knowledge is the first attempt to benefit from 
-diacritics instead of ignoring them. Prior to Sarf, the trend was to preprocess 
-the text to remove any such `unwelcomed' letter. %Nonetheless, Sarf regards them as a richness to be utilized that should not be disregarded.
-
-%Moreover, since Sarf performs tokenization on the fly, Sarf is not just capable of solving
-%the problem of ``run-on'' words, but also of handling Multiword Expressions (MWE). 
-Moreover, since Sarf does not perform white-space delimited tokenization, Sarf is capable of 
-handling Multiword Expressions (MWEs).
-MWEs are defined in~\cite{MWE}
-``as idiosyncratic interpretations
-that cross word boundaries (or spaces)''. 
-%By this term, we refer to frequent cases when a group of words form together a single
-%item with a semantical meaning. In this paper, we focus on the example of compound names such as 
-%\noVocRL{`bid alkarym}. 
-%In current analyzers, this phrase is analyzed word by word and in best cases is 
-%considered to contain two names, instead of being understood to be a single but compound name.  
-
-Our focus when building Sarf, was not on improving the semantical rules and 
-expanding the morphological alternatives, instead we worked on adding support 
-for higher level control by the specific application utilizing the lower level 
-morphological analyzer. %In other words, the application-specific controller, has 
+%(check if position of this paragraph seems in correct place)
+%Our focus when building Sarf, was not on improving the semantical rules and 
+%expanding the morphological alternatives, instead we worked on adding support 
+%for higher level control by the specific application utilizing the lower level 
+%morphological analyzer. %In other words, the application-specific controller, has 
 % full control over and directs the morphological analysis of Sarf. 
 % (sentence should be reworded differently, but is needed to explain why we mention 
 % higher and lower accuracy hypothesis, which seems vague otherwise)
@@ -238,37 +225,116 @@ morphological analyzer. %In other words, the application-specific controller, ha
 %the presented solutions and their order of presentation may not be 
 %appropriate for the %case study.
 %application needs, which is an issue that Sarf tackles. % (maybe reworded)
-We strongly believe that by being
-an application-specific morphological analyzer that allows an application-specific 
+We have noted that in many NLP applications, when the morphological analyzer
+benefits from the peculiarities and characteristics of the query at hand, 
+the analysis %can be easily 
+is greatly 
+enhanced. 
+Consequently, we strongly believe that by 
+%being 
+allowing
+an application-specific %morphological 
+%analyzer that allows %an application-specific 
+%the
 controller to intervene at every decision to guide, use, order, and 
 refine the morphological analysis, Sarf is of high utility.
 
-%We validate our hypothesis using a case study from the Islamic 
-%literature, introduced later in Section~\ref{sec:results}.
-In addition to all its enhanced analysis methods, Sarf still
-outperformed current morphological analyzers in terms of running time.
-These results will be presented in Section~\ref{sec:results}.
+%Each alive machine in Sarf takes as input one letter at a time 
+%from a text stream.
+Apart from being application-specific, 
+Sarf %has
+%also  
+introduced 
+many enhancements. %to the field of Arabic morphological analysis. 
+%the following enhancements:
+%For example,
+First,
+Sarf does not assume that the word at hand is a token and
+performs tokenization on the fly based on morphological correctness.
+Up to our knowledge, this is the first %morphological 
+analyzer that 
+handles %the ``run-on'' words problem. 
+``run-on'' words. 
+%
+%Moreover, since Sarf performs tokenization on the fly, Sarf is not just capable of solving
+%the problem of ``run-on'' words, but also of handling Multiword Expressions (MWE). 
+Moreover,
+% since Sarf does not perform white-space delimited tokenization, 
+Sarf 
+%is capable of handling
+handles 
+Multiword Expressions (MWEs),
+%MWEs are defined in~\cite{MWE} as
+which are 
+``idiosyncratic interpretations
+that cross word boundaries (or spaces)''~\cite{MWE}. 
+%By this term, we refer to frequent cases when a group of words form together a single
+%item with a semantical meaning. In this paper, we focus on the example of compound names such as 
+%\noVocRL{`bid alkarym}. 
+%In current analyzers, this phrase is analyzed word by word and in best cases is 
+%considered to contain two names, instead of being understood to be a single but compound name.  
 
-We make the following key contributions: 
-\begin{enumerate}
-\item {\bf application-specific analysis:}  We designed and implemented
-a application-specific morphological analyzer where a controller
-guides the analysis. 
-%\item {\bf Exhaustive analysis:} Since we have an application-specific 
-%controller that can decide on the fly whether an analysis is 
-%accepted or not, we can afford to keep all valid analyses modulo
-%those pruned by the case controller. 
-%We do that using non-deterministic FSAs. 
-\item {\bf Recursive affixes:}
-We refine the concatenative analysis of 
-Buckwalter~\shortcite{Buckwalter:02} and define affixes
-recursively. 
-This allows Sarf to perform better and 
-maintain compositional part of speech (POS) tags.
-\item {\bf Diacritic-based Disambiguation:}
-Diacritics are used to disambiguate morphological
-alternatives using any existant diacritics.
-\end{enumerate}
+Second, 
+Sarf uses concatenative analysis with a novel %(maybe remove novel bc authors did not feel it is much)
+{\em recursive affixes} refinement,
+%where an affix can be a sequence of other affixes which are concatenatively compatible.
+where an affix can be a sequence of other concatenatively compatible affixes.
+%An atomic affix $a$ is a standalone affix
+%that is not the concatenation of other affixes. 
+%We define an affix $f: a | a f$ to be either
+%an atomic affix $a$ or an atomic affix concatenated
+%with an affix. 
+%Sarf introduces recursive affixes in order to
+%This refinement is introduced to better retain
+Hence, it better retains
+%part of speech information
+POS information  
+and enhances the 
+efficiency of affix matching. 
+
+Third, Sarf supports disambiguation using 
+%diacritics when they are available.
+any available diacritics.
+%This feature, to the best of our knowledge is the first attempt to benefit from 
+%To the best of our knowledge,
+Up to our knowledge, this is the first attempt to benefit from
+diacritics instead of ignoring them. 
+Prior to Sarf, the trend was to preprocess 
+the text to remove  
+these %any such
+`unwelcomed' letters. 
+%Nonetheless, Sarf regards them as a richness to be utilized that should not be disregarded.
+
+%In addition to all its enhanced analysis methods, Sarf still
+%Sarf also
+%outperformed current morphological analyzers in terms of running time,
+%%These results will be presented 
+%as shown in Section~\ref{sec:results}.
+Sarf is also more efficent than current morphological analyzers, 
+as shown in Section~\ref{sec:results}.
+
+
+%%We make the following 
+%We summarize our key contributions: 
+%\begin{enumerate}
+%\item {\bf application-specific analysis:}  We designed and implemented
+%a application-specific morphological analyzer where a controller
+%guides the analysis. 
+%%\item {\bf Exhaustive analysis:} Since we have an application-specific 
+%%controller that can decide on the fly whether an analysis is 
+%%accepted or not, we can afford to keep all valid analyses modulo
+%%those pruned by the case controller. 
+%%We do that using non-deterministic FSAs. 
+%\item {\bf Recursive affixes:}
+%We refine the concatenative analysis of 
+%Buckwalter~\shortcite{Buckwalter:02} and define affixes
+%recursively. 
+%This allows Sarf to perform better and 
+%maintain compositional part of speech (POS) tags.
+%\item {\bf Diacritic-based Disambiguation:}
+%Diacritics are used to disambiguate morphological
+%alternatives using any existant diacritics.
+%\end{enumerate}
 
 %The rest of this paper is structured as follows. In Section~\ref{sec:related}
 %we compare Sarf to related work. In Section~\ref{sec:sarf}
@@ -291,12 +357,12 @@ alternatives using any existant diacritics.
 The survey in~\cite{Sughaiyer:04} compares
 several morphological analyzers. 
 Analyzers such as~\cite{Khoja:01,Darwish:02} 
-target specific applications in the 
-analyzer itself or use a specific set of POS tags
-as their reference.
-Sarf differs in that it is a general morphological 
+target specific applications 
+%in the analyzer itself or use a specific set of POS tags as their reference
+or limit themselves to a specific set of POS tags. 
+Sarf differs in that it is a {\em general} morphological 
 analyzer that reports all possible solutions. 
-It is application-specific in the sense that a controller 
+It is {\em application-specific} in the sense that a controller 
 prunes these solutions. 
 
 Current morphological analyzers such as %(maybe disambiguators also added here according to reviewer comments)
@@ -304,18 +370,19 @@ Buckwalter~\shortcite{Buckwalter:02},
 Beesley~\shortcite{Beesley:01},
 SAMA~\cite{Kulick:10},
 and ElixirFM~\cite{Otakar:07} 
-take as input white space delimited tokens~\cite{Kulick:10},
+take as input white-space delimited tokens~\cite{Kulick:10},
 consider them as words,
 and enumerate all possible solutions. 
-%This approach has several problems. 
-However, we note the following points that deserve consideration:
-%(We need not to mention especially point 2 as a "problem" according to reviewer comments)
-First, a white space delimited token may have 
-more than one word or just a part of a MWE.
+This approach has several problems. 
+%However, we note the following: %(I thought of this change not to include point 2 as a "problem" according to reviewer comments)
+First, a white-space delimited token may have 
+more than one word or just part of a MWE.
 %Second, the exhaustive enumeration may hurt performance and may
 %not be necessary or appropriate
 %in some case studies as noted in~\cite{Maamouri:10}. 
-Second, in many applications, the exhaustive enumeration may not be needed or appropriate as noted in~\cite{Maamouri:10}; consequently, adding unnecessary running time.
+Second, in many applications, exhaustive enumeration may not be needed or appropriate
+~\cite{Maamouri:10}; consequently, adding unnecessary running time.
+
 Other morphological analyzers such as 
 Amira~\cite{Diab:07,Benajiba:07},
 MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09} 
@@ -323,8 +390,9 @@ MAGEAD~\cite{Habash:05}, and MADA+TOKAN~\cite{Habash:09}
 use machine learning and support vector machines (SVM) 
 to enhance the accuracy of the morphological analysis at the expense 
 of efficiency.
-Xerox rules can be compiled into specialized finite state
-machine (FSM) based analyzers as described in~\cite{Beesley:03}.
+Xerox rules can be compiled into specialized 
+%finite state machine (FSM) based analyzers as described in~\cite{Beesley:03}.
+FSA-based analyzers~\cite{Beesley:03}.
 However, the efficiency of the resulting analyzer depends on the
 way the Xerox rules are written. 
 This requires deep knowledge and insight from the user
@@ -332,39 +400,52 @@ in compilation techniques, context free grammars,
 and morphological analysis.
 %context free grammar rules that can be automatically compiled
 %into efficient non-deterministic finite state Automata (NDFSA). 
+Sarf, however, allows users to write directly the code for the needed controller. %(maybe not clear)
 
-Sarf builds upon the lexicon of Buckwalter\shortcite{Buckwalter:02}.
-It differs from Buckwalter in that it defines a shorter list of affixes
-and a longer list of affix compatibility rules to allow 
+Sarf builds upon the lexicon of Buckwalter. %\shortcite{Buckwalter:02}, %(already cited above)
+%It differs from Buckwalter in that it defines a shorter list of affixes
+It defines a shorter list of affixes
+and a longer list of 
+%affix 
+compatibility rules to allow 
 affixes to be defined recursively
-so that we can have prefix-prefix an suffix-suffix 
+so that we can have prefix-prefix and suffix-suffix 
 concatenations.
-This allows Sarf to better maintain and propagate 
+%This allows Sarf to better maintain and propagate 
+Hence, it better maintains and propagates 
 the POS tags associated with affixes. 
 %This information is highly 
 %redundant with Buckwalter.% and that may lead to consistency issues. 
-Sarf keeps all the possible analyses alive where each analysis
-corresponds to a set of decisions and positions in the text. 
-Buckwalter produces a set of solutions for each token 
-and the several analysis threads of the text need to be 
-generated as a product of the token solutions. 
+% (check if necessary to keep the 2 sentences below)
+%Sarf keeps all the possible analyses alive where each analysis
+%corresponds to a set of decisions and positions in the text. 
+%Buckwalter produces a set of solutions for each token 
+%and the several analysis threads of the text need to be 
+%generated as a product of the token solutions. 
 
-Similar to Sarf, both Beesley~\shortcite{Beesley:01} and Attia~\shortcite{Attia:05} use
-finite state Automata (FSA). 
+Similar to Sarf, both Beesley %~\shortcite{Beesley:01} (already cited previously)
+and Attia~\shortcite{Attia:05} use
+%finite state Automata (FSA). 
+FSA.
 Beesley reports that the number of Automata generated by a compiler
 for Xerox rules can not be controlled and also reports a difficulty 
 to compose the FSAs into a single framework. 
-Sarf however constructs an NDFSA from
-the controller and the prefix, stem, and suffix deterministic 
+Sarf however constructs an NDFSA from 
+%the controller and 
+the prefix, stem, and suffix deterministic 
 transducers to solve the problem.
-Sarf also differs in that it uses recursive affixes in the 
-affix transducers, and in that the transducers consider
+Sarf also differs in that 
+%it uses recursive affixes in the affix transducers, and in that 
+the transducers consider
 input from the controller to modify their behavior. 
 %With Sarf it is easy to control the FSA with a application-specific
 %controller. 
-Beesley requires recompilation of the Xerox rules. 
-Attia has researched extensively MWEs handling methods~\cite{Attia:06} and 
-automated extending their dictionary coverage~\cite{Attia:10}. 
+%Beesley requires recompilation of the Xerox rules. 
+% (I am not sure if it is ok to have the above removed)
+Similar to Sarf, Attia handles MWEs, but with a more extensive coverage
+~\cite{Attia:06,Attia:10}.
+%Attia has researched extensively MWEs handling methods~\cite{Attia:06} and 
+%automated extending their dictionary coverage~\cite{Attia:10}. 
 % (I am not sure how clear this statement is)
 
 Similar to The MADA+TOKAN toolkit, Sarf thinks of
@@ -458,27 +539,43 @@ handles ``run-on'' words.
 The diagram in Figure~\ref{f:example}
 illustrates the operation of $\Phi$, the Sarf FSA,
 when parsing the
-string \noTrnoVocRL{wsyl`b-h-aa\nospace al-lA`bwn}.
+string \noTrnoVocRL{wsyl`b-h-aa\nospace al--lA`bwn}.
 %\RL{al-lA`bwn}\RL{wsyl`b-h-aa}.
-\footnote{ 
-\noVocRL{n}%
-\noVocRL{w}
-\noVocRL{b}
-\noVocRL{`}
-\noVocRL{a} 
-\noVocRL{l}
-\noVocRL{l}
-\noVocRL{a} %
-\noVocRL{a}
-\noVocRL{h}
-\noVocRL{b}
-\noVocRL{`}
-\noVocRL{l}
-\noVocRL{y}
-\noVocRL{s}
-\noVocRL{w}
-in separate form to ease following the example
-}
+%\footnote{ 
+%%\noVocRL{n}%
+%%\noVocRL{w}
+%%\noVocRL{b}
+%%\noVocRL{`}
+%%\noVocRL{a} 
+%%\noVocRL{l}
+%%\noVocRL{l}
+%%\noVocRL{a} %
+%%\noVocRL{a}
+%%\noVocRL{h}
+%%\noVocRL{b}
+%%\noVocRL{`}
+%%\noVocRL{l}
+%%\noVocRL{y}
+%%\noVocRL{s}
+%%\noVocRL{w}
+%\noTrnoVocRL{n}%
+%\noTrnoVocRL{w}
+%\noTrnoVocRL{b}
+%\noTrnoVocRL{`}
+%\noTrnoVocRL{a} 
+%\noTrnoVocRL{l}
+%\noTrnoVocRL{l}
+%\noTrnoVocRL{a} %
+%\noTrnoVocRL{a}
+%\noTrnoVocRL{h}
+%\noTrnoVocRL{b}
+%\noTrnoVocRL{`}
+%\noTrnoVocRL{l}
+%\noTrnoVocRL{y}
+%\noTrnoVocRL{s}
+%\noTrnoVocRL{w}
+%in separate form% to ease following the example
+%}
 
 Boxes and circles denote accept and regular
 states respectively.
@@ -661,7 +758,7 @@ represents accept states and the triangle represents
 reject states. 
 Note that the concrete prefix, stem and suffix transducers
 are all deterministic and cycle free as discussed 
-is Sections~\ref{sec:affixFSA} and~\ref{sec:stemFSA}.
+in Sections~\ref{sec:affixFSA} and~\ref{sec:stemFSA}.
 The cycles are introduced in the abstract machine
 for pedagogical purposes.
 
@@ -787,7 +884,7 @@ in ~\cite{MWE}. %MWEs that can undergoe lexical inflections for their constituen
  & Al Kafi & Al Istibsar & Ibn Hanbal \\ \cline{2-4} 
 Sarf & 2.7002645 & 2.6884225 & 0.2356561 \\
 Buckwalter & 3.315950 & 5.406016 & 0.5472224 \\
-ElixirFM & 2.78$\times60^2$ & 2.3$\times60^2$ & 29.2$\times$60 \\
+ElixirFM & 166.8$\times60$ & 138$\times60$ & 29.2$\times$60 \\
 \hline
 \end{tabular}
 }
