@@ -42,7 +42,7 @@
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
 %\title{Application-Specific Arabic Morphological Analyzer for Arabic Text Mining}% maybe add "with Enhanced Capabilities"
-\title{Application-Specific Enhanced Morphological Analyzer \\for Arabic Text Mining}% maybe add "with Enhanced Capabilities"
+\title{Application-Specific Morphological Analyzer for Arabic Text Mining}% maybe add "with Enhanced Capabilities"
 
 %\author{ Jad Makhlouta \\\And
 %Hamza Harkous \\
@@ -111,28 +111,6 @@ occur often.
 
 
 %{\bf Sarf.~~~}
-In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
-has been submitted with the paper and will be available 
-as an open source tool.}, 
-a {\em novel application-specific efficient 
-%(maybe 'enhanced' instead of 'efficient' to engulf both efficiency and other refinements)
-morphological analyzer} that uses 
-non-deterministic finite state Automata (NDFSA)
-driven by an application-specific controller.
-Each machine in Sarf takes one letter at a time as input
-and represents a valid morphological analysis.
-%The application-specific controller prunes false positives
-The controller prunes false positives
-early in the run by making a decision at every input letter
-to control the machines.
-%The controller we present in Section~\ref{sec:controller}
-%is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
-%it can be a logical entity of any type.
-%since Automatas may be a %very complex
-%non-necessary solution for some simple applications.
-%(maybe re-word this sentence)
-%depending on application needs.
-
 %(check if position of this paragraph seems in correct place)
 %Our focus when building Sarf, was not on improving the semantical rules and 
 %expanding the morphological alternatives, instead we worked on adding support 
@@ -195,6 +173,28 @@ an application-specific %morphological
 %the
 controller that intervenes at every decision to guide, use, order, and 
 refine the morphological analysis is of high utility.
+
+In this paper, we present Sarf~\footnote{Sarf (name modified for blind review) 
+has been submitted with the paper and will be available 
+as an open source tool.}, 
+a {\em novel application-specific efficient 
+%(maybe 'enhanced' instead of 'efficient' to engulf both efficiency and other refinements)
+morphological analyzer} that uses 
+non-deterministic finite state Automata (NDFSA)
+driven by an application-specific controller.
+Each machine in Sarf takes one letter at a time as input
+and represents a valid morphological analysis.
+%The application-specific controller prunes false positives
+The controller prunes false positives
+early in the run by making a decision at every input letter
+to control the machines.
+%The controller we present in Section~\ref{sec:controller}
+%is an FSA. However, as we explain in Section~\ref{sec:ndfsa},
+%it can be a logical entity of any type.
+%since Automatas may be a %very complex
+%non-necessary solution for some simple applications.
+%(maybe re-word this sentence)
+%depending on application needs.
 
 %Each alive machine in Sarf takes as input one letter at a time 
 %from a text stream.
@@ -832,7 +832,7 @@ Current analyzers, with the exception of Attia, fail to recognize MWE such as \n
 report it as two consecutive names. 
 Sarf includes such expressions in the stem transducer (with one letter being the space) and 
 detects them as one unit since tokenization
-is performed on the fly. The multi-word stems
+is performed on the fly. The multiword stems
 can accept some compatible affixes such as \RL{w} (and) and \RL{f-} (but).
 This approach works for proper names but not for ``Syntactically-Flexible Expressions''~\cite{MWE}.
 %MWEs that can undergoe lexical inflections for their constituent words

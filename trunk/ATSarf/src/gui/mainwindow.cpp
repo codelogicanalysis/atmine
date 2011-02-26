@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	m_ui->pushButton->setVisible(false);
+	m_ui->chk_testing->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +73,7 @@ void MainWindow::on_pushButton_clicked()
 			try{
 				system("dot -Tsvg graph.dot -o graph.svg");
 				QMainWindow * mw =new QMainWindow(NULL);
+				mw->setWindowTitle("Sarf Graph");
 				QScrollArea * sa=new QScrollArea(mw);
 				mw->setCentralWidget(sa);
 				QLabel *pic=new QLabel(sa);
@@ -97,7 +99,7 @@ void MainWindow::on_fill_clicked()
 void MainWindow::on_cmd_browse_clicked()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open File"), "/home/jad/Desktop/linux", tr("All Files (*)"));
+		tr("Open File"), "", tr("All Files (*)")); // /home/jad/Desktop/linux
 	if (!fileName.isEmpty())
 		m_ui->input->setText(fileName);
 }
