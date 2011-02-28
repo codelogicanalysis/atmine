@@ -28,7 +28,7 @@ class NULLChainNarratorNode;
 typedef QList<Chain *> ChainsContainer;
 typedef QPair<NarratorNodeIfc &, ChainNarratorNode &> NodeAddress;
 
-#define nullNodeAddress NodeAddress((NarratorNodeIfc &)nullNarratorNodeIfc,(ChainNarratorNode &)nullChainNarratorNode)
+extern NodeAddress nullNodeAddress;
 extern NULLNarratorNodeIfc nullNarratorNodeIfc;
 extern NULLGraphNarratorNode nullGraphNarratorNode;
 extern NULLChainNarratorNode nullChainNarratorNode;

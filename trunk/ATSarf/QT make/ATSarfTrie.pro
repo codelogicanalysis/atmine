@@ -103,6 +103,7 @@ CONFIG += debug_and_release
 # QMAKE_CXXFLAGS += -O3
 # QMAKE_LFLAGS += -O3
 # debug
+
 QT += sql
 FORMS += ../src/gui/mainwindow.ui
 OTHER_FILES += 

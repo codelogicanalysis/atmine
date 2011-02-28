@@ -20,6 +20,7 @@ protected:
 
 private:
     Ui::MainWindow *m_ui;
+	friend int hadith(QString input_str,ATMProgressIFC *prg);
 
 private slots:
 	void on_pushButton_clicked();

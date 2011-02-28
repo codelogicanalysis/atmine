@@ -19,13 +19,13 @@
 شواويل	شَواوِيل	Ndip	months of Shawwal	$awAwiyl/NOUN	$aw~Al_1
 طوبة	طُوبَة	N0	Tuba (5th Coptic month, Jan. 9-Feb. 7)	Tuwbap/NOUN_PROP	Tuwbap_1
 غشت	غُشْت	Nprop	August (month)	gu$ot/NOUN_PROP	gu$ot_1
-كانون	كانُون	N0	Kanun (part of month names Dec. and Jan.)	kAnuwn/NOUN_PROP
-هاتور	هاتُور	Ndip	Hator (3rd Coptic month, Nov. 10-Dec. 9)	hAtuwr/NOUN_PROP
+كانون	كانُون	N0	Kanun (part of month names Dec. and Jan.)	kAnuwn/NOUN_PROP	
+هاتور	هاتُور	Ndip	Hator (3rd Coptic month, Nov. 10-Dec. 9)	hAtuwr/NOUN_PROP	
 امشير	أَمْشِير	N	Amshir (6th Coptic month, Feb. 8-Mar. 9)	>amo$iyr/NOUN_PROP	>amo$iyr_1
 رمودة	بَرْمُودَة	N0	Barmudah (8th Coptic month, Apr. 9-May 8)	baromuwdap/NOUN_PROP	baromuwdap_1
 بشنس	بَشَنْس	N0	Bashans (9th Coptic month, May 9-June 7)	ba$anos/NOUN_PROP	ba$anos_1
 بشنس	بَشَنْس	N0	Bashans (9th Coptic month, May 9-June 7)	ba$anos/NOUN_PROP	ba$anos_1
-توت	تُوت	Ndip	Tut (1st Coptic month, Sept. 11-Oct. 10)	tuwt/NOUN_PROP	tuwt_2
+توت	تُوت	Ndip	Tut (1st Coptic month, Sept. 11-Oct. 10)	tuwt/NOUN_PROP	tuwt_2	
 جمادى	جُمادَى	N0	Jumada (part of 5th and 6th month names in Islamic calendar)	jumAdaY/NOUN_PROP	jumAdaY_1
 جمادي	جُمادَي	NAt	Jumadas  (5th and 6th months in Islamic calendar)	jumAday/NOUN_PROP	jumAdaY_1
 محرم	مُحَرَّم	Ndip	Muharram (month)	muHar~am/NOUN_PROP	muHar~am_2
