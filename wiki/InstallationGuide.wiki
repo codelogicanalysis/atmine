@@ -11,6 +11,7 @@
     * qt-sdk
     * qtcreator
     * g++
+    * graphviz
 
 == Details ==
 
