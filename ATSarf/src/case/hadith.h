@@ -11,9 +11,11 @@
 //#define DEBUG_DFS_TRAVERSAL
 #define GENERAL_HADITH
 #define FORCE_RANKS
+#define DISPLAY_GRAPHNODES_CONTENT
 //#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
+#define TAG_HADITH
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 #define IBN_START
@@ -73,5 +75,6 @@ public:
 };
 
 extern HadithParameters parameters;
+extern QString chainDataStreamFileName;
 
 #endif // HADITH_H

@@ -7,6 +7,7 @@ NULLChainNarratorNode nullChainNarratorNode;
 NULLNarratorNodeIfc nullNarratorNodeIfc;
 NULLGraphNarratorNode nullGraphNarratorNode;
 ChainsContainer chains;
+NodeAddress nullNodeAddress((NarratorNodeIfc &)nullNarratorNodeIfc,(ChainNarratorNode &)nullChainNarratorNode);
 
 NarratorNodeIfc & ChainNarratorNode::getCorrespondingNarratorNode()
 {

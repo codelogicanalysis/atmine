@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	m_ui->pushButton->setVisible(false);
-	m_ui->chk_testing->setVisible(false);
+	//m_ui->chk_testing->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -62,9 +62,10 @@ void MainWindow::on_pushButton_clicked()
 		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
 	else
 		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
+	if (!m_ui->chk_hadith->isChecked())
+		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
-	m_ui->hadith_display->setText(hadith_str);
 #ifdef TEST_NARRATOR_GRAPH
 	if (m_ui->chk_hadith->isChecked())
 	{

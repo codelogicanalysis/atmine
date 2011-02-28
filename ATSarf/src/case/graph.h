@@ -427,13 +427,21 @@ public:
 class FillNodesVisitor: public NodeVisitor
 {
 private:
-	NarratorNodesList * list;
+	NarratorNodesList * list_all, * list_bottom;
 public:
-	FillNodesVisitor(NarratorNodesList * list){this->list=list;}
+	FillNodesVisitor(NarratorNodesList * list_all,NarratorNodesList * list_bottom){this->list_all=list_all; this->list_bottom=list_bottom;}
 	void initialize(){ }
-	NarratorNodesList * getFilledList(){return list;}
+	NarratorNodesList * getFilledList(){return list_all;}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
-	virtual void visit(NarratorNodeIfc & n) {list->append(&n);}
+	virtual void visit(NarratorNodeIfc & n) {
+		list_all->append(&n);
+		if (n.size()==0)
+			list_bottom->append(&n);
+	#ifdef DISPLAY_GRAPHNODES_CONTENT
+		if (n.isGraphNode())
+			out<<n.toString()<<"\n";
+	#endif
+	}
 	virtual void finish(){}
 };
 
@@ -525,6 +533,8 @@ private:
 						bottom_nodes, all_nodes; //not used yet, TODO: a seperate function to fill them
 	friend class ColorIndices;
 
+	ATMProgressIFC *prg;
+
 	int deapest_rank;//rank of the deapmost node;
 	int getDeapestRank(){return deapest_rank;}
 
@@ -535,19 +545,25 @@ private:
 		if (!narr1.isGraphNode() && !narr2.isGraphNode())
 		{
 			GraphNarratorNode * g=new GraphNarratorNode(n1,n2);
+		#if 0
 			out<<g->toString()<<"\n";
+		#endif
 			return *g;
 		}
 		else if (narr1.isGraphNode())
 		{
 			((GraphNarratorNode &)narr1).addNarrator(n2);
+		#if 0
 			out<<narr1.toString()<<"\n";
+		#endif
 			return (GraphNarratorNode &)narr1;
 		}
 		else if (narr2.isGraphNode())
 		{
 			((GraphNarratorNode &)narr2).addNarrator(n1);
+		#if 0
 			out<<narr2.toString()<<"\n";
+		#endif
 			return (GraphNarratorNode &)narr2;
 		}
 		else if (&narr1!=&narr2)
@@ -559,7 +575,9 @@ private:
 				ChainNarratorNode & c_node=n1[i];
 				g_node.addNarrator(c_node);
 			}
+		#if 0
 			out<<g_node.toString()<<"\n";
+		#endif
 			delete dlt_g_node;
 			return g_node;
 		}
@@ -602,6 +620,7 @@ private:
 		int radius=parameters.equality_radius;
 		double threshold=parameters.equality_threshold;
 		int num_chains=top_nodes.size();
+		prg->report(0);
 		for (int i=0;i<num_chains;i++)
 		{
 			ChainNarratorNode & c1= *(ChainNarratorNode *)top_nodes[i]; //since at this stage all are ChainNode's
@@ -646,7 +665,9 @@ private:
 						needle++;
 				}
 			}
+			prg->report(100.0*i/num_chains);
 		}
+		prg->report(100);
 	}
 	void computeRanks()
 	{
@@ -685,7 +706,7 @@ private:
 	}
 	void fillNodesLists()
 	{
-		FillNodesVisitor visitor(&all_nodes);
+		FillNodesVisitor visitor(&all_nodes, &bottom_nodes);
 		GraphVisitorController c(&visitor,this);
 		DFS_traverse(c);
 	}
@@ -741,8 +762,9 @@ private:
 		}
 	}
 public:
-	NarratorGraph(ChainsContainer & chains)
+	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg)
 	{
+		this->prg=prg;
 		transform2ChainNodes(chains);
 		buildGraph();
 		correctTopNodesList();
@@ -808,9 +830,9 @@ public:
 	}
 };
 
-inline int test_GraphFunctionalities(ChainsContainer &chains)
+inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *prg)
 {
-	NarratorGraph graph(chains);
+	NarratorGraph graph(chains,prg);
 	DisplayNodeVisitor visitor;
 	GraphVisitorController c(&visitor,&graph);
 	graph.DFS_traverse(c);

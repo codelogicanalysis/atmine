@@ -5,6 +5,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
+#include <QTextBrowser>
 
 #include "stemmer.h"
 #include "letters.h"
@@ -18,9 +19,12 @@
 #include "Retrieve_Template.h"
 #include "Search_by_item_locally.h"
 #include "graph.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include <assert.h>
 
 HadithParameters parameters;
+QString chainDataStreamFileName= "chainOutput";
 
 #ifndef REFINEMENTS
 	enum wordType { NAME, NRC,NMC};
@@ -1470,7 +1474,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	QByteArray output_to_file;
 	myoutPtr= new QTextStream(&output_to_file);
 #else
-	QFile chainOutput("chainOutput");
+	QFile chainOutput(chainDataStreamFileName);
 
 	chainOutput.remove();
 	if (!chainOutput.open(QIODevice::ReadWrite))
@@ -1670,6 +1674,11 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #ifdef TEST_NARRATOR_GRAPH
 	ChainsContainer chains;
 #endif
+#if defined(TAG_HADITH)
+	QTextBrowser * taggedBox=((MainWindow*)prg)->m_ui->hadith_display;
+	taggedBox->setText(*text);
+	taggedBox->setLayoutDirection(Qt::RightToLeft);
+#endif
 	chains.clear();
 	while (!tester.atEnd())
 	{
@@ -1677,6 +1686,50 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		s->deserialize(tester);
 	#ifdef TEST_NARRATOR_GRAPH
 		chains.append(s);
+	#endif
+	#if defined(TAG_HADITH)
+		int lastpos=0;
+		QTextCursor c=taggedBox->textCursor();
+		c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+		for (int j=0;j<s->m_chain.size();j++)
+		{
+			ChainPrim * curr_struct=s->m_chain[j];
+			if (curr_struct->isNarrator())
+			{
+				c=taggedBox->textCursor();
+				c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+				c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,curr_struct->getStart()/*-lastpos*/);
+				c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,curr_struct->getLength());
+				lastpos=curr_struct->getEnd();
+				taggedBox->setTextCursor(c);
+				taggedBox->setTextBackgroundColor(Qt::red);
+				Narrator * n=(Narrator *)curr_struct;
+				for (int i=0;i<n->m_narrator.size();i++)
+				{
+					NarratorPrim * nar_struct=n->m_narrator[i];
+					if (nar_struct->isNamePrim())
+					{
+						c=taggedBox->textCursor();
+						c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+						c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,nar_struct->getStart()/*-lastpos*/);
+						c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,nar_struct->getLength());
+						lastpos=nar_struct->getEnd();
+						taggedBox->setTextCursor(c);
+						taggedBox->setTextColor(Qt::white);
+					}
+				}
+			}
+			else
+			{
+				c=taggedBox->textCursor();
+				c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+				c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,curr_struct->getStart()/*-lastpos*/);
+				c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,curr_struct->getLength());
+				lastpos=curr_struct->getEnd();
+				taggedBox->setTextCursor(c);
+				taggedBox->setTextBackgroundColor(Qt::yellow);
+			}
+		}
 	#endif
 		hadith_out<<tester_Counter<<" ";
 		s->serialize(hadith_out);
@@ -1686,9 +1739,13 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	chainOutput.close();
 	f.close();
 #ifdef TEST_NARRATOR_GRAPH
-	test_GraphFunctionalities(chains);
+	test_GraphFunctionalities(chains, prg);
 #endif
 #endif
+#ifndef TAG_HADITH
+	((MainWindow*)prg)->m_ui->hadith_display->setText(*hadith_out.string());
+#endif
+
 
 #endif
 #ifdef STATS
@@ -1738,4 +1795,3 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #endif
 	return 0;
 }
-
