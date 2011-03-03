@@ -98,9 +98,6 @@ int test(QString input_str, QString &output_str, QString &error_str, QString & h
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
 
-	out<<QString("%1").arg(input_str[1].unicode());
-	return 0;
-
 	int source_id=insert_source("Lama and Kawthar Time Categories","Manual Work","Kawthar Ali & Lama Ghusn");
 	long abstract_Time=insert_category("TIME",STEM,dbitvec(max_sources),true); //returns id if already present
 	QString file_name="../../dic/T/all.txt";
@@ -127,7 +124,7 @@ int test(QString input_str, QString &output_str, QString &error_str, QString & h
 		QList<long> * abstract_categories=new QList<long>();
 		abstract_categories->append(abstract_Time);
 		QStringList entries=line.split("\t",QString::KeepEmptyParts);
-		if (entries.size()!=6)
+		if (entries.size()<5)
 		{
 			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 			return -1;
