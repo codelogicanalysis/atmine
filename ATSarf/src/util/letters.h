@@ -47,7 +47,7 @@ static const QChar question_mark=QChar(0x061F);
 static const QChar semicolon=QChar(0x061B);
 static const QChar fasila=QChar(0x060C);
 
-static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"")+fasila+question_mark+semicolon+"]";
+static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+"]";
 static const QString punctuation=QString(":\\.,()-'\"")+fasila+question_mark+semicolon;
 
 extern QVector<QChar> alefs; //set from initialize_variables()

@@ -235,8 +235,8 @@ bool TreeSearch::on_match_helper()
 				if (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
 				{
 					static const QString empty="";
-					QStringRef diacritics_of_word=isDiacritic(info.text->at(subpos))?info.text->midRef(subpos,last-subpos+1+1):QStringRef(&empty),
-												diacritics_of_rawdata=addlastDiacritics(0,0,&possible_raw_datasOFCurrentMatch[k][j]);//to get first couple of diacritics of raw_data without letters
+					QStringRef diacritics_of_word=isDiacritic(info.text->at(subpos))?addlastDiacritics(subpos,subpos,info.text):QStringRef(&empty),
+							   diacritics_of_rawdata=addlastDiacritics(0,0,&possible_raw_datasOFCurrentMatch[k][j]);//to get first couple of diacritics of raw_data without letters
 					if (!equal(diacritics_of_word,diacritics_of_rawdata))
 					{
 						possible_raw_datasOFCurrentMatch[k].removeAt(j);
