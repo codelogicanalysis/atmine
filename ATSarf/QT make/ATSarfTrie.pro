@@ -52,7 +52,8 @@ HEADERS += util/text_handling.h \
     ../src/util/reference.h \
     ../src/case/graph_nodes.h \
     ../src/case/graph.h \
-    ../src/util/text_handling.h
+    ../src/util/text_handling.h \
+    ../src/case/hadith_utilities.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \

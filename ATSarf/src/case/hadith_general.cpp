@@ -36,11 +36,13 @@ QString StopwordsFileName=".stop_words";
 
 #ifndef REFINEMENTS
 	enum wordType { NAME, NRC,NMC};
+	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 #else
 	enum wordType { NAME, NRC,NMC,STOP_WORD};
+	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S, STOP_WORD_S};
 	QStringList rasoul_words;
 #endif
-	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
+
 	QStringList compound_words;
 	QString hadath,abid,alrasoul;
 	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
@@ -69,6 +71,10 @@ inline QString type_to_text(wordType t)
 			return "NRC";
 		case NMC:
 			return "NMC";
+	#ifdef REFINEMENTS
+		case STOP_WORD:
+			return "STOP_WORD";
+	#endif
 		default:
 			return "UNDEFINED-TYPE";
 	}
@@ -85,6 +91,10 @@ inline QString type_to_text(stateType t)
 			return "NMC_S";
 		case NRC_S:
 			return "NRC_S";
+	#ifdef REFINEMENTS
+		case STOP_WORD_S:
+			return "STOP_WORD_S";
+	#endif
 		default:
 			return "UNDEFINED-TYPE";
 	}
@@ -96,7 +106,7 @@ inline void display(wordType t)
 }
 inline void display(stateType t)
 {
-	out<<type_to_text(t)<<endl;
+	out<<type_to_text(t)<<" ";
 	//qDebug() <<type_to_text(t);
 }
 inline void display(QString t)
@@ -372,7 +382,6 @@ public:
 	#ifdef REFINEMENTS
 		ibn_or_3abid= (equal_ignore_diacritics(stem_info->raw_data,abid));
 	#endif
-		display("["+stem_info->raw_data+"]");
 		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
@@ -505,7 +514,7 @@ inline long long next_positon(long long finish,bool & has_punctuation)
 inline long long getLastLetter_IN_previousWord(long long start_letter_current_word)
 {
 	start_letter_current_word--;
-	while(start_letter_current_word>=0 && delimiters.contains(text->at(start_letter_current_word)))
+	while(start_letter_current_word>=0 && isDelimiter(text->at(start_letter_current_word)))
 		start_letter_current_word--;
 	return start_letter_current_word;
 }
@@ -513,7 +522,7 @@ inline long long getLastLetter_IN_previousWord(long long start_letter_current_wo
 inline long long getLastLetter_IN_currentWord(long long start_letter_current_word)
 {
 	int size=text->length();
-	while(start_letter_current_word<size && !delimiters.contains(text->at(start_letter_current_word)))
+	while(start_letter_current_word<size && !isDelimiter(text->at(start_letter_current_word)))
 		start_letter_current_word++;
 	return start_letter_current_word;
 }
@@ -549,6 +558,20 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 	bool found,phrase=false,stop_word=false;
 	foreach (c, rasoul_words)
 	{
+	#if 1
+		int pos;
+		if (startsWith(text->midRef(current_pos),c,pos))
+		{
+			stop_word=true;
+			found=true;
+			finish=pos+current_pos;
+		#ifdef STATS
+			current_stem=c;
+			current_exact=c;
+		#endif
+			break;
+		}
+	#else
 		found=true;
 		int pos=current_pos;
 		for (int i=0;i<c.length();)
@@ -574,11 +597,26 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 		#endif
 			break;
 		}
+	#endif
 	}
 	if (!stop_word)//TODO: maybe modified to be set as a utility function, and just called from here
 	{
 		foreach (c, compound_words)
 		{
+		#if 1
+			int pos;
+			if (startsWith(text->midRef(current_pos),c,pos))
+			{
+				phrase=true;
+				found=true;
+				finish=pos+current_pos;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
+				break;
+			}
+		#else
 			found=true;
 			int pos=current_pos;
 			for (int i=0;i<c.length();)
@@ -594,6 +632,9 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 				}
 				pos++;
 			}
+			while (isDiacritic(text->at(pos)))
+				pos++;
+			if (isDiacritic(text->at(pos)))
 			if (found)
 			{
 				phrase=true;
@@ -604,6 +645,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 			#endif
 				break;
 			}
+		#endif
 		}
 	}
 	if (!stop_word && !phrase)
@@ -661,6 +703,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 	display(currentState);
+	display("\n");
 #ifdef PUNCTUATION
 	if (has_punctuation)
 	{
@@ -762,7 +805,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		if(should_stop)
 		{
 			display("<STOP1>");
-			nextState=TEXT_S;
+			nextState=STOP_WORD_S;
 			currentData.narratorCount++;
 		#ifdef CHAIN_BUILDING
 			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(start_index);
@@ -791,7 +834,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nrc_count=0;
 		#endif
 
-			return_value= false;
+			//return_value= false;
 			break;
 		}
 	#endif
@@ -934,7 +977,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#endif
 
 			currentData.narratorEndIndex=end_pos;
-			nextState=TEXT_S;
+			nextState=STOP_WORD_S;
 			currentData.narratorCount++;
 		#ifdef STATS
 			for (int i=temp_nmc_s.count()-temp_nmc_count;i<temp_nmc_s.count();i++)
@@ -950,7 +993,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_count=0;
 			temp_nrc_count=0;
 		#endif
-			return_value= false;
+			//return_value= false;
 			break;
 		}
 	#endif
@@ -1139,7 +1182,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentData.nmcStartIndex=start_index;
 
 			//2-add this narrator and end lookup
-			nextState=TEXT_S;
+			nextState=STOP_WORD_S;
 			currentData.narratorCount++;
 		#ifdef CHAIN_BUILDING
 			currentChain->nameConnectorPrim->m_end=end_pos;
@@ -1161,7 +1204,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_count=0;
 			temp_nrc_count=0;
 		#endif
-			return_value= false;
+			//return_value= false;
 			break;
 		}
 	#endif
@@ -1308,6 +1351,21 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentData.nrcPunctuation=true;
 	#endif
 		break;
+#ifdef REFINEMENTS
+	case STOP_WORD_S:
+		if (currentType==STOP_WORD)
+		{
+			nextState=STOP_WORD_S;
+			((Narrator*)currentChain->chain->m_chain[currentChain->chain->m_chain.length()-1])->m_narrator[0]->m_end=end_pos;
+			currentData.narratorEndIndex=end_pos;
+		}
+		else
+		{
+			nextState=TEXT_S;
+			return_value=false;
+		}
+		break;
+#endif
 	default:
 		break;
 	}
@@ -1578,7 +1636,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #endif
 	current_pos=0;
 #ifndef BUCKWALTER_INTERFACE
-	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
+	while(current_pos<text->length() && isDelimiter(text->at(current_pos)))
 		current_pos++;
 #else
 	QString line =getnext();//just for first line

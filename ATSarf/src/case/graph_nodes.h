@@ -12,6 +12,7 @@
 #include <QQueue>
 #include "reference.h"
 #include "narrator_abstraction.h"
+#include "hadith_utilities.h"
 
 #include "hadith.h"
 
@@ -403,7 +404,7 @@ public:
 	virtual QString CanonicalName()
 	{
 	#ifdef REFINEMENTS
-		if (rasoul_words.contains(equalChainNodes[0]->CanonicalName()))
+		if (isRasoul(equalChainNodes[0]->CanonicalName()))
 			return alrasoul;
 	#endif
 	#ifdef SMALLEST_CANONICAL

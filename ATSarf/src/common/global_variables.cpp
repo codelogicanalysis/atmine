@@ -2,6 +2,7 @@
 #include <QSqlDatabase>
 #include <QTextStream>
 #include <QDateTime>
+#include "hadith.h" //just to propagate Directives such as SUBMISSION
 #include "database_info_block.h"
 #include "letters.h"
 #include "sql_queries.h"
@@ -23,6 +24,12 @@ bool display_warnings=true;
 
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
+
+#ifndef SUBMISSION
+QString databaseFileName="../../src/sql design/atm_filled.sql";
+#else
+QString databaseFileName=".atm_filled.sql";
+#endif
 
 QString trie_path="stem_trie.dat";
 QString trie_list_path="stem_list.dat";

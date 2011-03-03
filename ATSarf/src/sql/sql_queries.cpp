@@ -21,6 +21,7 @@
 #include "dbitvec.h"
 
 QSqlQuery query;
+extern QString databaseFileName;
 
 #if 0
 #include <stdio.h>
@@ -267,7 +268,7 @@ bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 		if (!tried_once)
 		{
 			system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
-			system("mysql --user=\"root\" --password=\"\" atm <\"../../src/sql design/atm_filled.sql\"");
+			system(string("mysql --user=\"root\" --password=\"\" atm <\""+databaseFileName.toStdString()+"\"").c_str());
 			tried_once=true;
 			start_connection(p_ifc);
 		}

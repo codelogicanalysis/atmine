@@ -46,12 +46,19 @@ static const QChar madda =QChar(0x0653);
 static const QChar question_mark=QChar(0x061F);
 static const QChar semicolon=QChar(0x061B);
 static const QChar fasila=QChar(0x060C);
+static const QChar full_stop=QChar(0x06D4);
+static const QChar full_stop2=QChar(0x200F);
+static const QChar full_stop3=QChar(0x002E);
 
-static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+"]";
-static const QString punctuation=QString(":\\.,()-'\"")+fasila+question_mark+semicolon;
+static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
+static const QString punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
 
 extern QVector<QChar> alefs; //set from initialize_variables()
 
+inline bool isDelimiter(const QChar & letter)
+{
+	return delimiters.contains(letter);
+}
 
 inline bool isPunctuationMark(const QChar & letter)
 {
