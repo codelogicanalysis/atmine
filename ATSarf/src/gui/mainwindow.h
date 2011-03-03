@@ -14,6 +14,9 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 	virtual void report(int value);
+	virtual void tag(int start, int length,QColor color, bool textcolor);
+	virtual void startTaggingText(QString & text);
+	virtual void finishTaggingText();
 
 protected:
     void changeEvent(QEvent *e);
