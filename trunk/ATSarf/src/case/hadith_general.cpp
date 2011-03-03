@@ -372,6 +372,7 @@ public:
 	#ifdef REFINEMENTS
 		ibn_or_3abid= (equal_ignore_diacritics(stem_info->raw_data,abid));
 	#endif
+		display("["+stem_info->raw_data+"]");
 		if (equal_ignore_diacritics(stem_info->raw_data,hadath))
 		{
 		#ifdef STATS
@@ -670,7 +671,6 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 	bool should_stop= (currentType== STOP_WORD && !ibn_or_3abid);//stop_word not preceeded by 3abid or ibn
 #endif
 	bool return_value=true;
-
 	switch(currentState)
 	{
 	case TEXT_S:
@@ -1304,7 +1304,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#endif
 		}
 	#ifdef PUNCTUATION
-		if (has_punctuation && nextState==NRC_S)
+		if (has_punctuation && nextState==NRC_S && currentType!=NAME && currentType!=NRC)
 			currentData.nrcPunctuation=true;
 	#endif
 		break;

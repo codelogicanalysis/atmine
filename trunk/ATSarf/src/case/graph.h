@@ -285,12 +285,13 @@ protected:
 	}
 	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
 	{
+		out<<name<<"\n";
 		if (parameters.display_chain_num)
 		{
 			for (int i=0;i<n.size();i++)
 			{
 				ChainNarratorNode & c=n[i];
-				if (c.isFirst())//bc order drawn is just inverse of what is in chains
+				if (c.isFirst() || c.getIndex()==0)//bc order drawn is just inverse of what is in chains
 				{
 					int num=c.getChainNum();
 					QString ch_node=QString("ch%1").arg(num+1);
@@ -727,7 +728,7 @@ private:
 			{
 				if (visitor.detect_cycles && visitor.stop_searching_for_cycles )
 					return;
-				bool prev_visited=visitor.isPreviouslyVisited( c);
+				bool prev_visited=visitor.isPreviouslyVisited(c);
 				visitor.visit(n,c,i);
 				if (!prev_visited)
 					DFS_traverse(c,visitor);
