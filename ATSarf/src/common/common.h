@@ -36,9 +36,6 @@ using namespace std;
 extern bool filling;
 
 extern dbitvec INVALID_BITSET;
-extern QString delimiters;
-extern QString punctuation;
-extern QVector<QChar> alefs;
 
 void initialize_variables(); //must be called at the start
 

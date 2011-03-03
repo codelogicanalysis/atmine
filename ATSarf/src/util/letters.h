@@ -2,6 +2,8 @@
 #define	_LETTERS_H
 
 #include <QChar>
+#include <QVector>
+#include "common.h"
 
 //constantletters
 static const QChar hamza=QChar(0x0621);
@@ -44,6 +46,17 @@ static const QChar madda =QChar(0x0653);
 static const QChar question_mark=QChar(0x061F);
 static const QChar semicolon=QChar(0x061B);
 static const QChar fasila=QChar(0x060C);
+
+static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"")+fasila+question_mark+semicolon+"]";
+static const QString punctuation=QString(":\\.,()-'\"")+fasila+question_mark+semicolon;
+
+extern QVector<QChar> alefs; //set from initialize_variables()
+
+
+inline bool isPunctuationMark(const QChar & letter)
+{
+	return (punctuation.contains(letter));
+}
 
 #endif	/* _LETTERS_H */
 

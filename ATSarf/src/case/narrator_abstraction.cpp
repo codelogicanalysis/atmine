@@ -408,7 +408,7 @@ static const double max_distance=3;
 double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
 {
 	QString n1_str=n1.getString(),n2_str=n2.getString();
-	if (n1_str==n2_str)
+	if (equal(n1_str,n2_str))
 		return 0;
 #ifdef REFINEMENTS
 #if 1

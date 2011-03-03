@@ -25,6 +25,14 @@
 
 HadithParameters parameters;
 QString chainDataStreamFileName= "chainOutput";
+#ifndef SUBMISSION
+QString PhrasesFileName="../src/case/phrases";
+QString StopwordsFileName="../src/case/stop_words";
+#else
+QString PhrasesFileName=".phrases";
+QString StopwordsFileName=".stop_words";
+#endif
+
 
 #ifndef REFINEMENTS
 	enum wordType { NAME, NRC,NMC};
@@ -192,8 +200,8 @@ void hadith_initialize()
 #endif
 	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
 #ifdef REFINEMENTS
-	QFile input("../src/case/phrases"); //contains compound words or phrases
-									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
+	QFile input(PhrasesFileName);	 //contains compound words or phrases
+									 //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input.open(QIODevice::ReadOnly))
 		return;
 	QTextStream file(&input);
@@ -203,8 +211,8 @@ void hadith_initialize()
 		return;
 	compound_words=phrases.split("\n",QString::SkipEmptyParts);
 
-	QFile input2("../src/case/stop_words"); //words at which sanad is assumed to have finished
-									   //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
+	QFile input2(StopwordsFileName);	//words at which sanad is assumed to have finished
+										//maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
 	if (!input2.open(QIODevice::ReadOnly))
 		return;
 	QTextStream file2(&input2);
@@ -251,7 +259,9 @@ inline void initializeStateData()
 	currentData.ibn_or_3abid=false;
 	currentData.nameStartIndex=0;
 	currentData.nmcStartIndex=0;
+#ifdef PUNCTUATION
 	currentData.nrcPunctuation=false;
+#endif
 }
 
 class hadith_stemmer: public Stemmer
@@ -469,15 +479,23 @@ public:
 
 inline long long next_positon(long long finish,bool & has_punctuation)
 {
+	has_punctuation=false;
+#ifdef PUNCTUATION
 	if (finish<text->length() && punctuation.contains(text->at(finish)))
 		has_punctuation=true;
+#endif
 	finish++;
-	while(finish<text->length() /*&& delimiters.contains(text->at(finish))*/)
+	while(finish<text->length())
 	{
+	#ifdef PUNCTUATION
 		if (punctuation.contains(text->at(finish)))
 			has_punctuation=true;
 		else if (!non_punctuation_delimiters.contains(text->at(finish)))
 			break;
+	#else
+		if (!delimiters.contains(text->at(finish)))
+			break;
+	#endif
 		finish++;
 	}
 	return finish;
@@ -556,7 +574,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3
 			break;
 		}
 	}
-	if (!stop_word)
+	if (!stop_word)//TODO: maybe modified to be set as a utility function, and just called from here
 	{
 		foreach (c, compound_words)
 		{
@@ -642,14 +660,16 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 	display(currentState);
+#ifdef PUNCTUATION
 	if (has_punctuation)
 	{
 		display("<has punctuation>");
 	}
-	bool return_value=true;
+#endif
 #ifdef REFINEMENTS
 	bool should_stop= (currentType== STOP_WORD && !ibn_or_3abid);//stop_word not preceeded by 3abid or ibn
 #endif
+	bool return_value=true;
 
 	switch(currentState)
 	{
@@ -667,6 +687,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator=1;
 		#endif
+		#ifdef PUNCTUATION
 			if (has_punctuation)
 			{
 				display("<punc1>");
@@ -682,6 +703,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentChain->narrator=new Narrator(text);
 			#endif
 			}
+		#endif
 		}
 		else if (currentType==NRC)
 		{
@@ -796,8 +818,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nmc_s.append(entry);
 			temp_nmc_count++;
 		#endif
+		#ifdef PUNCTUATION
 			if (has_punctuation)
 				currentData.nmcCount=parameters.nmc_max+1;
+		#endif
 		}
 		else if (currentType==NRC)
 		{
@@ -826,8 +850,12 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			currentChain->chain->m_chain.append(currentChain->narrator);
 			currentChain->narrator=new Narrator(text);
 		#endif
+		#ifdef PUNCTUATION
+		#if 0
 			if (has_punctuation)
 				currentData.nrcCount=parameters.nrc_max;
+		#endif
+		#endif
 		}
 		else
 		{
@@ -838,6 +866,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			}
 		#endif
 			nextState=NAME_S;
+		#ifdef PUNCTUATION
 			if (has_punctuation)
 			{
 				display("<punc2>");
@@ -853,6 +882,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentChain->narrator=new Narrator(text);
 			#endif
 			}
+		#endif
 		}
 		break;
 
@@ -970,6 +1000,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator++;//found another name name
 		#endif
+		#ifdef PUNCTUATION
 			if (has_punctuation)
 			{
 				display("<punc3>");
@@ -985,13 +1016,16 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 				currentChain->narrator=new Narrator(text);
 			#endif
 			}
+		#endif
 		}
+	#ifdef PUNCTUATION
 		else if (has_punctuation) //TODO: if punctuation check is all what is required
 		{
 			nextState=NMC_S;
 			currentData.nmcCount=parameters.nmc_max+1;
 			currentData.nmcValid=false;
 		}
+	#endif
 		else if (currentData.nmcCount>parameters.nmc_max)
 		{
 			if (currentData.nmcValid)
@@ -1131,8 +1165,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			break;
 		}
 	#endif
+	#ifdef PUNCTUATION
 		if(currentType==NAME || currentType ==NRC)
 			currentData.nrcPunctuation=false;
+	#endif
 	#ifdef REFINEMENTS
 		if (currentType==NAME || possessive)
 	#else
@@ -1154,6 +1190,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#ifdef STATS
 			temp_names_per_narrator++;//found another name name
 		#endif
+		#ifdef PUNCTUATION
 			if (has_punctuation)
 			{
 				display("<punc4>");
@@ -1170,8 +1207,13 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			#endif
 				break;
 			}
+		#endif
 		}
+	#ifdef PUNCTUATION
 		else if (currentData.nrcCount>=parameters.nrc_max || currentData.nrcPunctuation)
+	#else
+		else if (currentData.nrcCount>=parameters.nrc_max)
+	#endif
 		{
 			nextState=TEXT_S;
 		#ifdef STATS
@@ -1261,8 +1303,10 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 			temp_nrc_count++;
 		#endif
 		}
+	#ifdef PUNCTUATION
 		if (has_punctuation && nextState==NRC_S)
 			currentData.nrcPunctuation=true;
+	#endif
 		break;
 	default:
 		break;
