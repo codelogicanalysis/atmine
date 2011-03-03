@@ -33,7 +33,7 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 {
 	QTextBrowser * taggedBox=m_ui->hadith_display;
 	QTextCursor c=taggedBox->textCursor();
-	//c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+#if 0
 	int lastpos=c.position();
 	int diff=start-lastpos;
 	if (diff>=0)
@@ -41,6 +41,10 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 	else
 		c.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,-diff);
 	c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,length);
+#else
+	c.setPosition(start,QTextCursor::MoveAnchor);
+	c.setPosition(start+length,QTextCursor::KeepAnchor);
+#endif
 	taggedBox->setTextCursor(c);
 	if (textcolor)
 		taggedBox->setTextColor(color);
@@ -52,11 +56,15 @@ void MainWindow::startTaggingText(QString & text)
 {
 	QTextBrowser * taggedBox=m_ui->hadith_display;
 	taggedBox->clear();
-	taggedBox->setText(text);
 	taggedBox->setLayoutDirection(Qt::RightToLeft);
 	QTextCursor c=taggedBox->textCursor();
+	c.clearSelection();
 	c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
 	taggedBox->setTextCursor(c);
+	taggedBox->setTextBackgroundColor(Qt::white);
+	taggedBox->setTextColor(Qt::black);
+	taggedBox->setText(text);
+
 }
 
 void MainWindow::finishTaggingText()
