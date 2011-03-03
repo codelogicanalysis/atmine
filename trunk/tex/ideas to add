@@ -1,0 +1,8 @@
+-arguments why application-specific is good:
+	1) by example: application interested in names and another in adjectives
+	2) re-order of tag generation based on interest of the application (i.e. change data structure heirarchy to match those needs, eg: POS first then adstract categories, etc..)
+	3)  evidence from other papers
+	
+-compare to eNarrator:
+	(from musnad ahmad)	حدثنا ابن نمير، حدثنا فضيل يعني ابن غزوان، حدثني أبو دهقانة، قال كنت جالسا عند عبد الله بن عمر فقال أتى رسول الله صلى الله عليه وسلم ضيف فقال لبلال ائتنا بطعام فذهب بلال فأبدل صاعين من تمر بصاع من تمر جيد وكان تمرهم دونا فأعجب النبي صلى الله عليه وسلم التمر فقال النبي صلى الله عليه وسلم من أين هذا التمر فأخبره أنه أبدل صاعا بصاعين فقال رسول الله صلى الله عليه وسلم رد علينا تمرنا‏.‏ 
+	

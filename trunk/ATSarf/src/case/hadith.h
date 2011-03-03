@@ -16,7 +16,7 @@
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
 #define TAG_HADITH
-//#define HADITHDEBUG  //just for additional debugging statements displayed
+#define HADITHDEBUG  //just for additional debugging statements displayed
 //#define TENTATIVE //are decisions that we are not sure about
 #define IBN_START
 #define REFINEMENTS

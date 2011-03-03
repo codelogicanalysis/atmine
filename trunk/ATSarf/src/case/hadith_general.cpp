@@ -1675,9 +1675,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 	ChainsContainer chains;
 #endif
 #if defined(TAG_HADITH)
-	QTextBrowser * taggedBox=((MainWindow*)prg)->m_ui->hadith_display;
-	taggedBox->setText(*text);
-	taggedBox->setLayoutDirection(Qt::RightToLeft);
+	prg->startTaggingText(*text);
 #endif
 	chains.clear();
 	while (!tester.atEnd())
@@ -1688,51 +1686,27 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		chains.append(s);
 	#endif
 	#if defined(TAG_HADITH)
-		int lastpos=0;
-		QTextCursor c=taggedBox->textCursor();
-		c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
 		for (int j=0;j<s->m_chain.size();j++)
 		{
 			ChainPrim * curr_struct=s->m_chain[j];
 			if (curr_struct->isNarrator())
 			{
-				c=taggedBox->textCursor();
-				c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
-				c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,curr_struct->getStart()/*-lastpos*/);
-				c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,curr_struct->getLength());
-				lastpos=curr_struct->getEnd();
-				taggedBox->setTextCursor(c);
-				taggedBox->setTextBackgroundColor(Qt::red);
+				prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::darkYellow,false);
 				Narrator * n=(Narrator *)curr_struct;
 				for (int i=0;i<n->m_narrator.size();i++)
 				{
 					NarratorPrim * nar_struct=n->m_narrator[i];
 					if (nar_struct->isNamePrim())
-					{
-						c=taggedBox->textCursor();
-						c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
-						c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,nar_struct->getStart()/*-lastpos*/);
-						c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,nar_struct->getLength());
-						lastpos=nar_struct->getEnd();
-						taggedBox->setTextCursor(c);
-						taggedBox->setTextColor(Qt::white);
-					}
+						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
 				}
 			}
 			else
-			{
-				c=taggedBox->textCursor();
-				c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
-				c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,curr_struct->getStart()/*-lastpos*/);
-				c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,curr_struct->getLength());
-				lastpos=curr_struct->getEnd();
-				taggedBox->setTextCursor(c);
-				taggedBox->setTextBackgroundColor(Qt::yellow);
-			}
+				prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::gray,false);
 		}
-	#endif
+	#else
 		hadith_out<<tester_Counter<<" ";
 		s->serialize(hadith_out);
+	#endif
 		tester_Counter++;
 		s->serialize(file_hadith);
 	}
@@ -1743,7 +1717,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #endif
 #endif
 #ifndef TAG_HADITH
-	((MainWindow*)prg)->m_ui->hadith_display->setText(*hadith_out.string());
+	prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
+#else
+	prg->finishTaggingText();
 #endif
 
 

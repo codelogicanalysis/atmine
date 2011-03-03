@@ -29,6 +29,48 @@ void MainWindow::report(int value)
 	m_ui->progressBar->setValue(value);
 }
 
+void MainWindow::tag(int start, int length,QColor color, bool textcolor)
+{
+	QTextBrowser * taggedBox=m_ui->hadith_display;
+	QTextCursor c=taggedBox->textCursor();
+	//c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+	int lastpos=c.position();
+	int diff=start-lastpos;
+	if (diff>=0)
+		c.movePosition(QTextCursor::Right,QTextCursor::MoveAnchor,diff);
+	else
+		c.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,-diff);
+	c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,length);
+	taggedBox->setTextCursor(c);
+	if (textcolor)
+		taggedBox->setTextColor(color);
+	else
+		taggedBox->setTextBackgroundColor(color);
+}
+
+void MainWindow::startTaggingText(QString & text)
+{
+	QTextBrowser * taggedBox=m_ui->hadith_display;
+	taggedBox->clear();
+	taggedBox->setText(text);
+	taggedBox->setLayoutDirection(Qt::RightToLeft);
+	QTextCursor c=taggedBox->textCursor();
+	c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+	taggedBox->setTextCursor(c);
+}
+
+void MainWindow::finishTaggingText()
+{
+	QTextBrowser * taggedBox=m_ui->hadith_display;
+	QTextCursor c=taggedBox->textCursor();
+#if 0
+	c.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+#else
+	c.movePosition(QTextCursor::End,QTextCursor::MoveAnchor);
+#endif
+	taggedBox->setTextCursor(c);
+}
+
 void MainWindow::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
@@ -71,6 +113,7 @@ void MainWindow::on_pushButton_clicked()
 	{
 		if (rc==0)
 		{
+			setWindowTitle(QString("Sarf (")+m_ui->input->toPlainText()+")");
 			try{
 				system("dot -Tsvg graph.dot -o graph.svg");
 				QMainWindow * mw =new QMainWindow(NULL);
