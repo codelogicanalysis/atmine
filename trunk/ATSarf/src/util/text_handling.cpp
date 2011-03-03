@@ -61,8 +61,9 @@ bool equal_strict(QList<QChar> & list1,QList<QChar> & list2)
 }
 
 //equal functions are just copy-paste of each other
-bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
+bool equal(const QString &word1,const QString &word2) // is diacritics tolerant and ignores punctuation
 {
+#if 0
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
 	int length2=word2.count();
@@ -81,6 +82,8 @@ bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
 				diacritics1.append(word1[i1]);
 			i1++;
 		}
+		while (i1<length1 && isPunctuationMark(word1[i1]))
+			i1++;
 		if (i1<length1)
 			letter1=word1[i1];
 		else
@@ -91,6 +94,8 @@ bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
 				diacritics2.append(word2[i2]);
 			i2++;
 		}
+		while (i2<length2 && isPunctuationMark(word2[i2]))
+			i2++;
 		if (i2<length2)
 			letter2=word2[i2];
 		else
@@ -110,19 +115,22 @@ bool equal(const QString &word1,const QString &word2) // is diacritics tolerant
 	if (length1-(i1+1)==0)
 	{
 		for (int i=i2+1;i<length2;i++)
-			if (!isDiacritic(word2[i]))
+			if (!isDiacritic(word2[i]) && !isPunctuationMark(word2[i]))
 				return false;
 	}
 	else
 	{
 		for (int i=i1+1;i<length1;i++)
-			if (!isDiacritic(word1[i]))
+			if (!isDiacritic(word1[i]) && !isPunctuationMark(word1[i]))
 				return false;
 	}
 	return true;
+#else
+	return equal(word1.rightRef(-1),word2.rightRef(-1));//rightRef of <0 returns whole string
+#endif
 }
 
-bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tolerant
+bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tolerant and ignores punctuation
 {
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
@@ -142,6 +150,8 @@ bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tol
 				diacritics1.append(word1.at(i1));
 			i1++;
 		}
+		while (i1<length1 && isPunctuationMark(word1.at(i1)))
+			i1++;
 		if (i1<length1)
 			letter1=word1.at(i1);
 		else
@@ -152,6 +162,8 @@ bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tol
 				diacritics2.append(word2.at(i2));
 			i2++;
 		}
+		while (i2<length2 && isPunctuationMark(word2.at(i2)))
+			i2++;
 		if (i2<length2)
 			letter2=word2.at(i2);
 		else
@@ -171,20 +183,21 @@ bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tol
 	if (length1-(i1+1)==0)
 	{
 		for (int i=i2+1;i<length2;i++)
-			if (!isDiacritic(word2.at(i)))
+			if (!isDiacritic(word2.at(i)) && !isPunctuationMark(word2.at(i)))
 				return false;
 	}
 	else
 	{
 		for (int i=i1+1;i<length1;i++)
-			if (!isDiacritic(word1.at(i)))
+			if (!isDiacritic(word1.at(i)) && !isPunctuationMark(word1.at(i)))
 				return false;
 	}
 	return true;
 }
 
-bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolerant
+bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolerant and ignores punctuation
 {
+#if 0
 	int length1=word1.count();
 	int length2=word2.count();
 	int i1=-1,i2=-1;
@@ -202,6 +215,8 @@ bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolera
 				diacritics1.append(word1.at(i1));
 			i1++;
 		}
+		while (i1<length1 && isPunctuationMark(word1.at(i1)))
+			i1++;
 		if (i1<length1)
 			letter1=word1.at(i1);
 		else
@@ -212,6 +227,8 @@ bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolera
 				diacritics2.append(word2.at(i2));
 			i2++;
 		}
+		while (i2<length2 && isPunctuationMark(word2[i2]))
+			i2++;
 		if (i2<length2)
 			letter2=word2.at(i2);
 		else
@@ -231,16 +248,19 @@ bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolera
 	if (length1-(i1+1)==0)
 	{
 		for (int i=i2+1;i<length2;i++)
-			if (!isDiacritic(word2.at(i)))
+			if (!isDiacritic(word2.at(i)) && !isPunctuationMark(word2.at(i)))
 				return false;
 	}
 	else
 	{
 		for (int i=i1+1;i<length1;i++)
-			if (!isDiacritic(word1.at(i)))
+			if (!isDiacritic(word1.at(i)) && !isPunctuationMark(word1.at(i)))
 				return false;
 	}
 	return true;
+#else
+	return equal(word1,word2.rightRef(-1));//rightRef of <0 returns whole string
+#endif
 }
 
 bool equal_ignore_diacritics(const QString &word1,const QString &word2)

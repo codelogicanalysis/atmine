@@ -125,7 +125,7 @@ void MainWindow::on_pushButton_clicked()
 			try{
 				system("dot -Tsvg graph.dot -o graph.svg");
 				QMainWindow * mw =new QMainWindow(NULL);
-				mw->setWindowTitle("Sarf Graph");
+				mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
 				QScrollArea * sa=new QScrollArea(mw);
 				mw->setCentralWidget(sa);
 				QLabel *pic=new QLabel(sa);
