@@ -285,7 +285,7 @@ protected:
 	}
 	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
 	{
-		out<<name<<"\n";
+		//out<<name<<"\n";
 		if (parameters.display_chain_num)
 		{
 			for (int i=0;i<n.size();i++)
@@ -637,21 +637,22 @@ private:
 					ChainNarratorNode & lastMergedNode //the node we should start comparing from after it
 							=g_node.getChainNodeInChain(k);//return the chain k node in the graph node if it exists
 
-					offset=(lastMergedNode.isNull()
-									?-1
-									:lastMergedNode.getIndex());//index of lastMergedNode, which we must skip
+					if (!lastMergedNode.isNull())
+						offset=max(offset, //previous offset which may be also increased since 2 were found equal
+								   lastMergedNode.getIndex());//index of lastMergedNode, which we must skip
 					u=max(offset+1,needle-radius); //the iterator over nodes of chain[k] for comparison
 					u=u>0?u:0;
 					bool match=false;
 
 					int increment=u-offset; //increment that we should add to start at u
-					ChainNarratorNode * n2=(offset==-1
+					ChainNarratorNode * n2=(lastMergedNode.isNull()
 											? &(c2+u) //start iteration at u (from beginning +u)
 											:&(lastMergedNode+increment)); //start iteration at u ( lastNode+(u-index(lastNode)) )
 					for(;u<needle+radius && !n2->isNull();u++,n2=&(n2->nextInChain())) //we are within bound of radius and of the chain size (if null => finished)
 					{
 						Narrator & n1_ref=n1->getNarrator();
 						Narrator & n2_ref=n2->getNarrator();
+						out<<n1_ref.getString()<<"]-["<<n2_ref.getString()<<"\n";
 						double eq_val=equal(n1_ref,n2_ref);
 						if (eq_val>=threshold)
 						{

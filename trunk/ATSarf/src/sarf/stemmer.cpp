@@ -69,7 +69,7 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 	if (position>=info.text->length() )
 		return true;
 	QChar ch=info.text->at(position);
-	if (delimiters.contains(ch))
+	if (isDelimiter(ch))
 		return true;
 	return false;
 }
