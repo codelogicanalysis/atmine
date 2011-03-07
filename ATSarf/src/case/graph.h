@@ -18,15 +18,13 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)=0;
 	virtual void finish()=0;
 
-	virtual void cycle_detected(){}//any cycle of length larger than 1 or 2 detected
-	virtual void cycle_detected(NarratorNodeIfc &){}//any cycle of length larger than 1 or 2 detected
-	virtual void cycle_detected(NarratorNodeIfc & ,NarratorNodeIfc &){}//any cycle of length larger than 1 or 2 detected
+	virtual void detectedCycle(NarratorNodeIfc & n);
+	virtual void finishVisit(NarratorNodeIfc & ) {}
 };
 
 class NarratorGraph;
 class LoopBreakingVisitor;
 
-#ifdef LINEAR_CHECK_FOR_VISITED
 class ColorIndices
 {
 private:
@@ -84,22 +82,16 @@ public:
 		return nextUnused;
 	}
 };
-#endif
 
-//make it linear using color
 class GraphVisitorController
 {
 protected:
-#ifndef LINEAR_CHECK_FOR_VISITED
-	typedef QMap<NarratorNodeIfc*,int> IDMap;
 	typedef Triplet<NarratorNodeIfc *,NarratorNodeIfc*,int> Edge;
 	typedef QMap<Edge, bool> EdgeMap;
-	IDMap nodeMap;
+	typedef QMap<NarratorNodeIfc *, NarratorNodeIfc*> ParentMap;
 	EdgeMap edgeMap;
-	int last_id;
-#else
-	unsigned int colorIndex;
-#endif
+	ParentMap parentMap;
+	unsigned int visitIndex, finishIndex ;
 
 	NarratorGraph * graph;
 	bool keep_track_of_edges, keep_track_of_nodes,merged_edges_as_one, detect_cycles;
@@ -109,136 +101,135 @@ protected:
 	friend class NarratorGraph;
 	friend class LoopBreakingVisitor;
 
-#ifndef LINEAR_CHECK_FOR_VISITED
 	void init()
 	{
-		edgeMap.clear();
-		nodeMap.clear();
-		last_id=0;
+		if (keep_track_of_edges)
+			edgeMap.clear();
+		parentMap.clear();
 	}
-#endif
 	void construct(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
 	{
 		this->visitor=visitor;
 		assert(visitor!=NULL);
 		this->visitor->controller=this;
-		this->keep_track_of_edges=keep_track_of_edges;
+		this->keep_track_of_edges=keep_track_of_edges || merged_edges_as_one;//if merged_edges_as_one is needed we must keep_track_of_edges
 		this->keep_track_of_nodes=keep_track_of_nodes;
 		this->merged_edges_as_one=merged_edges_as_one;
 		this->graph=graph;
 		detect_cycles=false;
 		stop_searching_for_cycles=false;
-	#ifndef LINEAR_CHECK_FOR_VISITED
 		init();
-	#endif
 	}
 
 public:
 
-#ifdef LINEAR_CHECK_FOR_VISITED
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int colorIndex,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true)
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=true, bool merged_edges_as_one=true) //assumes keep_track_of_nodes by default
+	{
+		construct(visitor,graph,keep_track_of_edges,true,merged_edges_as_one);
+		this->visitIndex=visitIndex; //assumed already cleared
+		ColorIndices::getInstance().use(visitIndex);
+		this->finishIndex=finishIndex; //assumed already cleared
+		ColorIndices::getInstance().use(finishIndex);
+	}
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true)
 	{
 		construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
-		this->colorIndex=colorIndex; //assumed already cleared
-	}
-#endif
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true)//merged_edges_as_one has no effect in case of LINEAR_CHECK_FOR_VISITED
-	{
-		construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
-	#ifdef LINEAR_CHECK_FOR_VISITED
-		this->colorIndex=ColorIndices::getInstance().getNextUnused();
-	#endif
-	}
-#ifndef LINEAR_CHECK_FOR_VISITED
-	int getUniqueNodeID(NarratorNodeIfc & n)//if not there returns -1
-	{
-		IDMap::iterator it=nodeMap.find(&n);
-		if (it==nodeMap.end())
-			return -1;
-		else
-			return it.value();
-	}
-	int generateUniqueNodeID(NarratorNodeIfc & n) //if not there generates one and returns it
-	{
-		int curr_id;
-		IDMap::iterator it=nodeMap.find(&n);
-		if (it==nodeMap.end())
+		if (keep_track_of_nodes)
 		{
-			curr_id=++last_id;
-			nodeMap.insert(&n,curr_id);
+			this->visitIndex=ColorIndices::getInstance().getNextUnused();
+			ColorIndices::getInstance().use(visitIndex);
+			this->finishIndex=ColorIndices::getInstance().getNextUnused();
+			ColorIndices::getInstance().use(finishIndex);
 		}
-		else
-			curr_id=it.value();
-		return curr_id;
 	}
-#endif
 	bool isPreviouslyVisited( NarratorNodeIfc & node)
 	{
 		if (!keep_track_of_nodes)
 			return false;
-	#ifdef LINEAR_CHECK_FOR_VISITED
-		return node.isVisited(colorIndex);
-	#else
-		IDMap::iterator it=nodeMap.find(&node);
-		return !(it==nodeMap.end());
-	#endif
+		bool visited= node.isVisited(visitIndex);
+		if (visited)
+		{
+			if (!isFinished(node))
+				visitor->detectedCycle(node);
+		}
+		return visited;
 	}
 	bool isPreviouslyVisited( NarratorNodeIfc & n1, NarratorNodeIfc & n2,int child_num)
 	{
 		if (!keep_track_of_edges)
 			return false;
 		assert(&n2==&(n1.getChild(child_num))); //to check if the edge exists i.e. we can go from n1 to n2
-	#ifndef LINEAR_CHECK_FOR_VISITED
 		if (merged_edges_as_one)
+		{
 			child_num=0; //so that they will all be treated equally
-		EdgeMap::iterator it=edgeMap.find(Edge(&n1,&n2,child_num));
-		return !(it==edgeMap.end());
-	#else
-		return n1[child_num].isVisited(colorIndex);
-	#endif
+			EdgeMap::iterator it=edgeMap.find(Edge(&n1,&n2,child_num));
+			return !(it==edgeMap.end());
+		}
+		else
+			return n1[child_num].isVisited(visitIndex);
 	}
 	void initialize()
 	{
-	#ifndef LINEAR_CHECK_FOR_VISITED
 		init();
-	#else
-		ColorIndices::getInstance().use(colorIndex);
-	#endif
+		ColorIndices::getInstance().use(visitIndex);
 		visitor->initialize();
+	}
+	NarratorNodeIfc & getParent(NarratorNodeIfc & n)
+	{
+		ParentMap::iterator it=parentMap.find(&n);
+		if (it!=parentMap.end())
+			return *(*it);
+		else
+			return nullNarratorNodeIfc;
 	}
 	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)
 	{
-		if (!isPreviouslyVisited(n1,n2,child_num))
+		//if (!isPreviouslyVisited(n1,n2,child_num))
+		//{
+			parentMap[&n2]=&n1;
 			visitor->visit(n1,n2,child_num);
+		//}
 
 		if (!keep_track_of_edges)
 			return;
-	#ifndef LINEAR_CHECK_FOR_VISITED
 		if (merged_edges_as_one)
+		{
 			child_num=0; //so that they will all be treated equally
-		edgeMap.insert(Edge(&n1,&n2,child_num),true);
-	#else
-		n1[child_num].setVisited(colorIndex);
-	#endif
+			edgeMap.insert(Edge(&n1,&n2,child_num),true);
+		}
+		else
+			n1[child_num].setVisited(visitIndex);
 	}
 	void visit(NarratorNodeIfc & n)
 	{
-		if (!isPreviouslyVisited(n))
+		//if (!isPreviouslyVisited(n))
+		//{
+			if (keep_track_of_nodes)
+				n.resetVisited(finishIndex);
 			visitor->visit(n);
+		//}
 
 		if (!keep_track_of_nodes)
 			return ;
-	#ifndef LINEAR_CHECK_FOR_VISITED
-		generateUniqueNodeID(n);
-	#else
-		n.setVisited(colorIndex);
-	#endif
+		n.setVisited(visitIndex);
+	}
+	bool isFinished( NarratorNodeIfc & node)
+	{
+		if (!keep_track_of_nodes)
+			return false;
+		return node.isVisited(finishIndex);
+	}
+	void finishVisit(NarratorNodeIfc & n)
+	{
+		if (keep_track_of_nodes)
+			n.setVisited(finishIndex);
+		n.setVisited(finishIndex);
+		visitor->finishVisit(n);
 	}
 	void finish()
 	{
-	#ifdef LINEAR_CHECK_FOR_VISITED
-		ColorIndices::getInstance().unUse(colorIndex,graph);
-	#endif
+		ColorIndices::getInstance().unUse(visitIndex,graph);
+		ColorIndices::getInstance().unUse(finishIndex,graph);
 		visitor->finish();
 	}
 };
@@ -251,7 +242,6 @@ protected:
 	#define d_out (*dot_out)
 	QList<QStringList> ranksList;
 
-#ifdef LINEAR_CHECK_FOR_VISITED
 	typedef QMap<NarratorNodeIfc*,int> IDMap;
 	IDMap nodeMap;
 	int last_id;
@@ -276,7 +266,6 @@ protected:
 			curr_id=it.value();
 		return curr_id;
 	}
-#endif
 	void setGraphRank(int rank, QString s)
 	{
 		while(rank>=ranksList.size())
@@ -285,38 +274,29 @@ protected:
 	}
 	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
 	{
-		//out<<name<<"\n";
 		if (parameters.display_chain_num)
 		{
 			for (int i=0;i<n.size();i++)
 			{
 				ChainNarratorNode & c=n[i];
-				if (c.isFirst() || c.getIndex()==0)//bc order drawn is just inverse of what is in chains
+				if (c.isLast())
 				{
 					int num=c.getChainNum();
 					QString ch_node=QString("ch%1").arg(num+1);
 					d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
 					d_out<<name<<"->"<<ch_node<<";\n";
-					setGraphRank(n.getRank(),ch_node);
+					setGraphRank(n.getRank()+2,ch_node);
 				}
 			}
 		}
 	}
 	QString getAndInitializeDotNode(NarratorNodeIfc & n)
 	{
-	#ifndef LINEAR_CHECK_FOR_VISITED
-		int curr_id=controller->getUniqueNodeID(n);
-	#else
 		int curr_id=getUniqueNodeID(n);
-	#endif
 		QString name;
 		if (curr_id==-1)
 		{
-		#ifndef LINEAR_CHECK_FOR_VISITED
-			curr_id=controller->generateUniqueNodeID(n);
-		#else
 			curr_id=generateUniqueNodeID(n);
-		#endif
 			if (n.isGraphNode())
 			{
 				d_out<<QString("g")<<curr_id<<" [label=\""<<n.CanonicalName().replace('\n',"");
@@ -345,10 +325,8 @@ public:
 	DisplayNodeVisitor(){	}
 	virtual void initialize()
 	{
-	#ifdef LINEAR_CHECK_FOR_VISITED
 		nodeMap.clear();
 		last_id=0;
-	#endif
 		ranksList.clear();
 		file=new QFile("graph.dot");
 		file->remove();
@@ -365,7 +343,7 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int /*child_num*/)
 	{
 		QString s1=getAndInitializeDotNode(n1), s2=getAndInitializeDotNode(n2);
-		d_out<<s2<<"->"<<s1<<";\n";
+		d_out<<s1<<"->"<<s2<<";\n";
 	}
 	virtual void visit(NarratorNodeIfc & n) //this is enough
 	{
@@ -383,7 +361,7 @@ public:
 			while (ranksList[currRank].size()==0)
 				currRank++;
 			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-			d_out<<"{ rank = sink;";
+			d_out<<"{ rank = source;";
 			foreach(s,ranksList[currRank])
 				d_out<<s<<";";
 			d_out<<QString("r%1;").arg(lastRank);
@@ -396,7 +374,7 @@ public:
 			if (ranksList[rank].size()>0)
 			{
 				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-				d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+				d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
 				d_out<<"{ rank = same;";
 				foreach(s,ranksList[rank])
 					d_out<<s<<";";
@@ -410,8 +388,8 @@ public:
 		if (rank>startingRank)
 		{
 			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-			d_out<<QString("r%1 -> r%2 [style=invis];\n").arg(lastRank).arg(lastRank-1);
-			d_out<<"{ rank = source;";
+			d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+			d_out<<"{ rank = sink;";
 			foreach(s,ranksList[rank])
 				d_out<<s<<";";
 			d_out<<QString("r%1;").arg(lastRank);
@@ -431,13 +409,13 @@ private:
 	NarratorNodesList * list_all, * list_bottom;
 public:
 	FillNodesVisitor(NarratorNodesList * list_all,NarratorNodesList * list_bottom){this->list_all=list_all; this->list_bottom=list_bottom;}
-	void initialize(){ }
+	void initialize(){ list_all->clear(); list_bottom->clear();}
 	NarratorNodesList * getFilledList(){return list_all;}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
 	virtual void visit(NarratorNodeIfc & n) {
 		list_all->append(&n);
-		if (n.size()==0)
-			list_bottom->append(&n);
+		/*if (n.size()==0) //TODO: do a function that checks if it is a leaf node (needs a for loop in the case of a graph node)
+			list_bottom->append(&n);*/
 	#ifdef DISPLAY_GRAPHNODES_CONTENT
 		if (n.isGraphNode())
 			out<<n.toString()<<"\n";
@@ -473,7 +451,6 @@ public:
 	virtual void visit(NarratorNodeIfc &) {	}
 	virtual void finish(){	}
 };
-
 class LoopBreakingVisitor: public NodeVisitor
 {
 private:
@@ -526,18 +503,17 @@ public:
 		out<< "Error: Cycle detected between nodes:"<<n1.CanonicalName()<<" and "<<n2.CanonicalName()<<"!\n";
 	}
 };
-
-class NarratorGraph //fill the lists
+class NarratorGraph
 {
 private:
 	NarratorNodesList	top_nodes,
-						bottom_nodes, all_nodes; //not used yet, TODO: a seperate function to fill them
+						bottom_nodes, all_nodes;
 	friend class ColorIndices;
 
 	ATMProgressIFC *prg;
 
-	int deapest_rank;//rank of the deapmost node;
-	int getDeapestRank(){return deapest_rank;}
+	int highest_rank;//rank of the deapmost node;
+	int getDeapestRank(){return highest_rank;}
 
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2)
 	{
@@ -591,26 +567,29 @@ private:
 	{//pre-condition: chain contains the valid chains extracted from the hadith
 		for (int chain_num=0;chain_num<chains.count();chain_num++)
 		{
-			int size=chains.at(chain_num)->m_chain.count(),index=0;
-			ChainNarratorNode* last;
+			int size=chains.at(chain_num)->m_chain.count();
+			ChainNarratorNode* last=NULL;
 			for (int j=0;j<size;j++)
 			{
 				if (chains.at(chain_num)->m_chain[j]->isNarrator())
 				{
 					Narrator *n=(Narrator *)(chains.at(chain_num)->m_chain[j]);
-					ChainNarratorNode* current= new ChainNarratorNode(n,index,chain_num);
-					if (index!=0)
+					ChainNarratorNode* current= new ChainNarratorNode(n,0,chain_num);
+					if (last !=NULL)
 					{
-						last->next=current;
-						current->previous=last;
-					}
-					else if (index==0)
-					{
-						top_nodes.append(current);
+						last->previous=current;
+						current->next=last;
 					}
 					last=current;
-					index++;
 				}
+			}
+			top_nodes.append(last);
+			//code below to correct index
+			int index=0;
+			for (ChainNarratorNode * current=last;!current->isNull();current=&current->nextInChain())
+			{
+				current->setIndex(index);
+				index++;
 			}
 		}
 	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
@@ -652,7 +631,9 @@ private:
 					{
 						Narrator & n1_ref=n1->getNarrator();
 						Narrator & n2_ref=n2->getNarrator();
-						out<<n1_ref.getString()<<"]-["<<n2_ref.getString()<<"\n";
+					#ifdef DEBUG_BUILDGRAPH
+						out<<n1_ref.getString()<<"]Versus["<<n2_ref.getString()<<"\n";
+					#endif
 						double eq_val=equal(n1_ref,n2_ref);
 						if (eq_val>=threshold)
 						{
@@ -673,17 +654,46 @@ private:
 	}
 	void computeRanks()
 	{
+	#if 0
+		for (int trials=0;trials<2;trials++)
+		{
+			for (int i=0;i<top_nodes.size();i++)
+			{
+				for (int j=0;j<top_nodes[i]->size();j++)
+				{
+					ChainNarratorNode * last=&(*top_nodes[i])[j];
+					for (ChainNarratorNode * current=last;!current->isNull();current=&current->nextInChain())
+					{
+						int rank1=last->getCorrespondingNarratorNode().getAutomaticRank(),
+							rank2=current->getCorrespondingNarratorNode().getAutomaticRank();
+						if (rank1>=rank2)
+							rank2=rank1+1;
+						current->setRank(rank2);
+						//current->getCorrespondingNarratorNode().setRank(rank2);
+						//last->getCorrespondingNarratorNode().setRank(rank1);
+						last->setRank(rank1);
+						if (rank2>highest_rank)
+							highest_rank=rank2;
+						last=current;
+					}
+				}
+			}
+		}
+	#else
 		RankCorrectorNodeVisitor r;
 		GraphVisitorController c(&r,this);
 		BFS_traverse(c);
 		BFS_traverse(c);
-		deapest_rank=r.getHighestRank();
+		highest_rank=r.getHighestRank();
+	#endif
 	}
 	void breakManageableCycles() //not re-looked at
 	{
+	#if 0
 		LoopBreakingVisitor l(this);
 		GraphVisitorController c(&l,this,true,true);
 		DFS_traverse(c,true);
+	#endif
 	}
 	void correctTopNodesList()
 	{
@@ -727,41 +737,13 @@ private:
 		#endif
 			if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i))
 			{
-				if (visitor.detect_cycles && visitor.stop_searching_for_cycles )
-					return;
 				bool prev_visited=visitor.isPreviouslyVisited(c);
 				visitor.visit(n,c,i);
 				if (!prev_visited)
 					DFS_traverse(c,visitor);
-				else if (visitor.detect_cycles)
-				{
-					//visitor.stop_searching_for_cycles=true;//stops the traversal whenever a cycle is detected
-					//detect cycles types
-					int start=(visitor.merged_edges_as_one?1:0);
-					int max=(visitor.merged_edges_as_one?2:n.size());
-					bool found_small_cycle=false;
-					for (int j=start;j<max;j++)
-					{
-						if (visitor.isPreviouslyVisited(c, c,j))
-						{
-							visitor.visitor->cycle_detected(c);
-							found_small_cycle=true;
-							break;
-						}
-						if (visitor.isPreviouslyVisited(c, n,j))
-						{
-							visitor.visitor->cycle_detected(c,n);
-							found_small_cycle=true;
-							break;
-						}
-					}
-					if (!found_small_cycle)
-						visitor.visitor->cycle_detected();
-					return;
-
-				}
 			}
 		}
+		visitor.finishVisit(n);
 	}
 public:
 	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg)
@@ -774,24 +756,15 @@ public:
 		//breakManageableCycles();
 		computeRanks();
 	}
-	void DFS_traverse(GraphVisitorController & visitor,bool detect_cycles=false)
+	void DFS_traverse(GraphVisitorController & visitor)
 	{
 		visitor.initialize();
-		if (detect_cycles)
-		{
-			visitor.detect_cycles=true;//forces VisitorController to detect cycles
-			visitor.keep_track_of_nodes=true;
-		}
 		int size=top_nodes.size();
 		for (int i=0; i<size;i++)
 		{
 			NarratorNodeIfc * node=top_nodes[i];
-			if (!(detect_cycles && visitor.stop_searching_for_cycles ))
-			{
+			if (!visitor.isPreviouslyVisited(*node))
 				DFS_traverse(*node,visitor);
-				if (detect_cycles)
-					visitor.initialize();
-			}
 		}
 		visitor.finish();
 	}
@@ -827,6 +800,7 @@ public:
 						queue.enqueue(&c);
 				}
 			}
+			visitor.finishVisit(n);
 		}
 		visitor.finish();
 	}

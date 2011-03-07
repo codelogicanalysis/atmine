@@ -1,7 +1,6 @@
 #include <QQueue>
 #include "graph.h"
 
-#ifdef LINEAR_CHECK_FOR_VISITED
 ColorIndices * ColorIndices::instance=NULL;
 void ColorIndices::unUse(unsigned int bit, NarratorGraph * graph)//unuse and clear color bit for all nodes in graph
 {
@@ -15,8 +14,23 @@ void ColorIndices::unUse(unsigned int bit, NarratorGraph * graph)//unuse and cle
 			(*graph->all_nodes[i])[j].resetVisited(bit);
 	}
 }
-#endif
 
+void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
+{
+	NarratorNodeIfc * current=&n;
+	out<<"cycle at ";
+	out<<"[";
+	do
+	{
+		QString s=current->CanonicalName();
+		out<<s<<",";
+		qDebug()<<s<<",";
+		current=&(controller->getParent(*current));
+	}while(current!=&n && !current->isNull());
+	out<<"]\n";
+}
+
+#if 0
 void LoopBreakingVisitor::finish() //not re-looked at
 {
 	if (cycle_fixed)
@@ -72,3 +86,4 @@ void LoopBreakingVisitor::cycle_detected(NarratorNodeIfc & n)//any cycle of leng
 	delete g;
 	parameters.equality_threshold=original_threshold;
 }
+#endif
