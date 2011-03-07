@@ -87,34 +87,34 @@ public:
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
 {
-	NarratorNodeIfc & getCorrespondingNarratorNode(){throw 1;}
+	NarratorNodeIfc & getCorrespondingNarratorNode(){assert(false);}
 
-	int size(){throw 1;}
-	NarratorNodeIfc & getChild(int ){throw 1;}
-	NarratorNodeIfc & getParent(int){throw 1;}
-	ChainNarratorNode & operator [](int){throw 1;}
+	int size(){assert(false);}
+	NarratorNodeIfc & getChild(int ){assert(false);}
+	NarratorNodeIfc & getParent(int){assert(false);}
+	ChainNarratorNode & operator [](int){assert(false);}
 
-	ChainNarratorNode & firstChainNode(){throw 1;}
-	ChainNarratorNode & nextChainNode(ChainNarratorNode & ){throw 1;}
+	ChainNarratorNode & firstChainNode(){assert(false);}
+	ChainNarratorNode & nextChainNode(ChainNarratorNode & ){assert(false);}
 
-	NodeAddress prevInChain(ChainNarratorNode &){throw 1;}
-	NodeAddress nextInChain(ChainNarratorNode &){throw 1;}
+	NodeAddress prevInChain(ChainNarratorNode &){assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode &){assert(false);}
 
-	QString CanonicalName(){throw 1;}
+	QString CanonicalName(){assert(false);}
 
-	virtual bool isNull(){throw 1;}
-	void setRank(int ){throw 1;}
-	int getAutomaticRank(){throw 1;}
-	int getRank() {throw 1;}
-	int getSavedRank(){throw 1;}
-	virtual QString rank2String(){throw 1;}
-	virtual ChainNarratorNode & getChainNodeInChain(int){throw 1;}
+	virtual bool isNull(){return true;}
+	void setRank(int ){assert(false);}
+	int getAutomaticRank(){assert(false);}
+	int getRank() {assert(false);}
+	int getSavedRank(){assert(false);}
+	virtual QString rank2String(){assert(false);}
+	virtual ChainNarratorNode & getChainNodeInChain(int){assert(false);}
 	virtual bool isGraphNode() {return false;}
 	virtual QString toString()   {return "NULLNarratorNodeIfc";}
-	void setVisited(unsigned int ) { throw 1;}
-	void resetVisited(unsigned int ) { throw 1; }
-	bool isVisited(unsigned int ) { throw 1; }
-	void resetColor() { throw 1; }
+	void setVisited(unsigned int ) { assert(false);}
+	void resetVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int ) { assert(false); }
+	void resetColor() { assert(false); }
 };
 
 class ChainContext
@@ -172,13 +172,18 @@ protected:
 	virtual int getSavedRank(){	return savedRank;}
 	virtual int getAutomaticRank()
 	{
+	#if 1
+		return (savedRank>=0?savedRank:getIndex());
+	#else
 		int r=getIndex();
-		if (savedRank>r)
+		if (savedRank<r)
 			return savedRank;
 		else
 			return r;
+	#endif
 	}
 	virtual void setRank(int rank) {savedRank=rank;}
+	virtual void setIndex(int index){chainContext.set(index, chainContext.getChainNum());}
 	friend class GraphNarratorNode;
 public:
 	ChainNarratorNode(Narrator * n,int index, int chain_num)
@@ -215,16 +220,22 @@ public:
 	virtual ChainNarratorNode & prevInChain();
 	virtual ChainNarratorNode & nextInChain();
 	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & ) {return nullNarratorNodeIfc;}
-	virtual int size() {return (isLast()?0:1);}
+	virtual int size() {return 1;}
 	virtual NarratorNodeIfc & getChild(int index)
 	{
 		assert(index==0);
-		return nextInChain().getCorrespondingNarratorNode();
+		if (isLast())
+			return (NarratorNodeIfc &)nullChainNarratorNode;
+		else
+			return nextInChain().getCorrespondingNarratorNode();
 	}
 	virtual NarratorNodeIfc & getParent(int index)
 	{
 		assert(index==0);
-		return prevInChain().getCorrespondingNarratorNode();
+		if (isFirst())
+			return (NarratorNodeIfc &)nullChainNarratorNode;
+		else
+			return prevInChain().getCorrespondingNarratorNode();
 	}
 	virtual ChainNarratorNode & operator [](int index)
 	{
@@ -277,36 +288,37 @@ public:
 class NULLChainNarratorNode: public ChainNarratorNode
 {
 protected:
-	int getSavedRank(){throw 1;}
-	int getAutomaticRank(){throw 1;}
-	void setRank(int ){throw 1;}
+	int getSavedRank(){assert(false);}
+	int getAutomaticRank(){assert(false);}
+	void setRank(int ){assert(false);}
+	void setIndex(int ){assert(false);}
 public:
 	NULLChainNarratorNode() {}
 	bool isNull() {	return true;}
-	NarratorNodeIfc & getCorrespondingNarratorNode() {throw 1;}
-	Narrator & getNarrator(){throw 1;}
-	ChainNarratorNode & operator+(int){throw 1;}
-	ChainNarratorNode & operator-(int){throw 1;}
+	NarratorNodeIfc & getCorrespondingNarratorNode() {assert(false);}
+	Narrator & getNarrator(){assert(false);}
+	ChainNarratorNode & operator+(int){assert(false);}
+	ChainNarratorNode & operator-(int){assert(false);}
 	int size() {return 0;}
-	NarratorNodeIfc & getChild(int){throw 1;}
-	NarratorNodeIfc & getParent(int){throw 1;}
-	ChainNarratorNode & operator [](int){throw 1;}
-	NodeAddress prevInChain(ChainNarratorNode & ){throw 1;}
-	NodeAddress nextInChain(ChainNarratorNode & ){throw 1;}
-	ChainNarratorNode & prevInChain(){throw 1;}
-	ChainNarratorNode & nextInChain(){throw 1;}
-	bool isFirst(){throw 1;}
-	bool isLast(){throw 1;}
-	int getIndex(){throw 1;}
-	QString rank2String(){throw 1;}
-	QString CanonicalName(){throw 1;}
-	int getChainNum(){throw 1;}
-	ChainNarratorNode & getChainNodeInChain(int ){throw 1;}
+	NarratorNodeIfc & getChild(int){assert(false);}
+	NarratorNodeIfc & getParent(int){assert(false);}
+	ChainNarratorNode & operator [](int){assert(false);}
+	NodeAddress prevInChain(ChainNarratorNode & ){assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode & ){assert(false);}
+	ChainNarratorNode & prevInChain(){assert(false);}
+	ChainNarratorNode & nextInChain(){assert(false);}
+	bool isFirst(){assert(false);}
+	bool isLast(){assert(false);}
+	int getIndex(){assert(false);}
+	QString rank2String(){assert(false);}
+	QString CanonicalName(){assert(false);}
+	int getChainNum(){assert(false);}
+	ChainNarratorNode & getChainNodeInChain(int ){assert(false);}
 	QString toString(){	return "NULLChainNarratorNodeIterator";}
-	void setVisited(unsigned int ) { throw 1;}
-	void resetVisited(unsigned int ) { throw 1; }
-	bool isVisited(unsigned int ) { throw 1; }
-	void resetColor() { throw 1; }
+	void setVisited(unsigned int ) { assert(false);}
+	void resetVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int ) { assert(false); }
+	void resetColor() { assert(false); }
 };
 
 class GraphNarratorNode: public NarratorNodeIfc
@@ -321,14 +333,14 @@ protected:
 	}
 	virtual int getAutomaticRank()
 	{
-		int largest_rank=equalChainNodes[0]->getAutomaticRank();
+		int smallest_rank=equalChainNodes[0]->getAutomaticRank();
 		for (int i=1;i<equalChainNodes.size();i++)
 		{
 			int rank=equalChainNodes[i]->getAutomaticRank();
-			if (largest_rank<rank)
-				largest_rank=rank;
+			if (smallest_rank<rank)
+				smallest_rank=rank;
 		}
-		return largest_rank;
+		return smallest_rank;
 	}
 	virtual int getSavedRank(){return savedRank;}
 	friend class LoopBreakingVisitor;
@@ -394,8 +406,8 @@ public:
 		QString ranks;
 	#ifdef SHOW_VERBOSE_RANKS
 		ranks="[";
-		for (int i=0;i<equalnarrators.size();i++)
-			ranks+=QString("%1,").arg(equalnarrators[i].getAutomaticRank());
+		for (int i=0;i<equalChainNodes.size();i++)
+			ranks+=QString("%1,").arg(equalChainNodes[i]->getAutomaticRank());
 		ranks+="]";
 	#endif
 		ranks+=QString("(%1)").arg(getSavedRank());
@@ -466,28 +478,28 @@ public:
 class NULLGraphNarratorNode: public GraphNarratorNode
 {
 protected:
-	int getSavedRank(){throw 1;}
-	int getAutomaticRank(){throw 1;}
-	void setRank(int ){throw 1;}
+	int getSavedRank(){assert(false);}
+	int getAutomaticRank(){assert(false);}
+	void setRank(int ){assert(false);}
 public:
 	NULLGraphNarratorNode(){}
 	bool isNull() {return true;}
-	void addNarrator(ChainNarratorNode &) {throw -1;}
-	NarratorNodeIfc & getCorrespondingNarratorNode() {throw 1;}
+	void addNarrator(ChainNarratorNode &) {assert(false);}
+	NarratorNodeIfc & getCorrespondingNarratorNode() {assert(false);}
 	int size() {return 0;}
-	NarratorNodeIfc & getChild(int){throw 1;}
-	NarratorNodeIfc & getParent(int){throw 1;}
-	ChainNarratorNode & operator [](int){throw 1;}
-	NodeAddress prevInChain(ChainNarratorNode & ){throw 1;}
-	NodeAddress nextInChain(ChainNarratorNode & ){throw 1;}
-	QString rank2String(){throw 1;}
-	QString CanonicalName(){throw 1;}
-	ChainNarratorNode & getChainNodeInChain(int ){throw 1;}
+	NarratorNodeIfc & getChild(int){assert(false);}
+	NarratorNodeIfc & getParent(int){assert(false);}
+	ChainNarratorNode & operator [](int){assert(false);}
+	NodeAddress prevInChain(ChainNarratorNode & ){assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode & ){assert(false);}
+	QString rank2String(){assert(false);}
+	QString CanonicalName(){assert(false);}
+	ChainNarratorNode & getChainNodeInChain(int ){assert(false);}
 	QString toString(){	return "NULLChainNarratorNodeIterator";}
-	void setVisited(unsigned int ) { throw 1;}
-	void resetVisited(unsigned int ) { throw 1; }
-	bool isVisited(unsigned int ) { throw 1; }
-	void resetColor() { throw 1; }
+	void setVisited(unsigned int ) { assert(false);}
+	void resetVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int ) { assert(false); }
+	void resetColor() { assert(false); }
 };
 
 

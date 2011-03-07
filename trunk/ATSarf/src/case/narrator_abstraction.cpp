@@ -406,14 +406,17 @@ typedef Triplet<NamePrim,NamePrim, Int2> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
 
 static const double max_distance=3;
-double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
+inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
 {
 	QString n1_str=n1.getString(),n2_str=n2.getString();
 	if (equal(n1_str,n2_str))
 		return 0;
 #ifdef REFINEMENTS
-	if (areRasoul(n1_str,n2_str))
+	bool eq1=isRasoul(n1_str), eq2=isRasoul(n2_str);
+	if (eq1 && eq2)
 		return 0;
+	else if (eq1 || eq2)
+		return max_distance;
 #endif
 	double dist=max_distance, delta=parameters.equality_delta;
 	QList<NamePrim > Names1,Names2;

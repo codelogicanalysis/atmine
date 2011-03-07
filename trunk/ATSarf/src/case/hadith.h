@@ -10,9 +10,9 @@
 
 //#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
 
-//#define LINEAR_CHECK_FOR_VISITED
 //#define DEBUG_BFS_TRAVERSAL
 //#define DEBUG_DFS_TRAVERSAL
+//#define DEBUG_BUILDGRAPH
 #define GENERAL_HADITH
 #define FORCE_RANKS
 #define DISPLAY_GRAPHNODES_CONTENT

@@ -21,13 +21,13 @@ ChainNarratorNode & ChainNarratorNode::prevInChain()
 {
 	return (previous!=NULL
 				?(*previous)
-				:nullChainNarratorNode);
+				:(ChainNarratorNode &)nullChainNarratorNode);
 }
 
 ChainNarratorNode & ChainNarratorNode::nextInChain()
 {
 	return (next!=NULL
 				?(*next)
-				:nullChainNarratorNode);
+				:(ChainNarratorNode &)nullChainNarratorNode);
 }
 
