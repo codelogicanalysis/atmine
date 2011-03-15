@@ -11,8 +11,10 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../src/sql \
     ../src/build
 INCLUDEPATH += $$TOP/datrie/
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4
-INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4/datrie
+#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4
+INCLUDEPATH += $$TOP/datrie
+#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4/datrie
+INCLUDEPATH += $$TOP/datrie/datrie
 HEADERS += util/text_handling.h \
     ../src/util/diacritics.h \
     ../src/util/dbitvec.h \
@@ -92,7 +94,7 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/graph.cpp
 
 # LIBS += -ldatrie
-LIBS += -L$$TOP/datrie/libdatrie-0.2.4/datrie/.libs/ \
+LIBS += -L$$TOP/datrie/datrie/.libs/ \
     -ldatrie
 CONFIG += qt
 CONFIG += debug_and_release
