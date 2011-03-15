@@ -10,6 +10,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    browseFileDlg(NULL),
     m_ui(new Ui::MainWindow)
 {
 	m_ui->setupUi(this);
@@ -150,10 +151,21 @@ void MainWindow::on_fill_clicked()
 
 void MainWindow::on_cmd_browse_clicked()
 {
-	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open File"), "", tr("All Files (*)")); // /home/jad/Desktop/linux
-	if (!fileName.isEmpty())
-		m_ui->input->setText(fileName);
+	//QString fileName = QFileDialog::getOpenFileName(this,
+//		tr("Open File"), "", tr("All Files (*)")); // /home/jad/Desktop/linux
+    if (browseFileDlg == NULL) {
+        QString dir = QDir::currentPath();
+        browseFileDlg = new QFileDialog(this, tr("Open File"), dir, tr("All Files (*)"));
+        browseFileDlg->setOptions(QFileDialog::DontUseNativeDialog);
+        browseFileDlg->setFileMode(QFileDialog::ExistingFile);
+        browseFileDlg->setViewMode(QFileDialog::Detail);
+    }
+    if (browseFileDlg->exec()){
+        QStringList files = browseFileDlg->selectedFiles();
+        QString fileName = files[0];
+        if (!fileName.isEmpty())
+            m_ui->input->setText(fileName);
+    }
 }
 
 int main(int argc, char *argv[])

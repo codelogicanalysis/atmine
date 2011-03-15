@@ -7,6 +7,7 @@
 namespace Ui {
     class MainWindow;
 }
+class QFileDialog;
 
 class MainWindow : public QMainWindow,public ATMProgressIFC {
     Q_OBJECT
@@ -22,6 +23,7 @@ protected:
     void changeEvent(QEvent *e);
 
 private:
+    QFileDialog * browseFileDlg;
     Ui::MainWindow *m_ui;
 	friend int hadith(QString input_str,ATMProgressIFC *prg);
 
