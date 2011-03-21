@@ -31,7 +31,7 @@ void TreeSearch::fill_details() //this function fills the public member function
         possible_raw_datasOFCurrentMatch.clear();
 		possible_raw_datasOFCurrentMatch.prepend(((result_node *)reached_node)->raw_datas);
 	#endif
-		sub_positionsOFCurrentMatch.prepend(position-1);
+		sub_positionsOFCurrentMatch.prepend(position);
         letter_node * tree_head=(letter_node*)Tree->getFirstNode();
         node * current_parent=((result_node *)reached_node)->parent;
 
@@ -49,7 +49,7 @@ void TreeSearch::fill_details() //this function fills the public member function
 				catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
 				idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
 			#endif
-				sub_positionsOFCurrentMatch.prepend(position-count-1);
+				sub_positionsOFCurrentMatch.prepend(position-count);
 			#ifdef REDUCE_THRU_DIACRITICS
 				possible_raw_datasOFCurrentMatch.prepend(((result_node *)current_parent)->raw_datas);
 			#endif
@@ -228,7 +228,7 @@ bool TreeSearch::on_match_helper()
 		int count=sub_positionsOFCurrentMatch.count();
 		for (int k=0;k<count;k++)
 		{
-			subpos=(k!=count-1?sub_positionsOFCurrentMatch[k]:getLastDiacritic(position-1,info.text)-1);
+			subpos=(k!=count-1?sub_positionsOFCurrentMatch[k]-1:getLastDiacritic(position-1,info.text)-1);
 			QStringRef subword=addlastDiacritics(startPos,subpos, info.text, last);
 			for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
 			{
@@ -253,7 +253,7 @@ bool TreeSearch::on_match_helper()
 					j--;
 				}
 			}
-			startPos=sub_positionsOFCurrentMatch[k]+1;
+			startPos=sub_positionsOFCurrentMatch[k];
 		}
 		for (int i=0;i<possible_raw_datasOFCurrentMatch.count();i++)
 			if (0==possible_raw_datasOFCurrentMatch[i].count())
@@ -288,9 +288,9 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 		inf.category_id=r_node->get_previous_category_id();
 		if (!multi_p.raw_dataONLY())
 		{
-			ItemCatRaw2PosDescAbsMapItr itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,raw_data));
+			ItemCatRaw2PosDescAbsMapItr itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
 			assert(itr!=map->end());
-			Map_entry & ITRvalue=itr.value();
+			ItemEntryInfo & ITRvalue=itr.value();
 			if (multi_p.abstract_category)
 				inf.abstract_categories=ITRvalue.first;
 			else
@@ -318,16 +318,16 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 			else
 				sol_pos->indexes.insert(i, AffixPosition(0,map->end()));
 		}
-		affix_info->append(inf);
+		affix_info.append(inf);
 	}
-	sol_pos->store_solution(inf);//store the last bc it is the first to be modified
+	sol_pos->store_solution(inf);//store the last bc it is the first to be modified (or accessed ??)
 }
 bool TreeSearch::increment(solution_position * info,int index)
 {
 	if (multi_p.NONE())
 		return false;
 	result_node * r_node=result_nodes->at(index);
-	minimal_item_info & inf=(*affix_info)[index];
+	minimal_item_info & inf=affix_info[index];
 	SolutionsCompare comp(multi_p);
 	if (!multi_p.raw_dataONLY())
 	{
@@ -336,8 +336,8 @@ bool TreeSearch::increment(solution_position * info,int index)
 		long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
 		int & raw_index=info->indexes[index].first;
 		QString & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
-		Map_key key=itr.key();
-		if (itr == map->end() || key != Map_key(id,catID,raw_data) )
+		ItemEntryKey key=itr.key();
+		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data) )
 		{
 			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)//check for next time
 			{
@@ -349,7 +349,7 @@ bool TreeSearch::increment(solution_position * info,int index)
 				else
 					inf.raw_data="";
 				inf.category_id=r_node->get_previous_category_id();
-				itr = map->find(Map_key(r_node->get_affix_id(),inf.category_id,raw_data));
+				itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
 			}
 			else
 			{

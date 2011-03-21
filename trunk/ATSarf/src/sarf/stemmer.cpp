@@ -15,9 +15,11 @@ bool PrefixMachine::onMatch()
 	for (node_info * part=lastNode();part!=NULL;part=previousNode(part))
 		out<<"\n"<<info.text->mid(part->start,part->finish-part->start+1)<<"\n";
 #endif
-	//out<<"p:"<<info->word.mid(0,position)<<"\n";
-	if (controller->Stem!=NULL)
-		delete controller->Stem;//TODO: change this allocation, deallocation to clear
+#ifdef DEBUG
+	qDebug()<<"p:"<<info.text->mid(info.start,position)<<"\n";
+#endif
+	/*if (controller->Stem!=NULL)
+		delete controller->Stem;//TODO: change this allocation, deallocation to clear*/
 	controller->Stem=new StemMachine(controller,position,controller->Prefix->resulting_category_idOFCurrentMatch);
 	controller->Stem->setSolutionSettings(controller->multi_p);
 	return (*controller->Stem)();
@@ -33,7 +35,7 @@ bool StemMachine::onMatch()
 	if (controller->called_everything)
 	{
 	#ifdef DEBUG
-		out<<"s:"<<info.text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"-"<<raw_data_of_currentmatch<<"\n";
+		qDebug()<<"s:"<<info.text->mid(starting_pos,currentMatchPos-starting_pos+1)<<"\n";
 	#endif
 		if (controller->Suffix!=NULL)
 			delete controller->Suffix;//TODO: change this allocation, deallocation to clear
@@ -60,7 +62,25 @@ bool SuffixMachine::onMatch()
 	for (node_info * part=lastNode();part!=NULL;part=previousNode(part))
 		out<<"\n"<<info.text->mid(part->start,part->finish-part->start+1)<<"\n";
 #endif
-	//out<<"S:"<<info->word.mid(startingPos)<<"\n";
+#ifdef DEBUG
+	qDebug()<<"S:"<<info.text->mid(info.start,info.finish-info.start+1)<<"\n";
+#endif
+#ifdef RUNON_WORDS
+	int index=controller->machines.size()-1;
+	if (index>=0 && controller->machines[index].Suffix==controller->Suffix)
+	{
+		controller->Prefix=new PrefixMachine(controller,info.finish+1);
+		controller->Prefix->setSolutionSettings(controller->multi_p);
+		controller->Stem=NULL;
+		controller->Suffix=NULL;
+		bool result= (*controller->Prefix)();
+		controller->Prefix=controller->machines[index].Prefix;
+		controller->Stem=controller->machines[index].Stem;
+		controller->Suffix=controller->machines[index].Suffix;
+		controller->machines.removeLast();
+		return result;
+	}
+#endif
 	return controller->on_match_helper();
 }
 
@@ -71,100 +91,66 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 	QChar ch=info.text->at(position);
 	if (isDelimiter(ch))
 		return true;
+#ifdef RUNON_WORDS
+	if (position>0)
+	{
+		ch=info.text->at(position-1);
+		if (isNonConnectingLetter(ch))
+		{
+			controller->machines.append(SubMachines(controller->Prefix,controller->Stem,controller->Suffix));
+			printMachines(controller->machines);
+			qDebug()<<"nonConnecting"<<position;
+			return true;
+		}
+	}
+#endif
 	return false;
 }
 
 bool Stemmer::on_match_helper()
 {
-#if 0
-	if (get_all_details)
-	{
-		if (called_everything || type==PREFIX)
-		{
-		#if !defined (REDUCE_THRU_DIACRITICS)
-			Prefix->fill_details();
-		#endif
-		#ifndef MULTIPLICATION
-			prefix_infos=new QVector<minimal_item_info>();
-
-			for (int i=0;i<Prefix->sub_positionsOFCurrentMatch.count();i++)
-			{
-				Search_by_item_locally s(PREFIX,Prefix->idsOFCurrentMatch[i],Prefix->catsOFCurrentMatch[i],Prefix->raw_datasOFCurrentMatch[i]);
-				minimal_item_info prefix_info;
-				while(s.retrieve(prefix_info))//TODO: results with incorrect behaviour assuming more than 1 category works for any affix, but assuming just one match this works
-					prefix_infos->append(prefix_info);
-			}
-		#else
-			prefix_infos=Prefix->affix_info;
-		#endif
-			if (!called_everything)
-				info.finish=Prefix->sub_positionsOFCurrentMatch.last();
-		}
-		if (called_everything || type==SUFFIX)
-		{
-		#if !defined (REDUCE_THRU_DIACRITICS)
-			Suffix->fill_details();
-		#endif
-		#ifndef MULTIPLICATION
-			suffix_infos=new QVector<minimal_item_info>();
-			for (int i=0;i<Suffix->sub_positionsOFCurrentMatch.count();i++)
-			{
-				Search_by_item_locally s(SUFFIX,Suffix->idsOFCurrentMatch[i],Suffix->catsOFCurrentMatch[i],Suffix->raw_datasOFCurrentMatch[i]);
-				minimal_item_info suffix_info;
-				while(s.retrieve(suffix_info))
-					suffix_infos->append(suffix_info);
-			}
-		#else
-			suffix_infos=Suffix->affix_info;
-		#endif
-			info.finish=Suffix->sub_positionsOFCurrentMatch.last();
-		}
-		if (called_everything || type==STEM)
-		{
-			Search_by_item_locally s(STEM,Stem->id_of_currentmatch,Stem->category_of_currentmatch,Stem->raw_data_of_currentmatch);
-			if (!called_everything)
-				info.finish=Stem->currentMatchPos;
-			stem_info=new minimal_item_info;
-			while(s.retrieve(*stem_info))
-			{
-				if (!on_match())
-					return false;
-			}
-			return true;
-		}
-		else
-			return on_match();
-	}
-	else
-		return on_match();
-#endif
 	info.finish=Suffix->info.finish;
-	if (get_all_details)
+#ifdef RUNON_WORDS
+	machines.append(SubMachines(Prefix,Stem,Suffix));
+	for (int i=0;i<machines.size();i++)
 	{
-		solution_position * s_inf=Suffix->computeFirstSolution();
-		do
+		runwordIndex=i;
+		SubMachines & m=machines[i];
+		Prefix=m.Prefix;
+		Stem=m.Stem;
+		Suffix=m.Suffix;
+#endif
+		if (get_all_details)
 		{
-			solution_position * p_inf=Prefix->computeFirstSolution();
+			solution_position * s_inf=Suffix->computeFirstSolution();
 			do
 			{
-				solution_position * S_inf=Stem->computeFirstSolution();
+				solution_position * p_inf=Prefix->computeFirstSolution();
 				do
 				{
-					suffix_infos=Suffix->affix_info;
-					prefix_infos=Prefix->affix_info;
-					stem_info=Stem->solution;
-					if (!on_match())
-						return false;
-				}while (Stem->computeNextSolution(S_inf));
-				delete S_inf;
-			}while (Prefix->computeNextSolution(p_inf));
-			delete p_inf;
-		}while(Suffix->computeNextSolution(s_inf));
-		delete s_inf;
-		return true;
+					solution_position * S_inf=Stem->computeFirstSolution();
+					do
+					{
+						suffix_infos=&Suffix->affix_info;
+						prefix_infos=&Prefix->affix_info;
+						stem_info=Stem->solution;
+						if (!on_match())
+							return false;
+					}while (Stem->computeNextSolution(S_inf));
+					delete S_inf;
+				}while (Prefix->computeNextSolution(p_inf));
+				delete p_inf;
+			}while(Suffix->computeNextSolution(s_inf));
+			delete s_inf;
+		}
+		else
+			if (!on_match())
+				return false;
+#ifdef RUNON_WORDS
 	}
-	else
-		return on_match();
+	machines.removeLast();
+	return true;
+#endif
 }
 bool Stemmer::on_match()
 {
@@ -172,8 +158,10 @@ bool Stemmer::on_match()
 	int number=0;
 	if (called_everything || type==PREFIX)
 	{
+		if (runwordIndex>0)
+			out<<"-->";
 		out<<"(";
-		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item
+		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item ( I dont think this is the case anymore)
 		{
 			if (number>0)
 					out<<" + ";
@@ -229,6 +217,6 @@ bool Stemmer::on_match()
 			word.append(suffix_infos->at(i).raw_data);
 		out <<" "<<word<<" ";
 	}
-	out<<" "<<info.finish+1<<"\n";
+	out<<" "<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<"\n";
 	return true;
 }

@@ -10,14 +10,15 @@ done---recheck the meaning of needle and offset and u in commented out optimized
 done---allow for greater values than 1 if they exist (don't chop)
 done---re-write the graph without iterators but with our version of list
 done---correct graph builder to keep track of needle or u per chain (not needed)
--done---check how does dot result in ranks with an order (i.e. not just set which are in this rank and which in another only but also that this rank must come first and this after
+done---check how does dot result in ranks with an order (i.e. not just set which are in this rank and which in another only but also that this rank must come first and this after
 
 -change the code to instantiate the stemmer(prefixMachine,StemMachine,...) only once in hadith case-study (i.e. change the testcase to make the one stemmer with a clear() function)
 -break cycles (save the equality vector)
--make SARF database-independent
+-make SARF database-independent (priority:2)
 -give more weight to order inforced by ibn
 -all names with space add without a space
--refine structures to report run-on words
+-refine structures to report run-on words (most priority:1)
+-fix Makefile to accomodate ui
 
 -To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)
 -maybe: after merge, traverse the graph and re-check for equality the children of same node but with lesser threshold and in these cases make use of the order set by "ibn"

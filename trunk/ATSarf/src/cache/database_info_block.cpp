@@ -124,7 +124,7 @@ void buildTrie()
 }
 #endif
 
-void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
+void fillMap(item_types type,QHash<ItemEntryKey,ItemEntryInfo> * map)
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
@@ -143,8 +143,8 @@ void fillMap(item_types type,QHash<Map_key,Map_entry> * map)
 			abstract_categories=string_to_bitset(query.value(5));
 		else
 			abstract_categories.reset();
-		Map_key key(item_id,category_id,raw_data);
-		Map_entry entry(abstract_categories,description_id,POS);
+		ItemEntryKey key(item_id,category_id,raw_data);
+		ItemEntryInfo entry(abstract_categories,description_id,POS);
 		map->insertMulti(key,entry);
 	}
 }

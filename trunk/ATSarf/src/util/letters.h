@@ -15,6 +15,7 @@ static const QChar alef_hamza_below= QChar(0x0625);
 static const QChar alef_wasla=QChar(0x0671);
 static const QChar ta2_marbouta=QChar(0x0629);
 static const QChar waw=QChar(0x0648);
+static const QChar waw_hamza_above=QChar(0x0624);
 static const QChar shadde=QChar(0x0651);
 static const QChar shadde_alef_above=QChar(0xFC63);
 static const QChar fatha=QChar(0x064E);
@@ -42,6 +43,9 @@ static const QChar ha2 =QChar(0x0647);
 static const QChar veh =QChar(0x06A4);
 static const QChar feh =QChar(0x0641);
 static const QChar madda =QChar(0x0653);
+static const QChar zain =QChar(0x0632);
+static const QChar thal =QChar(0x0630);
+static const QChar alef_maksoura= QChar(0x0649);
 
 static const QChar question_mark=QChar(0x061F);
 static const QChar semicolon=QChar(0x061B);
@@ -50,10 +54,11 @@ static const QChar full_stop=QChar(0x06D4);
 static const QChar full_stop2=QChar(0x200F);
 static const QChar full_stop3=QChar(0x002E);
 
-static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
-static const QString punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
+extern QString delimiters;
+extern QString punctuation;
+extern QVector<QChar> alefs;
+extern QString nonconnectingLetters;
 
-extern QVector<QChar> alefs; //set from initialize_variables()
 
 inline bool isDelimiter(const QChar & letter)
 {
@@ -62,7 +67,12 @@ inline bool isDelimiter(const QChar & letter)
 
 inline bool isPunctuationMark(const QChar & letter)
 {
-	return (punctuation.contains(letter));
+	return punctuation.contains(letter);
+}
+
+inline bool isNonConnectingLetter(const QChar & letter)
+{
+	return nonconnectingLetters.contains(letter);
 }
 
 #endif	/* _LETTERS_H */

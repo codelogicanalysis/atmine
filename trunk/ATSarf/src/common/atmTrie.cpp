@@ -1,6 +1,6 @@
 
 extern "C" {
-#include <config.h>
+//#include <config.h>
 #include <datrie/trie.h>
 }
 #include "atmTrie.h"

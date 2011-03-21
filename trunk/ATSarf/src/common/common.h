@@ -28,6 +28,8 @@
 #endif
 #define TIMESTAMP
 
+#define RUNON_WORDS
+
 
 using namespace std;
 

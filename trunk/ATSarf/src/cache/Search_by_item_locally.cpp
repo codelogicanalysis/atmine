@@ -13,7 +13,7 @@ Search_by_item_locally::Search_by_item_locally(item_types type,long long id, lon
 	this->id=id;
 	this->category_id=category_id;
 	this->raw_data=raw_data;
-	list = map->values(Map_key(id,category_id,raw_data));
+	list = map->values(ItemEntryKey(id,category_id,raw_data));
 	index=0;
 }
 bool Search_by_item_locally::retrieve(minimal_item_info &info)
