@@ -17,7 +17,7 @@ done---check how does dot result in ranks with an order (i.e. not just set which
 -make SARF database-independent (priority:2)
 -give more weight to order inforced by ibn
 -all names with space add without a space
--refine structures to report run-on words (most priority:1)
+done---refine structures to report run-on words
 -fix Makefile to accomodate ui
 
 -To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)
