@@ -96,12 +96,13 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 	{
 		ch=info.text->at(position-1);
 		if (isNonConnectingLetter(ch))
-		{
-			controller->machines.append(SubMachines(controller->Prefix,controller->Stem,controller->Suffix));
-			printMachines(controller->machines);
-			qDebug()<<"nonConnecting"<<position;
-			return true;
-		}
+		#ifdef REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
+			if (position-controller->Prefix->info.start>1)
+		#endif
+			{
+				controller->machines.append(SubMachines(controller->Prefix,controller->Stem,controller->Suffix));
+				return true;
+			}
 	}
 #endif
 	return false;
@@ -158,8 +159,7 @@ bool Stemmer::on_match()
 	int number=0;
 	if (called_everything || type==PREFIX)
 	{
-		if (runwordIndex>0)
-			out<<"-->";
+		out<<QString(runwordIndex,'\t');
 		out<<"(";
 		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item ( I dont think this is the case anymore)
 		{

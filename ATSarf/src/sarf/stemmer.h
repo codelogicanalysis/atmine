@@ -74,7 +74,6 @@ private:
 	int runwordIndex;
 	QList<SubMachines> machines;
 	friend class SuffixMachine;
-	friend class StemMachine;//TODO: remove this later
 #endif
 public:
 	bool called_everything;

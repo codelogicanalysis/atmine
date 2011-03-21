@@ -29,6 +29,7 @@
 #define TIMESTAMP
 
 #define RUNON_WORDS
+#define REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
 
 
 using namespace std;
