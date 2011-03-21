@@ -36,14 +36,20 @@ QString trie_list_path="stem_list.dat";
 QDateTime executable_timestamp;
 
 QVector<QChar> alefs(5);
+QString delimiters,punctuation,nonconnectingLetters;
 
 void initialize_variables()
 {
-	alefs[1]=alef_hamza_above;
 	alefs[0]=alef;
+	alefs[1]=alef_hamza_above;
 	alefs[2]=alef_hamza_below;
 	alefs[3]=alef_madda_above;
 	alefs[4]=alef_wasla;
+	nonconnectingLetters= QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
+						  waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
+	delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
+	punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
+
 	generate_bit_order("source",source_ids);
 	generate_bit_order("category",abstract_category_ids,"abstract");
 	INVALID_BITSET.reset();

@@ -41,6 +41,24 @@ public:
 	virtual ~SuffixMachine(){}
 };
 
+#ifdef RUNON_WORDS
+class SubMachines
+{
+public:
+	PrefixMachine* Prefix;
+	StemMachine* Stem;
+	SuffixMachine* Suffix;
+
+	SubMachines(PrefixMachine* Prefix, StemMachine* Stem, SuffixMachine* Suffix)
+	{
+		this->Prefix=Prefix;
+		this->Stem=Stem;
+		this->Suffix=Suffix;
+	}
+
+};
+#endif
+
 class Stemmer
 {
 public://protected:
@@ -51,6 +69,13 @@ public://protected:
 	QVector<minimal_item_info> * prefix_infos;
 	minimal_item_info * stem_info;
 	QVector<minimal_item_info> * suffix_infos;
+#ifdef RUNON_WORDS
+private:
+	int runwordIndex;
+	QList<SubMachines> machines;
+	friend class SuffixMachine;
+	friend class StemMachine;//TODO: remove this later
+#endif
 public:
 	bool called_everything;
 	PrefixMachine* Prefix;
@@ -71,6 +96,9 @@ public:
 		Stem=NULL;
 		Suffix=NULL;
 		multi_p=M_ALL;
+	#ifdef RUNON_WORDS
+		runwordIndex=0;
+	#endif
 	}
 	void setSolutionSettings(multiply_params params)
 	{
@@ -96,7 +124,7 @@ public:
 		else
 			return false;
 	}
-	virtual bool on_match_helper();
+	bool on_match_helper();
 	virtual bool on_match();
 	virtual ~Stemmer()
 	{
@@ -108,6 +136,17 @@ public:
 			delete Prefix;
 	}
 };
+#if 0
+inline void printMachines(QList<SubMachines> m)
+{
+	qDebug()<<"[";
+	for (int i=0;i<m.count();i++)
+		qDebug()<<(long)m[i].Prefix<<","<<(long)m[i].Stem<<","<<(long)m[i].Suffix;
+	qDebug()<<"]";
+}
+#else
+inline void printMachines(QList<SubMachines> ){}
+#endif
 
 #endif	/* _STEMMER_H */
 

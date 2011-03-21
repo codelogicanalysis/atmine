@@ -24,7 +24,7 @@ void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
 	{
 		QString s=current->CanonicalName();
 		out<<s<<",";
-		qDebug()<<s<<",";
+		//qDebug()<<s<<",";
 		current=&(controller->getParent(*current));
 	}while(current!=&n && !current->isNull());
 	out<<"]\n";

@@ -25,7 +25,7 @@ class TreeSearch
 		QList<long> catsOFCurrentMatch;
 		QList<long> idsOFCurrentMatch;
 	#else
-		AffixSolutionVector * affix_info;
+		AffixSolutionVector affix_info;
 		QList<result_node *> * result_nodes;
 	private:
 		ItemCatRaw2PosDescAbsMap * map;
@@ -33,7 +33,7 @@ class TreeSearch
 	#endif
         long resulting_category_idOFCurrentMatch;
 	public:
-		AffixSolutionVector & getSolution() const {return *affix_info;}//make sure affix_info is not null!!
+		const AffixSolutionVector & getSolution() const {return affix_info;}//make sure affix_info is not null!!
 		node_info * previousNode(node_info * current)
 		{
 			node* head=Tree->getFirstNode();
@@ -71,7 +71,7 @@ class TreeSearch
 			last->node=reached_node->getPreviousResultNode();
 			last->pos_in_tree=position-1;
 			last->finish=info.finish;
-			last->start=(sub_positionsOFCurrentMatch.size()>1?sub_positionsOFCurrentMatch[sub_positionsOFCurrentMatch.size()-2]:info.start);
+			last->start=(sub_positionsOFCurrentMatch.size()>1?sub_positionsOFCurrentMatch[sub_positionsOFCurrentMatch.size()-2]-1:info.start);
 			return last;
 		}
 		QList<result_node *> * getSplitList()
@@ -105,12 +105,9 @@ class TreeSearch
 			else if (type==SUFFIX)
 				map=database_info.map_suffix;
 
-			if (affix_info!=NULL)
-				affix_info->clear();
-			else
-				affix_info=new QVector<minimal_item_info>;
-			if (result_nodes!=NULL)
-				delete result_nodes;
+			affix_info.clear();
+			/*if (result_nodes!=NULL)
+				delete result_nodes;*/
 			result_nodes=getSplitList();
 			solution_position * first=new solution_position();
 			initializeAffixInfo(first,0);
@@ -152,7 +149,6 @@ class TreeSearch
 			this->type=type;
 			info.start=start;
 			info.finish=start;
-			affix_info=NULL;
 			this->reduce_thru_diacritics=reduce_thru_diacritics;
 			if (type==PREFIX)
 				Tree=database_info.Prefix_Tree;

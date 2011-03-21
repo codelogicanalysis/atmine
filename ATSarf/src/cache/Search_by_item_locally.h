@@ -9,13 +9,13 @@
 class Search_by_item_locally
 {
 private:
-	QHash<Map_key,Map_entry > * map;
+	QHash<ItemEntryKey,ItemEntryInfo > * map;
 	item_types type;
 	long long id;
 	long category_id;
 	QString raw_data;
 
-	QList<Map_entry > list;
+	QList<ItemEntryInfo > list;
 	int index;
 public:
 	Search_by_item_locally(item_types type,long long id, long category_id, QString & raw_data);

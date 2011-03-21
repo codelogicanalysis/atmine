@@ -11,10 +11,10 @@
 #include "dbitvec.h"
 #include "ATMProgressIFC.h"
 
-typedef Triplet<long long, long, QString> Map_key;  //(item_id,category_id,raw_data)
-typedef Triplet<dbitvec,long,QString> Map_entry; //(abstract_categories,description_id,POS)
+typedef Triplet<long long, long, QString> ItemEntryKey;  //(item_id,category_id,raw_data)
+typedef Triplet<dbitvec,long,QString> ItemEntryInfo; //(abstract_categories,description_id,POS)
 
-typedef QMultiHash<Map_key,Map_entry > ItemCatRaw2PosDescAbsMap;//change all uses of this map
+typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2PosDescAbsMap;//change all uses of this map
 typedef ItemCatRaw2PosDescAbsMap * ItemCatRaw2PosDescAbsMapPtr;
 typedef ItemCatRaw2PosDescAbsMap::iterator ItemCatRaw2PosDescAbsMapItr;
 

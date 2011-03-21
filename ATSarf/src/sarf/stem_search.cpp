@@ -237,7 +237,7 @@ solution_position * StemSearch::computeFirstSolution()
 	solution->category_id=category_of_currentmatch;
 	if (!multi_p.raw_dataONLY())
 	{
-		ItemCatRaw2PosDescAbsMapItr itr = database_info.map_stem->find(Map_key(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
+		ItemCatRaw2PosDescAbsMapItr itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
 		assert(itr!=database_info.map_stem->end());
 		if (multi_p.abstract_category)
 			solution->abstract_categories=itr.value().first;
@@ -274,8 +274,8 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 		ItemCatRaw2PosDescAbsMapItr & itr=current->indexes[0].second;
 		itr++;
 		QString raw_data=possible_raw_datas[current->indexes[0].first];
-		Map_key key=itr.key();
-		if (itr == database_info.map_stem->end() || key != Map_key(id_of_currentmatch,category_of_currentmatch,raw_data) )
+		ItemEntryKey key=itr.key();
+		if (itr == database_info.map_stem->end() || key != ItemEntryKey(id_of_currentmatch,category_of_currentmatch,raw_data) )
 		{
 			if (current->indexes[0].first<possible_raw_datas.count()-1)//check for next time
 			{
@@ -286,7 +286,7 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 				else
 					solution->raw_data="";
 				solution->category_id=category_of_currentmatch;
-				itr = database_info.map_stem->find(Map_key(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]));
+				itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]));
 			}
 			else
 			{
