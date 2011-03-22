@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include "graph_nodes.h"
+#include <QStack>
 
 typedef QList<NarratorNodeIfc *> NarratorNodesList;
 
@@ -66,10 +67,13 @@ public:
 	}
 	void unUse(unsigned int bit)
 	{
+	#if 0
 		assert (bit<maxBits());
 		usedBits &= (~(1 << bit));
+		//TODO: add a sweep on all nodes to resetColor for this bit.
 		if (nextUnused>bit)
 			nextUnused=bit;
+	#endif
 	}
 	void unUse(unsigned int bit, NarratorGraph * graph);//unuse and clear color bit for all nodes in graph
 	bool isUsed(unsigned int bit)
@@ -88,9 +92,9 @@ class GraphVisitorController
 protected:
 	typedef Triplet<NarratorNodeIfc *,NarratorNodeIfc*,int> Edge;
 	typedef QMap<Edge, bool> EdgeMap;
-	typedef QMap<NarratorNodeIfc *, NarratorNodeIfc*> ParentMap;
+	typedef QStack< NarratorNodeIfc*> ParentStack;
 	EdgeMap edgeMap;
-	ParentMap parentMap;
+	ParentStack parentStack;
 	unsigned int visitIndex, finishIndex ;
 
 	NarratorGraph * graph;
@@ -100,12 +104,13 @@ protected:
 
 	friend class NarratorGraph;
 	friend class LoopBreakingVisitor;
+	friend class NodeVisitor; //TODO: remove later
 
 	void init()
 	{
 		if (keep_track_of_edges)
 			edgeMap.clear();
-		parentMap.clear();
+		parentStack.clear();
 	}
 	void construct(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
 	{
@@ -174,19 +179,11 @@ public:
 		ColorIndices::getInstance().use(visitIndex);
 		visitor->initialize();
 	}
-	NarratorNodeIfc & getParent(NarratorNodeIfc & n)
-	{
-		ParentMap::iterator it=parentMap.find(&n);
-		if (it!=parentMap.end())
-			return *(*it);
-		else
-			return nullNarratorNodeIfc;
-	}
 	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)
 	{
 		//if (!isPreviouslyVisited(n1,n2,child_num))
 		//{
-			parentMap[&n2]=&n1;
+			parentStack.push(&n1);
 			visitor->visit(n1,n2,child_num);
 		//}
 

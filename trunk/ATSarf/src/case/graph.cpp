@@ -22,10 +22,15 @@ void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
 	out<<"[";
 	do
 	{
+		if (controller->parentStack.isEmpty())
+			break;
+		controller->parentStack.pop();
 		QString s=current->CanonicalName();
 		out<<s<<",";
 		//qDebug()<<s<<",";
-		current=&(controller->getParent(*current));
+		if (controller->parentStack.isEmpty())
+			break;
+		current=controller->parentStack.top();
 	}while(current!=&n && !current->isNull());
 	out<<"]\n";
 }
