@@ -226,6 +226,7 @@ QString bitset_to_string(dbitvec b)
 bool tried_once=false;
 void check_for_staleness()
 {
+#ifdef LOAD_FROM_FILE
 	QFileInfo temp(trie_list_path);
 	QDateTime cache_time;
 	if (temp.exists())
@@ -246,6 +247,7 @@ void check_for_staleness()
 			return;
 		}
 	}
+#endif
 }
 bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 {

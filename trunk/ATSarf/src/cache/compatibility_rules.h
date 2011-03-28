@@ -2,6 +2,7 @@
 #define	_COMPATIBILITY_RULES_H
 
 #include <QVector>
+#include <QDataStream>
 #include "dbitvec.h"
 #include "common.h"
 
@@ -17,16 +18,20 @@ typedef struct
 	unsigned int unused:6;
   } comp_rule_t;
 
-typedef QVector <QVector <comp_rule_t> > CompRuleLookupTable;
-typedef QVector<QString> CategoryNames;
-
 class compatibility_rules
 {
-    private:
+	public:
+		typedef QVector <QVector <comp_rule_t> > CompRuleLookupTable;
+		typedef QVector<QString> CategoryNames;
+		//TODO: add support for getting id of a CategoryName
+	private:
 		CompRuleLookupTable crlTable;
 		CategoryNames cat_names;
+
+		void fill();
+		void readFromDatabaseAndBuildFile();
     public:
-        void fill();
+		void buildFromFile();
 		bool operator()(int id1,int id2)
 		{
 			try{
@@ -59,5 +64,20 @@ class compatibility_rules
 		}
 };
 
+
+inline QDataStream &operator<<(QDataStream &out, const comp_rule_t &s)
+{
+	const void * temp=&s;
+	out<<*((const quint32 *)temp);
+	return out;
+}
+
+inline QDataStream &operator>>(QDataStream &in, comp_rule_t &s)
+{
+	quint32 r;
+	in>>r;
+	s=*((comp_rule_t *)((void *)&r));
+	return in;
+}
 #endif	/* _COMPATIBILITY_RULES_H */
 

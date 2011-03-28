@@ -1,3 +1,4 @@
+#include <QString>
 #include <bitset>
 #include <QSqlDatabase>
 #include <QTextStream>
@@ -25,14 +26,20 @@ bool display_warnings=true;
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 
-#ifndef SUBMISSION
-QString databaseFileName="../../src/sql design/atm_filled.sql";
-#else
-QString databaseFileName=".atm_filled.sql";
+QString databaseFileName;
+
+#ifdef LOAD_FROM_FILE
+QString trie_path;
+QString trie_list_path;
+QString compatibility_rules_path;
+QString prefix_tree_path;
+QString suffix_tree_path;
+QString description_path;
+QString prefix_info_path;
+QString suffix_info_path;
+QString stem_info_path;
 #endif
 
-QString trie_path="stem_trie.dat";
-QString trie_list_path="stem_list.dat";
 QDateTime executable_timestamp;
 
 QVector<QChar> alefs(5);
@@ -40,6 +47,24 @@ QString delimiters,punctuation,nonconnectingLetters;
 
 void initialize_variables()
 {
+#ifndef SUBMISSION
+	databaseFileName="../../src/sql design/atm_filled.sql";
+#else
+	databaseFileName=".atm_filled.sql";
+#endif
+#ifdef LOAD_FROM_FILE
+	trie_path=".stem_trie.dat";
+	trie_list_path=".stem_list.dat";
+	compatibility_rules_path= ".compatibility.dat";
+	prefix_tree_path=".prefix_tree.dat";
+	suffix_tree_path=".suffix_tree.dat";
+	description_path=".descriptions.dat";
+	prefix_info_path=".prefix_info.dat";
+	suffix_info_path=".suffix_info.dat";
+	stem_info_path=".stem_info.dat";
+#endif
+
+
 	alefs[0]=alef;
 	alefs[1]=alef_hamza_above;
 	alefs[2]=alef_hamza_below;

@@ -8,7 +8,19 @@
 
 class tree
 {
-    protected:
+#ifdef LOAD_FROM_FILE
+	private:
+		typedef QMap<node *,int>  IDMap;
+		typedef QMap<int,node *>  ReverseIDMap;
+		IDMap idMap;
+		ReverseIDMap reverseIDMap;
+		int last_id;
+		QDataStream * file;
+		int generateNodeID(node* n);
+		node* getNodeID(int num);
+		void setNodeID(int num, node * n);
+#endif
+	protected:
 		node* base;
 		int letter_nodes, result_nodes;
 		bool isAffix;
@@ -34,6 +46,7 @@ class tree
 #if !defined(MEMORY_EXHAUSTIVE) && !defined(REDUCE_THRU_DIACRITICS)
 		void sample();
 #endif
+		int build_affix_tree_from_file(item_types type);
 		int build_affix_tree(item_types type);
 		void reset()
 		{

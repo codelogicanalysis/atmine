@@ -20,7 +20,16 @@ typedef ItemCatRaw2PosDescAbsMap::iterator ItemCatRaw2PosDescAbsMapItr;
 
 class database_info_block
 {
+	private:
+		void readTrieFromDatabaseAndBuildFile();
+		void buildTrie();
+		void buildDescriptions();
+		void readDescriptionsFromDatabaseAndBuildFile();
+		void buildMap(item_types type,ItemCatRaw2PosDescAbsMap * map);
+		void fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map);
     public:
+		ATMProgressIFC *prgsIFC;
+
         tree* Prefix_Tree;
         tree* Suffix_Tree;
 #ifdef USE_TRIE
@@ -41,8 +50,14 @@ class database_info_block
 };
 
 extern database_info_block database_info;
+#ifdef LOAD_FROM_FILE
 extern QString trie_path;
 extern QString trie_list_path;
+extern QString description_path;
+extern QString prefix_info_path;
+extern QString suffix_info_path;
+extern QString stem_info_path;
+#endif
 extern QDateTime executable_timestamp;
 
 #endif // DATABASE_INFO_H

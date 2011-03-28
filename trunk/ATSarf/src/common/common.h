@@ -5,7 +5,7 @@
 #include "dbitvec.h"
 
 #define USE_TRIE
-#define TRIE_FROM_FILE
+#define LOAD_FROM_FILE
 #define USE_TRIE_WALK
 //#define QUEUE
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
@@ -18,7 +18,7 @@
 
 #ifndef USE_TRIE
 #undef USE_TRIE_WALK
-#undef TRIE_FROM_FILE
+#undef LOAD_FROM_FILE
 #endif
 #ifndef QUEUE
 #define PARENT
