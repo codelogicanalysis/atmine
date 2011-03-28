@@ -44,7 +44,7 @@ QString StopwordsFileName=".stop_words";
 #endif
 
 	QStringList compound_words;
-	QString hadath,abid,alrasoul;
+	QString hadath,abid,alrasoul,abihi;
 	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
 	int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 	QString non_punctuation_delimiters;
@@ -185,6 +185,7 @@ void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
 	abid.append(_3yn).append(ba2).append(dal);
+	abihi.append(alef).append(ba2).append(ya2).append(ha2);
 	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
 #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
 	abstract_NAME=get_abstractCategory_id("Male Names");

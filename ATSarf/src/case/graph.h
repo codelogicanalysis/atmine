@@ -29,23 +29,19 @@ class LoopBreakingVisitor;
 class ColorIndices
 {
 private:
-	static ColorIndices * instance;
-
+	NarratorGraph * graph;
 	unsigned int usedBits;
 	unsigned int nextUnused;
+
+	unsigned int maxBits(){ return sizeof(int)<<3;}
+	void setGraph(NarratorGraph * graph){this->graph=graph;}
+
+	friend class NarratorGraph;
+public:
 	ColorIndices()
 	{
 		usedBits=0;
 		nextUnused=0;
-	}
-	unsigned int maxBits(){ return sizeof(int)<<3;}
-
-public:
-	static ColorIndices & getInstance()
-	{
-		if (instance==NULL)
-			instance=new ColorIndices();
-		return *instance;
 	}
 	void use(unsigned int bit)
 	{
@@ -65,17 +61,7 @@ public:
 			nextUnused=maxBits();//unacceptable value for usage
 		}
 	}
-	void unUse(unsigned int bit)
-	{
-	#if 0
-		assert (bit<maxBits());
-		usedBits &= (~(1 << bit));
-		//TODO: add a sweep on all nodes to resetColor for this bit.
-		if (nextUnused>bit)
-			nextUnused=bit;
-	#endif
-	}
-	void unUse(unsigned int bit, NarratorGraph * graph);//unuse and clear color bit for all nodes in graph
+	void unUse(unsigned int bit);//unuse and clear color bit for all nodes in graph
 	bool isUsed(unsigned int bit)
 	{
 		assert (bit<maxBits());
@@ -89,10 +75,11 @@ public:
 
 class GraphVisitorController
 {
+public:
+	typedef QStack< NarratorNodeIfc*> ParentStack;
 protected:
 	typedef Triplet<NarratorNodeIfc *,NarratorNodeIfc*,int> Edge;
 	typedef QMap<Edge, bool> EdgeMap;
-	typedef QStack< NarratorNodeIfc*> ParentStack;
 	EdgeMap edgeMap;
 	ParentStack parentStack;
 	unsigned int visitIndex, finishIndex ;
@@ -104,7 +91,6 @@ protected:
 
 	friend class NarratorGraph;
 	friend class LoopBreakingVisitor;
-	friend class NodeVisitor; //TODO: remove later
 
 	void init()
 	{
@@ -128,25 +114,8 @@ protected:
 
 public:
 
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=true, bool merged_edges_as_one=true) //assumes keep_track_of_nodes by default
-	{
-		construct(visitor,graph,keep_track_of_edges,true,merged_edges_as_one);
-		this->visitIndex=visitIndex; //assumed already cleared
-		ColorIndices::getInstance().use(visitIndex);
-		this->finishIndex=finishIndex; //assumed already cleared
-		ColorIndices::getInstance().use(finishIndex);
-	}
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true)
-	{
-		construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
-		if (keep_track_of_nodes)
-		{
-			this->visitIndex=ColorIndices::getInstance().getNextUnused();
-			ColorIndices::getInstance().use(visitIndex);
-			this->finishIndex=ColorIndices::getInstance().getNextUnused();
-			ColorIndices::getInstance().use(finishIndex);
-		}
-	}
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=true, bool merged_edges_as_one=true); //assumes keep_track_of_nodes by default
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true);
 	bool isPreviouslyVisited( NarratorNodeIfc & node)
 	{
 		if (!keep_track_of_nodes)
@@ -173,20 +142,10 @@ public:
 		else
 			return n1[child_num].isVisited(visitIndex);
 	}
-	void initialize()
-	{
-		init();
-		ColorIndices::getInstance().use(visitIndex);
-		visitor->initialize();
-	}
+	void initialize();
 	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)
 	{
-		//if (!isPreviouslyVisited(n1,n2,child_num))
-		//{
-			parentStack.push(&n1);
-			visitor->visit(n1,n2,child_num);
-		//}
-
+		visitor->visit(n1,n2,child_num);
 		if (!keep_track_of_edges)
 			return;
 		if (merged_edges_as_one)
@@ -199,12 +158,10 @@ public:
 	}
 	void visit(NarratorNodeIfc & n)
 	{
-		//if (!isPreviouslyVisited(n))
-		//{
-			if (keep_track_of_nodes)
-				n.resetVisited(finishIndex);
-			visitor->visit(n);
-		//}
+		if (keep_track_of_nodes)
+			n.resetVisited(finishIndex);
+		parentStack.push(&n);
+		visitor->visit(n);
 
 		if (!keep_track_of_nodes)
 			return ;
@@ -222,13 +179,12 @@ public:
 			n.setVisited(finishIndex);
 		n.setVisited(finishIndex);
 		visitor->finishVisit(n);
+		parentStack.pop();
 	}
-	void finish()
-	{
-		ColorIndices::getInstance().unUse(visitIndex,graph);
-		ColorIndices::getInstance().unUse(finishIndex,graph);
-		visitor->finish();
-	}
+	void finish();
+	unsigned int getVisitColorIndex(){return visitIndex;}
+	unsigned int getFinishColorIndex(){return finishIndex;}
+	const ParentStack & getParentStack() {return parentStack;}
 };
 
 class DisplayNodeVisitor: public NodeVisitor
@@ -271,8 +227,9 @@ protected:
 	}
 	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
 	{
-		if (parameters.display_chain_num)
+		if (parameters.display_chain_num )
 		{
+			//qDebug()<<name;
 			for (int i=0;i<n.size();i++)
 			{
 				ChainNarratorNode & c=n[i];
@@ -347,6 +304,7 @@ public:
 		QString s=getAndInitializeDotNode(n);
 		displayChainNumsEndingJustAfter(n,s);
 	}
+	virtual void detectedCycle(NarratorNodeIfc & n);
 	virtual void finish()
 	{
 	#ifdef FORCE_RANKS
@@ -503,6 +461,7 @@ public:
 class NarratorGraph
 {
 private:
+	ColorIndices colorGuard;
 	NarratorNodesList	top_nodes,
 						bottom_nodes, all_nodes;
 	friend class ColorIndices;
@@ -559,6 +518,7 @@ private:
 			return (GraphNarratorNode &)narr1;
 	}
 	friend class LoopBreakingVisitor;
+	friend class GraphVisitorController;
 
 	void transform2ChainNodes(ChainsContainer &chains)
 	{//pre-condition: chain contains the valid chains extracted from the hadith
@@ -594,6 +554,7 @@ private:
 	}
 	void buildGraph()
 	{ //note: compares chain by chain then moves to another
+		//TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
 		int radius=parameters.equality_radius;
 		double threshold=parameters.equality_threshold;
 		int num_chains=top_nodes.size();
@@ -746,11 +707,13 @@ public:
 	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg)
 	{
 		this->prg=prg;
+		colorGuard.setGraph(this);
 		transform2ChainNodes(chains);
 		buildGraph();
 		correctTopNodesList();
 		fillNodesLists();
 		//breakManageableCycles();
+
 		computeRanks();
 	}
 	void DFS_traverse(GraphVisitorController & visitor)

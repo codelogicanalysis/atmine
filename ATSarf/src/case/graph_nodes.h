@@ -359,6 +359,9 @@ public:
 	}
 	virtual void addNarrator(ChainNarratorNode & nar) //we dont check for duplicates here
 	{
+		for (int i=0;i<size();i++)
+			if (&nar==&(*this)[i])
+				return;
 		equalChainNodes.append(&nar);
 		nar.setCorrespondingNarratorNode(this);
 	}

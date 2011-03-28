@@ -1,10 +1,11 @@
 #include <QQueue>
 #include "graph.h"
 
-ColorIndices * ColorIndices::instance=NULL;
-void ColorIndices::unUse(unsigned int bit, NarratorGraph * graph)//unuse and clear color bit for all nodes in graph
+void ColorIndices::unUse(unsigned int bit)//unuse and clear color bit for all nodes in graph
 {
-	unUse(bit);
+	assert (bit<maxBits());
+	usedBits &= (~(1 << bit));
+
 	int max=graph->all_nodes.size();
 	for (int i=0;i<max;i++)
 	{
@@ -13,6 +14,41 @@ void ColorIndices::unUse(unsigned int bit, NarratorGraph * graph)//unuse and cle
 		for (int j=0;j<size;j++)
 			(*graph->all_nodes[i])[j].resetVisited(bit);
 	}
+
+	if (nextUnused>bit)
+		nextUnused=bit;
+}
+
+GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges, bool merged_edges_as_one) //assumes keep_track_of_nodes by default
+{
+	construct(visitor,graph,keep_track_of_edges,true,merged_edges_as_one);
+	this->visitIndex=visitIndex; //assumed already cleared
+	graph->colorGuard.use(visitIndex);
+	this->finishIndex=finishIndex; //assumed already cleared
+	graph->colorGuard.use(finishIndex);
+}
+GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
+{
+	construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
+	if (keep_track_of_nodes)
+	{
+		this->visitIndex=graph->colorGuard.getNextUnused();
+		graph->colorGuard.use(visitIndex);
+		this->finishIndex=graph->colorGuard.getNextUnused();
+		graph->colorGuard.use(finishIndex);
+	}
+}
+void GraphVisitorController::initialize()
+{
+	init();
+	graph->colorGuard.use(visitIndex);
+	visitor->initialize();
+}
+void GraphVisitorController::finish()
+{
+	graph->colorGuard.unUse(visitIndex);
+	graph->colorGuard.unUse(finishIndex);
+	visitor->finish();
 }
 
 void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
@@ -20,6 +56,20 @@ void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
 	NarratorNodeIfc * current=&n;
 	out<<"cycle at ";
 	out<<"[";
+	QString s=n.CanonicalName();
+	out<<s<<",";
+	const GraphVisitorController::ParentStack & stack=controller->getParentStack();
+	int size=stack.size();
+	for (int i=size-1; i>=0; i--)
+	{
+		current=stack[i];
+		if (current==&n && i!=size-1)
+			break;
+		s=current->CanonicalName();
+		out<<s<<",";
+	}
+	out<<"]\n";
+#if 0
 	do
 	{
 		if (controller->parentStack.isEmpty())
@@ -33,6 +83,12 @@ void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
 		current=controller->parentStack.top();
 	}while(current!=&n && !current->isNull());
 	out<<"]\n";
+#endif
+}
+
+void DisplayNodeVisitor::detectedCycle(NarratorNodeIfc & n)
+{
+	//TODO: add code to draw cycle in a seperate file whenever detected
 }
 
 #if 0
