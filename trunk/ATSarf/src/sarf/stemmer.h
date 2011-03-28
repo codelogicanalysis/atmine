@@ -69,6 +69,8 @@ public://protected:
 	QVector<minimal_item_info> * prefix_infos;
 	minimal_item_info * stem_info;
 	QVector<minimal_item_info> * suffix_infos;
+
+	QStringRef getString() {return info.text->midRef(info.start,info.finish-info.start+1);}
 #ifdef RUNON_WORDS
 private:
 	int runwordIndex;

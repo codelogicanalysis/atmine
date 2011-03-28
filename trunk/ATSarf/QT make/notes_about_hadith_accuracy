@@ -5,13 +5,18 @@ done---maybe use numbers or punctuations
 	done---given 2 names without a narrator connector and with a punctuation mark, consider them as 2 different narators
 	done---if we get a punctuation mark in the context of a tolerance state, we break tolerance
 	ignored---use the numbers with reservation, if they happen at the beginning of a paragraph to segment hadith
--treat with special care أبيه and جده and عم and خال and feminine forms, and ignore them in equalities.
+done---treat with special care أبيه and جده and عم and خال and feminine forms, and ignore them in equalities. (for now ignored in equality)
+
 -treat with special care أمير المؤمنين.
 -assume what comes after عن without a suffix as narrator until next NRC eg: عن رجل عن, عن بعض أصحاب أبي عبد الله , عن عمه قال,
  عن عمه، ...
 -make use of suffixes, so if a name has complex suffixes, dont assume it is a name (like علينا)
 -when in an NRC state and the number of words till NAME is reached is exceded maybe, we should backtrack and start from the next NRC on the way, or no need for backtracking, since we should have saved them as individual NRC's in the structure so we can count if the ones that follow are within threshold
 -words such as stop words or phrases should be parsed for prefix in some way (eg: check if the stem of a word matches the first word an if so check if the rest match from the starting position of the stem). 
+
+-make bin more indicative from ibn, since bin is more sure to have been followed by name such as in:
+ حدثنا عتاب بن زياد، أخبرنا عبد الله يعني ابن مبارك، أنبأنا مالك بن أنس، عن نافع، عن ابن عمر، أن النبي صلى الله عليه وسلم ...
+4517 حدثنا أسباط بن محمد، حدثنا الأعمش، عن عبد الله بن عبد الله، عن سعد، مولى طلحة عن ابن عمر، قال لقد سمعت من، رسول الله صلى الله عليه وسلم حديثا ...
 
 -make numbers break tolerance state
 -ignored ---maybe give full stop a stronger meaning than other punctuations so that whenever it appears it breaks a sanad.

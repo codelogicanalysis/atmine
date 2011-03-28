@@ -409,13 +409,18 @@ static const double max_distance=3;
 inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
 {
 	QString n1_str=n1.getString(),n2_str=n2.getString();
+#ifdef REFINEMENTS
+	bool abihi1=equal(n1_str,abihi), abihi2=equal(n2_str,abihi);
+	if (abihi1 || abihi2)
+		return max_distance; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
+#endif
 	if (equal(n1_str,n2_str))
 		return 0;
 #ifdef REFINEMENTS
-	bool eq1=isRasoul(n1_str), eq2=isRasoul(n2_str);
-	if (eq1 && eq2)
+	bool ras1=isRasoul(n1_str), ras2=isRasoul(n2_str);
+	if (ras1 && ras2)
 		return 0;
-	else if (eq1 || eq2)
+	else if (ras1 || ras2)
 		return max_distance;
 #endif
 	double dist=max_distance, delta=parameters.equality_delta;

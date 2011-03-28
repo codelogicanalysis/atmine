@@ -14,7 +14,7 @@
 //#define DEBUG_DFS_TRAVERSAL
 //#define DEBUG_BUILDGRAPH
 #define GENERAL_HADITH
-#define FORCE_RANKS
+//#define FORCE_RANKS
 #define DISPLAY_GRAPHNODES_CONTENT
 //#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
@@ -48,7 +48,7 @@ extern QHash<long,bool> IBN_descriptions;
 
 #ifdef REFINEMENTS
 extern QStringList rasoul_words;
-extern QString alrasoul;
+extern QString alrasoul,abihi;
 #endif
 
 extern int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
