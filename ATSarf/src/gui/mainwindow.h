@@ -18,6 +18,8 @@ public:
 	virtual void tag(int start, int length,QColor color, bool textcolor);
 	virtual void startTaggingText(QString & text);
 	virtual void finishTaggingText();
+	virtual void setCurrentAction(const QString & s);
+	virtual void resetActionDisplay();
 
 protected:
     void changeEvent(QEvent *e);

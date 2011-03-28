@@ -3,6 +3,7 @@
 
 #include <QtCore/qdatastream.h>
 #include <QHash>
+#include <QDataStream>
 
 template <class T1, class T2, class T3>
 struct Triplet
@@ -60,5 +61,20 @@ Q_INLINE_TEMPLATE uint qHash ( Triplet<long long, long, QString> t)
 {
 	return uint(qHash(t.first));//+qHash(t.second)+qHash(t.third));
 }
+
+template <class T1, class T2, class T3>
+Q_INLINE_TEMPLATE QDataStream &operator<<(QDataStream &out, const Triplet<T1, T2, T3> &t)
+{
+	out<<t.first<<t.second<<t.third;
+	return out;
+}
+
+template <class T1, class T2, class T3>
+Q_INLINE_TEMPLATE QDataStream &operator>>(QDataStream &in, Triplet<T1, T2, T3> &t)
+{
+	in>>t.first>>t.second>>t.third;
+	return in;
+}
+
 
 #endif // TRIPLET_H

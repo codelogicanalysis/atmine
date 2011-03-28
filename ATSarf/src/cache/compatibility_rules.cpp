@@ -2,7 +2,9 @@
 #include "compatibility_rules.h"
 
 #include <QString>
+#include <QDataStream>
 #include <QList>
+#include <QFile>
 #include <QVector>
 #include <QHash>
 #include <QtAlgorithms>
@@ -10,8 +12,13 @@
 #include "sql_queries.h"
 #include "dbitvec.h"
 #include "Retrieve_Template.h"
+#include "database_info_block.h"
 
 using namespace std;
+
+#ifdef LOAD_FROM_FILE
+extern QString compatibility_rules_path;
+#endif
 
 void compatibility_rules::fill()
 {
@@ -22,6 +29,7 @@ void compatibility_rules::fill()
 			size=max_id.get(0).toInt()+1;
 	}
 	{//initialize the double array
+		database_info.prgsIFC->setCurrentAction("Compatibility Rules");
 		Columns cols;
 		cols.append("id");
 		cols.append("type");
@@ -68,6 +76,7 @@ void compatibility_rules::fill()
 				crule.valid=0;
 			}
 			row++;
+			database_info.prgsIFC->report((double)row/size*50+0.5);
 		}
 	}
 	{//fill with valid rules
@@ -77,6 +86,8 @@ void compatibility_rules::fill()
 		cols[2]="resulting_category";
 		cols[3]="type";
 		Retrieve_Template order("compatibility_rules",cols,"");
+		int size=order.size();
+		int i=0;
 		while (order.retrieve())
 		{
 			unsigned int c1=order.get(0).toLongLong();
@@ -98,7 +109,43 @@ void compatibility_rules::fill()
 			crule.typecat2=(item_types)t2;
 			crule.abstract1=0;
 			crule.abstract2=0;
+			i++;
+			database_info.prgsIFC->report((double)i/size*50+50.5);
 		}
 	}
 }
 
+void compatibility_rules::readFromDatabaseAndBuildFile()
+{
+	fill();
+#ifdef LOAD_FROM_FILE
+	QFile file(compatibility_rules_path.toStdString().data());
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out<< crlTable;
+		out<< cat_names;
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write COMPATIBILITY TABLES to file\n";
+#endif
+}
+void compatibility_rules::buildFromFile()
+{
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
+#ifndef LOAD_FROM_FILE
+	readFromDatabaseAndBuildFile();
+#else
+	QFile file(compatibility_rules_path.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		in>> crlTable;
+		in>>cat_names;
+		file.close();
+	}
+	else
+		readFromDatabaseAndBuildFile();
+#endif
+}

@@ -1,3 +1,5 @@
+#include <QFile>
+#include <QDataStream>
 #include "tree.h"
 #include "sql_queries.h"
 #include "Search_Compatibility.h"
@@ -5,7 +7,32 @@
 #include "Search_by_item.h"
 #include "text_handling.h"
 #include <assert.h>
+#include "database_info_block.h"
 
+
+#ifdef LOAD_FROM_FILE
+#ifdef REDUCE_THRU_DIACRITICS
+inline QString cache_version()
+{
+	return "RD";
+}
+#elif defined(MEMORY_EXHAUSTIVE)
+inline QString cache_version()
+{
+	return "ME";
+}
+#else
+inline QString cache_version()
+{
+	return "ND";
+}
+#endif
+#endif
+
+#ifdef LOAD_FROM_FILE
+extern QString prefix_tree_path;
+extern QString suffix_tree_path;
+#endif
 
 void tree::print_tree_helper(node * current_node, int level)
 {
@@ -60,10 +87,26 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
 #endif
 {
 	assert (equal(letters,raw_data));
+#ifdef LOAD_FROM_FILE
+	if (file!=NULL)
+	{
+		(*file)<<letters<<affix_id<<category_id<<resulting_category_id
+			#if defined (REDUCE_THRU_DIACRITICS)
+				<<raw_data
+			#elif defined (MEMORY_EXHAUSTIVE)
+				<<raw_data<<description
+			#endif
+				<<generateNodeID(current);
+	}
+#endif
 	//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
     if (current->isLetterNode() && current!=base)
     {
 		error << "Unexpected Error: provided node was a letter node and not a result one\n";
+	#ifdef LOAD_FROM_FILE
+		if (file!=NULL)
+			(*file)<<generateNodeID(NULL);
+	#endif
 		return NULL;
     }
     QChar current_letter;
@@ -114,11 +157,15 @@ result:
 		result_node * old_result=current->getResultChildren()->at(i);
 		if (old_result->get_previous_category_id()==category_id && old_result->get_resulting_category_id()==resulting_category_id && old_result->get_affix_id()==affix_id)
 		{
-#ifdef MEMORY_EXHAUSTIVE
+		#ifdef MEMORY_EXHAUSTIVE
 			((result_node*)old_result)->addPair(raw_data,description);
-#elif defined(REDUCE_THRU_DIACRITICS)
+		#elif defined(REDUCE_THRU_DIACRITICS)
 			old_result->add_raw_data(raw_data);
-#endif
+		#endif
+		#ifdef LOAD_FROM_FILE
+			if (file!=NULL)
+				(*file)<<generateNodeID(old_result);
+		#endif
 			return old_result;
 		}
     }
@@ -132,6 +179,10 @@ result:
     current->addChild(result);
     current=result;
     result_nodes++;
+#ifdef LOAD_FROM_FILE
+	if (file!=NULL)
+		(*file)<<generateNodeID(current);
+#endif
     return current;
     //post-condition: returns node of resulting category reached after addition
 }
@@ -142,6 +193,9 @@ tree::tree()
     letter_nodes=1;
     result_nodes=0;
     isAffix=false;
+#ifdef LOAD_FROM_FILE
+	file=NULL;
+#endif
 }
 tree::tree(item_types type)
 {
@@ -149,6 +203,9 @@ tree::tree(item_types type)
     letter_nodes=1;
     result_nodes=0;
     isAffix=true;
+#ifdef LOAD_FROM_FILE
+	file=NULL;
+#endif
     build_affix_tree(type);
 }
 bool tree::getAffixType(item_types &type)
@@ -216,17 +273,142 @@ void tree::sample()
     isAffix=false;
 }
 #endif
+#ifdef LOAD_FROM_FILE
+int tree::generateNodeID(node *n)
+{
+	int curr_id;
+	IDMap::iterator it=idMap.find(n);
+	if (it==idMap.end())
+	{
+		if (n!=base)
+			curr_id=++last_id;
+		else
+			curr_id=0; //base is number 0
+		idMap.insert(n,curr_id);
+	}
+	else
+		curr_id=it.value();
+	return curr_id;
+}
+node* tree::getNodeID(int num)
+{
+	ReverseIDMap::iterator it=reverseIDMap.find(num);
+	node * n;
+	if (num==0)//base is number 0
+		n=base;
+	else
+	{
+		assert (it!=reverseIDMap.end());
+		n=it.value();
+	}
+	return n;
+}
+void tree::setNodeID(int num, node * n)
+{
+	ReverseIDMap::iterator it=reverseIDMap.find(num);
+	if(it==reverseIDMap.end())
+		reverseIDMap.insert(num,n);
+	else
+		assert(n==it.value());
+}
+#endif
+int tree::build_affix_tree_from_file(item_types type)
+{
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
+#ifndef LOAD_FROM_FILE
+	return build_affix_tree(type);
+#else
+	file=NULL;
+	reset();
+	isAffix=true;
+	this->type=type;
+	QString fileName;
+	if (type==PREFIX)
+		fileName=prefix_tree_path;
+	else if (type==SUFFIX)
+		fileName=suffix_tree_path;
+	reverseIDMap.clear();
+	QFile file(fileName.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		QString version;
+		in >> version;
+		if (version==cache_version())
+		{
+			int num1,num2;
+			QString letters; long affix_id;long category_id; long resulting_category_id;
+		#if defined (REDUCE_THRU_DIACRITICS)
+			QString raw_data;
+		#elif defined (MEMORY_EXHAUSTIVE)
+			QString raw_data;QString description;
+		#endif
+			while(!in.atEnd())
+			{
+				in>>letters>>affix_id>>category_id>>resulting_category_id
+					#if defined (REDUCE_THRU_DIACRITICS)
+							>>raw_data
+					#elif defined (MEMORY_EXHAUSTIVE)
+							>>raw_data>>description
+					#endif
+							>>num1>>num2;
+				node * n=addElement(letters,affix_id,category_id,resulting_category_id,
+					#if defined (REDUCE_THRU_DIACRITICS)
+							raw_data,
+					#elif defined (MEMORY_EXHAUSTIVE)
+							raw_data,description,
+					#endif
+							getNodeID(num1));
+				setNodeID(num2,n);
+			}
+			file.close();
+			return 0;
+		}
+		else
+		{
+			file.close();
+			return build_affix_tree(type);
+		}
+	}
+	else
+		return build_affix_tree(type);
+#endif
+}
 int tree::build_affix_tree(item_types type)
 {
     reset();
     isAffix=true;
     this->type=type;
-    QSqlQuery query(db);
+	database_info.prgsIFC->setCurrentAction(interpret_type(type).toUpper()+" TREE");
+#ifdef LOAD_FROM_FILE
+	QString fileName;
+	if (type==PREFIX)
+		fileName=prefix_tree_path;
+	else if (type==SUFFIX)
+		fileName=suffix_tree_path;
+	last_id=1;//bc base =0
+	idMap.clear();
+
+	QFile rawFile(fileName.toStdString().data());
+	if (rawFile.open(QIODevice::WriteOnly))
+	{
+		file=new QDataStream(&rawFile);   // we will serialize the data into the file
+		(*file)<<cache_version();
+	}
+	else
+	{
+		error <<"Unexpected Error: Unable to write AFFIX Table to file\n";
+		file=NULL;
+	}
+#endif
+	QSqlQuery query(db);
     QString stmt=QString("SELECT id, name FROM %1").arg(interpret_type(type));
     QString name;
     unsigned long affix_id1;
     if (!execute_query(stmt,query))
-            return -1;;
+			return -1;
+	int size=query.size();
+	int i=0;
     while (query.next())
     {
             name=query.value(1).toString();
@@ -258,7 +440,15 @@ int tree::build_affix_tree(item_types type)
             }
 
 #endif
+			i++;
+			database_info.prgsIFC->report((double)i/size*100+0.5);
     }
+#ifdef LOAD_FROM_FILE
+	rawFile.close();
+	if (file!=NULL)
+		delete file;
+	file=NULL;
+#endif
     return 0;
 }
 void tree::print_tree()

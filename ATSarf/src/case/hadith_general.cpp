@@ -421,7 +421,12 @@ public:
 			finish_pos=info.finish;
 			return false;
 		}
-		if (stem_info->abstract_categories.getBit(bit_NAME))
+		if (stem_info->abstract_categories.getBit(bit_NAME)
+	#ifdef REFINEMENTS
+			&& Prefix->info.finish-Prefix->info.start<0)
+	#else
+			)
+	#endif
 		{
 			name=true;
 			if (info.finish>finish_pos)

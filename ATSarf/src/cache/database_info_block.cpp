@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QDateTime>
+#include <QDataStream>
 #include "database_info_block.h"
 #include "atmTrie.h"
 #include "common.h"
@@ -12,8 +13,7 @@
 
 #ifdef USE_TRIE
 
-ATMProgressIFC *prgsIFC=NULL;
-
+#ifdef LOAD_FROM_FILE
 #ifdef REDUCE_THRU_DIACRITICS
 inline QString cache_version()
 {
@@ -25,8 +25,9 @@ inline QString cache_version()
 	return "ND";
 }
 #endif
+#endif
 
-void buildfromfile()
+void database_info_block::readTrieFromDatabaseAndBuildFile()
 {
 	QSqlQuery query(db);
 #ifdef REDUCE_THRU_DIACRITICS
@@ -44,6 +45,7 @@ void buildfromfile()
 	int index=0;
 	last_id=-1;
 	int total=query.size(), current=0;
+	prgsIFC->setCurrentAction("STEM TRIE");
 	while (query.next())
 	{
 		stem_id=query.value(0).toULongLong();
@@ -72,6 +74,7 @@ void buildfromfile()
 		current++;
 		prgsIFC->report((double)current/total*100+0.5);
 	}
+#ifdef LOAD_FROM_FILE
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 	database_info.Stem_Trie->save(trie_path.toStdString().data());
 	QFile file(trie_list_path.toStdString().data());
@@ -84,13 +87,14 @@ void buildfromfile()
 	}
 	else
 		error <<"Unexpected Error: Unable to write TRIE to file\n";
+#endif
 }
 
-void buildTrie()
+void database_info_block::buildTrie()
 {
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
-#ifndef TRIE_FROM_FILE
-	buildfromfile();
+#ifndef LOAD_FROM_FILE
+	readTrieFromDatabaseAndBuildFile();
 #else
 	QFile file(trie_list_path.toStdString().data());
 	if (file.open(QIODevice::ReadOnly))
@@ -106,7 +110,7 @@ void buildTrie()
 		else
 		{
 			file.close();
-			buildfromfile();
+			readTrieFromDatabaseAndBuildFile();
 			return;
 		}
 		QFile input(trie_path);
@@ -119,18 +123,20 @@ void buildTrie()
 		}
 	}
 	else
-		buildfromfile();
+		readTrieFromDatabaseAndBuildFile();
 #endif
 }
 #endif
 
-void fillMap(item_types type,QHash<ItemEntryKey,ItemEntryInfo> * map)
+void database_info_block::fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map)
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
+	prgsIFC->setCurrentAction(table.toUpper()+" INFO");
 	QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
 	stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":""));
-	assert (execute_query(stmt,query)) ;
+	assert (execute_query(stmt,query));
+	int size=query.size(), i=0;
 	while (query.next())
 	{
 		long long item_id=query.value(0).toULongLong();
@@ -146,7 +152,51 @@ void fillMap(item_types type,QHash<ItemEntryKey,ItemEntryInfo> * map)
 		ItemEntryKey key(item_id,category_id,raw_data);
 		ItemEntryInfo entry(abstract_categories,description_id,POS);
 		map->insertMulti(key,entry);
+		i++;
+		prgsIFC->report((double)i/size*100+0.5);
 	}
+#ifdef LOAD_FROM_FILE
+	QString fileName;
+	if (type==PREFIX)
+		fileName=prefix_info_path;
+	else if (type==STEM)
+		fileName=stem_info_path;
+	else if (type==SUFFIX)
+		fileName=suffix_info_path;
+	QFile file(fileName.toStdString().data());
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out<< *(map);
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write DESCRIPTION to file\n";
+#endif
+}
+
+void database_info_block::buildMap(item_types type,ItemCatRaw2PosDescAbsMap * map)
+{
+#ifndef LOAD_FROM_FILE
+	fillMap(type,map);
+#else
+	QString fileName;
+	if (type==PREFIX)
+		fileName=prefix_info_path;
+	else if (type==STEM)
+		fileName=stem_info_path;
+	else if (type==SUFFIX)
+		fileName=suffix_info_path;
+	QFile file(fileName.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		in>> *(map);
+		file.close();
+	}
+	else
+		fillMap(type,map);
+#endif
 }
 
 database_info_block::database_info_block()
@@ -166,16 +216,17 @@ database_info_block::database_info_block()
 	descriptions=new QVector<QString>;
 }
 
-void fillDescriptions()
+void database_info_block::readDescriptionsFromDatabaseAndBuildFile()
 {
+	prgsIFC->setCurrentAction("DESCRIPTIONS");
 	int size=0;
 	{//get max_id
 		Retrieve_Template max_id("description","max(id)","");
 		if (max_id.retrieve())
 			size=max_id.get(0).toInt()+1;
 	}
-	delete database_info.descriptions;
-	database_info.descriptions=new QVector<QString>(size);
+	delete descriptions;
+	descriptions=new QVector<QString>(size);
 	Retrieve_Template desc("description","id","name","");
 	int row=0, id=0;
 	assert (desc.retrieve());
@@ -185,28 +236,58 @@ void fillDescriptions()
 			assert (desc.retrieve());
 		id=desc.get(0).toLongLong();
 		if (row==id)
-			database_info.descriptions->operator [](row)=desc.get(1).toString();
+			(*descriptions)[row]=desc.get(1).toString();
 		else
-			database_info.descriptions->operator [](row)="";
+			(*descriptions)[row]="";
 		row++;
+		prgsIFC->report((double)row/size*100+0.5);
 	}
+#ifdef LOAD_FROM_FILE
+	QFile file(description_path.toStdString().data());
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out<< *(descriptions);
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write DESCRIPTION to file\n";
+#endif
+}
+void database_info_block::buildDescriptions()
+{
+	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
+#ifndef LOAD_FROM_FILE
+	readDescriptionsFromDatabaseAndBuildFile();
+#else
+	QFile file(description_path.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		in>> *(descriptions);
+		file.close();
+	}
+	else
+		readDescriptionsFromDatabaseAndBuildFile();
+#endif
 }
 
 void database_info_block::fill(ATMProgressIFC *p)
 {
-    Prefix_Tree->build_affix_tree(PREFIX);
-    Suffix_Tree->build_affix_tree(SUFFIX);
 	prgsIFC=p;
+	Prefix_Tree->build_affix_tree_from_file(PREFIX);
+	Suffix_Tree->build_affix_tree_from_file(SUFFIX);
 #ifdef USE_TRIE
 	buildTrie();
 #endif
-	comp_rules->fill();
+	comp_rules->buildFromFile();
 
-	fillDescriptions();
+	buildDescriptions();
 
-	fillMap(PREFIX,map_prefix);
-	fillMap(STEM,map_stem);
-	fillMap(SUFFIX,map_suffix);
+	buildMap(PREFIX,map_prefix);
+	buildMap(STEM,map_stem);
+	buildMap(SUFFIX,map_suffix);
+	p->resetActionDisplay();
 	filling=false;
 }
 

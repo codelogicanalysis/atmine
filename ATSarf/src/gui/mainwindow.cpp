@@ -29,9 +29,25 @@ void MainWindow::report(int value)
 		return;
 	m_ui->progressBar->setValue(value);
 }
+void MainWindow::setCurrentAction(const QString & s)
+{
+	if (this==NULL)
+		return;
+	m_ui->progressBar->setFormat(s+"(%p%)");
+}
+
+void MainWindow::resetActionDisplay()
+{
+	if (this==NULL)
+		return;
+	m_ui->progressBar->setFormat("%p%");
+	m_ui->progressBar->reset();
+}
 
 void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 {
+	if (this==NULL)
+		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
 	QTextCursor c=taggedBox->textCursor();
 #if 0
@@ -55,6 +71,8 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 
 void MainWindow::startTaggingText(QString & text)
 {
+	if (this==NULL)
+		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
 	taggedBox->clear();
 	taggedBox->setLayoutDirection(Qt::RightToLeft);
@@ -70,6 +88,8 @@ void MainWindow::startTaggingText(QString & text)
 
 void MainWindow::finishTaggingText()
 {
+	if (this==NULL)
+		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
 	QTextCursor c=taggedBox->textCursor();
 #if 0
