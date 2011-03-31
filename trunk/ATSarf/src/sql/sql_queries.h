@@ -40,7 +40,9 @@ bool start_connection(ATMProgressIFC *); //and do other initializations
 void close_connection();
 int generate_bit_order(QString table,int array[],QString filter_column="");
 long get_abstractCategory_id(int bit);
+#if 0
 int get_abstractCategory_id(QString abstract_category);
+#endif
 long get_source_id(int bit);
 bool existsID(QString table,unsigned long long id,QString additional_condition ="");
 long long getID(QString table, QString name, QString additional_condition="", QString column_name="name");

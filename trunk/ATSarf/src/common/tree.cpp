@@ -29,11 +29,6 @@ inline QString cache_version()
 #endif
 #endif
 
-#ifdef LOAD_FROM_FILE
-extern QString prefix_tree_path;
-extern QString suffix_tree_path;
-#endif
-
 void tree::print_tree_helper(node * current_node, int level)
 {
     out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";

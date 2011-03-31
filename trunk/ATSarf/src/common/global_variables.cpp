@@ -7,6 +7,7 @@
 #include "database_info_block.h"
 #include "letters.h"
 #include "sql_queries.h"
+#include "common.h"
 
 dbitvec INVALID_BITSET(max_sources);
 
@@ -26,55 +27,19 @@ bool display_warnings=true;
 int source_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 int abstract_category_ids[max_sources+1]={0};//here last element stores number of filled entries in the array
 
-QString databaseFileName;
-
 #ifdef LOAD_FROM_FILE
-QString trie_path;
-QString trie_list_path;
-QString compatibility_rules_path;
-QString prefix_tree_path;
-QString suffix_tree_path;
-QString description_path;
-QString prefix_info_path;
-QString suffix_info_path;
-QString stem_info_path;
+QStringList cacheFileList;
 #endif
 
 QDateTime executable_timestamp;
 
-QVector<QChar> alefs(5);
-QString delimiters,punctuation,nonconnectingLetters;
-
 void initialize_variables()
 {
-#ifndef SUBMISSION
-	databaseFileName="../../src/sql design/atm_filled.sql";
-#else
-	databaseFileName=".atm_filled.sql";
-#endif
 #ifdef LOAD_FROM_FILE
-	trie_path=".stem_trie.dat";
-	trie_list_path=".stem_list.dat";
-	compatibility_rules_path= ".compatibility.dat";
-	prefix_tree_path=".prefix_tree.dat";
-	suffix_tree_path=".suffix_tree.dat";
-	description_path=".descriptions.dat";
-	prefix_info_path=".prefix_info.dat";
-	suffix_info_path=".suffix_info.dat";
-	stem_info_path=".stem_info.dat";
+	cacheFileList<<trie_path<<trie_list_path<<compatibility_rules_path<<prefix_tree_path
+				 <<suffix_tree_path<<description_path<<prefix_info_path<<suffix_info_path<<stem_info_path;
 #endif
-
-
-	alefs[0]=alef;
-	alefs[1]=alef_hamza_above;
-	alefs[2]=alef_hamza_below;
-	alefs[3]=alef_madda_above;
-	alefs[4]=alef_wasla;
-	nonconnectingLetters= QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
-						  waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
-	delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
-	punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
-
+	//generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
 	generate_bit_order("source",source_ids);
 	generate_bit_order("category",abstract_category_ids,"abstract");
 	INVALID_BITSET.reset();

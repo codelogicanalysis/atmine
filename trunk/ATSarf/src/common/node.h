@@ -60,7 +60,7 @@ class node
 			return parent;
 		}
 #endif
-		node()
+		node():parent(NULL)
 		{
 			result_children=new QList<result_node*>;
 		#ifdef BINARY_SEARCH

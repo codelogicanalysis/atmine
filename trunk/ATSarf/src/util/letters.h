@@ -54,11 +54,11 @@ static const QChar full_stop=QChar(0x06D4);
 static const QChar full_stop2=QChar(0x200F);
 static const QChar full_stop3=QChar(0x002E);
 
-extern QString delimiters;
-extern QString punctuation;
-extern QVector<QChar> alefs;
-extern QString nonconnectingLetters;
-
+static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
+static const QString punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
+static const QString alefs=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla;
+static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
+		waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
 
 inline bool isDelimiter(const QChar & letter)
 {

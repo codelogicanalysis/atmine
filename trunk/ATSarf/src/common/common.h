@@ -2,6 +2,8 @@
 #define _COMMON_H
 
 #include <QString>
+#include <QStringList>
+#include "hadith.h"
 #include "dbitvec.h"
 
 #define USE_TRIE
@@ -124,5 +126,23 @@ public:
 };
 
 static multiply_params M_ALL;
+
+#ifndef SUBMISSION
+static const QString databaseFileName="../../src/sql design/atm_filled.sql";
+#else
+static const  QString databaseFileName=".atm_filled.sql";
+#endif
+
+#ifdef LOAD_FROM_FILE
+static const QString trie_path=".stem_trie.dat";
+static const QString trie_list_path=".stem_list.dat";
+static const QString compatibility_rules_path= ".compatibility.dat";
+static const QString prefix_tree_path=".prefix_tree.dat";
+static const QString suffix_tree_path=".suffix_tree.dat";
+static const QString description_path=".descriptions.dat";
+static const QString prefix_info_path=".prefix_info.dat";
+static const QString suffix_info_path=".suffix_info.dat";
+static const QString stem_info_path=".stem_info.dat";
+#endif
 
 #endif

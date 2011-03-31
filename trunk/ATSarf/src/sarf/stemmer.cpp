@@ -86,6 +86,10 @@ bool SuffixMachine::onMatch()
 
 bool SuffixMachine::shouldcall_onmatch(int position)
 {
+#if defined(RUNON_WORDS) && defined(REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS) //TODO:support for diacritics
+	if (position-controller->Prefix->info.start==1 && controller->machines.size()>0 && (*info.text)[position-1]!=waw)
+		return false;
+#endif
 	if (position>=info.text->length() )
 		return true;
 	QChar ch=info.text->at(position);

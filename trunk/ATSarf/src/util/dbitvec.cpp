@@ -53,3 +53,31 @@ void dbitvec::show()
 #else
 void dbitvec::show(){}
 #endif
+
+#if 0
+#include <QFile>
+void testStreaming()
+{
+	dbitvec v(113),b;
+	v.setBit(2);
+	v.setBit(105);
+	QFile file("temp");
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out<< v;
+		file.close();
+	}
+	else
+		error <<"Unexpected Error";
+	QFile file1("temp");
+	if (file1.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file1);    // read the data serialized from the file
+		in>> b;
+		file1.close();
+	}
+	assert(b==v);
+	return 0;
+}
+#endif
