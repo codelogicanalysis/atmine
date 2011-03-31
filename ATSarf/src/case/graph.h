@@ -522,7 +522,9 @@ private:
 
 	void transform2ChainNodes(ChainsContainer &chains)
 	{//pre-condition: chain contains the valid chains extracted from the hadith
-		for (int chain_num=0;chain_num<chains.count();chain_num++)
+		prg->setCurrentAction("Creating Nodes");
+		int num_chains=chains.count();
+		for (int chain_num=0;chain_num<num_chains;chain_num++)
 		{
 			int size=chains.at(chain_num)->m_chain.count();
 			ChainNarratorNode* last=NULL;
@@ -548,6 +550,7 @@ private:
 				current->setIndex(index);
 				index++;
 			}
+			prg->report(100.0*chain_num/num_chains+0.5);
 		}
 	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
 	//				 chains and top_nodes stores the link to the first node of each chain
@@ -558,6 +561,7 @@ private:
 		int radius=parameters.equality_radius;
 		double threshold=parameters.equality_threshold;
 		int num_chains=top_nodes.size();
+		prg->setCurrentAction("Merging Nodes");
 		prg->report(0);
 		for (int i=0;i<num_chains;i++)
 		{
@@ -589,12 +593,14 @@ private:
 					{
 						Narrator & n1_ref=n1->getNarrator();
 						Narrator & n2_ref=n2->getNarrator();
-					#ifdef DEBUG_BUILDGRAPH
-						out<<n1_ref.getString()<<"]Versus["<<n2_ref.getString()<<"\n";
-					#endif
 						double eq_val=equal(n1_ref,n2_ref);
 						if (eq_val>=threshold)
 						{
+						#ifdef DEBUG_BUILDGRAPH
+							int index2=n2->getIndex();
+							assert(index2<20);
+							qDebug()<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<index2<<"]\n";
+						#endif
 							mergeNodes(*n1,*n2);
 							offset=u;	//this is matched, we must skip it in search for match for next node in c1
 							needle=u+1; //since the node is matched, we move to match the next
@@ -640,8 +646,12 @@ private:
 	#else
 		RankCorrectorNodeVisitor r;
 		GraphVisitorController c(&r,this);
+		prg->setCurrentAction("Computing Ranks");
+		prg->report(0);
 		BFS_traverse(c);
+		prg->report(50);
 		BFS_traverse(c);
+		prg->report(100);
 		highest_rank=r.getHighestRank();
 	#endif
 	}
@@ -655,8 +665,11 @@ private:
 	}
 	void correctTopNodesList()
 	{
+		prg->setCurrentAction("Correct TopList");
+		prg->report(0);
 		NarratorNodesList & new_top_list=*(new NarratorNodesList);
-		for (int i=0;i<top_nodes.size();i++)
+		int size=top_nodes.size();
+		for (int i=0;i<size;i++)
 		{
 			ChainNarratorNode & c=(ChainNarratorNode &)*top_nodes[i];
 			NarratorNodeIfc * g=&c.getCorrespondingNarratorNode();
@@ -668,6 +681,7 @@ private:
 			}
 			else
 				new_top_list.append(g);
+			prg->report(100.0*i/size+0.5);
 		}
 		top_nodes=new_top_list; //TODO: try reduce copy cost
 		/*&delete &top_nodes; //we do this to reduce a copy operation
@@ -676,9 +690,12 @@ private:
 	}
 	void fillNodesLists()
 	{
+		prg->setCurrentAction("Correct NodeList");
+		prg->report(0);
 		FillNodesVisitor visitor(&all_nodes, &bottom_nodes);
 		GraphVisitorController c(&visitor,this);
 		DFS_traverse(c);
+		prg->report(100);
 	}
 	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
@@ -769,9 +786,13 @@ public:
 inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *prg)
 {
 	NarratorGraph graph(chains,prg);
+	prg->setCurrentAction("Display Graph");
+	prg->report(0);
 	DisplayNodeVisitor visitor;
 	GraphVisitorController c(&visitor,&graph);
 	graph.DFS_traverse(c);
+	prg->setCurrentAction("Completed");
+	prg->report(100);
 	return 0;
 }
 

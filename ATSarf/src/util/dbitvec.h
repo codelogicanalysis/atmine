@@ -12,6 +12,7 @@ brief: provides a bitvector with [] access and dynamic size
 #include <string.h> // for memset
 #include <QDataStream>
 #include <cstring>
+#include <assert.h>
 
 class dbitvec {
 	unsigned int size;
@@ -129,7 +130,12 @@ inline bool operator != (const dbitvec & d1, const dbitvec &d2)
 
 inline QDataStream &operator<<(QDataStream &out, const dbitvec &d)
 {
-	out<<(const quint32)d.bytes<<(const quint32)d.size<<QString((const char*)d.data);
+	out		<<(const quint32)d.bytes
+			<<(const quint32)d.size;
+	unsigned int * dump = (unsigned int *) d.data;
+	unsigned int l = (d.bytes+3)/4;
+	for (unsigned int i=0; i<l;i++)
+		out << dump[i];
 	return out;
 }
 
@@ -137,10 +143,16 @@ inline QDataStream &operator>>(QDataStream &in, dbitvec &d)
 {
 	quint32 bytes,size;
 	QString s;
-	in>>bytes>>size>>s;
+	in>>bytes;
+	in>>size;
+	d.resize(bytes*4*8);
 	d.bytes=bytes;
 	d.size=size;
-	strcpy((char*)d.data,(const char *)s.toStdString().data()); //TODO: write an equivalent for strcpy for unsigned char *
+	unsigned int * dump = (unsigned int *) d.data;
+	assert (d.data != NULL);
+	unsigned l = (bytes+3)/4;
+	for (unsigned int i =0; i < l; i++)
+		in>>dump[i];
 	return in;
 }
 #endif

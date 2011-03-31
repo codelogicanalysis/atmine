@@ -194,7 +194,9 @@ int main(int argc, char *argv[])
 	executable_timestamp=fileinfo.lastModified();*/
 	QApplication app(argc, argv);
 	MainWindow mainw;
+#ifndef SUBMISSION
 	start_connection(&mainw);
+#endif
 	mainw.show();
 	return app.exec();
 }

@@ -134,6 +134,7 @@ public:
 	}
 	void set(int index, int chain_num)
 	{
+		assert(index<20);
 		this->index=index;
 		this->chain_num=chain_num;
 		valid=true;
@@ -360,8 +361,13 @@ public:
 	virtual void addNarrator(ChainNarratorNode & nar) //we dont check for duplicates here
 	{
 		for (int i=0;i<size();i++)
-			if (&nar==&(*this)[i])
+		{
+			ChainNarratorNode * n2=&(*this)[i];
+			ChainNarratorNode * n1=&nar;
+			if (n1==n2)
 				return;
+			//assert (n1!=n2); //TODO...
+		}
 		equalChainNodes.append(&nar);
 		nar.setCorrespondingNarratorNode(this);
 	}

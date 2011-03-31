@@ -2,6 +2,7 @@
 #include "compatibility_rules.h"
 
 #include <QString>
+#include <QBitArray>
 #include <QDataStream>
 #include <QList>
 #include <QFile>
@@ -16,13 +17,23 @@
 
 using namespace std;
 
-#ifdef LOAD_FROM_FILE
-extern QString compatibility_rules_path;
-#endif
 
-void compatibility_rules::fill()
+void compatibility_rules::fill() //TODO: solve issue of abstract not read correctly
 {
 	int size=0;
+	{//fill abstract Cat ID
+		Retrieve_Template abstCatID("category","id","abstract=1");
+		int i=0;
+		absCatIDForBits.clear();
+		absCatBitMap.clear();
+		while (abstCatID.retrieve())
+		{
+			int id=abstCatID.get(0).toInt();
+			absCatIDForBits.append(id);
+			absCatBitMap.insert(id,i);
+			i++;
+		}
+	}
 	{//get max_id
 		Retrieve_Template max_id("category","max(id)","");
 		if (max_id.retrieve())
@@ -41,7 +52,7 @@ void compatibility_rules::fill()
 		for (int i=0;i<size;i++)
 		{
 			crlTable[i]=QVector<comp_rule_t> (size);
-			cat_names[i]="";
+			//cat_names[i].valid=false; //not needed since by default is false
 		}
 		int row=0, id=0;
 		assert (category_table.retrieve());
@@ -51,18 +62,19 @@ void compatibility_rules::fill()
 				assert (category_table.retrieve());
 			id=category_table.get(0).toLongLong();
 			item_types t;
-			unsigned int abstract;
+			bool abstract;
 			if (row==id)
 			{
 				t=(item_types)category_table.get(1).toInt();
-				abstract=category_table.get(2).toInt();
+				//abstract=category_table.get(2).toInt(); does not work
+				abstract= (absCatBitMap.find(id)!=absCatBitMap.end());
 			}
 			else
 			{
 				t=ITEM_TYPES_LAST_ONE;//INVALID
-				abstract=0;
+				abstract=false;
 			}
-			cat_names[row]=category_table.get(3).toString();
+			cat_names[row].set(category_table.get(3).toString(),abstract!=0);
 			for (int i=0;i<size;i++)
 			{
 				comp_rule_t & crule=crlTable[row][i];
@@ -123,8 +135,9 @@ void compatibility_rules::readFromDatabaseAndBuildFile()
 	if (file.open(QIODevice::WriteOnly))
 	{
 		QDataStream out(&file);   // we will serialize the data into the file
-		out<< crlTable;
-		out<< cat_names;
+		out	<< crlTable
+			<< cat_names
+			<< absCatIDForBits;
 		file.close();
 	}
 	else
@@ -136,16 +149,31 @@ void compatibility_rules::buildFromFile()
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 #ifndef LOAD_FROM_FILE
 	readFromDatabaseAndBuildFile();
+	fillMap();
 #else
 	QFile file(compatibility_rules_path.toStdString().data());
 	if (file.open(QIODevice::ReadOnly))
 	{
 		QDataStream in(&file);    // read the data serialized from the file
-		in>> crlTable;
-		in>>cat_names;
+		in	>> crlTable
+			>> cat_names
+			>> absCatIDForBits;
 		file.close();
 	}
 	else
 		readFromDatabaseAndBuildFile();
+	fillMap();
 #endif
+}
+void compatibility_rules::fillMap()
+{
+	int size=cat_names.size();
+	for(int i=0;i<size;i++)
+	{
+		if (cat_names[i].isValid())
+			catNamesMap.insert(cat_names[i].getName(),i);
+	}
+	size=absCatIDForBits.size();
+	for(int i=0;i<size;i++)
+		absCatBitMap.insert(absCatIDForBits[i],i);
 }

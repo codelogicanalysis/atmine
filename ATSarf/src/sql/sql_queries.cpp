@@ -14,6 +14,7 @@
 #include <QStringList>
 #include <QList>
 #include <assert.h>
+#include <iostream>
 
 #include "sql_queries.h"
 #include "database_info_block.h"
@@ -21,7 +22,9 @@
 #include "dbitvec.h"
 
 QSqlQuery query;
-extern QString databaseFileName;
+#ifdef LOAD_FROM_FILE
+extern QStringList cacheFileList;
+#endif
 
 #if 0
 #include <stdio.h>
@@ -243,7 +246,10 @@ void check_for_staleness()
 		if (d>cache_time)
 #endif
 		{
-			system(QString(QString("rm ") +trie_path+ " "+trie_list_path).toStdString().data());
+			QString s,files;
+			foreach ( s,cacheFileList)
+				files+=s+" ";
+			system(QString(QString("rm ") +files).toStdString().data());
 			return;
 		}
 	}
@@ -276,7 +282,7 @@ bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 		}
 		else
 		{
-			error <<"Unable to build databases. Reason: "<<db.lastError().text()<<"\n";
+			std::cout <<"Unable to build databases. Reason: "<<db.lastError().text().toStdString()<<"\n";
 			return 1;
 		}
 	}
@@ -1197,7 +1203,7 @@ bool areCompatible(rules rule,long category1,long category2)
 	long resulting_id;
 	return areCompatible(rule,category1,category2,resulting_id);
 }
-
+#if 0
 QHash<QString, int> abstract_id_mapping;
 int get_abstractCategory_id(QString abstract_category)
 {
@@ -1210,3 +1216,4 @@ int get_abstractCategory_id(QString abstract_category)
 		return id;
 	}
 }
+#endif

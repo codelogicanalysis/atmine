@@ -87,9 +87,11 @@ class result_node:public node
 		}
 		result_node * getPreviousResultNode()
 		{
+			//TODO: check memory corruption
 			node * previous=parent;
-			while (previous!=NULL  && previous->isLetterNode())
-				previous=previous->parent;
+			while (previous!=NULL){
+								  if (!previous->isLetterNode()) break;
+								  previous=previous->parent;}
 			return (result_node*)previous;
 		}
 		~result_node(){}

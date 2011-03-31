@@ -15,7 +15,6 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 #include "Math_functions.h"
-#include "sql_queries.h"
 #include "Retrieve_Template.h"
 #include "Search_by_item_locally.h"
 #include "graph.h"
@@ -24,7 +23,10 @@
 #include <assert.h>
 
 HadithParameters parameters;
-QString chainDataStreamFileName= "chainOutput";
+QString chainDataStreamFileName= ".chainOutput";
+#ifdef PREPROCESS_DESCRIPTIONS
+QString preProcessedDescriptionsFileName= ".HadithPreProcessedDescriptions";
+#endif
 #ifndef SUBMISSION
 QString PhrasesFileName="../src/case/phrases";
 QString StopwordsFileName="../src/case/stop_words";
@@ -181,6 +183,51 @@ void initializeChainData(chainData *currentChain)
 }
 #endif
 
+#ifdef PREPROCESS_DESCRIPTIONS
+void readFromDatabasePreProcessedDescriptions()
+{
+	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%/inform' OR name LIKE 'inform/%' OR name LIKE 'inform %' OR name LIKE '% inform' OR name = 'inform' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
+	while (nrc_s.retrieve())
+		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
+	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
+	while (nmc_s.retrieve())
+		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
+	Retrieve_Template ibn_s("description","id","name='son'");
+	while (ibn_s.retrieve())
+		IBN_descriptions.insert(ibn_s.get(0).toULongLong(),true);
+
+	QFile file(preProcessedDescriptionsFileName.toStdString().data());
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out	<< NRC_descriptions
+			<< NMC_descriptions
+			<< IBN_descriptions;
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write PreProcessed Descriptions to file\n";
+}
+void readFromFilePreprocessedDescriptions()
+{
+#ifndef LOAD_FROM_FILE
+	readFromDatabasePreProcessedDescriptions();
+#else
+	QFile file(preProcessedDescriptionsFileName.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		in	>> NRC_descriptions
+			>> NMC_descriptions
+			>> IBN_descriptions;
+		file.close();
+	}
+	else
+		readFromDatabasePreProcessedDescriptions();
+#endif
+}
+#endif
+
 void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
@@ -188,28 +235,28 @@ void hadith_initialize()
 	abihi.append(alef).append(ba2).append(ya2).append(ha2);
 	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
 #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
-	abstract_NAME=get_abstractCategory_id("Male Names");
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
 #elif defined(JUST_BUCKWALTER)
-	abstract_NAME=get_abstractCategory_id("NOUN_PROP");
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
 #else
-	abstract_NAME=get_abstractCategory_id("Name of Person");
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Name of Person");
 #endif
 #ifndef JUST_BUCKWALTER
-	abstract_POSSESSIVE=get_abstractCategory_id("POSSESSIVE");
-	abstract_PLACE=get_abstractCategory_id("Name of Place");
-	abstract_CITY=get_abstractCategory_id("City/Town");
-	abstract_COUNTRY=get_abstractCategory_id("Country");
-	bit_POSSESSIVE=get_bitindex(abstract_POSSESSIVE,abstract_category_ids);
-	bit_PLACE=get_bitindex(abstract_PLACE,abstract_category_ids);
-	bit_CITY=get_bitindex(abstract_CITY,abstract_category_ids);
-	bit_COUNTRY=get_bitindex(abstract_COUNTRY,abstract_category_ids);
+	abstract_POSSESSIVE=database_info.comp_rules->getAbstractCategoryID("POSSESSIVE");
+	abstract_PLACE=database_info.comp_rules->getAbstractCategoryID("Name of Place");
+	abstract_CITY=database_info.comp_rules->getAbstractCategoryID("City/Town");
+	abstract_COUNTRY=database_info.comp_rules->getAbstractCategoryID("Country");
+	bit_POSSESSIVE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_POSSESSIVE);
+	bit_PLACE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_PLACE);
+	bit_CITY=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_CITY);
+	bit_COUNTRY=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COUNTRY);
 #else
 	abstract_POSSESSIVE=-1;
 	abstract_PLACE=-1;
 	abstract_CITY=-1;
 	abstract_COUNTRY=-1;
 #endif
-	bit_NAME=get_bitindex(abstract_NAME,abstract_category_ids);
+	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
 #ifdef REFINEMENTS
 	QFile input(PhrasesFileName);	 //contains compound words or phrases
 									 //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
@@ -242,16 +289,7 @@ void hadith_initialize()
 	stat.narrator_per_chain.clear();
 #endif
 #ifdef PREPROCESS_DESCRIPTIONS
-	//preprocessing descriptions:
-	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%/inform' OR name LIKE 'inform/%' OR name LIKE 'inform %' OR name LIKE '% inform' OR name = 'inform' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
-	while (nrc_s.retrieve())
-		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
-	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
-	while (nmc_s.retrieve())
-		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
-	Retrieve_Template ibn_s("description","id","name='son'");
-	while (ibn_s.retrieve())
-		IBN_descriptions.insert(ibn_s.get(0).toULongLong(),true);
+	readFromFilePreprocessedDescriptions();
 #endif
 	non_punctuation_delimiters=delimiters;
 	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]"));
@@ -275,7 +313,7 @@ inline void initializeStateData()
 #endif
 }
 
-class hadith_stemmer: public Stemmer
+class hadith_stemmer: public Stemmer //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
 {
 private:
 	bool place;
@@ -423,7 +461,7 @@ public:
 		}
 		if (stem_info->abstract_categories.getBit(bit_NAME)
 	#ifdef REFINEMENTS
-			&& Prefix->info.finish-Prefix->info.start<0)
+			&& Suffix->info.finish-Suffix->info.start<0)
 	#else
 			)
 	#endif
@@ -439,7 +477,20 @@ public:
 			return true;
 		}
 #ifndef JUST_BUCKWALTER
-		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE))
+#if 1
+		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) && stem_info->abstract_categories.getBit(bit_PLACE))
+		{
+			possessive=true;
+			place=true;
+		#ifdef STATS
+			stem=temp_stem;
+		#endif
+			nmc=true;
+			finish_pos=info.finish;
+			return false;
+		}
+#else
+		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) )
 		{
 			possessive=true;
 			if (place)
@@ -465,6 +516,7 @@ public:
 				return false;
 			}
 		}
+#endif
 #endif
 		#ifdef STATS
 			stems.append(temp_stem);
@@ -775,7 +827,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		#endif
 		}
 #ifdef IBN_START//needed in case a hadith starts by ibn such as "ibn yousef qal..."
-		else if (currentType==NMC && isBinOrPossessive)
+		else if (currentType==NMC && isBinOrPossessive && !possessive)
 		{
 			display("<IBN1>");
 			initializeStateData();
@@ -1307,7 +1359,7 @@ bool getNextState(stateType currentState,wordType currentType,stateType & nextSt
 		}
 #endif
 #ifdef IBN_START
-		else if (currentType==NMC && isBinOrPossessive)
+		else if (currentType==NMC && isBinOrPossessive && !possessive)
 		{
 			display("<IBN3>");
 		#ifdef CHAIN_BUILDING
@@ -1647,6 +1699,9 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 #else
 	QString line =getnext();//just for first line
 	assert(line=="");
+#endif
+#ifdef PROGRESSBAR
+	prg->setCurrentAction("Parsing Hadith");
 #endif
 	for (;current_pos<text_size;)
 	{
