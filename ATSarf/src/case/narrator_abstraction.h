@@ -94,8 +94,16 @@ public:
 	virtual void serialize(QTextStream &chainOut) const;
 };
 class NameConnectorPrim :public NarratorPrim {
+private:
+	enum Type {POS,IBN, OTHER};
+	Type type;
 public:
-
+	void setPossessive(){type=POS;}
+	bool isPossessive(){return type==POS;}
+	void setIbn(){type=IBN;}
+	bool isIbn(){return type==IBN;}
+	void setOther(){type=OTHER;}
+	bool isOther(){return type==OTHER;}
 	NameConnectorPrim(QString * hadith_text);
 	NameConnectorPrim(QString * hadith_text,long long m_start);
 

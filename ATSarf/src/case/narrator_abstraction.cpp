@@ -133,8 +133,8 @@ void NamePrim::deserialize(QDataStream &) {
 	assert(c==getType((const NamePrim*)this));*/
 }
 
-NameConnectorPrim::NameConnectorPrim(QString * hadith_text):NarratorPrim(hadith_text){}
-NameConnectorPrim::NameConnectorPrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start){}
+NameConnectorPrim::NameConnectorPrim(QString * hadith_text):NarratorPrim(hadith_text),type(OTHER){}
+NameConnectorPrim::NameConnectorPrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start),type(OTHER){}
 
 bool NameConnectorPrim::isNamePrim() const {
 	return false;

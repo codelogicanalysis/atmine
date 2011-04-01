@@ -866,6 +866,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#ifdef CHAIN_BUILDING
 			initializeChainData(currentChain);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+			currentChain->nameConnectorPrim->setIbn();
 		#endif
 		#ifdef STATS
 			temp_nmc_s.clear();
@@ -932,6 +933,12 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			currentChain->namePrim->m_end=getLastLetter_IN_previousWord(stateInfo.startPos);
 			currentChain->narrator->m_narrator.append(currentChain->namePrim);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+		#ifdef REFINEMENTS
+			if (stateInfo.ibn)
+				currentChain->nameConnectorPrim->setIbn();
+			else
+				currentChain->nameConnectorPrim->setPossessive();
+		#endif
 			/*for (int i=0;i<currentChain->temp_nameConnectors->count()-1;i++)
 				delete (*currentChain->temp_nameConnectors)[i];*/
 			delete currentChain->temp_nameConnectors;
@@ -1205,6 +1212,12 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			currentChain->nameConnectorPrim->m_end=getLastLetter_IN_previousWord(stateInfo.startPos);
 			currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+		#ifdef REFINEMENTS
+			if (stateInfo.ibn)
+				currentChain->nameConnectorPrim->setIbn();
+			else
+				currentChain->nameConnectorPrim->setPossessive();
+		#endif
 		#endif
 			currentData.nmcCount++;
 			if (stateInfo.isIbnOrPossessivePlace())
@@ -1299,7 +1312,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 	#ifdef REFINEMENTS
 		if (stateInfo.currentType==NAME || stateInfo.possessivePlace)
 	#else
-		if (currentType==NAME)
+		if (stateInfo.currentType==NAME)
 	#endif
 		{
 			stateInfo.nextState=NAME_S;
@@ -1310,8 +1323,17 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 
 			currentChain->narratorConnectorPrim->m_end=getLastLetter_IN_previousWord(stateInfo.startPos);
 			currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-			currentChain->namePrim=new NamePrim(text,stateInfo.startPos);
-
+		#ifdef REFINEMENTS
+			if (stateInfo.currentType==NAME)
+		#endif
+				currentChain->namePrim=new NamePrim(text,stateInfo.startPos);
+		#ifdef REFINEMENTS
+			else
+			{
+				currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+				currentChain->nameConnectorPrim->setPossessive();
+			}
+		#endif
 		#endif
 			currentData.nrcEndIndex=getLastLetter_IN_previousWord(stateInfo.startPos);
 		#ifdef STATS
@@ -1326,8 +1348,21 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 			#ifdef CHAIN_BUILDING
-				currentChain->namePrim->m_end=stateInfo.endPos;
-				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+			#ifdef REFINEMENTS
+				if (stateInfo.currentType==NAME)
+				{
+			#endif
+					currentChain->namePrim->m_end=stateInfo.endPos;
+					currentChain->narrator->m_narrator.append(currentChain->namePrim);
+			#ifdef REFINEMENTS
+				}
+				else
+				{
+					currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
+					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+				}
+			#endif
+
 				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
 				currentChain->chain->m_chain.append(currentChain->narrator);
 				currentChain->narrator=new Narrator(text);
@@ -1398,6 +1433,8 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				delete currentChain->narrator;
 			currentChain->narrator=new Narrator(text);
 			currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+			currentChain->nameConnectorPrim->setIbn();
+			currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 			currentChain->temp_nameConnectors->clear();
 			//currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 		#endif
@@ -1887,6 +1924,10 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 					NarratorPrim * nar_struct=n->m_narrator[i];
 					if (nar_struct->isNamePrim())
 						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
+					else if (((NameConnectorPrim *)nar_struct)->isIbn())
+						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::blue,true);
+					else if (((NameConnectorPrim *)nar_struct)->isPossessive())
+						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::yellow,true);
 				}
 			}
 			else
