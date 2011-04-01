@@ -89,7 +89,7 @@ public:
 typedef struct text_info_
 {
 	QString *text;
-	long long start,finish;
+	long start,finish;
 }text_info;
 
 class multiply_params
