@@ -1,6 +1,7 @@
 #include "hadith.h"
 #include "narrator_abstraction.h"
 #include <QStringList>
+#include <QDataStream>
 #include <assert.h>
 #include "Triplet.h"
 #include "stemmer.h"
@@ -145,11 +146,18 @@ void NameConnectorPrim::serialize(QTextStream &chainOut) const
 }
 void NameConnectorPrim::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const NameConnectorPrim*)this);
+	chainOut<<(qint64)m_start<<(qint64)m_end<<(quint8)type;
 }
-void NameConnectorPrim::deserialize(QDataStream &) {
+void NameConnectorPrim::deserialize(QDataStream & chainIn) {
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const NameConnectorPrim*)this));*/
+	qint64 start,end;
+	quint8 l_type;
+	chainIn>>start>>end>>l_type;
+	m_start=start;
+	m_end=end;
+	type=(Type)l_type;
 }
 
 NarratorConnectorPrim::NarratorConnectorPrim(QString * hadith_text):ChainPrim(hadith_text){
@@ -174,13 +182,13 @@ void NarratorConnectorPrim::serialize(QTextStream &chainOut) const{
 }
 void NarratorConnectorPrim::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const NarratorConnectorPrim*)this);
-	chainOut<<(qlonglong)m_start<<(qlonglong)m_end;
+	chainOut<<(qint64)m_start<<(qint64)m_end;
 }
 void NarratorConnectorPrim::deserialize(QDataStream &chainIn){
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const NarratorConnectorPrim*)this));*/
-	qlonglong start,end;
+	qint64 start,end;
 	chainIn>>start>>end;
 	m_start=start;
 	m_end=end;

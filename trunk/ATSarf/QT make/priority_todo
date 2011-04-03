@@ -26,6 +26,7 @@ done---refine structures to report run-on words
 -check parsing problem in hadith number 4670
 -when treating edges as one, pass again thru the vector of chain nodes (in GraphVisitorController)
 -add code to draw cycle in a seperate file whenever detected
+-correct tagging for IBN not to add words that follow (resulting from not ending nameConnector Structure except after detecting another structure)
 
 -To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)
 -maybe: after merge, traverse the graph and re-check for equality the children of same node but with lesser threshold and in these cases make use of the order set by "ibn"
