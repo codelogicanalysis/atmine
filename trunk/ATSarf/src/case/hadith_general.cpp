@@ -777,9 +777,9 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 	else if (s.nmc)
 	{
 		if (s.ibn)
-			display("NMC-Bin ");
+			{display("NMC-Bin ");}
 		if (s.possessive)
-			display("NMC-Possessive ");
+			{display("NMC-Possessive ");}
 		//isBinOrPossessive=true;
 		return NMC;
 	}

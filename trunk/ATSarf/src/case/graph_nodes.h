@@ -44,6 +44,7 @@ class NarratorNodeIfc //abstract interface
 {
 private:
 	unsigned int color;
+	friend class LoopBreakingVisitor;
 protected:
 	virtual void setRank(int rank)=0;
 	virtual int getSavedRank()=0;
