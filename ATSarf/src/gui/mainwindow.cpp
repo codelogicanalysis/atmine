@@ -123,6 +123,7 @@ void MainWindow::on_pushButton_clicked()
 	parameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	parameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
 	parameters.display_chain_num=m_ui->chk_chainNum->isChecked();
+	parameters.break_cycles=m_ui->chk_breakCycles->isChecked();
 	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
 	{
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");

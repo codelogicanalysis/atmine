@@ -51,100 +51,46 @@ void GraphVisitorController::finish()
 	visitor->finish();
 }
 
-void NodeVisitor::detectedCycle(NarratorNodeIfc & n)
+void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc & n)
 {
-	NarratorNodeIfc * current=&n;
-	out<<"cycle at ";
-	out<<"[";
-	QString s=n.CanonicalName();
-	out<<s<<",";
-	const GraphVisitorController::ParentStack & stack=controller->getParentStack();
-	int size=stack.size();
-	for (int i=size-1; i>=0; i--)
-	{
-		current=stack[i];
-		if (current==&n && i!=size-1)
-			break;
-		s=current->CanonicalName();
-		out<<s<<",";
-	}
-	out<<"]\n";
-#if 0
-	do
-	{
-		if (controller->parentStack.isEmpty())
-			break;
-		controller->parentStack.pop();
-		QString s=current->CanonicalName();
-		out<<s<<",";
-		//qDebug()<<s<<",";
-		if (controller->parentStack.isEmpty())
-			break;
-		current=controller->parentStack.top();
-	}while(current!=&n && !current->isNull());
-	out<<"]\n";
-#endif
-}
-
-void DisplayNodeVisitor::detectedCycle(NarratorNodeIfc & n)
-{
-	//TODO: add code to draw cycle in a seperate file whenever detected
-}
-
-#if 0
-void LoopBreakingVisitor::finish() //not re-looked at
-{
-	if (cycle_fixed)
-	{
-		cycle_fixed=false;
-		detected_cycle=false;
-		controller->initialize();
-		graph->DFS_traverse(*(this->controller),true);//retry breaking more loops
-	}
-	if (detected_cycle && ! cycle_fixed)
-		out<< "Error: Cycles detected, which were not corrected!\n";
-}
-
-//not re-looked at
-void LoopBreakingVisitor::cycle_detected(NarratorNodeIfc & n)//any cycle of length larger than 1 or 2 detected
-{
-	static const double step=parameters.equality_delta/2;
-	static const int num_steps=4;
-	detected_cycle=true;
-	controller->stop_searching_for_cycles=true;
-	out<< "Error: Self cycle detected at node"<<n.CanonicalName()<<"!\n";
 	if (!n.isGraphNode())
 		return; //unable to resolve
-	GraphNarratorNode * g=(GraphNarratorNode *)&n;
+	GraphNarratorNode & g=*(GraphNarratorNode *)&n;
+#ifdef DISPLAY_NODES_BEING_BROKEN
+	qDebug()<<g.CanonicalName();
+#endif
 	QList<ChainNarratorNode *> narrators;
-	for (int i=0;i<g->equalChainNodes.size();i++)
+	for (int i=0;i<g.size();i++)
 	{
-		narrators.append((g->equalChainNodes[i]));
-		(g->equalChainNodes[i])->setCorrespondingNarratorNode(NULL);
+		narrators.append(&(g[i]));
+		g[i].setCorrespondingNarratorNode(NULL);
 	}
-
-	double original_threshold=parameters.equality_threshold;
-	for (int i=0;i<num_steps;i++)
+	g.equalChainNodes.clear();
+	NarratorGraph* graph=controller->getGraph();
+	QList<NarratorNodeIfc *> new_nodes;
+	int size=narrators.size();
+	for (int j=0;j<size;j++)
 	{
-		parameters.equality_threshold-=step;
-		for (int j=1;j<narrators.size();j++)
-			if (equal(narrators[j-1]->getNarrator(),narrators[j]->getNarrator()))
-				graph->mergeNodes(*narrators[j-1],*narrators[j]);
-		bool all_fixed=true;
-		for (int j=0;j<narrators.size();j++)
+		for (int k=j+1;k<size;k++)
 		{
-			NarratorNodeIfc & node=narrators[j]->getCorrespondingNarratorNode();
-			if (node.isGraphNode() && has_self_cycle(n))
+			double eq_val=equal(narrators[j]->getNarrator(),narrators[k]->getNarrator());
+			if (eq_val>threshold)
 			{
-				all_fixed=false;
-				break;
+				NarratorNodeIfc & n_new=graph->mergeNodes(*narrators[j],*narrators[k]);
+				if (!new_nodes.contains(&n_new))
+					new_nodes.append(&n_new);
 			}
 		}
-		cycle_fixed=all_fixed;
 	}
-	//check how to free memory correctly
-	//g->equalnarrators.clear();
-	delete g;
-	parameters.equality_threshold=original_threshold;
+	//to keep all_nodes consistent
+	graph->all_nodes.removeOne(&g);
+	graph->all_nodes.append(new_nodes);
+	if (graph->top_nodes.contains(&g))
+	{
+		graph->top_nodes.removeOne(&g);
+		graph->top_nodes.append(new_nodes);
+	}
+	for (int i=0;i<new_nodes.size();i++)
+		new_nodes[i]->color=g.color;
+	//delete &g;
 }
-#endif

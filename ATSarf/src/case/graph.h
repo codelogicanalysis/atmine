@@ -19,8 +19,8 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)=0;
 	virtual void finish()=0;
 
-	virtual void detectedCycle(NarratorNodeIfc & n);
-	virtual void finishVisit(NarratorNodeIfc & ) {}
+	virtual void detectedCycle(NarratorNodeIfc & n)=0;
+	virtual void finishVisit(NarratorNodeIfc & n)=0;
 };
 
 class NarratorGraph;
@@ -90,7 +90,6 @@ protected:
 	bool stop_searching_for_cycles;
 
 	friend class NarratorGraph;
-	friend class LoopBreakingVisitor;
 
 	void init()
 	{
@@ -185,6 +184,7 @@ public:
 	unsigned int getVisitColorIndex(){return visitIndex;}
 	unsigned int getFinishColorIndex(){return finishIndex;}
 	const ParentStack & getParentStack() {return parentStack;}
+	NarratorGraph * getGraph(){return graph;}
 };
 
 class DisplayNodeVisitor: public NodeVisitor
@@ -303,8 +303,46 @@ public:
 	{
 		QString s=getAndInitializeDotNode(n);
 		displayChainNumsEndingJustAfter(n,s);
+	#ifdef DISPLAY_GRAPHNODES_CONTENT
+		if (n.isGraphNode())
+			out<<n.toString()<<"\n";
+	#endif
 	}
-	virtual void detectedCycle(NarratorNodeIfc & n);
+	virtual void finishVisit(NarratorNodeIfc & ){}
+	virtual void detectedCycle(NarratorNodeIfc & n)
+	{
+		NarratorNodeIfc * current=&n;
+		out<<"cycle at ";
+		out<<"[";
+		QString s=n.CanonicalName();
+		out<<s<<",";
+		const GraphVisitorController::ParentStack & stack=controller->getParentStack();
+		int size=stack.size();
+		for (int i=size-1; i>=0; i--)
+		{
+			current=stack[i];
+			if (current==&n && i!=size-1)
+				break;
+			s=current->CanonicalName();
+			out<<s<<",";
+		}
+		out<<"]\n";
+	#if 0
+		do
+		{
+			if (controller->parentStack.isEmpty())
+				break;
+			controller->parentStack.pop();
+			QString s=current->CanonicalName();
+			out<<s<<",";
+			//qDebug()<<s<<",";
+			if (controller->parentStack.isEmpty())
+				break;
+			current=controller->parentStack.top();
+		}while(current!=&n && !current->isNull());
+		out<<"]\n";
+	#endif
+	}
 	virtual void finish()
 	{
 	#ifdef FORCE_RANKS
@@ -356,6 +394,7 @@ public:
 		file->close();
 		delete file;
 	}
+
 };
 
 class FillNodesVisitor: public NodeVisitor
@@ -371,11 +410,9 @@ public:
 		list_all->append(&n);
 		/*if (n.size()==0) //TODO: do a function that checks if it is a leaf node (needs a for loop in the case of a graph node)
 			list_bottom->append(&n);*/
-	#ifdef DISPLAY_GRAPHNODES_CONTENT
-		if (n.isGraphNode())
-			out<<n.toString()<<"\n";
-	#endif
 	}
+	virtual void finishVisit(NarratorNodeIfc & ){}
+	virtual void detectedCycle(NarratorNodeIfc & ){}
 	virtual void finish(){}
 };
 
@@ -404,59 +441,42 @@ public:
 
 	}
 	virtual void visit(NarratorNodeIfc &) {	}
+	virtual void finishVisit(NarratorNodeIfc & ){ }
+	virtual void detectedCycle(NarratorNodeIfc & ){ }
 	virtual void finish(){	}
 };
 class LoopBreakingVisitor: public NodeVisitor
 {
 private:
-	bool cycle_fixed;
-	bool detected_cycle;
-	NarratorGraph * graph;
-	bool has_self_cycle(NarratorNodeIfc &  n)
+	double threshold;
+	void swapThresholds() //swap threshold and parameters.equality_threshold
 	{
-		int num=n.size();
-		for (int i=0;i<num;i++)
-		{
-			NarratorNodeIfc & c=n.getChild(i);
-			if (&c==&n)
-				return true;
-		}
-		return false;
+		double temp=parameters.equality_threshold;
+		parameters.equality_threshold=threshold;
+		threshold=temp;
 	}
-	bool has_dual_cycle(NarratorNodeIfc &  n1,NarratorNodeIfc &  n2) //assuming when this is called n1 is parent of n2
-	{
-		int num=n2.size();
-		for (int i=0;i<num;i++)
-		{
-			NarratorNodeIfc & c=n2.getChild(i);
-			if (&c==&n1)
-				return true;
-		}
-		return false;
-	}
+	void reMergeNodes(NarratorNodeIfc & n);
 public:
-	LoopBreakingVisitor(NarratorGraph * graph)
-	{
-		cycle_fixed=false;
-		detected_cycle=false;
-		this->graph=graph;
-	}
-	void initialize()	{	}
+	LoopBreakingVisitor(double equality_threshold) {threshold=equality_threshold; }
+	virtual void initialize() { /*swapThresholds();*/ }
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ) { 	}
 	virtual void visit(NarratorNodeIfc &) {	}
-	virtual void finish();
-	virtual void cycle_detected()//any cycle of length larger than 2 detected
+	virtual void finishVisit(NarratorNodeIfc & ){}
+	virtual void detectedCycle(NarratorNodeIfc & n)
 	{
-		detected_cycle=true;
-		controller->stop_searching_for_cycles=false;
+		NarratorNodeIfc * current=&n;
+		reMergeNodes(*current);
+		const GraphVisitorController::ParentStack & stack=controller->getParentStack();
+		int size=stack.size();
+		for (int i=size-1; i>=0; i--)
+		{
+			current=stack[i];
+			if (current==&n && i!=size-1)
+				break;
+			reMergeNodes(*current);
+		}
 	}
-	virtual void cycle_detected(NarratorNodeIfc & n);//any cycle of length larger than 1 or 2 detected
-	virtual void cycle_detected(NarratorNodeIfc & n1,NarratorNodeIfc & n2)//any cycle of length larger than 1 or 2 detected
-	{
-		detected_cycle=true;
-		controller->stop_searching_for_cycles=true;
-		out<< "Error: Cycle detected between nodes:"<<n1.CanonicalName()<<" and "<<n2.CanonicalName()<<"!\n";
-	}
+	virtual void finish() { /*swapThresholds();*/ }
 };
 class NarratorGraph
 {
@@ -655,13 +675,24 @@ private:
 		highest_rank=r.getHighestRank();
 	#endif
 	}
-	void breakManageableCycles() //not re-looked at
+	void breakManageableCycles()
 	{
-	#if 0
-		LoopBreakingVisitor l(this);
-		GraphVisitorController c(&l,this,true,true);
-		DFS_traverse(c,true);
-	#endif
+		const double step=parameters.equality_delta;
+		const int num_steps=3;
+		prg->setCurrentAction("Breaking Cycles");
+		prg->report(0);
+		for (int i=1;i<=num_steps;i++)
+		{
+		#ifdef DISPLAY_NODES_BEING_BROKEN
+			qDebug()<<"--";
+		#endif
+			double threshold=parameters.equality_threshold+i*step;
+			LoopBreakingVisitor l(threshold);
+			GraphVisitorController c(&l,this);
+			DFS_traverse(c);
+			prg->report(i/num_steps*100+0.5);
+		}
+
 	}
 	void correctTopNodesList()
 	{
@@ -700,11 +731,11 @@ private:
 	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
 		visitor.visit(n);
-		int size=n.size();
+		//int size=n.size();
 	#ifdef DEBUG_DFS_TRAVERSAL
 		out<<"parent:"<<n.toString()<<" "<<size<<"\n";
 	#endif
-		for (int i=0;i<size;i++)
+		for (int i=0;i<n.size();i++)//n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
 		{
 			NarratorNodeIfc & c=n.getChild(i);
 		#ifdef DEBUG_DFS_TRAVERSAL
@@ -729,8 +760,8 @@ public:
 		buildGraph();
 		correctTopNodesList();
 		fillNodesLists();
-		//breakManageableCycles();
-
+		if (parameters.break_cycles)
+			breakManageableCycles();
 		computeRanks();
 	}
 	void DFS_traverse(GraphVisitorController & visitor)
