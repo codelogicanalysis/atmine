@@ -18,7 +18,11 @@ BASE:=$(shell pwd | xargs basename)
 #echobase:
 #	@echo $(BASE)
 
-DATRIE=third/datrie
+ifneq ($(findstring cyg,$(MAKECMDGOALS)),cyg)
+    DATRIE=third/datrie
+else
+    DATRIE=third/wdatrie
+endif
 
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build src/gui

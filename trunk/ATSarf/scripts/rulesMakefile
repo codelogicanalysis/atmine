@@ -73,6 +73,8 @@ opt: all
 
 32: all
 
+cyg: all
+
 #rules to make C code from antler grammar
 %Lexer.c %Parser.c: %.g
 	@echo "java -jar $(ANTLR_JAR) $<"
