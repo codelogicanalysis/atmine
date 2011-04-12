@@ -24,4 +24,4 @@ clean:
 		cd $$i; $(MAKE) clean; cd $(TOP); \
 	done
 
-opt 32: all
+opt 32 64 cyg: all

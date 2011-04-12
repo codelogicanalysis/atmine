@@ -10,7 +10,11 @@
 #
 # Feb 12,2010    fadi   initial creation
 
-QTDIR=third/qt
+ifneq ($(findstring cyg,$(MAKECMDGOALS)),cyg)
+    QTDIR=third/qt
+else
+    QTDIR=third/wqt
+endif
 
 #programs needed to generate code
 QTMOC_BIN=$(TOP)/$(QTDIR)/bin/moc
