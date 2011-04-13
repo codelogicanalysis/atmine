@@ -90,6 +90,7 @@ typedef struct text_info_
 {
 	QString *text;
 	long start,finish;
+	QString getString(){ return text->mid(start, finish-start+1);}//TODO: solve bug in inconsistent start when diacritics exist
 }text_info;
 
 class multiply_params

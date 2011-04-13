@@ -15,6 +15,8 @@
 #include "diacritics.h"
 //#include "Search_by_item_locally.h"
 
+class Stemmer;
+
 class TreeSearch
 {
 	public://private
@@ -29,6 +31,7 @@ class TreeSearch
 		QList<result_node *> * result_nodes;
 	private:
 		ItemCatRaw2PosDescAbsMap * map;
+		friend class Stemmer;
 	public:
 	#endif
         long resulting_category_idOFCurrentMatch;
