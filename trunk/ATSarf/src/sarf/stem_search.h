@@ -7,6 +7,8 @@
 #include "solution_position.h"
 #include <QString>
 
+class Stemmer;
+
 class StemSearch
 {
 	public:
@@ -14,10 +16,10 @@ class StemSearch
 		int currentMatchPos;
 		long category_of_currentmatch;
 		long id_of_currentmatch;
-		int starting_pos;
 		minimal_item_info * solution;
 	protected:
 		text_info info;
+		friend class Stemmer;
 	private:
 #ifdef USE_TRIE
 		ATTrie * trie;
@@ -30,7 +32,7 @@ class StemSearch
 		StemSearch(QString * text,int start, long prefix_category,bool reduce_thru_diacritics=true)
 		{
 			info.text=text;
-			starting_pos=start;
+			info.start=start;
 			this->prefix_category=prefix_category;
 			this->reduce_thru_diacritics=reduce_thru_diacritics;
 		#ifdef USE_TRIE
@@ -48,7 +50,7 @@ class StemSearch
 		{
 			ATTrie::Position pos = trie->startWalk();
 			stop=false;
-			traverse(starting_pos,pos);
+			traverse(info.start,pos);
 			trie->freePosition(pos);
 			return !stop;
 		}

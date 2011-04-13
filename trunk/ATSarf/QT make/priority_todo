@@ -23,10 +23,12 @@ done---refine structures to report run-on words
 -give more weight to order inforced by ibn
 -all names with space add without a space, if has non-connecting letters before the space
 -fix Makefile to accomodate ui
--check parsing problem in hadith number 4670
+-check parsing problem in hadith number 4670,4512
 -when treating edges as one, pass again thru the vector of chain nodes (in GraphVisitorController)
 -add code to draw cycle in a seperate file whenever detected
 -correct tagging for IBN not to add words that follow (resulting from not ending nameConnector Structure except after detecting another structure)
+-if we enable the rank we dont hit the musnad_ahmad bug (priority:1 )
+-results of run-on words
 
 -To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)
 -maybe: after merge, traverse the graph and re-check for equality the children of same node but with lesser threshold and in these cases make use of the order set by "ibn"

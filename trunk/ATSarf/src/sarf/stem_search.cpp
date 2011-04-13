@@ -144,7 +144,7 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 	QString subword=getDiacriticword(i-1,starting_pos,*info.text);
 #else
 	int last;
-	QStringRef subword=addlastDiacritics(starting_pos,last_letter_index,info.text,last);
+	QStringRef subword=addlastDiacritics(info.start,last_letter_index,info.text,last);
 	currentMatchPos=last>0?last-1:0;
 	info.finish=currentMatchPos;
 #endif
