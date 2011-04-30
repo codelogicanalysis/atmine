@@ -12,6 +12,8 @@
 #include "diacritics.h"
 #include <sys/time.h>
 
+extern void splitRecursiveAffixes();
+
 int word_sarf_test(QString input_str)
 {
 	QString line=input_str.split('\n')[0];
@@ -89,6 +91,7 @@ int start(QString input_str, QString &output_str, QString &error_str, QString &h
 
 int test(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool /*hadith*/,ATMProgressIFC * /*m_ui*/)
 {
+#if 0
 	out.setString(&output_str);
 	out.setCodec("utf-8");
 	in.setString(&input_str);
@@ -143,6 +146,10 @@ int test(QString input_str, QString &output_str, QString &error_str, QString & h
 	out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 	input.close();
 	return 0;
+#else
+	splitRecursiveAffixes();
+	return 0;
+#endif
 }
 
 

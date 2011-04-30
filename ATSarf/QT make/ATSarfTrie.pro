@@ -11,9 +11,11 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../src/sql \
     ../src/build
 INCLUDEPATH += $$TOP/datrie/
-#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4
+
+# INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4
 INCLUDEPATH += $$TOP/datrie
-#INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4/datrie
+
+# INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4/datrie
 INCLUDEPATH += $$TOP/datrie/datrie
 HEADERS += util/text_handling.h \
     ../src/util/diacritics.h \
@@ -55,7 +57,8 @@ HEADERS += util/text_handling.h \
     ../src/case/graph_nodes.h \
     ../src/case/graph.h \
     ../src/util/text_handling.h \
-    ../src/case/hadith_utilities.h
+    ../src/case/hadith_utilities.h \
+    ../src/case/split_affixes.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -91,7 +94,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/common/common.cpp \
     ../src/common/solution_position.cpp \
     ../src/case/graph_nodes.cpp \
-    ../src/case/graph.cpp
+    ../src/case/graph.cpp \
+    ../src/case/split_affixes.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

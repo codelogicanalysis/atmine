@@ -780,7 +780,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		raw_data=name;
 	int i=0;
 	QString reducedName, reducedRawData;
-	if (name.length()>0)
+	if (type==STEM && name.length()>0)
 		do
 		{
 			//qDebug()<<"o:"<<name;
@@ -965,6 +965,37 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	perform_query(stmt);
 	update_dates(source_id);
 	return item_id;
+}
+int remove_item(item_types type,long item_id, QString raw_data, long category_id, long description_id, QString POS)
+{
+	QString stmt( QString("DELETE FROM %1_category ")+
+				  "WHERE %1_id=%2 AND category_id=%3 AND raw_data=\"%4\" "+
+						"AND description_id=%5 AND POS=\"%6\"");
+	stmt=stmt.arg(interpret_type(type)).arg(item_id).arg(category_id)
+			 .arg(raw_data).arg(description_id).arg(POS);
+	perform_query(stmt);
+	if (query.numRowsAffected()==0)
+	{
+		error << "No entry removed in "+interpret_type(type)+"_category!\n";
+		return -2;
+	} else if (query.numRowsAffected()>1) {
+		error << "More than one entry in "+interpret_type(type)+"_category removed!\n";
+		return -2;
+	}
+	stmt=QString( "SELECT COUNT(*)")+
+				  "FROM %1_category "+
+				  "WHERE %1_id=%2 AND category_id=%3 AND raw_data=\"%4\" "+
+						"AND description_id=%5 AND POS=\"%6\"";
+	stmt=stmt.arg(interpret_type(type)).arg(item_id).arg(category_id)
+			 .arg(raw_data).arg(description_id).arg(POS);
+	perform_query(stmt);
+	assert(query.next());
+	if (query.record().value(1)==0) {
+		QString stmt( "DELETE FROM %1 WHERE id=%2");
+		stmt=stmt.arg(interpret_type(type)).arg(item_id);
+		perform_query(stmt);
+	}
+	return 0;
 }
 //let dispay table return the number of rows in the table
 long display_table(QString table) //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
