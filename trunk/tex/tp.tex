@@ -57,6 +57,10 @@
 \fancyfoot[l]{ \scriptsize \textit{AUB, Spring 2010-2011}}
 \fancyfoot[R]{ \scriptsize \textit{ Thesis Proposal Report}}
 
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+\renewcommand{\labelenumii}{\labelenumi\arabic{enumii}.}
+\renewcommand{\labelenumiii}{\labelenumii\arabic{enumiii}.}
+
 
 %-------BEGIN----------------------------------------------------
 \begin{document}
@@ -112,29 +116,27 @@ Submitted on: \> \today
 
 \begin{abstract}
 Text Mining 
-%can be considered as a subfield of both Natural Language Processing (NLP) and Data Mining.
 is interested in automatically extracting useful information and relations from text documents.
-%Extracted information is hard to discover manually or previously unknown
-%Natural Language Processing applications perform 
-%to discover useful information that is otherwise unknown.
-The complexity of natural languages introduces interesting challenges 
-to automatic analysis of underlying textual data.
-Morphological analysis is key to many Natural Language Processing Applications.
-General morphological analyzers such as Buckwalter and ElixirFM 
-generate all morphological solutions.
-However, this exhaustive enumeration may not be needed or appropriate for the
-application at hand.
-We propose developing Sarf, an Arabic application-specific morphological analyzer whose functionality can be customized 
-based on the specific needs of the application. 
-%This flexibility has been motivated by 
-%the broad spectrum of text mining applications, each with its specific characteristics and corpora, which
-%necessitate a special treatment.
-Sarf encodes its lexicon into a non-deterministic composition of three finite automata.
+This information is hard to discover manually or is previously unknown.
+This thesis is concerned with Arabic Text Mining where
+%The complexity of natural languages introduces interesting challenges 
+%to automatic analysis of underlying textual data.
+morphological analysis is key.%to many Natural Language Processing Applications.
+General-purpose morphological analyzers such as Buckwalter and ElixirFM exist for the Arabic language and
+generate all possible morphological solutions.
+Many Natural Language Processing applications need only few of these solutions.
+We propose building Sarf, an Arabic application-specific morphological analyzer. 
+Natural Language Processing applications can easily customize Sarf 
+to prune unwanted solutions. This refinement allows applications to run more efficiently. 
+%The flexible API of Sarf enables developers without expertise in morphology to have access rich NLP tools. (TODO: re-write)
+Sarf encodes its lexicon into a non-deterministic composition of three finite transducers.
 It also solves the issue of `run-on' words, supports disambiguation using diacritics, 
 handles multi-word expressions and performs online tokenization.
-In our thesis, we will use Sarf to solve two useful Natural Language Processing applications: 
-(1) the extraction of time entities from Arabic documents, and 
-(2) the automation of the process of hadith authentication.
+We will apply Sarf to  
+(1) extract time entities from Arabic documents,
+(2) extract narrators from hadith documents,
+(3) relate narrators to their biographies in separate documents, and 
+ thus automate the process of hadith authentication.
 
 \end{abstract}
 
@@ -146,6 +148,7 @@ of information available and our ability to understand and analyze it. ``Omnipre
 it too easy to save things that previously we would have trashed. Inexpensive disks
 and online storage make it too easy to postpone decisions about what to do with all
 this stuff -- we simply get more memory and keep it all.''~\cite{Witten:11}
+Even old paper documents are being ported to digital form to facilitate their use. 
 This explosion in available data has motivated the automation of the task 
 of extracting information of interest for a certain usage. 
 Manual extraction is practically unfeasible due to
@@ -159,173 +162,102 @@ information through relating separate datasets~\cite{JNi06}.
 %(non-trivial, implicit, previously unknown and potentially useful) patterns 
 %or knowledge from huge amounts of data'~\cite{Witten:00}.
 
-Clearly, a small percentage of the data available worldwide 
-is stored in databases in structured form; instead, the greater amount of information is available in the 
-form of electronic text files and documents such as news articles, publications, governmental records, etc. ...
-Even old paper documents are being ported to digital form to facilitate their use. 
-Text Mining emerged as an attempt to automate the extraction of interesting, 
+While a small percentage of data %available worldwide 
+is available in structured form, the greater amount is stored in unstructured form such as  
+text files.
+Examples are news articles, publications, governmental records, etc. ...
+{\em Text Mining} emerged as an attempt to automate the extraction of interesting, 
 previously unknown and potentially useful information
 from the huge amounts of text documents~\cite{Witten:08}.
-Information Extraction (IE) from natural languages, however, is challenged
-by the difficulty of getting structured 
-entities from the underlying unstructured textual data.
+%Information Extraction (IE) from natural languages, however, is challenged
+%by the difficulty of getting structured 
+%entities from the underlying unstructured textual data.
+Natural languages are inherently ambiguous which renders the problem of 
+Information Extraction (IE) from natural language texts harder than 
+its counterpart in structured data.
 
-%Information Extraction (IE) from Natural Language Texts has always been an important 
-%problem in Data mining. What distinguishes text mining from the 
-%other subfields of data mining is mainly due to the challenge of getting structured 
-%entities from the underlying unstructured textual data. Clearly, a small percentage of the data available worldwide 
-%is stored in databases in structured form; instead the greater amount of information is available in the 
-%form of electronic text files and documents such as news articles, publications, governmental records, etc. ...
-%Even old paper documents are being ported to digital form to facilitate their use. 
+Natural Language Processing (NLP), one of the hardest fields in Artificial Intelligence,
+is interested in building a computational model of text or speech
+and their underlying meaning~\cite{sharp:01}. 
+%It is known that this task
+%is very complex and possibly not completely achievable. 
+Many applications target entities and relations that can be 
+easily extracted with partial computational models derived from
+statistical and morphological analysis techniques.
+%needed to grasp the whole meaning of the text but to extract some useful entities.
+%This IE problem can be performed through some statistical approaches 
+%and/or partial NLP techniques.
 
-Natural Language Processing (NLP)
-as a field of research is interested in achieving a computational model of the language
-and understanding its underlying meaning~\cite{sharp:01}. It is known that this task
-is very complex and possibly not completely achievable. However, in most applications it 
-is not needed to grasp the whole meaning of the text but to extract some useful entities.
-This Information Extraction(IE) problem can be performed through some statistical approaches 
-and/or partial NLP techniques.
-
-A subproblem of NLP is morphology.
-Morphological analyzers%~\cite{Sughaiyer:04}
-are interested in understanding the internal structure of a word;
-It considers words as being composed of 
+%A subproblem of NLP is morphology.
+Morphological analyzers %~\cite{Sughaiyer:04}
+consider the internal structure of a word and compose it from
 several {\em morphemes}. 
 A morpheme is a {\em stem} or an {\em affix}.
 An affix is a {\em prefix, suffix,} or an {\em infix}.
 Prefixes and suffixes are attached to the beginning and end of the word respectively; 
 while infixes introduce changes in the stem itself. 
 Morphological analyzers have been extensively used as building blocks 
-in many text mining applications~\cite{Sou07}.  In Arabic, many morphological analyzers exist including:  
+in many text mining applications~\cite{Sou07}.  In Arabic, morphological analyzers such as  
 Buckwalter~\cite{Buckwalter:02},
 Beesley~\cite{Beesley:01},
 SAMA ~\cite{Kulick:10},
 ElixirFM~\cite{Otakar:07}, 
 AMIRA~\cite{Diab:07,Benajiba:07},
 MAGEAD~\cite{Habash:05}, 
-and MADA+TOKAN~\cite{Habash:09}.
-%Arabic however has distinctive characteristics that
-%complicate its analysis; and consequently, much remains to be performed in the field.
+and MADA+TOKAN~\cite{Habash:09}
+exist.
+They preprocess text to remove diacritics, short vowels, such as 
+\RL{ha}, \RL{hu}, \RL{hi}, \RL{TaN}, \RL{huN}, \RL{hiN}.~\footnote{In this document, 
+we use the default ArabTeX transliteration style ZDMG.} Diacritics help to disambiguate the
+meaning of a word. For example, \noVocRL{wrd} may mean ``rose"(\RL{ward}), ``came"(\fullvocalize\RL{warada}) 
+or ``and he replied"(\RL{waradda}). We think that using diacritics in the analysis can highly increase accuracy.
+Current analyzers take as input whitespace-delimited tokens. However, in Arabic word boundaries can be more complex.
+Arabic letters can have up to 
+four different forms
+corresponding to their position in a word, i.e. beginning,
+middle, end of word and separate forms. 
+This allows the phrase
+\noTrnoVocRL{il_A\nospace almdrsT}  with no delimiter within
+to be visually recognizable
+as two separate words \noVocRL{il_A} (to) and \noVocRL{almdrsT} (the school).
+This happens because the first word \noVocRL{il_A} ends with
+\noVocRL{_A} a non-connecting letter. We propose to solve this problem, commonly known as the run-on word problem, using online tokenization.
+This also solves the issue of multi-word expressions such as \noVocRL{`abid al-la.tiyf} being analyzed as one unit -- here a compound proper name.
 
-In this thesis, we propose to develop Sarf, an application-specific 
+%Arabic however has distinctive characteristics that
+%complicate its analysis. 
+%Arabic text is composed of
+
+In this thesis, we propose to build Sarf, an application-specific 
 morphological analyzer for the Arabic language 
 which is capable of benefiting
-from the specific characteristics of the application at hand. 
-In addition, it supports disambiguation using diacritics and 
-handles `run-on' words. We also propose to use Sarf to solve two interesting .
-text mining applications: time entity extraction and hadith authentication.
+from the specific characteristics of the application at hand.
+In addition , Sarf solves the issue of `run-on' words, supports disambiguation using diacritics, 
+handles multi-word expressions and performs online tokenization. 
+We will apply Sarf to  
+(1) extract time entities from Arabic documents,
+(2) extract narrators from hadith documents,
+(3) relate narrators to their biographies in separate documents, and 
+ thus automate the process of hadith authentication.
 
-\section{Applications of Text Mining}
-\label{sec:Applications}
+\subsubsection{Time Entity Extraction}
 
-%Text Mining has gained much interest lately especially due to its wide range of applications.
-%However, these applications have substantially differing corpora (terminology, 
-%sentence structure, etc...). In this section, we present some of the 
-%previously explored applications of text mining.
-%
-%Research in text mining started in the mid 1980s when Swanson 
-%realized that slicing and combining seemingly unrelated medical 
-%articles led to the discovery of new 
-%hypotheses~\cite{JNi06}. 
-%Lately we saw applications of text mining in the advertisement, 
-%political campaigning, and other businesses.
-
-Research in text mining started in the mid 1980s when Swanson 
-realized that slicing and combining seemingly unrelated medical 
-articles led to the discovery of new 
-hypotheses~\cite{JNi06}. 
-Text Mining has gained much interest lately due to its wide range of applications,
-including its use in the areas of advertisement, 
-political campaigning, and other businesses.
-However, these applications have substantially differing corpora (terminology, 
-sentence structure, etc...). In this section, we present some of the 
-previously explored applications of text mining.
-
-\subsection{Sentiment Analysis} 
-	This field -- also known as Opinion Mining' -- attempts classifying the polarity of sentiments of people 
-	or even their emotional state ~\cite{Pang:08}. The inputs for such analyzers include product and movie reviews, 
-	Internet blogs, electronic social networks and possibly newspapers. Early research was conducted on review sites
-	to automate the task classifying whether the review was positive and negative. Consequently, users can get concise helpful
-	sentiment summaries about the product, movie, etc...~\cite{Pang:02, Turney:02}. Such abilities motivated research targeting 
-	the following applications:
-	\subsubsection{Marketing Applications} 
-		The strength of blogs in disseminating opinions is a two-edged sword that can 
-		``make or break a company's reputation''~\cite{hoffman:08a}. Consequently, analyzing customers' opinions as portrayed 
-		on online discussion forums should be detected as soon as possible. This input is vital in the company's policy for its
-		reputation management. It can accordingly take actions to retain current customers, attract new ones and win back former 
-		customers~\cite{hoffman:08b}. Sentiment Mining has also been used to predict customer churns~\cite{marketing:07,marketing:08}
-		to take appropriate actions. It can help also in producing more effective advertisements based on the interests of the market.
-	\subsubsection{Political Applications} 
-		Political experts and analysts can benefit also. Since opinions extracted from textual data 
-		can reveal much even without the need of performing any explicit surveys. According to ~\cite{Gryc:10}, it ``opens up many avenues
-		for more accurate and naturalistic large-scale political analysis.'' Some research has been performed on classifying and predicting
-		political inclinations~\cite{Durant:07, Yu:08}. This field can help political leaders to better understand the views of their people 
-		and possibly perform better campaigns.
-		
-\subsection{Academic Applications} 
-	In scientific disciplines where written papers and publications contain technical information, the need to retrieve
-	specific information that a user needs, aids in \textbf{\em developing advanced search engines}. 
-	Text mining plays a great role toward this end through the following:
-	\subsubsection{Text Summarization} 
-		When an application is interested in mining a text for the most important and informative portions,
-		the application is considered to be tackling the field of `Text Summarization'. Summaries may have different forms such as being 
-		a group of representative words, to a coherent abstraction of the text in novel terms and phrases that capture its main meaning. 
-		The main motivation
-		for such a research is to enhance search engines. By capturing the most informative concepts in a document, it aids determining a 
-		better metric for a document's relevance to a search query. It also helps search engines display a shortened preview of the document for returned
-		results. This reduces the overwhelming amount of information a user needs to read before deciding weather the whole document deserves
-		comprehensive study. It is also helpful when the editorial staff of a magazine or newspaper need to present an article in the limited space.
-		Similarly, summarization is vital when the content of 
-		news articles needs to be dramatically shortened to be sent in an SMS form to subscribed PDA users. 
-		Useful surveys of current research on text Summarization can be
-		found in ~\cite{Radev:02,Das:07}.
-	\subsubsection{Text Categorization and Clustering} 
-		In many cases, it is very useful to be able to search for documents by theme, topic, domain, etc...
-		This ability is achieved if documents can be automatically clustered into different categories over which a user can search. It has been also 
-		proposed to cluster documents based on biographical data~\cite{Kostoff:99}. Technically speaking the difference between Categorization and
-		Clustering is that the former organizes documents into predefined categories where in the latter the categories arise from the document content
-		themselves~\cite{sharp:01}. Many approaches exist in this field as described in~\cite{Berry:03, Aas:99, MUNTEANU:05}.
-		\begin{enumerate}
-		\item \textbf{Email Classification:} It is noteworthy to mention that it is text categorization can be used for emails 
-			-- such as urgent, work, friends, spam, etc... Consequently, it can be used for spam detection and email 
-			filtering~\cite{Mock:01,bekkerman:04}.
-		\item \textbf{Parental Control:} It has also been proposed to use categorization for parental control by
-			automatically detecting inappropriate content for their children~\cite{Kontostathis:09}.
-		\end{enumerate}
-	\subsubsection{Entity Extraction:} Named Entity Extraction/Recognition (NER) targets being able to detect phrases that convey some general concept
-		and/or belong to a predefined set of categories such as persons, places, time, etc... It has been argued that having the luxury of searching
-		for entities enhances search abilities instead of being restricted to a list of words appearing in a text~\cite{basis:06}. 
-		It seems that humans think of their
-		queries in terms of entities/concepts and then try translating them to some list of words which are most likely to appear in a document that
-		is relevant to their search query. In general, a user does not ``know all the search terms that will return all instances of the desired
-		information''~\cite{basis:06}. A survey of research in the field is presented in ~\cite{Nadeau:07}. 
-	
-\subsection{Security Applications} 
-	It has been proposed that text mining of emails can be used for detecting money laundering and 
-	terrorist plans. However the effectiveness of data mining in this context is still debatable~\cite{Jonas:06,Federici:07}.
-	
-	We also propose another security application which can be used to be used when investigating in criminal cases:
-	Given two sets of reports consisting of crime scene investigation and suspect interrogation reports, 
-	an officer may query use a specialized text mining application to query for relations between suspects in terms of 
-	criminal action, locality, or third party persons unknown to the officer.
-	It can be envisioned that such an application will return two convicted people who had no direct relation
-	in the reports, but who are related only through a third person unknown to the investigator. 
-	Such a query is very hard to answer manually.
-
-\subsection{Medical Applications} 
-	Medical records and clinical reports are studied to detect
-	patterns of occurrence of certain symptoms and diseases. It attempts relate those patterns with
-	other biological factors such as certain 
-	genes or protein interaction~\cite{blaschke:99, Krallinger:05, Rebholz-Schuhmann:07, Cohen:08, Tsuruoka:08}.
-	They are also used to analyze factors correlating with medical accidents to minimize their occurrence~\cite{Kimura:08}.
-	Till present, most of the interest in text mining comes from biological sciences~\cite{Giannopoulou:08}.
-
-\subsection{Hadith Authentication}
+%One of the applications we propose to build using Sarf is a time entity extractor. This application
+%recognizes time expressions in text document and transforms them to time information of the default format
+%that can be stored in a database and on which computations and analysis can be performed.
+Consider the following phrase: \noVocRL{al-'i_tnayn fy al-sAbi` min ^sbA.t lsanaT 2011} (Monday the seventh of February 2011).
+We are interested in transforming such phrases into a time structure of the form: 05/02/2011 that can be used in further analysis.
+Many applications can benefit from temporal entities extracted from text documents.
+For example, %applications that sort the documents chronologically.
+Li et al. from 
+Microsoft hold a patent for a tool that extracts authorship 
+dates from Latin documents~\cite{patent:09}. We will use Sarf to automate time entity extraction for Arabic.
+ 
+\subsubsection{Hadith Authentication}
 
 In this thesis, we will present and propose to solve an interesting application 
 for text mining in the field of Islamic Studies. 
-A \noVocRL{.hady_t}~\footnote{In this document, 
-we use the default ArabTeX transliteration style ZDMG.}
+A \noVocRL{.hady_t}
 is a narration related to the prophet Mohammad
 through a \noVocRL{sanad} or a sequence of narrators. 
 The collections of traditions are the second source of
@@ -400,6 +332,114 @@ as a geographical dictionary of places in hadith.
 In this our thesis, we present an application
 for authenticating inputted hadith based on inputted biography books.
 
+\section{Other Applications of Text Mining}
+\label{sec:Applications}
+
+%Text Mining has gained much interest lately especially due to its wide range of applications.
+%However, these applications have substantially differing corpora (terminology, 
+%sentence structure, etc...). In this section, we present some of the 
+%previously explored applications of text mining.
+%
+%Research in text mining started in the mid 1980s when Swanson 
+%realized that slicing and combining seemingly unrelated medical 
+%articles led to the discovery of new 
+%hypotheses~\cite{JNi06}. 
+%Lately we saw applications of text mining in the advertisement, 
+%political campaigning, and other businesses.
+
+Research in text mining started in the mid 1980s when Swanson 
+realized that slicing and combining seemingly unrelated medical 
+articles led to the discovery of new 
+hypotheses~\cite{JNi06}. 
+Text Mining has gained much interest lately due to its wide range of applications,
+including its use in the areas of advertisement, 
+political campaigning, and other businesses.
+These applications consider corpora that substantially differ in terminology, 
+sentence structure and morphology. Thus, an application-specific analyzer such as Sarf is of great benefit.
+
+In this section, we present previously explored applications of text mining. %TODO: and focus on their discrimenent morphological features.
+
+\subsection{Sentiment Analysis} 
+	This field -- also known as `Opinion Mining' -- attempts classifying the polarity of sentiments of people 
+	or even their emotional state ~\cite{Pang:08}. The inputs for such analyzers include product and movie reviews, 
+	Internet blogs, electronic social networks and possibly newspapers. Early research was conducted on review sites
+	to automate the task classifying whether the review was positive and negative. Consequently, users can get concise helpful
+	sentiment summaries about the product, movie, etc...~\cite{Pang:02, Turney:02}. Such abilities motivated research targeting 
+	the following applications:
+	\subsubsection{Marketing Applications} 
+		The strength of blogs in disseminating opinions is a two-edged sword that can 
+		``make or break a company's reputation''~\cite{hoffman:08a}. Consequently, analyzing customers' opinions as portrayed 
+		on online discussion forums should be detected as soon as possible. This input is vital in the company's policy for its
+		reputation management. It can accordingly take actions to retain current customers, attract new ones and win back former 
+		customers~\cite{hoffman:08b}. Sentiment Mining has also been used to predict customer churns~\cite{marketing:07,marketing:08}% maybe explain churn
+		to take appropriate actions. It can help also in producing more effective advertisements based on the interests of the market.
+	\subsubsection{Political Applications} 
+		Political experts and analysts can also benefit, since opinions extracted from textual data 
+		can reveal much even without the need of performing any explicit surveys. According to ~\cite{Gryc:10}, it ``opens up many avenues
+		for more accurate and naturalistic large-scale political analysis.'' Some research has been performed on classifying and predicting
+		political inclinations~\cite{Durant:07, Yu:08}. This field can help political leaders to better understand the views of their people 
+		and possibly perform better campaigns.
+		
+\subsection{Academic Applications} 
+	In scientific disciplines where written papers and publications contain technical information, the need to retrieve
+	specific information that a user needs, aids in \textbf{\em developing advanced search engines}. 
+	Text mining plays a great role toward this end through the following:
+	\subsubsection{Text Summarization} 
+		When an application is interested in mining a text for the most important and informative portions,
+		the application is considered to be tackling the field of `Text Summarization'. Summaries may have different forms such as being 
+		a group of representative words, or even a coherent abstraction of the text in novel terms and phrases that capture its meaning. 
+		The main motivation
+		for such a research is to enhance search engines. By capturing the most informative concepts in a document, it aids determining a 
+		better metric for a document's relevance to a search query. It also helps search engines display a shortened preview of the document for returned
+		results. This reduces the overwhelming amount of information a user needs to read before deciding whether the whole document deserves
+		comprehensive study. It is also helpful when the editorial staff of a magazine or newspaper need to present a large article in the limited space.
+		Similarly, summarization is vital when the content of 
+		news articles needs to be dramatically shortened to be sent in an SMS form to subscribed PDA users. 
+		Useful surveys of current research on text Summarization can be
+		found in ~\cite{Radev:02,Das:07}.
+	\subsubsection{Text Categorization and Clustering} 
+		In many cases, it is very useful to be able to search for documents by theme, topic, domain, etc...
+		This ability is achieved if documents can be automatically clustered into different categories over which a user can search. It has been also 
+		proposed to cluster documents based on biographical data~\cite{Kostoff:99}. Technically speaking the difference between categorization and
+		clustering is that the former organizes documents into predefined categories where in the latter the categories arise from the document content
+		themselves~\cite{sharp:01}. Many approaches exist in this field as described in~\cite{Berry:03, Aas:99, MUNTEANU:05}.
+		\begin{enumerate}
+		\item \textbf{Email Classification:} It is noteworthy to mention that categorization can be used to classify emails into different subgroups
+			-- such as urgent, work, friends, spam, etc... Consequently, it can be used for spam detection and email 
+			filtering~\cite{Mock:01,bekkerman:04}.
+		\item \textbf{Parental Control:} It has also been proposed to use categorization for parental control by
+			automatically detecting inappropriate content for children~\cite{Kontostathis:09}.
+		\end{enumerate}
+	\subsubsection{Entity Extraction:} Named Entity Extraction/Recognition (NER) targets being able to detect phrases that convey some general concept
+		and/or belong to a predefined set of categories such as persons, places, time, etc... It has been argued that having the luxury of searching
+		for entities enhances search abilities instead of being restricted to search for a list of words appearing in a document~\cite{basis:06}. 
+		It seems that humans think of their
+		queries in terms of entities/concepts and then try translating them to some list of words which are most likely to appear in a document that
+		is relevant to their search query. In general, a user does not ``know all the search terms that will return all instances of the desired
+		information''~\cite{basis:06}. A survey of research in the field is presented in ~\cite{Nadeau:07}. 
+	
+\subsection{Security Applications} 
+	It has been proposed that text mining of emails can be used for detecting money laundering and 
+	terrorist plans. However the effectiveness of mining techniques in this context is still debatable~\cite{Jonas:06,Federici:07}.
+	
+	We also propose another security application which can be used when investigating in criminal cases:
+	Given two sets of reports consisting of crime scene investigation and suspect interrogation reports, 
+	an officer may use a specialized text mining application to query for relations between suspects in terms of 
+	criminal action, locality, or third party persons. %common between suspects
+	It can be envisioned that such an application will return two convicted people who had no direct relation
+	in the reports, but who are related only through a third person unknown to the investigator. 
+	Such a query is very hard to answer manually.
+
+\subsection{Medical Applications} 
+	Medical records and clinical reports are studied to detect
+	patterns of occurrence of certain symptoms and diseases. It attempts to relate those patterns with
+	other biological factors such as certain 
+	genes or protein interaction~\cite{blaschke:99, Krallinger:05, Rebholz-Schuhmann:07, Cohen:08, Tsuruoka:08}.
+	They are also used to analyze factors correlating with medical accidents to minimize their occurrence~\cite{Kimura:08}.
+	Till present, most of the interest in text mining comes from biological sciences~\cite{Giannopoulou:08}.
+
+
+
 \section{Arabic Text Mining}
 
 Morphological analysis is key in current automated 
@@ -437,12 +477,12 @@ such as English.
 
 \subsubsection{\ref*{sec:ArabicDistinctive}.1 High degree of Ambiguity}
 
-	Morphological ambiguity is a `notorious' problem for Arabic language~\cite{Kiraz:98}.
+	Morphological ambiguity is a `notorious' problem for the Arabic language~\cite{Kiraz:98}.
 	Ambiguity refers to the fact that one word may lead to several possible solutions.
 	As discussed in~\cite{Attia:08a}, the following are the reasons of genuine ambiguity\footnote{
 	Here we are discussing ambiguity that is inherent to the language. Other sources of ambiguity
 	may be due to over-approximations and relaxed compatibility rules in the morphological analyzer.} 
-	in the language:
+	in the language.
 	\begin{enumerate}
 		\item \textbf{Orthographic alternation operations:} These refer to alterations from the stem
 			original letters upon inflection, which can make it similar to other distinct words.
@@ -472,9 +512,11 @@ such as English.
 	This difference can be used to argue that Arabic is more ambiguous than English. Still however, the author of ~\cite{Attia:06b}, Attia,
 	claims that this ambiguity resulted from some grammatical over-approximations and inaccuracies in the lexicon of Buckwalter along with
 	its inclusion of classical terms that are rarely used. By this he means that the score does not reflect the intrinsic Arabic ambiguity and 
-	they report a score of 1.75 for their tool which used tighter grammar and lexical rules and omitted classical words. Although, Dr. Attia
-	has a point relating to exaggerated numbers due to over-approximations, the reduction of the lexicon is not a correct approach since it does
-	not reflect the ambiguity of Arabic but of the subset of Arabic needed for some applications (mainly modern text documents such as news).
+	he reports a score of 1.75 for his tool which used tighter grammar and lexical rules and omitted classical words. Although, Dr. Attia
+	has a point relating to exaggerated numbers due to over-approximations, the omission of some non-frequent words from the lexicon 
+	does not a correct approach for reporting ambiguity since it does
+	not reflect the ambiguity of Arabic but of the subset of Arabic needed for some applications.\footnote{
+	In his case, he focused mainly on modern text documents such as news articles.}
 	In all cases, this is a question open to future investigations by NLP researchers and Arabic linguists...
 
 \subsubsection{\ref*{sec:ArabicDistinctive}.2 Diacritics}
@@ -489,7 +531,7 @@ such as English.
 	
 	Since most Arabic documents are unvocalized, the ambiguity of the morphological analyses is significantly increased.
 	For instance, in many cases, it is impossible to distinguish between active and passive verbs on the word level without
-	appropriate diacritics such as the undiacriticized versions of \RL{`abada} ($<$subject$>$ worshiped) and \RL{`obida} ($<$subject$>$ was worshiped).
+	appropriate diacritics. For instance the undiacriticized versions of \RL{`abada} ($<$subject$>$ worshiped) and \RL{`obida} ($<$subject$>$ was worshiped) are homomorphic.
 	
 	Also, removing the shadda which is commonly assumed to be a diacritization removes practically a repeated letter as in \RL{`allama} (taught)
 	and results in ambiguation with other words having a totally different meaning such as \RL{`alima} (learned)~\cite{Attia:08a}.
@@ -498,20 +540,19 @@ such as English.
 \subsubsection{\ref*{sec:ArabicDistinctive}.3 Run-on words}
 \label{sec:ArabicDistinctive:runon}
 
-	Arabic letters can have up to 
-	four different forms
-	corresponding to their position in a word, i.e. beginning,
-	middle, end of word and separate forms. 
-	This allows the phrase
-	\noTrnoVocRL{il_A\nospace almdrsT}  with no delimiter within
-	to be visually recognizable
-	as two separate words \noVocRL{il_A} (to) and \noVocRL{almdrsT} (the school).
-	This happens because the first word \noVocRL{il_A} ends with
-	\noVocRL{_A} a non-connecting letter. 
+%	Arabic letters can have up to 
+%	four different forms
+%	corresponding to their position in a word, i.e. beginning,
+%	middle, end of word and separate forms. 
+%	This allows the phrase
+	The example provided in the introduction,
+	\noTrnoVocRL{il_A\nospace almdrsT} provides evidence to the issues 
+	that can arise due to the presence of non-connecting letters. 
 	The non-connecting letters are \RL{A}, \noVocRL{'a}, \noVocRL{'i},
 		\noVocRL{'A},\noVocRL{_A}, \noVocRL{w}, \noVocRL{|u'|}, \noVocRL{|i'|},	
 		\noVocRL{d}, \noVocRL{_d}, \noVocRL{r}, \noVocRL{z} and \noVocRL{T}.
-	These words occur often in text and greatly increase the
+	Words that are not separated by white-space occur often in text and 
+	greatly increase the
 	difficulty of tokenization and are referred to as 
 	``run-on'' words~\cite{Buckwalter:04}.
 	Such difficulties are inherent in the 
@@ -537,19 +578,19 @@ such as English.
 
 	It is known that ``Arabic is a highly inflectional language, which makes the morphological
 	analysis complicated'' ~\cite{Attia:08a}. In other words, instead of forming words from stems, the
-	structure of the Arabic language is built from roots. That's why Arabic dictionaries are indexed by the roots.
+	structure of the Arabic language is built from roots. That's why Arabic dictionaries are indexed by the roots of words.
 	The Arabic stems are formed by applying some inflectional patterns that modify the meaning of the word.
 	For instance, the root \noVocRL{drs} can derive the following stems: \RL{darras}, \RL{dAris}, 
 	\RL{modarris}, \RL{madrows}, \RL{madrasaT}, etc..
 	However, in Latin languages the inflectional forms don't transform the meaning completely and can generally be treated
-	as prefixes and suffixes. In such inflectional languages such as Arabic, concatenative analysis sometimes fails to capture the
-	word structure especially when occur inside the stem itself caused by infixes. In this our thesis, we will not focus on this problem,
+	as prefixes and suffixes. In inflectional languages such as Arabic, concatenative analysis sometimes fails to capture the
+	word structure especially when infixes occurs inside the stem itself. In our thesis, we will not focus on this problem,
 	however we have mentioned it for completeness. 
 
 
 \section{Proposal Organization} %TODO:
 
-The rest of the proposal is organized as follows. In Section 2, we present the problem(s) to be attempted. 
+The rest of the proposal is organized as follows. In Section 2, we present the problems to be attempted. 
 In Section 3, we review related literature. 
 Then, in Section 4, we describe our preliminary results. 
 Finally, in Section 5, a time-schedule and a research plan are presented.
@@ -563,19 +604,19 @@ In what follows we describe the problems that we would like to tackle in our the
 We propose developing `Sarf', a novel morphological analyzer that introduces many enhancements to the
 field of morphological analysis. As noted in Section~\ref{sec:ArabicDistinctive}, 
 Arabic poses many difficulties which currently 
-have not been tackled in a satisfactory way. Of these we focus on the issues of `run-on' words and
+have not been tackled in a satisfactory way. Of these, we focus on the issues of `run-on' words and
 the use of diacritics in morphological analysis -- two issues which have been under-looked by researchers in the field.
 We will also work on speeding morphological analysis and 
 enhancing affix representations to better reflect the semantics of underlying word structure.
-Morover, we target supporting for interaction between the different text mining applications 
+Moreover, we target supporting for interaction between the different text mining applications 
 and the morphological analyzer, 
 allowing the applications to drive the analysis and prune it on the fly. 
 We will start first by justifying the need for the latter flexibility.
 
 \subsection{Application-Specific Analysis}
 
-Current Analyzers are unable to benefit from the characteristics of the application in which the Analyzer is used.
-Their output is the same regardless of the needs of the application used and the characteristics of the corpus
+Current analyzers are unable to benefit from the characteristics of the application in which they are used.
+Their output is the same regardless of the needs of the application and the characteristics of the corpus
 being analyzed. We noted in Section~\ref{sec:Applications}, that
 there is a broad spectrum of applications to which Text Mining is applied. In most cases, morphology 
 ``plays an essential role in any higher-level understanding and processing of Arabic text"~\cite{Sou07}.
@@ -583,12 +624,12 @@ there is a broad spectrum of applications to which Text Mining is applied. In mo
 Our focus when building Sarf, was not on improving the semantical rules and 
 expanding the morphological alternatives, instead we worked on adding support 
 for higher level control by the specific application utilizing the lower level 
-morphological analyzer. In other words, the application-specific controller, has 
-full control over and directs the morphological analysis of Sarf. 
+morphological analyzer. In other words, the application-specific controller has 
+full control in directing the general morphological analysis of Sarf. 
 % (sentence should be reworded differently, but is needed to explain why we mention 
 % higher and lower accuracy hypothesis, which seems vague otherwise)
 
-We justify the above enhancement as follows:
+We justify the above enhancement as follows.
 
 \subsubsection{Reduction in the Required Analysis}
 
@@ -613,7 +654,7 @@ time structure; and whenever a positive answer is verified by one of the analysi
 the analyzer can stop without computing the other alternative solutions.
 
 In other words, if the analyzer can be controlled at every step by an application-specific
-controller, the analysis can be enhanced and reduced significantly.
+controller, the analysis can be enhanced significantly.
 
 \subsubsection{Evidence from Related Works}
 
@@ -634,9 +675,10 @@ alternative guidelines.
 %This refinement was achieved only after the NLP 
 %task interacted with the morphological analyzer,
 %a flexibility our analyzer is designed to provide for the application-specific controller on the run. %(check if this sentence makes sense)
-It reports that a refined version of SAMA~\cite{Kulick:10} was achieved when the NLP 
+It reports that a refined version of the analyzer was achieved when the NLP 
 task interacted with the morphological analyzer, which is
-a flexibility our analyzer is designed to provide for the application-specific controller on the run.
+a flexibility our analyzer is designed to provide on the run 
+through the application-specific controller.
 
 \item In addition, 
 the work of Habash~\cite{Habash:06} reports that different 
@@ -644,7 +686,7 @@ types of morphological analyses behave differently on the same %case study.
 data set.
 The analyzers may report different solutions or 
 may present the solutions in different orders. 
-Clearly, some of 
+It can be argued that some of 
 the presented solutions and their order of presentation may not be 
 appropriate for the %case study.
 application needs, which is an issue that Sarf tackles. % (maybe reworded)
@@ -652,15 +694,15 @@ application needs, which is an issue that Sarf tackles. % (maybe reworded)
 
 \subsubsection{Possible Reorder of Analyzer Structures}
 
-Analyzers provide different levels of features for the alternative solutions.
-Commonly, those features include: the vocalized version corresponding to the analysis,
+Analyzers provide different levels of features for presented solutions.
+Commonly, those features include: the vocalized version of the corresponding analysis,
 its Part of Speech (POS), its gloss (i.e. semantical meaning) and other abstract categories to which
 it belongs (e.g. Proper Name, Place, Time, etc...)\footnote{For example, the analyzer Attia 
 provides the following information for Nouns: Gender, Number, Case, Humanness, its possible
 categorization as proper noun (subdivided into person, place, organization), etc..~\cite{Attia:08a}.}.
-If it is known beforehand by the application if one feature is its primary interest, using which
-early termination of a word analysis can be interpreted, the analyzer can reorder its structures to support for
-faster lookup for this feature.
+If it is known beforehand by the application that some features are of primary interest, using which
+early termination of word analysis can be achieved, the analyzer can reorder its structures to support for
+faster lookup for those feature.
 
 For example, by default in Sarf, the features are ordered in the following hierarchy: 
 vocalized entry, abstract categories, gloss, then POS. In this way, Sarf will store corresponding vocalized entries per 
@@ -672,7 +714,7 @@ that information first, which will significantly speed up its retrieval.
 
 \subsubsection{Refine Reported Solutions}
 
-We argue also that by introducing an application specific controller that is capable
+We argue also that by introducing an application-specific controller that is capable
 of intervening with the morphological analyzer at every decision, the reported query results 
 can be refined significantly. This task can be much more difficult otherwise. 
 
@@ -681,8 +723,8 @@ building an application that verifies that the output of an OCR document is corr
 that the scanned words are morphologically correct and exist in an exhaustive Arabic lexicon.
 To make the problem more interesting, we will assume that our application can benefit from the morphological analyzer to 
 improve its interpretation of the scanned glitch by refining its interpretation on the fly, restricting its output
-to words that exist in the lexicon.\footnote{This application was inspired from the works of~\cite{Badr:95,Obaid:98} that
-used benefited from the lexicon while performing the OCR; their methods, however, is not totally applicable to our
+to words that exist in the lexicon.\footnote{This application was inspired from the works of~\cite{Badr:95,Obaid:98} that 
+utilized the lexicon while performing the OCR; their methods, however, are not applicable to our
 hypothetical application.}
 We can envision that for a particular font used in some documents, 
 the default OCR engine misrepresents a character 
@@ -706,7 +748,7 @@ as an unnecessary over-approximation. In that case, it can modify its controller
 interesting or most frequent. This can be done by possibly applying some intelligent heuristics such as ignoring all run-on words
 which contains a sub-word of size: equal to one except for the clitic \noVocRL{w}; equal to two except for \noVocRL{mA} 
 and \noVocRL{lA} which appear frequently in run-on words and so on... Such statistical refinements, when handled early on during
-the analysis of the subparts of the word through the application-specific controller, are clearly much more affective than 
+the analysis of the subparts of the word through the application-specific controller, are clearly much more effective than 
 a later post-processing step.
 
 ~\\
@@ -727,7 +769,7 @@ that are not separated by a delimiter but are visually conceived as non-connecte
 This problem is especially important due to the fact that many of the valuable 
 Arabic texts available for text mining have been originally ported from
 paper documents. OCR is often used to automate this task; however, this task
-results in mistakes that are often escape manual inspection.
+results in mistakes that often escape manual inspection.
 In particular, run-on words are admitted 
 to be hard to detect especially when the `glyph design (i.e., the
 perceived width) of the non-connecting letter' seems comparable
@@ -757,7 +799,7 @@ lexicalized collocations which are spelled without intervening space -- such as 
 
 This difficulty in tokenization has been reported by Buckwalter in~\cite{Buckwalter:04} because of its 
 frequency in three corpus of the Arabic Tree Bank on which some experiments were performed. 
-That paper was concluded that ``the problem of run-on words in Arabic calls for
+That paper concluded that ``the problem of run-on words in Arabic calls for
 a reassessment of current tokenization strategies,
 including the definition of `word token' itself. It
 should be assumed that each input string represents
@@ -844,24 +886,10 @@ $\langle c(\beta),c(\gamma)\rangle \in L_{sx}$ and
 $\langle c(\alpha),c(\gamma)\rangle \in L_{px}$, where
 $c()$ returns the category of the morpheme.
 
-It is clear that in current analyzers, the list of affixes is much larger than needed
-due to the explosion of possible valid combinations that result from the most basic 
-prefixes. Note also that in current analyzers, sometimes to add just one prefix to the lexicon, it is required to
-manually generate all suitable combinations with those previously in the dictionary.
-For instance in Table~\ref{t:affixes}, the two syntactically and semantically different but homomorphic prefixes for \RL{ya}
-repeat the same combinations with other prefixes.
-
-Consider the case of the missing prefix from the lexicon of Buckwalter detected by Prof Attia. It is the 
-``clitic question morpheme which can be prefixed to verbs and nouns''(\RL{'a})~\cite{Attia:06b}.
-If we are to modify Buckwalter to support for its insertion that would result in reproducing most of the current
-prefix entries to concatenate to them this possible clitic. Having prefixes been recursive as in Sarf, just a single 
-prefix will be inserted along with some compatibility rules.
-
-
 As noted in Table~\ref{t:affixes}, many affixes are composed of other affixes. For example,
-the prefix \noTrnoVocRL{wsy} is composed of three other prefixes
-namely \noTrnoVocRL{w}, \noTrnoVocRL{s}, and \noTrnoVocRL{y}.
-The POS tag for \noTrnoVocRL{wsy} is a concatenation
+the prefix \noVocRL{wsy} is composed of three other prefixes
+namely \noVocRL{w}, \noVocRL{s}, and \noVocRL{y}.
+The POS tag for \noVocRL{wsy} is a concatenation
 %of the POS tags of each of the three morphemes. 
 of those of the three morphemes. 
 Keeping all valid morphemes in a list
@@ -878,13 +906,27 @@ is that of the second morpheme in the pair.
 
 Sarf only keeps atomic affixes and their categories.
 By doing so, the affix representation better reflects the rules
-which govern their formation. It also is able to better capture what each part of the compound prefix
-contributed to the gloss of the word and its POS. For instance, it is much more instructive to analyze
-and classify words based on their atomic affixes related POS and gloss instead of parsing string
-delimited entries. 
+which govern their formation. This representation also better captures what each part of the compound prefix
+contributes to the gloss of the word and its POS. For instance, it is much more instructive to analyze
+and classify words based on the POS and gloss of their atomic affixes, instead of parsing string
+delimited entries per compound affixes. 
+
+It is clear that in current analyzers, the list of affixes is much larger than needed
+due to the explosion of possible valid combinations that result from composing the atomic 
+affixes. Note also that in current analyzers, sometimes to add just one affix to the lexicon, it is required to
+manually generate all suitable combinations with those previously in the dictionary.
+For instance in Table~\ref{t:affixes}, the two syntactically and semantically different but homomorphic prefixes for \RL{ya}
+repeat the same combinations with other prefixes.
+
+Consider the case of the missing prefix from the lexicon of Buckwalter detected by Dr. Attia: the 
+``clitic question morpheme which can be prefixed to verbs and nouns''(\RL{'a})~\cite{Attia:06b}.
+If we are to modify Buckwalter to support for its insertion, this would result in reproducing most of the current
+prefix entries with the clitic concatenated to them. Since prefixes are defined recursively in Sarf, just a single 
+prefix will be inserted along with some compatibility rules to support for the clitic under consideration.
 
 More than that, the fine scale of POS tagging and word division better suits any higher level attempt of semantical
-parsing at the sentence structure and better aligns with tagged corpora which commonly tag atomic affixes such as clitic 
+parsing at the sentence structure. For instance an Arabic word can make up a sentence where each of its morphemes 
+represents a sentence subpart. This refinement results in better alignment with tagged corpora which commonly tag atomic affixes such as clitic 
 parts which are generally attached as prefixes. 
 %(check for some citation or paper evidence?)
 
@@ -892,7 +934,7 @@ parts which are generally attached as prefixes.
 
 As will be shown later in Section~\ref{sec:timeefficiency}, Sarf has outperformed commonly used
 morphological analyzers. That has been made possible through many optimizations to the functioning
-of the analysis methods and implementation, of which we enumerate the following:
+of the analysis methods and their implementation, of which we enumerate the following.
 
 \begin{enumerate}
 \item \textbf{Linear Traversal of the input text through the use of finite state automata:}
@@ -900,16 +942,18 @@ of the analysis methods and implementation, of which we enumerate the following:
 \item \textbf{Efficient use of data structures:} Lexicon entries are loaded into main memory 
 	when Sarf is started in appropriate structures that support efficient look-up. For instance,
 	for stem lookup, we used a double array trie (datrie)~\cite{Aoe:89}. We also extensively used
-	maps and hash-tables when needed. Also whenever an array reverse lookup was needed we stored
-	that lookup array for constant time access instead of a linear search in the original array.
+	maps and hash-tables when needed. Also whenever a reverse-array lookup was needed, we stored
+	reverse lookup arrays for constant time access instead of a linear search in the original array.
 	Also when using a bit vector to access a specific bit, binary operations are used instead of
-	multiplication and division...
+	decimal multiplication and division...
 \item \textbf{Reduced analysis and computations when not needed:} As discussed above, the 
 	application-specific controller can enhance performance by some early analysis aborting, and
-	non-complete retrieval of needed information for the analysis. For example, if for the application 
+	non-complete retrieval of analysis features when not needed. For example, if for the application 
 	at hand, only stems are needed, affix information such as gloss and POS need not be retrieved.
-	Many other reductions can be envisioned suitable for particular applications of Sarf. 
+	Many other reductions can be envisioned depending on the characteristics of the
+	specific applications of Sarf. 
 \end{enumerate}
+
 \section{Building a Time Entity Extractor}
 
 One of the applications we propose to build using Sarf is a time entity extractor. This application
@@ -919,7 +963,7 @@ that can be stored in a database and on which computations and analysis can be p
 Time structures which are conveyed in the content of a document instead of its meta-data 
 have always been an interesting problem for the research community \cite{GROSS:93,Llido:01,DSTO:05,patent:09}. 
 Li et al. working at the 
-Microsoft have been awarded a patent for having devised an application for extracting authorship 
+Microsoft have been filed a patent for having devised an application for extracting authorship 
 dates from documents~\cite{patent:09}. The importance of their work is justified by the fact that 
 in many cases the modification date of a document is not representative of its date of generation due 
 to many reasons. For example, ``when documents are uploaded or copied to
@@ -990,6 +1034,7 @@ We propose the following process:
 	subdivided into its chain of narrators. This can be performed by detecting sequences of narrators
 	connected by narration connectors. This task has been completed and is presented in detail in Secion~
 	\ref{sec:hadithSegmentation}.
+	
 \item \textbf{Building a Partial Order Graph of Narrators:}
 
 	At this stage, the different extracted chains of Narrators are merged into a 
@@ -999,7 +1044,7 @@ We propose the following process:
 	is depicted in Figure~\ref{f:narrators}. 
 	It has been extracted by our preliminary tool for the hadith case study introduced in Section~\ref{sec:hadith}.
 	
-\item \textbf{Localization of Narrators in Biograph Books:}
+\item \textbf{Localization of Narrators in Biography Books:}
 
 	This partial order graph is instrumental to automate
 	localization of narrators in biography documents and
@@ -1903,36 +1948,46 @@ learning system that can learn more names.
 \chapter{Thesis Plan}
 
 The main tasks of the thesis are listed below: \\
-\begin{enumerate}[1)]
-\item \textbf{Build and Enhance Sarf}
-	\begin{enumerate}[\ref*{s:intro}.1)]
-	\item Port Buckwalter into C++ and mysql
-	\item Implement the Finite State Automata Framework
-	\item Implement an application-specific controller interface
-	\item Support for disambiguation using diacritics
-	\item Support for multi-word expressions
-	\item Solve the Issue of `run-on' words
-	\item Optimize performance
-	\item Support for Running Sarf Under the Windows Operating System
+\begin{enumerate}
+\item \textbf{Build and Enhance Sarf} \label{I:Sarf}
+	\begin{enumerate}
+	\item Port Buckwalter into C++ and mysql \label{I:portBuckwalter}
+	\item Design and implement the Non-deterministic Finite State Automata framework \label{I:ndfsa}
+	\item Implement an application-specific controller interface \label{I:applicationController}
+	\item Support for disambiguation using diacritics \label{I:diacritics}
+	\item Support for multi-word expressions \label{I:multiword}
+	\item Solve the issue of `run-on' words \label{I:runon}
+	\item Validate Sarf \label{I:validateSarf}
+	\item Benchmark against existing corpora \label{I:benchMark}
+	\end{enumerate}
+\item \textbf{Support Sarf}
+	\begin{enumerate}
+	\item Optimize performance \label{I:optimizeSarf}
+	\item Support for running Sarf under Windows \label{I:Sarfo}
 	\item Refactor the code
 	\item Write a user Manual
 	\item Write a developer manual and documentation
 	\end{enumerate}
 \item \textbf{Build a time entity extraction application}
-\item \textbf{Automate the Hadith Authentication Case Study}
-	\begin{enumerate}[3.1)]
+	\begin{enumerate}
+	\item Recognize time entities
+	\item Normalize extracted time entities
+	\item Validate with a sorting application
+	\end{enumerate}
+\item \textbf{Automate Hadith Authentication}
+	\begin{enumerate}
 	\item Extend the Lexicon of Buckwalter with proper names 
 	\item Implement the hadith segmentation tool
 	\item Write the Narrator Equality Function
 	\item Build Parial Order Graphs
 	\item Correct Graph mistakes that result from Ambiguous narrator names which introduce false cycles to the graph
 	\item Segment biography books using a graph coloring algorithm
-	\item Extract Annotations from the Biography books
+	\item Extract Annotations from the biography books
 	\item Assign annotations to graph nodes
-	\item Perform time and possibly location consistency checks
-	\item Perform Experiments on the effects of different narrators in Hadith Literature
-	\item Write a user Manual
-	\item Distribute the tool to willing religious scientists and report their findings
+	\item Enable and perform consistency checks between narrator chains
+	\item Perform experiments on the effects of different narrators in hadith literature
+	\item Write a user manual
+	\item Distribute the tool to volunteer scholars and report their findings
 	\end{enumerate}
 \item \textbf{Write thesis Report and defend the thesis}
 \end{enumerate}

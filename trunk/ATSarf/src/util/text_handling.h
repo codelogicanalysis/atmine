@@ -47,7 +47,7 @@ inline bool equal(const QChar & c1, const QChar & c2)
 		return true;
 	return false;
 }
-inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)
+inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//TODO: solve bug in index boundaries here
 {
 	int length1=word1.length(),length2=word2.length();
 	int i=0,j=0;
