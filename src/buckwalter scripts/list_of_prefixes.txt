@@ -21,12 +21,14 @@
 فبال	فَبِال	NPref-BiAl	and/so + with/by + the	fa/CONJ+bi/PREP+Al/DET+	
 وكال	وَكَال	NPref-BiAl	and + like/such as + the	wa/CONJ+ka/PREP+Al/DET+	
 فكال	فَكَال	NPref-BiAl	and/so + like/such as + the	fa/CONJ+ka/PREP+Al/DET+	
-لل	لِل	NPref-Lil	to/for + the	li/PREP+Al/DET+	
-ولل	وَلِل	NPref-Lil	and + to/for + the	wa/CONJ+li/PREP+Al/DET+	
-فلل	فَلِل	NPref-Lil	and/so + to/for + the	fa/CONJ+li/PREP+Al/DET+	
-ل	لِ	NPref-LiAl	to/for + the	li/PREP+Al/DET+	
-ول	وَلِ	NPref-LiAl	and + to/for + the	wa/CONJ+li/PREP+Al/DET+	
-فل	فَلِ	NPref-LiAl	and/so + to/for + the	fa/CONJ+li/PREP+Al/DET+	
+		NPref-[Li]Al	the	Al/DET+	
+ل	ل	NPref-[Li]l	the	Al/DET+	
+لل	لِل	NPref-Lil	for/to + the	li/PREP+Al/DET+	
+ولل	وَلِل	NPref-Lil	and + for/to + the	wa/CONJ+li/PREP+Al/DET+	
+فلل	فَلِل	NPref-Lil	and/so + for/to + the	fa/CONJ+li/PREP+Al/DET+	
+ل	لِ	NPref-LiAl	for/to + the	li/PREP+Al/DET+	
+ول	وَلِ	NPref-LiAl	and + for/to + the	wa/CONJ+li/PREP+Al/DET+	
+فل	فَلِ	NPref-LiAl	and/so + for/to + the	fa/CONJ+li/PREP+Al/DET+	
 ي	يَ	IVPref-hw-ya	he/it	ya/IV3MS+	
 ي	يُ	IVPref-hw-yu	he/it	yu/IV3MS+	
 وي	وَيَ	IVPref-hw-ya	and + he/it	wa/CONJ+ya/IV3MS+	

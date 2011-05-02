@@ -56,7 +56,7 @@ void node::addChild(node* child)
 	#elif defined(HASH_TABLE)
 		letter_children->insert(l->getLetter(),l);
 	#elif defined(EXTENSIVE_TREE)
-		letter_children->operator [](getLetterIndex(l->getLetter()))=l;
+		(*letter_children)[getLetterIndex(l->getLetter())]=l;
 	#endif
 	}
 	else

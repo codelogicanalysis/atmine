@@ -14,10 +14,13 @@
 
 inline int getLetterIndex(const QChar & letter)
 {
+	int unicode=letter.unicode();
+	if (unicode==0)
+		return 36;
 	static int letter_map[42]={0 /*0x621*/, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25/*0x63A*/,
 										-1,-1,-1,-1,-1,-1,26 /*0x641*/,27,28,29,30,31,32,33,34,35};
 
-	int diff=letter.unicode()-1569/*hamza.unicode()*/;
+	int diff=unicode-1569/*hamza.unicode()*/;
 	if (!(diff>0 && diff <42))
 		return -1;
 	return letter_map[diff];
@@ -68,7 +71,7 @@ class node
 		#elif defined(HASH_TABLE)
 			letter_children=new QHash<QChar,letter_node *>();
 		#elif defined(EXTENSIVE_TREE)
-			letter_children=new QVector<letter_node *>(36);
+			letter_children=new QVector<letter_node *>(37);
 		#if 0 //not needed it seems bc by default initialized to NULL
 			for (int i=0;i<letter_children->count();i++)
 				letter_children->operator [](i)=NULL;
