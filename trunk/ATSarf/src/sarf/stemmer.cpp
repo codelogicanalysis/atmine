@@ -160,18 +160,14 @@ bool Stemmer::on_match_helper()
 bool Stemmer::on_match()
 {
 	int count=0;
-	int number=0;
 	if (called_everything || type==PREFIX)
 	{
 		out<<QString(runwordIndex,'\t');
 		out<<"(";
 		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item ( I dont think this is the case anymore)
 		{
-			if (number>0)
-					out<<" + ";
-			number++;
 			if (count>0)
-					out << " OR ";
+					out << " + ";
 			count++;
 			const minimal_item_info & rmii = prefix_infos->at(i);
 			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ rmii.description();
@@ -197,15 +193,11 @@ bool Stemmer::on_match()
 	if (called_everything || type==SUFFIX)
 	{
 		out<< "-(";
-		number=0;
 		count=0;
 		for (int i=0;i<suffix_infos->count();i++)
 		{
-			if (number>0)
-					out<<" + ";
-			number++;
 			if (count>0)
-					out << " OR ";
+					out << " + ";
 			count++;
 			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description();
 		}

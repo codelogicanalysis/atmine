@@ -68,7 +68,7 @@ class compatibility_rules
 		{
 			try{
 				return crlTable[id1][id2].valid;
-			}catch(int i) {
+			}catch(...) {
 				return false;
 			}
 		}
@@ -82,7 +82,7 @@ class compatibility_rules
 					id_r=crule.rc;
 				}
 				return crule.valid;
-			}catch(int i) {
+			}catch(...) {
 				return false;
 			}
 		}
@@ -90,7 +90,7 @@ class compatibility_rules
 		{
 			try{
 				return cat_names[id].getName();
-			}catch(int i) {
+			}catch(...) {
 				return "";
 			}
 		}

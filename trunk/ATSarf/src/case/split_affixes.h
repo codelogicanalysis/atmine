@@ -3,8 +3,8 @@
 
 #include <QDialog>
 #include <QComboBox>
-//#include <QHBoxLayout>
-//#include <QVBoxLayout>
+#include <QFile>
+#include <QTextStream>
 #include <QHeaderView>
 #include <QStringList>
 #include <QPushButton>
@@ -29,6 +29,7 @@ public:
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
 		split=new QPushButton("&Split",this);
+		exportLists=new QPushButton("&Export",this);
 		affixType=new QComboBox(this);
 		affixType->addItem("Prefix",PREFIX);
 		affixType->addItem("Suffix",SUFFIX);
@@ -37,10 +38,12 @@ public:
 		grid=new QGridLayout(this);
 		grid->addWidget(split,0,0);
 		grid->addWidget(affixType,0,1);
-		grid->addWidget(originalAffixList,1,0,1,2);
-		grid->addWidget(compatRulesList,2,0,1,2);
-		grid->addWidget(errors,3,0,1,2);
+		grid->addWidget(exportLists,0,2);
+		grid->addWidget(originalAffixList,1,0,1,3);
+		grid->addWidget(compatRulesList,2,0,1,3);
+		grid->addWidget(errors,3,0,1,3);
 		connect(split,SIGNAL(clicked()),this,SLOT(split_clicked()));
+		connect(exportLists,SIGNAL(clicked()),this,SLOT(export_clicked()));
 		connect(affixType,SIGNAL(currentIndexChanged(int)),this,SLOT(affixType_currentIndexChanged(int)));
 		displayed_error.setString(errors_text);
 		loadAffixList();
@@ -101,8 +104,36 @@ public slots:
 	void split_clicked() {
 		split_action();
 	}
-	void affixType_currentIndexChanged(int)
-	{
+	void export_clicked() {
+		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+		QFile f(tr("%1List.txt").arg(interpret_type(t)));
+		assert(f.open(QIODevice::WriteOnly));
+		QTextStream file(&f);
+		file.setCodec("utf-8");
+		for (int i=0;i<originalAffixList->rowCount();i++) {
+			//long affix_id=originalAffixList->item(i,0)->text().toLongLong();
+			QString affix=originalAffixList->item(i,1)->text();
+			QString category=originalAffixList->item(i,2)->text();
+			QString raw_data=originalAffixList->item(i,3)->text();
+			QString pos=originalAffixList->item(i,4)->text();
+			QString description=originalAffixList->item(i,5)->text();
+			file<<affix<<"\t"<<raw_data<<"\t"<<category<<"\t"<<description<<"\t"<<pos<<"\t\n";
+		}
+		f.close();
+		rules rule=(t==PREFIX?AA:CC);
+		QFile f2(tr("%1.txt").arg(interpret_type(rule)));
+		assert(f2.open(QIODevice::WriteOnly));
+		QTextStream file2(&f2);
+		file2.setCodec("utf-8");
+		Retrieve_Template r("compatibility_rules","category_id1","category_id2","resulting_category",tr("type=%1").arg(rule));
+		while (r.retrieve()) {
+			file2<<database_info.comp_rules->getCategoryName(r.get(0).toLongLong())<<"\t"
+				 <<database_info.comp_rules->getCategoryName(r.get(1).toLongLong())<<"\t"
+				 <<database_info.comp_rules->getCategoryName(r.get(2).toLongLong())<<"\n";
+		}
+		f2.close();
+	}
+	void affixType_currentIndexChanged(int) {
 		loadAffixList();
 		loadCompatibilityList();
 		errors->clear();
@@ -120,24 +151,52 @@ private:
 		else
 			return "--";
 	}
-	int getRow(const QString & affix,const QString & raw_data, const QString & pos, const QString description) const {
-		if (affix.isEmpty())
+	bool hasSubjectObjectInconsistency(QString descriptionDesired,QString descriptionFound) {
+		descriptionFound.replace("they","them");
+		descriptionFound.replace("he/","him/");
+		descriptionFound.replace("she","her");
+		descriptionFound.replace("I","me");
+		descriptionFound.replace("we","us");
+		return (descriptionDesired.startsWith(descriptionFound)
+				&& (descriptionDesired.endsWith("to") || descriptionDesired.endsWith("(to)")  ));
+	}
+	int getRow(const QString & affix,const QString & raw_data, const QString & pos, const QString & description) {
+		if (pos.isEmpty())
 			return -1;
-		for (int i=0;i<originalAffixList->rowCount();i++) {
+		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+		int rowCount=originalAffixList->rowCount();
+		for (int i=0;i<rowCount;i++) {
 			//long affix_id1=originalAffixList->item(i,0)->text().toLongLong();
 			QString affix1=originalAffixList->item(i,1)->text();
-			//QString category2=originalAffixList->item(i,2)->text();
+			QString category1=originalAffixList->item(i,2)->text();
 			QString raw_data1=originalAffixList->item(i,3)->text();
 			QString pos1=originalAffixList->item(i,4)->text();
 			QString description1=originalAffixList->item(i,5)->text();
 			if (	affix1==affix &&
 					raw_data1==raw_data &&
-					pos1==pos &&
-					description1==description) {
-				/*if (description1!=description)
-					warning<<"In ("<<affix<<","<<raw_data<<","<<pos<<") different descriptions found and used the first:"<<description<<" Versus "<<description1<<".\n";*/
-				return i;
+					pos1==pos ) {
+				if (description1==description)
+					return i;
+				else if (t==PREFIX && hasSubjectObjectInconsistency(description,description1)){ //prefix subject/object confusion for "for"
+					QString newCat=category1+"(object)";
+					long added_affix_id=insert_item(PREFIX,affix,raw_data,newCat,source_id,NULL,description,pos);
+					//TODO: solve staleness
+					/*system(QString(tr("rm ")+compatibility_rules_path+" "+description_path).toStdString().data());
+					database_info.comp_rules->buildFromFile();
+					database_info.fill((ATMProgressIFC*)parentWidget());*/
+					warning<< "Adding prefix ("<<affix<<","<<raw_data<<","<<newCat<<","<<description<<","<<pos<<"\n";
+					assert(added_affix_id>=0);
+					originalAffixList->setRowCount(rowCount+1);
+					originalAffixList->setItem(rowCount,0,new QTableWidgetItem(tr("%1").arg(added_affix_id)));
+					originalAffixList->setItem(rowCount,1,new QTableWidgetItem(affix));
+					originalAffixList->setItem(rowCount,2,new QTableWidgetItem(newCat));
+					originalAffixList->setItem(rowCount,3,new QTableWidgetItem(raw_data));
+					originalAffixList->setItem(rowCount,4,new QTableWidgetItem(pos));
+					originalAffixList->setItem(rowCount,5,new QTableWidgetItem(description));
+					return rowCount;
+				}
 			}
+
 		}
 		return -1;
 	}
@@ -145,7 +204,7 @@ private:
 public:
 	int source_id;
 	QTextEdit * affix;
-	QPushButton * split;
+	QPushButton * split, *exportLists;
 	QComboBox * affixType;
 	QTextBrowser * errors;
 	QString * errors_text;
@@ -155,6 +214,7 @@ public:
 	~SplitDialog() {
 		delete affix;
 		delete split;
+		delete exportLists;
 		delete affixType;
 		delete errors;
 		delete errors_text;
