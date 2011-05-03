@@ -58,8 +58,7 @@ class node
 	public:
 #ifdef PARENT
 		node * parent; //public member and can be defined by other classes such as treesearch upon traversal.
-		node * getPrevious()
-		{
+		node * getPrevious() {
 			return parent;
 		}
 #endif

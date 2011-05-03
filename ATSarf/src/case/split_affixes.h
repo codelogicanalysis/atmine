@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QComboBox>
+#include <QMessageBox>
 #include <QFile>
 #include <QTextStream>
 #include <QHeaderView>
@@ -14,6 +15,7 @@
 #include <QTextBrowser>
 #include "Retrieve_Template.h"
 #include "Search_by_item.h"
+#include "Search_Compatibility.h"
 #include "database_info_block.h"
 #include "sql_queries.h"
 #include "logger.h"
@@ -30,6 +32,7 @@ public:
 		errors_text=new QString();
 		split=new QPushButton("&Split",this);
 		exportLists=new QPushButton("&Export",this);
+		reverse=new QPushButton("&Reverse Check",this);
 		affixType=new QComboBox(this);
 		affixType->addItem("Prefix",PREFIX);
 		affixType->addItem("Suffix",SUFFIX);
@@ -39,12 +42,14 @@ public:
 		grid->addWidget(split,0,0);
 		grid->addWidget(affixType,0,1);
 		grid->addWidget(exportLists,0,2);
-		grid->addWidget(originalAffixList,1,0,1,3);
-		grid->addWidget(compatRulesList,2,0,1,3);
-		grid->addWidget(errors,3,0,1,3);
+		grid->addWidget(reverse,0,3);
+		grid->addWidget(originalAffixList,1,0,1,4);
+		grid->addWidget(compatRulesList,2,0,1,4);
+		grid->addWidget(errors,3,0,1,4);
 		connect(split,SIGNAL(clicked()),this,SLOT(split_clicked()));
 		connect(exportLists,SIGNAL(clicked()),this,SLOT(export_clicked()));
 		connect(affixType,SIGNAL(currentIndexChanged(int)),this,SLOT(affixType_currentIndexChanged(int)));
+		connect(reverse,SIGNAL(clicked()),this,SLOT(reverse_clicked()));
 		displayed_error.setString(errors_text);
 		loadAffixList();
 		loadCompatibilityList();
@@ -101,6 +106,9 @@ public:
 	}
 
 public slots:
+	void reverse_clicked() {
+		reverse_action();
+	}
 	void split_clicked() {
 		split_action();
 	}
@@ -141,7 +149,7 @@ public slots:
 
 private:
 	void split_action();
-
+	void reverse_action();
 	QString getAffix(long id) {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		QString table=interpret_type(t);
@@ -204,7 +212,7 @@ private:
 public:
 	int source_id;
 	QTextEdit * affix;
-	QPushButton * split, *exportLists;
+	QPushButton * split, *exportLists, *reverse;
 	QComboBox * affixType;
 	QTextBrowser * errors;
 	QString * errors_text;
@@ -215,6 +223,7 @@ public:
 		delete affix;
 		delete split;
 		delete exportLists;
+		delete reverse;
 		delete affixType;
 		delete errors;
 		delete errors_text;
