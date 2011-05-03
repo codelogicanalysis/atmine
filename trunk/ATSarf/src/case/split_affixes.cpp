@@ -1,5 +1,6 @@
 #include "split_affixes.h"
 
+
 void SplitDialog::split_action() {
 	QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
 	item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
@@ -33,7 +34,7 @@ void SplitDialog::split_action() {
 				QString affix2=affix1.mid(affix.size());
 				QString raw_data2=raw_data1.mid(raw_data.size());
 				QString pos2=pos1.mid(pos.size());
-				QString description2=description1.mid(description.size()+ (t==PREFIX?3:1)); //' + ' or '+'
+				QString description2=description1.mid(description.size()+ (t==PREFIX?3:1)); //' + ' or ' '
 				int rowIndex2=getRow(affix2,raw_data2,pos2,description2);
 				if (rowIndex2<0) {
 					if (!pos2.isEmpty())
@@ -55,6 +56,42 @@ void SplitDialog::split_action() {
 	errors->setText(*errors_text);
 }
 
+void SplitDialog::reverse_action() {
+	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(type==PREFIX?AA:CC);
+	Retrieve_Template t("compatibility_rules","category_id1","category_id2","resulting_category", tr("type=%1").arg(rule));
+	while (t.retrieve())
+	{
+		long category_id2=t.get(0).toLongLong();
+		long category_id3=t.get(1).toLongLong();
+		long resulting_category1=t.get(2).toLongLong();
+		Search_Compatibility s(AA,resulting_category1,false);
+		long category_id1,resulting_category2;
+		while (s.retrieve(category_id1,resulting_category2))
+		{
+			if (!(category_id2==category_id1 && resulting_category1==category_id3))
+			{
+				assert(category_id1!=category_id2);
+				if (!areCompatible(rule,category_id1,category_id2))
+				{
+					QMessageBox msgBox;
+					msgBox.setText(tr("About to add Rule (")+database_info.comp_rules->getCategoryName(category_id1)+","+database_info.comp_rules->getCategoryName(category_id2)+")\n"
+								   +"\tcategory3="+database_info.comp_rules->getCategoryName(category_id3)+",resulting1="+database_info.comp_rules->getCategoryName(resulting_category1)+",resulting2="+database_info.comp_rules->getCategoryName(resulting_category2));
+					msgBox.setInformativeText("Do you want to add it?");
+					msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+					msgBox.setDefaultButton(QMessageBox::Yes);
+					int ret = msgBox.exec();
+					if (ret==QMessageBox::Yes)
+					{
+						insert_compatibility_rules(rule,category_id1,category_id2,source_id);
+						warning<<"Added Rule ("<<database_info.comp_rules->getCategoryName(category_id1)<<","<<database_info.comp_rules->getCategoryName(category_id2)<<")\n"
+								<<"\tcategory3="<<database_info.comp_rules->getCategoryName(category_id3)<<",resulting1="<<database_info.comp_rules->getCategoryName(resulting_category1)<<",resulting2="<<database_info.comp_rules->getCategoryName(resulting_category2)<<"\n";
+					}
+				}
+			}
+		}
+	}
+}
 
 void splitRecursiveAffixes(){
 
