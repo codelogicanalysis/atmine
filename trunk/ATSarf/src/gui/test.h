@@ -5,7 +5,7 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-//#define AUGMENT_DICTIONARY
+#define AUGMENT_DICTIONARY
 //#define JUST_BUCKWALTER
 #define REPETITIONS 1
 //starting point

@@ -1,303 +1,73 @@
-﻿		Pref-0			
+		Pref-0			
+		NPref-[Li]Al	the	Al/DET+	
 و	وَ	Pref-Wa	and	wa/CONJ+	
 ف	فَ	Pref-Wa	and/so	fa/CONJ+	
 ب	بِ	NPref-Bi	with/by	bi/PREP+	
 ك	كَ	NPref-Bi	like/such as	ka/PREP+	
-وب	وَبِ	NPref-Bi	and + with/by	wa/CONJ+bi/PREP+	
-فب	فَبِ	NPref-Bi	and/so + with/by	fa/CONJ+bi/PREP+	
-وك	وَكَ	NPref-Bi	and + like/such as	wa/CONJ+ka/PREP+	
-فك	فَكَ	NPref-Bi	and/so + like/such as	fa/CONJ+ka/PREP+	
-ل	لِ	NPref-Li	for/to	li/PREP+	
-ول	وَلِ	NPref-Li	and + for/to	wa/CONJ+li/PREP+	
-فل	فَلِ	NPref-Li	and/so + for/to	fa/CONJ+li/PREP+	
-ل	لَ	NPref-La	indeed/truly	la/EMPHATIC_PARTICLE+	
-ل	لَ	PVPref-La	would have	la/RESULT_CLAUSE_PARTICLE+	
-ال	ال	NPref-Al	the	Al/DET+	
-وال	وَال	NPref-Al	and + the	wa/CONJ+Al/DET+	
-فال	فَال	NPref-Al	and/so + the	fa/CONJ+Al/DET+	
-بال	بِال	NPref-BiAl	with/by + the	bi/PREP+Al/DET+	
-كال	كَال	NPref-BiAl	like/such as + the	ka/PREP+Al/DET+	
-وبال	وَبِال	NPref-BiAl	and + with/by + the	wa/CONJ+bi/PREP+Al/DET+	
-فبال	فَبِال	NPref-BiAl	and/so + with/by + the	fa/CONJ+bi/PREP+Al/DET+	
-وكال	وَكَال	NPref-BiAl	and + like/such as + the	wa/CONJ+ka/PREP+Al/DET+	
-فكال	فَكَال	NPref-BiAl	and/so + like/such as + the	fa/CONJ+ka/PREP+Al/DET+	
-		NPref-[Li]Al	the	Al/DET+	
+ل	لِ	IVPref-hw-li-	for	li/SUBJUNC+	
 ل	ل	NPref-[Li]l	the	Al/DET+	
-لل	لِل	NPref-Lil	for/to + the	li/PREP+Al/DET+	
-ولل	وَلِل	NPref-Lil	and + for/to + the	wa/CONJ+li/PREP+Al/DET+	
-فلل	فَلِل	NPref-Lil	and/so + for/to + the	fa/CONJ+li/PREP+Al/DET+	
-ل	لِ	NPref-LiAl	for/to + the	li/PREP+Al/DET+	
-ول	وَلِ	NPref-LiAl	and + for/to + the	wa/CONJ+li/PREP+Al/DET+	
-فل	فَلِ	NPref-LiAl	and/so + for/to + the	fa/CONJ+li/PREP+Al/DET+	
+ل	لَ	PVPref-La	would have	la/RESULT_CLAUSE_PARTICLE+	
+ل	لَ	NPref-La	indeed/truly	la/EMPHATIC_PARTICLE+	
+ل	لِ	NPref-Li	for/to	li/PREP+	
+ال	ال	NPref-Al	the	Al/DET+	
+ي	يَ	IVPref-hw-ya(object)	him/it to	ya/IV3MS+	
+ي	يُ	IVPref-hw-yu(object)	him/it to	yu/IV3MS+	
+ي	يَ	IVPref-hmA-ya(object)	them (both) to	ya/IV3MD+	
+ي	يُ	IVPref-hmA-yu(object)	them (both) to	yu/IV3MD+	
+ي	يَ	IVPref-hm-ya(object)	them (people) to	ya/IV3MP+	
+ي	يُ	IVPref-hm-yu(object)	them (people) to	yu/IV3MP+	
+ي	يَ	IVPref-hn-ya(object)	them (women) to	ya/IV3FP+	
+ي	يُ	IVPref-hmA-yu	they (both)	yu/IV3MD+	
+ي	يُ	IVPref-hn-yu	they (women)	yu/IV3FP+	
+ي	يَ	IVPref-hn-ya	they (women)	ya/IV3FP+	
+ي	يُ	IVPref-hn-yu(object)	them (women) to	yu/IV3FP+	
 ي	يَ	IVPref-hw-ya	he/it	ya/IV3MS+	
 ي	يُ	IVPref-hw-yu	he/it	yu/IV3MS+	
-وي	وَيَ	IVPref-hw-ya	and + he/it	wa/CONJ+ya/IV3MS+	
-وي	وَيُ	IVPref-hw-yu	and + he/it	wa/CONJ+yu/IV3MS+	
-في	فَيَ	IVPref-hw-ya	and/so + he/it	fa/CONJ+ya/IV3MS+	
-في	فَيُ	IVPref-hw-yu	and/so + he/it	fa/CONJ+yu/IV3MS+	
-س	سَ	IVPref-sa-	will	sa/FUT+	
-سي	سَيَ	IVPref-hw-ya	will + he/it	sa/FUT+ya/IV3MS+	
-سي	سَيُ	IVPref-hw-yu	will + he/it	sa/FUT+yu/IV3MS+	
-وسي	وَسَيَ	IVPref-hw-ya	and + will + he/it	wa/CONJ+sa/FUT+ya/IV3MS+	
-وسي	وَسَيُ	IVPref-hw-yu	and + will + he/it	wa/CONJ+sa/FUT+yu/IV3MS+	
-فسي	فَسَيَ	IVPref-hw-ya	and/so + will + he/it	fa/CONJ+sa/FUT+ya/IV3MS+	
-فسي	فَسَيُ	IVPref-hw-yu	and/so + will + he/it	fa/CONJ+sa/FUT+yu/IV3MS+	
 ي	يَ	IVPref-hmA-ya	they (both)	ya/IV3MD+	
-ي	يُ	IVPref-hmA-yu	they (both)	yu/IV3MD+	
-وي	وَيَ	IVPref-hmA-ya	and + they (both)	wa/CONJ+ya/IV3MD+	
-وي	وَيُ	IVPref-hmA-yu	and + they (both)	wa/CONJ+yu/IV3MD+	
-في	فَيَ	IVPref-hmA-ya	and/so + they (both)	fa/CONJ+ya/IV3MD+	
-في	فَيُ	IVPref-hmA-yu	and/so + they (both)	fa/CONJ+yu/IV3MD+	
-سي	سَيَ	IVPref-hmA-ya	will + they (both)	sa/FUT+ya/IV3MD+	
-سي	سَيُ	IVPref-hmA-yu	will + they (both)	sa/FUT+yu/IV3MD+	
-وسي	وَسَيَ	IVPref-hmA-ya	and + will + they (both)	wa/CONJ+sa/FUT+ya/IV3MD+	
-وسي	وَسَيُ	IVPref-hmA-yu	and + will + they (both)	wa/CONJ+sa/FUT+yu/IV3MD+	
-فسي	فَسَيَ	IVPref-hmA-ya	and/so + will + they (both)	fa/CONJ+sa/FUT+ya/IV3MD+	
-فسي	فَسَيُ	IVPref-hmA-yu	and/so + will + they (both)	fa/CONJ+sa/FUT+yu/IV3MD+	
 ي	يَ	IVPref-hm-ya	they (people)	ya/IV3MP+	
 ي	يُ	IVPref-hm-yu	they (people)	yu/IV3MP+	
-وي	وَيَ	IVPref-hm-ya	and + they (people)	wa/CONJ+ya/IV3MP+	
-وي	وَيُ	IVPref-hm-yu	and + they (people)	wa/CONJ+yu/IV3MP+	
-في	فَيَ	IVPref-hm-ya	and/so + they (people)	fa/CONJ+ya/IV3MP+	
-في	فَيُ	IVPref-hm-yu	and/so + they (people)	fa/CONJ+yu/IV3MP+	
-سي	سَيَ	IVPref-hm-ya	will + they (people)	sa/FUT+ya/IV3MP+	
-سي	سَيُ	IVPref-hm-yu	will + they (people)	sa/FUT+yu/IV3MP+	
-وسي	وَسَيَ	IVPref-hm-ya	and + will + they (people)	wa/CONJ+sa/FUT+ya/IV3MP+	
-وسي	وَسَيُ	IVPref-hm-yu	and + will + they (people)	wa/CONJ+sa/FUT+yu/IV3MP+	
-فسي	فَسَيَ	IVPref-hm-ya	and/so + will + they (people)	fa/CONJ+sa/FUT+ya/IV3MP+	
-فسي	فَسَيُ	IVPref-hm-yu	and/so + will + they (people)	fa/CONJ+sa/FUT+yu/IV3MP+	
-ي	يَ	IVPref-hn-ya	they (women)	ya/IV3FP+	
-ي	يُ	IVPref-hn-yu	they (women)	yu/IV3FP+	
-وي	وَيَ	IVPref-hn-ya	and + they (women)	wa/CONJ+ya/IV3FP+	
-وي	وَيُ	IVPref-hn-yu	and + they (women)	wa/CONJ+yu/IV3FP+	
-في	فَيَ	IVPref-hn-ya	and/so + they (women)	fa/CONJ+ya/IV3FP+	
-في	فَيُ	IVPref-hn-yu	and/so + they (women)	fa/CONJ+yu/IV3FP+	
-سي	سَيَ	IVPref-hn-ya	will + they (women)	sa/FUT+ya/IV3FP+	
-سي	سَيُ	IVPref-hn-yu	will + they (women)	sa/FUT+yu/IV3FP+	
-وسي	وَسَيَ	IVPref-hn-ya	and + will + they (women)	wa/CONJ+sa/FUT+ya/IV3FP+	
-وسي	وَسَيُ	IVPref-hn-yu	and + will + they (women)	wa/CONJ+sa/FUT+yu/IV3FP+	
-فسي	فَسَيَ	IVPref-hn-ya	and/so + will + they (women)	fa/CONJ+sa/FUT+ya/IV3FP+	
-فسي	فَسَيُ	IVPref-hn-yu	and/so + will + they (women)	fa/CONJ+sa/FUT+yu/IV3FP+	
-ل	لِ	IVPref-hw-li-	for	li/SUBJUNC+	
-لي	لِيَ	IVPref-hw-liya	for + him/it to	li/SUBJUNC+ya/IV3MS+	
-لي	لِيُ	IVPref-hw-liyu	for + him/it to	li/SUBJUNC+yu/IV3MS+	
-ولي	وَلِيَ	IVPref-hw-liya	and + for + him/it to	wa/CONJ+li/SUBJUNC+ya/IV3MS+	
-ولي	وَلِيُ	IVPref-hw-liyu	and + for + him/it to	wa/CONJ+li/SUBJUNC+yu/IV3MS+	
-فلي	فَلِيَ	IVPref-hw-liya	and/so + for + him/it to	fa/CONJ+li/SUBJUNC+ya/IV3MS+	
-فلي	فَلِيُ	IVPref-hw-liyu	and/so + for + him/it to	fa/CONJ+li/SUBJUNC+yu/IV3MS+	
-لي	لِيَ	IVPref-hmA-liya	for + them (both) to	li/SUBJUNC+ya/IV3MD+	
-لي	لِيُ	IVPref-hmA-liyu	for + them (both) to	li/SUBJUNC+yu/IV3MD+	
-ولي	وَلِيَ	IVPref-hmA-liya	and + for + them (both) to	wa/CONJ+li/SUBJUNC+ya/IV3MD+	
-ولي	وَلِيُ	IVPref-hmA-liyu	and + for + them (both) to	wa/CONJ+li/SUBJUNC+yu/IV3MD+	
-فلي	فَلِيَ	IVPref-hmA-liya	and/so + for + them (both) to	fa/CONJ+li/SUBJUNC+ya/IV3MD+	
-فلي	فَلِيُ	IVPref-hmA-liyu	and/so + for + them (both) to	fa/CONJ+li/SUBJUNC+yu/IV3MD+	
-لي	لِيَ	IVPref-hm-liya	for + them (people) to	li/SUBJUNC+ya/IV3MP+	
-لي	لِيُ	IVPref-hm-liyu	for + them (people) to	li/SUBJUNC+yu/IV3MP+	
-ولي	وَلِيَ	IVPref-hm-liya	and + for + them (people) to	wa/CONJ+li/SUBJUNC+ya/IV3MP+	
-ولي	وَلِيُ	IVPref-hm-liyu	and + for + them (people) to	wa/CONJ+li/SUBJUNC+yu/IV3MP+	
-فلي	فَلِيَ	IVPref-hm-liya	and/so + for + them (people) to	fa/CONJ+li/SUBJUNC+ya/IV3MP+	
-فلي	فَلِيُ	IVPref-hm-liyu	and/so + for + them (people) to	fa/CONJ+li/SUBJUNC+yu/IV3MP+	
-لي	لِيَ	IVPref-hn-liya	for + them (women) to	li/SUBJUNC+ya/IV3FP+	
-لي	لِيُ	IVPref-hn-liyu	for + them (women) to	li/SUBJUNC+yu/IV3FP+	
-ولي	وَلِيَ	IVPref-hn-liya	and + for + them (women) to	wa/CONJ+li/SUBJUNC+ya/IV3FP+	
-ولي	وَلِيُ	IVPref-hn-liyu	and + for + them (women) to	wa/CONJ+li/SUBJUNC+yu/IV3FP+	
-فلي	فَلِيَ	IVPref-hn-liya	and/so + for + them (women) to	fa/CONJ+li/SUBJUNC+ya/IV3FP+	
-فلي	فَلِيُ	IVPref-hn-liyu	and/so + for + them (women) to	fa/CONJ+li/SUBJUNC+yu/IV3FP+	
+س	سَ	IVPref-sa-	will	sa/FUT+	
+ت	تُ	IVPref-hy-tu(object)	it/them/her (to)	tu/IV3FS+	
+ت	تَ	IVPref-Anta-ta(object)	you [masc.sg.] (to)	ta/IV2MS+	
+ت	تُ	IVPref-Anta-tu(object)	you [masc.sg.] (to)	tu/IV2MS+	
+ت	تَ	IVPref-AntmA-ta(object)	you (both) (to)	ta/IV2D+	
+ت	تُ	IVPref-AntmA-tu(object)	you (both) (to)	tu/IV2D+	
+ت	تَ	IVPref-hy-ta(object)	it/them/her (to)	ta/IV3FS+	
+ت	تَ	IVPref-hmA-ta(object)	them (both) [fem.du.] (to)	ta/IV3FD+	
+ت	تُ	IVPref-Anti-tu(object)	you [fem.sg.] (to)	tu/IV2FS+	
+ت	تَ	IVPref-Antm-ta(object)	you [masc.pl.] (to)	ta/IV2MP+	
+ت	تُ	IVPref-Antm-tu(object)	you [masc.pl.] (to)	tu/IV2MP+	
+ت	تَ	IVPref-Antn-ta(object)	you [fem.pl.] (to)	ta/IV2FP+	
+ت	تُ	IVPref-Antn-tu(object)	you [fem.pl.] (to)	tu/IV2FP+	
+ت	تُ	IVPref-hmA-tu(object)	them (both) [fem.du.] (to)	tu/IV3FD+	
+ت	تُ	IVPref-Antn-tu	you [fem.pl.]	tu/IV2FP+	
+ت	تَ	IVPref-Antn-ta	you [fem.pl.]	ta/IV2FP+	
+ت	تَ	IVPref-Anti-ta(object)	you [fem.sg.] (to)	ta/IV2FS+	
 ت	تَ	IVPref-hy-ta	it/they/she	ta/IV3FS+	
 ت	تُ	IVPref-hy-tu	it/they/she	tu/IV3FS+	
-وت	وَتَ	IVPref-hy-ta	and + it/they/she	wa/CONJ+ta/IV3FS+	
-وت	وَتُ	IVPref-hy-tu	and + it/they/she	wa/CONJ+tu/IV3FS+	
-فت	فَتَ	IVPref-hy-ta	and/so + it/they/she	fa/CONJ+ta/IV3FS+	
-فت	فَتُ	IVPref-hy-tu	and/so + it/they/she	fa/CONJ+tu/IV3FS+	
-ست	سَتَ	IVPref-hy-ta	will + it/they/she	sa/FUT+ta/IV3FS+	
-ست	سَتُ	IVPref-hy-tu	will + it/they/she	sa/FUT+tu/IV3FS+	
-وست	وَسَتَ	IVPref-hy-ta	and + will + it/they/she	wa/CONJ+sa/FUT+ta/IV3FS+	
-وست	وَسَتُ	IVPref-hy-tu	and + will + it/they/she	wa/CONJ+sa/FUT+tu/IV3FS+	
-فست	فَسَتَ	IVPref-hy-ta	and/so + will + it/they/she	fa/CONJ+sa/FUT+ta/IV3FS+	
-فست	فَسَتُ	IVPref-hy-tu	and/so + will + it/they/she	fa/CONJ+sa/FUT+tu/IV3FS+	
 ت	تَ	IVPref-Anta-ta	you [masc.sg.]	ta/IV2MS+	
 ت	تُ	IVPref-Anta-tu	you [masc.sg.]	tu/IV2MS+	
-وت	وَتَ	IVPref-Anta-ta	and + you [masc.sg.]	wa/CONJ+ta/IV2MS+	
-وت	وَتُ	IVPref-Anta-tu	and + you [masc.sg.]	wa/CONJ+tu/IV2MS+	
-فت	فَتَ	IVPref-Anta-ta	and/so + you [masc.sg.]	fa/CONJ+ta/IV2MS+	
-فت	فَتُ	IVPref-Anta-tu	and/so + you [masc.sg.]	fa/CONJ+tu/IV2MS+	
-ست	سَتَ	IVPref-Anta-ta	will + you [masc.sg.]	sa/FUT+ta/IV2MS+	
-ست	سَتُ	IVPref-Anta-tu	will + you [masc.sg.]	sa/FUT+tu/IV2MS+	
-وست	وَسَتَ	IVPref-Anta-ta	and + will + you [masc.sg.]	wa/CONJ+sa/FUT+ta/IV2MS+	
-وست	وَسَتُ	IVPref-Anta-tu	and + will + you [masc.sg.]	wa/CONJ+sa/FUT+tu/IV2MS+	
-فست	فَسَتَ	IVPref-Anta-ta	and/so + will + you [masc.sg.]	fa/CONJ+sa/FUT+ta/IV2MS+	
-فست	فَسَتُ	IVPref-Anta-tu	and/so + will + you [masc.sg.]	fa/CONJ+sa/FUT+tu/IV2MS+	
 ت	تَ	IVPref-AntmA-ta	you (both)	ta/IV2D+	
 ت	تُ	IVPref-AntmA-tu	you (both)	tu/IV2D+	
-وت	وَتَ	IVPref-AntmA-ta	and + you (both)	wa/CONJ+ta/IV2D+	
-وت	وَتُ	IVPref-AntmA-tu	and + you (both)	wa/CONJ+tu/IV2D+	
-فت	فَتَ	IVPref-AntmA-ta	and/so + you (both)	fa/CONJ+ta/IV2D+	
-فت	فَتُ	IVPref-AntmA-tu	and/so + you (both)	fa/CONJ+tu/IV2D+	
-ست	سَتَ	IVPref-AntmA-ta	will + you (both)	sa/FUT+ta/IV2D+	
-ست	سَتُ	IVPref-AntmA-tu	will + you (both)	sa/FUT+tu/IV2D+	
-وست	وَسَتَ	IVPref-AntmA-ta	and + will + you (both)	wa/CONJ+sa/FUT+ta/IV2D+	
-وست	وَسَتُ	IVPref-AntmA-tu	and + will + you (both)	wa/CONJ+sa/FUT+tu/IV2D+	
-فست	فَسَتَ	IVPref-AntmA-ta	and/so + will + you (both)	fa/CONJ+sa/FUT+ta/IV2D+	
-فست	فَسَتُ	IVPref-AntmA-tu	and/so + will + you (both)	fa/CONJ+sa/FUT+tu/IV2D+	
 ت	تَ	IVPref-hmA-ta	they (both) [fem.du.]	ta/IV3FD+	
 ت	تُ	IVPref-hmA-tu	they (both) [fem.du.]	tu/IV3FD+	
-وت	وَتَ	IVPref-hmA-ta	and + they (both) [fem.du.]	wa/CONJ+ta/IV3FD+	
-وت	وَتُ	IVPref-hmA-tu	and + they (both) [fem.du.]	wa/CONJ+tu/IV3FD+	
-فت	فَتَ	IVPref-hmA-ta	and/so + they (both) [fem.du.]	fa/CONJ+ta/IV3FD+	
-فت	فَتُ	IVPref-hmA-tu	and/so + they (both) [fem.du.]	fa/CONJ+tu/IV3FD+	
-ست	سَتَ	IVPref-hmA-ta	will + they (both) [fem.du.]	sa/FUT+ta/IV3FD+	
-ست	سَتُ	IVPref-hmA-tu	will + they (both) [fem.du.]	sa/FUT+tu/IV3FD+	
-وست	وَسَتَ	IVPref-hmA-ta	and + will + they (both) [fem.du.]	wa/CONJ+sa/FUT+ta/IV3FD+	
-وست	وَسَتُ	IVPref-hmA-tu	and + will + they (both) [fem.du.]	wa/CONJ+sa/FUT+tu/IV3FD+	
-فست	فَسَتَ	IVPref-hmA-ta	and/so + will + they (both) [fem.du.]	fa/CONJ+sa/FUT+ta/IV3FD+	
-فست	فَسَتُ	IVPref-hmA-tu	and/so + will + they (both) [fem.du.]	fa/CONJ+sa/FUT+tu/IV3FD+	
 ت	تَ	IVPref-Anti-ta	you [fem.sg.]	ta/IV2FS+	
 ت	تُ	IVPref-Anti-tu	you [fem.sg.]	tu/IV2FS+	
-وت	وَتَ	IVPref-Anti-ta	and + you [fem.sg.]	wa/CONJ+ta/IV2FS+	
-وت	وَتُ	IVPref-Anti-tu	and + you [fem.sg.]	wa/CONJ+tu/IV2FS+	
-فت	فَتَ	IVPref-Anti-ta	and/so + you [fem.sg.]	fa/CONJ+ta/IV2FS+	
-فت	فَتُ	IVPref-Anti-tu	and/so + you [fem.sg.]	fa/CONJ+tu/IV2FS+	
-ست	سَتَ	IVPref-Anti-ta	will + you [fem.sg.]	sa/FUT+ta/IV2FS+	
-ست	سَتُ	IVPref-Anti-tu	will + you [fem.sg.]	sa/FUT+tu/IV2FS+	
-وست	وَسَتَ	IVPref-Anti-ta	and + will + you [fem.sg.]	wa/CONJ+sa/FUT+ta/IV2FS+	
-وست	وَسَتُ	IVPref-Anti-tu	and + will + you [fem.sg.]	wa/CONJ+sa/FUT+tu/IV2FS+	
-فست	فَسَتَ	IVPref-Anti-ta	and/so + will + you [fem.sg.]	fa/CONJ+sa/FUT+ta/IV2FS+	
-فست	فَسَتُ	IVPref-Anti-tu	and/so + will + you [fem.sg.]	fa/CONJ+sa/FUT+tu/IV2FS+	
 ت	تَ	IVPref-Antm-ta	you [masc.pl.]	ta/IV2MP+	
 ت	تُ	IVPref-Antm-tu	you [masc.pl.]	tu/IV2MP+	
-وت	وَتَ	IVPref-Antm-ta	and + you [masc.pl.]	wa/CONJ+ta/IV2MP+	
-وت	وَتُ	IVPref-Antm-tu	and + you [masc.pl.]	wa/CONJ+tu/IV2MP+	
-فت	فَتَ	IVPref-Antm-ta	and/so + you [masc.pl.]	fa/CONJ+ta/IV2MP+	
-فت	فَتُ	IVPref-Antm-tu	and/so + you [masc.pl.]	fa/CONJ+tu/IV2MP+	
-ست	سَتَ	IVPref-Antm-ta	will + you [masc.pl.]	sa/FUT+ta/IV2MP+	
-ست	سَتُ	IVPref-Antm-tu	will + you [masc.pl.]	sa/FUT+tu/IV2MP+	
-وست	وَسَتَ	IVPref-Antm-ta	and + will + you [masc.pl.]	wa/CONJ+sa/FUT+ta/IV2MP+	
-وست	وَسَتُ	IVPref-Antm-tu	and + will + you [masc.pl.]	wa/CONJ+sa/FUT+tu/IV2MP+	
-فست	فَسَتَ	IVPref-Antm-ta	and/so + will + you [masc.pl.]	fa/CONJ+sa/FUT+ta/IV2MP+	
-فست	فَسَتُ	IVPref-Antm-tu	and/so + will + you [masc.pl.]	fa/CONJ+sa/FUT+tu/IV2MP+	
-ت	تَ	IVPref-Antn-ta	you [fem.pl.]	ta/IV2FP+	
-ت	تُ	IVPref-Antn-tu	you [fem.pl.]	tu/IV2FP+	
-وت	وَتَ	IVPref-Antn-ta	and + you [fem.pl.]	wa/CONJ+ta/IV2FP+	
-وت	وَتُ	IVPref-Antn-tu	and + you [fem.pl.]	wa/CONJ+tu/IV2FP+	
-فت	فَتَ	IVPref-Antn-ta	and/so + you [fem.pl.]	fa/CONJ+ta/IV2FP+	
-فت	فَتُ	IVPref-Antn-tu	and/so + you [fem.pl.]	fa/CONJ+tu/IV2FP+	
-ست	سَتَ	IVPref-Antn-ta	will + you [fem.pl.]	sa/FUT+ta/IV2FP+	
-ست	سَتُ	IVPref-Antn-tu	will + you [fem.pl.]	sa/FUT+tu/IV2FP+	
-وست	وَسَتَ	IVPref-Antn-ta	and + will + you [fem.pl.]	wa/CONJ+sa/FUT+ta/IV2FP+	
-وست	وَسَتُ	IVPref-Antn-tu	and + will + you [fem.pl.]	wa/CONJ+sa/FUT+tu/IV2FP+	
-فست	فَسَتَ	IVPref-Antn-ta	and/so + will + you [fem.pl.]	fa/CONJ+sa/FUT+ta/IV2FP+	
-فست	فَسَتُ	IVPref-Antn-tu	and/so + will + you [fem.pl.]	fa/CONJ+sa/FUT+tu/IV2FP+	
-لت	لِتَ	IVPref-hy-lita	for + it/them/her (to)	li/SUBJUNC+ta/IV3FS+	
-لت	لِتُ	IVPref-hy-litu	for + it/them/her (to)	li/SUBJUNC+tu/IV3FS+	
-ولت	وَلِتَ	IVPref-hy-lita	and + for + it/them/her (to)	wa/CONJ+li/SUBJUNC+ta/IV3FS+	
-ولت	وَلِتُ	IVPref-hy-litu	and + for + it/them/her (to)	wa/CONJ+li/SUBJUNC+tu/IV3FS+	
-فلت	فَلِتَ	IVPref-hy-lita	and/so + for + it/them/her (to)	fa/CONJ+li/SUBJUNC+ta/IV3FS+	
-فلت	فَلِتُ	IVPref-hy-litu	and/so + for + it/them/her (to)	fa/CONJ+li/SUBJUNC+tu/IV3FS+	
-لت	لِتَ	IVPref-Anta-lita	for + you [masc.sg.] (to)	li/SUBJUNC+ta/IV2MS+	
-لت	لِتُ	IVPref-Anta-litu	for + you [masc.sg.] (to)	li/SUBJUNC+tu/IV2MS+	
-ولت	وَلِتَ	IVPref-Anta-lita	and + for + you [masc.sg.] (to)	wa/CONJ+li/SUBJUNC+ta/IV2MS+	
-ولت	وَلِتُ	IVPref-Anta-litu	and + for + you [masc.sg.] (to)	wa/CONJ+li/SUBJUNC+tu/IV2MS+	
-فلت	فَلِتَ	IVPref-Anta-lita	and/so + for + you [masc.sg.] (to)	fa/CONJ+li/SUBJUNC+ta/IV2MS+	
-فلت	فَلِتُ	IVPref-Anta-litu	and/so + for + you [masc.sg.] (to)	fa/CONJ+li/SUBJUNC+tu/IV2MS+	
-لت	لِتَ	IVPref-AntmA-lita	for + you (both) (to)	li/SUBJUNC+ta/IV2D+	
-لت	لِتُ	IVPref-AntmA-litu	for + you (both) (to)	li/SUBJUNC+tu/IV2D+	
-ولت	وَلِتَ	IVPref-AntmA-lita	and + for + you (both) (to)	wa/CONJ+li/SUBJUNC+ta/IV2D+	
-ولت	وَلِتُ	IVPref-AntmA-litu	and + for + you (both) (to)	wa/CONJ+li/SUBJUNC+tu/IV2D+	
-فلت	فَلِتَ	IVPref-AntmA-lita	and/so + for + you (both) (to)	fa/CONJ+li/SUBJUNC+ta/IV2D+	
-فلت	فَلِتُ	IVPref-AntmA-litu	and/so + for + you (both) (to)	fa/CONJ+li/SUBJUNC+tu/IV2D+	
-لت	لِتَ	IVPref-hmA-lita	for + them (both) [fem.du.] (to)	li/SUBJUNC+ta/IV3FD+	
-لت	لِتُ	IVPref-hmA-litu	for + them (both) [fem.du.] (to)	li/SUBJUNC+tu/IV3FD+	
-ولت	وَلِتَ	IVPref-hmA-lita	and + for + them (both) [fem.du.] (to)	wa/CONJ+li/SUBJUNC+ta/IV3FD+	
-ولت	وَلِتُ	IVPref-hmA-litu	and + for + them (both) [fem.du.] (to)	wa/CONJ+li/SUBJUNC+tu/IV3FD+	
-فلت	فَلِتَ	IVPref-hmA-lita	and/so + for + them (both) [fem.du.] (to)	fa/CONJ+li/SUBJUNC+ta/IV3FD+	
-فلت	فَلِتُ	IVPref-hmA-litu	and/so + for + them (both) [fem.du.] (to)	fa/CONJ+li/SUBJUNC+tu/IV3FD+	
-لت	لِتَ	IVPref-Anti-lita	for + you [fem.sg.] (to)	li/SUBJUNC+ta/IV2FS+	
-لت	لِتُ	IVPref-Anti-litu	for + you [fem.sg.] (to)	li/SUBJUNC+tu/IV2FS+	
-ولت	وَلِتَ	IVPref-Anti-lita	and + for + you [fem.sg.] (to)	wa/CONJ+li/SUBJUNC+ta/IV2FS+	
-ولت	وَلِتُ	IVPref-Anti-litu	and + for + you [fem.sg.] (to)	wa/CONJ+li/SUBJUNC+tu/IV2FS+	
-فلت	فَلِتَ	IVPref-Anti-lita	and/so + for + you [fem.sg.] (to)	fa/CONJ+li/SUBJUNC+ta/IV2FS+	
-فلت	فَلِتُ	IVPref-Anti-litu	and/so + for + you [fem.sg.] (to)	fa/CONJ+li/SUBJUNC+tu/IV2FS+	
-لت	لِتَ	IVPref-Antm-lita	for + you [masc.pl.] (to)	li/SUBJUNC+ta/IV2MP+	
-لت	لِتُ	IVPref-Antm-litu	for + you [masc.pl.] (to)	li/SUBJUNC+tu/IV2MP+	
-ولت	وَلِتَ	IVPref-Antm-lita	and + for + you [masc.pl.] (to)	wa/CONJ+li/SUBJUNC+ta/IV2MP+	
-ولت	وَلِتُ	IVPref-Antm-litu	and + for + you [masc.pl.] (to)	wa/CONJ+li/SUBJUNC+tu/IV2MP+	
-فلت	فَلِتَ	IVPref-Antm-lita	and/so + for + you [masc.pl.] (to)	fa/CONJ+li/SUBJUNC+ta/IV2MP+	
-فلت	فَلِتُ	IVPref-Antm-litu	and/so + for + you [masc.pl.] (to)	fa/CONJ+li/SUBJUNC+tu/IV2MP+	
-لت	لِتَ	IVPref-Antn-lita	for + you [fem.pl.] (to)	li/SUBJUNC+ta/IV2FP+	
-لت	لِتُ	IVPref-Antn-litu	for + you [fem.pl.] (to)	li/SUBJUNC+tu/IV2FP+	
-ولت	وَلِتَ	IVPref-Antn-lita	and + for + you [fem.pl.] (to)	wa/CONJ+li/SUBJUNC+ta/IV2FP+	
-ولت	وَلِتُ	IVPref-Antn-litu	and + for + you [fem.pl.] (to)	wa/CONJ+li/SUBJUNC+tu/IV2FP+	
-فلت	فَلِتَ	IVPref-Antn-lita	and/so + for + you [fem.pl.] (to)	fa/CONJ+li/SUBJUNC+ta/IV2FP+	
-فلت	فَلِتُ	IVPref-Antn-litu	and/so + for + you [fem.pl.] (to)	fa/CONJ+li/SUBJUNC+tu/IV2FP+	
-أ	أَ	IVPref-AnA->a	I	>a/IV1S+	
+أ	أُ	IVPref-AnA->u(object)	me (to)	>u/IV1S+	
 أ	أُ	IVPref-AnA->u	I	>u/IV1S+	
-وأ	وَأَ	IVPref-AnA->a	and + I	wa/CONJ+>a/IV1S+	
-وأ	وَأُ	IVPref-AnA->u	and + I	wa/CONJ+>u/IV1S+	
-فأ	فَأَ	IVPref-AnA->a	and/so + I	fa/CONJ+>a/IV1S+	
-فأ	فَأُ	IVPref-AnA->u	and/so + I	fa/CONJ+>u/IV1S+	
-سأ	سَأَ	IVPref-AnA->a	will + I	sa/FUT+>a/IV1S+	
-سأ	سَأُ	IVPref-AnA->u	will + I	sa/FUT+>u/IV1S+	
-وسأ	وَسَأَ	IVPref-AnA->a	and + will + I	wa/CONJ+sa/FUT+>a/IV1S+	
-وسأ	وَسَأُ	IVPref-AnA->u	and + will + I	wa/CONJ+sa/FUT+>u/IV1S+	
-فسأ	فَسَأَ	IVPref-AnA->a	and/so + will + I	fa/CONJ+sa/FUT+>a/IV1S+	
-فسأ	فَسَأُ	IVPref-AnA->u	and/so + will + I	fa/CONJ+sa/FUT+>u/IV1S+	
-ا	أَ	IVPref-AnA->a	I	>a/IV1S+	
-ا	أُ	IVPref-AnA->u	I	>u/IV1S+	
-وا	وَأَ	IVPref-AnA->a	and + I	wa/CONJ+>a/IV1S+	
-وا	وَأُ	IVPref-AnA->u	and + I	wa/CONJ+>u/IV1S+	
-فا	فَأَ	IVPref-AnA->a	and/so + I	fa/CONJ+>a/IV1S+	
-فا	فَأُ	IVPref-AnA->u	and/so + I	fa/CONJ+>u/IV1S+	
-سا	سَأَ	IVPref-AnA->a	will + I	sa/FUT+>a/IV1S+	
-سا	سَأُ	IVPref-AnA->u	will + I	sa/FUT+>u/IV1S+	
-وسا	وَسَأَ	IVPref-AnA->a	and + will + I	wa/CONJ+sa/FUT+>a/IV1S+	
-وسا	وَسَأُ	IVPref-AnA->u	and + will + I	wa/CONJ+sa/FUT+>u/IV1S+	
-فسا	فَسَأَ	IVPref-AnA->a	and/so + will + I	fa/CONJ+sa/FUT+>a/IV1S+	
-فسا	فَسَأُ	IVPref-AnA->u	and/so + will + I	fa/CONJ+sa/FUT+>u/IV1S+	
-آ	آ	IVPref-AnA-|	I	|/IV1S+	
-وآ	وَآ	IVPref-AnA-|	and + I	wa/CONJ+|/IV1S+	
-فآ	فَآ	IVPref-AnA-|	and/so + I	fa/CONJ+|/IV1S+	
-سآ	سَآ	IVPref-AnA-|	will + I	sa/FUT+|/IV1S+	
-وسآ	وَسَآ	IVPref-AnA-|	and + will + I	wa/CONJ+sa/FUT+|/IV1S+	
-فسآ	فَسَآ	IVPref-AnA-|	and/so + will + I	fa/CONJ+sa/FUT+|/IV1S+	
+أ	أَ	IVPref-AnA->a	I	>a/IV1S+	
+أ	أَ	IVPref-AnA->a(object)	me (to)	>a/IV1S+	
+ا	آ	IVPref-AnA-|(object)	me (to)	|/IV1S+	
+ا	أُ	IVPref-AnA->u(object)	me (to)	>u/IV1S+	
+ا	أَ	IVPref-AnA->a(object)	me (to)	>a/IV1S+	
 ا	آ	IVPref-AnA-|	I	|/IV1S+	
-وا	وَآ	IVPref-AnA-|	and + I	wa/CONJ+|/IV1S+	
-فا	فَآ	IVPref-AnA-|	and/so + I	fa/CONJ+|/IV1S+	
-سا	سَآ	IVPref-AnA-|	will + I	sa/FUT+|/IV1S+	
-وسا	وَسَآ	IVPref-AnA-|	and + will + I	wa/CONJ+sa/FUT+|/IV1S+	
-فسا	فَسَآ	IVPref-AnA-|	and/so + will + I	fa/CONJ+sa/FUT+|/IV1S+	
-لأ	لِأَ	IVPref-AnA-li>a	for + me (to)	li/SUBJUNC+>a/IV1S+	
-لأ	لِأُ	IVPref-AnA-li>u	for + me (to)	li/SUBJUNC+>u/IV1S+	
-ولأ	وَلِأَ	IVPref-AnA-li>a	and + for + me (to)	wa/CONJ+li/SUBJUNC+>a/IV1S+	
-ولأ	وَلِأُ	IVPref-AnA-li>u	and + for + me (to)	wa/CONJ+li/SUBJUNC+>u/IV1S+	
-فلأ	فَلِأَ	IVPref-AnA-li>a	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+>a/IV1S+	
-فلأ	فَلِأُ	IVPref-AnA-li>u	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+>u/IV1S+	
-لا	لِأَ	IVPref-AnA-li>a	for + me (to)	li/SUBJUNC+>a/IV1S+	
-لا	لِأُ	IVPref-AnA-li>u	for + me (to)	li/SUBJUNC+>u/IV1S+	
-ولا	وَلِأَ	IVPref-AnA-li>a	and + for + me (to)	wa/CONJ+li/SUBJUNC+>a/IV1S+	
-ولا	وَلِأُ	IVPref-AnA-li>u	and + for + me (to)	wa/CONJ+li/SUBJUNC+>u/IV1S+	
-فلا	فَلِأَ	IVPref-AnA-li>a	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+>a/IV1S+	
-فلا	فَلِأُ	IVPref-AnA-li>u	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+>u/IV1S+	
-لآ	لِآ	IVPref-AnA-li|	for + me (to)	li/SUBJUNC+|/IV1S+	
-ولآ	وَلِآ	IVPref-AnA-li|	and + for + me (to)	wa/CONJ+li/SUBJUNC+|/IV1S+	
-فلآ	فَلِآ	IVPref-AnA-li|	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+|/IV1S+	
-لا	لِآ	IVPref-AnA-li|	for + me (to)	li/SUBJUNC+|/IV1S+	
-ولا	وَلِآ	IVPref-AnA-li|	and + for + me (to)	wa/CONJ+li/SUBJUNC+|/IV1S+	
-فلا	فَلِآ	IVPref-AnA-li|	and/so + for + me (to)	fa/CONJ+li/SUBJUNC+|/IV1S+	
+ا	أُ	IVPref-AnA->u	I	>u/IV1S+	
+ا	أَ	IVPref-AnA->a	I	>a/IV1S+	
+آ	آ	IVPref-AnA-|	I	|/IV1S+	
+آ	آ	IVPref-AnA-|(object)	me (to)	|/IV1S+	
+ن	نَ	IVPref-nHn-na(object)	us (to)	na/IV1P+	
 ن	نَ	IVPref-nHn-na	we	na/IV1P+	
 ن	نُ	IVPref-nHn-nu	we	nu/IV1P+	
-ون	وَنَ	IVPref-nHn-na	and + we	wa/CONJ+na/IV1P+	
-ون	وَنُ	IVPref-nHn-nu	and + we	wa/CONJ+nu/IV1P+	
-فن	فَنَ	IVPref-nHn-na	and/so + we	fa/CONJ+na/IV1P+	
-فن	فَنُ	IVPref-nHn-nu	and/so + we	fa/CONJ+nu/IV1P+	
-سن	سَنَ	IVPref-nHn-na	will + we	sa/FUT+na/IV1P+	
-سن	سَنُ	IVPref-nHn-nu	will + we	sa/FUT+nu/IV1P+	
-وسن	وَسَنَ	IVPref-nHn-na	and + will + we	wa/CONJ+sa/FUT+na/IV1P+	
-وسن	وَسَنُ	IVPref-nHn-nu	and + will + we	wa/CONJ+sa/FUT+nu/IV1P+	
-فسن	فَسَنَ	IVPref-nHn-na	and/so + will + we	fa/CONJ+sa/FUT+na/IV1P+	
-فسن	فَسَنُ	IVPref-nHn-nu	and/so + will + we	fa/CONJ+sa/FUT+nu/IV1P+	
-لن	لِنَ	IVPref-nHn-lina	for + us (to)	li/SUBJUNC+na/IV1P+	
-لن	لِنُ	IVPref-nHn-linu	for + us (to)	li/SUBJUNC+nu/IV1P+	
-ولن	وَلِنَ	IVPref-nHn-lina	and + for + us (to)	wa/CONJ+li/SUBJUNC+na/IV1P+	
-ولن	وَلِنُ	IVPref-nHn-linu	and + for + us (to)	wa/CONJ+li/SUBJUNC+nu/IV1P+	
-فلن	فَلِنَ	IVPref-nHn-lina	and/so + for + us (to)	fa/CONJ+li/SUBJUNC+na/IV1P+	
-فلن	فَلِنُ	IVPref-nHn-linu	and/so + for + us (to)	fa/CONJ+li/SUBJUNC+nu/IV1P+	
+ن	نُ	IVPref-nHn-nu(object)	us (to)	nu/IV1P+	
