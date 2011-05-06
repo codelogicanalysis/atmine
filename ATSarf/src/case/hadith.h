@@ -82,7 +82,7 @@ public:
 	}
 };
 
-extern HadithParameters parameters;
+extern HadithParameters hadithParameters;
 extern QString chainDataStreamFileName;
 
 #endif // HADITH_H
