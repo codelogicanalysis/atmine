@@ -55,40 +55,42 @@ void compatibility_rules::fill() //TODO: solve issue of abstract not read correc
 			//cat_names[i].valid=false; //not needed since by default is false
 		}
 		int row=0, id=0;
-		assert (category_table.retrieve());
-		while(row<size) //just in case some ID's are not there we fill them invalid
+		if (category_table.retrieve())
 		{
-			if (row==id+1)
-				assert (category_table.retrieve());
-			id=category_table.get(0).toLongLong();
-			item_types t;
-			bool abstract;
-			if (row==id)
+			while(row<size) //just in case some ID's are not there we fill them invalid
 			{
-				t=(item_types)category_table.get(1).toInt();
-				//abstract=category_table.get(2).toInt(); does not work
-				abstract= (absCatBitMap.find(id)!=absCatBitMap.end());
-			}
-			else
-			{
-				t=ITEM_TYPES_LAST_ONE;//INVALID
-				abstract=false;
-			}
-			cat_names[row].set(category_table.get(3).toString(),abstract!=0);
-			for (int i=0;i<size;i++)
-			{
-				comp_rule_t & crule=crlTable[row][i];
-				crule.abstract1=abstract;
-				crule.typecat1=t;
-				crule.valid=0;
+				if (row==id+1)
+					assert (category_table.retrieve());
+				id=category_table.get(0).toLongLong();
+				item_types t;
+				bool abstract;
+				if (row==id)
+				{
+					t=(item_types)category_table.get(1).toInt();
+					//abstract=category_table.get(2).toInt(); does not work
+					abstract= (absCatBitMap.find(id)!=absCatBitMap.end());
+				}
+				else
+				{
+					t=ITEM_TYPES_LAST_ONE;//INVALID
+					abstract=false;
+				}
+				cat_names[row].set(category_table.get(3).toString(),abstract!=0);
+				for (int i=0;i<size;i++)
+				{
+					comp_rule_t & crule=crlTable[row][i];
+					crule.abstract1=abstract;
+					crule.typecat1=t;
+					crule.valid=0;
 
-				crule=crlTable[i][row];
-				crule.abstract2=abstract;
-				crule.typecat2=t;
-				crule.valid=0;
+					crule=crlTable[i][row];
+					crule.abstract2=abstract;
+					crule.typecat2=t;
+					crule.valid=0;
+				}
+				row++;
+				database_info.prgsIFC->report((double)row/size*50+0.5);
 			}
-			row++;
-			database_info.prgsIFC->report((double)row/size*50+0.5);
 		}
 	}
 	{//fill with valid rules

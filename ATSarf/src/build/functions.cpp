@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QDir>
+#include <QString>
 #include "functions.h"
 #include "sql_queries.h"
 #include "text_handling.h"
@@ -170,17 +171,22 @@ int insert_buckwalter()
 		input.close();
 	}
 	//compatibility rules
-	const QString rules_files[3]= {"../../src/buckwalter scripts/tableAB", \
+	const QString rules_files[5]= {"../../src/buckwalter scripts/tableAB", \
 								  "../../src/buckwalter scripts/tableBC", \
-								  "../../src/buckwalter scripts/tableAC"};
-	const rules rule[3] ={ AB, BC, AC};
-	for (int j=0;j<3;j++)
+								  "../../src/buckwalter scripts/tableAC", \
+								  "../../src/buckwalter scripts/tableAA", \
+								  "../../src/buckwalter scripts/tableCC"};
+	const rules rule[5] ={ AB, BC, AC, AA, CC};
+	for (int j=0;j<5;j++)
 	{
 		QFile input(rules_files[j]);
 		if (!input.open(QIODevice::ReadWrite))
 		{
-			out << "File not found\n";
-			return 1;
+			out << QString("File %1 not found\n").arg(rules_files[j]);
+			if (j>3)
+				continue;
+			else
+				return 1;
 		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
@@ -197,14 +203,24 @@ int insert_buckwalter()
 			if (line.isEmpty() || line.startsWith(";")) //ignore empty lines and comments if they exist
 				continue;
 			QStringList entries=line.split(" ",QString::KeepEmptyParts);
-			if (entries.size()!=2)
+			if (entries.size()<2)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}
 			QString cat1=entries[0];
 			QString cat2=entries[1];
-			if (insert_compatibility_rules(rule[j],cat1,cat2,source_id)<0)
+			QString resCat=cat2;
+			if (rule[j]==AA || rule[j]==CC)	{
+				if (entries.size()<3) {
+					out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+					return -1;
+				} else {
+					resCat=entries[2];
+				}
+
+			}
+			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,source_id)<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				continue; //files contain undefined categories, so just ignore these

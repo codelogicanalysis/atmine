@@ -229,18 +229,20 @@ void database_info_block::readDescriptionsFromDatabaseAndBuildFile()
 	descriptions=new QVector<QString>(size);
 	Retrieve_Template desc("description","id","name","");
 	int row=0, id=0;
-	assert (desc.retrieve());
-	while(row<size) //just in case some ID's are not there we fill them invalid
+	if (desc.retrieve())
 	{
-		if (row==id+1)
-			assert (desc.retrieve());
-		id=desc.get(0).toLongLong();
-		if (row==id)
-			(*descriptions)[row]=desc.get(1).toString();
-		else
-			(*descriptions)[row]="";
-		row++;
-		prgsIFC->report((double)row/size*100+0.5);
+		while(row<size) //just in case some ID's are not there we fill them invalid
+		{
+			if (row==id+1)
+				assert (desc.retrieve());
+			id=desc.get(0).toLongLong();
+			if (row==id)
+				(*descriptions)[row]=desc.get(1).toString();
+			else
+				(*descriptions)[row]="";
+			row++;
+			prgsIFC->report((double)row/size*100+0.5);
+		}
 	}
 #ifdef LOAD_FROM_FILE
 	QFile file(description_path.toStdString().data());

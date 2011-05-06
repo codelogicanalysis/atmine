@@ -1,5 +1,12 @@
 ﻿		Suff-0			
 	ْ	CVSuff-o	you <verb>	+o/CVSUFF_SUBJ:2MS	
+ه	هُ	CVSuff-h	it/him	+hu/CVSUFF_DO:3MS	
+هما	هُما	CVSuff-h	them (both)	+humA/CVSUFF_DO:3D	
+هم	هُم	CVSuff-h	them	+hum/CVSUFF_DO:3MP	
+ها	ها	CVSuff-h	it/them/her	+hA/CVSUFF_DO:3FS	
+هن	هُنَّ	CVSuff-h	them	+hun~a/CVSUFF_DO:3FP	
+ني	نِي	CVSuff-h	me	+niy/CVSUFF_DO:1S	
+نا	نا	CVSuff-h	us	+nA/CVSUFF_DO:1P	
 ه	ْهُ	CVSuff-oh	you <verb> it/him	+o/CVSUFF_SUBJ:2MS+hu/CVSUFF_DO:3MS	
 هما	ْهُما	CVSuff-oh	you <verb> them (both)	+o/CVSUFF_SUBJ:2MS+humA/CVSUFF_DO:3D	
 هم	ْهُم	CVSuff-oh	you <verb> them	+o/CVSUFF_SUBJ:2MS+hum/CVSUFF_DO:3MP	
