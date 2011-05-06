@@ -4,6 +4,8 @@
 #include "diacritics.h"
 #include "stemmer.h"
 
+SarfParameters sarfParameters;
+
 PrefixMachine::PrefixMachine(Stemmer * controller,int start):PrefixSearch(controller->info.text,start)
 {
 	this->controller=controller;
@@ -66,19 +68,22 @@ bool SuffixMachine::onMatch()
 	qDebug()<<"S:"<<info.text->mid(info.start,info.finish-info.start+1)<<"\n";
 #endif
 #ifdef RUNON_WORDS
-	int index=controller->machines.size()-1;
-	if (index>=0 && controller->machines[index].Suffix==controller->Suffix)
+	if (sarfParameters.enableRunonwords)
 	{
-		controller->Prefix=new PrefixMachine(controller,info.finish+1);
-		controller->Prefix->setSolutionSettings(controller->multi_p);
-		controller->Stem=NULL;
-		controller->Suffix=NULL;
-		bool result= (*controller->Prefix)();
-		controller->Prefix=controller->machines[index].Prefix;
-		controller->Stem=controller->machines[index].Stem;
-		controller->Suffix=controller->machines[index].Suffix;
-		controller->machines.removeLast();
-		return result;
+		int index=controller->machines.size()-1;
+		if (index>=0 && controller->machines[index].Suffix==controller->Suffix)
+		{
+			controller->Prefix=new PrefixMachine(controller,info.finish+1);
+			controller->Prefix->setSolutionSettings(controller->multi_p);
+			controller->Stem=NULL;
+			controller->Suffix=NULL;
+			bool result= (*controller->Prefix)();
+			controller->Prefix=controller->machines[index].Prefix;
+			controller->Stem=controller->machines[index].Stem;
+			controller->Suffix=controller->machines[index].Suffix;
+			controller->machines.removeLast();
+			return result;
+		}
 	}
 #endif
 	return controller->on_match_helper();
@@ -87,8 +92,9 @@ bool SuffixMachine::onMatch()
 bool SuffixMachine::shouldcall_onmatch(int position)
 {
 #if defined(RUNON_WORDS) && defined(REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS) //TODO:support for diacritics
-	if (position-controller->Prefix->info.start==1 && controller->machines.size()>0 && (*info.text)[position-1]!=waw)
-		return false;
+	if (sarfParameters.enableRunonwords)
+		if (position-controller->Prefix->info.start==1 && controller->machines.size()>0 && (*info.text)[position-1]!=waw)
+			return false;
 #endif
 	if (position>=info.text->length() )
 		return true;
@@ -96,17 +102,20 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 	if (isDelimiter(ch))
 		return true;
 #ifdef RUNON_WORDS
-	if (position>0)
+	if (sarfParameters.enableRunonwords)
 	{
-		ch=info.text->at(position-1);
-		if (isNonConnectingLetter(ch))
-		#ifdef REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
-			if (position-controller->Prefix->info.start>1)
-		#endif
-			{
-				controller->machines.append(SubMachines(controller->Prefix,controller->Stem,controller->Suffix));
-				return true;
-			}
+		if (position>0)
+		{
+			ch=info.text->at(position-1);
+			if (isNonConnectingLetter(ch))
+			#ifdef REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
+				if (position-controller->Prefix->info.start>1)
+			#endif
+				{
+					controller->machines.append(SubMachines(controller->Prefix,controller->Stem,controller->Suffix));
+					return true;
+				}
+		}
 	}
 #endif
 	return false;
@@ -116,14 +125,18 @@ bool Stemmer::on_match_helper()
 {
 	info.finish=Suffix->info.finish;
 #ifdef RUNON_WORDS
-	machines.append(SubMachines(Prefix,Stem,Suffix));
+	if (sarfParameters.enableRunonwords)
+		machines.append(SubMachines(Prefix,Stem,Suffix));
 	for (int i=0;i<machines.size();i++)
 	{
 		runwordIndex=i;
-		SubMachines & m=machines[i];
-		Prefix=m.Prefix;
-		Stem=m.Stem;
-		Suffix=m.Suffix;
+		if (sarfParameters.enableRunonwords)
+		{
+			SubMachines & m=machines[i];
+			Prefix=m.Prefix;
+			Stem=m.Stem;
+			Suffix=m.Suffix;
+		}
 #endif
 		if (get_all_details)
 		{
@@ -153,7 +166,8 @@ bool Stemmer::on_match_helper()
 				return false;
 #ifdef RUNON_WORDS
 	}
-	machines.removeLast();
+	if (sarfParameters.enableRunonwords)
+		machines.removeLast();
 	return true;
 #endif
 }

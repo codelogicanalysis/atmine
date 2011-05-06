@@ -431,7 +431,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	else if (ras1 || ras2)
 		return max_distance;
 #endif
-	double dist=max_distance, delta=parameters.equality_delta;
+	double dist=max_distance, delta=hadithParameters.equality_delta;
 	QList<NamePrim > Names1,Names2;
 	QList<NameConnectorPrim > Conns1, Conns2;
 #ifdef EQUALITY_REFINEMENTS

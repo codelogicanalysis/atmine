@@ -6,6 +6,7 @@
 #include "ui_mainwindow.h"
 #include "database_info_block.h"
 #include "hadith.h"
+#include "stemmer.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -116,14 +117,15 @@ void MainWindow::on_pushButton_clicked()
 {
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
-	parameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
-	parameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
-	parameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
-	parameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
-	parameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
-	parameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
-	parameters.display_chain_num=m_ui->chk_chainNum->isChecked();
-	parameters.break_cycles=m_ui->chk_breakCycles->isChecked();
+	hadithParameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
+	hadithParameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
+	hadithParameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
+	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
+	hadithParameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
+	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
+	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
+	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();
+	sarfParameters.enableRunonwords=m_ui->chk_runon->isChecked();
 	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
 	{
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
@@ -164,6 +166,13 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_fill_clicked()
 {
 	initialize_variables();
+#ifndef SUBMISSION
+	start_connection(this);
+	//generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
+	generate_bit_order("source",source_ids);
+	generate_bit_order("category",abstract_category_ids,"abstract");
+#endif
+
 	database_info.fill(this);
 	hadith_initialize();
 	m_ui->pushButton->setVisible(true);
@@ -191,13 +200,10 @@ void MainWindow::on_cmd_browse_clicked()
 
 int main(int argc, char *argv[])
 {
-	/*QFileInfo fileinfo(argv[0]);
-	executable_timestamp=fileinfo.lastModified();*/
+	QFileInfo fileinfo(argv[0]);
+	executable_timestamp=fileinfo.lastModified();
 	QApplication app(argc, argv);
 	MainWindow mainw;
-#ifndef SUBMISSION
-	start_connection(&mainw);
-#endif
 	mainw.show();
 	return app.exec();
 }

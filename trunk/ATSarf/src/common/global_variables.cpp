@@ -39,9 +39,6 @@ void initialize_variables()
 	cacheFileList<<trie_path<<trie_list_path<<compatibility_rules_path<<prefix_tree_path
 				 <<suffix_tree_path<<description_path<<prefix_info_path<<suffix_info_path<<stem_info_path;
 #endif
-	//generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
-	generate_bit_order("source",source_ids);
-	generate_bit_order("category",abstract_category_ids,"abstract");
 	INVALID_BITSET.reset();
 	INVALID_BITSET.setBit(max_sources-1,true);
 	//INVALID_BITSET.show();

@@ -7,6 +7,15 @@
 #include "common.h"
 #include <QVector>
 
+class SarfParameters {
+public:
+	bool enableRunonwords;
+	SarfParameters() {
+		enableRunonwords=false;
+	}
+};
+extern SarfParameters sarfParameters;
+
 class Stemmer;
 
 class PrefixMachine: public PrefixSearch//TreeMachine
@@ -99,6 +108,8 @@ public:
 		multi_p=M_ALL;
 	#ifdef RUNON_WORDS
 		runwordIndex=0;
+		if (!sarfParameters.enableRunonwords)
+			machines.append(SubMachines(NULL, NULL, NULL)); //just to fill it with anything so that in on_match machine.size()==1
 	#endif
 	}
 	void setSolutionSettings(multiply_params params)

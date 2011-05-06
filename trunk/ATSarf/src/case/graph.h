@@ -227,7 +227,7 @@ protected:
 	}
 	void displayChainNumsEndingJustAfter(NarratorNodeIfc & n, QString name)
 	{
-		if (parameters.display_chain_num )
+		if (hadithParameters.display_chain_num )
 		{
 			//qDebug()<<name;
 			for (int i=0;i<n.size();i++)
@@ -451,8 +451,8 @@ private:
 	double threshold;
 	void swapThresholds() //swap threshold and parameters.equality_threshold
 	{
-		double temp=parameters.equality_threshold;
-		parameters.equality_threshold=threshold;
+		double temp=hadithParameters.equality_threshold;
+		hadithParameters.equality_threshold=threshold;
 		threshold=temp;
 	}
 	void reMergeNodes(NarratorNodeIfc & n);
@@ -578,8 +578,8 @@ private:
 	void buildGraph()
 	{ //note: compares chain by chain then moves to another
 		//TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
-		int radius=parameters.equality_radius;
-		double threshold=parameters.equality_threshold;
+		int radius=hadithParameters.equality_radius;
+		double threshold=hadithParameters.equality_threshold;
 		int num_chains=top_nodes.size();
 		prg->setCurrentAction("Merging Nodes");
 		prg->report(0);
@@ -677,7 +677,7 @@ private:
 	}
 	void breakManageableCycles()
 	{
-		const double step=parameters.equality_delta;
+		const double step=hadithParameters.equality_delta;
 		const int num_steps=3;
 		prg->setCurrentAction("Breaking Cycles");
 		prg->report(0);
@@ -686,7 +686,7 @@ private:
 		#ifdef DISPLAY_NODES_BEING_BROKEN
 			qDebug()<<"--";
 		#endif
-			double threshold=parameters.equality_threshold+i*step;
+			double threshold=hadithParameters.equality_threshold+i*step;
 			LoopBreakingVisitor l(threshold);
 			GraphVisitorController c(&l,this);
 			DFS_traverse(c);
@@ -760,7 +760,7 @@ public:
 		buildGraph();
 		correctTopNodesList();
 		fillNodesLists();
-		if (parameters.break_cycles)
+		if (hadithParameters.break_cycles)
 			breakManageableCycles();
 		computeRanks();
 	}

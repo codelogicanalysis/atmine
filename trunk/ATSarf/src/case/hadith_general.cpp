@@ -22,7 +22,7 @@
 #include "ui_mainwindow.h"
 #include <assert.h>
 
-HadithParameters parameters;
+HadithParameters hadithParameters;
 QString chainDataStreamFileName= ".chainOutput";
 #ifdef PREPROCESS_DESCRIPTIONS
 QString preProcessedDescriptionsFileName= ".HadithPreProcessedDescriptions";
@@ -963,7 +963,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		#ifdef PUNCTUATION
 			if (stateInfo.followedByPunctuation)
-				currentData.nmcCount=parameters.nmc_max+1;
+				currentData.nmcCount=hadithParameters.nmc_max+1;
 		#endif
 		}
 		else if (stateInfo.currentType==NRC)
@@ -1165,11 +1165,11 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		else if (stateInfo.followedByPunctuation) //TODO: if punctuation check is all what is required
 		{
 			stateInfo.nextState=NMC_S;
-			currentData.nmcCount=parameters.nmc_max+1;
+			currentData.nmcCount=hadithParameters.nmc_max+1;
 			currentData.nmcValid=false;
 		}
 	#endif
-		else if (currentData.nmcCount>parameters.nmc_max)
+		else if (currentData.nmcCount>hadithParameters.nmc_max)
 		{
 			if (currentData.nmcValid)
 			{
@@ -1381,7 +1381,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		}
 	#ifdef PUNCTUATION
-		else if (currentData.nrcCount>=parameters.nrc_max || currentData.nrcPunctuation)
+		else if (currentData.nrcCount>=hadithParameters.nrc_max || currentData.nrcPunctuation)
 	#else
 		else if (currentData.nrcCount>=parameters.nrc_max)
 	#endif
@@ -1785,7 +1785,7 @@ int hadith(QString input_str,ATMProgressIFC *prg)
 		//long last_letter=next>=text_size?text_size-1:stateInfo.lastEndPos;//getLastLetter_IN_previousWord(next);
 		if((getNextState(stateInfo,currentChain)==false))
 		{
-			if (currentData.narratorCount>=parameters.narr_min)
+			if (currentData.narratorCount>=hadithParameters.narr_min)
 			{
 				sanadEnd=currentData.narratorEndIndex;
 			#ifdef DISPLAY_HADITH_OVERVIEW
