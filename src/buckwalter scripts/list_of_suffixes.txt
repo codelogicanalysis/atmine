@@ -1,76 +1,191 @@
-﻿		Suff-0			
-	ْ	CVSuff-o	you <verb>	+o/CVSUFF_SUBJ:2MS	
-ه	هُ	CVSuff-h	it/him	+hu/CVSUFF_DO:3MS	
-هما	هُما	CVSuff-h	them (both)	+humA/CVSUFF_DO:3D	
-هم	هُم	CVSuff-h	them	+hum/CVSUFF_DO:3MP	
-ها	ها	CVSuff-h	it/them/her	+hA/CVSUFF_DO:3FS	
-هن	هُنَّ	CVSuff-h	them	+hun~a/CVSUFF_DO:3FP	
-ني	نِي	CVSuff-h	me	+niy/CVSUFF_DO:1S	
-نا	نا	CVSuff-h	us	+nA/CVSUFF_DO:1P	
-ه	ْهُ	CVSuff-oh	you <verb> it/him	+o/CVSUFF_SUBJ:2MS+hu/CVSUFF_DO:3MS	
-هما	ْهُما	CVSuff-oh	you <verb> them (both)	+o/CVSUFF_SUBJ:2MS+humA/CVSUFF_DO:3D	
-هم	ْهُم	CVSuff-oh	you <verb> them	+o/CVSUFF_SUBJ:2MS+hum/CVSUFF_DO:3MP	
-ها	ْها	CVSuff-oh	you <verb> it/them/her	+o/CVSUFF_SUBJ:2MS+hA/CVSUFF_DO:3FS	
-هن	ْهُنَّ	CVSuff-oh	you <verb> them	+o/CVSUFF_SUBJ:2MS+hun~a/CVSUFF_DO:3FP	
-ني	ْنِي	CVSuff-oh	you <verb> me	+o/CVSUFF_SUBJ:2MS+niy/CVSUFF_DO:1S	
-نا	ْنا	CVSuff-oh	you <verb> us	+o/CVSUFF_SUBJ:2MS+nA/CVSUFF_DO:1P	
-	َ	PVSuff-a	he/it <verb>	+a/PVSUFF_SUBJ:3MS	
-		PVSuff-0a	he/it <verb>	+(null)/PVSUFF_SUBJ:3MS	
-ه	هُ	PVSuff-0ah	he/it <verb> it/him	+(null)/PVSUFF_SUBJ:3MS+hu/PVSUFF_DO:3MS	
-هما	هُما	PVSuff-0ah	he/it <verb> them (both)	+(null)/PVSUFF_SUBJ:3MS+humA/PVSUFF_DO:3D	
-هم	هُم	PVSuff-0ah	he/it <verb> them	+(null)/PVSUFF_SUBJ:3MS+hum/PVSUFF_DO:3MP	
-ها	ها	PVSuff-0ah	he/it <verb> it/them/her	+(null)/PVSUFF_SUBJ:3MS+hA/PVSUFF_DO:3FS	
-هن	هُنَّ	PVSuff-0ah	he/it <verb> them	+(null)/PVSUFF_SUBJ:3MS+hun~a/PVSUFF_DO:3FP	
-ك	كَ	PVSuff-0ah	he/it <verb> you	+(null)/PVSUFF_SUBJ:3MS+ka/PVSUFF_DO:2MS	
-ك	كِ	PVSuff-0ah	he/it <verb> you	+(null)/PVSUFF_SUBJ:3MS+ki/PVSUFF_DO:2FS	
-كما	كُما	PVSuff-0ah	he/it <verb> you (both)	+(null)/PVSUFF_SUBJ:3MS+kumA/PVSUFF_DO:2D	
-كم	كُم	PVSuff-0ah	he/it <verb> you	+(null)/PVSUFF_SUBJ:3MS+kum/PVSUFF_DO:2MP	
-كن	كُنَّ	PVSuff-0ah	he/it <verb> you	+(null)/PVSUFF_SUBJ:3MS+kun~a/PVSUFF_DO:2FP	
-ني	نِي	PVSuff-0ah	he/it <verb> me	+(null)/PVSUFF_SUBJ:3MS+niy/PVSUFF_DO:1S	
-نا	نا	PVSuff-0ah	he/it <verb> us	+(null)/PVSUFF_SUBJ:3MS+nA/PVSUFF_DO:1P	
+		Suff-0			
+	ُّ	PVSuff-~t	I <verb>	+tu/VSUFF_SUBJ:1S	
+	َّ	IVSuff-~n-		+na/VSUFF_SUBJ:3FP	
+	َّ	PVSuff-~n	they [fem.pl.] <verb>	+na/VSUFF_SUBJ:3FP	
+	َّ	FWSuff-~a	me	+~a/PRON_1S	
+		NSuff-|h	two	+A/NSUFF_MASC_DU_NOM_POSS	
+	َّ	NSuff-[iy]h	my	+ya/POSS_PRON_1S	
+	َّ	PVSuff-~t	you [masc.sg.] <verb>	+ta/VSUFF_SUBJ:2MS	
+	َّ	IVSuff-~n	[fem.pl.]	+na/VSUFF_SUBJ:FP	
+		IVSuff-|	[du.]	+A/VSUFF_SUBJ:D_MOOD:SJ	
+		IVSuff-|-		+A/VSUFF_SUBJ:3D	
+		PVSuff-|	they (both) <verb>	+A/VSUFF_SUBJ:3MD	
+	ِّ	PVSuff-~t	you [fem.sg.] <verb>	+ti/VSUFF_SUBJ:2FS	
+		PVSuff-0a	he/it <verb>	+(null)/VSUFF_SUBJ:3MS	
+	َ	PVSuff-a	he/it <verb>	+a/VSUFF_SUBJ:3MS	
+	ْ	CVSuff-o	you <verb>	+o/VSUFF_SUBJ:2MS	
+و	ُو	IVSuff-w2-		+uw/VSUFF_SUBJ:MP_MOOD:SJ	
+و	ُو	IVSuff-w-		+uw/VSUFF_SUBJ:3MP_MOOD:SJ	
+و	ُو	CVSuff-w-	you [masc.pl] <verb>	+uw/VSUFF_SUBJ:2MP	
+و	ُو	PVSuff-uw-	they <verb>	+uw/VSUFF_SUBJ:3MP	
+و	ُو	NSuff-wh	[masc.pl.]	+uw/NSUFF_MASC_PL_NOM_POSS	
+و	وْ	IVSuff-aw-		+awo/VSUFF_SUBJ:MP_MOOD:SJ	
+و	وْ	IVSuff-aw2-		+awo/VSUFF_SUBJ:3MP_MOOD:SJ	
+و	َوْ	PVSuff-aw-	they <verb>	+uw/VSUFF_SUBJ:3MP	
+و	ُو	NSuff-w-		+uw/NSUFF_MASC_PL_NOM	
+و	ُو	PVSuff-[t]w[h]			
+هما	هُما	CVSuff-h	them (both)	+humA/VSUFF_DO:3D	
+هما	هِما	VSuff-[iy]~hi	them (both)	+himA/VSUFF_DO:3D	
+هما	هِما	NSuff-[iy]h	their	+himA/POSS_PRON_3D	
+هما	هُما	NSuff-hu	their	+humA/POSS_PRON_3D	
+هما	هُما	FWSuff-hu-he	they (both)	+humA/PRON_3D	
+هما	هِما	VSuff-~hi	them (both)	+humA/VSUFF_DO:3D	
+هما	هُما	FWSuff-hu-him	them (both)	+humA/PRON_3D	
+هما	هما	NSuff-h	their	+humA/POSS_PRON_3D	
+هما	هِما	FWSuff-hi	them (both)	+himA/PRON_3D	
+هما	هما	IVSuff-h	them (both)	+humA/VSUFF_DO:3D	
+هما	هُما	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+humA/POSS_PRON_3D	
+هم	هم	IVSuff-h	them	+hum/VSUFF_DO:3MP	
+هم	هُم	FWSuff-hu-he	they [masc.pl.]	+hum/PRON_3MP	
+هم	هُم	FWSuff-hu-him	them [masc.pl.]	+hum/PRON_3MP	
+هم	هِم	VSuff-[iy]~hi	them	+him/VSUFF_DO:3MP	
+هم	هم	NSuff-h	their	+hum/POSS_PRON_3MP	
+هم	هِم	NSuff-[iy]h	their	+him/POSS_PRON_3MP	
+هم	هِم	VSuff-~hi	them	+hum/VSUFF_DO:3MP	
+هم	هُم	CVSuff-h	them	+hum/VSUFF_DO:3MP	
+هم	هُم	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+hum/POSS_PRON_3MP	
+هم	هُم	NSuff-hu	their	+hum/POSS_PRON_3MP	
+هم	هِم	FWSuff-hi	them [masc.pl.]	+him/PRON_3MP	
+هن	هنَّ	IVSuff-h	them	+hun~a/VSUFF_DO:3FP	
+هن	هِنَّ	FWSuff-hi	them [fem.pl.]	+hin~a/PRON_3FP	
+هن	هُنَّ	CVSuff-h	them	+hun~a/VSUFF_DO:3FP	
+هن	هُنَّ	FWSuff-hu-he	they [fem.pl.]	+hun~a/PRON_3FP	
+هن	هِنَّ	VSuff-~hi	them	+hun~a/VSUFF_DO:3FP	
+هن	هُنَّ	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+hun~a/POSS_PRON_3FP	
+هن	هِنَّ	NSuff-[iy]h	their	+hin~a/POSS_PRON_3FP	
+هن	هنَّ	NSuff-h	their	+hun~a/POSS_PRON_3FP	
+هن	هِنَّ	VSuff-[iy]~hi	them	+hin~a/VSUFF_DO:3FP	
+هن	هُنَّ	FWSuff-hu-him	them [fem.pl.]	+hun~a/PRON_3FP	
+هن	هُنَّ	NSuff-hu	their	+hun~a/POSS_PRON_3FP	
+ان	انِ	IVSuff-An	[du.]	+Ani/VSUFF_SUBJ:D_MOOD:I	
+ان	انِ	NSuff-An	two	+Ani/NSUFF_MASC_DU_NOM	
+ان	انِ	IVSuff-An-		+Ani/VSUFF_SUBJ:3D_MOOD:I	
+ي	يَ	FWSuff-ya	me	+ya/PRON_1S	
+ي	ِي	NSuff-iy	my	+iy/POSS_PRON_1S	
+ي	ِي	FWSuff-iy-me	me	+iy/PRON_1S	
+ي	يَ	NSuff-|h	my two	+A/NSUFF_MASC_DU_NOM+ya/POSS_PRON_1S	
+ي	َيَّ	NSuff-ayh	my two	+ayo/NSUFF_MASC_DU_ACCGEN+ya/POSS_PRON_1S	
+ي	ِي	CVSuff-y	you [fem.sg.] <verb>	+iy/VSUFF_SUBJ:2FS	
+ي	ِّي	FWSuff-~iy	me	+~iy/PRON_1S	
+ي	ِيَّ	NSuff-wh	my	+uw/NSUFF_MASC_PL_NOM+ya/POSS_PRON_1S	
+ي	َيْ	NSuff-ayh	two	+ayo/NSUFF_MASC_DU_ACCGEN_POSS	
+ي	ِي	NSuff-iyh	[masc.pl.]	+iy/NSUFF_MASC_PL_ACCGEN_POSS	
+ي	ِي	NSuff-iy-		+iy/NSUFF_MASC_PL_ACCGEN	
+ي	ِي	FWSuff-iy-I	I	+iy/PRON_1S	
+ي	ِي	IVSuff-y	[fem.sg.]	+iy/VSUFF_SUBJ:2FS_MOOD:SJ	
+ه	ه	IVSuff-h	it/him	+hu/VSUFF_DO:3MS	
+ه	هِ	NSuff-[iy]h	his/its	+hi/POSS_PRON_3MS	
+ه	هُ	FWSuff-hu-he	it/he	+hu/PRON_3MS	
+ه	ه	NSuff-h	his/its	+hu/POSS_PRON_3MS	
+ه	هُ	NSuff-h	his/its	+hu/POSS_PRON_3MS	
+ه	هُ	FWSuff-hu-him	it/him	+hu/PRON_3MS	
+ه	هِ	VSuff-~hi	it/him	+hu/VSUFF_DO:3MS	
+ه	هُ	CVSuff-h	it/him	+hu/VSUFF_DO:3MS	
+ه	هِ	VSuff-[iy]~hi	it/him	+hi/VSUFF_DO:3MS	
+ه	هُ	NSuff-|h	his/its two	+A/NSUFF_MASC_DU_NOM+hu/POSS_PRON_3MS	
+ه	هِ	FWSuff-hi	it/him	+hi/PRON_3MS	
+ت	ْتِ	PVSuff-t	you [fem.sg.] <verb>	+ti/VSUFF_SUBJ:2FS	
+ت	ْتَ	PVSuff-t	you [masc.sg.] <verb>	+ta/VSUFF_SUBJ:2MS	
+ت	َت	NSuff-ap-	[fem.sg.]	+ap/NSUFF_FEM_SG	
+ت	َتْ	PVSuff-at-	it/they/she <verb>	+at/VSUFF_SUBJ:3FS	
+ت	ْتُ	PVSuff-t	I <verb>	+tu/VSUFF_SUBJ:1S	
+ت	َت	PVSuff-at	it/they/she <verb>	+at/VSUFF_SUBJ:3FS	
+تم	ْتُم	PVSuff-t	you [masc.pl.] <verb>	+tum/VSUFF_SUBJ:2MP	
+تم	ْتُم	PVSuff-t-	you [masc.pl.] <verb>	+tum/VSUFF_SUBJ:2MP	
+ون	ُونَ	IVSuff-wn	[masc.pl.]	+uwna/VSUFF_SUBJ:MP_MOOD:I	
+ون	ُونَ	NSuff-wn	[masc.pl.]	+uwna/NSUFF_MASC_PL_NOM	
+ون	ُونَ	IVSuff-wn-		+uwna/VSUFF_SUBJ:3MP_MOOD:I	
+ون	وْنَ	IVSuff-awn-		+awona/VSUFF_SUBJ:3MP_MOOD:I	
+ون	وْنَ	IVSuff-awn	[masc.pl.]	+wona/VSUFF_SUBJ:MP_MOOD:I	
+ون	وْنَ	IVSuff-awn2-	[masc.pl.]	+awona/VSUFF_SUBJ:MP_MOOD:I	
+ن	ْنَ	IVSuff-n	[fem.pl.]	+na/VSUFF_SUBJ:FP	
+ن	نِ	IVSuff-|n-		+Ani/VSUFF_SUBJ:3D_MOOD:I	
+ن	ْنَ	PVSuff-n	they [fem.pl.] <verb>	+na/VSUFF_SUBJ:3FP	
+ن	نِ	NSuff-|-ni	two	+Ani/NSUFF_MASC_DU_NOM	
+ن	ْنَ	IVSuff-n-		+na/VSUFF_SUBJ:3FP	
+ن	ُّنَّ	PVSuff-~t	you [fem.pl.] <verb>	+tun~a/VSUFF_SUBJ:2FP	
+ن	نِ	IVSuff-|n	[du.]	+Ani/VSUFF_SUBJ:D_MOOD:I	
+كم	كُم	NSuff-h	your	+kum/POSS_PRON_2MP	
+كم	كُم	FWSuff-k	you [masc.pl.]	+kum/PRON_2MP	
+كم	كُم	IVSuff-k	you	+kum/VSUFF_DO:2MP	
+كم	كُم	VSuff-~k	you (pl.)	+kum/VSUFF_DO:2MP	
+كم	كُم	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kum/POSS_PRON_2MP	
+كما	كُما	FWSuff-k	you (both)	+kumA/PRON_2D	
+كما	كُما	IVSuff-k	you (both)	+kumA/VSUFF_DO:2D	
+كما	كُما	VSuff-~k	you	+kumA/VSUFF_DO:2D	
+كما	كُما	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kumA/POSS_PRON_2D	
+كما	كُما	NSuff-h	your	+kumA/POSS_PRON_2D	
+ا	ا	IVSuff-A-		+A/VSUFF_SUBJ:3D	
+ا	ّا	FWSuff-~a	us	+~A/PRON_1P	
+ا	ا	PVSuff-a	they (both) <verb>	+A/VSUFF_SUBJ:3MD	
+ا	ا	FWSuff-A	we	+A/PRON_1P	
+ا	ا	NSuff-Ah	two	+A/NSUFF_MASC_DU_NOM_POSS	
+ا	اً	NSuff-AF	[acc.indef.]	+AF/NSUFF_MASC_SG_ACC_INDEF	
+ا	ا	IVSuff-A	[du.]	+A/VSUFF_SUBJ:D_MOOD:SJ	
+ا	ّا	PVSuff-~n	we <verb>	+nA/VSUFF_SUBJ:1P	
+ها	ها	FWSuff-hu-he	it/they/she	+hA/PRON_3FS	
+ها	ها	IVSuff-h	it/them/her	+hA/VSUFF_DO:3FS	
+ها	ها	FWSuff-hu-him	it/them/her	+hA/PRON_3FS	
+ها	ها	NSuff-h	its/their/her	+hA/POSS_PRON_3FS	
+ها	ها	CVSuff-h	it/them/her	+hA/VSUFF_DO:3FS	
+ها	ها	NSuff-|h	its/their/her two	+A/NSUFF_MASC_DU_NOM+hA/POSS_PRON_3FS	
+ها	ها	FWSuff-hi	it/them/her	+hA/PRON_3FS	
+ني	نِي	IVSuff-ny-nA	me	+niy/VSUFF_DO:1S	
+ني	نِي	FWSuff-niy-I	I	+niy/PRON_1S	
+ني	نِي	CVSuff-h	me	+niy/VSUFF_DO:1S	
+ني	نِي	FWSuff-niy-me	me	+niy/PRON_1S	
+نا	نا	IVSuff-ny-nA	us	+nA/VSUFF_DO:1P	
+نا	نا	CVSuff-h	us	+nA/VSUFF_DO:1P	
+نا	نا	NSuff-h	our	+nA/POSS_PRON_1P	
+نا	نا	FWSuff-nA-us	us	+nA/PRON_1P	
+نا	نا	NSuff-|h	our two	+A/NSUFF_MASC_DU_NOM+nA/POSS_PRON_1P	
+نا	ْنا	PVSuff-n	we <verb>	+nA/VSUFF_SUBJ:1P	
+نا	نا	FWSuff-nA-we	we	+nA/PRON_1P	
+ك	كِ	NSuff-h	your	+ki/POSS_PRON_2FS	
+ك	كَ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+ka/POSS_PRON_2MS	
+ك	كَ	NSuff-h	your	+ka/POSS_PRON_2MS	
+ك	كَ	IVSuff-k	you	+ka/VSUFF_DO:2MS	
+ك	كِ	FWSuff-k	you [fem.sg.]	+ki/PRON_2FS	
+ك	كَ	FWSuff-k	you [masc.sg.]	+ka/PRON_2MS	
+ك	كِ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+ki/POSS_PRON_2FS	
+ك	كِ	IVSuff-k	you	+ki/VSUFF_DO:2FS	
+كن	كُنَّ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kun~a/POSS_PRON_2FP	
+كن	كُنَّ	NSuff-h	your	+kun~a/POSS_PRON_2FP	
+كن	كُنَّ	FWSuff-k	you [fem.pl.]	+kun~a/PRON_2FP	
+كن	كُنَّ	IVSuff-k	you (women)	+kun~a/VSUFF_DO:2FP	
 تين	َتَيْنِ	NSuff-tayn	two	+atayoni/NSUFF_FEM_DU_ACCGEN	
 تان	َتانِ	NSuff-atAn	two	+atAni/NSUFF_FEM_DU_NOM	
+تا	َتا	PVSuff-at	they (both) <verb>	+atA/VSUFF_SUBJ:3FD	
 تا	َتا	NSuff-atAh	two	+atA/NSUFF_FEM_DU_NOM_POSS	
 تاه	َتاهُ	NSuff-atAh	his/its two	+atA/NSUFF_FEM_DU_NOM_POSS+hu/POSS_PRON_3MS	
 تاهما	َتاهُما	NSuff-atAh	their two	+atA/NSUFF_FEM_DU_NOM_POSS+humA/POSS_PRON_3D	
 تاهم	َتاهُم	NSuff-atAh	their two	+atA/NSUFF_FEM_DU_NOM_POSS+hum/POSS_PRON_3MP	
 تاها	َتاها	NSuff-atAh	its/their/her two	+atA/NSUFF_FEM_DU_NOM_POSS+hA/POSS_PRON_3FS	
 تاهن	َتاهُنَّ	NSuff-atAh	their two	+atA/NSUFF_FEM_DU_NOM_POSS+hun~a/POSS_PRON_3FP	
-تاك	َتاكَ	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+ka/POSS_PRON_2MS	
 تاك	َتاكِ	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+ki/POSS_PRON_2FS	
+تاك	َتاكَ	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+ka/POSS_PRON_2MS	
 تاكما	َتاكُما	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+kumA/POSS_PRON_2D	
 تاكم	َتاكُم	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+kum/POSS_PRON_2MP	
 تاكن	َتاكُنَّ	NSuff-atAh	your two	+atA/NSUFF_FEM_DU_NOM_POSS+kun~a/POSS_PRON_2FP	
 تاي	َتايَ	NSuff-atAh	my two	+atA/NSUFF_FEM_DU_NOM_POSS+ya/POSS_PRON_1S	
 تانا	َتانا	NSuff-atAh	our two	+atA/NSUFF_FEM_DU_NOM_POSS+nA/POSS_PRON_1P	
 تي	َتَيْ	NSuff-tay	two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS	
+تي	َتَيَّ	NSuff-tay	my two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+ya/POSS_PRON_1S	
 تيه	َتَيْهِ	NSuff-tay	his/its two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+hu/POSS_PRON_3MS	
 تيهما	َتَيْهِما	NSuff-tay	their two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+humA/POSS_PRON_3D	
 تيهم	َتَيْهِم	NSuff-tay	their two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+hum/POSS_PRON_3MP	
 تيها	َتَيْها	NSuff-tay	its/their/her two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+hA/POSS_PRON_3FS	
 تيهن	َتَيْهِنَّ	NSuff-tay	their two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+hun~a/POSS_PRON_3FP	
-تيك	َتَيْكَ	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+ka/POSS_PRON_2MS	
 تيك	َتَيْكِ	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+ki/POSS_PRON_2FS	
+تيك	َتَيْكَ	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+ka/POSS_PRON_2MS	
 تيكما	َتَيْكُما	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+kumA/POSS_PRON_2D	
 تيكم	َتَيْكُم	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+kum/POSS_PRON_2MP	
 تيكن	َتَيْكُنَّ	NSuff-tay	your two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+kun~a/POSS_PRON_2FP	
-تي	َتَيَّ	NSuff-tay	my two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+ya/POSS_PRON_1S	
 تينا	َتَيْنا	NSuff-tay	our two	+atayo/NSUFF_FEM_DU_ACCGEN_POSS+nA/POSS_PRON_1P	
 ة	َة	NSuff-ap	[fem.sg.]	+ap/NSUFF_FEM_SG	
-ته	َته	NSuff-ath	his/its	+ap/NSUFF_FEM_SG+hu/POSS_PRON_3MS	
-تهما	َتهما	NSuff-ath	their	+ap/NSUFF_FEM_SG+humA/POSS_PRON_3D	
-تهم	َتهم	NSuff-ath	their	+ap/NSUFF_FEM_SG+hum/POSS_PRON_3MP	
-تها	َتها	NSuff-ath	its/their/her	+ap/NSUFF_FEM_SG+hA/POSS_PRON_3FS	
-تهن	َتهنَّ	NSuff-ath	their	+ap/NSUFF_FEM_SG+hun~a/POSS_PRON_3FP	
-تك	َتكَ	NSuff-ath	your	+ap/NSUFF_FEM_SG+ka/POSS_PRON_2MS	
-تك	َتكِ	NSuff-ath	your	+ap/NSUFF_FEM_SG+ki/POSS_PRON_2FS	
-تكما	َتكُما	NSuff-ath	your	+ap/NSUFF_FEM_SG+kumA/POSS_PRON_2D	
-تكم	َتكُم	NSuff-ath	your	+ap/NSUFF_FEM_SG+kum/POSS_PRON_2MP	
-تكن	َتكُنَّ	NSuff-ath	your	+ap/NSUFF_FEM_SG+kun~a/POSS_PRON_2FP	
-تي	َتِي	NSuff-ath	my	+ap/NSUFF_FEM_SG+iy/POSS_PRON_1S	
-تنا	َتنا	NSuff-ath	our	+ap/NSUFF_FEM_SG+nA/POSS_PRON_1P	
+ين	ِينَ	NSuff-iyna	[masc.pl.]	+iyona/NSUFF_MASC_PL_ACCGEN	
 ين	َيْنِ	NSuff-ayn	two	+ayoni/NSUFF_MASC_DU_ACCGEN	
-ي	َيْ	NSuff-ayh	two	+ayo/NSUFF_MASC_DU_ACCGEN_POSS	
+ين	ِينَ	IVSuff-yn	[fem.sg.]	+iyna/VSUFF_SUBJ:2FS_MOOD:I	
 يه	َيْهِ	NSuff-ayh	his/its two	+ayo/NSUFF_MASC_DU_ACCGEN+hu/POSS_PRON_3MS	
 يهما	َيْهِما	NSuff-ayh	their two	+ayo/NSUFF_MASC_DU_ACCGEN+humA/POSS_PRON_3D	
 يهم	َيْهِم	NSuff-ayh	their two	+ayo/NSUFF_MASC_DU_ACCGEN+hum/POSS_PRON_3MP	
@@ -81,545 +196,27 @@
 يكما	َيْكُما	NSuff-ayh	your two	+ayo/NSUFF_MASC_DU_ACCGEN+kumA/POSS_PRON_2D	
 يكم	َيْكُم	NSuff-ayh	your two	+ayo/NSUFF_MASC_DU_ACCGEN+kum/POSS_PRON_2MP	
 يكن	َيْكُنَّ	NSuff-ayh	your two	+ayo/NSUFF_MASC_DU_ACCGEN+kun~a/POSS_PRON_2FP	
-ي	َيَّ	NSuff-ayh	my two	+ayo/NSUFF_MASC_DU_ACCGEN+ya/POSS_PRON_1S	
 ينا	َيْنا	NSuff-ayh	our two	+ayo/NSUFF_MASC_DU_ACCGEN+nA/POSS_PRON_1P	
-ا	اً	NSuff-AF	[acc.indef.]	+AF/NSUFF_MASC_SG_ACC_INDEF	
-ان	انِ	NSuff-An	two	+Ani/NSUFF_MASC_DU_NOM	
-ا	ا	NSuff-Ah	two	+A/NSUFF_MASC_DU_NOM_POSS	
-اه	اهُ	NSuff-Ah	its/his two	+A/NSUFF_MASC_DU_NOM+hu/POSS_PRON_3MS	
+اه	اهُ	NSuff-Ah	his/its two	+A/NSUFF_MASC_DU_NOM+hu/POSS_PRON_3MS	
 اهما	اهُما	NSuff-Ah	their two	+A/NSUFF_MASC_DU_NOM+humA/POSS_PRON_3D	
 اهم	اهُم	NSuff-Ah	their two	+A/NSUFF_MASC_DU_NOM+hum/POSS_PRON_3MP	
 اها	اها	NSuff-Ah	its/their/her two	+A/NSUFF_MASC_DU_NOM+hA/POSS_PRON_3FS	
 اهن	اهُنَّ	NSuff-Ah	their two	+A/NSUFF_MASC_DU_NOM+hun~a/POSS_PRON_3FP	
-اك	اكَ	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+ka/POSS_PRON_2MS	
 اك	اكِ	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+ki/POSS_PRON_2FS	
+اك	اكَ	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+ka/POSS_PRON_2MS	
 اكما	اكُما	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+kumA/POSS_PRON_2D	
 اكم	اكُم	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+kum/POSS_PRON_2MP	
 اكن	اكُنَّ	NSuff-Ah	your two	+A/NSUFF_MASC_DU_NOM+kun~a/POSS_PRON_2FP	
 اي	ايَ	NSuff-Ah	my two	+A/NSUFF_MASC_DU_NOM+ya/POSS_PRON_1S	
 انا	انا	NSuff-Ah	our two	+A/NSUFF_MASC_DU_NOM+nA/POSS_PRON_1P	
 ات	ات	NSuff-At	[fem.pl.]	+At/NSUFF_FEM_PL	
-اته	اته	NSuff-Ath	[fem.pl.] its/his	+At/NSUFF_FEM_PL+hu/POSS_PRON_3MS	
-اتهما	اتهما	NSuff-Ath	[fem.pl.] their	+At/NSUFF_FEM_PL+humA/POSS_PRON_3D	
-اتهم	اتهم	NSuff-Ath	[fem.pl.] their	+At/NSUFF_FEM_PL+hum/POSS_PRON_3MP	
-اتها	اتها	NSuff-Ath	[fem.pl.] its/their/her	+At/NSUFF_FEM_PL+hA/POSS_PRON_3FS	
-اتهن	اتهنَّ	NSuff-Ath	[fem.pl.] their	+At/NSUFF_FEM_PL+hun~a/POSS_PRON_3FP	
-اتك	اتكَ	NSuff-Ath	[fem.pl.] your	+At/NSUFF_FEM_PL+ka/POSS_PRON_2MS	
-اتك	اتكِ	NSuff-Ath	[fem.pl.] your	+At/NSUFF_FEM_PL+ki/POSS_PRON_2FS	
-اتكما	اتكُما	NSuff-Ath	[fem.pl.] your	+At/NSUFF_FEM_PL+kumA/POSS_PRON_2D	
-اتكم	اتكُم	NSuff-Ath	[fem.pl.] your	+At/NSUFF_FEM_PL+kum/POSS_PRON_2MP	
-اتكن	اتكُنَّ	NSuff-Ath	[fem.pl.] your	+At/NSUFF_FEM_PL+kun~a/POSS_PRON_2FP	
-اتي	اتِي	NSuff-Ath	[fem.pl.] my	+At/NSUFF_FEM_PL+iy/POSS_PRON_1S	
-اتنا	اتنا	NSuff-Ath	[fem.pl.] our	+At/NSUFF_FEM_PL+nA/POSS_PRON_1P	
 آت	آت	NSuff-|t	[fem.pl.]	+|t/NSUFF_FEM_PL	
-آته	آته	NSuff-|th	[fem.pl.] its/his	+|t/NSUFF_FEM_PL+hu/POSS_PRON_3MS	
-آتهما	آتهما	NSuff-|th	[fem.pl.] their	+|t/NSUFF_FEM_PL+humA/POSS_PRON_3D	
-آتهم	آتهم	NSuff-|th	[fem.pl.] their	+|t/NSUFF_FEM_PL+hum/POSS_PRON_3MP	
-آتها	آتها	NSuff-|th	[fem.pl.] its/their/her	+|t/NSUFF_FEM_PL+hA/POSS_PRON_3FS	
-آتهن	آتهنَّ	NSuff-|th	[fem.pl.] their	+|t/NSUFF_FEM_PL+hun~a/POSS_PRON_3FP	
-آتك	آتكَ	NSuff-|th	[fem.pl.] your	+|t/NSUFF_FEM_PL+ka/POSS_PRON_2MS	
-آتك	آتكِ	NSuff-|th	[fem.pl.] your	+|t/NSUFF_FEM_PL+ki/POSS_PRON_2FS	
-آتكما	آتكُما	NSuff-|th	[fem.pl.] your	+|t/NSUFF_FEM_PL+kumA/POSS_PRON_2D	
-آتكم	آتكُم	NSuff-|th	[fem.pl.] your	+|t/NSUFF_FEM_PL+kum/POSS_PRON_2MP	
-آتكن	آتكُنَّ	NSuff-|th	[fem.pl.] your	+|t/NSUFF_FEM_PL+kun~a/POSS_PRON_2FP	
-آتي	آتِي	NSuff-|th	[fem.pl.] my	+|t/NSUFF_FEM_PL+iy/POSS_PRON_1S	
-آتنا	آتنا	NSuff-|th	[fem.pl.] our	+|t/NSUFF_FEM_PL+nA/POSS_PRON_1P	
-ه	ه	NSuff-h	its/his	+hu/POSS_PRON_3MS	
-هما	هما	NSuff-h	their	+humA/POSS_PRON_3D	
-هم	هم	NSuff-h	their	+hum/POSS_PRON_3MP	
-ها	ها	NSuff-h	its/their/her	+hA/POSS_PRON_3FS	
-هن	هنَّ	NSuff-h	their	+hun~a/POSS_PRON_3FP	
-ك	كَ	NSuff-h	your	+ka/POSS_PRON_2MS	
-ك	كِ	NSuff-h	your	+ki/POSS_PRON_2FS	
-كما	كُما	NSuff-h	your	+kumA/POSS_PRON_2D	
-كم	كُم	NSuff-h	your	+kum/POSS_PRON_2MP	
-كن	كُنَّ	NSuff-h	your	+kun~a/POSS_PRON_2FP	
-نا	نا	NSuff-h	our	+nA/POSS_PRON_1P	
-ين	ِينَ	NSuff-iyna	[masc.pl.]	+iyona/NSUFF_MASC_PL_ACCGEN	
-ي	ِي	NSuff-iyh	[masc.pl.]	+iy/NSUFF_MASC_PL_ACCGEN_POSS	
-يه	ِيهِ	NSuff-iyh	his/its	+iy/NSUFF_MASC_PL_ACCGEN+hi/POSS_PRON_3MS	
-يهما	ِيهِما	NSuff-iyh	their	+iy/NSUFF_MASC_PL_ACCGEN+himA/POSS_PRON_3D	
-يهم	ِيهِم	NSuff-iyh	their	+iy/NSUFF_MASC_PL_ACCGEN+him/POSS_PRON_3MP	
-يها	ِيها	NSuff-iyh	its/their/her	+iy/NSUFF_MASC_PL_ACCGEN+hA/POSS_PRON_3FS	
-يهن	ِيهِنَّ	NSuff-iyh	their	+iy/NSUFF_MASC_PL_ACCGEN+hin~a/POSS_PRON_3FP	
-يك	ِيكَ	NSuff-iyh	your	+iy/NSUFF_MASC_PL_ACCGEN+ka/POSS_PRON_2MS	
-يك	ِيكِ	NSuff-iyh	your	+iy/NSUFF_MASC_PL_ACCGEN+ki/POSS_PRON_2FS	
-يكما	ِيكُما	NSuff-iyh	your	+iy/NSUFF_MASC_PL_ACCGEN+kumA/POSS_PRON_2D	
-يكم	ِيكُم	NSuff-iyh	your	+iy/NSUFF_MASC_PL_ACCGEN+kum/POSS_PRON_2MP	
-يكن	ِيكُنَّ	NSuff-iyh	your	+iy/NSUFF_MASC_PL_ACCGEN+kun~a/POSS_PRON_2FP	
-ي	ِيَّ	NSuff-iyh	my	+iy/NSUFF_MASC_PL_ACCGEN+ya/POSS_PRON_1S	
-ينا	ِينا	NSuff-iyh	our	+iy/NSUFF_MASC_PL_ACCGEN+nA/POSS_PRON_1P	
-ي	ِي	NSuff-iy	my	+iy/POSS_PRON_1S	
-ن	نِ	NSuff-|-ni	two	+Ani/NSUFF_MASC_DU_NOM	
-		NSuff-|h	two	+A/NSUFF_MASC_DU_NOM_POSS	
-ه	هُ	NSuff-|h	its/his two	+A/NSUFF_MASC_DU_NOM+hu/POSS_PRON_3MS	
-هما	هُما	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+humA/POSS_PRON_3D	
-هم	هُم	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+hum/POSS_PRON_3MP	
-ها	ها	NSuff-|h	its/their/her two	+A/NSUFF_MASC_DU_NOM+hA/POSS_PRON_3FS	
-هن	هُنَّ	NSuff-|h	their two	+A/NSUFF_MASC_DU_NOM+hun~a/POSS_PRON_3FP	
-ك	كَ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+ka/POSS_PRON_2MS	
-ك	كِ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+ki/POSS_PRON_2FS	
-كما	كُما	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kumA/POSS_PRON_2D	
-كم	كُم	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kum/POSS_PRON_2MP	
-كن	كُنَّ	NSuff-|h	your two	+A/NSUFF_MASC_DU_NOM+kun~a/POSS_PRON_2FP	
-ي	يَ	NSuff-|h	my two	+A/NSUFF_MASC_DU_NOM+ya/POSS_PRON_1S	
-نا	نا	NSuff-|h	our two	+A/NSUFF_MASC_DU_NOM+nA/POSS_PRON_1P	
-ون	ُونَ	NSuff-wn	[masc.pl.]	+uwna/NSUFF_MASC_PL_NOM	
-و	ُو	NSuff-wh	[masc.pl.]	+uw/NSUFF_MASC_PL_NOM_POSS	
-وه	ُوهُ	NSuff-wh	his/its	+uw/NSUFF_MASC_PL_NOM+hu/POSS_PRON_3MS	
-وهما	ُوهُما	NSuff-wh	their	+uw/NSUFF_MASC_PL_NOM+humA/POSS_PRON_3D	
-وهم	ُوهُم	NSuff-wh	their	+uw/NSUFF_MASC_PL_NOM+hum/POSS_PRON_3MP	
-وها	ُوها	NSuff-wh	its/their/her	+uw/NSUFF_MASC_PL_NOM+hA/POSS_PRON_3FS	
-وهن	ُوهُنَّ	NSuff-wh	their	+uw/NSUFF_MASC_PL_NOM+hun~a/POSS_PRON_3FP	
-وك	ُوكَ	NSuff-wh	your	+uw/NSUFF_MASC_PL_NOM+ka/POSS_PRON_2MS	
-وك	ُوكِ	NSuff-wh	your	+uw/NSUFF_MASC_PL_NOM+ki/POSS_PRON_2FS	
-وكما	ُوكُما	NSuff-wh	your	+uw/NSUFF_MASC_PL_NOM+kumA/POSS_PRON_2D	
-وكم	ُوكُم	NSuff-wh	your	+uw/NSUFF_MASC_PL_NOM+kum/POSS_PRON_2MP	
-وكن	ُوكُنَّ	NSuff-wh	your	+uw/NSUFF_MASC_PL_NOM+kun~a/POSS_PRON_2FP	
-ي	ِيَّ	NSuff-wh	my	+uw/NSUFF_MASC_PL_NOM+ya/POSS_PRON_1S	
-ونا	ُونا	NSuff-wh	our	+uw/NSUFF_MASC_PL_NOM+nA/POSS_PRON_1P	
-ه	َهُ	PVSuff-ah	he/it <verb> it/him	+a/PVSUFF_SUBJ:3MS+hu/PVSUFF_DO:3MS	
-هما	َهُما	PVSuff-ah	he/it <verb> them (both)	+a/PVSUFF_SUBJ:3MS+humA/PVSUFF_DO:3D	
-هم	َهُم	PVSuff-ah	he/it <verb> them	+a/PVSUFF_SUBJ:3MS+hum/PVSUFF_DO:3MP	
-ها	َها	PVSuff-ah	he/it <verb> it/them/her	+a/PVSUFF_SUBJ:3MS+hA/PVSUFF_DO:3FS	
-هن	َهُنَّ	PVSuff-ah	he/it <verb> them	+a/PVSUFF_SUBJ:3MS+hun~a/PVSUFF_DO:3FP	
-ك	َكَ	PVSuff-ah	he/it <verb> you	+a/PVSUFF_SUBJ:3MS+ka/PVSUFF_DO:2MS	
-ك	َكِ	PVSuff-ah	he/it <verb> you	+a/PVSUFF_SUBJ:3MS+ki/PVSUFF_DO:2FS	
-كما	َكُما	PVSuff-ah	he/it <verb> you (both)	+a/PVSUFF_SUBJ:3MS+kumA/PVSUFF_DO:2D	
-كم	َكُم	PVSuff-ah	he/it <verb> you	+a/PVSUFF_SUBJ:3MS+kum/PVSUFF_DO:2MP	
-كن	َكُنَّ	PVSuff-ah	he/it <verb> you	+a/PVSUFF_SUBJ:3MS+kun~a/PVSUFF_DO:2FP	
-ني	َنِي	PVSuff-ah	he/it <verb> me	+a/PVSUFF_SUBJ:3MS+niy/PVSUFF_DO:1S	
-نا	َنا	PVSuff-ah	he/it <verb> us	+a/PVSUFF_SUBJ:3MS+nA/PVSUFF_DO:1P	
-ن	ْنَ	PVSuff-n	they [fem.pl.] <verb>	+na/PVSUFF_SUBJ:3FP	
-نا	ْنا	PVSuff-n	we <verb>	+nA/PVSUFF_SUBJ:1P	
-	َّ	PVSuff-~n	they [fem.pl.] <verb>	+na/PVSUFF_SUBJ:3FP	
-ا	ّا	PVSuff-~n	we <verb>	+nA/PVSUFF_SUBJ:1P	
-نه	ْنَهُ	PVSuff-nh	they <verb> it/him	+na/PVSUFF_SUBJ:3FP+hu/PVSUFF_DO:3MS	
-نهما	ْنَهُما	PVSuff-nh	they <verb> (both of) them	+na/PVSUFF_SUBJ:3FP+humA/PVSUFF_DO:3D	
-نهم	ْنَهُم	PVSuff-nh	they <verb> them	+na/PVSUFF_SUBJ:3FP+hum/PVSUFF_DO:3MP	
-نها	ْنَها	PVSuff-nh	they <verb> it/them/her	+na/PVSUFF_SUBJ:3FP+hA/PVSUFF_DO:3FS	
-نهن	ْنَهُنَّ	PVSuff-nh	they <verb> them	+na/PVSUFF_SUBJ:3FP+hun~a/PVSUFF_DO:3FP	
-نك	ْنَكَ	PVSuff-nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+ka/PVSUFF_DO:2MS	
-نك	ْنَكِ	PVSuff-nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+ki/PVSUFF_DO:2FS	
-نكما	ْنَكُما	PVSuff-nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kumA/PVSUFF_DO:2D	
-نكم	ْنَكُم	PVSuff-nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kum/PVSUFF_DO:2MP	
-نكن	ْنَكُنَّ	PVSuff-nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kun~a/PVSUFF_DO:2FP	
-نني	ْنَنِي	PVSuff-nh	they <verb> me	+na/PVSUFF_SUBJ:3FP+niy/PVSUFF_DO:1S	
-ننا	ْنَنا	PVSuff-nh	they <verb> us	+na/PVSUFF_SUBJ:3FP+nA/PVSUFF_DO:1P	
-ه	َّهُ	PVSuff-~nh	they <verb> it/him	+na/PVSUFF_SUBJ:3FP+hu/PVSUFF_DO:3MS	
-هما	َّهُما	PVSuff-~nh	they <verb> (both of) them	+na/PVSUFF_SUBJ:3FP+humA/PVSUFF_DO:3D	
-هم	َّهُم	PVSuff-~nh	they <verb> them	+na/PVSUFF_SUBJ:3FP+hum/PVSUFF_DO:3MP	
-ها	َّها	PVSuff-~nh	they <verb> it/them/her	+na/PVSUFF_SUBJ:3FP+hA/PVSUFF_DO:3FS	
-هن	َّهُنَّ	PVSuff-~nh	they <verb> them	+na/PVSUFF_SUBJ:3FP+hun~a/PVSUFF_DO:3FP	
-ك	َّكَ	PVSuff-~nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+ka/PVSUFF_DO:2MS	
-ك	َّكِ	PVSuff-~nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+ki/PVSUFF_DO:2FS	
-كما	َّكُما	PVSuff-~nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kumA/PVSUFF_DO:2D	
-كم	َّكُم	PVSuff-~nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kum/PVSUFF_DO:2MP	
-كن	َّكُنَّ	PVSuff-~nh	they <verb> you	+na/PVSUFF_SUBJ:3FP+kun~a/PVSUFF_DO:2FP	
-ني	َّنِي	PVSuff-~nh	they <verb> me	+na/PVSUFF_SUBJ:3FP+niy/PVSUFF_DO:1S	
-نا	َّنا	PVSuff-~nh	they <verb> us	+na/PVSUFF_SUBJ:3FP+nA/PVSUFF_DO:1P	
-ناه	ْناهُ	PVSuff-nh	we <verb> it/him	+nA/PVSUFF_SUBJ:1P+hu/PVSUFF_DO:3MS	
-ناهما	ْناهُما	PVSuff-nh	we <verb> (both of) them	+nA/PVSUFF_SUBJ:1P+humA/PVSUFF_DO:3D	
-ناهم	ْناهُم	PVSuff-nh	we <verb> them	+nA/PVSUFF_SUBJ:1P+hum/PVSUFF_DO:3MP	
-ناها	ْناها	PVSuff-nh	we <verb> it/them/her	+nA/PVSUFF_SUBJ:1P+hA/PVSUFF_DO:3FS	
-ناهن	ْناهُنَّ	PVSuff-nh	we <verb> them	+nA/PVSUFF_SUBJ:1P+hun~a/PVSUFF_DO:3FP	
-ناك	ْناكَ	PVSuff-nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+ka/PVSUFF_DO:2MS	
-ناك	ْناكِ	PVSuff-nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+ki/PVSUFF_DO:2FS	
-ناكما	ْناكُما	PVSuff-nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kumA/PVSUFF_DO:2D	
-ناكم	ْناكُم	PVSuff-nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kum/PVSUFF_DO:2MP	
-ناكن	ْناكُنَّ	PVSuff-nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kun~a/PVSUFF_DO:2FP	
-اه	ّاهُ	PVSuff-~nh	we <verb> it/him	+nA/PVSUFF_SUBJ:1P+hu/PVSUFF_DO:3MS	
-اهما	ّاهُما	PVSuff-~nh	we <verb> (both of) them	+nA/PVSUFF_SUBJ:1P+humA/PVSUFF_DO:3D	
-اهم	ّاهُم	PVSuff-~nh	we <verb> them	+nA/PVSUFF_SUBJ:1P+hum/PVSUFF_DO:3MP	
-اها	ّاها	PVSuff-~nh	we <verb> it/them/her	+nA/PVSUFF_SUBJ:1P+hA/PVSUFF_DO:3FS	
-اهن	ّاهُنَّ	PVSuff-~nh	we <verb> them	+nA/PVSUFF_SUBJ:1P+hun~a/PVSUFF_DO:3FP	
-اك	ّاكَ	PVSuff-~nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+ka/PVSUFF_DO:2MS	
-اك	ّاكِ	PVSuff-~nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+ki/PVSUFF_DO:2FS	
-اكما	ّاكُما	PVSuff-~nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kumA/PVSUFF_DO:2D	
-اكم	ّاكُم	PVSuff-~nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kum/PVSUFF_DO:2MP	
-اكن	ّاكُنَّ	PVSuff-~nh	we <verb> you	+nA/PVSUFF_SUBJ:1P+kun~a/PVSUFF_DO:2FP	
-ت	ْتُ	PVSuff-t	I <verb>	+tu/PVSUFF_SUBJ:1S	
-ت	ْتَ	PVSuff-t	you [masc.sg.] <verb>	+ta/PVSUFF_SUBJ:2MS	
-ت	ْتِ	PVSuff-t	you [fem.sg.] <verb>	+ti/PVSUFF_SUBJ:2FS	
-تما	ْتُما	PVSuff-t	you [du.] <verb>	+tumA/PVSUFF_SUBJ:2D	
-تم	ْتُم	PVSuff-t	you [masc.pl.] <verb>	+tum/PVSUFF_SUBJ:2MP	
-تن	ْتُنَّ	PVSuff-t	you [fem.pl.] <verb>	+tun~a/PVSUFF_SUBJ:2FP	
-	ُّ	PVSuff-~t	I <verb>	+tu/PVSUFF_SUBJ:1S	
-	َّ	PVSuff-~t	you [masc.sg.] <verb>	+ta/PVSUFF_SUBJ:2MS	
-	ِّ	PVSuff-~t	you [fem.sg.] <verb>	+ti/PVSUFF_SUBJ:2FS	
-ما	ُّما	PVSuff-~t	you [du.] <verb>	+tumA/PVSUFF_SUBJ:2D	
-م	ُّم	PVSuff-~t	you [masc.pl.] <verb>	+tum/PVSUFF_SUBJ:2MP	
-ن	ُّنَّ	PVSuff-~t	you [fem.pl.] <verb>	+tun~a/PVSUFF_SUBJ:2FP	
-ته	ْتُهُ	PVSuff-th	I <verb> it/him	+tu/PVSUFF_SUBJ:1S+hu/PVSUFF_DO:3MS	
-تهما	ْتُهُما	PVSuff-th	I <verb> them (both)	+tu/PVSUFF_SUBJ:1S+humA/PVSUFF_DO:3D	
-تهم	ْتُهُم	PVSuff-th	I <verb> them	+tu/PVSUFF_SUBJ:1S+hum/PVSUFF_DO:3MP	
-تها	ْتُها	PVSuff-th	I <verb> it/them/her	+tu/PVSUFF_SUBJ:1S+hA/PVSUFF_DO:3FS	
-تهن	ْتُهُنَّ	PVSuff-th	I <verb> them	+tu/PVSUFF_SUBJ:1S+hun~a/PVSUFF_DO:3FP	
-ه	ُّهُ	PVSuff-~th	I <verb> it/him	+tu/PVSUFF_SUBJ:1S+hu/PVSUFF_DO:3MS	
-هما	ُّهُما	PVSuff-~th	I <verb> them (both)	+tu/PVSUFF_SUBJ:1S+humA/PVSUFF_DO:3D	
-هم	ُّهُم	PVSuff-~th	I <verb> them	+tu/PVSUFF_SUBJ:1S+hum/PVSUFF_DO:3MP	
-ها	ُّها	PVSuff-~th	I <verb> it/them/her	+tu/PVSUFF_SUBJ:1S+hA/PVSUFF_DO:3FS	
-هن	ُّهُنَّ	PVSuff-~th	I <verb> them	+tu/PVSUFF_SUBJ:1S+hun~a/PVSUFF_DO:3FP	
-ته	ْتَهُ	PVSuff-th	you [masc.sg.] <verb> it/him	+ta/PVSUFF_SUBJ:2MS+hu/PVSUFF_DO:3MS	
-تهما	ْتَهُما	PVSuff-th	you [masc.sg.] <verb> them (both)	+ta/PVSUFF_SUBJ:2MS+humA/PVSUFF_DO:3D	
-تهم	ْتَهُم	PVSuff-th	you [masc.sg.] <verb> them	+ta/PVSUFF_SUBJ:2MS+hum/PVSUFF_DO:3MP	
-تها	ْتَها	PVSuff-th	you [masc.sg.] <verb> it/them/her	+ta/PVSUFF_SUBJ:2MS+hA/PVSUFF_DO:3FS	
-تهن	ْتَهُنَّ	PVSuff-th	you [masc.sg.] <verb> them	+ta/PVSUFF_SUBJ:2MS+hun~a/PVSUFF_DO:3FP	
-ه	َّهُ	PVSuff-~th	you [masc.sg.] <verb> it/him	+ta/PVSUFF_SUBJ:2MS+hu/PVSUFF_DO:3MS	
-هما	َّهُما	PVSuff-~th	you [masc.sg.] <verb> them (both)	+ta/PVSUFF_SUBJ:2MS+humA/PVSUFF_DO:3D	
-هم	َّهُم	PVSuff-~th	you [masc.sg.] <verb> them	+ta/PVSUFF_SUBJ:2MS+hum/PVSUFF_DO:3MP	
-ها	َّها	PVSuff-~th	you [masc.sg.] <verb> it/them/her	+ta/PVSUFF_SUBJ:2MS+hA/PVSUFF_DO:3FS	
-هن	َّهُنَّ	PVSuff-~th	you [masc.sg.] <verb> them	+ta/PVSUFF_SUBJ:2MS+hun~a/PVSUFF_DO:3FP	
-ته	ْتِهِ	PVSuff-th	you [fem.sg.] <verb> it/him	+ti/PVSUFF_SUBJ:2FS+hu/PVSUFF_DO:3MS	
-تهما	ْتِهِما	PVSuff-th	you [fem.sg.] <verb> them (both)	+ti/PVSUFF_SUBJ:2FS+humA/PVSUFF_DO:3D	
-تهم	ْتِهِم	PVSuff-th	you [fem.sg.] <verb> them	+ti/PVSUFF_SUBJ:2FS+hum/PVSUFF_DO:3MP	
-تها	ْتِها	PVSuff-th	you [fem.sg.] <verb> it/them/her	+ti/PVSUFF_SUBJ:2FS+hA/PVSUFF_DO:3FS	
-تهن	ْتِهِنَّ	PVSuff-th	you [fem.sg.] <verb> them	+ti/PVSUFF_SUBJ:2FS+hun~a/PVSUFF_DO:3FP	
-ه	ِّهِ	PVSuff-~th	you [fem.sg.] <verb> it/him	+ti/PVSUFF_SUBJ:2FS+hu/PVSUFF_DO:3MS	
-هما	ِّهِما	PVSuff-~th	you [fem.sg.] <verb> them (both)	+ti/PVSUFF_SUBJ:2FS+humA/PVSUFF_DO:3D	
-هم	ِّهِم	PVSuff-~th	you [fem.sg.] <verb> them	+ti/PVSUFF_SUBJ:2FS+hum/PVSUFF_DO:3MP	
-ها	ِّها	PVSuff-~th	you [fem.sg.] <verb> it/them/her	+ti/PVSUFF_SUBJ:2FS+hA/PVSUFF_DO:3FS	
-هن	ِّهِنَّ	PVSuff-~th	you [fem.sg.] <verb> them	+ti/PVSUFF_SUBJ:2FS+hun~a/PVSUFF_DO:3FP	
-تك	ْتُكَ	PVSuff-th	I <verb> you	+tu/PVSUFF_SUBJ:1S+ka/PVSUFF_DO:2MS	
-تك	ْتُكِ	PVSuff-th	I <verb> you	+tu/PVSUFF_SUBJ:1S+ki/PVSUFF_DO:2FS	
-تكما	ْتُكُما	PVSuff-th	I <verb> you (both)	+tu/PVSUFF_SUBJ:1S+kumA/PVSUFF_DO:2D	
-تكم	ْتُكُم	PVSuff-th	I <verb> you (pl.)	+tu/PVSUFF_SUBJ:1S+kum/PVSUFF_DO:2MP	
-تكن	ْتُكُنَّ	PVSuff-th	I <verb> you (women)	+tu/PVSUFF_SUBJ:1S+kun~a/PVSUFF_DO:2FP	
-ك	ُّكَ	PVSuff-~th	I <verb> you	+tu/PVSUFF_SUBJ:1S+ka/PVSUFF_DO:2MS	
-ك	ُّكِ	PVSuff-~th	I <verb> you	+tu/PVSUFF_SUBJ:1S+ki/PVSUFF_DO:2FS	
-كما	ُّكُما	PVSuff-~th	I <verb> you (both)	+tu/PVSUFF_SUBJ:1S+kumA/PVSUFF_DO:2D	
-كم	ُّكُم	PVSuff-~th	I <verb> you (pl.)	+tu/PVSUFF_SUBJ:1S+kum/PVSUFF_DO:2MP	
-كن	ُّكُنَّ	PVSuff-~th	I <verb> you (women)	+tu/PVSUFF_SUBJ:1S+kun~a/PVSUFF_DO:2FP	
-تني	ْتَنِي	PVSuff-th	you [masc.sg.] <verb> me	+ta/PVSUFF_SUBJ:2MS+niy/PVSUFF_DO:1S	
-تنا	ْتَنا	PVSuff-th	you [masc.sg.] <verb> us	+ta/PVSUFF_SUBJ:2MS+nA/PVSUFF_DO:1P	
-ني	َّنِي	PVSuff-~th	you [masc.sg.] <verb> me	+ta/PVSUFF_SUBJ:2MS+niy/PVSUFF_DO:1S	
-نا	َّنا	PVSuff-~th	you [masc.sg.] <verb> us	+ta/PVSUFF_SUBJ:2MS+nA/PVSUFF_DO:1P	
-تني	ْتِنِي	PVSuff-th	you [fem.sg.] <verb> me	+ti/PVSUFF_SUBJ:2FS+niy/PVSUFF_DO:1S	
-تنا	ْتِنا	PVSuff-th	you [fem.sg.] <verb> us	+ti/PVSUFF_SUBJ:2FS+nA/PVSUFF_DO:1P	
-ني	ِّنِي	PVSuff-~th	you [fem.sg.] <verb> me	+ti/PVSUFF_SUBJ:2FS+niy/PVSUFF_DO:1S	
-نا	ِّنا	PVSuff-~th	you [fem.sg.] <verb> us	+ti/PVSUFF_SUBJ:2FS+nA/PVSUFF_DO:1P	
-تماه	ْتُماهُ	PVSuff-th	you [du.] <verb> it/him	+tumA/PVSUFF_SUBJ:2D+hu/PVSUFF_DO:3MS	
-تماهما	ْتُماهُما	PVSuff-th	you [du.] <verb> them (both)	+tumA/PVSUFF_SUBJ:2D+humA/PVSUFF_DO:3D	
-تماهم	ْتُماهُم	PVSuff-th	you [du.] <verb> them	+tumA/PVSUFF_SUBJ:2D+hum/PVSUFF_DO:3MP	
-تماها	ْتُماها	PVSuff-th	you [du.] <verb> it/them/her	+tumA/PVSUFF_SUBJ:2D+hA/PVSUFF_DO:3FS	
-تماهن	ْتُماهُنَّ	PVSuff-th	you [du.] <verb> them	+tumA/PVSUFF_SUBJ:2D+hun~a/PVSUFF_DO:3FP	
-تماني	ْتُمانِي	PVSuff-th	you [du.] <verb> me	+tumA/PVSUFF_SUBJ:2D+niy/PVSUFF_DO:1S	
-تمانا	ْتُمانا	PVSuff-th	you [du.] <verb> us	+tumA/PVSUFF_SUBJ:2D+nA/PVSUFF_DO:1P	
-ماه	ُّماهُ	PVSuff-~th	you [du.] <verb> it/him	+tumA/PVSUFF_SUBJ:2D+hu/PVSUFF_DO:3MS	
-ماهما	ُّماهُما	PVSuff-~th	you [du.] <verb> them (both)	+tumA/PVSUFF_SUBJ:2D+humA/PVSUFF_DO:3D	
-ماهم	ُّماهُم	PVSuff-~th	you [du.] <verb> them	+tumA/PVSUFF_SUBJ:2D+hum/PVSUFF_DO:3MP	
-ماها	ُّماها	PVSuff-~th	you [du.] <verb> it/them/her	+tumA/PVSUFF_SUBJ:2D+hA/PVSUFF_DO:3FS	
-ماهن	ُّماهُنَّ	PVSuff-~th	you [du.] <verb> them	+tumA/PVSUFF_SUBJ:2D+hun~a/PVSUFF_DO:3FP	
-ماني	ُّمانِي	PVSuff-~th	you [du.] <verb> me	+tumA/PVSUFF_SUBJ:2D+niy/PVSUFF_DO:1S	
-مانا	ُّمانا	PVSuff-~th	you [du.] <verb> us	+tumA/PVSUFF_SUBJ:2D+nA/PVSUFF_DO:1P	
-تموه	ْتُمُوهُ	PVSuff-th	you [masc.pl.] <verb> it/him	+tum/PVSUFF_SUBJ:2MP+hu/PVSUFF_DO:3MS	
-تموهما	ْتُمُوهُما	PVSuff-th	you [masc.pl.] <verb> them (both)	+tum/PVSUFF_SUBJ:2MP+humA/PVSUFF_DO:3D	
-تموهم	ْتُمُوهُم	PVSuff-th	you [masc.pl.] <verb> them	+tum/PVSUFF_SUBJ:2MP+hum/PVSUFF_DO:3MP	
-تموها	ْتُمُوها	PVSuff-th	you [masc.pl.] <verb> it/them/her	+tum/PVSUFF_SUBJ:2MP+hA/PVSUFF_DO:3FS	
-تموهن	ْتُمُوهُنَّ	PVSuff-th	you [masc.pl.] <verb> them	+tum/PVSUFF_SUBJ:2MP+hun~a/PVSUFF_DO:3FP	
-تموني	ْتُمُونِي	PVSuff-th	you [masc.pl.] <verb> me	+tum/PVSUFF_SUBJ:2MP+niy/PVSUFF_DO:1S	
-تمونا	ْتُمُونا	PVSuff-th	you [masc.pl.] <verb> us	+tum/PVSUFF_SUBJ:2MP+nA/PVSUFF_DO:1P	
-موه	ُّمُوهُ	PVSuff-~th	you [masc.pl.] <verb> it/him	+tum/PVSUFF_SUBJ:2MP+hu/PVSUFF_DO:3MS	
-موهما	ُّمُوهُما	PVSuff-~th	you [masc.pl.] <verb> them (both)	+tum/PVSUFF_SUBJ:2MP+humA/PVSUFF_DO:3D	
-موهم	ُّمُوهُم	PVSuff-~th	you [masc.pl.] <verb> them	+tum/PVSUFF_SUBJ:2MP+hum/PVSUFF_DO:3MP	
-موها	ُّمُوها	PVSuff-~th	you [masc.pl.] <verb> it/them/her	+tum/PVSUFF_SUBJ:2MP+hA/PVSUFF_DO:3FS	
-موهن	ُّمُوهُنَّ	PVSuff-~th	you [masc.pl.] <verb> them	+tum/PVSUFF_SUBJ:2MP+hun~a/PVSUFF_DO:3FP	
-موني	ُّمُونِي	PVSuff-~th	you [masc.pl.] <verb> me	+tum/PVSUFF_SUBJ:2MP+niy/PVSUFF_DO:1S	
-مونا	ُّمُونا	PVSuff-~th	you [masc.pl.] <verb> us	+tum/PVSUFF_SUBJ:2MP+nA/PVSUFF_DO:1P	
-تنه	ْتُنَّهُ	PVSuff-th	you [fem.pl.] <verb> it/him	+tun~a/PVSUFF_SUBJ:2FP+hu/PVSUFF_DO:3MS	
-تنهما	ْتُنَّهُما	PVSuff-th	you [fem.pl.] <verb> them (both)	+tun~a/PVSUFF_SUBJ:2FP+humA/PVSUFF_DO:3D	
-تنهم	ْتُنَّهُم	PVSuff-th	you [fem.pl.] <verb> them	+tun~a/PVSUFF_SUBJ:2FP+hum/PVSUFF_DO:3MP	
-تنها	ْتُنَّها	PVSuff-th	you [fem.pl.] <verb> it/them/her	+tun~a/PVSUFF_SUBJ:2FP+hA/PVSUFF_DO:3FS	
-تنهن	ْتُنَّهُنَّ	PVSuff-th	you [fem.pl.] <verb> them	+tun~a/PVSUFF_SUBJ:2FP+hun~a/PVSUFF_DO:3FP	
-تنني	ْتُنَّنِي	PVSuff-th	you [fem.pl.] <verb> me	+tun~a/PVSUFF_SUBJ:2FP+niy/PVSUFF_DO:1S	
-تننا	ْتُنَّنا	PVSuff-th	you [fem.pl.] <verb> us	+tun~a/PVSUFF_SUBJ:2FP+nA/PVSUFF_DO:1P	
-نه	ُّنَّهُ	PVSuff-~th	you [fem.pl.] <verb> it/him	+tun~a/PVSUFF_SUBJ:2FP+hu/PVSUFF_DO:3MS	
-نهما	ُّنَّهُما	PVSuff-~th	you [fem.pl.] <verb> them (both)	+tun~a/PVSUFF_SUBJ:2FP+humA/PVSUFF_DO:3D	
-نهم	ُّنَّهُم	PVSuff-~th	you [fem.pl.] <verb> them	+tun~a/PVSUFF_SUBJ:2FP+hum/PVSUFF_DO:3MP	
-نها	ُّنَّها	PVSuff-~th	you [fem.pl.] <verb> it/them/her	+tun~a/PVSUFF_SUBJ:2FP+hA/PVSUFF_DO:3FS	
-نهن	ُّنَّهُنَّ	PVSuff-~th	you [fem.pl.] <verb> them	+tun~a/PVSUFF_SUBJ:2FP+hun~a/PVSUFF_DO:3FP	
-نني	ُّنَّنِي	PVSuff-~th	you [fem.pl.] <verb> me	+tun~a/PVSUFF_SUBJ:2FP+niy/PVSUFF_DO:1S	
-ننا	ُّنَّنا	PVSuff-~th	you [fem.pl.] <verb> us	+tun~a/PVSUFF_SUBJ:2FP+nA/PVSUFF_DO:1P	
-ت	َت	PVSuff-at	it/they/she <verb>	+at/PVSUFF_SUBJ:3FS	
-تا	َتا	PVSuff-at	they (both) <verb>	+atA/PVSUFF_SUBJ:3FD	
-ته	َتْهُ	PVSuff-ath	it/they/she <verb> it/him	+at/PVSUFF_SUBJ:3FS+hu/PVSUFF_DO:3MS	
-تهما	َتْهُما	PVSuff-ath	it/they/she <verb> them (both)	+at/PVSUFF_SUBJ:3FS+humA/PVSUFF_DO:3D	
-تهم	َتْهُم	PVSuff-ath	it/they/she <verb> them	+at/PVSUFF_SUBJ:3FS+hum/PVSUFF_DO:3MP	
-تها	َتْها	PVSuff-ath	it/they/she <verb> it/them/her	+at/PVSUFF_SUBJ:3FS+hA/PVSUFF_DO:3FS	
-تهن	َتْهُنَّ	PVSuff-ath	it/they/she <verb> them	+at/PVSUFF_SUBJ:3FS+hun~a/PVSUFF_DO:3FP	
-تك	َتْكَ	PVSuff-ath	it/they/she <verb> you	+at/PVSUFF_SUBJ:3FS+ka/PVSUFF_DO:2MS	
-تك	َتْكِ	PVSuff-ath	it/they/she <verb> you	+at/PVSUFF_SUBJ:3FS+ki/PVSUFF_DO:2FS	
-تكما	َتْكُما	PVSuff-ath	it/they/she <verb> you (both)	+at/PVSUFF_SUBJ:3FS+kumA/PVSUFF_DO:2D	
-تكم	َتْكُم	PVSuff-ath	it/they/she <verb> you	+at/PVSUFF_SUBJ:3FS+kum/PVSUFF_DO:2MP	
-تكن	َتْكُنَّ	PVSuff-ath	it/they/she <verb> you	+at/PVSUFF_SUBJ:3FS+kun~a/PVSUFF_DO:2FP	
-تني	َتْنِي	PVSuff-ath	it/they/she <verb> me	+at/PVSUFF_SUBJ:3FS+niy/PVSUFF_DO:1S	
-تنا	َتْنا	PVSuff-ath	it/they/she <verb> us	+at/PVSUFF_SUBJ:3FS+nA/PVSUFF_DO:1P	
-تاه	َتاهُ	PVSuff-ath	they (both) <verb> it/him	+atA/PVSUFF_SUBJ:3FD+hu/PVSUFF_DO:3MS	
-تاهما	َتاهُما	PVSuff-ath	they (both) <verb> them (both)	+atA/PVSUFF_SUBJ:3FD+humA/PVSUFF_DO:3D	
-تاهم	َتاهُم	PVSuff-ath	they (both) <verb> them	+atA/PVSUFF_SUBJ:3FD+hum/PVSUFF_DO:3MP	
-تاها	َتاها	PVSuff-ath	they (both) <verb> it/them/her	+atA/PVSUFF_SUBJ:3FD+hA/PVSUFF_DO:3FS	
-تاهن	َتاهُنَّ	PVSuff-ath	they (both) <verb> them	+atA/PVSUFF_SUBJ:3FD+hun~a/PVSUFF_DO:3FP	
-تاك	َتاكَ	PVSuff-ath	they (both) <verb> you	+atA/PVSUFF_SUBJ:3FD+ka/PVSUFF_DO:2MS	
-تاك	َتاكِ	PVSuff-ath	they (both) <verb> you	+atA/PVSUFF_SUBJ:3FD+ki/PVSUFF_DO:2FS	
-تاكما	َتاكُما	PVSuff-ath	they (both) <verb> you (both)	+atA/PVSUFF_SUBJ:3FD+kumA/PVSUFF_DO:2D	
-تاكم	َتاكُم	PVSuff-ath	they (both) <verb> you	+atA/PVSUFF_SUBJ:3FD+kum/PVSUFF_DO:2MP	
-تاكن	َتاكُنَّ	PVSuff-ath	they (both) <verb> you	+atA/PVSUFF_SUBJ:3FD+kun~a/PVSUFF_DO:2FP	
-تاني	َتانِي	PVSuff-ath	they (both) <verb> me	+atA/PVSUFF_SUBJ:3FD+niy/PVSUFF_DO:1S	
-تانا	َتانا	PVSuff-ath	they (both) <verb> us	+atA/PVSUFF_SUBJ:3FD+nA/PVSUFF_DO:1P	
-ا	ا	PVSuff-A	they (both) <verb>	+A/PVSUFF_SUBJ:3MD	
-		PVSuff-|	they (both) <verb>	+A/PVSUFF_SUBJ:3MD	
-اه	اهُ	PVSuff-Ah	they (both) <verb> it/him	+A/PVSUFF_SUBJ:3MD+hu/PVSUFF_DO:3MS	
-اهما	اهُما	PVSuff-Ah	they (both) <verb> them (both)	+A/PVSUFF_SUBJ:3MD+humA/PVSUFF_DO:3D	
-اهم	اهُم	PVSuff-Ah	they (both) <verb> them	+A/PVSUFF_SUBJ:3MD+hum/PVSUFF_DO:3MP	
-اها	اها	PVSuff-Ah	they (both) <verb> it/them/her	+A/PVSUFF_SUBJ:3MD+hA/PVSUFF_DO:3FS	
-اهن	اهُنَّ	PVSuff-Ah	they (both) <verb> them	+A/PVSUFF_SUBJ:3MD+hun~a/PVSUFF_DO:3FP	
-اك	اكَ	PVSuff-Ah	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+ka/PVSUFF_DO:2MS	
-اك	اكِ	PVSuff-Ah	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+ki/PVSUFF_DO:2FS	
-اكما	اكُما	PVSuff-Ah	they (both) <verb> you (both)	+A/PVSUFF_SUBJ:3MD+kumA/PVSUFF_DO:2D	
-اكم	اكُم	PVSuff-Ah	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+kum/PVSUFF_DO:2MP	
-اكن	اكُنَّ	PVSuff-Ah	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+kun~a/PVSUFF_DO:2FP	
-اني	انِي	PVSuff-Ah	they (both) <verb> me	+A/PVSUFF_SUBJ:3MD+niy/PVSUFF_DO:1S	
-انا	انا	PVSuff-Ah	they (both) <verb> us	+A/PVSUFF_SUBJ:3MD+nA/PVSUFF_DO:1P	
-ه	هُ	PVSuff-|h	they (both) <verb> it/him	+A/PVSUFF_SUBJ:3MD+hu/PVSUFF_DO:3MS	
-هما	هُما	PVSuff-|h	they (both) <verb> them (both)	+A/PVSUFF_SUBJ:3MD+humA/PVSUFF_DO:3D	
-هم	هُم	PVSuff-|h	they (both) <verb> them	+A/PVSUFF_SUBJ:3MD+hum/PVSUFF_DO:3MP	
-ها	ها	PVSuff-|h	they (both) <verb> it/them/her	+A/PVSUFF_SUBJ:3MD+hA/PVSUFF_DO:3FS	
-هن	هُنَّ	PVSuff-|h	they (both) <verb> them	+A/PVSUFF_SUBJ:3MD+hun~a/PVSUFF_DO:3FP	
-ك	كَ	PVSuff-|h	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+ka/PVSUFF_DO:2MS	
-ك	كِ	PVSuff-|h	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+ki/PVSUFF_DO:2FS	
-كما	كُما	PVSuff-|h	they (both) <verb> you (both)	+A/PVSUFF_SUBJ:3MD+kumA/PVSUFF_DO:2D	
-كم	كُم	PVSuff-|h	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+kum/PVSUFF_DO:2MP	
-كن	كُنَّ	PVSuff-|h	they (both) <verb> you	+A/PVSUFF_SUBJ:3MD+kun~a/PVSUFF_DO:2FP	
-ني	نِي	PVSuff-|h	they (both) <verb> me	+A/PVSUFF_SUBJ:3MD+niy/PVSUFF_DO:1S	
-نا	نا	PVSuff-|h	they (both) <verb> us	+A/PVSUFF_SUBJ:3MD+nA/PVSUFF_DO:1P	
-وا	ُوا	PVSuff-uwA	they <verb>	+uwA/PVSUFF_SUBJ:3MP	
-وا	َوْا	PVSuff-awA	they <verb>	+awoA/PVSUFF_SUBJ:3MP	
-وا	ُوا	CVSuff-wA	you [masc.pl] <verb>	+uwA/CVSUFF_SUBJ:2MP	
-وه	ُوهُ	CVSuff-wh	you [masc.pl] <verb> it/him	+uw/CVSUFF_SUBJ:2MP+hu/CVSUFF_DO:3MS	
-وهما	ُوهُما	CVSuff-wh	you [masc.pl] <verb> them (both)	+uw/CVSUFF_SUBJ:2MP+humA/CVSUFF_DO:3D	
-وهم	ُوهُم	CVSuff-wh	you [masc.pl] <verb> them	+uw/CVSUFF_SUBJ:2MP+hum/CVSUFF_DO:3MP	
-وها	ُوها	CVSuff-wh	you [masc.pl] <verb> it/them/her	+uw/CVSUFF_SUBJ:2MP+hA/CVSUFF_DO:3FS	
-وهن	ُوهُنَّ	CVSuff-wh	you [masc.pl] <verb> them	+uw/CVSUFF_SUBJ:2MP+hun~a/CVSUFF_DO:3FP	
-وني	ُونِي	CVSuff-wh	you [masc.pl] <verb> me	+uw/CVSUFF_SUBJ:2MP+niy/CVSUFF_DO:1S	
-ونا	ُونا	CVSuff-wh	you [masc.pl] <verb> us	+uw/CVSUFF_SUBJ:2MP+nA/CVSUFF_DO:1P	
-ي	ِي	CVSuff-y	you [fem.sg.] <verb>	+iy/CVSUFF_SUBJ:2FS	
-يه	ِيهِ	CVSuff-yh	you [fem.sg.] <verb> it/him	+iy/CVSUFF_SUBJ:2FS+hi/CVSUFF_DO:3MS	
-يهما	ِيهِما	CVSuff-yh	you [fem.sg.] <verb> them (both)	+iy/CVSUFF_SUBJ:2FS+himA/CVSUFF_DO:3D	
-يهم	ِيهِم	CVSuff-yh	you [fem.sg.] <verb> them	+iy/CVSUFF_SUBJ:2FS+him/CVSUFF_DO:3MP	
-يها	ِيها	CVSuff-yh	you [fem.sg.] <verb> it/them/her	+iy/CVSUFF_SUBJ:2FS+hA/CVSUFF_DO:3FS	
-يهن	ِيهِنَّ	CVSuff-yh	you [fem.sg.] <verb> them	+iy/CVSUFF_SUBJ:2FS+hin~a/CVSUFF_DO:3FP	
-يني	ِينِي	CVSuff-yh	you [fem.sg.] <verb> me	+iy/CVSUFF_SUBJ:2FS+niy/CVSUFF_DO:1S	
-ينا	ِينا	CVSuff-yh	you [fem.sg.] <verb> us	+iy/CVSUFF_SUBJ:2FS+nA/CVSUFF_DO:1P	
-وه	ُوهُ	PVSuff-uwh	they <verb> it/him	+uw/PVSUFF_SUBJ:3MP+hu/PVSUFF_DO:3MS	
-وهما	ُوهُما	PVSuff-uwh	they <verb> them (both)	+uw/PVSUFF_SUBJ:3MP+humA/PVSUFF_DO:3D	
-وهم	ُوهُم	PVSuff-uwh	they <verb> them	+uw/PVSUFF_SUBJ:3MP+hum/PVSUFF_DO:3MP	
-وها	ُوها	PVSuff-uwh	they <verb> it/them/her	+uw/PVSUFF_SUBJ:3MP+hA/PVSUFF_DO:3FS	
-وهن	ُوهُنَّ	PVSuff-uwh	they <verb> them	+uw/PVSUFF_SUBJ:3MP+hun~a/PVSUFF_DO:3FP	
-وك	ُوكَ	PVSuff-uwh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+ka/PVSUFF_DO:2MS	
-وك	ُوكِ	PVSuff-uwh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+ki/PVSUFF_DO:2FS	
-وكما	ُوكُما	PVSuff-uwh	they <verb> you (both)	+uw/PVSUFF_SUBJ:3MP+kumA/PVSUFF_DO:2D	
-وكم	ُوكُم	PVSuff-uwh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+kum/PVSUFF_DO:2MP	
-وكن	ُوكُنَّ	PVSuff-uwh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+kun~a/PVSUFF_DO:2FP	
-وني	ُونِي	PVSuff-uwh	they <verb> me	+uw/PVSUFF_SUBJ:3MP+niy/PVSUFF_DO:1S	
-ونا	ُونا	PVSuff-uwh	they <verb> us	+uw/PVSUFF_SUBJ:3MP+nA/PVSUFF_DO:1P	
-وه	َوْهُ	PVSuff-awh	they <verb> it/him	+uw/PVSUFF_SUBJ:3MP+hu/PVSUFF_DO:3MS	
-وهما	َوْهُما	PVSuff-awh	they <verb> them (both)	+uw/PVSUFF_SUBJ:3MP+humA/PVSUFF_DO:3D	
-وهم	َوْهُم	PVSuff-awh	they <verb> them	+uw/PVSUFF_SUBJ:3MP+hum/PVSUFF_DO:3MP	
-وها	َوْها	PVSuff-awh	they <verb> it/them/her	+uw/PVSUFF_SUBJ:3MP+hA/PVSUFF_DO:3FS	
-وهن	َوْهُنَّ	PVSuff-awh	they <verb> them	+uw/PVSUFF_SUBJ:3MP+hun~a/PVSUFF_DO:3FP	
-وك	َوْكَ	PVSuff-awh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+ka/PVSUFF_DO:2MS	
-وك	َوْكِ	PVSuff-awh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+ki/PVSUFF_DO:2FS	
-وكما	َوْكُما	PVSuff-awh	they <verb> you (both)	+uw/PVSUFF_SUBJ:3MP+kumA/PVSUFF_DO:2D	
-وكم	َوْكُم	PVSuff-awh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+kum/PVSUFF_DO:2MP	
-وكن	َوْكُنَّ	PVSuff-awh	they <verb> you	+uw/PVSUFF_SUBJ:3MP+kun~a/PVSUFF_DO:2FP	
-وني	َوْنِي	PVSuff-awh	they <verb> me	+uw/PVSUFF_SUBJ:3MP+niy/PVSUFF_DO:1S	
-ونا	َوْنا	PVSuff-awh	they <verb> us	+uw/PVSUFF_SUBJ:3MP+nA/PVSUFF_DO:1P	
-ه	ه	IVSuff-h	it/him	+hu/IVSUFF_DO:3MS	
-هما	هما	IVSuff-h	them (both)	+humA/IVSUFF_DO:3D	
-هم	هم	IVSuff-h	them	+hum/IVSUFF_DO:3MP	
-ها	ها	IVSuff-h	it/them/her	+hA/IVSUFF_DO:3FS	
-هن	هنَّ	IVSuff-h	them	+hun~a/IVSUFF_DO:3FP	
-ك	كَ	IVSuff-k	you	+ka/IVSUFF_DO:2MS	
-ك	كِ	IVSuff-k	you	+ki/IVSUFF_DO:2FS	
-كما	كُما	IVSuff-k	you (both)	+kumA/IVSUFF_DO:2D	
-كم	كُم	IVSuff-k	you	+kum/IVSUFF_DO:2MP	
-كن	كُنَّ	IVSuff-k	you	+kun~a/IVSUFF_DO:2FP	
-ني	نِي	IVSuff-ny-nA	me	+niy/IVSUFF_DO:1S	
-نا	نا	IVSuff-ny-nA	us	+nA/IVSUFF_DO:1P	
-ن	ْنَ	IVSuff-n	[fem.pl.]	+na/IVSUFF_SUBJ:FP	
-	َّ	IVSuff-~n	[fem.pl.]	+na/IVSUFF_SUBJ:FP	
-نه	ْنَهُ	IVSuff-nh	it/him	+na/IVSUFF_SUBJ:FP+hu/IVSUFF_DO:3MS	
-نهما	ْنَهُما	IVSuff-nh	them (both)	+na/IVSUFF_SUBJ:FP+humA/IVSUFF_DO:3D	
-نهم	ْنَهُم	IVSuff-nh	them	+na/IVSUFF_SUBJ:FP+hum/IVSUFF_DO:3MP	
-نها	ْنَها	IVSuff-nh	it/them/her	+na/IVSUFF_SUBJ:FP+hA/IVSUFF_DO:3FS	
-نهن	ْنَهُنَّ	IVSuff-nh	them	+na/IVSUFF_SUBJ:FP+hun~a/IVSUFF_DO:3FP	
-نني	ْنَنِي	IVSuff-nh	me	+na/IVSUFF_SUBJ:FP+niy/IVSUFF_DO:1S	
-ننا	ْنَنا	IVSuff-nh	us	+na/IVSUFF_SUBJ:FP+nA/IVSUFF_DO:1P	
-ه	َّهُ	IVSuff-~nh	it/him	+na/IVSUFF_SUBJ:FP+hu/IVSUFF_DO:3MS	
-هما	َّهُما	IVSuff-~nh	them (both)	+na/IVSUFF_SUBJ:FP+humA/IVSUFF_DO:3D	
-هم	َّهُم	IVSuff-~nh	them	+na/IVSUFF_SUBJ:FP+hum/IVSUFF_DO:3MP	
-ها	َّها	IVSuff-~nh	it/them/her	+na/IVSUFF_SUBJ:FP+hA/IVSUFF_DO:3FS	
-هن	َّهُنَّ	IVSuff-~nh	them	+na/IVSUFF_SUBJ:FP+hun~a/IVSUFF_DO:3FP	
-ني	َّنِي	IVSuff-~nh	me	+na/IVSUFF_SUBJ:FP+niy/IVSUFF_DO:1S	
-نا	َّنا	IVSuff-~nh	us	+na/IVSUFF_SUBJ:FP+nA/IVSUFF_DO:1P	
-نك	ْنَكَ	IVSuff-nk	you	+na/IVSUFF_SUBJ:3FP+ka/IVSUFF_DO:2MS	
-نك	ْنَكِ	IVSuff-nk	you	+na/IVSUFF_SUBJ:3FP+ki/IVSUFF_DO:2FS	
-نكما	ْنَكُما	IVSuff-nk	you (both)	+na/IVSUFF_SUBJ:3FP+kumA/IVSUFF_DO:2D	
-نكم	ْنَكُم	IVSuff-nk	you	+na/IVSUFF_SUBJ:3FP+kum/IVSUFF_DO:2MP	
-نكن	ْنَكُنَّ	IVSuff-nk	you	+na/IVSUFF_SUBJ:3FP+kun~a/IVSUFF_DO:2FP	
-ك	َّكَ	IVSuff-~nk	you	+na/IVSUFF_SUBJ:3FP+ka/IVSUFF_DO:2MS	
-ك	َّكِ	IVSuff-~nk	you	+na/IVSUFF_SUBJ:3FP+ki/IVSUFF_DO:2FS	
-كما	َّكُما	IVSuff-~nk	you (both)	+na/IVSUFF_SUBJ:3FP+kumA/IVSUFF_DO:2D	
-كم	َّكُم	IVSuff-~nk	you	+na/IVSUFF_SUBJ:3FP+kum/IVSUFF_DO:2MP	
-كن	َّكُنَّ	IVSuff-~nk	you	+na/IVSUFF_SUBJ:3FP+kun~a/IVSUFF_DO:2FP	
-ا	ا	IVSuff-A	[du.]	+A/IVSUFF_SUBJ:D_MOOD:SJ	
-		IVSuff-|	[du.]	+A/IVSUFF_SUBJ:D_MOOD:SJ	
-اه	اهُ	IVSuff-Ah	it/him	+A/IVSUFF_SUBJ:D_MOOD:SJ+hu/IVSUFF_DO:3MS	
-اهما	اهُما	IVSuff-Ah	them (both)	+A/IVSUFF_SUBJ:D_MOOD:SJ+humA/IVSUFF_DO:3D	
-اهم	اهُم	IVSuff-Ah	them	+A/IVSUFF_SUBJ:D_MOOD:SJ+hum/IVSUFF_DO:3MP	
-اها	اها	IVSuff-Ah	it/them/her	+A/IVSUFF_SUBJ:D_MOOD:SJ+hA/IVSUFF_DO:3FS	
-اهن	اهُنَّ	IVSuff-Ah	them	+A/IVSUFF_SUBJ:D_MOOD:SJ+hun~a/IVSUFF_DO:3FP	
-اني	انِي	IVSuff-Ah	me	+A/IVSUFF_SUBJ:D_MOOD:SJ+niy/IVSUFF_DO:1S	
-انا	انا	IVSuff-Ah	us	+A/IVSUFF_SUBJ:D_MOOD:SJ+nA/IVSUFF_DO:1P	
-ه	هُ	IVSuff-|h	it/him	+A/IVSUFF_SUBJ:D_MOOD:SJ+hu/IVSUFF_DO:3MS	
-هما	هُما	IVSuff-|h	them (both)	+A/IVSUFF_SUBJ:D_MOOD:SJ+humA/IVSUFF_DO:3D	
-هم	هُم	IVSuff-|h	them	+A/IVSUFF_SUBJ:D_MOOD:SJ+hum/IVSUFF_DO:3MP	
-ها	ها	IVSuff-|h	it/them/her	+A/IVSUFF_SUBJ:D_MOOD:SJ+hA/IVSUFF_DO:3FS	
-هن	هُنَّ	IVSuff-|h	them	+A/IVSUFF_SUBJ:D_MOOD:SJ+hun~a/IVSUFF_DO:3FP	
-ني	نِي	IVSuff-|h	me	+A/IVSUFF_SUBJ:D_MOOD:SJ+niy/IVSUFF_DO:1S	
-نا	نا	IVSuff-|h	us	+A/IVSUFF_SUBJ:D_MOOD:SJ+nA/IVSUFF_DO:1P	
-اك	اكَ	IVSuff-Ak	you	+A/IVSUFF_SUBJ:3D+ka/IVSUFF_DO:2MS	
-اك	اكِ	IVSuff-Ak	you	+A/IVSUFF_SUBJ:3D+ki/IVSUFF_DO:2FS	
-اكما	اكُما	IVSuff-Ak	you (both)	+A/IVSUFF_SUBJ:3D+kumA/IVSUFF_DO:2D	
-اكم	اكُم	IVSuff-Ak	you	+A/IVSUFF_SUBJ:3D+kum/IVSUFF_DO:2MP	
-اكن	اكُنَّ	IVSuff-Ak	you	+A/IVSUFF_SUBJ:3D+kun~a/IVSUFF_DO:2FP	
-ك	كَ	IVSuff-|k	you	+A/IVSUFF_SUBJ:3D+ka/IVSUFF_DO:2MS	
-ك	كِ	IVSuff-|k	you	+A/IVSUFF_SUBJ:3D+ki/IVSUFF_DO:2FS	
-كما	كُما	IVSuff-|k	you (both)	+A/IVSUFF_SUBJ:3D+kumA/IVSUFF_DO:2D	
-كم	كُم	IVSuff-|k	you	+A/IVSUFF_SUBJ:3D+kum/IVSUFF_DO:2MP	
-كن	كُنَّ	IVSuff-|k	you	+A/IVSUFF_SUBJ:3D+kun~a/IVSUFF_DO:2FP	
-ان	انِ	IVSuff-An	[du.]	+Ani/IVSUFF_SUBJ:D_MOOD:I	
-ن	نِ	IVSuff-|n	[du.]	+Ani/IVSUFF_SUBJ:D_MOOD:I	
-انه	انِهِ	IVSuff-Anh	it/him	+Ani/IVSUFF_SUBJ:D_MOOD:I+hu/IVSUFF_DO:3MS	
-انهما	انِهِما	IVSuff-Anh	them (both)	+Ani/IVSUFF_SUBJ:D_MOOD:I+humA/IVSUFF_DO:3D	
-انهم	انِهِم	IVSuff-Anh	them	+Ani/IVSUFF_SUBJ:D_MOOD:I+hum/IVSUFF_DO:3MP	
-انها	انِها	IVSuff-Anh	it/them/her	+Ani/IVSUFF_SUBJ:D_MOOD:I+hA/IVSUFF_DO:3FS	
-انهن	انِهِنَّ	IVSuff-Anh	them	+Ani/IVSUFF_SUBJ:D_MOOD:I+hun~a/IVSUFF_DO:3FP	
-انني	انِنِي	IVSuff-Anh	me	+Ani/IVSUFF_SUBJ:D_MOOD:I+niy/IVSUFF_DO:1S	
-اننا	انِنا	IVSuff-Anh	us	+Ani/IVSUFF_SUBJ:D_MOOD:I+nA/IVSUFF_DO:1P	
-نه	نِهِ	IVSuff-|nh	it/him	+Ani/IVSUFF_SUBJ:D_MOOD:I+hu/IVSUFF_DO:3MS	
-نهما	نِهِما	IVSuff-|nh	them (both)	+Ani/IVSUFF_SUBJ:D_MOOD:I+humA/IVSUFF_DO:3D	
-نهم	نِهِم	IVSuff-|nh	them	+Ani/IVSUFF_SUBJ:D_MOOD:I+hum/IVSUFF_DO:3MP	
-نها	نِها	IVSuff-|nh	it/them/her	+Ani/IVSUFF_SUBJ:D_MOOD:I+hA/IVSUFF_DO:3FS	
-نهن	نِهِنَّ	IVSuff-|nh	them	+Ani/IVSUFF_SUBJ:D_MOOD:I+hun~a/IVSUFF_DO:3FP	
-نني	نِنِي	IVSuff-|nh	me	+Ani/IVSUFF_SUBJ:D_MOOD:I+niy/IVSUFF_DO:1S	
-ننا	نِنا	IVSuff-|nh	us	+Ani/IVSUFF_SUBJ:D_MOOD:I+nA/IVSUFF_DO:1P	
-انك	انِكَ	IVSuff-Ank	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+ka/IVSUFF_DO:2MS	
-انك	انِكِ	IVSuff-Ank	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+ki/IVSUFF_DO:2FS	
-انكما	انِكُما	IVSuff-Ank	you (both)	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kumA/IVSUFF_DO:2D	
-انكم	انِكُم	IVSuff-Ank	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kum/IVSUFF_DO:2MP	
-انكن	انِكُنَّ	IVSuff-Ank	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kun~a/IVSUFF_DO:2FP	
-نك	نِكَ	IVSuff-|nk	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+ka/IVSUFF_DO:2MS	
-نك	نِكِ	IVSuff-|nk	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+ki/IVSUFF_DO:2FS	
-نكما	نِكُما	IVSuff-|nk	you (both)	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kumA/IVSUFF_DO:2D	
-نكم	نِكُم	IVSuff-|nk	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kum/IVSUFF_DO:2MP	
-نكن	نِكُنَّ	IVSuff-|nk	you	+Ani/IVSUFF_SUBJ:3D_MOOD:I+kun~a/IVSUFF_DO:2FP	
-وا	ُوا	IVSuff-wA	[masc.pl.]	+uwA/IVSUFF_SUBJ:MP_MOOD:SJ	
-وا	وْا	IVSuff-awA	[masc.pl.]	+awoA/IVSUFF_SUBJ:MP_MOOD:SJ	
-وه	ُوهُ	IVSuff-wh	it/him	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+hu/IVSUFF_DO:3MS	
-وهما	ُوهُما	IVSuff-wh	them (both)	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+humA/IVSUFF_DO:3D	
-وهم	ُوهُم	IVSuff-wh	them	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+hum/IVSUFF_DO:3MP	
-وها	ُوها	IVSuff-wh	it/them/her	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+hA/IVSUFF_DO:3FS	
-وهن	ُوهُنَّ	IVSuff-wh	them	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+hun~a/IVSUFF_DO:3FP	
-وني	ُونِي	IVSuff-wh	me	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+niy/IVSUFF_DO:1S	
-ونا	ُونا	IVSuff-wh	us	+uw/IVSUFF_SUBJ:MP_MOOD:SJ+nA/IVSUFF_DO:1P	
-وه	وْهُ	IVSuff-awh	it/him	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+hu/IVSUFF_DO:3MS	
-وهما	وْهُما	IVSuff-awh	them (both)	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+humA/IVSUFF_DO:3D	
-وهم	وْهُم	IVSuff-awh	them	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+hum/IVSUFF_DO:3MP	
-وها	وْها	IVSuff-awh	it/them/her	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+hA/IVSUFF_DO:3FS	
-وهن	وْهُنَّ	IVSuff-awh	them	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+hun~a/IVSUFF_DO:3FP	
-وني	وْنِي	IVSuff-awh	me	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+niy/IVSUFF_DO:1S	
-ونا	وْنا	IVSuff-awh	us	+awo/IVSUFF_SUBJ:MP_MOOD:SJ+nA/IVSUFF_DO:1P	
-وك	ُوكَ	IVSuff-wk	you	+uw/IVSUFF_SUBJ:3MP_MOOD:SJ+ka/IVSUFF_DO:2MS	
-وك	ُوكِ	IVSuff-wk	you	+uw/IVSUFF_SUBJ:3MP_MOOD:SJ+ki/IVSUFF_DO:2FS	
-وكما	ُوكُما	IVSuff-wk	you (both)	+uw/IVSUFF_SUBJ:3MP_MOOD:SJ+kumA/IVSUFF_DO:2D	
-وكم	ُوكُم	IVSuff-wk	you	+uw/IVSUFF_SUBJ:3MP_MOOD:SJ+kum/IVSUFF_DO:2MP	
-وكن	ُوكُنَّ	IVSuff-wk	you	+uw/IVSUFF_SUBJ:3MP_MOOD:SJ+kun~a/IVSUFF_DO:2FP	
-وك	وْكَ	IVSuff-awk	you	+awo/IVSUFF_SUBJ:3MP_MOOD:SJ+ka/IVSUFF_DO:2MS	
-وك	وْكِ	IVSuff-awk	you	+awo/IVSUFF_SUBJ:3MP_MOOD:SJ+ki/IVSUFF_DO:2FS	
-وكما	وْكُما	IVSuff-awk	you (both)	+awo/IVSUFF_SUBJ:3MP_MOOD:SJ+kumA/IVSUFF_DO:2D	
-وكم	وْكُم	IVSuff-awk	you	+awo/IVSUFF_SUBJ:3MP_MOOD:SJ+kum/IVSUFF_DO:2MP	
-وكن	وْكُنَّ	IVSuff-awk	you	+awo/IVSUFF_SUBJ:3MP_MOOD:SJ+kun~a/IVSUFF_DO:2FP	
-ون	ُونَ	IVSuff-wn	[masc.pl.]	+uwna/IVSUFF_SUBJ:MP_MOOD:I	
-ون	وْنَ	IVSuff-awn	[masc.pl.]	+wona/IVSUFF_SUBJ:MP_MOOD:I	
-ونه	ُونَهُ	IVSuff-wnh	it/him	+uwna/IVSUFF_SUBJ:MP_MOOD:I+hu/IVSUFF_DO:3MS	
-ونهما	ُونَهُما	IVSuff-wnh	them (both)	+uwna/IVSUFF_SUBJ:MP_MOOD:I+humA/IVSUFF_DO:3D	
-ونهم	ُونَهُم	IVSuff-wnh	them	+uwna/IVSUFF_SUBJ:MP_MOOD:I+hum/IVSUFF_DO:3MP	
-ونها	ُونَها	IVSuff-wnh	it/them/her	+uwna/IVSUFF_SUBJ:MP_MOOD:I+hA/IVSUFF_DO:3FS	
-ونهن	ُونَهُنَّ	IVSuff-wnh	them	+uwna/IVSUFF_SUBJ:MP_MOOD:I+hun~a/IVSUFF_DO:3FP	
-ونني	ُونَنِي	IVSuff-wnh	me	+uwna/IVSUFF_SUBJ:MP_MOOD:I+niy/IVSUFF_DO:1S	
-وننا	ُونَنا	IVSuff-wnh	us	+uwna/IVSUFF_SUBJ:MP_MOOD:I+nA/IVSUFF_DO:1P	
-ونه	وْنَهُ	IVSuff-awnh	it/him	+awona/IVSUFF_SUBJ:MP_MOOD:I+hu/IVSUFF_DO:3MS	
-ونهما	وْنَهُما	IVSuff-awnh	them (both)	+awona/IVSUFF_SUBJ:MP_MOOD:I+humA/IVSUFF_DO:3D	
-ونهم	وْنَهُم	IVSuff-awnh	them	+awona/IVSUFF_SUBJ:MP_MOOD:I+hum/IVSUFF_DO:3MP	
-ونها	وْنَها	IVSuff-awnh	it/them/her	+awona/IVSUFF_SUBJ:MP_MOOD:I+hA/IVSUFF_DO:3FS	
-ونهن	وْنَهُنَّ	IVSuff-awnh	them	+awona/IVSUFF_SUBJ:MP_MOOD:I+hun~a/IVSUFF_DO:3FP	
-ونني	وْنَنِي	IVSuff-awnh	me	+awona/IVSUFF_SUBJ:MP_MOOD:I+niy/IVSUFF_DO:1S	
-وننا	وْنَنا	IVSuff-awnh	us	+awona/IVSUFF_SUBJ:MP_MOOD:I+nA/IVSUFF_DO:1P	
-ونك	ُونَكَ	IVSuff-wnk	you	+uwna/IVSUFF_SUBJ:3MP_MOOD:I+ka/IVSUFF_DO:2MS	
-ونك	ُونَكِ	IVSuff-wnk	you	+uwna/IVSUFF_SUBJ:3MP_MOOD:I+ki/IVSUFF_DO:2FS	
-ونكما	ُونَكُما	IVSuff-wnk	you (both)	+uwna/IVSUFF_SUBJ:3MP_MOOD:I+kumA/IVSUFF_DO:2D	
-ونكم	ُونَكُم	IVSuff-wnk	you	+uwna/IVSUFF_SUBJ:3MP_MOOD:I+kum/IVSUFF_DO:2MP	
-ونكن	ُونَكُنَّ	IVSuff-wnk	you	+uwna/IVSUFF_SUBJ:3MP_MOOD:I+kun~a/IVSUFF_DO:2FP	
-ونك	وْنَكَ	IVSuff-awnk	you	+awona/IVSUFF_SUBJ:3MP_MOOD:I+ka/IVSUFF_DO:2MS	
-ونك	وْنَكِ	IVSuff-awnk	you	+awona/IVSUFF_SUBJ:3MP_MOOD:I+ki/IVSUFF_DO:2FS	
-ونكما	وْنَكُما	IVSuff-awnk	you (both)	+awona/IVSUFF_SUBJ:3MP_MOOD:I+kumA/IVSUFF_DO:2D	
-ونكم	وْنَكُم	IVSuff-awnk	you	+awona/IVSUFF_SUBJ:3MP_MOOD:I+kum/IVSUFF_DO:2MP	
-ونكن	وْنَكُنَّ	IVSuff-awnk	you	+awona/IVSUFF_SUBJ:3MP_MOOD:I+kun~a/IVSUFF_DO:2FP	
-ي	ِي	IVSuff-y	[fem.sg.]	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ	
-يه	ِيهِ	IVSuff-yh	it/him	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+hi/IVSUFF_DO:3MS	
-يهما	ِيهِما	IVSuff-yh	them (both)	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+himA/IVSUFF_DO:3D	
-يهم	ِيهِم	IVSuff-yh	them	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+him/IVSUFF_DO:3MP	
-يها	ِيها	IVSuff-yh	it/them/her	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+hA/IVSUFF_DO:3FS	
-يهن	ِيهِنَّ	IVSuff-yh	them	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+hin~a/IVSUFF_DO:3FP	
-يني	ِينِي	IVSuff-yh	me	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+niy/IVSUFF_DO:1S	
-ينا	ِينا	IVSuff-yh	us	+iy/IVSUFF_SUBJ:2FS_MOOD:SJ+nA/IVSUFF_DO:1P	
-ين	ِينَ	IVSuff-yn	[fem.sg.]	+iyna/IVSUFF_SUBJ:2FS_MOOD:I	
-ينه	ِينَهُ	IVSuff-ynh	it/him	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+hu/IVSUFF_DO:3MS	
-ينهما	ِينَهُما	IVSuff-ynh	them (both)	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+humA/IVSUFF_DO:3D	
-ينهم	ِينَهُم	IVSuff-ynh	them	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+hum/IVSUFF_DO:3MP	
-ينها	ِينَها	IVSuff-ynh	it/them/her	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+hA/IVSUFF_DO:3FS	
-ينهن	ِينَهُنَّ	IVSuff-ynh	them	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+hun~a/IVSUFF_DO:3FP	
-ينني	ِينَنِي	IVSuff-ynh	me	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+niy/IVSUFF_DO:1S	
-يننا	ِينَنا	IVSuff-ynh	us	+iyna/IVSUFF_SUBJ:2FS_MOOD:I+nA/IVSUFF_DO:1P	
-ه	هِ	FWSuff-hi	it/him	+hi/PRON_3MS	
-هما	هِما	FWSuff-hi	them (both)	+himA/PRON_3D	
-هم	هِم	FWSuff-hi	them [masc.pl.]	+him/PRON_3MP	
-ها	ها	FWSuff-hi	it/them/her	+hA/PRON_3FS	
-هن	هِنَّ	FWSuff-hi	them [fem.pl.]	+hin~a/PRON_3FP	
-ه	هُ	FWSuff-hu-he	it/he	+hu/PRON_3MS	
-هما	هُما	FWSuff-hu-he	they (both)	+humA/PRON_3D	
-هم	هُم	FWSuff-hu-he	they [masc.pl.]	+hum/PRON_3MP	
-ها	ها	FWSuff-hu-he	it/they/she	+hA/PRON_3FS	
-هن	هُنَّ	FWSuff-hu-he	they [fem.pl.]	+hun~a/PRON_3FP	
-ه	هُ	FWSuff-hu-him	it/him	+hu/PRON_3MS	
-هما	هُما	FWSuff-hu-him	them (both)	+humA/PRON_3D	
-هم	هُم	FWSuff-hu-him	them [masc.pl.]	+hum/PRON_3MP	
-ها	ها	FWSuff-hu-him	it/them/her	+hA/PRON_3FS	
-هن	هُنَّ	FWSuff-hu-him	them [fem.pl.]	+hun~a/PRON_3FP	
-ك	كَ	FWSuff-k	you [masc.sg.]	+ka/PRON_2MS	
-ك	كِ	FWSuff-k	you [fem.sg.]	+ki/PRON_2FS	
-كما	كُما	FWSuff-k	you (both)	+kumA/PRON_2D	
-كم	كُم	FWSuff-k	you [masc.pl.]	+kum/PRON_2MP	
-كن	كُنَّ	FWSuff-k	you [fem.pl.]	+kun~a/PRON_2FP	
-	َّ	FWSuff-~a	me	+~a/PRON_1S	
-ي	يَ	FWSuff-ya	me	+ya/PRON_1S	
-ني	نِي	FWSuff-niy-I	I	+niy/PRON_1S	
-ني	نِي	FWSuff-niy-me	me	+niy/PRON_1S	
-ي	ِي	FWSuff-iy-I	I	+iy/PRON_1S	
-ي	ِي	FWSuff-iy-me	me	+iy/PRON_1S	
-ي	ِّي	FWSuff-~iy	me	+~iy/PRON_1S	
-نا	نا	FWSuff-nA-us	us	+nA/PRON_1P	
-نا	نا	FWSuff-nA-we	we	+nA/PRON_1P	
-ا	ا	FWSuff-A	we	+A/PRON_1P	
-ا	ّا	FWSuff-~A	us	+~A/PRON_1P	
+تما	ْتُما	PVSuff-t	you [du.] <verb>	+tumA/VSUFF_SUBJ:2D	
+تن	ْتُنَّ	PVSuff-t	you [fem.pl.] <verb>	+tun~a/VSUFF_SUBJ:2FP	
+ما	ُّما	PVSuff-~t	you [du.] <verb>	+tumA/VSUFF_SUBJ:2D	
+م	ُّم	PVSuff-~t	you [masc.pl.] <verb>	+tum/VSUFF_SUBJ:2MP	
+وا	وْا	IVSuff-awA	[masc.pl.]	+awoA/VSUFF_SUBJ:MP_MOOD:SJ	
+وا	َوْا	PVSuff-awA	they <verb>	+awoA/VSUFF_SUBJ:3MP	
+وا	ُوا	CVSuff-wA	you [masc.pl] <verb>	+uwA/VSUFF_SUBJ:2MP	
+وا	ُوا	IVSuff-wA	[masc.pl.]	+uwA/VSUFF_SUBJ:MP_MOOD:SJ	
+وا	ُوا	PVSuff-uwA	they <verb>	+uwA/VSUFF_SUBJ:3MP	
