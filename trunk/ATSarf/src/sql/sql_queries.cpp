@@ -976,21 +976,38 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 	perform_query(stmt);
 	if (query.numRowsAffected()==0)
 	{
-		error << "No entry removed in "+interpret_type(type)+"_category!\n";
-		return -2;
+		//try finding a different id for description (eg the id given is for a prefix while we are looking for suffix)
+		QString stmt2( QString("SELECT id FROM description ")+
+					  "WHERE name IN (SELECT name FROM description WHERE id=%1) AND type=%2");
+		stmt2=stmt2.arg(description_id).arg((int)type);
+		perform_query(stmt2);
+		long desc_other=description_id;
+		while (query.next()) {
+			desc_other=query.value(0).toLongLong();
+			QString stmt( QString("DELETE FROM %1_category ")+
+						  "WHERE %1_id=%2 AND category_id=%3 AND raw_data=\"%4\" "+
+								"AND description_id=%5 AND POS=\"%6\"");
+			stmt=stmt.arg(interpret_type(type)).arg(item_id).arg(category_id)
+					 .arg(raw_data).arg(desc_other).arg(POS);
+			perform_query(stmt);
+		}
+		if (query.numRowsAffected()==0) {
+			error << "No entry removed in "+interpret_type(type)+"_category!\n";
+			return -2;
+		} else {
+			description_id=desc_other;
+		}
 	} else if (query.numRowsAffected()>1) {
 		error << "More than one entry in "+interpret_type(type)+"_category removed!\n";
 		return -2;
 	}
 	stmt=QString( "SELECT COUNT(*)")+
 				  "FROM %1_category "+
-				  "WHERE %1_id=%2 AND category_id=%3 AND raw_data=\"%4\" "+
-						"AND description_id=%5 AND POS=\"%6\"";
-	stmt=stmt.arg(interpret_type(type)).arg(item_id).arg(category_id)
-			 .arg(raw_data).arg(description_id).arg(POS);
+				  "WHERE %1_id=%2";
+	stmt=stmt.arg(interpret_type(type)).arg(item_id);
 	perform_query(stmt);
 	assert(query.next());
-	if (query.record().value(1)==0) {
+	if (query.record().value(0)==0) {
 		QString stmt( "DELETE FROM %1 WHERE id=%2");
 		stmt=stmt.arg(interpret_type(type)).arg(item_id);
 		perform_query(stmt);

@@ -34,7 +34,7 @@ void SplitDialog::split_action() {
 				QString affix2=affix1.mid(affix.size());
 				QString raw_data2=raw_data1.mid(raw_data.size());
 				QString pos2=pos1.mid(pos.size());
-				QString description2=description1.mid(description.size()+ (t==PREFIX?3:1)); //' + ' or ' '
+				QString description2=description1.mid((description.size()==0?-1:description.size())+ (t==PREFIX?3:1)); //' + ' or ' '
 				int rowIndex2=getRow(affix2,raw_data2,pos2,description2);
 				if (rowIndex2<0) {
 					if (!pos2.isEmpty())
