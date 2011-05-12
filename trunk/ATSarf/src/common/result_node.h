@@ -9,7 +9,8 @@ class result_node:public node
     private:
         long previous_category_id;
         long affix_id;
-        long resulting_category_id;
+		long resulting_category_id :63;
+		bool isAcceptState:1;
 
 		void initialize(const result_node & n)
 		{
@@ -32,17 +33,18 @@ class result_node:public node
     #endif
 
 	#ifdef REDUCE_THRU_DIACRITICS
-		result_node(long affix_id,long previous_category_id,long resulting_category_id,QString raw_data):node()
+		result_node(long affix_id,long previous_category_id,long resulting_category_id,bool isAccept,QString raw_data):node()
 		{
 			this->raw_datas.clear();
 			add_raw_data(raw_data);
 	#else
-		result_node(long affix_id,long previous_category_id,long resulting_category_id)
+		result_node(long affix_id,long previous_category_id,long resulting_category_id,isAccept)
 		{
 	#endif
 			set_previous_category_id(previous_category_id);
 			set_resulting_category_id(resulting_category_id);
 			set_affix_id(affix_id);
+			set_accept_state(isAccept);
 		}
 		result_node(const result_node & n):node(n)
 		{
@@ -80,6 +82,12 @@ class result_node:public node
 		void set_resulting_category_id(long id)
 		{
 			resulting_category_id=id;
+		}
+		void set_accept_state(bool val) {
+			isAcceptState=val;
+		}
+		bool is_accept_state() {
+			return isAcceptState;
 		}
 		QString to_string(bool isAffix=true)
 		{

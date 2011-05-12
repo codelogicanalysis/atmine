@@ -8,6 +8,7 @@
 #include "text_handling.h"
 #include <assert.h>
 #include "database_info_block.h"
+#include "Retrieve_Template.h"
 
 
 #ifdef LOAD_FROM_FILE
@@ -29,6 +30,37 @@ inline QString cache_version()
 #endif
 #endif
 
+inline bool isAcceptState(item_types type,long cat_r_id) {
+	bool isAccept=false;
+	if (type==PREFIX) {
+		Retrieve_Template existABcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AB));
+		if (existABcheck.retrieve() && existABcheck.get(0).toInt()>0) {
+			Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
+			if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
+				isAccept=true;
+			}
+		}
+	} else {
+		Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
+		if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
+			Retrieve_Template existBCcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)BC));
+			if (existBCcheck.retrieve() && existBCcheck.get(0).toInt()>0) {
+				isAccept=true;
+			}
+		}
+	}
+	return isAccept;
+}
+
+inline bool hasCompatibleAffixes(item_types type,long cat_r_id) {
+	bool hasComp=false;
+	Retrieve_Template check("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)(type==PREFIX?AA:CC)));
+	if (check.retrieve() && check.get(0).toInt()>0) {
+		hasComp=true;
+	}
+	return hasComp;
+}
+
 void tree::print_tree_helper(node * current_node, int level)
 {
     out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
@@ -47,45 +79,48 @@ int tree::build_helper(item_types type, long cat_id1, int size, node * current)
     Search_Compatibility s2((type==PREFIX?AA:CC),cat_id1);
     while (s2.retrieve(cat_id2,cat_r_id))
     {
-            Search_by_category s3(cat_id2);
-#ifdef MEMORY_EXHAUSTIVE
-            all_item_info inf;
-            while(s3.retrieve(inf))
-            {
-                    QString name= getColumn(interpret_type(type),"name",inf.item_id);
-                    node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,inf.raw_data,inf.description,current);
-#elif defined(REDUCE_THRU_DIACRITICS)
-            all_item_info inf;
-            while(s3.retrieve(inf))
-            {
-                    QString name= getColumn(interpret_type(type),"name",inf.item_id);
-                    node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,inf.raw_data,current);
-#else
-            long long affix_id;
-            while(s3.retrieve(affix_id))
-            {
-                    QString name= getColumn(interpret_type(type),"name",affix_id);
-                    node * next=addElement(name,affix_id,cat_id2,cat_r_id,current);
+		bool isAccept=isAcceptState(type,cat_r_id);
+		if (isAccept || hasCompatibleAffixes(type,cat_r_id)) { //dont add to tree branches that have no rules and connect to nothing else that may have rules
+			Search_by_category s3(cat_id2);
+		#ifdef MEMORY_EXHAUSTIVE
+			all_item_info inf;
+			while(s3.retrieve(inf))
+			{
+					QString name= getColumn(interpret_type(type),"name",inf.item_id);
+					node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,inf.description,current);
+		#elif defined(REDUCE_THRU_DIACRITICS)
+			all_item_info inf;
+			while(s3.retrieve(inf))
+			{
+					QString name= getColumn(interpret_type(type),"name",inf.item_id);
+					node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,current);
+		#else
+			long long affix_id;
+			while(s3.retrieve(affix_id))
+			{
+					QString name= getColumn(interpret_type(type),"name",affix_id);
+					node * next=addElement(name,affix_id,cat_id2,cat_r_id,isAccept,current);
 
-#endif
-                    build_helper(type,cat_r_id,size-name.length(),next);
-            }
+		#endif
+					build_helper(type,cat_r_id,size-name.length(),next);
+			}
+		}
     }
     return 0;
 }
 #ifdef MEMORY_EXHAUSTIVE
-node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,QString description,node * current)
+node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,QString description,node * current)
 #elif defined (REDUCE_THRU_DIACRITICS)
-node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,node * current)
+node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,node * current)
 #else
-node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,node * current)
+node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,node * current)
 #endif
 {
 	assert (equal(letters,raw_data));
 #ifdef LOAD_FROM_FILE
 	if (file!=NULL)
 	{
-		(*file)<<letters<<affix_id<<category_id<<resulting_category_id
+		(*file)<<letters<<affix_id<<category_id<<resulting_category_id<<isAccept
 			#if defined (REDUCE_THRU_DIACRITICS)
 				<<raw_data
 			#elif defined (MEMORY_EXHAUSTIVE)
@@ -95,8 +130,7 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
 	}
 #endif
 	//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
-    if (current->isLetterNode() && current!=base)
-    {
+	if (current->isLetterNode() && current!=base) {
 		error << "Unexpected Error: provided node was a letter node and not a result one\n";
 	#ifdef LOAD_FROM_FILE
 		if (file!=NULL)
@@ -165,11 +199,11 @@ result:
 		}
     }
 #ifdef MEMORY_EXHAUSTIVE
-    result_node * result=new result_node(affix_id,category_id,resulting_category_id,raw_data,description);
+	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept,raw_data,description);
 #elif defined(REDUCE_THRU_DIACRITICS)
-    result_node * result=new result_node(affix_id,category_id,resulting_category_id,raw_data);
+	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept,raw_data);
 #else
-    result_node * result=new result_node(affix_id,category_id,resulting_category_id);
+	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept);
 #endif
     current->addChild(result);
     current=result;
@@ -332,7 +366,7 @@ int tree::build_affix_tree_from_file(item_types type)
 		if (version==cache_version())
 		{
 			int num1,num2;
-			QString letters; long affix_id;long category_id; long resulting_category_id;
+			QString letters; long affix_id;long category_id; long resulting_category_id;bool isAccept;
 		#if defined (REDUCE_THRU_DIACRITICS)
 			QString raw_data;
 		#elif defined (MEMORY_EXHAUSTIVE)
@@ -340,14 +374,14 @@ int tree::build_affix_tree_from_file(item_types type)
 		#endif
 			while(!in.atEnd())
 			{
-				in>>letters>>affix_id>>category_id>>resulting_category_id
+				in>>letters>>affix_id>>category_id>>resulting_category_id>>isAccept
 					#if defined (REDUCE_THRU_DIACRITICS)
 							>>raw_data
 					#elif defined (MEMORY_EXHAUSTIVE)
 							>>raw_data>>description
 					#endif
 							>>num1>>num2;
-				node * n=addElement(letters,affix_id,category_id,resulting_category_id,
+				node * n=addElement(letters,affix_id,category_id,resulting_category_id,isAccept,
 					#if defined (REDUCE_THRU_DIACRITICS)
 							raw_data,
 					#elif defined (MEMORY_EXHAUSTIVE)
@@ -406,37 +440,46 @@ int tree::build_affix_tree(item_types type)
 	int i=0;
     while (query.next())
     {
-            name=query.value(1).toString();
-			affix_id1=query.value(0).toULongLong();
-            Search_by_item s1(type,affix_id1);
+		name=query.value(1).toString();
+		affix_id1=query.value(0).toULongLong();
+		Search_by_item s1(type,affix_id1);
 #ifdef MEMORY_EXHAUSTIVE
-            minimal_item_info inf;
-            while(s1.retrieve(inf))
-            {
-                    node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,inf.description,base);
-					if (type!=STEM)
-						build_helper(type,inf.category_id,6-name.length(),next);
-            }
+		minimal_item_info inf;
+		while(s1.retrieve(inf))
+		{
+			bool isAccept=isAcceptState(type,inf.category_id);
+			if (isAccept || hasCompatibleAffixes(type,inf.category_id)) {
+				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,isAccept,inf.raw_data,inf.description,base);
+				if (type!=STEM)
+					build_helper(type,inf.category_id,6-name.length(),next);
+			}
+		}
 #elif defined(REDUCE_THRU_DIACRITICS)
-            minimal_item_info inf;
-            while(s1.retrieve(inf))
-            {
-					node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,inf.raw_data,base);
-					if (type!=STEM)
-						build_helper(type,inf.category_id,6-name.length(),next);
-            }
+		minimal_item_info inf;
+		while(s1.retrieve(inf))
+		{
+			bool isAccept=isAcceptState(type,inf.category_id);
+			if (isAccept || hasCompatibleAffixes(type,inf.category_id)) {
+				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,isAccept,inf.raw_data,base);
+				if (type!=STEM)
+					build_helper(type,inf.category_id,6-name.length(),next);
+			}
+		}
 #else
-            long cat_id;
-            while(s1.retrieve(cat_id))
-            {
-                    node * next=addElement(name,affix_id1,cat_id,cat_id,base);
-					if (type!=STEM)
-						build_helper(type,cat_id,6-name.length(),next);
-            }
+		long cat_id;
+		while(s1.retrieve(cat_id))
+		{
+			bool isAccept=isAcceptState(type,cat_id);
+			if (isAccept || hasCompatibleAffixes(type,cat_id)) {
+				node * next=addElement(name,affix_id1,cat_id,cat_id,isAccept,base);
+				if (type!=STEM)
+					build_helper(type,cat_id,6-name.length(),next);
+			}
+		}
 
 #endif
-			i++;
-			database_info.prgsIFC->report((double)i/size*100+0.5);
+		i++;
+		database_info.prgsIFC->report((double)i/size*100+0.5);
     }
 #ifdef LOAD_FROM_FILE
 	rawFile.close();

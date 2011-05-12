@@ -29,11 +29,11 @@ class tree
 		void print_tree_helper(node * current_node, int level);
 		int build_helper(item_types type, long cat_id1, int size, node * current);
 #ifdef MEMORY_EXHAUSTIVE
-		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,QString description,node * current);
+		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,QString description,node * current);
 #elif defined (REDUCE_THRU_DIACRITICS)
-		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,QString raw_data,node * current);
+		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,node * current);
 #else
-		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,node * current);
+		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,node * current);
 #endif
 	public:
 		tree();

@@ -11,8 +11,25 @@
 #include <QDir>
 
 //#define SHOW_CATEGORY
+typedef QMap<node *,int> AffixGraphMap;
+
+inline int getGraphID(AffixGraphMap & map,int & last_id, node * n) {
+	int curr_id;
+	AffixGraphMap::iterator it=map.find(n);
+	if (it==map.end()) {
+		curr_id=++last_id;
+		map.insert(n,curr_id);
+	}
+	else
+		curr_id=it.value();
+	return curr_id;
+}
+
 
 void verify(item_types type) {
+	int last_id=0;
+	AffixGraphMap map;
+	map.clear();
 	QString t=interpret_type(type);
 	QQueue<node *> queue;
 	node * base=(type==PREFIX?database_info.Prefix_Tree->getFirstNode():database_info.Suffix_Tree->getFirstNode());
@@ -35,11 +52,11 @@ void verify(item_types type) {
 		if (n.isLetterNode()) {
 			letter_node & l= (letter_node &)n;
 			QChar letter=l.getLetter();
-			d_out<<"n"<<(long)(&n)<<" [label=\""<<(letter!='\0'?letter:'-')<<"\", shape=circle];\n";
+			d_out<<"n"<<getGraphID(map,last_id,&n)<<" [label=\""<<(letter!='\0'?letter:'-')<<"\", shape=circle];\n";
 		}else {
 		#ifdef SHOW_CATEGORY
 			result_node & r= (result_node &)n;
-			d_out<<"n"<<(long)(&n)<<" [label=\""
+			d_out<<"n"<<getGraphID(map,last_id,&n)<<" [label=\""
 				#ifdef SHOW_CATEGORY_LABEL
 					<<database_info.comp_rules->getCategoryName(r.get_resulting_category_id())
 				#endif
@@ -48,8 +65,8 @@ void verify(item_types type) {
 		#ifdef SHOW_RAW_DATA
 			int size=r.raw_datas.size();
 			for (int i=0;i<size;i++) {
-				d_out<<"r"<<i<<" [label=\""<<r.raw_datas[i]<<"\", shape=oval];\n";
-				d_out<<"n"<<(long)(&n)<<"->"<<"r"<<i<<";\n";
+				d_out<<"r"<<getGraphID(map,last_id,&n)<<"_"<<i<<" [label=\""<<r.raw_datas[i]<<"\", shape=oval];\n";
+				d_out<<"n"<<getGraphID(map,last_id,&n)<<"->"<<"r"<<getGraphID(map,last_id,&n)<<"_"<<i<<";\n";
 			}
 		#endif
 		}
@@ -60,13 +77,13 @@ void verify(item_types type) {
 			node * nc=l_nodes[i];
 			if (nc!=NULL) {
 				queue.enqueue(nc);
-				d_out<<"n"
+				d_out<<"n"<< getGraphID(map,last_id,
 					#ifdef SHOW_CATEGORY
-						<<(long)(&n)
+						&n)
 					#else
-						<<(long)((n.isLetterNode()?&n:(n.getPrevious())))
+						(n.isLetterNode()?&n:(n.getPrevious())))
 					#endif
-						<<"->"<<"n"<<(long)nc<<";\n";
+						<<"->"<<"n"<<getGraphID(map,last_id,nc)<<";\n";
 			}
 		}
 
@@ -76,7 +93,7 @@ void verify(item_types type) {
 			if (nc!=NULL) {
 				queue.enqueue(nc);
 			#ifdef SHOW_CATEGORY
-				d_out<<"n"<<(long)(&n)<<"->"<<"n"<<(long)nc<<";\n";
+				d_out<<"n"<<getGraphID(map,last_id,&n)<<"->"<<"n"<<getGraphID(map,last_id,nc)<<";\n";
 			#endif
 			}
 		}
@@ -96,7 +113,7 @@ void verify(item_types type) {
 		sa->setWidget(pic);
 		mw->show();
 #else
-		system(QString("kgraphviewer ./%1.dot -caption %1.dot &").arg(t).arg(QDir::currentPath()).toStdString().data());
+		system(QString("kgraphviewer ./%1.dot -caption \"%1.dot\" &").arg(t).arg(QDir::currentPath()).toStdString().data());
 #endif
 	}
 	catch(...)

@@ -189,7 +189,8 @@ bool TreeSearch::operator ()()
 			reached_node=current_child;
 #endif
 			resulting_category_idOFCurrentMatch=((result_node *)current_child)->get_resulting_category_id();
-			if ( shouldcall_onmatch_ex(position) &&
+			bool isAccept=((result_node *)current_child)->is_accept_state();
+			if ( isAccept && shouldcall_onmatch_ex(position) &&
 				 !(on_match_helper())) {
 					stop=true;
 					break;
