@@ -12,7 +12,7 @@
 #include "ATMProgressIFC.h"
 
 typedef Triplet<long long, long, QString> ItemEntryKey;  //(item_id,category_id,raw_data)
-typedef Triplet<dbitvec,long,QString> ItemEntryInfo; //(abstract_categories,description_id,POS)
+typedef Triplet<dbitvec,long,QString> ItemEntryInfo; //(abstract_categories or reverse_description,description_id,POS)
 
 typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2PosDescAbsMap;//change all uses of this map
 typedef ItemCatRaw2PosDescAbsMap * ItemCatRaw2PosDescAbsMapPtr;

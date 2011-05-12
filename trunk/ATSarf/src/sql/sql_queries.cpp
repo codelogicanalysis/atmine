@@ -773,6 +773,7 @@ long long insert_description(QString name,item_types type)
 	return getID("description",name,QString("type=%1").arg((int)type));//get id of inserted
 }
 //TODO: change the order of the parameters to have those related only to stems last; but dont forget to change also the calls to this function accordingly
+//note: lemmaID for prefix and suffix means 'reverse_description' understood as 0 or 1
 long insert_item(item_types type,QString name, QString raw_data, QString category, int source_id, QList<long> * abstract_ids, QString description, QString POS,QString grammar_stem,QString lemma_ID)
 {
 #if 1 //if alef is first word and different form of alef the rawdata dont insert
@@ -935,6 +936,9 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 			else
 			{//TODO: check if what follows is correct
 				addSource(item_category,source_id,-1,primary_condition,false);
+				//check for conflict in reverse_description only since description_id and POS became now part of the primary key
+				if (resolve_conflict(item_category,"reverse_description",QVariant((bool)lemma_ID.toInt()),primary_condition,source_id,false)<0)
+					return -1;
 			}
 			update_dates(source_id);
 			return item_id;
@@ -959,8 +963,8 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	}
 	else
 	{
-		stmt="INSERT INTO %1_category(%1_id, category_id, sources, raw_data, description_id, POS)  VALUES('%2','%3','%4','%5','%6','%7')";
-		stmt=stmt.arg(table).arg( item_id).arg( category_id).arg( bitset_to_string(sources)).arg( raw_data).arg( description_id).arg(POS);
+		stmt="INSERT INTO %1_category(%1_id, category_id, sources, raw_data, description_id, POS,reverse_description)  VALUES('%2','%3','%4','%5','%6','%7',%8)";
+		stmt=stmt.arg(table).arg( item_id).arg( category_id).arg( bitset_to_string(sources)).arg( raw_data).arg( description_id).arg(POS).arg(lemma_ID.toInt());
 	}
 	perform_query(stmt);
 	update_dates(source_id);

@@ -26,6 +26,10 @@ class SuffixSearch : public TreeSearch
 				return false;
 			return shouldcall_onmatch(position);
 		}
+		virtual bool operator ()() {
+			return TreeSearch::operator ()();
+		}
+
 		/*static SuffixSearch * createSuffixSearch(QString * text,int start, )
 		{
 			SuffixSearch * me =new SuffixSearch(text,start);

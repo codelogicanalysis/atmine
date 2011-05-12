@@ -132,7 +132,9 @@ void MainWindow::on_pushButton_clicked()
 		return;
 	}
 	int rc;
-	if (!m_ui->chk_testing->isChecked())
+	if (m_ui->chk_verification->isChecked())
+		verify(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
+	else if (!m_ui->chk_testing->isChecked())
 		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
 	else
 		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);

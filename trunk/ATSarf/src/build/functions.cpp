@@ -105,7 +105,7 @@ int insert_buckwalter()
 			if (line.isEmpty()) //ignore empty lines if they exist
 				continue;
 			QStringList entries=line.split("\t",QString::KeepEmptyParts);
-			if (entries.size()!=num_entries)
+			if (entries.size()<num_entries)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
@@ -140,6 +140,7 @@ int insert_buckwalter()
 			}
 			QString abstract_category;
 			long abstract_id=-1;
+			//bool reverse_description=false;
 			if (types[j]==STEM)
 			{
 				//if (!POS.contains("+"))//choose what to do with POS like "litaw~i/ADV+hi/PRON_3MS"
@@ -159,10 +160,14 @@ int insert_buckwalter()
 						//out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
 					}
 				}
-			}
+			} /*else {
+				reverse_description=(bool)lemmaID.toInt();
+			}*/
 			QList<long> *abstract_categories=new QList<long>();
 			abstract_categories->append(abstract_id);
-			if ((types[j]==STEM?insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:insert_item(types[j],item,raw_data,category,source_id,NULL,description,POS,"","")<0))
+			if ((types[j]==STEM?
+				 insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:
+				 insert_item(types[j],item,raw_data,category,source_id,NULL,description,POS,"",lemmaID)<0))
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
