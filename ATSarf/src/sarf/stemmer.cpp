@@ -206,14 +206,21 @@ bool Stemmer::on_match()
 	}
 	if (called_everything || type==SUFFIX)
 	{
+		QString later_part="";
 		out<< "-(";
 		count=0;
 		for (int i=0;i<suffix_infos->count();i++)
 		{
 			if (count>0)
-					out << " + ";
+					out << " ";//" + ";
 			count++;
-			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description();
+			if (later_part=="" && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
+				later_part=suffix_infos->at(i).description();
+				continue;
+			} else {
+				later_part="";
+			}
+			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description()<<later_part;
 		}
 		out <<")";
 	}

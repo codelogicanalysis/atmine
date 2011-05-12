@@ -133,6 +133,7 @@ CREATE TABLE `prefix_category` (
   `raw_data` varchar(60) NOT NULL default '',
   `POS` varchar(250) NOT NULL default '',
   `description_id` bigint(20) default NULL,
+  `reverse_description` bit(1) default 0,
   PRIMARY KEY  (`prefix_id`,`category_id`,`raw_data`,`POS` ),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
@@ -271,6 +272,7 @@ CREATE TABLE `suffix_category` (
   `raw_data` varchar(60) NOT NULL default '',
   `POS` varchar(250) NOT NULL default '',
   `description_id` bigint(20) default NULL,
+  `reverse_description` bit(1) default 0,
   PRIMARY KEY  (`suffix_id`,`category_id`,`raw_data`, `POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)

@@ -13,6 +13,7 @@
 #include <sys/time.h>
 
 extern void splitRecursiveAffixes();
+extern void verify(item_types type);
 
 int word_sarf_test(QString input_str)
 {
@@ -152,4 +153,17 @@ int test(QString input_str, QString &output_str, QString &error_str, QString & h
 #endif
 }
 
-
+int verify(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool /*hadith*/,ATMProgressIFC * /*m_ui*/)
+{
+	out.setString(&output_str);
+	out.setCodec("utf-8");
+	in.setString(&input_str);
+	in.setCodec("utf-8");
+	displayed_error.setString(&error_str);
+	displayed_error.setCodec("utf-8");
+	hadith_out.setString(&hadith_str);
+	hadith_out.setCodec("utf-8");
+	//verify(PREFIX);
+	verify(SUFFIX);
+	return 0;
+}

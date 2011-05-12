@@ -146,4 +146,10 @@ static const QString suffix_info_path=".suffix_info.dat";
 static const QString stem_info_path=".stem_info.dat";
 #endif
 
+//reverse_descriotion
+#define REVERSEDESCBIT max_sources-2
+#define setReverseDirection(abstractCat) abstractCat.setBit(REVERSEDESCBIT,true)
+#define resetReverseDirection(abstractCat) abstractCat.setBit(REVERSEDESCBIT,false)
+#define isReverseDirection(abstractCat) abstractCat.getBit(REVERSEDESCBIT)
+
 #endif

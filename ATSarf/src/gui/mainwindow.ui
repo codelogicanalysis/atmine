@@ -476,7 +476,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_hadith">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>230</x>
       <y>40</y>
       <width>71</width>
       <height>22</height>
@@ -489,7 +489,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_morphology">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>110</x>
       <y>40</y>
       <width>101</width>
       <height>22</height>
@@ -505,7 +505,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_testing">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>320</x>
       <y>40</y>
       <width>71</width>
       <height>22</height>
@@ -561,6 +561,19 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="checked">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_verification">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>40</y>
+      <width>101</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Verification</string>
     </property>
    </widget>
   </widget>

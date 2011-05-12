@@ -36,7 +36,7 @@ public:
 		affixType=new QComboBox(this);
 		affixType->addItem("Prefix",PREFIX);
 		affixType->addItem("Suffix",SUFFIX);
-		originalAffixList=new QTableWidget(0,6,this);
+		originalAffixList=new QTableWidget(0,7,this);
 		compatRulesList=new QTableWidget(0,3,this);
 		grid=new QGridLayout(this);
 		grid->addWidget(split,0,0);
@@ -62,36 +62,41 @@ public:
 		Columns list;
 		originalAffixList->clear();
 		QStringList v;
-		v<<table+" ID"<<"Affix"<<"Category"<<"Raw Data"<<"POS"<<"Description";
+		v<<table+" ID"<<"Affix"<<"Category"<<"Raw Data"<<"POS"<<"Description"<<"Reverse";
 		originalAffixList->verticalHeader()->setHidden(true);
 		originalAffixList->setHorizontalHeaderLabels(v);
+		originalAffixList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+		originalAffixList->setSelectionBehavior(QAbstractItemView::SelectRows);
+		originalAffixList->setSelectionMode(QAbstractItemView::SingleSelection);
 		list.append(table+"_id");
 		list.append("category_id");
 		list.append("raw_data");
 		list.append("POS");
 		list.append("description_id");
-		Retrieve_Template s(table+"_category",list,"1=1 ORDER BY "+table+"_id ASC");
-		originalAffixList->setRowCount(s.size());
-		originalAffixList->setEditTriggers(QAbstractItemView::NoEditTriggers);
-		originalAffixList->setSelectionBehavior(QAbstractItemView::SelectRows);
-		originalAffixList->setSelectionMode(QAbstractItemView::SingleSelection);
-		int row=0;
-		while (s.retrieve())
-		{
-			long id=s.get(0).toLongLong();
-			originalAffixList->setItem(row,0,new QTableWidgetItem(tr("%1").arg(id)));
-			originalAffixList->setItem(row,1,new QTableWidgetItem(getAffix(id)));
-			originalAffixList->setItem(row,2,new QTableWidgetItem(database_info.comp_rules->getCategoryName(s.get(1).toLongLong())));
-			originalAffixList->setItem(row,3,new QTableWidgetItem(s.get(2).toString()));
-			originalAffixList->setItem(row,4,new QTableWidgetItem(s.get(3).toString()));
-			long description_id=s.get(4).toLongLong();
-			QString desc;
-			if (description_id>0 && description_id<database_info.descriptions->size())
-				desc= database_info.descriptions->at(description_id);
-			else
-				desc= QString::null;
-			originalAffixList->setItem(row,5,new QTableWidgetItem(desc));
-			row++;
+		int size=0;
+		for (int i=0;i<2;i++) {
+			Retrieve_Template s(table+"_category",list,tr("reverse_description=%1 ORDER BY ").arg(i)+table+"_id ASC");
+			int row=size;
+			size+=s.size();
+			originalAffixList->setRowCount(size);
+			while (s.retrieve())
+			{
+				long id=s.get(0).toLongLong();
+				originalAffixList->setItem(row,0,new QTableWidgetItem(tr("%1").arg(id)));
+				originalAffixList->setItem(row,1,new QTableWidgetItem(getAffix(id)));
+				originalAffixList->setItem(row,2,new QTableWidgetItem(database_info.comp_rules->getCategoryName(s.get(1).toLongLong())));
+				originalAffixList->setItem(row,3,new QTableWidgetItem(s.get(2).toString()));
+				originalAffixList->setItem(row,4,new QTableWidgetItem(s.get(3).toString()));
+				long description_id=s.get(4).toLongLong();
+				QString desc;
+				if (description_id>0 && description_id<database_info.descriptions->size())
+					desc= database_info.descriptions->at(description_id);
+				else
+					desc= QString::null;
+				originalAffixList->setItem(row,5,new QTableWidgetItem(desc));
+				originalAffixList->setItem(row,6,new QTableWidgetItem(tr("%1").arg(i)));
+				row++;
+			}
 		}
 	}
 	void loadCompatibilityList() {
@@ -125,7 +130,8 @@ public slots:
 			QString raw_data=originalAffixList->item(i,3)->text();
 			QString pos=originalAffixList->item(i,4)->text();
 			QString description=originalAffixList->item(i,5)->text();
-			file<<affix<<"\t"<<raw_data<<"\t"<<category<<"\t"<<description<<"\t"<<pos<<"\t\n";
+			QString reverse_description=originalAffixList->item(i,6)->text();
+			file<<affix<<"\t"<<raw_data<<"\t"<<category<<"\t"<<description<<"\t"<<pos<<"\t"<<reverse_description<<"\n";
 		}
 		f.close();
 		rules rule=(t==PREFIX?AA:CC);
@@ -159,7 +165,7 @@ private:
 		else
 			return "--";
 	}
-	bool hasSubjectObjectInconsistency(QString descriptionDesired,QString descriptionFound) {
+	bool hasSubjectObjectInconsistency(QString descriptionDesired,QString descriptionFound) { //works for prefixes
 		descriptionFound.replace("they","them");
 		descriptionFound.replace("he/","him/");
 		descriptionFound.replace("she","her");

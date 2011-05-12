@@ -295,9 +295,10 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 				inf.abstract_categories=ITRvalue.first;
 			else
 				inf.abstract_categories=INVALID_BITSET;
-			if (multi_p.description)
+			if (multi_p.description) {
+				inf.abstract_categories=ITRvalue.first; //TODO: check if correct, added in case abstractcategory is reverse_description
 				inf.description_id=ITRvalue.second;
-			else
+			} else
 				inf.description_id=-1;
 			if (multi_p.POS)
 				inf.POS=ITRvalue.third;

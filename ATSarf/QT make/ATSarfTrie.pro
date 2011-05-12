@@ -58,7 +58,8 @@ HEADERS += util/text_handling.h \
     ../src/case/graph.h \
     ../src/util/text_handling.h \
     ../src/case/hadith_utilities.h \
-    ../src/case/split_affixes.h
+    ../src/case/split_affixes.h \
+    ../src/util/Quadruplet.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -95,7 +96,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/common/solution_position.cpp \
     ../src/case/graph_nodes.cpp \
     ../src/case/graph.cpp \
-    ../src/case/split_affixes.cpp
+    ../src/case/split_affixes.cpp \
+    ../src/case/suffix_verification.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

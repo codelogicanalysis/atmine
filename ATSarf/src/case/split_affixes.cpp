@@ -28,21 +28,42 @@ void SplitDialog::split_action() {
 			if (	affix1.startsWith(affix) &&
 					raw_data1.startsWith(raw_data) &&
 					pos1.startsWith(pos) &&
-					description1.startsWith(description)	) {
+					(description1.startsWith(description) || description1.endsWith(description) )	) {
+				bool reverse_description=true;
+				if (description1.startsWith(description))
+					reverse_description=false;
 				originalAffixList->selectRow(i);
 				//split the item selected
 				QString affix2=affix1.mid(affix.size());
 				QString raw_data2=raw_data1.mid(raw_data.size());
 				QString pos2=pos1.mid(pos.size());
-				QString description2=description1.mid((description.size()==0?-1:description.size())+ (t==PREFIX?3:1)); //' + ' or ' '
+				QString description2;
+				if (!reverse_description)
+					description2=description1.mid((description.size()==0?-1:description.size())+ (t==PREFIX?3:1)); //' + ' or ' '
+				else
+					description2=description1.mid(0,description1.size()-(description.size()==0?-1:description.size())- (t==PREFIX?3:1)); //' '
 				int rowIndex2=getRow(affix2,raw_data2,pos2,description2);
 				if (rowIndex2<0) {
 					if (!pos2.isEmpty())
 						warning<<"("<<affix2<<","<<raw_data2<<","<<pos2<<","<<description2<<") not found.\n";
 					continue;
+				} else {
+					bool reverse_description2=(bool)originalAffixList->item(i,6)->text().toInt();
+					if (reverse_description2 && ! reverse_description){
+						error<<"Inconsistent Reverse Description.\n";
+						continue;
+					}
+					if (reverse_description){
+						originalAffixList->setItem(rowIndex2,6,new QTableWidgetItem(QString("1")));
+						QString category2=originalAffixList->item(rowIndex2,2)->text();
+						warning<<"updating reverse_description...\n";
+						KEEP_OLD=false;
+						insert_item(t,affix2,raw_data2,category2,source_id,new QList<long>,description2,pos2,"","1");
+					}
 				}
 				QString category2=originalAffixList->item(rowIndex2,2)->text();
 				remove_item(t,affix_id1,raw_data1,database_info.comp_rules->getCategoryID(category1),database_info.descriptions->indexOf(description1),pos1);
+
 				insert_compatibility_rules((t==PREFIX?AA:CC),category,category2,category1,source_id);
 				int compRowIndex=compatRulesList->rowCount();
 				compatRulesList->setRowCount(compRowIndex+1);
