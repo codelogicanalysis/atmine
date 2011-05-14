@@ -18,8 +18,7 @@ void TreeSearch::fill_details() //this function fills the public member function
 #ifdef QUEUE
 	//nothing needs to be done, members are already filled during traversals
 #elif defined(PARENT)
-	if (!filled_details)
-	{
+	if (!filled_details) {
         sub_positionsOFCurrentMatch.clear();
 	#ifndef MULTIPLICATION
         catsOFCurrentMatch.clear();
@@ -30,16 +29,17 @@ void TreeSearch::fill_details() //this function fills the public member function
 	#ifdef REDUCE_THRU_DIACRITICS
         possible_raw_datasOFCurrentMatch.clear();
 		possible_raw_datasOFCurrentMatch.prepend(((result_node *)reached_node)->raw_datas);
+		//qDebug()<<position<<":"<<((result_node *)reached_node)->raw_datas[0];
 	#endif
 		sub_positionsOFCurrentMatch.prepend(position);
         letter_node * tree_head=(letter_node*)Tree->getFirstNode();
         node * current_parent=((result_node *)reached_node)->parent;
+		assert(current_parent->getResultChildren()->contains(reached_node));
 
         int count=0;
         while (current_parent!=tree_head)
         {
-			if (current_parent->isLetterNode())
-			{
+			if (current_parent->isLetterNode()) {
 				if (((letter_node* )current_parent)->getLetter()!='\0')
 					count++;
 			}
@@ -52,12 +52,13 @@ void TreeSearch::fill_details() //this function fills the public member function
 				sub_positionsOFCurrentMatch.prepend(position-count);
 			#ifdef REDUCE_THRU_DIACRITICS
 				possible_raw_datasOFCurrentMatch.prepend(((result_node *)current_parent)->raw_datas);
+				//qDebug()<<position-count<<":"<<((result_node *)current_parent)->raw_datas[0];
 			#endif
 			}
 			current_parent=current_parent->parent;
         }
+		//qDebug()<<"--";
 		filled_details=true;
-
 	}
 #endif
 }
@@ -79,7 +80,7 @@ bool TreeSearch::operator ()()
 	all_positions.enqueue(sub_positionsOFCurrentMatch);
 	all_ids.enqueue(idsOFCurrentMatch);
 #ifdef REDUCE_THRU_DIACRITICS
-	QList<QList< QString> > possible_raw_datasOFCurrentMatch;
+	QList <QList< QString> > possible_raw_datasOFCurrentMatch;
 	QQueue<QList<QList< QString> > > all_raw_datas;
 	all_raw_datas.clear();
 	all_raw_datas.enqueue(possible_raw_datasOFCurrentMatch);
@@ -146,8 +147,7 @@ bool TreeSearch::operator ()()
 #endif
 
 		letter_node * let_node=current_node->getLetterChild(future_letter);
-		if (let_node!=NULL)
-		{
+		if (let_node!=NULL) {
 			queue.enqueue(let_node);
 #ifdef QUEUE
 			temp_partition=sub_positionsOFCurrentMatch;
@@ -280,7 +280,7 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 	for (int i=start_index;i<count;i++)
 	{
 		inf.type=type;
-		QString & raw_data=possible_raw_datasOFCurrentMatch[i][0];
+		QString raw_data=possible_raw_datasOFCurrentMatch[i][0];
 		if (multi_p.raw_data)
 			inf.raw_data=raw_data;
 		else
@@ -289,9 +289,9 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 		inf.category_id=r_node->get_previous_category_id();
 		if (!multi_p.raw_dataONLY())
 		{
-			ItemCatRaw2PosDescAbsMapItr itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
+			const ItemCatRaw2PosDescAbsMapItr & itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
 			assert(itr!=map->end());
-			ItemEntryInfo & ITRvalue=itr.value();
+			const ItemEntryInfo & ITRvalue=itr.value();
 			if (multi_p.abstract_category)
 				inf.abstract_categories=ITRvalue.first;
 			else
@@ -320,8 +320,13 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 			else
 				sol_pos->indexes.insert(i, AffixPosition(0,map->end()));
 		}
-		affix_info.append(inf);
+		if (affix_info.size()>i)
+			affix_info[i]=inf;
+		else
+			affix_info.append(inf);
 	}
+	for (int i=count;i<sol_pos->indexes.count();i++)
+		sol_pos->indexes.remove(i);
 	sol_pos->store_solution(inf);//store the last bc it is the first to be modified (or accessed ??)
 }
 bool TreeSearch::increment(solution_position * info,int index)
@@ -337,8 +342,8 @@ bool TreeSearch::increment(solution_position * info,int index)
 		itr++;
 		long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
 		int & raw_index=info->indexes[index].first;
-		QString & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
-		ItemEntryKey key=itr.key();
+		QString raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+		const ItemEntryKey & key=itr.key();
 		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data) )
 		{
 			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)//check for next time

@@ -114,11 +114,14 @@ class TreeSearch
 			result_nodes=getSplitList();
 			solution_position * first=new solution_position();
 			initializeAffixInfo(first,0);
+			//first->print_positions();
 			return first;
 		}
 		bool computeNextSolution(solution_position * current)//compute next posibility
 		{
-			return increment(current,sub_positionsOFCurrentMatch.count()-1);
+			bool val=increment(current,sub_positionsOFCurrentMatch.count()-1);
+			//current->print_positions();
+			return val;
 		}
 #endif
 #ifdef REDUCE_THRU_DIACRITICS
@@ -163,7 +166,7 @@ class TreeSearch
 		#endif
 		}
         virtual bool operator()();
-		virtual void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
+		/*virtual*/ void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
         virtual bool onMatch() = 0;// returns true to continue, false to abort
 		virtual ~TreeSearch(){}
 };

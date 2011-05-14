@@ -211,16 +211,22 @@ bool Stemmer::on_match()
 		count=0;
 		for (int i=0;i<suffix_infos->count();i++)
 		{
+			//qDebug()<< "{"<<suffix_infos->at(i).POS<<"}";
 			if (count>0)
 					out << " ";//" + ";
 			count++;
-			if (later_part=="" && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
+			if (later_part=="" && suffix_infos->count()>i+1 && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
 				later_part=suffix_infos->at(i).description();
+				//out<< "{"<<suffix_infos->at(i).POS<<"}";
+				count =0;
 				continue;
 			} else {
 				later_part="";
 			}
+			if (suffix_infos->at(i).description().isEmpty())
+				count=0;
 			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description()<<later_part;
+			//out<< "{"<<suffix_infos->at(i).POS<<"}";
 		}
 		out <<")";
 	}
@@ -232,7 +238,10 @@ bool Stemmer::on_match()
 		word.append(stem_info->raw_data);
 		for (int i=0;i<suffix_infos->count();i++)
 			word.append(suffix_infos->at(i).raw_data);
-		out <<" "<<word<<" ";
+		//QString suff;
+		//for (int i=0;i<suffix_infos->count();i++)
+		//	suff.append("-").append(suffix_infos->at(i).raw_data);
+		out <<" "<<word;//<<" "<<"["<<suff<<"]";
 	}
 	out<<" "<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<"\n";
 	return true;
