@@ -16,16 +16,24 @@ class StemSearch;
 
 class solution_position
 {
+/*public:
+	void print_positions() {
+		qDebug()<<"--------";
+		for (int i=0;i<indexes.size();i++) {
+			ItemCatRaw2PosDescAbsMapItr itr=indexes.at(i).second;
+			qDebug()<<indexes.at(i).first<<"=>"
+					<<itr.key().first<<" "<<itr.key().second<<" "<<itr.key().third<<" "
+					<<(long)&(itr.value().first)<<" "<<itr.value().second<<" "<<itr.value().third;
+		}
+	}*/
 public:
 	//int current_index;
 	InternalPositions indexes;
 	StoredInfo previous_solutions;//solutions stored for only current index
-	void store_solution(minimal_item_info & inf)
-	{
+	void store_solution(minimal_item_info & inf) {
 		previous_solutions.append(inf);
 	}
-	void clear_stored_solutions()
-	{
+	void clear_stored_solutions() {
 		previous_solutions.clear();
 	}
 	int getAffixSolutionLength(TreeSearch * affixMachine);

@@ -13,7 +13,8 @@
 #include <sys/time.h>
 
 extern void splitRecursiveAffixes();
-extern void verify(item_types type);
+extern void drawAffixGraph(item_types type);
+extern void listAllAffixes(item_types type);
 
 int word_sarf_test(QString input_str)
 {
@@ -163,7 +164,9 @@ int verify(QString input_str, QString &output_str, QString &error_str, QString &
 	displayed_error.setCodec("utf-8");
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
-	//verify(PREFIX);
-	verify(SUFFIX);
+	//drawAffixGraph(PREFIX);
+	drawAffixGraph(SUFFIX);
+	listAllAffixes(SUFFIX);
+	listAllAffixes(PREFIX);
 	return 0;
 }
