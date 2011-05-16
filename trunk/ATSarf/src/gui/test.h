@@ -8,11 +8,12 @@
 //#define AUGMENT_DICTIONARY
 //#define JUST_BUCKWALTER
 #define REPETITIONS 1
-//starting point
-int start(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith,ATMProgressIFC *m_ui);
 
-int test(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith,ATMProgressIFC *m_ui);
+int morphology(QString input_str,ATMProgressIFC * prg);
+int hadith(QString input_str,ATMProgressIFC * prg);
+int test(QString input_str,ATMProgressIFC * prg);
+int verify(QString input_str,ATMProgressIFC * prg);
+int breakAffix(QString input_str, ATMProgressIFC * prg);
+int timeRecognize(QString input_str, ATMProgressIFC * prg);
 
-
-int verify(QString input_str, QString &output_str, QString &error_str, QString & hadith_str, bool hadith,ATMProgressIFC * m_ui);
 #endif // TEST_H

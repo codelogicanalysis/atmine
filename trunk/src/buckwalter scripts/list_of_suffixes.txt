@@ -1,3 +1,4 @@
+﻿		Suff-0			
 		Suff-			
 		NSuff-|h	two	+A/NSUFF_MASC_DU_NOM_POSS	
 	َّ	FWSuff-~a	me	+~a/PRON_1S	

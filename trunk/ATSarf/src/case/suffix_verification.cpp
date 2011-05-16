@@ -10,7 +10,8 @@
 #include <QLabel>
 #include <QDir>
 
-//#define SHOW_CATEGORY
+#define SHOW_CATEGORY_LABEL
+#define SHOW_CATEGORY
 #define SHOW_RAW_DATA
 typedef QMap<node *,int> AffixGraphMap;
 
