@@ -33,12 +33,17 @@ QStringList cacheFileList;
 
 QDateTime executable_timestamp;
 
+QString non_punctuation_delimiters;
+
 void initialize_variables()
 {
 #ifdef LOAD_FROM_FILE
 	cacheFileList<<trie_path<<trie_list_path<<compatibility_rules_path<<prefix_tree_path
 				 <<suffix_tree_path<<description_path<<prefix_info_path<<suffix_info_path<<stem_info_path;
 #endif
+	non_punctuation_delimiters=delimiters;
+	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]"));
+
 	INVALID_BITSET.reset();
 	INVALID_BITSET.setBit(max_sources-1,true);
 	//INVALID_BITSET.show();

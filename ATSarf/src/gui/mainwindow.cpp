@@ -131,13 +131,29 @@ void MainWindow::on_pushButton_clicked()
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
+	QString input=m_ui->input->toPlainText();
+	out.setString(&output_str);
+	out.setCodec("utf-8");
+	in.setString(&input);
+	in.setCodec("utf-8");
+	displayed_error.setString(&error_str);
+	displayed_error.setCodec("utf-8");
+	hadith_out.setString(&hadith_str);
+	hadith_out.setCodec("utf-8");
 	int rc;
 	if (m_ui->chk_verification->isChecked())
-		verify(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
-	else if (!m_ui->chk_testing->isChecked())
-		rc=start(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
-	else
-		test(m_ui->input->toPlainText(),output_str,error_str,hadith_str,m_ui->chk_hadith->isChecked(),this);
+		verify(input,this);
+	else if (m_ui->chk_hadith->isChecked())
+		rc=hadith(input,this);
+	else if ( m_ui->chk_morphology->isChecked())
+		morphology(input,this);
+	else if (m_ui->chk_testing->isChecked())
+		test(input,this);
+	else if (m_ui->chk_AffixBreaker->isChecked())
+		breakAffix(input,this);
+	else if (m_ui->chk_time->isChecked())
+		timeRecognize(input,this);
+
 	if (!m_ui->chk_hadith->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);

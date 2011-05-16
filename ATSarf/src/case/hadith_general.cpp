@@ -20,6 +20,7 @@
 #include "graph.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "textParsing.h"
 #include <assert.h>
 
 HadithParameters hadithParameters;
@@ -65,7 +66,7 @@ QString StopwordsFileName=".stop_words";
 	QString hadath,abid,alrasoul,abihi;
 	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
 	int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
-	QString non_punctuation_delimiters;
+
 #ifdef PREPROCESS_DESCRIPTIONS
 	QHash<long,bool> NMC_descriptions;
 	QHash<long,bool> NRC_descriptions;
@@ -307,8 +308,6 @@ void hadith_initialize()
 #ifdef PREPROCESS_DESCRIPTIONS
 	readFromFilePreprocessedDescriptions();
 #endif
-	non_punctuation_delimiters=delimiters;
-	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]"));
 }
 
 inline void initializeStateData()
@@ -562,54 +561,6 @@ public:
 #endif
 };
 
-inline long next_positon(long finish,bool & has_punctuation)
-{
-	has_punctuation=false;
-#ifdef PUNCTUATION
-	if (finish<text->length() && punctuation.contains(text->at(finish)))
-		has_punctuation=true;
-#endif
-	finish++;
-	while(finish<text->length())
-	{
-	#ifdef PUNCTUATION
-		if (punctuation.contains(text->at(finish)))
-			has_punctuation=true;
-		else if (!non_punctuation_delimiters.contains(text->at(finish)))
-			break;
-	#else
-		if (!delimiters.contains(text->at(finish)))
-			break;
-	#endif
-		finish++;
-	}
-	return finish;
-}
-
-inline long getLastLetter_IN_previousWord(long start_letter_current_word)
-{
-	start_letter_current_word--;
-	while(start_letter_current_word>=0 && isDelimiter(text->at(start_letter_current_word)))
-		start_letter_current_word--;
-	return start_letter_current_word;
-}
-
-inline long getLastLetter_IN_currentWord(long start_letter_current_word)
-{
-	int size=text->length();
-	while(start_letter_current_word<size)
-	{
-		if(!isDelimiter(text->at(start_letter_current_word)))
-			start_letter_current_word++;
-		else
-		{
-			start_letter_current_word--;
-			break;
-		}
-	}
-	return start_letter_current_word;
-}
-
 inline wordType result(wordType t){display(t); return t;}
 inline QString choose_stem(QList<QString> stems) //rule can be modified later
 {
@@ -739,7 +690,7 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 		s();
 		finish=max(s.info.finish,s.finish_pos);
 		if (finish==current_pos)
-			finish=getLastLetter_IN_currentWord(current_pos);
+			finish=getLastLetter_IN_currentWord(text,current_pos);
 		#ifdef STATS
 			current_exact=removeDiacritics(s.info.text->mid(current_pos,finish-current_pos+1));
 			current_stem=s.stem;
@@ -753,7 +704,7 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 #endif
 	bool has_punctuation;
 	stateInfo.endPos=finish;
-	stateInfo.nextPos=next_positon(finish,has_punctuation);
+	stateInfo.nextPos=next_positon(text,finish,has_punctuation);
 	stateInfo.followedByPunctuation=has_punctuation;
 	display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 #ifdef REFINEMENTS
@@ -1691,7 +1642,7 @@ wordType getWordType(bool & isBinOrPossessive,bool & possessive, long &next_pos)
 #include <sys/time.h>
 #endif
 
-int hadith(QString input_str,ATMProgressIFC *prg)
+int hadithHelper(QString input_str,ATMProgressIFC *prg)
 {
 #ifdef IMAN_CODE
 	return adjective_detector(input_str);

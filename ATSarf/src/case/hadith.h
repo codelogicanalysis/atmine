@@ -54,7 +54,7 @@ extern QString alrasoul,abihi;
 
 extern int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 
-int hadith(QString input_str,ATMProgressIFC *prgs);
+int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
 
 class HadithParameters

@@ -202,7 +202,7 @@ bool isValidTransition(int currentState,wordType currentType,int & nextState)
 
 }
 
-int hadith(QString input_str)
+int hadithHelper(QString input_str)
 {
 		//file parsing:
 		QFile input(input_str);

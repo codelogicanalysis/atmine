@@ -59,6 +59,7 @@ static const QString punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+s
 static const QString alefs=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla;
 static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
 		waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
+extern QString non_punctuation_delimiters;
 
 inline bool isDelimiter(const QChar & letter)
 {

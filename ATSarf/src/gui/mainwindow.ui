@@ -34,9 +34,9 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>60</y>
+      <y>90</y>
       <width>501</width>
-      <height>391</height>
+      <height>361</height>
      </rect>
     </property>
     <property name="minimumSize">
@@ -130,7 +130,7 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>40</y>
+      <y>70</y>
       <width>59</width>
       <height>18</height>
      </rect>
@@ -476,7 +476,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_hadith">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>240</x>
       <y>40</y>
       <width>71</width>
       <height>22</height>
@@ -491,7 +491,7 @@ p, li { white-space: pre-wrap; }
      <rect>
       <x>110</x>
       <y>40</y>
-      <width>101</width>
+      <width>111</width>
       <height>22</height>
      </rect>
     </property>
@@ -505,7 +505,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_testing">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>380</x>
       <y>40</y>
       <width>71</width>
       <height>22</height>
@@ -566,14 +566,43 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_verification">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>40</y>
-      <width>101</width>
+      <x>240</x>
+      <y>60</y>
+      <width>131</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Verification</string>
+     <string>Affix Verification</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_AffixBreaker">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>60</y>
+      <width>121</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Affix Breaker</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_time">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>60</y>
+      <width>141</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Time Recognition</string>
     </property>
    </widget>
   </widget>
