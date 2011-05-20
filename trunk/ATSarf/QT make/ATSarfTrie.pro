@@ -60,7 +60,8 @@ HEADERS += util/text_handling.h \
     ../src/case/hadith_utilities.h \
     ../src/case/split_affixes.h \
     ../src/util/Quadruplet.h \
-    ../src/util/textParsing.h
+    ../src/util/textParsing.h \
+    ../src/case/timeRecognizer.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \

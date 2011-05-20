@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QTextBrowser>
+#include <QInputDialog>
 #include "Retrieve_Template.h"
 #include "Search_by_item.h"
 #include "Search_Compatibility.h"
@@ -33,6 +34,7 @@ public:
 		split=new QPushButton("&Split",this);
 		exportLists=new QPushButton("&Export",this);
 		reverse=new QPushButton("&Reverse Check",this);
+		specialize=new QPushButton("S&pecialize",this);
 		affixType=new QComboBox(this);
 		affixType->addItem("Prefix",PREFIX);
 		affixType->addItem("Suffix",SUFFIX);
@@ -43,13 +45,15 @@ public:
 		grid->addWidget(affixType,0,1);
 		grid->addWidget(exportLists,0,2);
 		grid->addWidget(reverse,0,3);
-		grid->addWidget(originalAffixList,1,0,1,4);
-		grid->addWidget(compatRulesList,2,0,1,4);
-		grid->addWidget(errors,3,0,1,4);
+		grid->addWidget(specialize,0,4);
+		grid->addWidget(originalAffixList,1,0,1,5);
+		grid->addWidget(compatRulesList,2,0,1,5);
+		grid->addWidget(errors,3,0,1,5);
 		connect(split,SIGNAL(clicked()),this,SLOT(split_clicked()));
 		connect(exportLists,SIGNAL(clicked()),this,SLOT(export_clicked()));
 		connect(affixType,SIGNAL(currentIndexChanged(int)),this,SLOT(affixType_currentIndexChanged(int)));
 		connect(reverse,SIGNAL(clicked()),this,SLOT(reverse_clicked()));
+		connect(specialize,SIGNAL(clicked()),this,SLOT(specialize_clicked()));
 		displayed_error.setString(errors_text);
 		loadAffixList();
 		loadCompatibilityList();
@@ -74,6 +78,7 @@ public:
 		list.append("POS");
 		list.append("description_id");
 		int size=0;
+		cat_empty=-1;
 		for (int i=0;i<2;i++) {
 			Retrieve_Template s(table+"_category",list,tr("reverse_description=%1 ORDER BY ").arg(i)+table+"_id ASC");
 			int row=size;
@@ -82,11 +87,15 @@ public:
 			while (s.retrieve())
 			{
 				long id=s.get(0).toLongLong();
+				QString affix=getAffix(id);
+				QString category=database_info.comp_rules->getCategoryName(s.get(1).toLongLong());
+				QString raw_data=s.get(2).toString();
+				QString pos=s.get(3).toString();
 				originalAffixList->setItem(row,0,new QTableWidgetItem(tr("%1").arg(id)));
-				originalAffixList->setItem(row,1,new QTableWidgetItem(getAffix(id)));
-				originalAffixList->setItem(row,2,new QTableWidgetItem(database_info.comp_rules->getCategoryName(s.get(1).toLongLong())));
-				originalAffixList->setItem(row,3,new QTableWidgetItem(s.get(2).toString()));
-				originalAffixList->setItem(row,4,new QTableWidgetItem(s.get(3).toString()));
+				originalAffixList->setItem(row,1,new QTableWidgetItem(affix));
+				originalAffixList->setItem(row,2,new QTableWidgetItem(category));
+				originalAffixList->setItem(row,3,new QTableWidgetItem(raw_data));
+				originalAffixList->setItem(row,4,new QTableWidgetItem(pos));
 				long description_id=s.get(4).toLongLong();
 				QString desc;
 				if (description_id>0 && description_id<database_info.descriptions->size())
@@ -95,9 +104,12 @@ public:
 					desc= QString::null;
 				originalAffixList->setItem(row,5,new QTableWidgetItem(desc));
 				originalAffixList->setItem(row,6,new QTableWidgetItem(tr("%1").arg(i)));
+				if (affix.isEmpty() && raw_data.isEmpty() && pos.isEmpty() && desc.isEmpty())
+					cat_empty=database_info.comp_rules->getCategoryID(category);
 				row++;
 			}
 		}
+		assert (size==0 || cat_empty!=-1);
 	}
 	void loadCompatibilityList() {
 		QStringList v;
@@ -117,6 +129,9 @@ public slots:
 	void split_clicked() {
 		split_action();
 	}
+	void specialize_clicked() {
+		specialize_action();
+	}
 	void export_clicked() {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		QFile f(tr("%1List.txt").arg(interpret_type(t)));
@@ -131,7 +146,7 @@ public slots:
 			QString pos=originalAffixList->item(i,4)->text();
 			QString description=originalAffixList->item(i,5)->text();
 			QString reverse_description=originalAffixList->item(i,6)->text();
-			file<<affix<<"\t"<<raw_data<<"\t"<<category<<"\t"<<description<<"\t"<<pos<<"\t"<<reverse_description<<"\n";
+			file<<affix<<"\t"<<raw_data<<"\t"<<category<<"\t"<<description<<"\t"<<pos<<"\t"<<(reverse_description=="0"?"":"1")<<"\n";
 		}
 		f.close();
 		rules rule=(t==PREFIX?AA:CC);
@@ -156,6 +171,7 @@ public slots:
 private:
 	void split_action();
 	void reverse_action();
+	void specialize_action();
 	QString getAffix(long id) {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		QString table=interpret_type(t);
@@ -217,8 +233,9 @@ private:
 
 public:
 	int source_id;
+	long cat_empty;
 	QTextEdit * affix;
-	QPushButton * split, *exportLists, *reverse;
+	QPushButton * split, *exportLists, *reverse, *specialize;
 	QComboBox * affixType;
 	QTextBrowser * errors;
 	QString * errors_text;

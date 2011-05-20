@@ -118,8 +118,8 @@ void drawAffixGraph(item_types type) {
 	d_out<<"}\n";
 	file.close();
 	try{
-		system(QString("dot -Tsvg %1.dot -o %1.svg").arg(t).toStdString().data());
 #ifdef DISPLAY
+		system(QString("dot -Tsvg %1.dot -o %1.svg").arg(t).toStdString().data());
 		QMainWindow * mw =new QMainWindow(NULL);
 		mw->setWindowTitle(QString("%1 Tree").arg(t));
 		QScrollArea * sa=new QScrollArea(mw);
@@ -143,30 +143,45 @@ private:
 	QTextStream * dout;
 	#define d_out *(dout)
 
-	void traverse(node * n,QString raw_data, QString description, QString POS)
+	void traverse(node * n,QString affix,QString raw_data, QString description, QString POS)
 	{
 		if (!n->isLetterNode()) {
 			result_node * r=(result_node* )n;
 			for (int i=0; i<r->raw_datas.size();i++) {
 				QString raw=raw_data+r->raw_datas[i];
 				QString cat=database_info.comp_rules->getCategoryName(r->get_resulting_category_id());
-				QString affix=removeDiacritics(raw);
 				ItemCatRaw2PosDescAbsMapItr itr=map->find(ItemEntryKey(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i]));
 				while (itr!=map->end() && itr.key()==ItemEntryKey(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i])) {
 					dbitvec d=itr.value().first;
 					QString pos=POS+itr.value().third;
 					QString added_desc=(*database_info.descriptions)[itr.value().second];
 					QString desc;
-					if (type==SUFFIX)
-						desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
-					else
+					if (type==SUFFIX){
+						bool r=isReverseDirection(d);
+						//qDebug()<<raw_data<<" "<<r;
+						if (description.contains("%1"))
+							desc=description.arg(added_desc+(added_desc=="" || description=="%1"?"":" "));
+						else {
+							if (r)
+								desc="%1"+added_desc+(added_desc=="" || description==""?"":" ")+description;
+							else
+								desc= description+(added_desc=="" || description==""?"":" ")+added_desc;
+						}
+						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
+						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
+					}else
 						desc=description+(description==""?"":" + ")+added_desc;
-					if (r->is_accept_state())
-						d_out<<affix<<"\t"<<raw<<"\t"<<cat<<"\t"<<desc<<"\t"<<pos<<"\t\n";
+					if (r->is_accept_state()) {
+						QString temp=desc;
+						temp.remove("%1");
+						d_out<<affix<<"\t"<<raw<<"\t"<<cat<<"\t"<<temp<<"\t"<<pos<<"\t\n";
+					}
 					QVector<letter_node *> letters=n->getLetterChildren();
 					for (int i=0;i<letters.size();i++) {
-						if (letters[i]!=NULL)
-							traverse(letters[i],raw,desc,pos);
+						if (letters[i]!=NULL) {
+							QChar letter=letters[i]->getLetter();
+							traverse(letters[i],(letter!='\0'?affix+letter:affix),raw,desc,pos);
+						}
 					}
 					itr++;
 				}
@@ -175,11 +190,13 @@ private:
 			QVector<letter_node *> letters=n->getLetterChildren();
 			QList<result_node *> * results=n->getResultChildren();
 			for (int i=0;i<results->size();i++) {
-				traverse((*results)[i],raw_data,description,POS);
+				traverse((*results)[i],affix,raw_data,description,POS);
 			}
 			for (int i=0;i<letters.size();i++) {
-				if (letters[i]!=NULL)
-					traverse(letters[i],raw_data,description,POS);
+				if (letters[i]!=NULL){
+					QChar letter=letters[i]->getLetter();
+					traverse(letters[i],(letter!='\0'?affix+letter:affix),raw_data,description,POS);
+				}
 			}
 		}
 	}
@@ -202,10 +219,11 @@ public:
 	}
 	void operator ()() {
 		node * top=(type==PREFIX? database_info.Prefix_Tree:database_info.Suffix_Tree)->getFirstNode();
-		traverse(top,"","","");
+		traverse(top,"","","","");
 	}
 	~ListAllAffixes() {
 		file->close();
+		system("sort suffix.list >suffix_sorted.list ");
 		delete file;
 		delete dout;
 	}

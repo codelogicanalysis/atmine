@@ -9,6 +9,8 @@
 #include "diacritics.h"
 #include "Search_Compatibility.h"
 
+#define ONLY_SUFFIXES
+
 bool pos=false;
 long abstract_possessive;
 
@@ -77,11 +79,18 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-	const QString item_files[3]= {	"../../src/buckwalter scripts/list_of_prefixes.txt",
+#ifndef ONLY_SUFFIXES
+	const int num_files_items=3;
+	const QString item_files[num_files_items]= {	"../../src/buckwalter scripts/list_of_prefixes.txt",
 									"../../src/buckwalter scripts/list_of_suffixes.txt",
 									"../../src/buckwalter scripts/list_of_stems.txt"};
-	const item_types types[3] ={ PREFIX, SUFFIX,STEM};
-	for (int j=0;j<3;j++)
+	const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
+#else
+	const int num_files_items=1;
+	const QString item_files[num_files_items]= {"../../src/buckwalter scripts/list_of_suffixes.txt",};
+	const item_types types[num_files_items] ={SUFFIX,};
+#endif
+	for (int j=0;j<num_files_items;j++)
 	{
 		int num_entries=6;
 		QFile input(item_files[j]);
@@ -107,7 +116,7 @@ int insert_buckwalter()
 			QStringList entries=line.split("\t",QString::KeepEmptyParts);
 			if (entries.size()<num_entries)
 			{
-				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+				out<<"Error at line "<<line_num<<": '"<<line<<"', Insufficient tab-delimited entries\n";
 				return -1;
 			}
 			QString item=entries[0];
@@ -169,7 +178,7 @@ int insert_buckwalter()
 				 insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:
 				 insert_item(types[j],item,raw_data,category,source_id,NULL,description,POS,"",lemmaID)<0))
 			{
-				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+				out<<"Error at line "<<line_num<<": '"<<line<<"', Item was not inserted\n";
 				return -1;
 			}
 		}
@@ -177,13 +186,15 @@ int insert_buckwalter()
 		input.close();
 	}
 	//compatibility rules
-	const QString rules_files[5]= {"../../src/buckwalter scripts/tableAA", \
+	const int num_files_rules=5;
+	const QString rules_files[num_files_rules]= {"../../src/buckwalter scripts/tableAA", \
 								   "../../src/buckwalter scripts/tableCC", \
 								   "../../src/buckwalter scripts/tableAB", \
 								   "../../src/buckwalter scripts/tableBC", \
 								   "../../src/buckwalter scripts/tableAC"  };
-	const rules rule[5] ={ AA, CC,AB, BC, AC};
-	for (int j=0;j<5;j++)
+	const rules rule[num_files_rules] ={ AA, CC,AB, BC, AC};
+
+	for (int j=0;j<num_files_rules;j++)
 	{
 		QFile input(rules_files[j]);
 		if (!input.open(QIODevice::ReadWrite))
@@ -228,6 +239,12 @@ int insert_buckwalter()
 					assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
 				}
 			}
+#ifdef ONLY_SUFFIXES
+			else {
+				assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)); //if not AB or AC => BC
+				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false));  ////if not AC or BC => AB
+			}
+#endif
 			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,source_id)<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";

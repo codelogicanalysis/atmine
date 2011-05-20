@@ -91,7 +91,11 @@ class result_node:public node
 		}
 		QString to_string(bool isAffix=true)
 		{
-			return QString("-").append(QString("%1").arg((isAffix?getColumn("category","name",previous_category_id):QString("%1").arg(previous_category_id)))).append(">[").append(QString("%1").arg((isAffix?getColumn("category","name",resulting_category_id):QString("%1").arg(resulting_category_id)))).append("]");
+			return QString("-").append(QString("%1").arg((isAffix?
+														  getColumn("category","name",previous_category_id):
+														  QString("%1").arg(previous_category_id)))).append(">[").append(QString("%1").arg((isAffix?
+																																			getColumn("category","name",resulting_category_id):
+																																			QString("%1").arg(resulting_category_id)))).append("]");
 		}
 		result_node * getPreviousResultNode()
 		{

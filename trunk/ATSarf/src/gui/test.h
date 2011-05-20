@@ -5,8 +5,8 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-//#define AUGMENT_DICTIONARY
-//#define JUST_BUCKWALTER
+#define AUGMENT_DICTIONARY
+#define JUST_BUCKWALTER
 #define REPETITIONS 1
 
 int morphology(QString input_str,ATMProgressIFC * prg);
