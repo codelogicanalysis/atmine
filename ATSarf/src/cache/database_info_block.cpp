@@ -133,29 +133,33 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
 	prgsIFC->setCurrentAction(table.toUpper()+" INFO");
-	QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
-	stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":",reverse_description"));
-	assert (execute_query(stmt,query));
-	int size=query.size(), i=0;
-	while (query.next())
-	{
-		long long item_id=query.value(0).toULongLong();
-		long category_id =query.value(1).toULongLong();
-		QString raw_data=query.value(2).toString();
-		QString POS=query.value(3).toString();
-		long description_id=query.value(4).toULongLong();
-		dbitvec abstract_categories(max_sources);
-		if (type==STEM)
-			abstract_categories=string_to_bitset(query.value(5));
-		else {
-			abstract_categories.reset();
-			setReverseDirection(abstract_categories);
+	for (int i=0;i<(type==STEM?1:2);i++) {
+		QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
+		stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":"")).append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
+		assert (execute_query(stmt,query));
+		int size=query.size();
+		while (query.next())
+		{
+			long long item_id=query.value(0).toULongLong();
+			long category_id =query.value(1).toULongLong();
+			QString raw_data=query.value(2).toString();
+			QString POS=query.value(3).toString();
+			long description_id=query.value(4).toULongLong();
+			dbitvec abstract_categories(max_sources);
+			if (type==STEM)
+				abstract_categories=string_to_bitset(query.value(5));
+			else {
+				abstract_categories.reset();
+				if (i==1)
+					setReverseDirection(abstract_categories);
+				else
+					resetReverseDirection(abstract_categories);
+			}
+			ItemEntryKey key(item_id,category_id,raw_data);
+			ItemEntryInfo entry(abstract_categories,description_id,POS);
+			map->insertMulti(key,entry);
+			prgsIFC->report((double)i/size*100+0.5);
 		}
-		ItemEntryKey key(item_id,category_id,raw_data);
-		ItemEntryInfo entry(abstract_categories,description_id,POS);
-		map->insertMulti(key,entry);
-		i++;
-		prgsIFC->report((double)i/size*100+0.5);
 	}
 #ifdef LOAD_FROM_FILE
 	QString fileName;

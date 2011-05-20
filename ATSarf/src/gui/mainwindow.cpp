@@ -7,6 +7,7 @@
 #include "database_info_block.h"
 #include "hadith.h"
 #include "stemmer.h"
+#include "timeRecognizer.h"
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -154,7 +155,7 @@ void MainWindow::on_pushButton_clicked()
 	else if (m_ui->chk_time->isChecked())
 		timeRecognize(input,this);
 
-	if (!m_ui->chk_hadith->isChecked())
+	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
@@ -193,6 +194,7 @@ void MainWindow::on_fill_clicked()
 
 	database_info.fill(this);
 	hadith_initialize();
+	time_initialize();
 	m_ui->pushButton->setVisible(true);
 	m_ui->fill->setVisible(false);
 }

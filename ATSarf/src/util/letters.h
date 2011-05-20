@@ -61,20 +61,13 @@ static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef
 		waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
 extern QString non_punctuation_delimiters;
 
-inline bool isDelimiter(const QChar & letter)
-{
-	return delimiters.contains(letter);
-}
+inline bool isDelimiter(const QChar & letter) { return delimiters.contains(letter); }
 
-inline bool isPunctuationMark(const QChar & letter)
-{
-	return punctuation.contains(letter);
-}
+inline bool isPunctuationMark(const QChar & letter) { return punctuation.contains(letter); }
 
-inline bool isNonConnectingLetter(const QChar & letter)
-{
-	return nonconnectingLetters.contains(letter);
-}
+inline bool isNonConnectingLetter(const QChar & letter) { return nonconnectingLetters.contains(letter); }
+
+inline bool isNumber(const QChar & letter) { return letter<='9' && letter >='0';}
 
 #endif	/* _LETTERS_H */
 

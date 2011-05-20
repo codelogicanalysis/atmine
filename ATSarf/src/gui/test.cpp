@@ -10,12 +10,12 @@
 #include "database_info_block.h"
 #include "text_handling.h"
 #include "diacritics.h"
+#include "timeRecognizer.h"
 #include <sys/time.h>
 
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
 extern void listAllAffixes(item_types type);
-extern int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg);
 
 int word_sarf_test(QString input_str)
 {
@@ -75,8 +75,8 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 }
 int test(QString ,ATMProgressIFC *)
 {
-	int source_id=insert_source("Lama and Kawthar Time Categories","Manual Work","Kawthar Ali & Lama Ghusn");
-	long abstract_Time=insert_category("TIME",STEM,dbitvec(max_sources),true); //returns id if already present
+	int source_id=insert_source("Jad Time Categories","Manual Work","Jad Makhlouta");
+	long abstract_Time=insert_category("Absolute Time",STEM,dbitvec(max_sources),true); //returns id if already present
 	QString file_name="../../dic/T/all.txt";
 	QFile input(file_name);
 	if (!input.open(QIODevice::ReadWrite))
@@ -125,9 +125,9 @@ int test(QString ,ATMProgressIFC *)
 int verify(QString ,ATMProgressIFC *)
 {
 	//drawAffixGraph(PREFIX);
-	drawAffixGraph(SUFFIX);
+	//drawAffixGraph(SUFFIX);
 	listAllAffixes(SUFFIX);
-	listAllAffixes(PREFIX);
+	//listAllAffixes(PREFIX);
 	return 0;
 }
 int breakAffix(QString, ATMProgressIFC *) {

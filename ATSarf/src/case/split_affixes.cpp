@@ -45,7 +45,7 @@ void SplitDialog::split_action() {
 				int rowIndex2=getRow(affix2,raw_data2,pos2,description2);
 				if (rowIndex2<0) {
 					if (!pos2.isEmpty())
-						warning<<"("<<affix2<<","<<raw_data2<<","<<pos2<<","<<description2<<") not found.\n";
+						warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") not found.\n";
 					continue;
 				} else {
 					bool reverse_description2=(bool)originalAffixList->item(i,6)->text().toInt();
@@ -118,4 +118,94 @@ void splitRecursiveAffixes(){
 
 	SplitDialog * d=new SplitDialog();
 	d->exec();
+}
+
+void SplitDialog::specialize_action(){
+	if (originalAffixList->selectionMode()==QAbstractItemView::MultiSelection) {
+		QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
+		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+		if (selection.size()>=1){
+			QString category_original="";
+			for (int i=0;i<selection.size();i++) {
+				int top=selection[i].topRow();
+				for (int j=0;j<selection[i].rowCount();j++) {
+					int rowIndex=top+j;
+					if (category_original=="")
+						category_original=originalAffixList->item(rowIndex,2)->text();
+					else if (category_original!=originalAffixList->item(rowIndex,2)->text()) {
+						error<<"Operation Failed: because not all selected rows have same category\n";
+						return;
+					}
+				}
+			}
+			//first add category of new Names for the specialized category and category of those left and duplicate previous rules to them
+			bool ok;
+			QString category_specialized = QInputDialog::getText(this, tr("Name for Scpecialized Category"),
+												  tr("New Name:"), QLineEdit::Normal,
+												  category_original, &ok);
+			QString category_left = QInputDialog::getText(this, tr("Name of Category for entries left"),
+												  tr("New Name:"), QLineEdit::Normal,
+												  category_original, &ok);
+
+			if (ok && !category_specialized.isEmpty() && !category_left.isEmpty()) {
+				rules rule=(t==PREFIX?AA:CC);
+				long cat_org_id=getID("category",category_original,QString("type=%1").arg((int)t));
+				long specialized_id=insert_category(category_specialized,t,source_id,false);
+				long left_id=insert_category(category_left,t,source_id,false);
+				Search_Compatibility s(rule,cat_org_id,true);
+				long cat_id2,cat_result;
+				while (s.retrieve(cat_id2,cat_result)) {
+					insert_compatibility_rules(rule,specialized_id,cat_id2,cat_result,source_id);
+					insert_compatibility_rules(rule,left_id,cat_id2,cat_result,source_id);
+				}
+				Search_Compatibility s2(rule,cat_org_id,false);
+				while (s2.retrieve(cat_id2,cat_result)) {
+					insert_compatibility_rules(rule,cat_id2,specialized_id,cat_result,source_id);
+					insert_compatibility_rules(rule,cat_id2,left_id,cat_result,source_id);
+				}
+
+				//second change categories of those selected and those non-selected
+				QSqlQuery query(db);
+				for (int i=0;i<selection.size();i++) {
+					int top=selection[i].topRow();
+					for (int j=0;j<selection[i].rowCount();j++) {
+						int rowIndex=top+j;
+						long affix_id=originalAffixList->item(rowIndex,0)->text().toLongLong();
+						QString raw_data=originalAffixList->item(rowIndex,3)->text();
+						QString pos=originalAffixList->item(rowIndex,4)->text();
+						QString description=originalAffixList->item(rowIndex,5)->text();
+						QString stmt=QString(tr("UPDATE %1_category ")+
+											  "SET category_id=%2 "+
+											  "WHERE %1_id=%3 AND category_id=%4 AND raw_data=\"%5\" AND POS=\"%6\" AND "+
+													"description_id IN (SELECT id FROM description WHERE name =\"%7\" AND type=%8)")
+									  .arg(interpret_type(t)).arg(specialized_id).arg(affix_id).arg(cat_org_id).arg(raw_data)
+									  .arg(pos).arg(description).arg((int)t);
+						execute_query(stmt,query);
+						int num=query.numRowsAffected();
+						assert (num==1 || num==-1);
+					}
+				}
+				execute_query(QString(tr("UPDATE %1_category ")+
+									  "SET category_id=%2 "+
+									  "WHERE category_id=%3")
+							  .arg(interpret_type(t)).arg(left_id).arg(cat_org_id),query);
+				if (query.numRowsAffected()==0)
+					warning << "Operation performed performed just renaming because there are no left entries of this query\n";
+				//third: add 2 dummy rules to keep consistency with AB,AC,BC
+				insert_compatibility_rules(rule,cat_empty,specialized_id,cat_org_id,source_id);
+				insert_compatibility_rules(rule,cat_empty,left_id,cat_org_id,source_id);
+				//forth: remove all rules AA or CC having the old_category
+				QString stmt=QString(tr("DELETE  ")+
+									  "FROM  compatibility_rules "+
+									  "WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
+							  .arg((int)rule).arg(cat_org_id);
+				execute_query(stmt,query);
+				system(QString("rm ").append(compatibility_rules_path).toStdString().data());
+				database_info.comp_rules->buildFromFile();
+				loadAffixList();
+			}
+		}
+	}else {
+		originalAffixList->setSelectionMode(QAbstractItemView::MultiSelection);
+	}
 }

@@ -780,7 +780,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	if (raw_data.length()<name.length())
 		raw_data=name;
 	int i=0;
-	QString reducedName, reducedRawData;
+	QString reducedName;
 	if (type==STEM && name.length()>0)
 		do
 		{
@@ -806,10 +806,14 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 #endif
 	QString table=interpret_type(type);
 	QString item_category=QString("%1_category").arg(table);
-	if (table=="--")
+	if (table=="--") {
+		error<<"Table Invalid\n";
 		return -3; //must not reach here
-	if (!existsSOURCE(source_id))
+	}
+	if (!existsSOURCE(source_id)) {
+		error<<"Source does not exist\n";
 		return -2;
+	}
 	if (abstract_ids!=NULL)
 	{
 		for (int i=0; i<abstract_ids->count();i++)
@@ -846,8 +850,10 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		}
 		cat_sources.setBit(bit_index);
 		category_id=insert_category(category,type,cat_sources);
-		if (category_id==-1)
+		if (category_id==-1) {
+			error << "Category was not inserted sucessfully\n";
 			return -1;
+		}
 		if (warn_about_automatic_insertion)
 			warning << QString("New %2 Category Automatically inserted: '%1'").arg(category).arg(table.toUpper())<<"\n";
 		//new_category=true;
@@ -899,8 +905,10 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	{
 		if (type==STEM && grammar_stem_id!=-1)
 		{
-			if (resolve_conflict("stem","grammar_stem_id",grammar_stem_id,QString("id = %1").arg(item_id),source_id,true)<0)
+			if (resolve_conflict("stem","grammar_stem_id",grammar_stem_id,QString("id = %1").arg(item_id),source_id,true)<0) {
+				error<< "Could not resolve conflict\n";
 				return -1;
+			}
 		}
 	}
 	if (abstract_ids!=NULL)
@@ -930,15 +938,19 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 			if (type==STEM)
 			{
 				//check for conflict in lemmaID only since description_id and POS became now part of the primary key
-				if (resolve_conflict(item_category,"lemma_ID",lemma_ID,primary_condition,source_id,false)<0)
+				if (resolve_conflict(item_category,"lemma_ID",lemma_ID,primary_condition,source_id,false)<0) {
+					error<< "Could not resolve conflict\n";
 					return -1;
+				}
 			}
 			else
 			{//TODO: check if what follows is correct
 				addSource(item_category,source_id,-1,primary_condition,false);
 				//check for conflict in reverse_description only since description_id and POS became now part of the primary key
-				if (resolve_conflict(item_category,"reverse_description",QVariant((bool)lemma_ID.toInt()),primary_condition,source_id,false)<0)
+				if (resolve_conflict(item_category,"reverse_description",QVariant((bool)lemma_ID.toInt()),primary_condition,source_id,false)<0) {
+					error<< "Could not resolve conflict\n";
 					return -1;
+				}
 			}
 			update_dates(source_id);
 			return item_id;
@@ -1092,7 +1104,7 @@ long display_table(QString table) //TODO: has some error in producing sources fo
 }
 int insert_source(QString name, QString normalization_process, QString creator) //returns current number of sources
 {
-	QString stmt( "SELECT id FROM source WHERE description =\"%1\"");
+	QString stmt("SELECT id FROM source WHERE description =\"%1\"");
 	stmt=stmt.arg(name);
 	perform_query(stmt);
 	if (query.next())
