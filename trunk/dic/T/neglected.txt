@@ -1,0 +1,87 @@
+أوان	أَوان	N	time/moment	>awAn/NOUN	>awAn_1
+اوان	أَوان	N	time/moment	>awAn/NOUN	>awAn_1
+آون	آوِن	Nap	times/moments	|win/NOUN	>awAn_1
+اون	آوِن	Nap	times/moments	|win/NOUN	>awAn_1
+أون	آوِن	Nap	times/moments	|win/NOUN	>awAn_1
+بعدما	بَعْدَما	FW-Wa	after	baEodamA/CONJ	baEodamA_1
+بعدما	بَعْدَما	FW-Wa	after what	baEoda/PREP+mA/REL_PRON	baEodamA_2
+تريليون	ترِيلِيُون	NduAt	trillion	triyliyuwn/NOUN	triyliyuwn_1
+تسعيني	تِسْعِينِيّ	Nall	nineties	tisoEiyniy~/NOUN	tisoEiyniy~_1
+تلو	تِلْوَ	FW-Wa	after	tilowa/PREP	tilowa_1
+تلو	تِلْوَ	FW-Wa-a	after	tilowa/PREP	tilowa_1
+تو	تَوّ	N0	immediately	taw~/NOUN	taw~_1
+تو	تَوّ	NF	immediately	taw~/ADV	taw~AF_1
+أثلاث	أَثْلاث	N	thirds	>avolAv/NOUN	vulov_1
+اثلاث	أَثْلاث	N	thirds	>avolAv/NOUN	vulov_1
+أثمان	أَثْمان	N	eighths	>avomAn/NOUN	vumon_1
+اثمان	أَثْمان	N	eighths	>avomAn/NOUN	vumon_1
+للإثنين	لِلْ{ِثْنَيْنِ	FW-Wa	to/for + the + two	li/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	lilo{ivonayoni_1	Day Name
+للاثنين	لِلْ{ِثْنَيْنِ	FW-Wa	to/for + the + two	li/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	lilo{ivonayoni_1	Day Name
+بالإثنين	بِال{ِثْنَيْنِ	FW-Wa	with/by + the + two	bi/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	biAl{ivonayoni_1	Day Name
+بالاثنين	بِال{ِثْنَيْنِ	FW-Wa	with/by + the + two	bi/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	biAl{ivonayoni_1	Day Name
+كالإثنين	كَال{ِثْنَيْنِ	FW-Wa	as/like + the + two	ka/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	kaAl{ivonayoni_1	Day Name
+كالاثنين	كَال{ِثْنَيْنِ	FW-Wa	as/like + the + two	ka/PREP+Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	kaAl{ivonayoni_1	Day Name
+الإثنتان	ال{ِثْنَتانِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+atAni/NSUFF_FEM_DU_NOM	Al{ivonatAni_1
+الاثنتان	ال{ِثْنَتانِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+atAni/NSUFF_FEM_DU_NOM	Al{ivonatAni_1
+الإثنتين	ال{ِثْنَتَيْنِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	Al{ivonatAni_1
+الاثنتين	ال{ِثْنَتَيْنِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	Al{ivonatAni_1
+للإثنتين	لِلْ{ِثْنَتَيْنِ	FW-Wa	to/for + the + two	li/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	lilo{ivonatayoni_1
+للاثنتين	لِلْ{ِثْنَتَيْنِ	FW-Wa	to/for + the + two	li/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	lilo{ivonatayoni_1
+بالإثنتين	بِال{ِثْنَتَيْنِ	FW-Wa	with/by + the + two	bi/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	biAl{ivonatayoni_1
+بالاثنتين	بِال{ِثْنَتَيْنِ	FW-Wa	with/by + the + two	bi/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	biAl{ivonatayoni_1
+كالإثنتين	كَال{ِثْنَتَيْنِ	FW-Wa	as/like + the + two	ka/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	kaAl{ivonatayoni_1
+كالاثنتين	كَال{ِثْنَتَيْنِ	FW-Wa	as/like + the + two	ka/PREP+Al/DET+{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	kaAl{ivonatayoni_1
+حتما	حَتَّما	FW-Wa	until when	Hat~amA/CONJ	Hat~amA_1
+أحدث	أَحْدَث	Nel	newer/newest/more/most recent	>aHodav/NOUN	>aHodav_2
+احدث	أَحْدَث	Nel	newer/newest/more/most recent	>aHodav/NOUN	>aHodav_2
+أخماس	أَخْماس	N	fifths	>axomAs/NOUN	xumos_1
+اخماس	أَخْماس	N	fifths	>axomAs/NOUN	xumos_1
+دهري	دُهْرِيّ	Nall	old aged	duhoriy~/ADJ	duhoriy~_1
+مادام	مادام	PV_V_intr	as long as	mAdAm/VERB_PERFECT	mAdAm_1
+مادم	مادُم	PV_C_intr	as long as	mAdum/VERB_PERFECT	mAdAm_1
+أربعيني	أَرْبَعِينِيّ	NAt	forties	>arobaEiyniy~/NOUN	>arobaEiyniy~_1
+اربعيني	أَرْبَعِينِيّ	NAt	forties	>arobaEiyniy~/NOUN	>arobaEiyniy~_1
+سبعوني	سَبْعُونِيّ	Nall	septuagenarian	saboEuwniy~/ADJ	saboEuwniy~_1
+سبعيني	سَبْعِينِيّ	NAt	seventies	saboEiyniy~/NOUN	saboEiyniy~_1
+سبعيني	سَبْعِينِيّ	N-ap	seventieth/seventies	saboEiyniy~/NOUN	saboEiyniy~_1
+أسباع	أَسْباع	N	sevenths	>asobAE/NOUN	suboE_1
+اسباع	أَسْباع	N	sevenths	>asobAE/NOUN	suboE_1
+سباعي	سُباعِيّ	Nall	seven-part	subAEiy~/ADJ	subAEiy~_1
+أسبوعي	أُسْبُوعِيّ	Nall	weekly	>usobuwEiy~/ADJ	>usobuwEiy~_1
+اسبوعي	أُسْبُوعِيّ	Nall	weekly	>usobuwEiy~/ADJ	>usobuwEiy~_1
+ستوني	سِتُّونِيّ	Nall	sexagenarian	sit~uwniy~/ADJ	sit~uwniy~_1
+ستيني	سِتِّينِيّ	NAt	sixties	sit~iyniy~/NOUN	sit~iyniy~_1
+ستيني	سِتِّينِيّ	N-ap	sixties	sit~iyniy~/NOUN	sit~iyniy~_1
+أسداس	أَسْداس	N	sixths	>asodAs/NOUN	>asodAs_1
+اسداس	أَسْداس	N	sixths	>asodAs/NOUN	>asodAs_1
+سداسي	سُداسِيّ	Nall	six-part/six-fold	sudAsiy~/ADJ	sudAsiy~_1
+سنوي	سَنَوِيّ	N/ap	yearly/annual	sanawiy~/ADJ	sanawiy~_1
+سنوي	سَنَوِيّ	NF	annually/yearly/per annum	sanawiy~/ADV	sanawiy~_1
+شهري	شَهْرِيّ	N-ap	monthly	$ahoriy~/ADJ	$ahoriy~_1
+شهري	شَهْرِيّ	NF	monthly	$ahoriy~/ADV	$ahoriy~_1
+شهراني	شَهْرانِيّ	N0	Shahrani	$ahorAniy~/NOUN_PROP	$ahorAniy~_1
+أعشار	أَعْشار	N	tenths	>aEo$Ar/NOUN	Eu$or_1
+اعشار	أَعْشار	N	tenths	>aEo$Ar/NOUN	Eu$or_1
+عشور	عُشُور	N	tenths	Eu$uwr/NOUN	Eu$or_1
+عشري	عَشْرِيّ	N-ap	decennial	Ea$oriy~/ADJ	Ea$oriy~_1
+عشري	عَشْرِيّ	N0	Ashri	Ea$oriy~/NOUN_PROP	Ea$oriy~_2
+عشري	عُشْرِيّ	N-ap	decimal	Eu$oriy~/ADJ	Eu$oriy~_1
+أعشاري	أَعْشارِيّ	N-ap	decimal	>aEo$Ariy~/ADJ	Eu$oriy~_1
+اعشاري	أَعْشارِيّ	N-ap	decimal	>aEo$Ariy~/ADJ	Eu$oriy~_1
+عشريني	عِشْرِينِيّ	Nall	twenties	Ei$oriyniy~/NOUN	Ei$oriyniy~_1
+عمر	عُمْر	N	age/life	Eumor/NOUN	Eumor_1
+أعمار	أَعْمار	N	age groups	>aEomAr/NOUN	Eumor_1
+اعمار	أَعْمار	N	age groups	>aEomAr/NOUN	Eumor_1
+غدايا	غَدايا	N0_Nhy	mornings	gadAyA/NOUN	gadiy~ap_1
+فجأة	فَجْأَةً	FW-Wa	suddenly	fajo>apF/ADV	fajo>apF_1
+فجاءة	فُجاءَةً	FW-Wa	suddenly	fujA'apF/ADV	fujA'apF_1
+فطير	فَطِير	N0	Passover	faTiyr/NOUN_PROP	faTiyr_3
+قرب	قُرْبَ	FW-Wa	near	quroba/PREP	quroba_1
+قرب	قُرْبِ	FW-Wa	near	qurobi/PREP	quroba_1
+بقرب	بِقُرْبِ	FW-Wa	near	biqurobi/PREP	quroba_1
+قرب	قُرْبَ	FW-Wa-a	near	quroba/PREP	quroba_1
+قرب	قُرْبِ	FW-Wa-i	near	qurobi/PREP	quroba_1
+بقرب	بِقُرْبِ	FW-Wa-i	near	biqurobi/PREP	quroba_1
+قرب	قُرْب	FW-Wa-o	near	qurob/PREP	quroba_1
+قريب	قَرِيب	N-ap	recent/soon	qariyb/ADJ	qariyb_2
+سبوت	سُبُوت	N	Saturdays/Sabbaths	subuwt/NOUN_PROP	sabot_1

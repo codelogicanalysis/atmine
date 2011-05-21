@@ -4,7 +4,7 @@
 #include "timeRecognizer.h"
 
 TimeParameters timeParameters;
-unsigned int bit_ABSOLUTE_TIME, bit_RELATIVE_TIME;
+QList<unsigned int> bits_ABSOLUTE_TIME, bits_RELATIVE_TIME;
 
 enum wordType { ABS_T, REL_T, OTHER};
 enum stateType { NOTHING_S , MAYBE_TIME_S, TIME_S};
@@ -164,18 +164,23 @@ inline void display(QString t)
 #endif
 
 void time_initialize(){
-	long abstract_ABSOLUTE_TIME=database_info.comp_rules->getAbstractCategoryID("Absolute Time");
-	bit_ABSOLUTE_TIME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ABSOLUTE_TIME);
-	long abstract_RELATIVE_TIME=database_info.comp_rules->getAbstractCategoryID("Relative Time");
-	bit_RELATIVE_TIME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_RELATIVE_TIME);
-	if (abstract_RELATIVE_TIME<0)
-	{
-		if (abstract_ABSOLUTE_TIME<0) {
-			bit_ABSOLUTE_TIME=0;
-			bit_RELATIVE_TIME=0;
-		} else {
-			bit_RELATIVE_TIME=bit_ABSOLUTE_TIME;
-		}
+	QList<QString> abs,rel;
+	abs.append("Month Name");
+	abs.append("Day Name");
+	rel.append("Time Preposition");
+	rel.append("Number");
+	abs.append("Relative Time");
+	abs.append("Holiday");
+	abs.append("Season");
+	abs.append("Time Unit");
+	abs.append("Time Reference");
+	for (int i=0;i<abs.count();i++) {
+		long abstract_ABSOLUTE_TIME=database_info.comp_rules->getAbstractCategoryID(abs[i]);
+		bits_ABSOLUTE_TIME.append(database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ABSOLUTE_TIME));
+	}
+	for (int i=0;i<rel.count();i++) {
+		long abstract_RELATIVE_TIME=database_info.comp_rules->getAbstractCategoryID(rel[i]);
+		bits_RELATIVE_TIME.append(database_info.comp_rules->getAbstractCategoryBitIndex(abstract_RELATIVE_TIME));
 	}
 }
 
@@ -225,15 +230,21 @@ public:
 	}
 
 	bool analyze() {
-		if (stem_info->abstract_categories.getBit(bit_ABSOLUTE_TIME)){
-			absoluteTime=true;
-			finish_pos=info.finish;
-			return false;
+		if (Suffix->info.finish>=Suffix->info.start)
+			return true;//ignore solutions having suffixes
+		for (int i=0;i<bits_ABSOLUTE_TIME.count();i++) {
+			if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])){
+				absoluteTime=true;
+				finish_pos=info.finish;
+				return false;
+			}
 		}
-		if (stem_info->abstract_categories.getBit(bit_RELATIVE_TIME)){
-			relativeTime=true;
-			finish_pos=info.finish;
-			return true;
+		for (int i=0;i<bits_RELATIVE_TIME.count();i++) {
+			if (stem_info->abstract_categories.getBit(bits_RELATIVE_TIME[i])){
+				relativeTime=true;
+				finish_pos=info.finish;
+				return true;
+			}
 		}
 		return true;
 	}
