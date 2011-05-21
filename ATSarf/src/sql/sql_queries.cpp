@@ -486,7 +486,7 @@ dbitvec addSource(QString table, int source_id, long long id , QString additiona
 }
 dbitvec addAbstractCategory(QString primary_condition,int abstract_category_id)
 {
-        if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
+	if (!existsID("category",abstract_category_id,QString("abstract=1 AND type =%1").arg((int)(STEM))))
 		return INVALID_BITSET;
 	int bit_index=get_bitindex(abstract_category_id,abstract_category_ids);
 	if (bit_index>=0 && bit_index<max_sources)
@@ -515,7 +515,10 @@ bool addAbstractCategory(QString name, QString raw_data, QString category, int s
 				if (name[i]!=corresponding_part[0])
 				{
 					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
-					assert(alefs.contains(corresponding_part[0]));
+					if(!alefs.contains(corresponding_part[0])) {
+						qDebug()<<corresponding_part[0]<<" "<<alefs;
+						return -1;
+					}
 					name[i]=corresponding_part[0];
 				}
 			}

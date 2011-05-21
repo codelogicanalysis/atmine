@@ -1,0 +1,402 @@
+﻿آب	آب	Nprop	August	|b/NOUN_PROP	|b_1	Month Name
+اب	آب	Nprop	August	|b/NOUN_PROP	|b_1	Month Name
+أبريل	أَبْرِيل	Nprop	April	>aboriyl/NOUN_PROP	>aboriyl_1	Month Name
+ابريل	أَبْرِيل	Nprop	April	>aboriyl/NOUN_PROP	>aboriyl_1	Month Name
+إبريل	إِبْرِيل	Nprop	April	<iboriyl/NOUN_PROP	>aboriyl_1	Month Name
+ابريل	إِبْرِيل	Nprop	April	<iboriyl/NOUN_PROP	>aboriyl_1	Month Name
+أحد	أَحَد	N	Sunday	>aHad/NOUN_PROP	>aHad_2	Day Name
+احد	أَحَد	N	Sunday	>aHad/NOUN_PROP	>aHad_2	Day Name
+آحاد	آحاد	N	Sundays	|HAd/NOUN_PROP	>aHad_2	Day Name
+احاد	آحاد	N	Sundays	|HAd/NOUN_PROP	>aHad_2	Day Name
+آخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Preposition
+اخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Preposition
+أواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Preposition
+اواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Preposition
+أخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Preposition
+اخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Preposition
+أخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Preposition
+اخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Preposition
+آذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
+اذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
+أذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
+تاريخ	تارِيخ	Ndu	date/history	tAriyx/NOUN	tAriyx_1	Time Preposition
+أغسطس	أَغُسْطُس	N0	August	>agusoTus/NOUN_PROP	>agusoTus_1	Month Name
+اغسطس	أَغُسْطُس	N0	August	>agusoTus/NOUN_PROP	>agusoTus_1	Month Name
+أكتوبر	أُكْتُوبِر	Ndip	October	>ukotuwbir/NOUN_PROP	>ukotuwbir_1	Month Name
+اكتوبر	أُكْتُوبِر	Ndip	October	>ukotuwbir/NOUN_PROP	>ukotuwbir_1	Month Name
+آلاف	آلاف	N	thousands	|lAf/NOUN	>alof_1	Number
+الاف	آلاف	N	thousands	|lAf/NOUN	>alof_1	Number
+ألوف	أُلُوف	N	thousands	>uluwf/NOUN	>alof_1	Number
+الوف	أُلُوف	N	thousands	>uluwf/NOUN	>alof_1	Number
+ألفي	أَلْفِيّ	Nall	millenary/one thousandth	>alofiy~/ADJ	>alofiy~_1	Number
+الفي	أَلْفِيّ	Nall	millenary/one thousandth	>alofiy~/ADJ	>alofiy~_1	Number
+أمس	أَمْس	FW-Wa	yesterday	>amos/ADV	>amos_1	Relative Time
+امس	أَمْس	FW-Wa	yesterday	>amos/ADV	>amos_1	Relative Time
+أمس	أَمْس	N	yesterday	>amos/NOUN	>amos_1	Relative Time
+امس	أَمْس	N	yesterday	>amos/NOUN	>amos_1	Relative Time
+آناء	آناءَ	FW-Wa	during	|nA'a/PREP	|nA'a_1	Time Preposition
+اناء	آناءَ	FW-Wa	during	|nA'a/PREP	|nA'a_1	Time Preposition
+آناء	آناءِ	FW-Wa	during	|nA'i/PREP	|nA'a_1	Time Preposition
+اناء	آناءِ	FW-Wa	during	|nA'i/PREP	|nA'a_1	Time Preposition
+آناء	آناءَ	FW-Wa-a	during	|nA'a/PREP	|nA'a_1	Time Preposition
+اناء	آناءَ	FW-Wa-a	during	|nA'a/PREP	|nA'a_1	Time Preposition
+آنائ	آناءئ	FW-Wa-i	during	|nA}i/PREP	|nA'a_1	Time Preposition
+انائ	آناءئ	FW-Wa-i	during	|nA}i/PREP	|nA'a_1	Time Preposition
+أوت	أُوت	Nprop	August	>uwt/NOUN_PROP	>uwt_1	Month Name
+اوت	أُوت	Nprop	August	>uwt/NOUN_PROP	>uwt_1	Month Name
+أول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Time Preposition	Number
+اول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Time Preposition	Number
+أول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Time Preposition	Number
+اول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Time Preposition	Number
+الآن	الآنَ	FW-Wa	now	Al|na/ADV	Al|na_1	Relative Time
+الان	الآنَ	FW-Wa	now	Al|na/ADV	Al|na_1	Relative Time
+آنئذ	آنَئِذٍ	FW-Wa	then/at that time	|na}i*K/ADV	|na}i*K_1	Time Preposition
+انئذ	آنَئِذٍ	FW-Wa	then/at that time	|na}i*K/ADV	|na}i*K_1	Time Preposition
+آنذاك	آنَذاك	FW-Wa	then/at that time	|na*Ak/ADV	|na*Ak_1	Time Preposition
+انذاك	آنَذاك	FW-Wa	then/at that time	|na*Ak/ADV	|na*Ak_1	Time Preposition
+أيار	أَيّار	Nprop	May	>ay~Ar/NOUN_PROP	>ay~Ar_1	Month Name
+ايار	أَيّار	Nprop	May	>ay~Ar/NOUN_PROP	>ay~Ar_1	Month Name
+بؤون	بَؤُون	Nap	Ba'una (10th Coptic month, June 8-July 7)	ba&uwn/NOUN_PROP	ba&uwnap_1	Month Name
+بدء	بَدْء	N0F	start/beginning	bado'/NOUN	bado'_1	Time Preposition
+بدأ	بَدْأ	Nh	start/beginning	bado>/NOUN	bado'_1	Time Preposition
+بدؤ	بَدْؤ	Nh	start/beginning	bado&/NOUN	bado'_1	Time Preposition
+بدئ	بَدْئ	Nhy	start/beginning	bado}/NOUN	bado'_1	Time Preposition
+إبتداء	{ِبْتِداء	N0_Nh	beginning/start	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+ابتداء	{ِبْتِداء	N0_Nh	beginning/start	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+إبتداؤ	{ِبْتِداؤ	Nh	beginning/start	{ibotidA&/NOUN	{ibotidA'_1	Time Preposition
+ابتداؤ	{ِبْتِداؤ	Nh	beginning/start	{ibotidA&/NOUN	{ibotidA'_1	Time Preposition
+إبتدائ	{ِبْتِدائ	Nhy	beginning/start	{ibotidA}/NOUN	{ibotidA'_1	Time Preposition
+ابتدائ	{ِبْتِدائ	Nhy	beginning/start	{ibotidA}/NOUN	{ibotidA'_1	Time Preposition
+إبتداء	{ِبْتِداء	NAn_Nayn	beginning/starts	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+ابتداء	{ِبْتِداء	NAn_Nayn	beginning/starts	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+إبتدائ	{ِبْتِدائ	Nayn	beginning/starts	{ibotidA}/NOUN	{ibotidA'_1	Time Preposition
+ابتدائ	{ِبْتِدائ	Nayn	beginning/starts	{ibotidA}/NOUN	{ibotidA'_1	Time Preposition
+إبتداء	{ِبْتِداء	NAt	beginning/starts	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+ابتداء	{ِبْتِداء	NAt	beginning/starts	{ibotidA'/NOUN	{ibotidA'_1	Time Preposition
+إبتداء	{ِبْتِداءً	FW-Wa	beginning from/as of	{ibotidA'F/ADJ	{ibotidA'F_1	Time Preposition
+ابتداء	{ِبْتِداءً	FW-Wa	beginning from/as of	{ibotidA'F/ADJ	{ibotidA'F_1	Time Preposition
+برمودة	بَرْمُودَة	N0	Barmudah (8th Coptic month, Apr. 9-May 8)	baromuwdap/NOUN_PROP	baromuwdap_1	Month Name
+بشنس	بَشَنْس	N0	Bashans (9th Coptic month, May 9-June 7)	ba$anos/NOUN_PROP	ba$anos_1	Month Name
+باعوث	باعُوث	N	Easter	bAEuwv/NOUN_PROP	bAEuwv_1	Holiday
+بعد	بَعْدَ	FW-Wa	after	baEoda/PREP	baEoda_1	Time Preposition
+بعد	بَعْدِ	FW-Wa	after	baEodi/PREP	baEoda_1	Time Preposition
+بعد	بَعْدَ	FW-Wa-a	after	baEoda/PREP	baEoda_1	Time Preposition
+بعد	بَعْدِ	FW-Wa-i	after	baEodi/PREP	baEoda_1	Time Preposition
+بعد	بَعْد	FW-Wa-o	after	baEod/PREP	baEoda_1	Time Preposition
+تسع	تِسْع	N	nine	tisoE/ADJ	tisoE_1	Number
+تسع	تِسْع	Nap	nine	tisoE/ADJ	tisoE_1	Number
+تسعين	تِسْعِين	NAt	nineties	tisoEiyn/NOUN	tisoEiyn_1	Number
+تاسع	تاسِع	N/ap	ninth	tAsiE/ADJ	tAsiE_1	Number
+تسعمائ	تِسْعمائ	Nap	nine-hundred	tisoEmA}/NOUN	tisoEmA}ap_1	Number
+تشرين	تِشْرِين	N0	Tishrin (part of month names Oct. and Nov.)	ti$oriyn/NOUN_PROP	ti$oriyn_1	Month Name
+تشارين	تَشارِين	Ndip	autumns/fall seasons	ta$Ariyn/NOUN	ta$Ariyn_1	Season
+تموز	تَمُّوز	Ndip	July	tam~uwz/NOUN_PROP	tam~uwz_1	Month Name
+توت	تُوت	Ndip	Tut (1st Coptic month, Sept. 11-Oct. 10)	tuwt/NOUN_PROP	tuwt_2	Month Name
+ثلث	ثُلْث	Ndu	one third	vulov/NOUN	vulov_1	Number
+ثلاث	ثَلاث	N	three	valAv/ADJ	valAv_1	Number
+ثلاث	ثَلاث	Nap	three	valAv/ADJ	valAv_1	Number
+ثلاث	ثَلاث	Numb	thirty	valAv/NOUN	valAv_1	Number
+ثالث	ثالِث	N/ap	third	vAliv/ADJ	vAliv_1	Number
+ثالث	ثالِث	N/ap	Third	vAliv/NOUN_PROP	vAliv_2	Number
+ثلاثين	ثَلاثِين	NAt	thirties	valAviyn/NOUN	valAviynAt_1	Number
+ثلاثيني	ثَلاثِينِيّ	Nall	thirties	valAviyniy~/NOUN	valAviyniy~_1	Number
+ثلاثمائ	ثَلاثمائ	Nap	three-hundred	valAvmA}/NOUN	valAvmA}ap_1	Number
+ثلثمائ	ثَل`ثمائ	Nap	three-hundred	val`vmA}/NOUN	valAvmA}ap_1	Number
+ثلاثاء	ثُلاثاء	N0_Nh	Tuesday	vulAvA'/NOUN_PROP	vulAvA'_1	Day Name
+ثلاثاؤ	ثُلاثاؤ	Nh	Tuesday	vulAvA&/NOUN_PROP	vulAvA'_1	Day Name
+ثلاثائ	ثُلاثائ	Nhy	Tuesday	vulAvA}/NOUN_PROP	vulAvA'_1	Day Name
+ثلثاء	ثُلَثاء	N0_Nh	Tuesday	vulavA'/NOUN_PROP	vulAvA'_1	Day Name
+ثلثاؤ	ثُلَثاؤ	Nh	Tuesday	vulavA&/NOUN_PROP	vulAvA'_1	Day Name
+ثلثائ	ثُلَثائ	Nhy	Tuesday	vulavA}/NOUN_PROP	vulAvA'_1	Day Name
+ثمن	ثُمْن	Ndu	one-eighth	vumon/NOUN	vumon_1	Number
+ثمن	ثُمْن	Ndu	eighth	vumon/NOUN	vumon_1	Number
+ثامن	ثامِن	Nall	eighth	vAmin/ADJ	vAmin_1	Number
+ثمانين	ثَمانِين	NAt	eighties	vamAniyn/NOUN	vamAniyn_1	Number
+ثمانيني	ثَمانِينِيّ	NAt	eighties	vamAniyniy~/NOUN	vamAniyn_1	Number
+ثماني	ثَمانِي	N0	eight	vamAniy/ADJ	vamAniy_1	Number
+ثمان	ثَمان	NK	eight	vamAn/NOUN	vamAniy_1	Number
+ثماني	ثَمانِي	Nap	eight	vamAniy/ADJ	vamAniy_1	Number
+ثمان	ثَمان	Numb	eighty	vamAn/NOUN	vamAniy_1	Number
+ثمانمائ	ثَمانِمائ	Nap	eight-hundred	vamAnimA}/NOUN	vamAnimA}ap_1	Number
+الإثنان	ال{ِثْنانِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+Ani/NSUFF_MASC_DU_NOM	Al{ivonAni_1	Number
+الاثنان	ال{ِثْنانِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+Ani/NSUFF_MASC_DU_NOM	Al{ivonAni_1	Number
+إثنان	{ِثْنانِ	FW-Wa	two	{ivon/ADJ+Ani/NSUFF_MASC_DU_NOM	{ivonAni_1	Number
+اثنان	{ِثْنانِ	FW-Wa	two	{ivon/ADJ+Ani/NSUFF_MASC_DU_NOM	{ivonAni_1	Number
+إثنين	{ِثْنَيْنِ	FW-WaBi	two	{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	{ivonAni_1	Number
+اثنين	{ِثْنَيْنِ	FW-WaBi	two	{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	{ivonAni_1	Number
+الإثنين	ال{ِثْنَيْنِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	Al{ivonAni_1	Number
+الاثنين	ال{ِثْنَيْنِ	FW-Wa	the + two	Al/DET+{ivon/ADJ+ayoni/NSUFF_MASC_DU_ACCGEN	Al{ivonAni_1	Number
+إثنتا	{ِثْنَتا	FW-Wa	(1st word in "twelve")	{ivon/ADJ+atA/NSUFF_FEM_DU_NOM_POSS	{ivonatA_1	Number
+اثنتا	{ِثْنَتا	FW-Wa	(1st word in "twelve")	{ivon/ADJ+atA/NSUFF_FEM_DU_NOM_POSS	{ivonatA_1	Number
+إثنتي	{ِثْنَتَيْ	FW-WaBi	(1st word in "twelve")	{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	{ivonatA_1	Number
+اثنتي	{ِثْنَتَيْ	FW-WaBi	(1st word in "twelve")	{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	{ivonatA_1	Number
+الإثنتا	ال{ِثْنَتا	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+A/NSUFF_FEM_DU_NOM_POSS	Al{ivonatA_1	Number
+الاثنتا	ال{ِثْنَتا	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+A/NSUFF_FEM_DU_NOM_POSS	Al{ivonatA_1	Number
+الإثنتي	ال{ِثْنَتَيْ	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	Al{ivonatA_1	Number
+الاثنتي	ال{ِثْنَتَيْ	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	Al{ivonatA_1	Number
+للإثنتي	لِل{ِثْنَتَيْ	FW-Wa	to/for + the + (1st word in "twelve")	li/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	lil{ivonatayo_1	Number
+للاثنتي	لِل{ِثْنَتَيْ	FW-Wa	to/for + the + (1st word in "twelve")	li/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	lil{ivonatayo_1	Number
+بالإثنتي	بِال{ِثْنَتَيْ	FW-Wa	with/by + the + (1st word in "twelve")	bi/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	biAl{ivonatayo_1	Number
+بالاثنتي	بِال{ِثْنَتَيْ	FW-Wa	with/by + the + (1st word in "twelve")	bi/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	biAl{ivonatayo_1	Number
+كالإثنتي	كَال{ِثْنَتَيْ	FW-Wa	as/like + the + (1st word in "twelve")	ka/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	kaAl{ivonatayo_1	Number
+كالاثنتي	كَال{ِثْنَتَيْ	FW-Wa	as/like + the + (1st word in "twelve")	ka/PREP+Al/DET+{ivon/ADJ+atayo/NSUFF_FEM_DU_ACCGEN_POSS	kaAl{ivonatayo_1	Number
+إثنا	{ِثْنا	FW-Wa	(1st word in "twelve")	{ivon/ADJ+A/NSUFF_MASC_DU_NOM_POSS	{ivonA_1	Number
+اثنا	{ِثْنا	FW-Wa	(1st word in "twelve")	{ivon/ADJ+A/NSUFF_MASC_DU_NOM_POSS	{ivonA_1	Number
+إثني	{ِثْنَيْ	FW-WaBi	(1st word in "twelve")	{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	{ivonA_1	Number
+اثني	{ِثْنَيْ	FW-WaBi	(1st word in "twelve")	{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	{ivonA_1	Number
+الإثنا	ال{ِثْنا	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+A/NSUFF_MASC_DU_NOM_POSS	Al{ivonA_1	Number
+الاثنا	ال{ِثْنا	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+A/NSUFF_MASC_DU_NOM_POSS	Al{ivonA_1	Number
+الإثني	ال{ِثْنَيْ	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	Al{ivonA_1	Number
+الاثني	ال{ِثْنَيْ	FW-Wa	the + (1st word in "twelve")	Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	Al{ivonA_1	Number
+للإثني	لِل{ِثْنَيْ	FW-Wa	to/for + the + (1st word in "twelve")	li/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	lil{ivonayo_1	Number
+للاثني	لِل{ِثْنَيْ	FW-Wa	to/for + the + (1st word in "twelve")	li/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	lil{ivonayo_1	Number
+بالإثني	بِال{ِثْنَيْ	FW-Wa	with/by + the + (1st word in "twelve")	bi/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	biAl{ivonayo_1	Number
+بالاثني	بِال{ِثْنَيْ	FW-Wa	with/by + the + (1st word in "twelve")	bi/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	biAl{ivonayo_1	Number
+كالإثني	كَال{ِثْنَيْ	FW-Wa	as/like + the + (1st word in "twelve")	ka/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	kaAl{ivonayo_1	Number
+كالاثني	كَال{ِثْنَيْ	FW-Wa	as/like + the + (1st word in "twelve")	ka/PREP+Al/DET+{ivon/ADJ+ayo/NSUFF_MASC_DU_ACCGEN_POSS	kaAl{ivonayo_1	Number
+إثنين	{ِثْنَيْنِ	N0	Monday	{ivonayoni/NOUN_PROP	{ivonayoni_1	Day Name
+اثنين	{ِثْنَيْنِ	N0	Monday	{ivonayoni/NOUN_PROP	{ivonayoni_1	Day Name
+إثنتان	{ِثْنَتانِ	FW-Wa	two	{ivon/ADJ+atAni/NSUFF_FEM_DU_NOM	{ivonatAni_1	Number
+اثنتان	{ِثْنَتانِ	FW-Wa	two	{ivon/ADJ+atAni/NSUFF_FEM_DU_NOM	{ivonatAni_1	Number
+إثنتين	{ِثْنَتَيْنِ	FW-WaBi	two	{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	{ivonatAni_1	Number
+اثنتين	{ِثْنَتَيْنِ	FW-WaBi	two	{ivon/ADJ+atayoni/NSUFF_FEM_DU_ACCGEN	{ivonatAni_1	Number
+أثناء	أَثْناءَ	FW-Wa	during	>avonA'a/PREP	>avonA'a_1	Time Preposition
+اثناء	أَثْناءَ	FW-Wa	during	>avonA'a/PREP	>avonA'a_1	Time Preposition
+أثناء	أَثْناءِ	FW-Wa	during	>avonA'i/PREP	>avonA'a_1	Time Preposition
+اثناء	أَثْناءِ	FW-Wa	during	>avonA'i/PREP	>avonA'a_1	Time Preposition
+أثناء	أَثْناءَ	FW-Wa-a	during	>avonA'a/PREP	>avonA'a_1	Time Preposition
+اثناء	أَثْناءَ	FW-Wa-a	during	>avonA'a/PREP	>avonA'a_1	Time Preposition
+أثنائ	أَثْنائِ	FW-Wa-i	during	>avonA}i/PREP	>avonA'a_1	Time Preposition
+اثنائ	أَثْنائِ	FW-Wa-i	during	>avonA}i/PREP	>avonA'a_1	Time Preposition
+أثنائ	أَثْنائ	FW-Wa-o	during	>avonA}a/PREP	>avonA'a_1	Time Preposition
+اثنائ	أَثْنائ	FW-Wa-o	during	>avonA}a/PREP	>avonA'a_1	Time Preposition
+أثناء	أَثْناء	N0	meanwhile/meantime	>avonA'/NOUN	>avonA'_2	Time Preposition
+اثناء	أَثْناء	N0	meanwhile/meantime	>avonA'/NOUN	>avonA'_2	Time Preposition
+ثاني	ثانِي	N0F	second/next	vAniy/ADJ	vAniy_1	Number
+ثاني	ثانِي	N0	Second	vAniy/NOUN_PROP	vAniy_2	Number
+ثاني	ثانِي	NAn_Nayn	second/next	vAniy/ADJ	vAniy_3	Number
+ثان	ثان	NK	second/next	vAniy/ADJ	vAniy_3	Number
+ثاني	ثانِي	NapAt	second/next	vAniy/ADJ	vAniy_3	Number
+ثاني	ثانِي	Napdu	second (time span)	vAniy/NOUN	vAniyap_1	Time Unit
+ثواني	ثَوانِي	N0_Nh	seconds (time span)	vawAniy/NOUN	vAniyap_1	Time Unit
+ثوان	ثَوان	NK	seconds (time span)	vawAn/NOUN	vAniyap_1	Time Unit
+جمع	جُمْع	Nap	Friday	jumoE/NOUN_PROP	jumoEap_1	Day Name
+جوان	جُوان	Ndip	June	juwAn/NOUN_PROP	juwAn_1	Month Name
+حتى	حَتَّى	FW-Wa	until/up to	Hat~aY/PREP	Hat~aY_1	Time Preposition
+حتي	حَتَّى	FW-Wa	until/up to	Hat~aY/PREP	Hat~aY_1	Time Preposition
+حادي	حادِي	N0	first (word in "11th", "21st", "31st", through "91st")	HAdiy/ADJ	HAdiy_1	Number
+حادية	حادِيَة	N0	first (word in "11th", "21st", "31st", through "91st")	HAdiyap/ADJ	HAdiy_1	Number
+حادي	حادِي	N0	one	HAdiy/NOUN	HAdiy_3	Number
+محرم	مُحَرَّم	Ndip	Muharram (month)	muHar~am/NOUN_PROP	muHar~am_2	Month Name
+حزيران	حَزِيران	Ndip	June	HaziyrAn/NOUN_PROP	HaziyrAn_1	Month Name
+حزيران	حُزَيْران	Ndip	June	HuzayorAn/NOUN_PROP	HaziyrAn_1	Month Name
+حين	حِينَ	FW-Wa	when	Hiyna/PREP	Hiyna_1	Time Preposition
+حين	حِينِ	FW-Wa	when	Hiyni/PREP	Hiyna_1	Time Preposition
+حين	حِينَ	FW-Wa-a	when	Hiyna/PREP	Hiyna_1	Time Preposition
+حين	حِينِ	FW-Wa-i	when	Hiyni/PREP	Hiyna_1	Time Preposition
+حينئذ	حِينَئِذٍ	FW-Wa	then/at the time	Hiyna}i*K/ADV	Hiyna}i*K_1	Time Preposition
+حينذاك	حِينَذاك	FW-Wa	then/at the time	Hiyna*Ak/ADV	Hiyna*Ak_1	Time Preposition
+حينما	حِينَما	FW-Wa	when/while	HiynamA/CONJ	HiynamA_1	Time Preposition
+خمس	خُمْس	Ndu	fifth	xumos/NOUN	xumos_1	Number
+خمس	خَمْس	N	five	xamos/ADJ	xamos_1	Number
+خمس	خَمْس	Nap	five	xamos/ADJ	xamos_1	Number
+خمس	خَمْس	Numb	fifty	xamos/NOUN	xamos_1	Number
+خمسمائ	خَمْسمائ	Nap	five-hundred	xamosmA}/NOUN	xamosmA}ap_1	Number
+خمسي	خَمْسِيّ	N-ap	five-year/five-part	xamosiy~/ADJ	xamosiy~_1	Number
+خمسين	خَمْسِين	NAt	fifties	xamosiyn/NOUN	xamosiyn_1	Number
+خمسيني	خَمْسِينِيّ	NAt	fifties	xamosiyniy~/NOUN	xamosiyniy~_1	Number
+خمسيني	خَمْسِينِيّ	N-ap	fiftieth/fifties	xamosiyniy~/NOUN	xamosiyniy~_1	Number
+خميس	خَمِيس	N	Thursday	xamiys/NOUN_PROP	xamiys_2	Day Name
+خامس	خامِس	N-ap	fifth	xAmis/ADJ	xAmis_1	Number
+دجنبر	دُجَنْبِر	N0	December	dujanobir/NOUN_PROP	dujanobir_1	Month Name
+ربع	رُبْع	Ndu	quarter/fourth	ruboE/NOUN	ruboE_1	Number
+ربيع	رَبِيع	N	Spring	rabiyE/NOUN_PROP	rabiyE_1	Season
+أربع	أَرْبَع	Nel	four	>arobaE/ADJ	>arobaE_1	Number
+اربع	أَرْبَع	Nel	four	>arobaE/ADJ	>arobaE_1	Number
+أربع	أَرْبَع	Nap	four	>arobaE/ADJ	>arobaE_1	Number
+اربع	أَرْبَع	Nap	four	>arobaE/ADJ	>arobaE_1	Number
+أربع	أَرْبَع	Numb	forty/fortieth	>arobaE/NOUN	>arobaE_1	Number
+اربع	أَرْبَع	Numb	forty/fortieth	>arobaE/NOUN	>arobaE_1	Number
+أربعين	أَرْبَعِين	NAt	forties	>arobaEiyn/NOUN	>arobaEiyn_1	Number
+اربعين	أَرْبَعِين	NAt	forties	>arobaEiyn/NOUN	>arobaEiyn_1	Number
+أربعمائ	أَرْبَعمائ	Nap	four-hundred	>arobaEmA}/NOUN	>arobaEmA}ap_1	Number
+اربعمائ	أَرْبَعمائ	Nap	four-hundred	>arobaEmA}/NOUN	>arobaEmA}ap_1	Number
+أربع	أَرْبَع	FW	Arba	>arobaE/NOUN_PROP	>arobaE_2	Number
+اربع	أَرْبَع	FW	Arba	>arobaE/NOUN_PROP	>arobaE_2	Number
+أربعاء	أَرْبِعاء	N0_Nh	Wednesday	>arobiEA'/NOUN_PROP	>arobiEA'_1	Day Name
+اربعاء	أَرْبِعاء	N0_Nh	Wednesday	>arobiEA'/NOUN_PROP	>arobiEA'_1	Day Name
+أربعاؤ	أَرْبِعاؤ	Nh	Wednesday	>arobiEA&/NOUN_PROP	>arobiEA'_1	Day Name
+اربعاؤ	أَرْبِعاؤ	Nh	Wednesday	>arobiEA&/NOUN_PROP	>arobiEA'_1	Day Name
+أربعائ	أَرْبِعائ	Nhy	Wednesday	>arobiEA}/NOUN_PROP	>arobiEA'_1	Day Name
+اربعائ	أَرْبِعائ	Nhy	Wednesday	>arobiEA}/NOUN_PROP	>arobiEA'_1	Day Name
+رابع	رابِع	Nall	fourth	rAbiE/ADJ	rAbiE_1	Number
+رمضان	رَمَضان	Ndip	Ramadan	ramaDAn/NOUN_PROP	ramaDAn_1	Month Name
+سبع	سَبْع	N	seven	saboE/ADJ	saboE_2	Number
+سبع	سَبْع	Nap	seven	saboE/ADJ	saboE_2	Number
+سبع	سَبْع	Numb	seventy	saboE/NOUN	saboE_2	Number
+سبعمائ	سَبْعمائ	Nap	seven-hundred	saboEmA}/NOUN	saboEmA}ap_1	Number
+سبعين	سَبْعِين	NAt	seventies	saboEiyn/NOUN	saboEiyn_1	Number
+سبع	سُبْع	Ndu	seventh	suboE/NOUN	suboE_1	Number
+أسبوع	أُسْبُوع	Ndu	week	>usobuwE/NOUN	>usobuwE_1	Time Unit
+اسبوع	أُسْبُوع	Ndu	week	>usobuwE/NOUN	>usobuwE_1	Time Unit
+أسابيع	أَسابِيع	Ndip	weeks	>asAbiyE/NOUN	>usobuwE_1	Time Unit
+اسابيع	أَسابِيع	Ndip	weeks	>asAbiyE/NOUN	>usobuwE_1	Time Unit
+سبوع	سَبُوع	NAt	Pentecost	sabuwE/NOUN_PROP	sabuwEAt_1	Holiday
+سابع	سابِع	Nall	seventh	sAbiE/ADJ	sAbiE_1	Number
+ست	سِتّ	N	six	sit~/ADJ	sit~_1	Number
+ست	سِتّ	Nap	six	sit~/ADJ	sit~_1	Number
+ست	سِتّ	Numb	sixty	sit~/NOUN	sit~_1	Number
+ستين	سِتِّين	NAt	sixties	sit~iyn/NOUN	sit~iyn_1	Number
+ستمائ	سِتّمائ	Nap	six-hundred	sit~mA}/NOUN	sit~mA}ap_1	Number
+سات	ساتّ	N-ap	sixth	sAt~/NOUN	sAt~_1	Number
+سدس	سُدْس	Ndu	one sixth/sextant	sudos/NOUN	sudos_1	Number
+سادس	سادِس	Nall	sixth	sAdis/ADJ	sAdis_1	Number
+سن	سَن	Napdu	year	san/NOUN	sanap_1	Time Unit
+سنو	سَنَو	NAt	years	sanaw/NOUN	sanap_1	Time Unit
+سن	سِن	Nuwn_Niyn	years	sin/NOUN	sanap_1	Time Unit
+ساع	ساع	Napdu	hour/time	sAE/NOUN	sAEap_1	Time Unit
+ساع	ساع	NAt	hours	sAE/NOUN	sAEap_1	Time Unit
+ساعتئذ	ساعَتَئِذٍ	FW-Wa	at that hour/time	sAEata}i*K/ADV	sAEata}i*K_1	Time Preposition
+شتنبر	شُتَنْبِر	N0	September (Maghrebi spelling)	$utanobir/NOUN_PROP	$utanobir_1	Month Name
+شتاء	شِتاء	N0_Nh	winter	$itA'/NOUN	$itA'_1	Season
+شتاؤ	شِتاؤ	Nh	winter	$itA&/NOUN	$itA'_1	Season
+شتائ	شِتائ	Nhy	winter	$itA}/NOUN	$itA'_1	Season
+أشتي	أَشْتِي	Nap	winters	>a$otiy/NOUN	$itA'_1	Season
+اشتي	أَشْتِي	Nap	winters	>a$otiy/NOUN	$itA'_1	Season
+شروق	شُرُوق	N	sunrise	$uruwq/NOUN	$uruwq_1	Relative Time
+شهر	شَهْر	Ndu	month	$ahor/NOUN	$ahor_1	Time Unit
+شهور	شُهُور	N	months	$uhuwr/NOUN	$ahor_1	Time Unit
+أشهر	أَشْهُر	N	months	>a$ohur/NOUN	$ahor_1	Time Unit
+اشهر	أَشْهُر	N	months	>a$ohur/NOUN	$ahor_1	Time Unit
+صيف	صَيْف	Ndu	summer	Sayof/NOUN	Sayof_1	Season
+أصياف	أَصْياف	N	summers	>aSoyAf/NOUN	Sayof_1	Season
+اصياف	أَصْياف	N	summers	>aSoyAf/NOUN	Sayof_1	Season
+صيوف	صُيُوف	N	summers	Suyuwf/NOUN	Sayof_1	Season
+طوال	طِوالَ	FW-Wa	during	TiwAla/PREP	TiwAla_1	Time Preposition
+طوال	طِوالَ	FW-Wa-a	during	TiwAla/PREP	TiwAla_1	Time Preposition
+طيلة	طِيلَةَ	FW-Wa	during	Tiylapa/PREP	Tiylapa_1	Time Preposition
+طيلت	طِيلَتَ	FW-Wa-a	during	Tiylata/PREP	Tiylapa_1	Time Preposition
+ظهر	ظُهْر	N	noon/afternoon	Zuhor/NOUN	Zuhor_1	Relative Time
+ظهر	ظُهْر	NF	in the afternoon/at noon	Zuhor/ADV	Zuhor_1	Relative Time
+أظهار	أَظْهار	N	afternoons	>aZohAr/NOUN	Zuhor_1	Relative Time
+اظهار	أَظْهار	N	afternoons	>aZohAr/NOUN	Zuhor_1	Relative Time
+عشر	عُشْر	Ndu	tenth/tenth part	Eu$or/NOUN	Eu$or_1	Number
+عشر	عَشَر	Nap	ten	Ea$ar/NOUN	Ea$arap_1	Number
+عشر	عَشْر	Nap	ten	Ea$or/NOUN	Ea$arap_1	Number
+عشر	عَشَر	N	ten	Ea$ar/NOUN	Ea$arap_1	Number
+عشر	عِشْر	Numb	twenty	Ei$or/NOUN	Ei$oruwn_1	Number
+عشرين	عِشْرِين	NAt	twenties	Ei$oriyn/NOUN	Ei$oriyn_1	Number
+عاشر	عاشِر	N-ap	tenth	EA$ir/NOUN	EA$ir_1	Number
+عند	عِنْدَ	FW-Wa	with/at	Einoda/PREP	Einoda_1	Time Preposition
+عند	عِنْدِ	FW-Wa	with/at	Einodi/PREP	Einoda_1	Time Preposition
+عند	عِنْدَ	FW-Wa-a	with/at	Einoda/PREP	Einoda_1	Time Preposition
+عند	عِنْدِ	FW-Wa-i	with/at	Einodi/PREP	Einoda_1	Time Preposition
+عند	عِنْد	FW-Wa-o	with/at	Einod/PREP	Einoda_1	Time Preposition
+عندما	عِنْدَما	FW-Wa	when	EinodamA/CONJ	EinodamA_1	Time Preposition
+عندئذ	عِنْدَئِذٍ	FW-Wa	at that time/then	Einoda}i*K/ADV	Einoda}i*K_1	Time Preposition
+عندذاك	عِنْدَذاك	FW-Wa	at that time/then	Einoda*Ak/ADV	Einoda*Ak_1	Time Preposition
+عندها	عِنْدَها	FW-Wa	then/at that moment	EinodahA/ADV	EinodahA_1	Time Preposition
+عام	عام	Ndu	year	EAm/NOUN	EAm_1	Time Unit
+أعوام	أَعْوام	N	years	>aEowAm/NOUN	EAm_1	Time Unit
+اعوام	أَعْوام	N	years	>aEowAm/NOUN	EAm_1	Time Unit
+عامئذ	عامَئِذٍ	FW-Wa	that year	EAma}i*K/ADV	EAma}i*K_1	Time Preposition
+عامذاك	عامَذاك	FW-Wa	that year	EAma*Ak/ADV	EAma*Ak_1	Time Preposition
+غدو	غُدْو	Nap	morning	gudow/NOUN	gudowap_1	Relative Time
+غدو	غَدْو	Nap	lunch	gadow/NOUN	gadowap_1	Relative Time
+غدي	غَدِيّ	Nap	morning	gadiy~/NOUN	gadiy~ap_1	Relative Time
+غروب	غُرُوب	N	setting	guruwb/NOUN	guruwb_1	Relative Time
+غشت	غُشْت	Nprop	August (month)	gu$ot/NOUN_PROP	gu$ot_1	Month Name
+فطور	فَطُور	N	breakfast	faTuwr/NOUN	faTuwr_1	Relative Time
+كانون	كانُون	N0	Kanun (part of month names Dec. and Jan.)	kAnuwn/NOUN_PROP	kAnuwn_1	Month Name
+مايو	مايُو	N0	May	mAyuw/NOUN_PROP	mAyuw_1	Month Name
+إمساك	إِمْساك	N	imsak (start of Ramadan fast)	<imosAk/NOUN	<imosAk_2	Time Reference
+امساك	إِمْساك	N	imsak (start of Ramadan fast)	<imosAk/NOUN	<imosAk_2	Time Reference
+مساء	مَساءَ	FW-Wa	evening	masA'a/ADV	masA'_1	Relative Time
+مساء	مَساء	N0_Nh	evening	masA'/NOUN	masA'_1	Relative Time
+مساؤ	مَساؤ	Nh	evening	masA&/NOUN	masA'_1	Relative Time
+مسائ	مَسائ	Nhy	evening	masA}/NOUN	masA'_1	Relative Time
+ممسى	مُمْسَى	N0	evening time	mumosaY/NOUN	mumosaY_1	Relative Time
+ممسا	مُمْسا	Nhy	evening time	mumosA/NOUN	mumosaY_1	Relative Time
+مساء	مَساءً	FW-Wa	in the evening	masA'F/ADV	masA'_1	Relative Time
+مسائي	مَسائِيّ	N-ap	evening	masA}iy~/ADJ	masA}iy~_1	Relative Time
+مليار	مِلْيار	NduAt	billion	miloyAr/NOUN	miloyAr_1	Number
+مليون	مِلْيُون	NduAt	million	miloyuwn/NOUN	miloyuwn_1	Number
+ملايين	مَلايِين	Ndip	millions	malAyiyn/NOUN	miloyuwn_1	Number
+من	مِن	FW-Wa	from	min/PREP	min_1	Time Preposition
+من	مِن	FW-Wa-n	from	min/PREP	min_1	Time Preposition
+هاتور	هاتُور	Ndip	Hator (3rd Coptic month, Nov. 10-Dec. 9)	hAtuwr/NOUN_PROP	hAtuwr_1	Month Name
+هجري	هِجْرِيّ	N-ap	Hijri/Hegira (calendar)	hijoriy~/ADJ	hijoriy~_1	Time Reference
+هلال	هِلال	N0	Crescent	hilAl/NOUN_PROP	hilAl_2	Relative Time
+توقيت	تَوْقِيت	N/At	time standard	tawoqiyt/NOUN	tawoqiyt_1	Time Reference
+مولد	مَوْلِد	N0	Mawlid (Prophet's Birthday)	mawolid/NOUN_PROP	mawolid_2	Time Reference
+ميلاد	مِيلاد	Ndu	birthday/birth	miylAd/NOUN	miylAd_1	Time Reference
+ميلاد	مِيلاد	Ndu	Christmas	miylAd/NOUN_PROP	miylAd_1	Time Reference
+ميلاد	مِيلاد	Ndu	Christian Era	miylAd/NOUN_PROP	miylAd_1	Time Reference
+ميلادي	مِيلادِيّ	N-ap	A.D./Christian Era	miylAdiy~/ADJ	miylAdiy~_1	Time Reference
+يناير	يَنايِر	N0	January	yanAyir/NOUN_PROP	yanAyir_1	Month Name
+ينائر	يَنائِر	N0	January	yanA}ir/NOUN_PROP	yanAyir_1	Month Name
+يوبيل	يُوبِيل	N	jubilee	yuwbiyl/NOUN	yuwbiyl_1	Time Reference
+يوليو	يُولِيُو	N0	July	yuwliyuw/NOUN_PROP	yuwliyuw_1	Month Name
+يوليه	يُولِيَه	N0	July	yuwliyah/NOUN_PROP	yuwliyuw_1	Month Name
+يوليوز	يُولْيُوز	N0	July	yuwloyuwz/NOUN_PROP	yuwliyuw_1	Month Name
+يوم	يَوْم	Ndu	day	yawom/NOUN	yawom_1	Time Unit
+أيام	أَيّام	N	days	>ay~Am/NOUN	yawom_1	Time Unit
+ايام	أَيّام	N	days	>ay~Am/NOUN	yawom_1	Time Unit
+اليوم	الْيَوْمَ	FW-Wa	today	Aloyawoma/ADV	yawom_3	Relative Time
+يومئذ	يَوْمَئِذٍ	FW-Wa	on that day	yawoma}i*K/ADV	yawoma}i*K_1	Time Preposition
+يومذاك	يَوْمَذاك	FW-Wa	on that day	yawoma*Ak/ADV	yawoma*Ak_1	Time Preposition
+يونيو	يُونِيُو	Nprop	June	yuwniyuw/NOUN_PROP	yuwniyuw_1	Month Name
+يونيه	يُونِيَه	Nprop	June	yuwniyah/NOUN_PROP	yuwniyuw_1	Month Name
+يونية	يُونِيَة	Nprop	June	yuwniyap/NOUN_PROP	yuwniyuw_1	Month Name
+جانفي	جانفِي	N0	January	jAnfiy/NOUN_PROP	jAnfiy_1	Month Name
+شباط	شُباط	Ndip	February	$ubAT/NOUN_PROP	$ubAT_1	Month Name
+فبراير	فِبْرايِر	N0	February	fiborAyir/NOUN_PROP	fiborAyir_1	Month Name
+فيفري	فِيفرِي	N0	February	fiyfriy/NOUN_PROP	fiyfriy_1	Month Name
+مارت	مارْت	N0	March	mArot/NOUN_PROP	mArot_1	Month Name
+مارس	مارِس	N0	March	mAris/NOUN_PROP	mAris_1	Month Name
+نيسان	نِيسان	N0	April	niysAn/NOUN_PROP	niysAn_1	Month Name
+أفريل	أَفْرِيل	Nprop	April	>aforiyl/NOUN_PROP	>aforiyl_1	Month Name
+افريل	أَفْرِيل	Nprop	April	>aforiyl/NOUN_PROP	>aforiyl_1	Month Name
+مايو	مايُو	N0	May	mAyuw/NOUN_PROP	mAyuw_1	Month Name
+جويلي	جُوِيلِي	Nap	July	juwiyliy/NOUN_PROP	juwiyliy_1	Month Name
+أيلول	أَيْلُول	Nprop	September	>ayoluwl/NOUN_PROP	>ayoluwl_1	Month Name
+ايلول	أَيْلُول	Nprop	September	>ayoluwl/NOUN_PROP	>ayoluwl_1	Month Name
+سبتمبر	سِبْتَمْبِر	N0	September	sibotamobir/NOUN_PROP	sibotamobir_1	Month Name
+نوفمبر	نُوفِمْبِر	N0	November	nuwfimobir/NOUN_PROP	nuwfimobir_1	Month Name
+نفمبر	نُفِمْبِر	N0	November	nufimobir/NOUN_PROP	nuwfimobir_1	Month Name
+ديسمبر	دِيسَمْبِر	N0	December	diysamobir/NOUN_PROP	diysamobir_1	Month Name
+دسمبر	دِسَمْبِر	N0	December	disamobir/NOUN_PROP	diysamobir_1	Month Name
+واحد	واحِد	N-ap	one	wAHid/NOUN	wAHid_2	Number
+عشر	عِشْر	Numb	twenty	Ei$or/NOUN	Ei$oruwn_1	Number
+رجب	رَجَب	N	Rajab (month)	rajab/NOUN_PROP	rajab_1	Month Name
+منسلخ	مُنْسَلَخ	N	end of the month	munosalax/NOUN	munosalax_1	Relative Time
+شعبان	شَعْبان	Ndip	Sha'ban (month)	$aEobAn/NOUN_PROP	$aEobAn_1	Month Name
+شوال	شَوّال	N/At	Shawwal (month)	$aw~Al/NOUN_PROP	$aw~Al_1	Month Name
+شواويل	شَواوِيل	Ndip	months of Shawwal	$awAwiyl/NOUN	$aw~Al_1	Month Name
+صفر	صَفَر	N	Safar (month)	Safar/NOUN_PROP	Safar_2	Month Name
+طوبة	طُوبَة	N0	Tuba (5th Coptic month, Jan. 9-Feb. 7)	Tuwbap/NOUN_PROP	Tuwbap_1	Month Name
+قماح	قُماح	N	coldest winter months	qumAH/NOUN	qumAH_1	Season
+أمشير	أَمْشِير	N	Amshir (6th Coptic month, Feb. 8-Mar. 9)	>amo$iyr/NOUN_PROP	>amo$iyr_1	Month Name
+امشير	أَمْشِير	N	Amshir (6th Coptic month, Feb. 8-Mar. 9)	>amo$iyr/NOUN_PROP	>amo$iyr_1	Month Name
+برمهات	بَرَمْهات	N0	Baramhat (7th Coptic month, Mar. 10-Apr. 8)	baramohAt/NOUN_PROP	baramohAt_1	Month Name
+جمادى	جُمادَى	N0	Jumada (part of 5th and 6th month names in Islamic calendar)	jumAdaY/NOUN_PROP	jumAdaY_1	Month Name
+جمادي	جُمادَي	NAt	Jumadas  (5th and 6th months in Islamic calendar)	jumAday/NOUN_PROP	jumAdaY_1	Month Name
+حوت	حُوت	N0	Hout (12th month of solar year, in S.Ar.)	Huwt/NOUN_PROP	Huwt_3	Month Name
+خريف	خَرِيف	N	autumn/fall	xariyf/NOUN	xariyf_1	Season
+صيف	صَيْف	Ndu	summer	Sayof/NOUN	Sayof_1	Season
+أصياف	أَصْياف	N	summers	>aSoyAf/NOUN	Sayof_1	Season
+اصياف	أَصْياف	N	summers	>aSoyAf/NOUN	Sayof_1	Season
+صيوف	صُيُوف	N	summers	Suyuwf/NOUN	Sayof_1	Season
+لك	لَكّ	Ndu_L	lac/one hundred thousand	lak~/NOUN	lak~_1	Number
+ألكاك	أَلْكاك	N	lac/one hundred thousand	>alokAk/NOUN	lak~_1	Number
+الكاك	أَلْكاك	N	lac/one hundred thousand	>alokAk/NOUN	lak~_1	Number
+لكوك	لُكُوك	N_L	lac/one hundred thousand	lukuwk/NOUN	lak~_1	Number
+مئ	مِئ	Napdu	hundred	mi}/NOUN	mi}ap_1	Number
+مائ	مِائ	Napdu	hundred	miA}/NOUN	mi}ap_1	Number
+مئ	مِئ	NAt	hundreds	mi}/NOUN	mi}ap_1	Number
+مائ	مِائ	NAt	hundreds	miA}/NOUN	mi}ap_1	Number
+مئون	مِئُون	N0	hundreds	mi}uwn/NOUN	mi}ap_1	Number
+ربو	رِبْو	NapAt	ten thousand/myriad	ribow/NOUN	ribowap_1	Number
+ألف	أَلْف	Ndu	thousand	>alof/NOUN	>alof_1	Number
+الف	أَلْف	Ndu	thousand	>alof/NOUN	>alof_1	Number
+سبت	سَبْت	N	Saturday	sabot/NOUN_PROP	sabot_1	Day Name

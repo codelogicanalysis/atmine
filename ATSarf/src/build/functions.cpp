@@ -9,7 +9,7 @@
 #include "diacritics.h"
 #include "Search_Compatibility.h"
 
-#define ONLY_SUFFIXES
+//#define ONLY_SUFFIXES
 
 bool pos=false;
 long abstract_possessive;
@@ -133,7 +133,6 @@ int insert_buckwalter()
 			//3 letters are not properly transfered using perl script because it is not based on unicode, here we solve them manually
 			if (item.contains("{") || item.contains("`") || item.contains("V"))
 			{
-				QString before=item;
 				item=item.replace("{",QString(alef_wasla));
 				item=item.replace("`",QString(aleft_superscript));
 				item=item.replace("V",QString(veh));
@@ -141,7 +140,6 @@ int insert_buckwalter()
 			}
 			if (raw_data.contains("{") || raw_data.contains("`") || raw_data.contains("V"))
 			{
-				QString before=raw_data;
 				raw_data=raw_data.replace("{",QString(alef_wasla));
 				raw_data=raw_data.replace("`",QString(aleft_superscript));
 				raw_data=raw_data.replace("V",QString(veh));
