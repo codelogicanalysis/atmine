@@ -85,3 +85,8 @@
 قرب	قُرْب	FW-Wa-o	near	qurob/PREP	quroba_1
 قريب	قَرِيب	N-ap	recent/soon	qariyb/ADJ	qariyb_2
 سبوت	سُبُوت	N	Saturdays/Sabbaths	subuwt/NOUN_PROP	sabot_1
+مدا	مَدا	Nhy	period/duration	madA/NOUN	madaY_2
+فتر	فَتْر	Napdu	phase/time period/interval	fator/NOUN	fatorap_1	Relative Time
+فتر	فَتَر	NAt	phases/time periods/intervals	fatar/NOUN	fatorap_1	Relative Time
+لحظ	لَحْظ	Napdu_L	moment/instant	laHoZ/NOUN	laHoZap_1	Time Unit
+لحظ	لَحَظ	NAt_L	moments/instants	laHaZ/NOUN	laHoZap_1	Time Unit

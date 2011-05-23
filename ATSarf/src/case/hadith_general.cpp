@@ -55,9 +55,9 @@ QString StopwordsFileName=".stop_words";
 		bool ibn:1;
 		bool _3abid:1;
 		bool possessivePlace:1;
-		bool followedByPunctuation:1;
-		int unused:21;
-		void resetCurrentWordInfo()	{ibn=false;_3abid=false;possessivePlace=false;followedByPunctuation=false;}
+		int unused:22;
+		PunctuationInfo punctuationInfo;
+		void resetCurrentWordInfo()	{ibn=false;_3abid=false;possessivePlace=false;punctuationInfo.reset();}
 		bool ibnOr3abid() { return ibn || _3abid;}
 		bool isIbnOrPossessivePlace(){return ibn || possessivePlace;}
 	} StateInfo;
@@ -702,10 +702,8 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 #ifdef REFINEMENTS
 	}
 #endif
-	bool has_punctuation;
 	stateInfo.endPos=finish;
-	stateInfo.nextPos=next_positon(text,finish,has_punctuation);
-	stateInfo.followedByPunctuation=has_punctuation;
+	stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
 	display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 #ifdef REFINEMENTS
 	if (stop_word)
@@ -749,8 +747,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 	display(stateInfo.currentState);
 	display("\n");
 #ifdef PUNCTUATION
-	if (stateInfo.followedByPunctuation)
-	{
+	if (stateInfo.punctuationInfo.has_punctuation) {
 		display("<has punctuation>");
 	}
 #endif
@@ -775,7 +772,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			temp_names_per_narrator=1;
 		#endif
 		#ifdef PUNCTUATION
-			if (stateInfo.followedByPunctuation)
+			if (stateInfo.punctuationInfo.has_punctuation)
 			{
 				display("<punc1>");
 				currentData.narratorCount++;
@@ -913,7 +910,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			temp_nmc_count++;
 		#endif
 		#ifdef PUNCTUATION
-			if (stateInfo.followedByPunctuation)
+			if (stateInfo.punctuationInfo.has_punctuation)
 				currentData.nmcCount=hadithParameters.nmc_max+1;
 		#endif
 		}
@@ -961,7 +958,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 			stateInfo.nextState=NAME_S;
 		#ifdef PUNCTUATION
-			if (stateInfo.followedByPunctuation)
+			if (stateInfo.punctuationInfo.has_punctuation)
 			{
 				display("<punc2>");
 				currentData.narratorCount++;
@@ -1095,7 +1092,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			temp_names_per_narrator++;//found another name name
 		#endif
 		#ifdef PUNCTUATION
-			if (stateInfo.followedByPunctuation)
+			if (stateInfo.punctuationInfo.has_punctuation)
 			{
 				display("<punc3>");
 				currentData.narratorCount++;
@@ -1113,7 +1110,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		}
 	#ifdef PUNCTUATION
-		else if (stateInfo.followedByPunctuation) //TODO: if punctuation check is all what is required
+		else if (stateInfo.punctuationInfo.has_punctuation) //TODO: if punctuation check is all what is required
 		{
 			stateInfo.nextState=NMC_S;
 			currentData.nmcCount=hadithParameters.nmc_max+1;
@@ -1300,7 +1297,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			temp_names_per_narrator++;//found another name name
 		#endif
 		#ifdef PUNCTUATION
-			if (stateInfo.followedByPunctuation)
+			if (stateInfo.punctuationInfo.has_punctuation)
 			{
 				display("<punc4>");
 				currentData.narratorCount++;
@@ -1427,7 +1424,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		}
 	#ifdef PUNCTUATION
-		if (stateInfo.followedByPunctuation && stateInfo.nextState==NRC_S && stateInfo.currentType!=NAME && stateInfo.currentType!=NRC)
+		if (stateInfo.punctuationInfo.has_punctuation && stateInfo.nextState==NRC_S && stateInfo.currentType!=NAME && stateInfo.currentType!=NRC)
 			currentData.nrcPunctuation=true;
 	#endif
 		break;

@@ -494,3 +494,67 @@ int insert_placenames() //not yet complete
 	}
 	return 0;
 }
+
+int insert_time_categorizations()
+{
+	int source_id=insert_source("Jad Time Categories","Manual Work","Jad Makhlouta");
+	QString file_name="../../dic/T/categorized.txt";
+	QFile input(file_name);
+	if (!input.open(QIODevice::ReadWrite)) {
+		out << "Unexpected Error: File not found\n";
+		return 1;
+	}
+	QTextStream file(&input);
+	file.setCodec("utf-8");
+	int line_num=0;
+	while (!file.atEnd()) {
+		line_num++;
+		QString line=file.readLine(0);
+		if (line.isNull())
+		{
+			line_num--; //finished
+			break;
+		}
+		if (line.isEmpty()) //ignore empty lines if they exist
+			continue;
+		QList<long> * abstract_categories=new QList<long>();
+		long time_abstract_category_id=insert_category("Time",STEM,source_id,true); //returns id if already present
+		abstract_categories->append(time_abstract_category_id);
+		QStringList entries=line.split("\t",QString::KeepEmptyParts);
+		if (entries.size()<7)
+		{
+			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			return -1;
+		}
+		QString item=entries[0];
+		QString raw_data=entries[1];
+		QString category=entries[2];
+		QString description=entries[3];
+		QString POS=entries[4];
+		//3 letters are not properly transfered using perl script because it is not based on unicode, here we solve them manually
+		if (item.contains("{") || item.contains("`") || item.contains("V")) {
+			item=item.replace("{",QString(alef_wasla));
+			item=item.replace("`",QString(aleft_superscript));
+			item=item.replace("V",QString(veh));
+			//out << "Replaced "<<interpret_type(types[j])<<": "<<before<<" by "<<item<<"\n";
+		}
+		if (raw_data.contains("{") || raw_data.contains("`") || raw_data.contains("V")) {
+			raw_data=raw_data.replace("{",QString(alef_wasla));
+			raw_data=raw_data.replace("`",QString(aleft_superscript));
+			raw_data=raw_data.replace("V",QString(veh));
+			//out << "Replaced "<<interpret_type(types[j])<<": "<<before<<" by "<<raw_data<<"\n";
+		}
+		//lemma is 5
+		QString cateorized_abstract_category=entries[6];
+		long cateorized_abstract_category_id=insert_category(cateorized_abstract_category,STEM,source_id,true); //returns id if already present
+		abstract_categories->append(cateorized_abstract_category_id);
+		if (!addAbstractCategory(item,raw_data,category,source_id,abstract_categories,description,POS))
+		{
+			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			return -1;
+		}
+	}
+	out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+	input.close();
+	return 0;
+}

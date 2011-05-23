@@ -48,20 +48,41 @@ static const QChar thal =QChar(0x0630);
 static const QChar alef_maksoura= QChar(0x0649);
 
 static const QChar question_mark=QChar(0x061F);
-static const QChar semicolon=QChar(0x061B);
+static const QChar semicolon_ar=QChar(0x061B);
 static const QChar fasila=QChar(0x060C);
-static const QChar full_stop=QChar(0x06D4);
+static const QChar full_stop1=QChar(0x06D4);
 static const QChar full_stop2=QChar(0x200F);
 static const QChar full_stop3=QChar(0x002E);
+static const QChar double_quotation1=QChar(0x00BB);//RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
+static const QChar double_quotation2=QChar(0x00AB);//LEFT-POINTING DOUBLE ANGLE QUOTATION MARK
+static const QChar double_quotation3=QChar(0x02DD);//DOUBLE ACUTE ACCENT
+static const QChar double_quotation4=QChar(0x02EE);//MODIFIER LETTER DOUBLE APOSTROPHE
+static const QChar double_quotation5=QChar(0x02F5);//MODIFIER LETTER MIDDLE DOUBLE GRAVE ACCENT
+static const QChar double_quotation6=QChar(0x02F6);//MODIFIER LETTER MIDDLE DOUBLE ACUTE ACCENT
+static const QChar single_quotation1=QChar(0x02BB);//MODIFIER LETTER TURNED COMMA
+static const QChar single_quotation2=QChar(0x02BC);//MODIFIER LETTER APOSTROPHE
+static const QChar single_quotation3=QChar(0x02BD);//MODIFIER LETTER REVERSED COMMA
+static const QChar single_quotation4=QChar(0x02CA);//MODIFIER LETTER ACUTE ACCENT
+static const QChar single_quotation5=QChar(0x02CB);//MODIFIER LETTER GRAVE ACCENT
 
-static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3+"]";
-static const QString punctuation=QString(":\\.,()-'\n\"")+fasila+question_mark+semicolon+full_stop+full_stop2+full_stop3;
+static const QChar paragraph_seperator=QChar(0x2029);//PARAGRAPH SEPARATOR
+static const QChar zero_width_space=QChar(0xFEFF);//ZERO WIDTH NO-BREAK SPACE
+
+static const QString delimiters=QString("[ :\\.,()-><{}\\/|'\"\n\t\r")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+
+								double_quotation1+double_quotation2+double_quotation3+double_quotation4+double_quotation5+double_quotation6+
+								single_quotation1+single_quotation2+single_quotation3+single_quotation4+single_quotation5+paragraph_seperator+
+								zero_width_space+"\\[\\]]";
+static const QString punctuation=QString(":\\.,()-'\n\r\"")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+paragraph_seperator;
 static const QString alefs=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla;
 static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
 		waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;
 extern QString non_punctuation_delimiters;
 
-inline bool isDelimiter(const QChar & letter) { return delimiters.contains(letter); }
+inline bool isDelimiter(const QChar & letter) {
+	if (letter.unicode()<0x0020)
+		return true;
+	return delimiters.contains(letter);
+}
 
 inline bool isPunctuationMark(const QChar & letter) { return punctuation.contains(letter); }
 

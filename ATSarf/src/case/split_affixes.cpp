@@ -140,9 +140,12 @@ void SplitDialog::specialize_action(){
 			}
 			//first add category of new Names for the specialized category and category of those left and duplicate previous rules to them
 			bool ok;
-			QString category_specialized = QInputDialog::getText(this, tr("Name for Scpecialized Category"),
-												  tr("New Name:"), QLineEdit::Normal,
-												  category_original, &ok);
+			QString category_specialized = category_original;
+			while (category_specialized==category_original) {
+				category_specialized=QInputDialog::getText(this, tr("Name for Scpecialized Category"),
+									 tr("New Name: (must be different from original)"), QLineEdit::Normal,
+									 category_original, &ok);
+			}
 			QString category_left = QInputDialog::getText(this, tr("Name of Category for entries left"),
 												  tr("New Name:"), QLineEdit::Normal,
 												  category_original, &ok);
@@ -194,12 +197,14 @@ void SplitDialog::specialize_action(){
 				//third: add 2 dummy rules to keep consistency with AB,AC,BC
 				insert_compatibility_rules(rule,cat_empty,specialized_id,cat_org_id,source_id);
 				insert_compatibility_rules(rule,cat_empty,left_id,cat_org_id,source_id);
-				//forth: remove all rules AA or CC having the old_category
-				QString stmt=QString(tr("DELETE  ")+
-									  "FROM  compatibility_rules "+
-									  "WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
-							  .arg((int)rule).arg(cat_org_id);
-				execute_query(stmt,query);
+				//forth: remove all rules AA or CC having the old_category if (old not used again)
+				if (category_original!=category_left) {
+					QString stmt=QString(tr("DELETE  ")+
+										  "FROM  compatibility_rules "+
+										  "WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
+								  .arg((int)rule).arg(cat_org_id);
+					execute_query(stmt,query);
+				}
 				system(QString("rm ").append(compatibility_rules_path).toStdString().data());
 				database_info.comp_rules->buildFromFile();
 				loadAffixList();

@@ -1,23 +1,62 @@
 #ifndef TEXTPARSING_H
 #define TEXTPARSING_H
 #include "hadith.h"
+#include "letters.h"
 
-inline long next_positon(QString * text,long finish,bool & has_punctuation) {
-	has_punctuation=false;
+class PunctuationInfo {
+public:
+	bool has_punctuation:1;
+	bool comma:1;
+	bool semicolon:1;
+	bool fullstop:1;
+	bool newLine:1;
+	PunctuationInfo() {
+		reset();
+	}
+	void reset() {
+		has_punctuation=false;
+		comma=false;
+		semicolon=false;
+		fullstop=false;
+		newLine=false;
+	}
+	bool hasEndingPunctuation() { return fullstop || newLine;}
+	bool update(const QChar & letter) { //returns true if this letter is a delimiter
+		if (non_punctuation_delimiters.contains(letter))
+			return true;
+		else if (punctuation.contains(letter)) {
+			has_punctuation=true;
+			if (letter==',' || letter ==fasila)
+				comma=true;
+			else if (letter=='\n' || letter =='\r' || letter==paragraph_seperator)
+				newLine=true;
+			else if (letter==semicolon_ar || letter ==';')
+				semicolon=true;
+			else if (letter==full_stop1 || letter==full_stop2 || letter==full_stop3 || letter==question_mark || letter=='.' || letter=='?')
+				fullstop=true;
+			return true;
+		} else
+			return false;
+	}
+};
+
+inline long next_positon(QString * text,long finish,PunctuationInfo & punctuationInfo) {
+	punctuationInfo.reset();
+	int size=text->length();
+	if (finish>=size)
+		return finish+1;//check this
+	QChar letter=text->at(finish);
 #ifdef PUNCTUATION
-	if (finish<text->length() && punctuation.contains(text->at(finish)))
-		has_punctuation=true;
+	punctuationInfo.update(letter);
 #endif
 	finish++;
-	while(finish<text->length())
-	{
+	while(finish<size) {
+		letter=text->at(finish);
 	#ifdef PUNCTUATION
-		if (punctuation.contains(text->at(finish)))
-			has_punctuation=true;
-		else if (!non_punctuation_delimiters.contains(text->at(finish)))
+		if (!punctuationInfo.update(letter)) // update returns true if letter is a delimiter
 			break;
 	#else
-		if (!delimiters.contains(text->at(finish)))
+		if (!delimiters.contains(letter))
 			break;
 	#endif
 		finish++;
