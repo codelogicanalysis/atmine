@@ -9,6 +9,8 @@ int insert_buckwalter();
 
 int insert_propernames();
 
-int insert_placenames(); //not yet complete
+int insert_placenames();
+
+int insert_time_categorizations();
 
 #endif // INSERT_SCRIPTS_H

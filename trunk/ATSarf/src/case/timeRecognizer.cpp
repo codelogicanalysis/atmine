@@ -3,10 +3,12 @@
 #include "textParsing.h"
 #include "timeRecognizer.h"
 
-TimeParameters timeParameters;
-QList<unsigned int> bits_ABSOLUTE_TIME, bits_RELATIVE_TIME;
 
-enum wordType { ABS_T, REL_T, OTHER};
+TimeParameters timeParameters;
+QList<unsigned int> bits_ABSOLUTE_TIME;
+unsigned int bit_TIME_PREPOSITION, bit_NUMBER;
+
+enum wordType { ABS_T, PREP_T, NUM, OTHER};
 enum stateType { NOTHING_S , MAYBE_TIME_S, TIME_S};
 
 class TimeEntity;
@@ -18,7 +20,8 @@ private:
 	long start, end;
 
 	TimeEntityVector absoluteParts;
-	TimeEntityVector relativeParts;
+	TimeEntityVector prepositionParts;
+	TimeEntityVector numberParts;
 public:
 	TimeEntity() { this->text=NULL; start=0;end=0;}
 	TimeEntity(QString * text) { this->text=text; start=0;end=0;}
@@ -39,21 +42,32 @@ public:
 		if (start>=this->start && end<=this->end) //later add check that there is no overlap
 			absoluteParts.append(TimeEntity(text,start,end));
 	}
-	void addRelativePart(long start, long end) {
+	void addPrepositionPart(long start, long end) {
 		if (start>=this->start && end<=this->end) //later add check that there is no overlap
-			relativeParts.append(TimeEntity(text,start,end));
+			prepositionParts.append(TimeEntity(text,start,end));
 	}
-	const TimeEntityVector & getRelativeParts() const { return relativeParts;}
+	void addNumberPart(long start, long end) {
+		if (start>=this->start && end<=this->end) //later add check that there is no overlap
+			numberParts.append(TimeEntity(text,start,end));
+	}
+	const TimeEntityVector & getPrepositionParts() const { return prepositionParts;}
 	const TimeEntityVector & getAbsoluteParts() const { return absoluteParts;}
-	TimeEntity * getLastRelativePart() {
-		if (relativeParts.size()>0)
-			return &relativeParts[relativeParts.size()-1];
+	const TimeEntityVector & getNumberParts() const { return numberParts;}
+	TimeEntity * getLastPrepositionPart() {
+		if (prepositionParts.size()>0)
+			return &prepositionParts[prepositionParts.size()-1];
 		else
 			return NULL;
 	}
 	TimeEntity * getLastAbsolutePart() {
 		if (absoluteParts.size()>0)
 			return &absoluteParts[absoluteParts.size()-1];
+		else
+			return NULL;
+	}
+	TimeEntity * getLastNumberPart() {
+		if (numberParts.size()>0)
+			return &numberParts[numberParts.size()-1];
 		else
 			return NULL;
 	}
@@ -70,12 +84,12 @@ public:
 	wordType currentType:2;
 	stateType currentState:2;
 	stateType nextState:2;
-	bool followedByPunctuation:1;
+	int unused:26;
+	PunctuationInfo punctuationInfo;
 
 	//info about time entity recognized
 	int IWn;
 	int IWt;
-	int unused:25;
 	TimeEntity * entityProcessed;
 
 	TimeStateInfo (){
@@ -88,9 +102,9 @@ public:
 		currentType=OTHER;
 		currentState=NOTHING_S;
 		nextState=NOTHING_S;
-		followedByPunctuation=true;
+		punctuationInfo.reset();
 	}
-	void resetCurrentWordInfo()	{followedByPunctuation=false;}
+	void resetCurrentWordInfo()	{punctuationInfo.reset();}
 	void resetCounters() {IWn=0;IWt=0;}
 	void discardEntity() {
 		if (entityProcessed!=NULL) {
@@ -122,8 +136,10 @@ inline QString type_to_text(wordType t)
 	{
 		case ABS_T:
 			return "ABS_T";
-		case REL_T:
-			return "REL_T";
+		case PREP_T:
+			return "PREP_T";
+		case NUM:
+			return "NUM";
 		case OTHER:
 			return "OTHER";
 		default:
@@ -167,8 +183,6 @@ void time_initialize(){
 	QList<QString> abs,rel;
 	abs.append("Month Name");
 	abs.append("Day Name");
-	rel.append("Time Preposition");
-	rel.append("Number");
 	abs.append("Relative Time");
 	abs.append("Holiday");
 	abs.append("Season");
@@ -178,16 +192,16 @@ void time_initialize(){
 		long abstract_ABSOLUTE_TIME=database_info.comp_rules->getAbstractCategoryID(abs[i]);
 		bits_ABSOLUTE_TIME.append(database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ABSOLUTE_TIME));
 	}
-	for (int i=0;i<rel.count();i++) {
-		long abstract_RELATIVE_TIME=database_info.comp_rules->getAbstractCategoryID(rel[i]);
-		bits_RELATIVE_TIME.append(database_info.comp_rules->getAbstractCategoryBitIndex(abstract_RELATIVE_TIME));
-	}
+	long abstract_TIME_PREPOSITION=database_info.comp_rules->getAbstractCategoryID("Time Preposition");
+	long abstract_NUMBER=database_info.comp_rules->getAbstractCategoryID("Number");
+	bit_TIME_PREPOSITION=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_PREPOSITION);
+	bit_NUMBER=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NUMBER);
 }
 
 class time_stemmer: public Stemmer
 {
 public:
-	bool absoluteTime,relativeTime;
+	bool absoluteTime,timePreposition, number;
 	long finish_pos;
 
 	time_stemmer(QString * word, int start):Stemmer(word,start,false) {
@@ -198,7 +212,8 @@ public:
 		this->info.start=start;
 		this->info.finish=start;
 		absoluteTime=false;
-		relativeTime=false;
+		timePreposition=false;
+		number=false;
 		finish_pos=start;
 	}
 	bool on_match() {
@@ -210,11 +225,11 @@ public:
 			solution_position * p_inf=Prefix->computeFirstSolution();
 			do
 			{
-				prefix_infos=Prefix->affix_info;
+				prefix_infos=&Prefix->affix_info;
 				solution_position * s_inf=Suffix->computeFirstSolution();
 				do
 				{
-					suffix_infos=Suffix->affix_info;
+					suffix_infos=&Suffix->affix_info;
 		#endif
 					if (!analyze())
 						return false;
@@ -230,21 +245,40 @@ public:
 	}
 
 	bool analyze() {
+	#if 0
 		if (Suffix->info.finish>=Suffix->info.start)
 			return true;//ignore solutions having suffixes
+	#endif
 		for (int i=0;i<bits_ABSOLUTE_TIME.count();i++) {
+		#ifdef GET_AFFIXES_ALSO
 			if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])){
+				if (stem_info->description().contains("Sunday")) {
+					for (int j=0;j<prefix_infos->size();j++) {
+						if (prefix_infos->at(j).POS=="Al/DET+") {
+							absoluteTime=true;
+							finish_pos=info.finish;
+							return false;
+						}
+					}
+					return true;
+				}
+		#else
+			{
+		#endif
 				absoluteTime=true;
 				finish_pos=info.finish;
 				return false;
 			}
 		}
-		for (int i=0;i<bits_RELATIVE_TIME.count();i++) {
-			if (stem_info->abstract_categories.getBit(bits_RELATIVE_TIME[i])){
-				relativeTime=true;
-				finish_pos=info.finish;
-				return true;
-			}
+		if (stem_info->abstract_categories.getBit(bit_TIME_PREPOSITION)){
+			timePreposition=true;
+			finish_pos=info.finish;
+			return true;
+		}
+		if (stem_info->abstract_categories.getBit(bit_NUMBER)){
+			number=true;
+			finish_pos=info.finish;
+			return true;
 		}
 		return true;
 	}
@@ -253,20 +287,31 @@ public:
 bool getNextState(TimeStateInfo &  stateInfo)
 {
 	display(stateInfo.currentState);
-	display("\n");
-	if (stateInfo.followedByPunctuation) {
-		display("<has punctuation>");
+	display(stateInfo.currentType);
+	bool punc=false;
+	if (stateInfo.punctuationInfo.hasEndingPunctuation()) {
+		display("<has Ending punctuation>");
+		punc=true;
 	}
+	display("\n");
+
 	bool return_value=true;
 	switch(stateInfo.currentState) {
 	case NOTHING_S:
-		if (stateInfo.currentType==REL_T) {
+		if (stateInfo.currentType==PREP_T) {
 			stateInfo.nextState=MAYBE_TIME_S;
 			stateInfo.resetCounters();
 			TimeEntity * t=stateInfo.createEntity(time_text);
 			t->setStart(stateInfo.startPos);
 			t->setEnd(stateInfo.endPos);
-			t->addRelativePart(stateInfo.startPos,stateInfo.endPos);
+			t->addPrepositionPart(stateInfo.startPos,stateInfo.endPos);
+		} else if (stateInfo.currentType==NUM) {
+			stateInfo.nextState=MAYBE_TIME_S;
+			stateInfo.resetCounters();
+			TimeEntity * t=stateInfo.createEntity(time_text);
+			t->setStart(stateInfo.startPos);
+			t->setEnd(stateInfo.endPos);
+			t->addNumberPart(stateInfo.startPos,stateInfo.endPos);
 		} else if (stateInfo.currentType==ABS_T) {
 			stateInfo.nextState=TIME_S;
 			stateInfo.resetCounters();
@@ -280,12 +325,18 @@ bool getNextState(TimeStateInfo &  stateInfo)
 		break;
 
 	case MAYBE_TIME_S:
-		if (stateInfo.currentType==REL_T) {
+		if (stateInfo.currentType==NUM) {
 			stateInfo.nextState=MAYBE_TIME_S;
 			stateInfo.resetCounters();
 			TimeEntity * t=stateInfo.entityProcessed;
 			t->setEnd(stateInfo.endPos);
-			t->addRelativePart(stateInfo.startPos,stateInfo.endPos);
+			t->addNumberPart(stateInfo.startPos,stateInfo.endPos);
+		} else if (stateInfo.currentType==PREP_T) {
+			stateInfo.nextState=MAYBE_TIME_S;
+			stateInfo.resetCounters();
+			TimeEntity * t=stateInfo.entityProcessed;
+			t->setEnd(stateInfo.endPos);
+			t->addPrepositionPart(stateInfo.startPos,stateInfo.endPos);
 		} else if (stateInfo.currentType==ABS_T) {
 			stateInfo.nextState=TIME_S;
 			stateInfo.resetCounters();
@@ -305,12 +356,12 @@ bool getNextState(TimeStateInfo &  stateInfo)
 		break;
 
 	case TIME_S:
-		if (stateInfo.currentType==REL_T) {
+		if (stateInfo.currentType==NUM) {
 			stateInfo.nextState=TIME_S;
 			stateInfo.resetCounters();
 			TimeEntity * t=stateInfo.entityProcessed;
 			t->setEnd(stateInfo.endPos);
-			t->addRelativePart(stateInfo.startPos,stateInfo.endPos);
+			t->addNumberPart(stateInfo.startPos,stateInfo.endPos);
 		} else if (stateInfo.currentType==ABS_T) {
 			stateInfo.nextState=TIME_S;
 			stateInfo.resetCounters();
@@ -333,7 +384,18 @@ bool getNextState(TimeStateInfo &  stateInfo)
 	default:
 		break;
 	}
-
+	if (punc) {
+		if (stateInfo.nextState==TIME_S) {
+			stateInfo.nextState=NOTHING_S;
+			stateInfo.resetCounters();
+			timeVector->append(*stateInfo.entityProcessed);
+			stateInfo.entityProcessed=NULL;
+		} else if (stateInfo.nextState==MAYBE_TIME_S) {
+			stateInfo.nextState=NOTHING_S;
+			stateInfo.resetCounters();
+			stateInfo.discardEntity();
+		}
+	}
 	return return_value;
 }
 
@@ -341,14 +403,18 @@ inline wordType result(wordType t){display(t); return t;}
 wordType getWordType(TimeStateInfo &  stateInfo)
 {
 	long  finish;
-	bool has_punctuation;
 	stateInfo.resetCurrentWordInfo();
 	if (isNumber(time_text,currentPos,finish)) {
 		stateInfo.endPos=finish;
-		stateInfo.nextPos=next_positon(time_text,finish,has_punctuation);
-		stateInfo.followedByPunctuation=has_punctuation;
+		stateInfo.nextPos=next_positon(time_text,finish,stateInfo.punctuationInfo);
 		display(time_text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-		return result(REL_T);
+
+		bool ok;
+		long num=time_text->mid(currentPos,finish-currentPos+1).toLong(&ok);
+		if (ok && num > 1000 && num <2050) //is a year
+			return(ABS_T);
+		else
+			return result(NUM);
 	}
 	time_stemmer s(time_text,currentPos);
 	s();
@@ -356,13 +422,14 @@ wordType getWordType(TimeStateInfo &  stateInfo)
 	if (finish==currentPos)
 		finish=getLastLetter_IN_currentWord(time_text,currentPos);
 	stateInfo.endPos=finish;
-	stateInfo.nextPos=next_positon(time_text,finish,has_punctuation);
-	stateInfo.followedByPunctuation=has_punctuation;
+	stateInfo.nextPos=next_positon(time_text,finish,stateInfo.punctuationInfo);
 	display(time_text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-	if (s.relativeTime )
-		return result(REL_T);
+	if (s.timePreposition )
+		return result(PREP_T);
 	else if (s.absoluteTime)
 		return result(ABS_T);
+	else if (s.number)
+		return result(NUM);
 	else
 		return result(OTHER);
 }
@@ -416,9 +483,12 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 			const TimeEntityVector & absolute=t.getAbsoluteParts();
 			for (int j=0;j<absolute.size();j++)
 				prg->tag(absolute[j].getStart(),absolute[j].getLength(),Qt::white,true);
-			const TimeEntityVector & relative=t.getRelativeParts();
-			for (int j=0;j<relative.size();j++)
-				prg->tag(relative[j].getStart(),relative[j].getLength(),Qt::darkRed,true);
+			const TimeEntityVector & preposition=t.getPrepositionParts();
+			for (int j=0;j<preposition.size();j++)
+				prg->tag(preposition[j].getStart(),preposition[j].getLength(),Qt::darkRed,true);
+			const TimeEntityVector & numbers=t.getNumberParts();
+			for (int j=0;j<numbers.size();j++)
+				prg->tag(numbers[j].getStart(),numbers[j].getLength(),Qt::darkMagenta,true);
 		}
 		stateInfo.currentState=stateInfo.nextState;
 		stateInfo.lastEndPos=stateInfo.endPos;

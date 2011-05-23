@@ -400,3 +400,23 @@
 ألف	أَلْف	Ndu	thousand	>alof/NOUN	>alof_1	Number
 الف	أَلْف	Ndu	thousand	>alof/NOUN	>alof_1	Number
 سبت	سَبْت	N	Saturday	sabot/NOUN_PROP	sabot_1	Day Name
+مدى	مَدَى	N0	period/duration	madaY/NOUN	madaY_2	Time Preposition
+منذ	مُنْذُ	FW-Wa	since/ago	muno*u/CONJ	muno*u_1	Time Preposition
+نحو	نَحْوَ	FW-Wa	towards/approximately	naHowa/PREP	naHowa_1	Time Preposition
+نحو	نَحْوَ	FW-Wa-a	towards/approximately	naHowa/PREP	naHowa_1	Time Preposition
+قبل	قَبْلَ	FW-Wa	before	qabola/PREP	qabola_1	Time Preposition
+قبل	قَبْلِ	FW-Wa	before	qaboli/PREP	qabola_1	Time Preposition
+قبل	قَبْلَ	FW-Wa-a	before	qabola/PREP	qabola_1	Time Preposition
+قبل	قَبْلِ	FW-Wa-i	before	qaboli/PREP	qabola_1	Time Preposition
+قبل	قَبْل	FW-Wa-o	before	qabol/PREP	qabola_1	Time Preposition
+حوالى	حَوالَى	FW-WaBi	approximately/around	HawAlaY/PREP	HawAlaY_1	Time Preposition
+حوالي	حَوالَي	FW-WaBi	approximately/around	HawAlay/PREP	HawAlaY_1	Time Preposition
+حوالي	حَوالَي	FW-Wa-y	approximately/around	HawAlay/PREP	HawAlaY_1	Time Preposition
+عقد	عَقْد	Ndu	contract/agreement	Eaqod/NOUN	Eaqod_2	Time Unit
+عقود	عُقُود	N	contracts/agreements	Euquwd/NOUN	Eaqod_2	Time Unit
+قرن	قَرْن	Ndu	century/age	qaron/NOUN	qaron_1	Time Unit
+قرون	قُرُون	N	centuries/ages	quruwn/NOUN	qaron_1	Time Unit
+خلال	خِلالَ	FW-Wa	during/through	xilAla/PREP	xilAla_1	Time Preposition
+خلال	خِلالِ	FW-Wa	during/through	xilAli/PREP	xilAla_1	Time Preposition
+خلال	خِلالَ	FW-Wa-a	during/through	xilAla/PREP	xilAla_1	Time Preposition
+خلال	خِلالِ	FW-Wa-i	during/through	xilAli/PREP	xilAla_1	Time Preposition
