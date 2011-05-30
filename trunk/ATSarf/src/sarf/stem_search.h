@@ -17,7 +17,7 @@ class StemSearch
 		long category_of_currentmatch;
 		long id_of_currentmatch;
 		minimal_item_info * solution;
-	protected:
+	//protected:
 		text_info info;
 		friend class Stemmer;
 	private:

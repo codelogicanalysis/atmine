@@ -27,17 +27,16 @@ inline QString removeDiacritics(QString /*&*/text)
 	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+kasratayn+fathatayn+dammatayn+aleft_superscript+QString("]"));
 	return text.remove(exp);
 }
-inline int getLastLetter_index(const QString & word)//last non-Diacritical letter, -1 means that all letters are diacritics
+inline int getLastLetter_index(const QString & word, int pos)//last non-Diacritical letter, -1 means that all letters are diacritics
 {
 	int length=word.length();
-	if (length==0)
+	if (length<=pos)
 		return -1;
-	int i=length-1;
-	while (i>=0 && isDiacritic(word[i]))
-		i--;
-	return i; //even if -1 is returned it shows that all characters are diactrics
+	while (pos>=0 && isDiacritic(word[pos]))
+		pos--;
+	return pos; //even if -1 is returned it shows that all characters are diactrics
 }
-inline QChar getLastLetter(const QString &word, int pos)//helper function for last non-Diacritic letter
+inline QChar _getLastLetter(const QString &word, int pos)//helper function for last non-Diacritic letter
 {
 	if (pos>=0 && pos < word.length())
 		return word[pos];
@@ -46,16 +45,16 @@ inline QChar getLastLetter(const QString &word, int pos)//helper function for la
 }
 inline QChar getLastLetter(const QString & word)//last non-Diacritical letter
 {
-	int pos=getLastLetter_index(word);
-	return getLastLetter(word,pos);
+	int pos=getLastLetter_index(word,word.length()-1);
+	return _getLastLetter(word,pos);
 }
 inline QString removeLastLetter(const QString & word)//last non-Diacritical letter
 {
-	return word.left(getLastLetter_index(word));
+	return word.left(getLastLetter_index(word,word.length()-1));
 }
 inline QString removeLastDiacritic(const QString &word) //removes last consecutive diactrics until a normal letter is reached
 {
-	return word.left(getLastLetter_index(word)+1);
+	return word.left(getLastLetter_index(word,word.length()-1)+1);
 }
 QString getDiacriticword(int position,int startPos,QString diacritic_word);
 inline int getLastDiacritic(int position, QString * diacritic_word) //get letter position after last diacritic starting from 'position+1', if no diacritic is found returns 'position+1'

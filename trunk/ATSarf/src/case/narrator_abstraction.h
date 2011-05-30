@@ -153,6 +153,7 @@ public:
 	Narrator(QString * hadith_text);
  //   QList <ChainNarratorPrim *> m_narrator; //modify back to here
    QList <NarratorPrim *> m_narrator;
+	bool isRasoul; //if it is known this node is rasoul node
 //    virtual CNPIterator first () {
 //    return m_narrator.begin();
 //        }

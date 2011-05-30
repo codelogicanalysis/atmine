@@ -62,7 +62,7 @@ NarratorPrim::NarratorPrim(QString * hadith_text,long long m_start){
 //Narrator::Narrator(){
 //m_narrator=new  QList <NarratorPrim *> ();
 //}
-Narrator::Narrator(QString * hadith_text):ChainPrim(hadith_text){}
+Narrator::Narrator(QString * hadith_text):ChainPrim(hadith_text){ isRasoul=false;}
 bool Narrator::isNarrator() const
 {
 	return true;
@@ -84,6 +84,7 @@ void Narrator::serialize(QTextStream &chainOut) const{
 }
 void Narrator::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const Narrator*)this);
+	chainOut<<isRasoul;
 	int size=m_narrator.size();
 	chainOut<<(qint32)size;
 	for (int i=0;i<size;i++)
@@ -97,6 +98,7 @@ void Narrator::deserialize(QDataStream &chainIn) {
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const Narrator*)this));*/
+	chainIn>>isRasoul;
 	qint32 size;
 	chainIn>>size;
 	for (int i=0;i<size;i++)
@@ -425,11 +427,16 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	if (equal(n1_str,n2_str))
 		return 0;
 #ifdef REFINEMENTS
+#if 1
+	bool ras1=n1.isRasoul, ras2=n2.isRasoul;
+#else
 	bool ras1=isRasoul(n1_str), ras2=isRasoul(n2_str);
+#endif
 	if (ras1 && ras2)
 		return 0;
 	else if (ras1 || ras2)
 		return max_distance;
+
 #endif
 	double dist=max_distance, delta=hadithParameters.equality_delta;
 	QList<NamePrim > Names1,Names2;

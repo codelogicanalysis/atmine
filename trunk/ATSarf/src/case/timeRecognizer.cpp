@@ -6,7 +6,7 @@
 
 TimeParameters timeParameters;
 QList<unsigned int> bits_ABSOLUTE_TIME;
-unsigned int bit_TIME_PREPOSITION, bit_NUMBER;
+unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME;
 
 enum wordType { ABS_T, PREP_T, NUM, OTHER};
 enum stateType { NOTHING_S , MAYBE_TIME_S, TIME_S};
@@ -183,6 +183,8 @@ void time_initialize(){
 	QList<QString> abs,rel;
 	abs.append("Month Name");
 	abs.append("Day Name");
+	long abstract_DAY_NAME=database_info.comp_rules->getAbstractCategoryID("Day Name");
+	bit_DAY_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_DAY_NAME);
 	abs.append("Relative Time");
 	abs.append("Holiday");
 	abs.append("Season");
@@ -252,7 +254,8 @@ public:
 		for (int i=0;i<bits_ABSOLUTE_TIME.count();i++) {
 		#ifdef GET_AFFIXES_ALSO
 			if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])){
-				if (stem_info->description().contains("Sunday")) {
+				if (bits_ABSOLUTE_TIME[i]==bit_DAY_NAME) {
+				//if (stem_info->description().contains("Sunday")) {
 					for (int j=0;j<prefix_infos->size();j++) {
 						if (prefix_infos->at(j).POS=="Al/DET+") {
 							absoluteTime=true;

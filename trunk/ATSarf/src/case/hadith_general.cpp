@@ -55,17 +55,18 @@ QString StopwordsFileName=".stop_words";
 		bool ibn:1;
 		bool _3abid:1;
 		bool possessivePlace:1;
-		int unused:22;
+		bool number:1;
+		int unused:21;
 		PunctuationInfo punctuationInfo;
-		void resetCurrentWordInfo()	{ibn=false;_3abid=false;possessivePlace=false;punctuationInfo.reset();}
+		void resetCurrentWordInfo()	{ibn=false;_3abid=false;possessivePlace=false;number=false;punctuationInfo.reset();}
 		bool ibnOr3abid() { return ibn || _3abid;}
 		bool isIbnOrPossessivePlace(){return ibn || possessivePlace;}
 	} StateInfo;
 
 	QStringList compound_words;
-	QString hadath,abid,alrasoul,abihi;
-	long abstract_NAME, abstract_POSSESSIVE, abstract_PLACE, abstract_CITY,abstract_COUNTRY;
-	int bit_NAME, bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
+	QString hadath,abid,alrasoul,abihi,_3an;
+	int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
+	QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
 	QHash<long,bool> NMC_descriptions;
@@ -251,18 +252,25 @@ void hadith_initialize()
 	abid.append(_3yn).append(ba2).append(dal);
 	abihi.append(alef).append(ba2).append(ya2).append(ha2);
 	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
+	_3an.append(_3yn).append(noon);
 #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
-	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	long abstract_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryID("Compound Names");
+	long abstract_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
+	int bit_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
+	int bit_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
+	bits_NAME.append(bit_COMPOUND_NAMES);
+	bits_NAME.append(bit_ENARRATOR_NAMES);
 #elif defined(JUST_BUCKWALTER)
-	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
+	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
 #else
-	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Name of Person");
+	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Name of Person");
 #endif
 #ifndef JUST_BUCKWALTER
-	abstract_POSSESSIVE=database_info.comp_rules->getAbstractCategoryID("POSSESSIVE");
-	abstract_PLACE=database_info.comp_rules->getAbstractCategoryID("Name of Place");
-	abstract_CITY=database_info.comp_rules->getAbstractCategoryID("City/Town");
-	abstract_COUNTRY=database_info.comp_rules->getAbstractCategoryID("Country");
+	long abstract_POSSESSIVE=database_info.comp_rules->getAbstractCategoryID("POSSESSIVE");
+	long abstract_PLACE=database_info.comp_rules->getAbstractCategoryID("Name of Place");
+	long abstract_CITY=database_info.comp_rules->getAbstractCategoryID("City/Town");
+	long abstract_COUNTRY=database_info.comp_rules->getAbstractCategoryID("Country");
 	bit_POSSESSIVE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_POSSESSIVE);
 	bit_PLACE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_PLACE);
 	bit_CITY=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_CITY);
@@ -273,7 +281,8 @@ void hadith_initialize()
 	abstract_CITY=-1;
 	abstract_COUNTRY=-1;
 #endif
-	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_NAME.append(bit_NAME);
 #ifdef REFINEMENTS
 	QFile input(PhrasesFileName);	 //contains compound words or phrases
 									 //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
@@ -336,7 +345,7 @@ private:
 	bool finished;
 #endif
 public:
-	bool name, nrc, nmc,possessive, ibn,_3abid;
+	bool name, nrc, nmc,possessive, ibn,_3abid,stopword;
 	long finish_pos;
 #ifdef STATS
 	QString stem;
@@ -363,6 +372,7 @@ public:
 		place=false;
 		ibn=false;
 		_3abid=false;
+		stopword=false;
 		finish_pos=start;
 	#ifdef STATS
 		stem="";
@@ -473,24 +483,31 @@ public:
 		#endif
 			nrc=true;
 			finish_pos=info.finish;
+		/*#ifdef REFINEMENTS
+			if (equal_ignore_diacritics(stem_info->raw_data,_3an))
+				return true; //bc eNarrator Names have 3an as name (for a weird reason)
+		#endif*/
 			return false;
 		}
-		if (stem_info->abstract_categories.getBit(bit_NAME)
-	#ifdef REFINEMENTS
-			&& Suffix->info.finish-Suffix->info.start<0)
-	#else
-			)
-	#endif
-		{
-			name=true;
-			if (info.finish>finish_pos)
+		int bitsNamesSize=bits_NAME.size();
+		for (int i=0;i<bitsNamesSize;i++) {
+			if (stem_info->abstract_categories.getBit(bits_NAME[i])
+				#ifdef REFINEMENTS
+					&& Suffix->info.finish-Suffix->info.start<0)
+				#else
+					)
+				#endif
 			{
-				finish_pos=info.finish;
-			#ifdef STATS
-				stem=temp_stem;
-			#endif
+				name=true;
+				if (info.finish>finish_pos)
+				{
+					finish_pos=info.finish;
+				#ifdef STATS
+					stem=temp_stem;
+				#endif
+				}
+				return true;
 			}
-			return true;
 		}
 #ifndef JUST_BUCKWALTER
 #if 1
@@ -505,6 +522,20 @@ public:
 			finish_pos=info.finish;
 			return false;
 		}
+	#ifdef REFINEMENTS
+		QString c;
+		foreach(c,rasoul_words) {
+			int i1=0,i2=Stem->info.start;
+			if (checkIfSmallestIsPrefixOfLargest(c.rightRef(-1),text->midRef(i2),i1,i2) && i1==c.size()-1) {
+				int pos=i2+Stem->info.start;
+				if (pos+1==text->size() || isDelimiter(text->at(pos+1))) {
+					finish_pos=pos;
+					stopword=true;
+					return false;
+				}
+			}
+		}
+	#endif
 #else
 		if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) )
 		{
@@ -590,6 +621,14 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 #endif
 	hadith_stemmer s(text,current_pos);
 #ifdef REFINEMENTS
+	if (isNumber(text,current_pos,finish)) {
+		stateInfo.number=true;
+		stateInfo.endPos=finish;
+		stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
+		display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
+		return result(NMC);
+	}
+
 	QString c;
 	bool found,phrase=false,stop_word=false;
 	foreach (c, rasoul_words)
@@ -706,7 +745,7 @@ wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
 	stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
 	display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 #ifdef REFINEMENTS
-	if (stop_word)
+	if (stop_word || s.stopword)
 	{
 		display("STOP_WORD");
 		return STOP_WORD;
@@ -745,7 +784,6 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 	display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 	display(stateInfo.currentState);
-	display("\n");
 #ifdef PUNCTUATION
 	if (stateInfo.punctuationInfo.has_punctuation) {
 		display("<has punctuation>");
@@ -1097,6 +1135,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				display("<punc3>");
 				currentData.narratorCount++;
 				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0;
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 			#ifdef CHAIN_BUILDING
@@ -1117,9 +1156,9 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			currentData.nmcValid=false;
 		}
 	#endif
-		else if (currentData.nmcCount>hadithParameters.nmc_max)
+		else if (currentData.nmcCount>hadithParameters.nmc_max || stateInfo.number)
 		{
-			if (currentData.nmcValid)
+			if (!stateInfo.number && currentData.nmcValid) //number is severe condition no tolerance
 			{
 				currentData.nmcValid=false;
 				stateInfo.nextState=NMC_S;
@@ -1302,6 +1341,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				display("<punc4>");
 				currentData.narratorCount++;
 				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0;
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 			#ifdef CHAIN_BUILDING
@@ -1329,9 +1369,9 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		}
 	#ifdef PUNCTUATION
-		else if (currentData.nrcCount>=hadithParameters.nrc_max || currentData.nrcPunctuation)
+		else if (currentData.nrcCount>=hadithParameters.nrc_max || currentData.nrcPunctuation ||stateInfo.number) //if not in refinements mode stateInfo.number will always remain false
 	#else
-		else if (currentData.nrcCount>=parameters.nrc_max)
+		else if (currentData.nrcCount>=parameters.nrc_max || stateInfo.number) //if not in refinements mode stateInfo.number will always remain false
 	#endif
 		{
 			stateInfo.nextState=TEXT_S;
@@ -1408,6 +1448,25 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			currentData.narratorStartIndex=stateInfo.startPos;
 			currentData.nmcStartIndex=stateInfo.startPos;
 			stateInfo.nextState=NMC_S;
+		#ifdef PUNCTUATION
+			if (stateInfo.punctuationInfo.has_punctuation)
+			{
+				display("<punc5>");
+				currentData.narratorCount++;
+				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0;
+				currentData.narratorEndIndex=stateInfo.endPos;
+				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+			#ifdef CHAIN_BUILDING
+				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
+				currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=new Narrator(text);
+			#endif
+				break;
+			}
+		#endif
 		}
 #endif
 		else
@@ -1433,7 +1492,9 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		if (stateInfo.currentType==STOP_WORD)
 		{
 			stateInfo.nextState=STOP_WORD_S;
-			((Narrator*)currentChain->chain->m_chain[currentChain->chain->m_chain.length()-1])->m_narrator[0]->m_end=stateInfo.endPos;
+			Narrator * n=((Narrator*)currentChain->chain->m_chain[currentChain->chain->m_chain.length()-1]);
+			n->m_narrator.last()->m_end=stateInfo.endPos;
+			n->isRasoul=true;
 			currentData.narratorEndIndex=stateInfo.endPos;
 		}
 		else
@@ -1446,7 +1507,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 	default:
 		break;
 	}
-
+	display("\n");
 #ifdef REFINEMENTS
 	currentData.ibn_or_3abid=stateInfo.ibnOr3abid(); //for it to be saved for next time use
 #endif
@@ -1739,9 +1800,9 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg)
 			#ifdef DISPLAY_HADITH_OVERVIEW
 				newHadithStart=currentData.sanadStartIndex;
 				//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
-				long end=stateInfo.endPos;
+				//long end=stateInfo.endPos;
 				out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
-				out<<"sanad end: "<<text->mid(end-display_letters,display_letters)<<endl<<endl;
+				out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
 			#ifdef CHAIN_BUILDING
 				currentChain->chain->serialize(chainOut);
 				//currentChain->chain->serialize(displayed_error);
