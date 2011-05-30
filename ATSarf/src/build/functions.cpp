@@ -304,10 +304,12 @@ int insert_propernames()
 			{
 				source_id=insert_source(source,normalization_process,line);
 				QString ab=file_name.split(".").at(0);
-				if (ab!="Compound Names")
-					abstract_category_id=insert_category(ab,STEM,source_id,true);
-				else
+			#if 0
+				if (ab=="Compound Names")
 					abstract_category_id=insert_category("Male Names",STEM,source_id,true);
+				else
+			#endif
+					abstract_category_id=insert_category(ab,STEM,source_id,true);
 				continue;
 			}
 			if (line.isNull())
@@ -326,6 +328,7 @@ int insert_propernames()
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}
+			delete abstract_categories;
 		}
 		out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 		input.close();

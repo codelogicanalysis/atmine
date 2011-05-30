@@ -73,8 +73,19 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 		{
 			if (equal(letter1,letter2))
 				continue;
-			else
+			else {
+			#ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
+				if (letter1==' ') {
+					i2--;//bc will be incremented later so this in effect only moves i1 and keeps i2 in its place
+					continue;
+				}
+				if (letter2==' ') {
+					i1--;//bc will be incremented later so this in effect only moves i2 and keeps i1 in its place
+					continue;
+				}
+			#endif
 				return false;
+			}
 		}
 		return false;
 	}

@@ -104,9 +104,10 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 #ifdef RUNON_WORDS
 	if (sarfParameters.enableRunonwords)
 	{
-		if (position>0)
+		int lastLetterIndex=getLastLetter_index(*info.text,position-1);
+		if (lastLetterIndex>=0)
 		{
-			ch=info.text->at(position-1);
+			ch=info.text->at(lastLetterIndex);
 			if (isNonConnectingLetter(ch))
 			#ifdef REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
 				if (position-controller->Prefix->info.start>1)

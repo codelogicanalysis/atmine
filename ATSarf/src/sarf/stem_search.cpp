@@ -2,6 +2,7 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "stem_search.h"
+#include "text_handling.h"
 #include <assert.h>
 
 #ifdef USE_TRIE_WALK
@@ -45,19 +46,32 @@ void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 		//qDebug()<<"s:"<<current_letter;
 		if (isDiacritic(current_letter))
 			continue;
-		else if (current_letter!=alef)//(!alefs.contains(current_letter))
-		{
+#ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
+		int lastNonDiacriticLetterIndex=getLastLetter_index(*info.text,i-1);
+		if (lastNonDiacriticLetterIndex>=0) {
+			QChar ch=info.text->at(lastNonDiacriticLetterIndex);
+			if (isNonConnectingLetter(ch)) {
+				if (trie->isWalkable(pos,' ')) {
+					ATTrie::Position pos2=trie->clonePosition(pos);
+					trie->walk(pos2, ' ');
+					if (!check_for_terminal(i-1,pos2))
+						break;
+					traverse(i,pos2);//stay at same position bc it is previous nonConnectingLetter effect and not a new letter
+					trie->freePosition(pos2);
+					if (stop)
+						break;// to stop in case the previous traversal was required to stop
+				}
+			}
+		}
+#endif
+		if (current_letter!=alef) {//(!alefs.contains(current_letter))
 			if (!trie->walk(pos, current_letter))
 				break;
 			if (!check_for_terminal(i,pos))
 				break;
-		}
-		else
-		{
-			for (int j=0;j<alefs.size();j++)
-			{
-				if (!stop && trie->isWalkable(pos,alefs[j]))
-				{
+		} else 	{
+			for (int j=0;j<alefs.size();j++) {
+				if (!stop && trie->isWalkable(pos,alefs[j])) {
 					ATTrie::Position pos2=trie->clonePosition(pos);
 					trie->walk(pos2, alefs[j]);
 					if (!check_for_terminal(i,pos2))

@@ -13,8 +13,8 @@ inline QString get_Possessive_form(QString word)
 {
 	if (word.length()>=2)
 	{
-		int last_index=getLastLetter_index(word);
-		QChar last=getLastLetter(word,last_index);
+		int last_index=getLastLetter_index(word,word.length()-1);
+		QChar last=_getLastLetter(word,last_index);
 		QChar before=getLastLetter(word.left(last_index));
 		if (last==alef && isConsonant(before))
 			return removeLastDiacritic(word).append(waw).append(ya2);
@@ -57,8 +57,19 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//
 			i++;
 		if (isDiacritic(word2[j]))
 			j++;
-		if (i<length1 && j<length2 && word1[i]!=word2[j])
+		if (i<length1 && j<length2 && word1[i]!=word2[j]) {
+		#ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
+			if (word1[i]==' ') {
+				i++;
+				continue;
+			}
+			if (word2[j]==' ') {
+				j++;
+				continue;
+			}
+		#endif
 			return false;
+		}
 		i++;
 		j++;
 	}
@@ -120,8 +131,7 @@ inline bool startsWith(const QStringRef &text,const QString &substring, int & fi
 			finish_pos++;
 		if (finish_pos==text_length)
 			return true;
-		if (isDelimiter(text.at(finish_pos))) //subset but not part of a word
-		{
+		if (isDelimiter(text.at(finish_pos))) {//subset but not part of a word
 			finish_pos--;
 			return true;
 		}

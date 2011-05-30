@@ -135,7 +135,7 @@ public:
 	}
 	void set(int index, int chain_num)
 	{
-		assert(index<20);
+		//assert(index<20);
 		this->index=index;
 		this->chain_num=chain_num;
 		valid=true;
