@@ -91,22 +91,20 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 inline bool equal(const QStringRef &word1,const QStringRef &word2) // is diacritics tolerant and ignores punctuation
 {
 	int i1,i2;
-	if (checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2))
-		return true;
 	int length1=word1.length(),
 		length2=word2.length();
-	if (length1-(i1+1)==0)
-	{
+	checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2);
+	if (length1-(i1+1)<=0) {
 		for (int i=i2+1;i<length2;i++)
 			if (!isDiacritic(word2.at(i)) && !isPunctuationMark(word2.at(i)))
 				return false;
 	}
-	else
-	{
+	else if (length2-(i2+1)<=0) {
 		for (int i=i1+1;i<length1;i++)
 			if (!isDiacritic(word1.at(i)) && !isPunctuationMark(word1.at(i)))
 				return false;
-	}
+	} else
+		return false;
 	return true;
 }
 inline bool equal(const QString &word1,const QString &word2)// is diacritics tolerant

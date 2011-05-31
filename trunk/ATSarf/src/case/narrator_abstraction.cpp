@@ -415,15 +415,27 @@ public:
 typedef Triplet<NamePrim,NamePrim, Int2> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
 
+inline bool isRelativeNarrator(const Narrator & n) {
+	QString n_str=n.getString();
+	if (equal(n_str,abyi))
+		return true;
+	for (int i=1;i<n.m_narrator.size();i++) {
+		if (suffixNames.contains(n.m_narrator[i]->getString()))
+			return true;
+	}
+	return false;
+}
+
 static const double max_distance=3;
 inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
 {
-	QString n1_str=n1.getString(),n2_str=n2.getString();
+
 #ifdef REFINEMENTS
-	bool abihi1=equal(n1_str,abihi), abihi2=equal(n2_str,abihi);
+	bool abihi1=isRelativeNarrator(n1), abihi2=isRelativeNarrator(n2);
 	if (abihi1 || abihi2)
 		return max_distance; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
 #endif
+	QString n1_str=n1.getString(),n2_str=n2.getString();
 	if (equal(n1_str,n2_str))
 		return 0;
 #ifdef REFINEMENTS
@@ -504,13 +516,19 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	QList<EqualNamesStruct> equal_names;
 	for (int i=0;i<Names1.count();i++)
 	{
+	#ifndef REFINEMENTS
 		StemsDetector stemsD1(Names1[i].hadith_text,Names1[i].m_start,Names1[i].m_end);
 		stemsD1();
+	#endif
 		for (int j=0;j<Names2.count();j++)
 		{
+		#ifndef REFINEMENTS
 			StemsDetector stemsD2(Names2[j].hadith_text,Names2[j].m_start,Names2[j].m_end);//TODO: later for efficiency, perform in a seperate loop, save them then use them
 			stemsD2();
 			if (has_equal_stems(stemsD1.stems,stemsD2.stems))
+		#else
+			if (equal_ignore_diacritics(Names1[i].getString(),Names2[j].getString()))
+		#endif
 				equal_names.append(EqualNamesStruct(Names1[i],Names2[j],Int2(i,j)));
 		}
 	}

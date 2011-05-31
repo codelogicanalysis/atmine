@@ -89,7 +89,7 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 		}
 		return false;
 	}
-	if (length1-(i1+1)==0 || length2-(i2+1)==0)
+	if (length1-(i1+1)<=0 || length2-(i2+1)<=0)
 		return true;
 	return false;
 }

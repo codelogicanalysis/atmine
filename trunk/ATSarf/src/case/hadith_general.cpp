@@ -40,6 +40,7 @@ QString StopwordsFileName=".stop_words";
 	enum wordType { NAME, NRC,NMC};
 	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S};
 #else
+	//#define GET_AFFIXES_ALSO
 	enum wordType { NAME, NRC,NMC,STOP_WORD};
 	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S, STOP_WORD_S};
 	QStringList rasoul_words;
@@ -63,8 +64,8 @@ QString StopwordsFileName=".stop_words";
 		bool isIbnOrPossessivePlace(){return ibn || possessivePlace;}
 	} StateInfo;
 
-	QStringList compound_words;
-	QString hadath,abid,alrasoul,abihi,_3an;
+	QStringList compound_words,suffixNames;
+	QString hadath,abid,alrasoul,abyi,_3an;
 	int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
 	QList<int> bits_NAME;
 
@@ -207,7 +208,7 @@ void readFromDatabasePreProcessedDescriptions()
 	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%/inform' OR name LIKE 'inform/%' OR name LIKE 'inform %' OR name LIKE '% inform' OR name = 'inform' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
 	while (nrc_s.retrieve())
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
-	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
+	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %' or name LIKE '% mother' or name LIKE 'mother' or name LIKE 'mother/%' or name LIKE 'grandfather' or name LIKE 'grandmother' or name LIKE 'father-in-law' or name LIKE 'mother-in-law' or name LIKE '% uncle' or name LIKE '% uncles'");
 	while (nmc_s.retrieve())
 		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
 	Retrieve_Template ibn_s("description","id","name='son'");
@@ -250,7 +251,11 @@ void hadith_initialize()
 {
 	hadath.append(_7a2).append(dal).append(tha2);
 	abid.append(_3yn).append(ba2).append(dal);
-	abihi.append(alef).append(ba2).append(ya2).append(ha2);
+	//abihi.append(alef).append(ba2).append(ya2).append(ha2);
+	abyi.append(alef).append(ba2).append(ya2);
+	suffixNames.append(QString("")+ha2);
+	suffixNames.append(QString("")+ha2+meem);
+	suffixNames.append(QString("")+ha2+meem+alef);
 	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
 	_3an.append(_3yn).append(noon);
 #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
@@ -347,6 +352,12 @@ private:
 public:
 	bool name, nrc, nmc,possessive, ibn,_3abid,stopword;
 	long finish_pos;
+#ifdef GET_AFFIXES_ALSO
+	bool has_waw;
+#endif
+#ifdef REFINEMENTS
+	long startStem, finishStem,wawStart,wawEnd;
+#endif
 #ifdef STATS
 	QString stem;
 	QList<QString> stems;
@@ -374,6 +385,15 @@ public:
 		_3abid=false;
 		stopword=false;
 		finish_pos=start;
+	#ifdef REFINEMENTS
+		startStem=start;
+		finishStem=start;
+	#endif
+	#ifdef GET_AFFIXES_ALSO
+		wawStart=start;
+		wawEnd=start;
+		has_waw=false;
+	#endif
 	#ifdef STATS
 		stem="";
 		stems.clear();
@@ -408,11 +428,11 @@ public:
 			solution_position * p_inf=Prefix->computeFirstSolution();
 			do
 			{
-				prefix_infos=Prefix->affix_info;
+				prefix_infos=&Prefix->affix_info;
 				solution_position * s_inf=Suffix->computeFirstSolution();
 				do
 				{
-					suffix_infos=Suffix->affix_info;
+					suffix_infos=&Suffix->affix_info;
 		#endif
 				#ifdef COUNT_AVERAGE_SOLUTIONS
 					total_solutions++;
@@ -438,6 +458,16 @@ public:
 
 	bool analyze()
 	{
+	#ifdef GET_AFFIXES_ALSO
+		has_waw=false;
+		for (int i=0;i<prefix_infos->size();i++)
+			if (prefix_infos->at(i).POS=="wa/CONJ+") {
+				wawStart=(i==0?Prefix->info.start:Prefix->getSplitPositions().at(i-1)-1);
+				wawEnd=Prefix->getSplitPositions().at(i)-1;
+				has_waw=true;
+				break;
+			}
+	#endif
 	#ifdef STATS
 		QString temp_stem=removeDiacritics(info.text->mid(Stem->starting_pos, Suffix->info.start-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 	#endif
@@ -454,6 +484,7 @@ public:
 		#endif
 			nrc=true;
 			finish_pos=info.finish;
+
 			return false;
 		}
 	#ifndef PREPROCESS_DESCRIPTIONS
@@ -467,6 +498,8 @@ public:
 		#endif
 		#ifdef REFINEMENTS
 			ibn=true;
+			finishStem=Stem->info.finish;
+			startStem=Stem->info.start;
 		#endif
 			nmc=true;
 			finish_pos=info.finish;
@@ -502,6 +535,10 @@ public:
 				if (info.finish>finish_pos)
 				{
 					finish_pos=info.finish;
+				#ifdef REFINEMENTS
+					finishStem=Stem->info.finish;
+					startStem=Stem->info.start;
+				#endif
 				#ifdef STATS
 					stem=temp_stem;
 				#endif
@@ -591,192 +628,6 @@ public:
 	}
 #endif
 };
-
-inline wordType result(wordType t){display(t); return t;}
-inline QString choose_stem(QList<QString> stems) //rule can be modified later
-{
-	if (stems.size()==0)
-		return "";
-	QString result=stems[0];
-	for (int i=1;i<stems.size();i++)
-		if (result.length()>stems[i].length())
-			result=stems[i];
-	return result;
-}
-#ifndef BUCKWALTER_INTERFACE
-//bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3abid,bool & has_punctuation, long &next_pos)
-wordType getWordType(StateInfo &  stateInfo) //does not fill stateInfo.currType
-{
-	long  finish;
-	stateInfo.ibn=false;
-	stateInfo.possessivePlace=false;
-	stateInfo.resetCurrentWordInfo();
-#if 0
-	static hadith_stemmer * s_p=NULL;
-	if (s_p==NULL)
-		s_p=new hadith_stemmer(text,current_pos);
-	else
-		s_p->init(current_pos);
-	hadith_stemmer & s=*s_p;
-#endif
-	hadith_stemmer s(text,current_pos);
-#ifdef REFINEMENTS
-	if (isNumber(text,current_pos,finish)) {
-		stateInfo.number=true;
-		stateInfo.endPos=finish;
-		stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
-		display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-		return result(NMC);
-	}
-
-	QString c;
-	bool found,phrase=false,stop_word=false;
-	foreach (c, rasoul_words)
-	{
-	#if 1
-		int pos;
-		if (startsWith(text->midRef(current_pos),c,pos))
-		{
-			stop_word=true;
-			found=true;
-			finish=pos+current_pos;
-		#ifdef STATS
-			current_stem=c;
-			current_exact=c;
-		#endif
-			break;
-		}
-	#else
-		found=true;
-		int pos=current_pos;
-		for (int i=0;i<c.length();)
-		{
-			if (!isDiacritic(text->at(pos)))
-			{
-				if (!equal(c[i],text->at(pos)))
-				{
-					found=false;
-					break;
-				}
-				i++;
-			}
-			pos++;
-		}
-		if (found)
-		{
-			stop_word=true;
-			finish=pos-1;
-		#ifdef STATS
-			current_stem=c;
-			current_exact=c;
-		#endif
-			break;
-		}
-	#endif
-	}
-	if (!stop_word)//TODO: maybe modified to be set as a utility function, and just called from here
-	{
-		foreach (c, compound_words)
-		{
-		#if 1
-			int pos;
-			if (startsWith(text->midRef(current_pos),c,pos))
-			{
-				phrase=true;
-				found=true;
-				finish=pos+current_pos;
-			#ifdef STATS
-				current_stem=c;
-				current_exact=c;
-			#endif
-				break;
-			}
-		#else
-			found=true;
-			int pos=current_pos;
-			for (int i=0;i<c.length();)
-			{
-				if (!isDiacritic(text->at(pos)))
-				{
-					if (!equal(c[i],text->at(pos)))
-					{
-						found=false;
-						break;
-					}
-					i++;
-				}
-				pos++;
-			}
-			while (isDiacritic(text->at(pos)))
-				pos++;
-			if (isDiacritic(text->at(pos)))
-			if (found)
-			{
-				phrase=true;
-				finish=pos-1;
-			#ifdef STATS
-				current_stem=c;
-				current_exact=c;
-			#endif
-				break;
-			}
-		#endif
-		}
-	}
-	if (!stop_word && !phrase)
-	{
-#endif
-		s();
-		finish=max(s.info.finish,s.finish_pos);
-		if (finish==current_pos)
-			finish=getLastLetter_IN_currentWord(text,current_pos);
-		#ifdef STATS
-			current_exact=removeDiacritics(s.info.text->mid(current_pos,finish-current_pos+1));
-			current_stem=s.stem;
-			if (current_stem=="")
-				current_stem=choose_stem(s.stems);
-			if (current_stem=="")
-				current_stem=current_exact;
-		#endif
-#ifdef REFINEMENTS
-	}
-#endif
-	stateInfo.endPos=finish;
-	stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
-	display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-#ifdef REFINEMENTS
-	if (stop_word || s.stopword)
-	{
-		display("STOP_WORD");
-		return STOP_WORD;
-	}
-	if (phrase)
-	{
-		display("PHRASE");
-		//isBinOrPossessive=true; //same behaviour as Bin
-		return NMC;
-	}
-	stateInfo.ibn=s.ibn;
-	stateInfo._3abid=s._3abid;
-#endif
-	stateInfo.possessivePlace=s.possessive;
-	if (s.nrc )
-		return result(NRC);
-	else if (s.nmc)
-	{
-		if (s.ibn)
-			{display("NMC-Bin ");}
-		if (s.possessive)
-			{display("NMC-Possessive ");}
-		//isBinOrPossessive=true;
-		return NMC;
-	}
-	else if (s.name)
-		return result(NAME);
-	else
-		return result(NMC);
-}
-#endif
 
 //bool getNextState(stateType currentState,wordType currentType,stateType & nextState,long  startPos,bool isIbnOrPossessivePlace,bool possessivePlace,bool ibnOR3abid,bool followedByPunctuation, long endPos,chainData *currentChain)
 bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
@@ -1513,6 +1364,253 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 #endif
 	return return_value;
 }
+
+inline bool result(wordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
+inline QString choose_stem(QList<QString> stems) //rule can be modified later
+{
+	if (stems.size()==0)
+		return "";
+	QString result=stems[0];
+	for (int i=1;i<stems.size();i++)
+		if (result.length()>stems[i].length())
+			result=stems[i];
+	return result;
+}
+#ifndef BUCKWALTER_INTERFACE
+//bool & isBinOrPossessive,bool & possessive, bool & ibn_or_3abid,bool & has_punctuation, long &next_pos)
+bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //does not fill stateInfo.currType
+{
+	stateInfo.resetCurrentWordInfo();
+	long  finish;
+	stateInfo.ibn=false;
+	stateInfo.possessivePlace=false;
+	stateInfo.resetCurrentWordInfo();
+#if 0
+	static hadith_stemmer * s_p=NULL;
+	if (s_p==NULL)
+		s_p=new hadith_stemmer(text,stateInfo.startPos);
+	else
+		s_p->init(stateInfo.startPos);
+	hadith_stemmer & s=*s_p;
+#endif
+	hadith_stemmer s(text,stateInfo.startPos);
+#ifdef REFINEMENTS
+	if (isNumber(text,stateInfo.startPos,finish)) {
+		stateInfo.number=true;
+		stateInfo.endPos=finish;
+		stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
+		display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
+		return result(NMC,stateInfo,currentChain);
+	}
+
+	QString c;
+	bool found,phrase=false,stop_word=false;
+	foreach (c, rasoul_words)
+	{
+	#if 1
+		int pos;
+		if (startsWith(text->midRef(stateInfo.startPos),c,pos))
+		{
+			stop_word=true;
+			found=true;
+			finish=pos+stateInfo.startPos;
+		#ifdef STATS
+			current_stem=c;
+			current_exact=c;
+		#endif
+			break;
+		}
+	#else
+		found=true;
+		int pos=current_pos;
+		for (int i=0;i<c.length();)
+		{
+			if (!isDiacritic(text->at(pos)))
+			{
+				if (!equal(c[i],text->at(pos)))
+				{
+					found=false;
+					break;
+				}
+				i++;
+			}
+			pos++;
+		}
+		if (found)
+		{
+			stop_word=true;
+			finish=pos-1;
+		#ifdef STATS
+			current_stem=c;
+			current_exact=c;
+		#endif
+			break;
+		}
+	#endif
+	}
+	if (!stop_word)//TODO: maybe modified to be set as a utility function, and just called from here
+	{
+		foreach (c, compound_words)
+		{
+		#if 1
+			int pos;
+			if (startsWith(text->midRef(stateInfo.startPos),c,pos))
+			{
+				phrase=true;
+				found=true;
+				finish=pos+stateInfo.startPos;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
+				break;
+			}
+		#else
+			found=true;
+			int pos=stateInfo.startPos;
+			for (int i=0;i<c.length();)
+			{
+				if (!isDiacritic(text->at(pos)))
+				{
+					if (!equal(c[i],text->at(pos)))
+					{
+						found=false;
+						break;
+					}
+					i++;
+				}
+				pos++;
+			}
+			while (isDiacritic(text->at(pos)))
+				pos++;
+			if (isDiacritic(text->at(pos)))
+			if (found)
+			{
+				phrase=true;
+				finish=pos-1;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
+				break;
+			}
+		#endif
+		}
+	}
+	if (!stop_word && !phrase)
+	{
+#endif
+		s();
+		finish=max(s.info.finish,s.finish_pos);
+		if (finish==stateInfo.startPos)
+			finish=getLastLetter_IN_currentWord(text,stateInfo.startPos);
+		#ifdef STATS
+			current_exact=removeDiacritics(s.info.text->mid(stateInfo.startPos,finish-stateInfo.startPos+1));
+			current_stem=s.stem;
+			if (current_stem=="")
+				current_stem=choose_stem(s.stems);
+			if (current_stem=="")
+				current_stem=current_exact;
+		#endif
+#ifdef REFINEMENTS
+	}
+#endif
+	stateInfo.endPos=finish;
+	stateInfo.nextPos=next_positon(text,finish,stateInfo.punctuationInfo);
+	display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
+#ifdef REFINEMENTS
+	if (stop_word || s.stopword) {
+		return result(STOP_WORD,stateInfo,currentChain);
+	}
+	if (phrase)
+	{
+		display("PHRASE ");
+		//isBinOrPossessive=true; //same behaviour as Bin
+		return result(NMC,stateInfo,currentChain);
+	}
+	stateInfo._3abid=s._3abid;
+#endif
+	stateInfo.possessivePlace=s.possessive;
+	if (s.nrc )
+		return result(NRC,stateInfo,currentChain);
+	else if (s.nmc)
+	{
+		if (s.ibn) {
+		#if defined(GET_AFFIXES_ALSO) || defined(REFINEMENTS)
+			PunctuationInfo copyPunc=stateInfo.punctuationInfo;
+		#endif
+		#ifdef GET_AFFIXES_ALSO
+			if (s.has_waw) {
+				display("waw ");
+				stateInfo.startPos=s.wawStart;
+				stateInfo.endPos=s.wawEnd;
+				stateInfo.nextPos=s.wawEnd+1;
+				stateInfo.punctuationInfo.reset();
+				if (!result(NRC,stateInfo,currentChain))
+					return false;
+				stateInfo.currentState=stateInfo.nextState;
+				stateInfo.lastEndPos=stateInfo.endPos;
+			}
+		#endif
+		#ifdef REFINEMENTS
+			display("Bin ");
+			stateInfo.ibn=true;
+			stateInfo.startPos=s.startStem;
+			stateInfo.endPos=s.finishStem;
+			stateInfo.punctuationInfo.reset();
+			if (s.finishStem<finish)
+				stateInfo.nextPos=s.finishStem+1;
+			else
+				stateInfo.punctuationInfo=copyPunc;
+			if (!result(NMC,stateInfo,currentChain))
+				return false;
+			stateInfo.currentState=stateInfo.nextState;
+			stateInfo.lastEndPos=stateInfo.endPos;
+			if (s.finishStem<finish) {
+				stateInfo.ibn=false;
+				stateInfo.startPos=s.finishStem+1;
+				stateInfo.endPos=finish;
+				return result(NAME,stateInfo,currentChain);
+			}
+			return true;
+		#else
+			return result(NMC,stateInfo,currentChain);
+		#endif
+		}
+		if (s.possessive) {
+			display("Possessive ");
+			return result(NMC,stateInfo,currentChain);
+		}
+		return result(NMC,stateInfo,currentChain);
+	}
+	else if (s.name){
+	#ifdef GET_AFFIXES_ALSO
+		PunctuationInfo copyPunc=stateInfo.punctuationInfo;
+		if (s.has_waw) {
+			display("waw ");
+			stateInfo.startPos=s.wawStart;
+			stateInfo.endPos=s.wawEnd;
+			stateInfo.nextPos=s.wawEnd+1;
+			stateInfo.punctuationInfo.reset();
+			if (!result(NRC,stateInfo,currentChain))
+				return false;
+			stateInfo.currentState=stateInfo.nextState;
+			stateInfo.lastEndPos=stateInfo.endPos;
+		}
+		stateInfo.punctuationInfo=copyPunc;
+	#endif
+	#ifdef REFINEMENTS
+		stateInfo.startPos=s.startStem;
+		stateInfo.endPos=s.finishStem;
+	#endif
+		return result(NAME,stateInfo,currentChain);
+	}
+	else
+		return result(NMC,stateInfo,currentChain);
+}
+#endif
+
+
 #ifdef STATS
 void show_according_to_frequency(QList<int> freq,QList<QString> words)
 {
@@ -1773,10 +1871,10 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg)
 	stateInfo.currentState=TEXT_S;
 	stateInfo.nextState=TEXT_S;
 	stateInfo.lastEndPos=0;
-	current_pos=0;
+	stateInfo.startPos=0;
 #ifndef BUCKWALTER_INTERFACE
-	while(current_pos<text->length() && isDelimiter(text->at(current_pos)))
-		current_pos++;
+	while(stateInfo.startPos<text->length() && isDelimiter(text->at(stateInfo.startPos)))
+		stateInfo.startPos++;
 #else
 	QString line =getnext();//just for first line
 	assert(line=="");
@@ -1784,15 +1882,10 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg)
 #ifdef PROGRESSBAR
 	prg->setCurrentAction("Parsing Hadith");
 #endif
-	for (;current_pos<text_size;)
+	for (;stateInfo.startPos<text_size;)
 	{
 #ifndef COMPARE_TO_BUCKWALTER
-		stateInfo.startPos=current_pos;
-		stateInfo.resetCurrentWordInfo();
-		stateInfo.currentType=getWordType(stateInfo);
-		current_pos=stateInfo.nextPos;//here current_pos is changed
-		//long last_letter=next>=text_size?text_size-1:stateInfo.lastEndPos;//getLastLetter_IN_previousWord(next);
-		if((getNextState(stateInfo,currentChain)==false))
+		if((proceedInStateMachine(stateInfo,currentChain)==false))
 		{
 			if (currentData.narratorCount>=hadithParameters.narr_min)
 			{
@@ -1881,18 +1974,19 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg)
 			}
 		}
 		stateInfo.currentState=stateInfo.nextState;
+		stateInfo.startPos=stateInfo.nextPos;
 		stateInfo.lastEndPos=stateInfo.endPos;
 #else
-		hadith_stemmer s(text,current_pos);
+		hadith_stemmer s(text,stateInfo.startPos);
 		s();
 		long finish=max(s.info.finish,s.finish_pos);
 		if (finish==current_pos)
-			finish=getLastLetter_IN_currentWord(current_pos);
-		current_pos=next_positon(finish);
+			finish=getLastLetter_IN_currentWord(stateInfo.startPos);
+		stateInfo.startPos=next_positon(finish);
 #endif
 #ifdef PROGRESSBAR
-		prg->report((double)current_pos/text_size*100+0.5);
-		if (current_pos==text_size-1)
+		prg->report((double)stateInfo.startPos/text_size*100+0.5);
+		if (stateInfo.startPos==text_size-1)
 			break;
 #endif
 	}
