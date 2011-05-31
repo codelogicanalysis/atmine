@@ -48,8 +48,8 @@ extern QHash<long,bool> IBN_descriptions;
 #endif
 
 #ifdef REFINEMENTS
-extern QStringList rasoul_words;
-extern QString alrasoul,abihi;
+extern QStringList rasoul_words,suffixNames;
+extern QString alrasoul,abyi;
 #endif
 
 extern int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
