@@ -77,7 +77,7 @@ public:
 };
 class NamePrim :public NarratorPrim {
 public:
-    virtual void f(){}
+	bool learnedName;
 	NamePrim(QString * hadith_text);
 	NamePrim(QString * hadith_text,long long m_start);
 

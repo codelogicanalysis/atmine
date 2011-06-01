@@ -118,8 +118,8 @@ void Narrator::deserialize(QDataStream &chainIn) {
 	}
 }
 
-NamePrim::NamePrim(QString * hadith_text):NarratorPrim(hadith_text){}
-NamePrim::NamePrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start){}
+NamePrim::NamePrim(QString * hadith_text):NarratorPrim(hadith_text){learnedName=false;}
+NamePrim::NamePrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start){learnedName=false;}
 
 bool NamePrim::isNamePrim() const {
 	return true;
@@ -129,11 +129,13 @@ void NamePrim::serialize(QTextStream &chainOut) const{
 }
 void NamePrim::serialize(QDataStream & chainOut) const{
 	chainOut<<getType((const NamePrim*)this);
+	chainOut<<learnedName;
 }
-void NamePrim::deserialize(QDataStream &) {
+void NamePrim::deserialize(QDataStream & chainIn) {
 	/*qint8 c;
 	chainIn>>c;
 	assert(c==getType((const NamePrim*)this));*/
+	chainIn>>learnedName;
 }
 
 NameConnectorPrim::NameConnectorPrim(QString * hadith_text):NarratorPrim(hadith_text),type(OTHER){}
@@ -420,8 +422,10 @@ inline bool isRelativeNarrator(const Narrator & n) {
 	if (equal(n_str,abyi))
 		return true;
 	for (int i=1;i<n.m_narrator.size();i++) {
-		if (suffixNames.contains(n.m_narrator[i]->getString()))
-			return true;
+		for (int j=0;j<suffixNames.size();j++) {
+			if (equal_ignore_diacritics(n.m_narrator[i]->getString(),suffixNames[j]))
+				return true;
+		}
 	}
 	return false;
 }

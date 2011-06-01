@@ -61,6 +61,11 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 		c.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,-diff);
 	c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,length);
 #else
+	if (length>100) {
+		start=start+length-1;
+		length=5;
+		color=Qt::red;
+	}
 	c.setPosition(start,QTextCursor::MoveAnchor);
 	c.setPosition(start+length,QTextCursor::KeepAnchor);
 #endif
