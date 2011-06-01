@@ -73,18 +73,20 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//
 		i++;
 		j++;
 	}
-	if (length1-(i+1)==0)
+	if (length1-(i+1)<=0)
 	{
 		for (int f=j+1;f<length2;f++)
 			if (!isDiacritic(word2[f]))
 				return false;
 	}
-	else
+	else if (length2-(j+1)<=0)
 	{
 		for (int f=i+1;f<length1;f++)
 			if (!isDiacritic(word1[f]))
 				return false;
 	}
+	else
+		return false;
 	return true;
 }
 bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2); //modifies value of i1 and i2

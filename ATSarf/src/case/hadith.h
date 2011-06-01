@@ -22,14 +22,15 @@
 //#define STATS
 #define TAG_HADITH
 //#define HADITHDEBUG  //just for additional debugging statements displayed
-//#define TENTATIVE //are decisions that we are not sure about
 #define PUNCTUATION
+#define TRYTOLEARN
+//#define ADD_ENARRATOR_NAMES
 #define IBN_START
 #define REFINEMENTS
 #define PREPROCESS_DESCRIPTIONS
 #define DISPLAY_HADITH_OVERVIEW
 #define CHAIN_BUILDING
-#define TEST_NARRATOR_GRAPH
+//#define TEST_NARRATOR_GRAPH
 #define EQUALITY_REFINEMENTS
 //#define EQUALITYDEBUG
 //#define COMPARE_TO_BUCKWALTER
