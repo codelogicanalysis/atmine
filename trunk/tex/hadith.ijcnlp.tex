@@ -650,13 +650,17 @@ Merge(Chain $C$[])
   Chain $C_c$[]=\{\}
   foreach Chain $c_1$ in $C$ 
     $C_c = C_c \cup c_1$
-    foreach Narrator $n_1$ in $c_1$
-      foreach Chain $c_2$ in $C-C_c$
-        foreach narrator $n_2$ in $c_2$
-
-
-    \}
-  \}
+    foreach Chain $c_2$ in $C-C_c$
+      foreach Narrator $n_1$ in $c_1$
+        start = max( $n_1$.index - radius, 0)
+        end = min($n_1$.index + radius, $n_2$.size)
+        $n_2$ = $c_2$[start]
+        while (true)
+            if (Distance($n_1$, $n_2$) < $\theta$)
+                mergeNodes($n_1$, $n_2$)
+            if ($n_2$ = $c_2$[end])
+                    break
+            $n_2$ = $c_2$.next($n_2$)        
 \end{Verbatim}
 \end{tabular}
 %}
@@ -710,7 +714,6 @@ Distance(Narrator n1, Narrator n2)
 \subsection{Narrator morphological distance metric}
 
 \subsection{Use of the POR graph}
-
 inconsistency check 
 consistency checks
 annotate with information extracted from biographies
@@ -720,31 +723,89 @@ what if analysis
 \section{Results}
 \label{sec:results}
 
-\begin{table}[bt]
-\centering
-\caption{Results of the hadith case study with Sarf.}
-%\begin{tabular}{|p{1.5cm}||c|c||c|c||c|c|} \hline
-\resizebox{1.1\columnwidth}{!}{
-\begin{tabular}{lcp{.2cm}cp{.2cm}c} %\cline{2-10}
- &  AlKafi & & AlIstibsar & &IbnHanbal \\ \cline{1-6}
-Word count  &98,943 & & 103,835 & & 20,354 \\ 
- Names       & 12,060  & & 14,613& & 3,013\\
-%Names/Narrator & 1.97 & & 1.84& & 1.25 \\
-Narrators  & 2,623 & & 5,767& & 1,755 \\ 
-%Narrators/Chain  & 4.84 & & 4.76 & &4.05 \\
-Chains  & 542 &  & 1,211& & 433 \\ 
-Ignored names  & 6,400 &  & 3,348 & & 642 \\ \hline
-Segmentation accuracy  & 96\%& & 96\%& & 92\%\\ 
-Chain accuracy & 99\%&  & 99\%& & 97\% \\ 
-%Narrator accuracy  & & & & &  & & & \\ 
-Narrator accuracy  & 91\%& & 90\% & & 90\% \\ \hline
-%Name false positives  & 7\%&  & 4\% & & 4\% \\ \hline
-Running time (secs.)& 1.32 & & 1.31 & & .096\\ \hline 
-\end{tabular}
-}
-\normalsize
-\label{t:hadithresallresults}
-\end{table}
+%\begin{table}[bt]
+%\centering
+%\caption{Results of the hadith case study with Sarf.}
+%%\begin{tabular}{|p{1.5cm}||c|c||c|c||c|c|} \hline
+%\resizebox{1.1\columnwidth}{!}{
+%\begin{tabular}{lcp{.2cm}cp{.2cm}c} %\cline{2-10}
+% &  AlKafi & & AlIstibsar & &IbnHanbal \\ \cline{1-6}
+%Word count  &98,943 & & 103,835 & & 20,354 \\ 
+% Names       & 12,060  & & 14,613& & 3,013\\
+%%Names/Narrator & 1.97 & & 1.84& & 1.25 \\
+%Narrators  & 2,623 & & 5,767& & 1,755 \\ 
+%%Narrators/Chain  & 4.84 & & 4.76 & &4.05 \\
+%Chains  & 542 &  & 1,211& & 433 \\ 
+%Ignored names  & 6,400 &  & 3,348 & & 642 \\ \hline
+%Segmentation accuracy  & 96\%& & 96\%& & 92\%\\ 
+%Chain accuracy & 99\%&  & 99\%& & 97\% \\ 
+%%Narrator accuracy  & & & & &  & & & \\ 
+%Narrator accuracy  & 91\%& & 90\% & & 90\% \\ \hline
+%%Name false positives  & 7\%&  & 4\% & & 4\% \\ \hline
+%Running time (secs.)& 1.32 & & 1.31 & & .096\\ \hline 
+%\end{tabular}
+%}
+%\normalsize
+%\label{t:hadithresallresults}
+%\end{table}
+%
+
+\begin{table*}[bt]                                     
+\centering                                            
+\caption{Results comparing between NaGEMA and iTree.}
+\resizebox{2.1\columnwidth}{!}{
+\begin{tabular}{p{2.1cm}lp{.1cm}cccp{.1cm}cccp{.1cm}ccc}
+%\multicolumn{13}{c}{NaGEMA with all refinements} \\ \cline{3-13}
+& & & \multicolumn{3}{c}{segmentation} & &  \multicolumn{3}{c}{sanad boundary}  & &  \multicolumn{3}{c}{name boundary} \\
+& & & recall & precision & F-score & & recall & precision & F-score & & recall & precision & F-score \\ \cline{2-14}
+\multirow{3}{*}{NaGEMA }&musnad & & 1.000 & 1.000 & 1.000 & & 0.993 & 0.990 & 0.991 & & 0.999 & 0.998 & 0.999 \\
+&kafi & & 1.000 & 0.920 & 0.958 & & 0.937 & 0.970 & 0.953 & & 0.993 & 0.988 & 0.990 \\
+&istibsar & & 1.000 & 0.973 & 0.986 & & 0.980 & 0.950 & 0.965 & & 0.996 & 0.998 & 0.997 \\ \cline{2-14}
+& & & 1.000 & 0.964 & 0.982 & & 0.970 & 0.970 & 0.970 & & 0.996 & 0.995 & 0.995 \\ \hline \hline
+%& & &  &  &  & &  &  &  & &  &  & \\
+%&\multicolumn{13}{c}{iTree} \\ \cline{3-13}
+& & & \multicolumn{3}{c}{accept as hadith} & &  \multicolumn{3}{c}{sanad boundary}  & &  \multicolumn{3}{c}{name boundary} \\
+& & & recall & precision & F-score & & recall & precision & F-score & & recall & precision & F-score \\ \cline{2-14}
+\multirow{3}{*}{iTree} &musnad & & 1.000 & NA & 1.000 & & 0.997 & 0.977 & 0.987 & & 0.998 & 1.000 & 0.999  \\
+&kafi & & 0.043 & NA & 0.083 & & 1.000 & 0.313 & 0.476 & & 1.000 & 1.000 & 1.000 \\
+&istibsar & & 0.028 & NA & 0.054 & & 0.875 & 0.583 & 0.700 & & 1.000 & 1.000 & 1.000 \\ \cline{2-14}
+& & & 0.357 & NA & 0.379 & & 0.957 & 0.624 & 0.721 & & 0.999 & 1.000 & 1.000 \\ 
+ \end{tabular}                 
+}                             
+\normalsize                   
+\label{t:hadithresults} 
+\end{table*}                   
+
+
+
+
+
+
+
+\begin{table*}[bt]                                     
+\centering                                            
+\caption{Results without punctuation and without learning. }
+\resizebox{2.1\columnwidth}{!}{
+\begin{tabular}{p{2.1cm}lp{.1cm}cccp{.1cm}cccp{.1cm}ccc}
+& & & \multicolumn{3}{c}{segmentation} & &  \multicolumn{3}{c}{sanad boundary}  & &  \multicolumn{3}{c}{name boundary} \\
+& & & recall & precision & F-score & & recall & precision & F-score & & recall & precision & F-score \\ \cline{2-14}
+\multirow{3}{*}{no punctuation} 
+& musnad  & & 1.000 & 1.000 & 1.000 & & 0.982 & 0.955 & 0.968 & & 1.000 & 0.998 & 0.999 \\ 
+& kafi & & 1.000 & 0.793 & 0.885 & & 0.944 & 0.967 & 0.955 & & 0.996 & 0.938 & 0.966 \\
+& istibsar & & 1.000 & 1.000 & 1.000 & & 0.980 & 0.931 & 0.955 & & 0.994 & 0.985 & 0.990 \\  \cline{2-14}
+& &  & 1.000 & 0.931 & 0.962 & & 0.969 & 0.951 & 0.960 & & 0.997 & 0.974 & 0.985 \\ \hline \hline
+%& & & \multicolumn{3}{c}{segmentation} & &  \multicolumn{3}{c}{sanad boundary}  & &  \multicolumn{3}{c}{name boundary} \\
+%& & & recall & precision & F-score & & recall & precision & F-score & & recall & precision & F-score \\ \cline{2-14}
+\multirow{3}{*}{no learning}
+& musnad & & 1.000 & 1.000 & 1.000 & & 0.894 & 0.985 & 0.937 & & 0.995 & 1.000 & 0.998\\
+& kafi & & 1.000 & 0.920 & 0.958 & & 0.937 & 0.970 & 0.953 & & 0.993 & 0.991 & 0.992\\
+& istibsar & & 1.000 & 0.973 & 0.986 & & 0.977 & 0.950 & 0.963 & & 0.996 & 0.998 & 0.997\\ \cline{2-14}
+ & &  & 1.000 & 0.964 & 0.982 & & 0.936 & 0.968 & 0.951 & & 0.995 & 0.996 & 0.995 \\
+ \end{tabular}                 
+}                             
+\normalsize                   
+\label{t:nopunctlearnresults} 
+\end{table*}                   
 
 We ran our experiments using a dual core 2.66 Ghz 64-bit processor 
 with 4GB of memory using a Linux operating system. 
