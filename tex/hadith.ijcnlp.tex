@@ -38,6 +38,8 @@
 \newcommand{\frl}[1]{\fbox{\RL{#1}}} 
 \newcommand{\noArRL}[1]{\arabfalse\RL{#1}\arabtrue} 
 \newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue} 
+\newcommand{\noTrnoVocRL}[1]{\transfalse\novocalize\noTrRL{#1}\vocalize\transtrue}  
+\newcommand{\noVocRL}[1]{\transtrue\novocalize\RL{#1}\vocalize}  
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
 \title{Automatic Hadith Graphs using Arabic Morphological Analysis}
@@ -779,32 +781,56 @@ what if analysis
 
 To evaluate our approach, we performed experiments on three books of 
 hadith~\cite{IbnHanbal,AlTousi,AlKulayni} whose accuracy results are detailed in 
-Tables~\ref{t:hadithresults} and \ref{t:nopunctlearnresults}. We used recall and precision as our evaluation metrics.
+Tables~\ref{t:hadithresults} and \ref{t:nopunctlearnresults}. 
+The numbers we present in the tables are the result of a manual verification of the correctness of the outputs of the first
+10\% of the narrations in the books under consideration.
+
+We used recall and precision as our evaluation metrics.
 We report results on three levels of accuracy: segmentation, sanad boundary and
 narrator boundary. Segmentation accuracy refers to the success of NaGEMA in
 detecting in the plain text of a hadith book the locations of the different
 narrations that it contains. While the sanad boundary is a measure of the accuracy
-in reporting the correct number of narrators in the sanad. Finally, the narrator boundary refers
-to the accuracy in reporting the correct number of words inside each narrator.
+in correctly reporting the individual narrators inside the sanad. Finally, the narrator boundary refers
+to the accuracy in correctly reporting the words that constitute the narrators.
 
-Precisely defined, segmentation recall refers to the fraction of extracted narrations from 
-those which are correct; and segmentation precision refers to the fraction of correct narrations
+Precisely defined, segmentation recall refers to the fraction of the narrations correctly detected to the
+total number of narrations available; while segmentation precision refers to the fraction of correctly detected narrations
 from those extracted. Similarly, sanad boundary recall is a measure whether we detected all narrators
-in the sand; and precision is a measure whether we did so without introducing much false positives.
+in the sand; while precision is a measure whether we did so without introducing much false positives. 
+The same concepts apply to the level of narrator boundary where the count is of the number of words which constitute a valid narrator.
 
 iTree does not tackle the problem hadith segmentation. In contrast to NaGEMA, it does not work on a book level, 
-instead it assumes that the knowledge of what part of the text of a hadith book is a narration is available.
-Consequently, for the narrators to be extracted, the hadith must be manually extracted
+instead it assumes that the knowledge of which part of the text of a hadith book is a narration is available.
+Consequently, for the narrators to be extracted from the sanad of a narration, the hadith must be manually extracted
 from the book and inputted on its own to the tool. Still however, in many cases it does not recognize the structure of
 the inputted hadith and is incapable of extracting any useful information from the narration. 
 In table~\ref{t:hadithresults}, we report the fraction of narrations which iTree recognizes from those inputted, instead
 of the segmentation measure used for NaGEMA. This measure is equivalent to the concept of recall; nonetheless, precision
 in this context is not applicable since by default the input is required to be represent correctly extracted narrations.
 
-Now we move to explain the significance of the experiments performed.
+In those experiments, we were interested in evaluating the approaches used by iTree and NaGEMA, without any bias that results
+from the difference in the coverage of the lexicons used. For this reason, we appended the list of names used by iTree with those
+available in Sarf's lexicon on top of which NaGEMA operates.
 
-
-
+Now we move to explain the significance of the experiments performed. First, we compare the recall of the segmentation 
+in NaGEMA and that of hadith acceptance rates in iTree. Although the task of segmentation is more complex than that of
+hadith recognition/acceptance, we still notice that iTree has on the average 35.7\% recall rate compared to 99.9\% for 
+NaGEMA. However, we notice that the difference in these numbers depended highly on the books under consideration. For instance,
+for the book of musnad, both approaches correctly detected  practically all narrations under consideration; 
+however iTree suffers a lot in 
+the books of both Kafi and Istibsar , resulting in a recall of less than 5\%. This is due to the less structured nature of the narrations
+those books contain. For example, iTree's grammar is defined such that a hadith starts by an Ikhbar word (\noVocRL{AdaT al-A_hbAar}) such as
+\noVocRL{qAl}, \noVocRL{.hadda_t}, etc...; 
+however, those books had a more flexible style of expressing the narration 
+and most of them started directly by narrator name without a preceeding Ikhbar word. This is a strong evidence of the supperiority of 
+our tolerance-based state-machine compared to the strict grammar approach used in iTree. 
+Clearly, our machine does not fail on such cases, since what it detects as a hadith is based on a concentration of names intervened by narrator 
+connectors. Similarly, iTree had a lower sanad boundary precision (62.4\% on the average) due to the fact that the its grammar has no method
+of detecting that the hadith ended except if it reaches a prophet indicative phrase such as \noVocRL{rasowl al-lah}, 
+\noVocRL{.sal_A `alayh al-lah wasalam}, etc.. However, especially in the books of Kafi and Istibsar, the prophet is not explicitly mentioned but 
+implicitly understood. In those cases, iTree will continue reporting narrators whenever it reaches a word that can act as a name even if it appears
+in the matn of the hadith. On the other hand, NaGEMA considers that a sanad ends whenever a tolerance state is broken even if it does not reach a prophet
+indicative phrase. Narrator boundary accuracy was similar however for both approaches because they relied on the same name lexicons.
 
 \begin{table*}[bt]                                     
 \centering                                            
@@ -831,59 +857,37 @@ Now we move to explain the significance of the experiments performed.
 \label{t:nopunctlearnresults} 
 \end{table*}                   
 
-We ran our experiments using a dual core 2.66 Ghz 64-bit processor 
-with 4GB of memory using a Linux operating system. 
-We report our results in Table~\ref{t:hadithresallresults} on the 
-three hadith books.
-NaGEMA detected narrator chains and segmented the books 
-correctly with a chain accuracy above 97\% and a narrator name
-accuracy above 90\%
-in all cases and across all the 1986 traditions in the three 
-different books with different formats. 
+After having provided evidence to the superiority of our approach compared to that of iTree, 
+we move to inspect the effect of two of the optimizations we implemented in NaGEMA.
+Those optimizations are: utilizing punctuation in disambiguating narration detection and narrator boundaries, 
+and learning names of narrators based on their local context.
+In Table~\ref{t:nopunctlearnresults}, we report the results of running NaGEMA, 
+disabling each of the optimizations at a time.
 
-The row ``word count'' is an indicator of the size of the data.
-The %numbers in 
-rows ``names'', ``narrators'', and ``chains'' denote the total
-number of the corresponding entities per book.
-The row ``ignored names'' reports the number of names detected 
-outside the chains and thus are irrelevant to
-the application. 
-%In addition, the rows ``names/narrator'' and ``narrators/chain'' 
-%report the average
-%number of names per narrator and 
-%the average number of narrators per chain respectively. 
+We notice that punctuations are useful for increasing all precision measures: hadith segmentation, sanad boundary and
+narrator boundary. Those measures are enhanced by about 3\%, 2\%, 1\% respectively as punctuation related information is 
+utilized.  Clearly, punctuation can help eliminate any confusion that may result from a concentration of names and words that are
+can be interpreted shallowly as narrator connectors. It also helps cleaning the sanad of a narration from names that coincidently appear at the 
+end of the matn of a previous narration. If close enough those names can be assumed as narrators in the sanad at hand; however, punctuation marks
+reduce such confusions.
 
-The ``segmentation accuracy'' reports on the accuracy of 
-segmentation of the book into separate hadiths.
-We computed the metric manually by marking the beginning 
-and end of a representative sample of hadiths in each 
-book and compared that to the NaGEMA results. 
-We used the same approach to compute all other accuracy measures.
-The ``chain accuracy'' reflects the percentage of correct narrators 
-covered by extracted chains.
-The ``narrator name accuracy'' row reflects the percentage of 
-correct proper names detected within
-narrator structures.
+Concerning the ability to learn names, our results show that it enhances mainly the recall of sanad boundaries by about 3.4\% on the average.
+Such an increased accuracy although small is not insignificant, since the task of hadith authentication requires a high accuracy. In particular,
+sometimes the presence of a specific narrator in the chain can render a hadith as not trustworthy since the narrator is not considered credible.
+That's why it is important not to lose any of the narrators that appear in the sanad. 
 
-%The row ``name false positives'' reports the percentage of words 
-%recognized as names while they should not.
-%We notice that this metric did not affect the accuracy
-%of narrator and chain segmentation since detecting
-%a narrator or a chain with the refined analysis without substantially affecting the 
-%high abstract measures such as chain and segmentation
-%accuracy.
 
 \section{Related work }
 \label{sec:related}
 
-The closest to our work is e-Narrator~\cite{Azmi2010}, a 
+The closest to our work is e-Narrator~\cite{eNarrator}, a 
 tool that uses a grammar based approach to solve 
 the narrator extraction problem. 
 The e-Narrator tool preprocesses the text to remove 
 punctuation and diacritics and to normalize white
 spaces. 
 Then e-Narrator uses a similarity-based approach
-to memory based learning~\cite{Azmi2010} in order to perform 
+to memory based learning~\cite{eNarrator} in order to perform 
 shallow parsing of the preprocessed text. 
 The e-Narrator tool uses a parser based on a context
 free grammar that enumerates several ways to express
