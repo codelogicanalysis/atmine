@@ -777,7 +777,31 @@ what if analysis
 \end{table*}                   
 
 
+To evaluate our approach, we performed experiments on three books of 
+hadith~\cite{IbnHanbal,AlTousi,AlKulayni} whose accuracy results are detailed in 
+Tables~\ref{t:hadithresults} and \ref{t:nopunctlearnresults}. We used recall and precision as our evaluation metrics.
+We report results on three levels of accuracy: segmentation, sanad boundary and
+narrator boundary. Segmentation accuracy refers to the success of NaGEMA in
+detecting in the plain text of a hadith book the locations of the different
+narrations that it contains. While the sanad boundary is a measure of the accuracy
+in reporting the correct number of narrators in the sanad. Finally, the narrator boundary refers
+to the accuracy in reporting the correct number of words inside each narrator.
 
+Precisely defined, segmentation recall refers to the fraction of extracted narrations from 
+those which are correct; and segmentation precision refers to the fraction of correct narrations
+from those extracted. Similarly, sanad boundary recall is a measure whether we detected all narrators
+in the sand; and precision is a measure whether we did so without introducing much false positives.
+
+iTree does not tackle the problem hadith segmentation. In contrast to NaGEMA, it does not work on a book level, 
+instead it assumes that the knowledge of what part of the text of a hadith book is a narration is available.
+Consequently, for the narrators to be extracted, the hadith must be manually extracted
+from the book and inputted on its own to the tool. Still however, in many cases it does not recognize the structure of
+the inputted hadith and is incapable of extracting any useful information from the narration. 
+In table~\ref{t:hadithresults}, we report the fraction of narrations which iTree recognizes from those inputted, instead
+of the segmentation measure used for NaGEMA. This measure is equivalent to the concept of recall; nonetheless, precision
+in this context is not applicable since by default the input is required to be represent correctly extracted narrations.
+
+Now we move to explain the significance of the experiments performed.
 
 
 
