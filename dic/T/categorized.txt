@@ -463,3 +463,30 @@
 غدا	غَداً	FW-WaBi	tomorrow	gadAF/ADV	gadAF_1	Relative Time
 غد	غَد	N	tomorrow	gad/NOUN	gad_1	Relative Time
 غدا	غَدا	Nap	morning/tomorrow	gadA/NOUN	gadAp_1	Relative Time
+عد	عِدّ	Nap	several/numerous/many	Eid~/ADJ	Eid~ap_1	Time Preposition
+أقل	أَقَلّ	Nel	less/least/smaller/smallest/minimum	>aqal~/NOUN	>aqal~_2	Time Preposition
+اقل	أَقَلّ	Nel	less/least/smaller/smallest/minimum	>aqal~/NOUN	>aqal~_2	Time Preposition
+أكثر	أَكْثَر	Nel	more/most	>akovar/ADJ	>akovar_1	Time Preposition
+اكثر	أَكْثَر	Nel	more/most	>akovar/ADJ	>akovar_1	Time Preposition
+تقريب	تَقْرِيب	NF	approximately	taqoriyb/ADV	taqoriybAF_1	Time Preposition
+نهاي	نِهاي	NapAt	end/termination	nihAy/NOUN	nihAyap_1	Time Preposition
+بداء	بَداء	NapAt	beginning/start	badA'/NOUN	badA'ap_1	Time Preposition
+بداي	بِداي	NapAt	beginning/start	bidAy/NOUN	bidAyap_1	Time Preposition
+نصف	نِصْف	Ndu	half/middle/semi-	niSof/NOUN	niSof_1	Number
+ربع	رُبْع	Ndu	quarter/fourth	ruboE/NOUN	ruboE_1	Number
+أرباع	أَرْباع	N	quarters/fourths	>arobAE/NOUN	ruboE_1	Number
+ارباع	أَرْباع	N	quarters/fourths	>arobAE/NOUN	ruboE_1	Number
+إلى	إِلَى	FW-Wa	to/towards	<ilaY/PREP	<ilaY_1	Time Preposition
+الى	إِلَى	FW-Wa	to/towards	<ilaY/PREP	<ilaY_1	Time Preposition
+إلي	إِلَي	FW-Wa-y	to/towards	<ilay/PREP	<ilaY_1	Time Preposition
+الي	إِلَي	FW-Wa-y	to/towards	<ilay/PREP	<ilaY_1	Time Preposition
+إلي	إِلَى	FW-Wa	to/towards	<ilaY/PREP	<ilaY_1	Time Preposition
+الي	إِلَى	FW-Wa	to/towards	<ilaY/PREP	<ilaY_1	Time Preposition
+بعد	بَعْدَ	FW-Wa	after	baEoda/PREP	baEoda_1	Time Preposition
+بعد	بَعْدِ	FW-Wa	after	baEodi/PREP	baEoda_1	Time Preposition
+بعد	بَعْدَ	FW-Wa-a	after	baEoda/PREP	baEoda_1	Time Preposition
+بعد	بَعْدِ	FW-Wa-i	after	baEodi/PREP	baEoda_1	Time Preposition
+بعد	بَعْد	FW-Wa-o	after	baEod/PREP	baEoda_1	Time Preposition
+بعد	بَعْدُ	FW-Wa	afterward/later/(not) yet	baEodu/ADV	baEodu_1	Time Preposition
+بعدما	بَعْدَما	FW-Wa	after	baEodamA/CONJ	baEodamA_1	Time Preposition
+بعدما	بَعْدَما	FW-Wa	after what	baEoda/PREP+mA/REL_PRON	baEodamA_2	Time Preposition
