@@ -26,15 +26,19 @@ int word_sarf_test(QString input_str)
 }
 int augment()
 {
+#ifndef INSERT_ONLY_TIME
 	if (insert_buckwalter()<0)
 		return -1;
+#endif
 #ifndef JUST_BUCKWALTER
+#ifndef INSERT_ONLY_TIME
 	if (insert_rules_for_Nprop_Al())
 		return -1;
 	if (insert_propernames()<0)
 		return -1;
 	if (insert_placenames()<0)
 		return -1;
+#endif
 	if (insert_time_categorizations()<0)
 		return -1;
 #endif

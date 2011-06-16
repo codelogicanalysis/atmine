@@ -7,6 +7,7 @@
 
 #define AUGMENT_DICTIONARY
 //#define JUST_BUCKWALTER
+#define INSERT_ONLY_TIME
 #define REPETITIONS 1
 
 int morphology(QString input_str,ATMProgressIFC * prg);
