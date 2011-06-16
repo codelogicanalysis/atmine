@@ -64,7 +64,7 @@ void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 			}
 		}
 #endif
-		if (current_letter!=alef) {//(!alefs.contains(current_letter))
+		if (current_letter!=alef) {//(!alefs.contains(current_letter) || info.start!=letter_index) { //
 			if (!trie->walk(pos, current_letter))
 				break;
 			if (!check_for_terminal(i,pos))
@@ -197,12 +197,16 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 			}
 			else
 			{
-				for (int i=0;i<possible_raw_datas.count();i++)
+				for (int i=0;i<possible_raw_datas.count();i++) {
+				#ifdef DEBUG
+					out<<subword.toString()<<"-"<<possible_raw_datas[i]<<"\n";
+				#endif
 					if (!equal(subword,possible_raw_datas[i]))
 					{
 						possible_raw_datas.remove(i);
 						i--;
 					}
+				}
 				if (possible_raw_datas.count()>0)
 					if (!onMatch())
 						return false;

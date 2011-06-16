@@ -269,6 +269,7 @@ int insert_propernames()
 	long abstract_category_id;
 	foreach (file_name,folder.entryList())
 	{
+		QString ab=file_name.split(".").at(0);
 		if (file_name=="all_n.txt")
 		{
 			out << "Ignored all_n.txt file\n";
@@ -290,6 +291,7 @@ int insert_propernames()
 		{
 			line_num++;
 			QString line=file.readLine(0);
+
 			if (line_num==1)
 			{
 				source=line;
@@ -303,7 +305,6 @@ int insert_propernames()
 			else if (line_num==3)
 			{
 				source_id=insert_source(source,normalization_process,line);
-				QString ab=file_name.split(".").at(0);
 			#if 0
 				if (ab=="Compound Names")
 					abstract_category_id=insert_category("Male Names",STEM,source_id,true);
@@ -320,7 +321,10 @@ int insert_propernames()
 			if (line.isEmpty()) //ignore empty lines if they exist
 				continue;
 			QList<long> * abstract_categories=new QList<long>();
-			abstract_categories->append(abstract_Noun_Prop_id);
+		#if 1
+			if (ab!="eNarrator Names")
+				abstract_categories->append(abstract_Noun_Prop_id);
+		#endif
 			abstract_categories->append(abstract_category_id);
 			abstract_categories->append(abstract_people_names);
 			if (insert_NProp(line, abstract_categories,source_id,"Name of Person")<0)

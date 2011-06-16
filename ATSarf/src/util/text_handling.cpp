@@ -4,7 +4,7 @@
 #include <QChar>
 #include <QList>
 //#include <QVector>
-//#include <QDebug>
+#include <QDebug>
 
 /* (rules for possessive)
 alef 				+consonant before			-wey					sayda --> saydawey		or		7alba --> 7albawey
@@ -18,6 +18,10 @@ Notes:
 -remove ta3reef if it is there, except for almanya, albanya, ...
 -asma2 el mourakaba according to last word
   */
+//#define COUNT_RUNON
+#ifdef COUNT_RUNON
+	extern bool runon;
+#endif
 
 inline bool equal_strict(QList<QChar> & list1,QList<QChar> & list2)
 {
@@ -77,10 +81,16 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 			#ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
 				if (letter1==' ') {
 					i2--;//bc will be incremented later so this in effect only moves i1 and keeps i2 in its place
+				#ifdef COUNT_RUNON
+					runon=true;
+				#endif
 					continue;
 				}
 				if (letter2==' ') {
 					i1--;//bc will be incremented later so this in effect only moves i2 and keeps i1 in its place
+				#ifdef COUNT_RUNON
+					runon=true;
+				#endif
 					continue;
 				}
 			#endif
