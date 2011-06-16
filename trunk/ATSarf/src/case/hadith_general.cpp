@@ -46,6 +46,11 @@ QString StopwordsFileName=".stop_words";
 	enum stateType { TEXT_S , NAME_S, NMC_S , NRC_S, STOP_WORD_S};
 	QStringList rasoul_words;
 #endif
+//#define COUNT_RUNON
+#ifdef COUNT_RUNON
+	bool runon;
+#endif
+
 	typedef struct  {
 		long lastEndPos;
 		long startPos;
@@ -268,7 +273,7 @@ void hadith_initialize()
 	long abstract_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryID("Compound Names");
 	int bit_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
 	bits_NAME.append(bit_COMPOUND_NAMES);
-	long abstract_NOUN_PROP=database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
+	long abstract_NOUN_PROP=database_info.comp_rules->getAbstractCategoryID("Female Names");//"NOUN_PROP"
 	bit_NOUN_PROP=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
 #ifdef ADD_ENARRATOR_NAMES
 	long abstract_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
@@ -567,6 +572,10 @@ public:
 						)
 					#endif
 				{
+				#ifdef REFINEMENTS
+					if (removeDiacritics(Stem->info.getString()).count()<3) //bit_NOUN_PROP==bits_NAME[i] &&
+						continue;
+				#endif
 					name=true;
 					if (info.finish>finish_pos)
 					{
@@ -578,6 +587,13 @@ public:
 							learnedName=false;
 						finishStem=Stem->info.finish;
 						startStem=Stem->info.start;
+					#ifdef COUNT_RUNON
+						runon=false;
+						if (equal(Stem->info.getString(),stem_info->raw_data)) {
+							if (runon)
+								error<<Stem->info.getString()<<"-"<<stem_info->raw_data<<"\n";
+						}
+					#endif
 					#endif
 					#ifdef GET_WAW
 						checkForWaw();
@@ -697,6 +713,11 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			display("<ending Punctuation>");
 		}
 	}
+	if (stateInfo.number) {
+		stateInfo.currentPunctuationInfo.has_punctuation=true;
+		stateInfo.currentPunctuationInfo.fullstop=true;
+		stateInfo.currentPunctuationInfo.newLine=true;
+	}
 #endif
 #ifdef TRYTOLEARN
 	stateInfo.nrcIsPunctuation=false;
@@ -732,6 +753,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				display("<punc1>");
 				currentData.narratorCount++;
 				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0;//punctuation is zero
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 			#ifdef TRYTOLEARN
@@ -755,16 +777,17 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		}
 		else if (stateInfo.currentType==NRC) {
-		#ifdef PUNCTUATION
+		/*#ifdef PUNCTUATION
 			if (!stateInfo.previousPunctuationInfo.fullstop && stateInfo._3an) {
 				stateInfo.nextState=TEXT_S;
 				break;
 			}
-		#endif
+		#endif*/
 			initializeStateData();
 			currentData.sanadStartIndex=stateInfo.startPos;
 			currentData.nrcStartIndex=stateInfo.startPos;
 			stateInfo.nextState=NRC_S;
+			currentData.nrcCount=1;
 		#ifdef CHAIN_BUILDING
 			initializeChainData(currentChain);
 			currentChain->narratorConnectorPrim->m_start=stateInfo.startPos;
@@ -781,7 +804,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		#ifdef REFINEMENTS
 			if (stateInfo._3an) {
-				currentData.nrcCount=0;
+				currentData.nrcCount=1;
 				currentData.nrcEndIndex=stateInfo.endPos;
 			#ifdef CHAIN_BUILDING
 				currentChain->narratorConnectorPrim->m_end=stateInfo.endPos;
@@ -955,7 +978,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			temp_nmc_count=0;
 		#endif
 			display(QString("counter%1\n").arg(currentData.narratorCount));
-			currentData.nrcCount=0;
+			currentData.nrcCount=1;
 			currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 			currentData.nrcStartIndex=stateInfo.startPos;
 		#ifdef CHAIN_BUILDING
@@ -969,7 +992,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		#ifdef REFINEMENTS
 			if (stateInfo._3an) {
-				currentData.nrcCount=0;
+				currentData.nrcCount=1;
 				currentData.nrcEndIndex=stateInfo.endPos;
 			#ifdef CHAIN_BUILDING
 				currentChain->narratorConnectorPrim->m_end=stateInfo.endPos;
@@ -1004,6 +1027,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				display("<punc2>");
 				currentData.narratorCount++;
 				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0; //punctuation not counted
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 			#ifdef CHAIN_BUILDING
@@ -1109,7 +1133,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 			display(QString("counter%1\n").arg(currentData.narratorCount));
 			currentData.nmcCount=0;
-			currentData.nrcCount=0;
+			currentData.nrcCount=1;
 			stateInfo.nextState=NRC_S;
 
 			currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
@@ -1126,7 +1150,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		#ifdef REFINEMENTS
 			if (stateInfo._3an) {
-				currentData.nrcCount=0;
+				currentData.nrcCount=1;
 				currentData.nrcEndIndex=stateInfo.endPos;
 			#ifdef CHAIN_BUILDING
 				currentChain->narratorConnectorPrim->m_end=stateInfo.endPos;
@@ -1166,9 +1190,9 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				currentData.nrcCount=0;
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-			#ifdef TRYTOLEARN
+			/*#ifdef TRYTOLEARN
 				stateInfo.nrcIsPunctuation=true;
-			#endif
+			#endif*/
 			#ifdef CHAIN_BUILDING
 				currentChain->namePrim->m_end=stateInfo.endPos;
 				currentChain->narrator->m_narrator.append(currentChain->namePrim);
@@ -1212,8 +1236,12 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			}
 		}
 	#endif
-		else if (currentData.nmcCount>hadithParameters.nmc_max || stateInfo.number ||
-				 (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine)) {
+		else if (currentData.nmcCount>hadithParameters.nmc_max
+				#ifdef PUNCTUATION
+					 || stateInfo.number ||
+					 (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine)
+				#endif
+			) {
 			if (currentData.nmcCount>hadithParameters.nmc_max && currentData.nmcValid) {//number is severe condition no tolerance
 				currentData.nmcValid=false;
 				stateInfo.nextState=NMC_S;
@@ -1404,7 +1432,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		if (stateInfo.currentType==NAME) {
 	#endif
 			stateInfo.nextState=NAME_S;
-			currentData.nrcCount=0;
+			currentData.nrcCount=1;
 			//currentData.nameStartIndex=start_index;
 		#ifdef CHAIN_BUILDING
 			//currentChain->namePrim->m_start=start_index;
@@ -1441,9 +1469,9 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 				currentData.nrcCount=0;
 				currentData.narratorEndIndex=stateInfo.endPos;
 				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-			#ifdef TRYTOLEARN
+			/*#ifdef TRYTOLEARN
 				stateInfo.nrcIsPunctuation=true;
-			#endif
+			#endif*/
 			#ifdef CHAIN_BUILDING
 			#ifdef REFINEMENTS
 				if (stateInfo.currentType==NAME)
@@ -1478,7 +1506,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 	#ifdef PUNCTUATION
 		else if (currentData.nrcCount>=hadithParameters.nrc_max || currentData.nrcPunctuation ||stateInfo.number) { //if not in refinements mode stateInfo.number will always remain false
 	#else
-		else if (currentData.nrcCount>=parameters.nrc_max || stateInfo.number) { //if not in refinements mode stateInfo.number will always remain false
+		else if (currentData.nrcCount>=hadithParameters.nrc_max) {
 	#endif
 			stateInfo.nextState=TEXT_S;
 		#ifdef STATS
@@ -1503,7 +1531,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			return_value= false;
 			break;
 		}
-#ifdef IBN_START
+	#ifdef IBN_START
 		else if (stateInfo.currentType==NMC && stateInfo.ibn) {
 			display("<IBN3>");
 		#ifdef CHAIN_BUILDING
@@ -1564,7 +1592,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 			}
 		#endif
 		}
-#endif
+	#endif
 		else {
 			stateInfo.nextState=NRC_S;
 			currentData.nrcCount++;
@@ -1590,7 +1618,7 @@ bool getNextState(StateInfo &  stateInfo,chainData *currentChain)
 		#endif
 		#ifdef REFINEMENTS
 			if (stateInfo._3an) {
-				currentData.nrcCount=0;
+				currentData.nrcCount=1;
 				currentData.nrcEndIndex=stateInfo.endPos;
 			#ifdef CHAIN_BUILDING
 				currentChain->narratorConnectorPrim->m_end=stateInfo.endPos;
@@ -1670,16 +1698,23 @@ bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //doe
 	hadith_stemmer s(text,stateInfo.startPos);
 #ifdef REFINEMENTS
 #ifdef TRYTOLEARN
-	if (stateInfo.currentState==NRC_S && currentData.nrcCount==0 && !stateInfo.nrcIsPunctuation)
+	if (stateInfo.currentState==NRC_S && currentData.nrcCount<=1
+		#ifdef PUNCTUATION
+			&& !stateInfo.nrcIsPunctuation
+		#endif
+		)
 		s.tryToLearnNames=true;
 #endif
+#ifdef PUNCTUATION
 	if (isNumber(text,stateInfo.startPos,finish)) {
+		display("Number ");
 		stateInfo.number=true;
 		stateInfo.endPos=finish;
-		stateInfo.nextPos=next_positon(text,finish,stateInfo.currentPunctuationInfo);
+		stateInfo.nextPos=next_positon(text,finish+1,stateInfo.currentPunctuationInfo);
 		display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 		return result(NMC,stateInfo,currentChain);
 	}
+#endif
 
 	QString c;
 	bool found,phrase=false,stop_word=false;
@@ -1783,7 +1818,7 @@ bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //doe
 		if (finish==stateInfo.startPos) {
 			finish=getLastLetter_IN_currentWord(text,stateInfo.startPos);
 		#ifdef REFINEMENTS
-			if (s.tryToLearnNames) {
+			if (s.tryToLearnNames && removeDiacritics(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
 				s.name=true;
 				s.finishStem=finish;
 				s.startStem=stateInfo.startPos;
@@ -1819,7 +1854,9 @@ bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //doe
 #endif
 #ifdef TRYTOLEARN
 	if (!s.name && !s.nmc && !s.nrc &&!s.stopword) {
-		if (stateInfo.currentPunctuationInfo.has_punctuation && s.tryToLearnNames) {
+		QString word=s.getString().toString();
+		if (stateInfo.currentPunctuationInfo.has_punctuation && s.tryToLearnNames && removeDiacritics(word).count()>=3) {
+			display("{learned}");
 			s.name=true;
 			s.nmc=false;
 			s.learnedName=true;
@@ -2220,13 +2257,10 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 #ifdef PROGRESSBAR
 	prg->setCurrentAction("Parsing Hadith");
 #endif
-	for (;stateInfo.startPos<text_size;)
-	{
+	for (;stateInfo.startPos<text_size;) {
 #ifndef COMPARE_TO_BUCKWALTER
-		if((proceedInStateMachine(stateInfo,currentChain)==false))
-		{
-			if (currentData.narratorCount>=hadithParameters.narr_min)
-			{
+		if((proceedInStateMachine(stateInfo,currentChain)==false)) {
+			if (currentData.narratorCount>=hadithParameters.narr_min) {
 				sanadEnd=currentData.narratorEndIndex;
 			#ifdef DISPLAY_HADITH_OVERVIEW
 				newHadithStart=currentData.sanadStartIndex;
@@ -2289,8 +2323,7 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 				temp_nrc_count=0;
 			#endif
 			}
-			else
-			{
+			else {
 			#ifdef STATS
 				int additional_names=temp_names_per_narrator;
 				temp_names_per_narrator=0;
@@ -2316,7 +2349,11 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 		stateInfo.lastEndPos=stateInfo.endPos;
 	#ifdef PUNCTUATION
 		stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
-		if (stateInfo.number)
+		if (stateInfo.number) {
+			stateInfo.previousPunctuationInfo.fullstop=true;
+			stateInfo.previousPunctuationInfo.has_punctuation=true;
+		}
+		if (stateInfo.previousPunctuationInfo.has_punctuation)
 			stateInfo.previousPunctuationInfo.fullstop=true;
 	#endif
 #else
@@ -2373,14 +2410,20 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 			ChainPrim * curr_struct=s->m_chain[j];
 			if (curr_struct->isNarrator())
 			{
-				prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::darkYellow,false);
 				Narrator * n=(Narrator *)curr_struct;
+				if (n->m_narrator.size()==0) {
+					out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
+					continue;
+				}
+				prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::darkYellow,false);
 				for (int i=0;i<n->m_narrator.size();i++)
 				{
 					NarratorPrim * nar_struct=n->m_narrator[i];
 					if (nar_struct->isNamePrim()) {
-						if (((NamePrim*)nar_struct)->learnedName)
+						if (((NamePrim*)nar_struct)->learnedName) {
 							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::blue,true);
+							//error<<nar_struct->getString()<<"\n";
+						}
 						else
 							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
 					}

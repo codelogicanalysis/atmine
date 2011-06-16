@@ -57,7 +57,7 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//
 			i++;
 		if (isDiacritic(word2[j]))
 			j++;
-		if (i<length1 && j<length2 && word1[i]!=word2[j]) {
+		if (i<length1 && j<length2 && !equal(word1[i],word2[j])) {
 		#ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
 			if (word1[i]==' ') {
 				i++;
@@ -95,7 +95,8 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2) // is diacrit
 	int i1,i2;
 	int length1=word1.length(),
 		length2=word2.length();
-	checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2);
+	if (!checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2))
+		return false;
 	if (length1-(i1+1)<=0) {
 		for (int i=i2+1;i<length2;i++)
 			if (!isDiacritic(word2.at(i)) && !isPunctuationMark(word2.at(i)))

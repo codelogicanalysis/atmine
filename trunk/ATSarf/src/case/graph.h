@@ -622,7 +622,7 @@ private:
 						if (eq_val>=threshold)
 						{
 						#ifdef DEBUG_BUILDGRAPH
-							out<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<n2->getIndex()<<"]\n";
+							out<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<n2->getIndex()<<"]";
 						#endif
 							mergeNodes(*n1,*n2);
 							offset=u;	//this is matched, we must skip it in search for match for next node in c1

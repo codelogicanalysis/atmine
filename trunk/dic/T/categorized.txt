@@ -44,10 +44,10 @@
 انائ	آناءئ	FW-Wa-i	during	|nA}i/PREP	|nA'a_1	Time Preposition
 أوت	أُوت	Nprop	August	>uwt/NOUN_PROP	>uwt_1	Month Name
 اوت	أُوت	Nprop	August	>uwt/NOUN_PROP	>uwt_1	Month Name
-أول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Time Preposition	Number
-اول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Time Preposition	Number
-أول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Time Preposition	Number
-اول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Time Preposition	Number
+أول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Number
+اول	أَوَّل	Nall	first	>aw~al/ADJ	>aw~al_2	Number
+أول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Number
+اول	أُوَل	N	first	>uwal/ADJ	>uwlaY_1	Number
 الآن	الآنَ	FW-Wa	now	Al|na/ADV	Al|na_1	Relative Time
 الان	الآنَ	FW-Wa	now	Al|na/ADV	Al|na_1	Relative Time
 آنئذ	آنَئِذٍ	FW-Wa	then/at that time	|na}i*K/ADV	|na}i*K_1	Time Preposition
@@ -420,3 +420,46 @@
 خلال	خِلالِ	FW-Wa	during/through	xilAli/PREP	xilAla_1	Time Preposition
 خلال	خِلالَ	FW-Wa-a	during/through	xilAla/PREP	xilAla_1	Time Preposition
 خلال	خِلالِ	FW-Wa-i	during/through	xilAli/PREP	xilAla_1	Time Preposition
+هذا	ه`ذا	FW-WaBi	this	h`*A/DEM_PRON_MS	h`*A_1	Time Preposition
+هذه	ه`ذِهِ	FW-WaBi	this/these	h`*ihi/DEM_PRON_F	h`*A_1	Time Preposition
+هذي	ه`ذِي	FW-WaBi	this/these	h`*iy/DEM_PRON_F	h`*A_1	Time Preposition
+هاته	هاتِهِ	FW-WaBi	this/these	hAtihi/DEM_PRON_F	h`*A_1	Time Preposition
+هذان	ه`ذانِ	FW-Wa	these two	h`*Ani/DEM_PRON_MD	h`*A_1	Time Preposition
+هذين	ه`ذَيْنِ	FW-WaBi	these two	h`*ayoni/DEM_PRON_MD	h`*A_1	Time Preposition
+هاتان	هاتانِ	FW-Wa	these two	hAtAni/DEM_PRON_FD	h`*A_1	Time Preposition
+هاتين	هاتَيْنِ	FW-WaBi	these two	hAtayoni/DEM_PRON_FD	h`*A_1	Time Preposition
+هؤلاء	ه`ؤُلاءِ	FW-WaBi	these	h`&ulA'i/DEM_PRON_MP	h`*A_1	Time Preposition
+هولاء	ه`ؤُلاءِ	FW-WaBi	these	h`&ulA'i/DEM_PRON_MP	h`*A_1	Time Preposition
+ذلك	ذ`لِكَ	FW-WaBi	that	*`lika/DEM_PRON_MS	*`lika_1	Time Preposition
+ذلكم	ذ`لِكُم	FW-WaBi	that one	*`likum/DEM_PRON_MS	*`lika_1	Time Preposition
+تلك	تِلْكَ	FW-WaBi	that/those	tiloka/DEM_PRON_FS	*`lika_1	Time Preposition
+تلكم	تِلْكُم	FW-WaBi	that one	tilokum/DEM_PRON_FS	*`lika_1	Time Preposition
+أولائكم	أُولائِكُم	FW-WaBi	those	>uwlA}ikum/DEM_PRON_MP	*`lika_1	Time Preposition
+اولائكم	أُولائِكُم	FW-WaBi	those	>uwlA}ikum/DEM_PRON_MP	*`lika_1	Time Preposition
+وقت	وَقَّت	PV-t	schedule/appoint a time	waq~at/VERB_PERFECT	waq~at_1	Relative Time
+وقت	وَقِّت	IV_yu	schedule/appoint a time	waq~it/VERB_IMPERFECT	waq~at_1	Relative Time
+وقت	وَقْت	N	time/moment/period of time	waqot/NOUN	waqot_1	Relative Time
+وقتئذ	وَقْتَئِذٍ	FW-Wa	at that time	waqota}i*K/ADV	waqot_1	Relative Time
+وقتذاك	وَقْتَذاك	FW-Wa	at that time	waqota*Ak/ADV	waqot_1	Relative Time
+وقتما	وَقْتَما	FW-Wa	whenever	waqotamA/CONJ	waqot_1	Relative Time
+أوقات	أَوْقات	N	moments/times	>awoqAt/NOUN	waqot_1	Relative Time
+اوقات	أَوْقات	N	moments/times	>awoqAt/NOUN	waqot_1	Relative Time
+في	فِي	FW-Wa	in	fiy/PREP	fiy_1	Time Preposition
+ماضي	ماضِي	N0F_Nh	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
+ماض	ماض	NK	past/bygone	mAD/ADJ	mADiy_1	Time Preposition
+ماضي	ماضِي	NAn_Nayn	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
+ماضي	ماضِي	Napdu	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
+حاضر	حاضِر	Nall	present/attending	HADir/ADJ	HADir_1	Time Preposition
+سالف	سالِف	N/ap	preceding/former	sAlif/NOUN	sAlif_1	Time Preposition
+سابق	سابِق	Nall	former/previous/preceding	sAbiq/ADJ	sAbiq_1	Time Preposition
+سابق	سابِق	NF	formerly/earlier	sAbiq/ADV	sAbiqAF_1	Time Preposition
+سابق	سابِق	Napdu	precedent/priority	sAbiq/NOUN	sAbiqap_1	Time Preposition
+دقيق	دَقِيق	Napdu	minute	daqiyq/NOUN	daqiyqap_1	Time Unit
+دقائق	دَقائِق	Ndip	minutes	daqA}iq/NOUN	daqiyqap_1	Time Unit
+أولى	أُولَى	N0	first	>uwlY/ADJ	>uwlaY_1	Number
+اولى	أُولَى	N0	first	>uwlY/ADJ	>uwlaY_1	Number
+أوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Preposition
+اوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Preposition
+غدا	غَداً	FW-WaBi	tomorrow	gadAF/ADV	gadAF_1	Relative Time
+غد	غَد	N	tomorrow	gad/NOUN	gad_1	Relative Time
+غدا	غَدا	Nap	morning/tomorrow	gadA/NOUN	gadAp_1	Relative Time

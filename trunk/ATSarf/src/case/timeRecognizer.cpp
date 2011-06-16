@@ -6,7 +6,7 @@
 
 TimeParameters timeParameters;
 QList<unsigned int> bits_ABSOLUTE_TIME;
-unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME;
+unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME,bit_TIME_UNIT;
 
 enum wordType { ABS_T, PREP_T, NUM, OTHER};
 enum stateType { NOTHING_S , MAYBE_TIME_S, TIME_S};
@@ -81,10 +81,13 @@ public:
 	long startPos;
 	long endPos;
 	long nextPos;
+	int numWords;
 	wordType currentType:2;
 	stateType currentState:2;
 	stateType nextState:2;
-	int unused:26;
+	bool isTimeUnit:1;
+	bool hasTimeUnit:1;
+	int unused:24;
 	PunctuationInfo punctuationInfo;
 
 	//info about time entity recognized
@@ -99,14 +102,19 @@ public:
 		endPos=0;
 		nextPos=0;
 		lastEndPos=0;
+		numWords=0;
+		isTimeUnit=false;
+		hasTimeUnit=false;
 		currentType=OTHER;
 		currentState=NOTHING_S;
 		nextState=NOTHING_S;
 		punctuationInfo.reset();
 	}
-	void resetCurrentWordInfo()	{punctuationInfo.reset();}
+	void resetCurrentWordInfo()	{punctuationInfo.reset();isTimeUnit=false;}
 	void resetCounters() {IWn=0;IWt=0;}
 	void discardEntity() {
+		numWords=0;
+		hasTimeUnit=false;
 		if (entityProcessed!=NULL) {
 			delete entityProcessed;
 			entityProcessed=NULL;
@@ -196,14 +204,16 @@ void time_initialize(){
 	}
 	long abstract_TIME_PREPOSITION=database_info.comp_rules->getAbstractCategoryID("Time Preposition");
 	long abstract_NUMBER=database_info.comp_rules->getAbstractCategoryID("Number");
+	long abstract_TIME_UNIT=database_info.comp_rules->getAbstractCategoryID("Time Unit");
 	bit_TIME_PREPOSITION=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_PREPOSITION);
 	bit_NUMBER=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NUMBER);
+	bit_TIME_UNIT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_UNIT);
 }
 
 class time_stemmer: public Stemmer
 {
 public:
-	bool absoluteTime,timePreposition, number;
+	bool absoluteTime,timePreposition, number,isTimeUnit;
 	long finish_pos;
 
 	time_stemmer(QString * word, int start):Stemmer(word,start,false) {
@@ -216,6 +226,7 @@ public:
 		absoluteTime=false;
 		timePreposition=false;
 		number=false;
+		isTimeUnit=false;
 		finish_pos=start;
 	}
 	bool on_match() {
@@ -255,7 +266,6 @@ public:
 		#ifdef GET_AFFIXES_ALSO
 			if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])){
 				if (bits_ABSOLUTE_TIME[i]==bit_DAY_NAME) {
-				//if (stem_info->description().contains("Sunday")) {
 					for (int j=0;j<prefix_infos->size();j++) {
 						if (prefix_infos->at(j).POS=="Al/DET+") {
 							absoluteTime=true;
@@ -270,6 +280,8 @@ public:
 		#endif
 				absoluteTime=true;
 				finish_pos=info.finish;
+				isTimeUnit=(equal(stem_info->raw_data,QString("")+tha2+alef+noon+ya2) ||
+						   equal(stem_info->raw_data,QString("")+_3yn+alef+meem)) &stem_info->abstract_categories.getBit(bit_TIME_UNIT);
 				return false;
 			}
 		}
@@ -291,6 +303,9 @@ bool getNextState(TimeStateInfo &  stateInfo)
 {
 	display(stateInfo.currentState);
 	display(stateInfo.currentType);
+	display(QString(" numWords=%1 ").arg(stateInfo.numWords));
+	if (stateInfo.hasTimeUnit) {
+		display(" {has time unit} ");}
 	bool punc=false;
 	if (stateInfo.punctuationInfo.hasEndingPunctuation()) {
 		display("<has Ending punctuation>");
@@ -399,6 +414,11 @@ bool getNextState(TimeStateInfo &  stateInfo)
 			stateInfo.discardEntity();
 		}
 	}
+	if (stateInfo.nextState!=NOTHING_S) {
+		stateInfo.numWords++;
+		if (stateInfo.isTimeUnit)
+			stateInfo.hasTimeUnit=true;
+	}
 	return return_value;
 }
 
@@ -427,6 +447,7 @@ wordType getWordType(TimeStateInfo &  stateInfo)
 	stateInfo.endPos=finish;
 	stateInfo.nextPos=next_positon(time_text,finish,stateInfo.punctuationInfo);
 	display(time_text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
+	stateInfo.isTimeUnit=s.isTimeUnit;
 	if (s.timePreposition )
 		return result(PREP_T);
 	else if (s.absoluteTime)
@@ -482,16 +503,19 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 		getNextState(stateInfo);
 		if (timeVector->size()>timeVectorSize) {
 			TimeEntity & t=(*timeVector)[timeVectorSize];
-			prg->tag(t.getStart(),t.getLength(),Qt::darkYellow,false);//Qt::gray
-			const TimeEntityVector & absolute=t.getAbsoluteParts();
-			for (int j=0;j<absolute.size();j++)
-				prg->tag(absolute[j].getStart(),absolute[j].getLength(),Qt::white,true);
-			const TimeEntityVector & preposition=t.getPrepositionParts();
-			for (int j=0;j<preposition.size();j++)
-				prg->tag(preposition[j].getStart(),preposition[j].getLength(),Qt::darkRed,true);
-			const TimeEntityVector & numbers=t.getNumberParts();
-			for (int j=0;j<numbers.size();j++)
-				prg->tag(numbers[j].getStart(),numbers[j].getLength(),Qt::darkMagenta,true);
+			if (!(stateInfo.hasTimeUnit && !t.getString().contains(' '))) {
+				out << t.getString()<<"\n";
+				prg->tag(t.getStart(),t.getLength(),Qt::darkYellow,false);//Qt::gray
+				const TimeEntityVector & absolute=t.getAbsoluteParts();
+				for (int j=0;j<absolute.size();j++)
+					prg->tag(absolute[j].getStart(),absolute[j].getLength(),Qt::white,true);
+				const TimeEntityVector & preposition=t.getPrepositionParts();
+				for (int j=0;j<preposition.size();j++)
+					prg->tag(preposition[j].getStart(),preposition[j].getLength(),Qt::darkRed,true);
+				const TimeEntityVector & numbers=t.getNumberParts();
+				for (int j=0;j<numbers.size();j++)
+					prg->tag(numbers[j].getStart(),numbers[j].getLength(),Qt::darkMagenta,true);
+			}
 		}
 		stateInfo.currentState=stateInfo.nextState;
 		stateInfo.lastEndPos=stateInfo.endPos;

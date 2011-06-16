@@ -86,6 +86,7 @@ void Narrator::serialize(QDataStream &chainOut) const{
 	chainOut<<getType((const Narrator*)this);
 	chainOut<<isRasoul;
 	int size=m_narrator.size();
+	//assert(size>0);
 	chainOut<<(qint32)size;
 	for (int i=0;i<size;i++)
 	{
@@ -500,7 +501,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	display(n1.getString());
 	display(" VS ");
 	display(n2.getString());
-	display(">\n");
+	display("> ");
 #if 0
 	for (int i=0;i<Names1.count();i++)
 		display(Names1[i].getString()+" - ");
@@ -540,6 +541,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 		return dist;
 	if (equal_names.count()==min(Names1.count(),Names2.count()))
 	{
+		display(QString("%1,%2,%3").arg(equal_names.count()).arg(Names1.count()).arg(Names2.count()));
 		display("equal names \\ ");//may be wrong will be refined later when we used EQUALITY_REFINEMENTS
 		dist-=delta;
 	}
@@ -646,7 +648,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	}
 #ifdef EQUALITY_REFINEMENTS
 	int min_names=min(Names1.count(),Names2.count()),
-		min_ibn_cnt=min(num_ibn1,num_ibn2);
+	min_ibn_cnt=min(num_ibn1,num_ibn2);
 	bool one_ibn_first=((!first_ibn1 && first_ibn2)|| (!first_ibn2 && first_ibn1));
 	bool correctly_skipped=one_ibn_first && ((first_ibn1 &&  num_ibn1==min_ibn_cnt && Names1.count()==min_names) ||
 						   (first_ibn2 &&  num_ibn2==min_ibn_cnt && Names2.count()==min_names));
@@ -692,7 +694,9 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 }
 double equal(const Narrator & n1,const  Narrator  & n2)
 {
-	return max_distance - getdistance(n1,n2);
+	double val= max_distance - getdistance(n1,n2);
+	//out<<n1.getString()<<"{"<<val<<"}"<<n2.getString()<<"\n";
+	return val;
 }
 
 double Narrator::equals(const Narrator & rhs) const

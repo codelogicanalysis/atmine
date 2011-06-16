@@ -223,7 +223,7 @@ const StemNode *
 ATTrie :: getData(ATTrie::Position pos)
 {
 	int index=getData(pos,true);
-	if (index>0)
+	if (index>=0)
 	{
 		return &(database_info.trie_nodes->at(index));
 	}

@@ -222,7 +222,8 @@ to be visually recognizable
 as two separate words \noVocRL{il_A} (to) and \noVocRL{almdrsT} (the school).
 This happens because the first word \noVocRL{il_A} ends with
 \noVocRL{_A} a non-connecting letter. We propose to solve this problem, commonly known as the run-on word problem, using online tokenization.
-This also solves the issue of multi-word expressions such as \noVocRL{`abid al-la.tiyf} being analyzed as one unit -- here a compound proper name.
+Online tokenization also solves the issue of multi-word expressions such as \noVocRL{`abid al-la.tiyf} and 
+allows them to be analyzed as one unit -- here a compound proper name.
 
 %Arabic however has distinctive characteristics that
 %complicate its analysis. 
@@ -1151,21 +1152,21 @@ redundant with Buckwalter and may lead to consistency issues.
 Similar to Sarf, Attia uses FSAs and handles more and qualitatively different MWEs
 ~\cite{Attia:06,Attia:10}.
 
-%Similar to %the 
-%MADA+TOKAN, Sarf uses
-%the several valid morphological analyses as 
-%%a richness that should 
-%richness at a higher abstract level, and does not view them as 
-%inaccuracies to be corrected. 
-Sarf differs from MADA+TOKAN in that it provides an interface for the 
-application to interfere in judging the analyses much earlier and
-at a finer granularity level. 
-%In Sarf, there is no need for a separate tokenizer such as
-Sarf does not need a separate tokenizer such as
-TOKAN since each solution keeps a stack of positions
-that partition text into morphemes.
-%The application-specific controller can build the trace 
-%when needed. 
+%%Similar to %the 
+%%MADA+TOKAN, Sarf uses
+%%the several valid morphological analyses as 
+%%%a richness that should 
+%%richness at a higher abstract level, and does not view them as 
+%%inaccuracies to be corrected. 
+%Sarf differs from MADA+TOKAN in that it provides an interface for the 
+%application to interfere in judging the analyses much earlier and
+%at a finer granularity level. 
+%%In Sarf, there is no need for a separate tokenizer such as
+%Sarf does not need a separate tokenizer such as
+%TOKAN since each solution keeps a stack of positions
+%that partition text into morphemes.
+%%The application-specific controller can build the trace 
+%%when needed. 
 
 Similar to The MADA+TOKAN toolkit, Sarf thinks of
 the several valid morphological analyses as a richness that 
@@ -1948,9 +1949,9 @@ learning system that can learn more names.
 \chapter{Thesis Plan}
 
 The main tasks of the thesis are listed below: \\
-\begin{enumerate}
-\item \textbf{Build and Enhance Sarf} \label{I:Sarf}
-	\begin{enumerate}
+\begin{enumerate}[1.]
+\item \textbf{Build and Enhance Sarf} \label{I:BuildSarf}
+	\begin{enumerate}[\ref*{I:BuildSarf}.1.]
 	\item Port Buckwalter into C++ and mysql \label{I:portBuckwalter}
 	\item Design and implement the Non-deterministic Finite State Automata framework \label{I:ndfsa}
 	\item Implement an application-specific controller interface \label{I:applicationController}
@@ -1960,36 +1961,36 @@ The main tasks of the thesis are listed below: \\
 	\item Validate Sarf \label{I:validateSarf}
 	\item Benchmark against existing corpora \label{I:benchMark}
 	\end{enumerate}
-\item \textbf{Support Sarf}
-	\begin{enumerate}
+\item \textbf{Support Sarf} \label{I:SupportSarf}
+	\begin{enumerate}[\ref*{I:SupportSarf}.1.]
 	\item Optimize performance \label{I:optimizeSarf}
-	\item Support for running Sarf under Windows \label{I:Sarfo}
-	\item Refactor the code
-	\item Write a user Manual
-	\item Write a developer manual and documentation
+	\item Support for running Sarf under Windows \label{I:SarfonWindows}
+	\item Refactor the code \label{I:RefactorSarf}
+	\item Write a user Manual \label{I:SarfUserManual}
+	\item Write a developer manual and documentation \label{I:SarfDeveloperManual}
 	\end{enumerate}
-\item \textbf{Build a time entity extraction application}
-	\begin{enumerate}
-	\item Recognize time entities
-	\item Normalize extracted time entities
-	\item Validate with a sorting application
+\item \textbf{Build a time entity extraction application} \label{I:TimeEntityExtractor}
+	\begin{enumerate}[\ref*{I:TimeEntityExtractor}.1.]
+	\item Recognize time entities \label{I:TimeEntityRecognition}
+	\item Normalize extracted time entities \label{I:TimeEntityNormalization}
+	\item Validate with a sorting application \label{I:TimeEntityValidation}
 	\end{enumerate}
-\item \textbf{Automate Hadith Authentication}
-	\begin{enumerate}
-	\item Extend the Lexicon of Buckwalter with proper names 
-	\item Implement the hadith segmentation tool
-	\item Write the Narrator Equality Function
-	\item Build Parial Order Graphs
-	\item Correct Graph mistakes that result from Ambiguous narrator names which introduce false cycles to the graph
-	\item Segment biography books using a graph coloring algorithm
-	\item Extract Annotations from the biography books
-	\item Assign annotations to graph nodes
-	\item Enable and perform consistency checks between narrator chains
-	\item Perform experiments on the effects of different narrators in hadith literature
-	\item Write a user manual
-	\item Distribute the tool to volunteer scholars and report their findings
+\item \textbf{Automate Hadith Authentication} \label{I:Hadith}
+	\begin{enumerate}[\ref*{I:Hadith}.1.]
+	\item Extend the Lexicon of Buckwalter with proper names \label{I:HadithNames}
+	\item Implement the hadith segmentation tool \label{I:HadithSegmentation}
+	\item Write the Narrator Equality Function \label{I:HadithEquality}
+	\item Build Parial Order Graphs \label{I:HadithPOR}
+	\item Correct Graph mistakes that result from Ambiguous narrator names which introduce false cycles to the graph \label{I:HadithBreakCycles}
+	\item Segment biography books using a graph coloring algorithm \label{I:BiographySegmentation}
+	\item Extract Annotations from the biography books \label{I:BiographyAnnotationExtraction}
+	\item Assign annotations to graph nodes \label{I:HadithPORAnnotation}
+	\item Enable and perform consistency checks between narrator chains \label{I:HadithChecks}
+	\item Perform experiments on the effects of different narrators in hadith literature \label{I:HadithExperiments}
+	\item Write a user manual \label{I:HadithManual}
+	\item Distribute the tool to volunteer scholars and report their findings \label{I:HadithScolars}
 	\end{enumerate}
-\item \textbf{Write thesis Report and defend the thesis}
+\item \textbf{Write thesis Report and defend the thesis} \label{I:WriteReport}
 \end{enumerate}
 
 \section{Time Table}
@@ -2016,31 +2017,35 @@ Table~\ref{t:timetable}. \\
 				\textbf{\small Work}
 				\end{tabular}
 			 \\ \toprule[0.1em] \bottomrule[0.1em]
-\textbf{1.1)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{1.2)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \hline
-\textbf{1.3)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{1.4)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~  & ~ &\\ \hline
-\textbf{1.5)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{1.6)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~  & ~ &\\ \hline
-\textbf{1.7)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{1.8)} & \x & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \hline
-\textbf{1.9)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & \X & ~ & \\ \hline
-\textbf{1.10)}& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X  & ~ & \\ \hline
-\textbf{1.11)}& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & \\ \toprule[0.1em] \bottomrule[0.1em]
-\textbf{2)}   & ~ & ~ & \X & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \toprule[0.1em] \bottomrule[0.1em]
-\textbf{3.1)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.2)} & \x & ~ & ~ & ~ & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.3)} & \x & ~ & ~ & ~ & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.4)} & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.5)} & ~ & ~ & ~ & \X & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.6)} & ~ & ~ & ~ & \X & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.7)} & ~ & ~ & ~ & ~ & ~ & \X & \X & \X & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.8)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
-\textbf{3.9)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & \X & \X & ~ & ~ & ~ & \X \\ \hline
-\textbf{3.10)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & \X & ~ & ~ & \X \\ \hline
-\textbf{3.11)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & \\ \hline
-\textbf{3.12)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X \\ \toprule[0.1em] \bottomrule[0.1em]
-\textbf{4)} & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X &  \\ \hline
+\textbf{\ref{I:portBuckwalter}} 				& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:ndfsa}} 							& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \hline
+\textbf{\ref{I:applicationController}} 			& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:diacritics}}						& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \hline
+\textbf{\ref{I:multiword}} 						& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:runon}} 							& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:benchMark}} 						& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \hline
+\textbf{\ref{I:validateSarf}} 					& ~ & ~ & ~ & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\\ \toprule[0.1em] \bottomrule[0.1em]
+\textbf{\ref{I:optimizeSarf}} 					& \x & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\X & ~ &\X &\\ \hline
+\textbf{\ref{I:SarfonWindows}} 					& \x & ~ &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:RefactorSarf}} 					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X &\X & ~ & \\ \hline
+\textbf{\ref{I:SarfUserManual}}					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & \\ \hline
+\textbf{\ref{I:SarfDeveloperManual}}			& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & \\ \toprule[0.1em] \bottomrule[0.1em]
+\textbf{\ref{I:TimeEntityRecognition}}  		& \x &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:TimeEntityNormalization}}		& ~ & \X &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline 
+\textbf{\ref{I:TimeEntityValidation}}			& ~ & ~ &\X & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \toprule[0.1em] \bottomrule[0.1em]
+\textbf{\ref{I:HadithNames}} 					& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline 
+\textbf{\ref{I:HadithSegmentation}} 			& \x & ~ & ~ & ~ &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:HadithEquality}} 				& \x & ~ & ~ & ~ &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:HadithPOR}} 						& \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:HadithBreakCycles}} 				& \x & ~ & ~ & ~ & ~ &\X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:BiographySegmentation}} 			& ~ & ~ & ~ & ~ & ~ &\X & \X & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:BiographyAnnotationExtraction}} 	& ~ & ~ & ~ & ~ & ~ & ~ &\X &\X & \X & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:HadithPORAnnotation}} 			& ~ & ~ & ~ & ~ & ~ & ~ & ~ &\X & \X & ~ & ~ & ~ & ~ & ~ & \\ \hline
+\textbf{\ref{I:HadithChecks}} 					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\X &\X & \X & ~ & ~ & ~ & \X \\ \hline
+\textbf{\ref{I:HadithExperiments}} 				& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ &\X & \X & ~ & ~ & \X \\ \hline
+\textbf{\ref{I:HadithManual}} 					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X & ~ & \\ \hline
+\textbf{\ref{I:HadithScolars}} 					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~  & ~ & \X \\ \toprule[0.1em] \bottomrule[0.1em]
+\textbf{\ref{I:WriteReport}} 					& ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & ~ & \X &  \\ \hline
 \end{tabular}
 }
 \normalsize

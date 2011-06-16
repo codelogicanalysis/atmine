@@ -37,7 +37,7 @@ bool StemMachine::onMatch()
 	if (controller->called_everything)
 	{
 	#ifdef DEBUG
-		qDebug()<<"s:"<<info.text->mid(info.start,currentMatchPos-info.start+1)<<"\n";
+		out<<"s:"<<info.text->mid(info.start,currentMatchPos-info.start+1)<<"\n";
 	#endif
 		if (controller->Suffix!=NULL)
 			delete controller->Suffix;//TODO: change this allocation, deallocation to clear

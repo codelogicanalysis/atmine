@@ -73,6 +73,10 @@ inline long getLastLetter_IN_previousWord(QString * text,long start_letter_curre
 
 inline long getLastLetter_IN_currentWord(QString * text,long start_letter_current_word) {
 	int size=text->length();
+#if 0
+	if (!isDelimiter(text->at(start_letter_current_word)))
+		start_letter_current_word++;
+#endif
 	while(start_letter_current_word<size)
 	{
 		if(!isDelimiter(text->at(start_letter_current_word)))

@@ -783,7 +783,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	if (raw_data.length()<name.length())
 		raw_data=name;
 	int i=0;
-	QString reducedName;
+	//QString reducedName;
 	if (type==STEM && name.length()>0)
 		do
 		{
@@ -799,11 +799,11 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 					name[i]=corresponding_part[0];
 				}
 			}
-			if (i>0 && isNonConnectingLetter(name[i-1]))
+			/*if (i>0 && isNonConnectingLetter(name[i-1]))
 			{
 				reducedName=name.remove(i,1);
 				//TODO: remove also from raw_data then later call insert_item again
-			}
+			}*/
 			//qDebug()<<"n:"<<name;
 		}while ((i=name.indexOf(' ',i)+1)>0 && i<name.length());
 #endif
