@@ -47,7 +47,7 @@ public:
 		connect(save,SIGNAL(clicked()),this,SLOT(save_clicked()));
 		open_action();
 		setWindowTitle(filename);
-		//this->resize(700,700);
+		this->resize(700,700);
 	}
 
 public slots:

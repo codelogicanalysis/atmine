@@ -83,7 +83,7 @@ void TimeTaggerDialog::open_action() {
 			text->setTextCursor(c);
 
 		} else {
-			error << "Tag File does not exist\n";
+			error << "Annotation File does not exist\n";
 		}
 	} else {
 		error << "File does not exist\n";
