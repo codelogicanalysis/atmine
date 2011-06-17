@@ -12,6 +12,8 @@ done---re-write the graph without iterators but with our version of list
 done---correct graph builder to keep track of needle or u per chain (not needed)
 done---check how does dot result in ranks with an order (i.e. not just set which are in this rank and which in another only but also that this rank must come first and this after
 done---refine structures to report run-on words
+done---all names with space add without a space, if has non-connecting letters before the space (solved differently by coding)
+done---make SARF database-independent
 
 -change the code to instantiate the stemmer(prefixMachine,StemMachine,...) only once in hadith case-study (i.e. change the testcase to make the one stemmer with a clear() function)
 -break cycles (save the equality vector)
@@ -19,15 +21,16 @@ done---refine structures to report run-on words
 	2) cluster based on average and stdev
 	OR
 	decrease delta and re-compute
--make SARF database-independent (priority:2)
+
+-solve tokenization issues dependant on numbers: عام1973 and و14 آذار
 -give more weight to order inforced by ibn
--all names with space add without a space, if has non-connecting letters before the space
 -fix Makefile to accomodate ui
 -check parsing problem in hadith number 4670,4512
+-if we enable the rank we dont hit the musnad_ahmad bug (priority:1 )
+
 -when treating edges as one, pass again thru the vector of chain nodes (in GraphVisitorController)
 -add code to draw cycle in a seperate file whenever detected
 -correct tagging for IBN not to add words that follow (resulting from not ending nameConnector Structure except after detecting another structure)
--if we enable the rank we dont hit the musnad_ahmad bug (priority:1 )
 -results of run-on words
 
 -To Think of: add color to node to denote visited. and color to edges and linear sweep of all nodes and edges (by getting thru the chains)

@@ -4,7 +4,8 @@
 #include "ATMProgressIFC.h"
 
 //#define TIMEDEBUG
-#define GET_AFFIXES_ALSO
+//#define DETAILED_DISPLAY
+//#define TIME_REFINEMENTS
 
 class TimeParameters
 {

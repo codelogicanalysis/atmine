@@ -8,18 +8,18 @@
 احد	أَحَد	N	Sunday	>aHad/NOUN_PROP	>aHad_2	Day Name
 آحاد	آحاد	N	Sundays	|HAd/NOUN_PROP	>aHad_2	Day Name
 احاد	آحاد	N	Sundays	|HAd/NOUN_PROP	>aHad_2	Day Name
-آخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Preposition
-اخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Preposition
-أواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Preposition
-اواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Preposition
-أخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Preposition
-اخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Preposition
-أخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Preposition
-اخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Preposition
+آخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Attribute
+اخر	آخِر	Nall	last/end	|xir/NOUN	|xir_1	Time Attribute
+أواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Attribute
+اواخر	أَواخِر	Ndip	end/last	>awAxir/NOUN	|xir_1	Time Attribute
+أخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Attribute
+اخير	أَخِير	Nall	last/latest/recent/latter	>axiyr/ADJ	>axiyr_1	Time Attribute
+أخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Attribute
+اخير	أَخِير	NF	finally/recently	>axiyr/ADV	>axiyrAF_1	Time Attribute
 آذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
 اذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
 أذار	آذار	Ndip	March	|*Ar/NOUN_PROP	|*Ar_1	Month Name
-تاريخ	تارِيخ	Ndu	date/history	tAriyx/NOUN	tAriyx_1	Time Preposition
+تاريخ	تارِيخ	Ndu	date/history	tAriyx/NOUN	tAriyx_1	Time Attribute
 أغسطس	أَغُسْطُس	N0	August	>agusoTus/NOUN_PROP	>agusoTus_1	Month Name
 اغسطس	أَغُسْطُس	N0	August	>agusoTus/NOUN_PROP	>agusoTus_1	Month Name
 أكتوبر	أُكْتُوبِر	Ndip	October	>ukotuwbir/NOUN_PROP	>ukotuwbir_1	Month Name
@@ -445,30 +445,30 @@
 أوقات	أَوْقات	N	moments/times	>awoqAt/NOUN	waqot_1	Relative Time
 اوقات	أَوْقات	N	moments/times	>awoqAt/NOUN	waqot_1	Relative Time
 في	فِي	FW-Wa	in	fiy/PREP	fiy_1	Time Preposition
-ماضي	ماضِي	N0F_Nh	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
-ماض	ماض	NK	past/bygone	mAD/ADJ	mADiy_1	Time Preposition
-ماضي	ماضِي	NAn_Nayn	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
-ماضي	ماضِي	Napdu	past/bygone	mADiy/ADJ	mADiy_1	Time Preposition
-حاضر	حاضِر	Nall	present/attending	HADir/ADJ	HADir_1	Time Preposition
-سالف	سالِف	N/ap	preceding/former	sAlif/NOUN	sAlif_1	Time Preposition
-سابق	سابِق	Nall	former/previous/preceding	sAbiq/ADJ	sAbiq_1	Time Preposition
-سابق	سابِق	NF	formerly/earlier	sAbiq/ADV	sAbiqAF_1	Time Preposition
-سابق	سابِق	Napdu	precedent/priority	sAbiq/NOUN	sAbiqap_1	Time Preposition
+ماضي	ماضِي	N0F_Nh	past/bygone	mADiy/ADJ	mADiy_1	Time Attribute
+ماض	ماض	NK	past/bygone	mAD/ADJ	mADiy_1	Time Attribute
+ماضي	ماضِي	NAn_Nayn	past/bygone	mADiy/ADJ	mADiy_1	Time Attribute
+ماضي	ماضِي	Napdu	past/bygone	mADiy/ADJ	mADiy_1	Time Attribute
+حاضر	حاضِر	Nall	present/attending	HADir/ADJ	HADir_1	Time Attribute
+سالف	سالِف	N/ap	preceding/former	sAlif/NOUN	sAlif_1	Time Attribute
+سابق	سابِق	Nall	former/previous/preceding	sAbiq/ADJ	sAbiq_1	Time Attribute
+سابق	سابِق	NF	formerly/earlier	sAbiq/ADV	sAbiqAF_1	Time Attribute
+سابق	سابِق	Napdu	precedent/priority	sAbiq/NOUN	sAbiqap_1	Time Attribute
 دقيق	دَقِيق	Napdu	minute	daqiyq/NOUN	daqiyqap_1	Time Unit
 دقائق	دَقائِق	Ndip	minutes	daqA}iq/NOUN	daqiyqap_1	Time Unit
 أولى	أُولَى	N0	first	>uwlY/ADJ	>uwlaY_1	Number
 اولى	أُولَى	N0	first	>uwlY/ADJ	>uwlaY_1	Number
-أوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Preposition
-اوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Preposition
+أوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Attribute
+اوائل	أَوائِل	Ndip	early/beginning	>awA}il/NOUN	>awA}il_1	Time Attribute
 غدا	غَداً	FW-WaBi	tomorrow	gadAF/ADV	gadAF_1	Relative Time
 غد	غَد	N	tomorrow	gad/NOUN	gad_1	Relative Time
 غدا	غَدا	Nap	morning/tomorrow	gadA/NOUN	gadAp_1	Relative Time
-عد	عِدّ	Nap	several/numerous/many	Eid~/ADJ	Eid~ap_1	Time Preposition
+عد	عِدّ	Nap	several/numerous/many	Eid~/ADJ	Eid~ap_1	Time Attribute
 أقل	أَقَلّ	Nel	less/least/smaller/smallest/minimum	>aqal~/NOUN	>aqal~_2	Time Preposition
 اقل	أَقَلّ	Nel	less/least/smaller/smallest/minimum	>aqal~/NOUN	>aqal~_2	Time Preposition
 أكثر	أَكْثَر	Nel	more/most	>akovar/ADJ	>akovar_1	Time Preposition
 اكثر	أَكْثَر	Nel	more/most	>akovar/ADJ	>akovar_1	Time Preposition
-تقريب	تَقْرِيب	NF	approximately	taqoriyb/ADV	taqoriybAF_1	Time Preposition
+تقريب	تَقْرِيب	NF	approximately	taqoriyb/ADV	taqoriybAF_1	Time Attribute
 نهاي	نِهاي	NapAt	end/termination	nihAy/NOUN	nihAyap_1	Time Preposition
 بداء	بَداء	NapAt	beginning/start	badA'/NOUN	badA'ap_1	Time Preposition
 بداي	بِداي	NapAt	beginning/start	bidAy/NOUN	bidAyap_1	Time Preposition
@@ -494,4 +494,41 @@
 ماض	ماض	NK	past/bygone	mAD/ADJ	mADiy_1	Relative Time
 ماضي	ماضِي	NAn_Nayn	past/bygone	mADiy/ADJ	mADiy_1	Relative Time
 ماضي	ماضِي	Napdu	past/bygone	mADiy/ADJ	mADiy_1	Relative Time
-تقريب	تَقْرِيب	N/At	approximation	taqoriyb/NOUN	taqoriyb_1	Time Preposition
+تقريب	تَقْرِيب	N/At	approximation	taqoriyb/NOUN	taqoriyb_1	Time Attribute
+سنوي	سَنَوِيّ	N/ap	yearly/annual	sanawiy~/ADJ	sanawiy~_1	Relative Time
+سنوي	سَنَوِيّ	NF	annually/yearly/per annum	sanawiy~/ADV	sanawiy~_1	Relative Time
+عصر	عَصْر	Ndu	age/period/epoch	EaSor/NOUN	EaSor_1	Relative Time
+قليل	قَلِيل	N-ap	little/few	qaliyl/ADJ	qaliyl_1	Time Attribute
+قلائل	قَلائِل	Ndip	few/insufficient	qalA}il/ADJ	qaliyl_1	Time Attribute
+قلال	قِلال	N	few/insufficient	qilAl/NOUN	qaliyl_1	Time Attribute
+قليل	قَلِيل	NF	a little/somewhat	qaliyl/ADV	qaliylAF_1	Time Attribute
+لحظ	لَحْظ	Napdu_L	moment/instant	laHoZ/NOUN	laHoZap_1	Time Unit
+لحظ	لَحَظ	NAt_L	moments/instants	laHaZ/NOUN	laHoZap_1	Time Unit
+عمر	عُمْر	N	age/life	Eumor/NOUN	Eumor_1	Time Unit
+أعمار	أَعْمار	N	age groups	>aEomAr/NOUN	Eumor_1	Time Unit
+اعمار	أَعْمار	N	age groups	>aEomAr/NOUN	Eumor_1	Time Unit
+فصل	فَصْل	Ndu	section/chapter/season	faSol/NOUN	faSol_2	Relative Time
+فصول	فُصُول	N	sections/chapters	fuSuwl/NOUN	faSol_2	Relative Time
+ليل	لَيْل	Ndu_L	night/nighttime	layol/NOUN	layol_1	Relative Time
+ليل	لَيْل	NF	at night/by night	layol/ADV	layol_1	Relative Time
+ليل	لَيْل	NapAt_L	night/evening	layol/NOUN	layolap_1	Relative Time
+ليالي	لَيالِي	N0_Nh_L	nights/evenings/soirees	layAliy/NOUN	layolap_1	Relative Time
+ليال	لَيال	NK	nights/evenings/soirees	layAl/NOUN	layolap_1	Relative Time
+ليلتئذ	لَيْلَتَئِذٍ	FW-Wa	on that night	layolata}i*K/ADV	layolata}i*K_1	Time Preposition
+ليلي	لَيْلِيّ	N-ap_L	evening/nightly/nocturnal	layoliy~/ADJ	layoliy~_1	Time Attribute
+ليلى	لَيْلَى	Nprop	Leila/Laila/Layla	layolaY/NOUN_PROP	layolaY_1	Time Attribute
+فائت	فائِت	N-ap	past/expired/elapsed/gone by	fA}it/ADJ	fA}it_1	Time Attribute
+فتر	فَتْر	Napdu	phase/time period/interval	fator/NOUN	fatorap_1	Relative Time
+فتر	فَتَر	NAt	phases/time periods/intervals	fatar/NOUN	fatorap_1	Relative Time
+مطلع	مَطْلَع	Ndu	beginning/rise	maTolaE/NOUN	maTolaE_1	Time Preposition
+صباح	صَباح	N	morning	SabAH/NOUN	SabAH_1	Relative Time
+صباح	صَباح	NF	in the morning	SabAH/ADV	SabAH_1	Relative Time
+صباحي	صَباحِيّ	N-ap	morning/matinal	SabAHiy~/ADJ	SabAHiy~_1	Time Attribute
+مرحل	مَرْحَل	Napdu	phase/stage/round	maroHal/NOUN	maroHalap_1	Time Preposition
+مراحل	مَراحِل	Ndip	phases/stages/rounds	marAHil/NOUN	maroHalap_1	Time Preposition
+جاري	جارِي	NF	occurring/happening/flowing	jAriy/NOUN	jAriyAF_1	Time Attribute
+جاري	جارِي	N0	current/present/proceeding/taking place	jAriy/ADJ	jAriy_1	Time Attribute
+جار	جار	NK	current/present/proceeding/taking place	jAr/ADJ	jAriy_1	Time Attribute
+جاري	جارِي	NAn_Nayn	current/present/proceeding/taking place	jAriy/ADJ	jAriy_1	Time Attribute
+جار	جار	Nuwn_Niyn	current/present/proceeding/taking place	jAr/ADJ	jAriy_1	Time Attribute
+جاري	جارِي	NapAt	current/present/proceeding/taking place	jAriy/ADJ	jAriy_1	Time Attribute

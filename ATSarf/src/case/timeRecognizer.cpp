@@ -6,16 +6,22 @@
 #include "Math_functions.h"
 #include <QtAlgorithms>
 #include <QVector>
+#include <QDataStream>
+
+
+#ifdef TIME_REFINEMENTS
+#define GET_AFFIXES_ALSO
+#else
+#undef GET_AFFIXES_ALSO
+#endif
 
 
 TimeParameters timeParameters;
 QList<unsigned int> bits_ABSOLUTE_TIME;
-unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME,bit_TIME_UNIT;
+unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME,bit_TIME_UNIT, bit_TIME_ATTRIBUTE;
 
-enum wordType { ABS_T, PREP_T, NUM, OTHER};
+enum wordType { ABS_T, PREP_T, NUM, T_ATTR, OTHER};
 enum stateType { NOTHING_S , MAYBE_TIME_S, TIME_S};
-
-class TimeEntity;
 
 class TimeEntity {
 private:
@@ -77,6 +83,11 @@ public:
 	}
 };
 
+QDataStream &operator<<(QDataStream &out, const TimeEntity &entity) {
+	out<<(int)entity.getStart()<<(int)entity.getEnd()+1;
+	return out;
+}
+
 typedef QVector<TimeEntity> TimeEntityVector;
 
 class TimeStateInfo {
@@ -86,12 +97,12 @@ public:
 	long endPos;
 	long nextPos;
 	int numWords;
-	wordType currentType:2;
+	wordType currentType:3;
 	stateType currentState:2;
 	stateType nextState:2;
 	bool isTimeUnit:1;
 	bool hasTimeUnit:1;
-	int unused:24;
+	int unused:23;
 	PunctuationInfo punctuationInfo;
 
 	//info about time entity recognized
@@ -154,6 +165,8 @@ inline QString type_to_text(wordType t)
 			return "NUM";
 		case OTHER:
 			return "OTHER";
+		case T_ATTR:
+			return "T_ATTR";
 		default:
 			return "UNDEFINED-TYPE";
 	}
@@ -212,12 +225,14 @@ void time_initialize(){
 	bit_TIME_PREPOSITION=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_PREPOSITION);
 	bit_NUMBER=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NUMBER);
 	bit_TIME_UNIT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_UNIT);
+	long abstract_TIME_ATTRIBUTE=database_info.comp_rules->getAbstractCategoryID("Time Attribute");
+	bit_TIME_ATTRIBUTE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_TIME_ATTRIBUTE);
 }
 
 class time_stemmer: public Stemmer
 {
 public:
-	bool absoluteTime,timePreposition, number,isTimeUnit;
+	bool absoluteTime,timePreposition, number,isTimeUnit,attribute;
 	long finish_pos;
 
 	time_stemmer(QString * word, int start):Stemmer(word,start,false) {
@@ -231,6 +246,7 @@ public:
 		timePreposition=false;
 		number=false;
 		isTimeUnit=false;
+		attribute=false;
 		finish_pos=start;
 	}
 	bool on_match() {
@@ -267,8 +283,8 @@ public:
 			return true;//ignore solutions having suffixes
 	#endif
 		for (int i=0;i<bits_ABSOLUTE_TIME.count();i++) {
-		#ifdef GET_AFFIXES_ALSO
 			if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])){
+		#ifdef GET_AFFIXES_ALSO
 				if (bits_ABSOLUTE_TIME[i]==bit_DAY_NAME) {
 					for (int j=0;j<prefix_infos->size();j++) {
 						if (prefix_infos->at(j).POS=="Al/DET+") {
@@ -279,8 +295,6 @@ public:
 					}
 					return true;
 				}
-		#else
-			{
 		#endif
 				absoluteTime=true;
 				finish_pos=info.finish;
@@ -296,6 +310,11 @@ public:
 		}
 		if (stem_info->abstract_categories.getBit(bit_NUMBER)){
 			number=true;
+			finish_pos=info.finish;
+			return true;
+		}
+		if (stem_info->abstract_categories.getBit(bit_TIME_ATTRIBUTE)){
+			attribute=true;
 			finish_pos=info.finish;
 			return true;
 		}
@@ -320,7 +339,7 @@ bool getNextState(TimeStateInfo &  stateInfo)
 	bool return_value=true;
 	switch(stateInfo.currentState) {
 	case NOTHING_S:
-		if (stateInfo.currentType==PREP_T) {
+		if (stateInfo.currentType==PREP_T || stateInfo.currentType==T_ATTR) {
 			stateInfo.nextState=MAYBE_TIME_S;
 			stateInfo.resetCounters();
 			TimeEntity * t=stateInfo.createEntity(time_text);
@@ -353,7 +372,7 @@ bool getNextState(TimeStateInfo &  stateInfo)
 			TimeEntity * t=stateInfo.entityProcessed;
 			t->setEnd(stateInfo.endPos);
 			t->addNumberPart(stateInfo.startPos,stateInfo.endPos);
-		} else if (stateInfo.currentType==PREP_T) {
+		} else if (stateInfo.currentType==PREP_T || stateInfo.currentType==T_ATTR) {
 			stateInfo.nextState=MAYBE_TIME_S;
 			stateInfo.resetCounters();
 			TimeEntity * t=stateInfo.entityProcessed;
@@ -384,6 +403,12 @@ bool getNextState(TimeStateInfo &  stateInfo)
 			TimeEntity * t=stateInfo.entityProcessed;
 			t->setEnd(stateInfo.endPos);
 			t->addNumberPart(stateInfo.startPos,stateInfo.endPos);
+		}else if (stateInfo.currentType==T_ATTR) {
+			stateInfo.nextState=TIME_S;
+			stateInfo.resetCounters();
+			TimeEntity * t=stateInfo.entityProcessed;
+			t->setEnd(stateInfo.endPos);
+			t->addPrepositionPart(stateInfo.startPos,stateInfo.endPos);
 		} else if (stateInfo.currentType==ABS_T) {
 			stateInfo.nextState=TIME_S;
 			stateInfo.resetCounters();
@@ -420,9 +445,9 @@ bool getNextState(TimeStateInfo &  stateInfo)
 	}
 	if (stateInfo.nextState!=NOTHING_S) {
 		stateInfo.numWords++;
-		if (stateInfo.isTimeUnit)
-			stateInfo.hasTimeUnit=true;
 	}
+	if (stateInfo.isTimeUnit)
+		stateInfo.hasTimeUnit=true;
 	return return_value;
 }
 
@@ -458,6 +483,12 @@ wordType getWordType(TimeStateInfo &  stateInfo)
 		return result(ABS_T);
 	else if (s.number)
 		return result(NUM);
+	else if (s.attribute)
+#ifdef TIME_REFINEMENTS
+		return result(T_ATTR);
+#else
+		return result(PREP_T);
+#endif
 	else
 		return result(OTHER);
 }
@@ -495,50 +526,89 @@ inline int countWords(QString * text, int start,int end) {
 }
 
 int calculateStatistics(QString filename){
-	TimeTaggerDialog::SelectionList tags, common;
+	TimeTaggerDialog::SelectionList tags;
+	QList<int> common_i,common_j;
 	QVector<double> boundaryRecallList, boundaryPrecisionList;
 	QFile file(QString("%1.tags").arg(filename).toStdString().data());
 	if (file.open(QIODevice::ReadOnly))
 	{
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	>> tags;
+		file.close();
 	} else {
-		error << "Tag File does not exist\n";
+		error << "Annotation File does not exist\n";
+		if (file.open(QIODevice::WriteOnly)) {
+			/*for (int i=0;i<timeVector->size();i++) {
+				tags.append(TimeTaggerDialog::Selection(timeVector->));
+			}*/
+			QDataStream out(&file);   // we will serialize the data into the file
+			out << *timeVector;
+			file.close();
+			error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
+		}
 		return -1;
 	}
 	qSort(tags.begin(),tags.end());
 	int i=0,j=0;
-	int commonCount=0;
+
 	while (i<tags.size() && j<timeVector->size()) {
 		int start1=tags[i].first,end1=tags[i].second-1,
 			start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
 		if (overLaps(start1,end1,start2,end2)) {
 			TimeTaggerDialog::Selection overlap=overLappingPart(start1,end1,start2,end2);
-			commonCount++;
+			if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
+				common_i.append(i);
+				common_j.append(j);
+			}
 			int countCommon=countWords(time_text,overlap.first,overlap.second);
 			int countCorrect=countWords(time_text,start1,end1);
 			int countDetected=countWords(time_text,start2,end2);
 			boundaryRecallList.append((double)countCommon/countCorrect);
 			boundaryPrecisionList.append((double)countCommon/countDetected);
+		#ifdef DETAILED_DISPLAY
 			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 							<<time_text->mid(start2,end2-start2+1)<<"\t"
 							<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
-			i++;
-			j++;
+		#endif
+			if (end1<=end2)
+				i++;
+			if (end2<=end1)
+				j++;
 		} else if (before(start1,end1,start2,end2)) {
+		#ifdef DETAILED_DISPLAY
 			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 							<<"-----\n";
+		#endif
 			i++;
 		} else if (after(start1,end1,start2,end2)) {
+		#ifdef DETAILED_DISPLAY
 			displayed_error	<<"-----\t"
 							<<time_text->mid(start2,end2-start2+1)<<"\n";
+		#endif
 			j++;
 		}
 	}
+#ifdef DETAILED_DISPLAY
+	while (i<tags.size()) {
+		int start1=tags[i].first,end1=tags[i].second-1;
+		displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+						<<"-----\n";
+		i++;
+	}
+	while (j<timeVector->size()) {
+		int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+		displayed_error	<<"-----\t"
+						<<time_text->mid(start2,end2-start2+1)<<"\n";
+		j++;
+	}
+#endif
+	assert(common_i.size()==common_j.size());
+	int commonCount=common_i.size();
 	double detectionRecall=(double)commonCount/tags.size(),
 		   detectionPrecision=(double)commonCount/timeVector->size(),
 		   boundaryRecall=average(boundaryRecallList),
 		   boundaryPrecision=average(boundaryPrecisionList);
+#ifdef DETAILED_DISPLAY
 	displayed_error << "-------------------------\n"
 					<< "Detection:\n"
 					<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
@@ -546,6 +616,9 @@ int calculateStatistics(QString filename){
 					<< "Boundary:\n"
 					<< "\trecall=\t\t"<<boundaryRecall<<"\n"
 					<< "\tprecision=\t\t"<<boundaryPrecision<<"\n";
+#else
+	displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision<<"\t"<<boundaryRecall<<"\t"<<boundaryPrecision<<"\n";
+#endif
 #if 0
 	for (int i=0;i<tags.size();i++) {
 		displayed_error<<time_text->mid(tags[i].first,tags[i].second-tags[i].first)<<"\n";
@@ -600,7 +673,9 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 		getNextState(stateInfo);
 		if (timeVector->size()>timeVectorSize) {
 			TimeEntity & t=(*timeVector)[timeVectorSize];
+		#ifdef TIME_REFINEMENTS
 			if (!(stateInfo.hasTimeUnit && !t.getString().contains(' '))) {
+		#endif
 				out << t.getString()<<"\n";
 				prg->tag(t.getStart(),t.getLength(),Qt::darkYellow,false);//Qt::gray
 				const TimeEntityVector & absolute=t.getAbsoluteParts();
@@ -612,7 +687,11 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 				const TimeEntityVector & numbers=t.getNumberParts();
 				for (int j=0;j<numbers.size();j++)
 					prg->tag(numbers[j].getStart(),numbers[j].getLength(),Qt::darkMagenta,true);
+		#ifdef TIME_REFINEMENTS
+			} else {
+				timeVector->remove(timeVectorSize);
 			}
+		#endif
 		}
 		stateInfo.currentState=stateInfo.nextState;
 		stateInfo.lastEndPos=stateInfo.endPos;
