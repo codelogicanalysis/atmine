@@ -2,6 +2,10 @@
 #include "stemmer.h"
 #include "textParsing.h"
 #include "timeRecognizer.h"
+#include "timeManualTagger.h"
+#include "Math_functions.h"
+#include <QtAlgorithms>
+#include <QVector>
 
 
 TimeParameters timeParameters;
@@ -458,9 +462,102 @@ wordType getWordType(TimeStateInfo &  stateInfo)
 		return result(OTHER);
 }
 
+inline bool overLaps(int start1,int end1,int start2,int end2) {
+	assert(start1<=end1 && start2<=end2);
+	if (start1>=start2 && start1<=end2)
+		return true;
+	if (start2>=start1 && start2<=end1)
+		return true;
+	return false;
+}
+
+inline bool after(int start1,int end1,int start2,int end2) {
+	assert(start1<=end1 && start2<=end2);
+	if (start1>=end2)
+		return true;
+	return false;
+}
+inline bool before(int start1,int end1,int start2,int end2) {
+	return after(start2,end2,start1,end1);
+}
+
+inline TimeTaggerDialog::Selection overLappingPart(int start1,int end1,int start2,int end2) {
+	return TimeTaggerDialog::Selection(max(start1,start2),min(end1,end2));
+}
+
+inline int countWords(QString * text, int start,int end) {
+	int count=1;
+	PunctuationInfo p;
+	while ((start=next_positon(text,getLastLetter_IN_currentWord(text,start),p))<end)
+		count++;
+	return count;
+
+}
+
+int calculateStatistics(QString filename){
+	TimeTaggerDialog::SelectionList tags, common;
+	QVector<double> boundaryRecallList, boundaryPrecisionList;
+	QFile file(QString("%1.tags").arg(filename).toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out	>> tags;
+	} else {
+		error << "Tag File does not exist\n";
+		return -1;
+	}
+	qSort(tags.begin(),tags.end());
+	int i=0,j=0;
+	int commonCount=0;
+	while (i<tags.size() && j<timeVector->size()) {
+		int start1=tags[i].first,end1=tags[i].second-1,
+			start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+		if (overLaps(start1,end1,start2,end2)) {
+			TimeTaggerDialog::Selection overlap=overLappingPart(start1,end1,start2,end2);
+			commonCount++;
+			int countCommon=countWords(time_text,overlap.first,overlap.second);
+			int countCorrect=countWords(time_text,start1,end1);
+			int countDetected=countWords(time_text,start2,end2);
+			boundaryRecallList.append((double)countCommon/countCorrect);
+			boundaryPrecisionList.append((double)countCommon/countDetected);
+			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+							<<time_text->mid(start2,end2-start2+1)<<"\t"
+							<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
+			i++;
+			j++;
+		} else if (before(start1,end1,start2,end2)) {
+			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+							<<"-----\n";
+			i++;
+		} else if (after(start1,end1,start2,end2)) {
+			displayed_error	<<"-----\t"
+							<<time_text->mid(start2,end2-start2+1)<<"\n";
+			j++;
+		}
+	}
+	double detectionRecall=(double)commonCount/tags.size(),
+		   detectionPrecision=(double)commonCount/timeVector->size(),
+		   boundaryRecall=average(boundaryRecallList),
+		   boundaryPrecision=average(boundaryPrecisionList);
+	displayed_error << "-------------------------\n"
+					<< "Detection:\n"
+					<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
+					<< "\tprecision=\t"<<commonCount<<"/"<<timeVector->size()<<"=\t"<<detectionPrecision<<"\n"
+					<< "Boundary:\n"
+					<< "\trecall=\t\t"<<boundaryRecall<<"\n"
+					<< "\tprecision=\t\t"<<boundaryPrecision<<"\n";
+#if 0
+	for (int i=0;i<tags.size();i++) {
+		displayed_error<<time_text->mid(tags[i].first,tags[i].second-tags[i].first)<<"\n";
+	}
+#endif
+	return 0;
+}
+
 
 int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
-	QFile input(input_str.split("\n")[0]);
+	QString filename=input_str.split("\n")[0];
+	QFile input(filename);
 	if (!input.open(QIODevice::ReadOnly))
 	{
 		out << "File not found\n";
@@ -524,6 +621,7 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 			break;
 	}
 	input.close();
+	calculateStatistics(filename);
 	prg->finishTaggingText();
 	delete time_text;
 	time_text=NULL;

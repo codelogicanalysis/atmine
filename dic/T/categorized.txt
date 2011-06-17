@@ -490,3 +490,8 @@
 بعد	بَعْدُ	FW-Wa	afterward/later/(not) yet	baEodu/ADV	baEodu_1	Time Preposition
 بعدما	بَعْدَما	FW-Wa	after	baEodamA/CONJ	baEodamA_1	Time Preposition
 بعدما	بَعْدَما	FW-Wa	after what	baEoda/PREP+mA/REL_PRON	baEodamA_2	Time Preposition
+ماضي	ماضِي	N0F_Nh	past/bygone	mADiy/ADJ	mADiy_1	Relative Time
+ماض	ماض	NK	past/bygone	mAD/ADJ	mADiy_1	Relative Time
+ماضي	ماضِي	NAn_Nayn	past/bygone	mADiy/ADJ	mADiy_1	Relative Time
+ماضي	ماضِي	Napdu	past/bygone	mADiy/ADJ	mADiy_1	Relative Time
+تقريب	تَقْرِيب	N/At	approximation	taqoriyb/NOUN	taqoriyb_1	Time Preposition

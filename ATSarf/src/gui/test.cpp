@@ -16,6 +16,7 @@
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
 extern void listAllAffixes(item_types type);
+extern int timeTagger(QString input_str);
 
 int word_sarf_test(QString input_str)
 {
@@ -68,12 +69,13 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 	}
 	return 0;
 }
-int test(QString ,ATMProgressIFC *) {
+int test(QString inputString,ATMProgressIFC *) {
 #ifdef AUGMENT_DICTIONARY
 	if (augment()<0)
 		return -1;
 #else
-
+	if (timeTagger(inputString))
+		return -1;
 #endif
 	return 0;
 }
