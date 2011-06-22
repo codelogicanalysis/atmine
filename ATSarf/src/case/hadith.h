@@ -2,8 +2,6 @@
 #define HADITH_H
 
 #include <QString>
-#include <QStringList>
-#include <QHash>
 #include "common.h"
 #include "ATMProgressIFC.h"
 
@@ -12,7 +10,7 @@
 
 //#define DEBUG_BFS_TRAVERSAL
 //#define DEBUG_DFS_TRAVERSAL
-//#define DEBUG_BUILDGRAPH
+#define DEBUG_BUILDGRAPH
 #define GENERAL_HADITH
 //#define FORCE_RANKS
 #define DISPLAY_GRAPHNODES_CONTENT
@@ -24,7 +22,7 @@
 //#define HADITHDEBUG  //just for additional debugging statements displayed
 #define PUNCTUATION
 #define TRYTOLEARN
-#define ADD_ENARRATOR_NAMES
+//#define ADD_ENARRATOR_NAMES
 #define IBN_START
 #define REFINEMENTS
 #define PREPROCESS_DESCRIPTIONS
@@ -32,7 +30,7 @@
 #define CHAIN_BUILDING
 #define TEST_NARRATOR_GRAPH
 #define EQUALITY_REFINEMENTS
-#define EQUALITYDEBUG
+//#define EQUALITYDEBUG
 //#define COMPARE_TO_BUCKWALTER
 //#define COMPARE_WITHOUT_ABSCAT
 #define PROGRESSBAR
@@ -43,47 +41,10 @@
 //#define BUCKWALTER_INTERFACE
 //#define OPTIMIZED_BUCKWALTER_TEST_CASE
 //#define IMAN_CODE
-
-#ifdef PREPROCESS_DESCRIPTIONS
-extern QHash<long,bool> IBN_descriptions;
-#endif
-
-#ifdef REFINEMENTS
-extern QStringList rasoul_words,suffixNames;
-extern QString alrasoul,abyi;
-#endif
-
-extern int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY;
+//#define COUNT_RUNON
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
 
-class HadithParameters
-{
-public:
-	unsigned int nmc_max:5;
-	unsigned int nrc_max:5;
-	unsigned int narr_min:5;
-	unsigned int equality_radius:5;
-	bool display_chain_num:1;
-	bool break_cycles:1;
-	unsigned int unused_int:10;
-	double equality_delta;
-	double equality_threshold;
-	HadithParameters()
-	{
-		nmc_max=3;
-		narr_min=3;
-		nrc_max=5;
-		equality_radius=3;
-		equality_delta=0.4;
-		equality_threshold=1;
-		display_chain_num=true;
-		break_cycles=true;
-	}
-};
-
-extern HadithParameters hadithParameters;
-extern QString chainDataStreamFileName;
 
 #endif // HADITH_H

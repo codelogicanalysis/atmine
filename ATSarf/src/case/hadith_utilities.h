@@ -1,7 +1,7 @@
 #ifndef HADITH_UTILITIES_H
 #define HADITH_UTILITIES_H
 
-#include "hadith.h"
+#include "hadithCommon.h"
 
 #ifdef REFINEMENTS
 #include <QString>

@@ -5,7 +5,7 @@
 #include "sql_queries.h"
 #include "ui_mainwindow.h"
 #include "database_info_block.h"
-#include "hadith.h"
+#include "hadithCommon.h"
 #include "stemmer.h"
 #include "timeRecognizer.h"
 #include <QFileDialog>
