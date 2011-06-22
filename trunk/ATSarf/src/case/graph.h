@@ -613,16 +613,14 @@ private:
 					{
 						Narrator & n1_ref=n1->getNarrator();
 						Narrator & n2_ref=n2->getNarrator();
-					#ifdef DEBUG_BUILDGRAPH
-					#if 1
-						qDebug()<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<n2->getIndex()<<"]\n";
-					#endif
-					#endif
 						double eq_val=equal(n1_ref,n2_ref);
+					#ifdef DEBUG_BUILDGRAPH
+						out<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<n2->getIndex()<<"]\t"<<eq_val<<"\n";
+					#endif
 						if (eq_val>=threshold)
 						{
 						#ifdef DEBUG_BUILDGRAPH
-							out<<n1_ref.getString()<<"["<<i<<","<<n1->getIndex()<<"]Versus["<<n2_ref.getString()<<"["<<k<<","<<n2->getIndex()<<"]";
+							out<<"\t=>merge\n";
 						#endif
 							mergeNodes(*n1,*n2);
 							offset=u;	//this is matched, we must skip it in search for match for next node in c1

@@ -1,7 +1,8 @@
-#include "hadith.h"
+#include "hadithCommon.h"
 #include "narrator_abstraction.h"
 #include <QStringList>
 #include <QDataStream>
+#include <QString>
 #include <assert.h>
 #include "Triplet.h"
 #include "stemmer.h"
@@ -9,13 +10,12 @@
 #include "hadith_utilities.h"
 
 #ifdef EQUALITYDEBUG
-inline void display(QString t)
-{
-	out<<t;
-	//qDebug() <<t;
-}
+	inline void display(QString t) {
+		out<<t;
+		//qDebug() <<t;
+	}
 #else
-#define display(c) ;
+	#define display(c) ;
 #endif
 
 qint8 getType(const NarratorPrim *)
@@ -501,7 +501,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 	display(n1.getString());
 	display(" VS ");
 	display(n2.getString());
-	display("> ");
+	display(">\n");
 #if 0
 	for (int i=0;i<Names1.count();i++)
 		display(Names1[i].getString()+" - ");

@@ -303,6 +303,11 @@ public:
 				return false;
 			}
 		}
+		if (stem_info->abstract_categories.getBit(bit_TIME_ATTRIBUTE)){
+			attribute=true;
+			finish_pos=info.finish;
+			return true;
+		}
 		if (stem_info->abstract_categories.getBit(bit_TIME_PREPOSITION)){
 			timePreposition=true;
 			finish_pos=info.finish;
@@ -310,11 +315,6 @@ public:
 		}
 		if (stem_info->abstract_categories.getBit(bit_NUMBER)){
 			number=true;
-			finish_pos=info.finish;
-			return true;
-		}
-		if (stem_info->abstract_categories.getBit(bit_TIME_ATTRIBUTE)){
-			attribute=true;
 			finish_pos=info.finish;
 			return true;
 		}
