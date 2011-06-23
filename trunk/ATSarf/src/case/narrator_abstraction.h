@@ -3,6 +3,8 @@
 
 #include <QList>
 #include <QTextStream>
+#include <QDataStream>
+#include "common.h"
 #include <QFile>
 #include <QDebug>
 #include "logger.h"
@@ -219,6 +221,66 @@ public:
 //    }
 
 };
+
+class Biography {
+public:
+	typedef QVector<Narrator *> NarratorVector;
+private:
+
+	QString * text;
+	int start, end;
+
+	NarratorVector narrators;
+
+public:
+	//Biography() { this->text=NULL; start=0;end=0;}
+	Biography(QString * text) { this->text=text; start=0;end=0;}
+	Biography(QString * text,long start) { this->text=text; this->start=start;end=start;}
+	Biography(QString * text,long start, long end) { this->text=text; this->start=start;this->end=end;}
+	void setStart(long s) { start=s;}
+	void setEnd(long e) { end=e; }
+	int getStart() const {return start;}
+	int getLength() const {	return end - start + 1;}
+	virtual int getEnd() const { return end;}
+	QString getString() const {
+		int length=getLength();
+		if (length<0)
+			return "";
+		return text->mid(getStart(), length);
+	}
+	void addNarrator(Narrator & n) {
+		if (n.getStart()>=this->start)// && n.getEnd()<=this->end)
+			narrators.append(&n);
+	}
+	void addNarrator(Narrator * n) {
+		if (n!=NULL)
+			addNarrator(*n);
+	}
+	int size() {
+		return narrators.size();
+	}
+	Narrator * operator [] (int i) {
+		assert(i>=0 && i<narrators.size());
+		return narrators[i];
+	}
+
+	//const NarratorVector & getNarrators() const { return narrators;}
+	Narrator * getLastNarrator() {
+		if (narrators.size()>0)
+			return narrators[narrators.size()-1];
+		else
+			return NULL;
+	}
+	void serialize(QDataStream &chainOut) const;
+	void deserialize(QDataStream &chainIn);
+	void serialize(QTextStream &chainOut) const;
+	/*~Biography(){
+		for (int i=0;i<narrators.size();i++) {
+			delete narrators[i];
+		}
+	}*/
+};
+
 
 double equal(const Narrator & n1,const Narrator & n2);
 
