@@ -16,5 +16,6 @@ int test(QString input_str,ATMProgressIFC * prg);
 int verify(QString input_str,ATMProgressIFC * prg);
 int breakAffix(QString input_str, ATMProgressIFC * prg);
 int timeRecognize(QString input_str, ATMProgressIFC * prg);
+int biographyHelper(QString input_str,ATMProgressIFC *prg);
 
 #endif // TEST_H

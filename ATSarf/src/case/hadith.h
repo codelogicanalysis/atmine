@@ -42,6 +42,7 @@
 //#define OPTIMIZED_BUCKWALTER_TEST_CASE
 //#define IMAN_CODE
 //#define COUNT_RUNON
+//#define NARRATORDEBUG
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

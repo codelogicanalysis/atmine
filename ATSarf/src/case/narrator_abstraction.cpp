@@ -1,7 +1,6 @@
 #include "hadithCommon.h"
 #include "narrator_abstraction.h"
 #include <QStringList>
-#include <QDataStream>
 #include <QString>
 #include <assert.h>
 #include "Triplet.h"
@@ -18,32 +17,25 @@
 	#define display(c) ;
 #endif
 
-qint8 getType(const NarratorPrim *)
-{
+qint8 getType(const NarratorPrim *) {
 	return 'n';
 }
-qint8 getType(const NamePrim *)
-{
+qint8 getType(const NamePrim *) {
 	return 'N';
 }
-qint8 getType(const ChainPrim *)
-{
+qint8 getType(const ChainPrim *) {
 	return 'C';
 }
-qint8 getType(const NameConnectorPrim *)
-{
+qint8 getType(const NameConnectorPrim *) {
 	return 'c';
 }
-qint8 getType(const Narrator *)
-{
+qint8 getType(const Narrator *) {
 	return 'a';
 }
-qint8 getType(const NarratorConnectorPrim *)
-{
+qint8 getType(const NarratorConnectorPrim *) {
 	return 'p';
 }
-qint8 getType(const Chain *)
-{
+qint8 getType(const Chain *) {
 	return 'A';
 }
 
@@ -702,4 +694,32 @@ double equal(const Narrator & n1,const  Narrator  & n2)
 double Narrator::equals(const Narrator & rhs) const
 {
     return equal(*this,rhs);
+}
+
+void Biography::serialize(QDataStream &chainOut) const{
+	int size=narrators.size();
+	chainOut<<start<<end<<size;
+	for (int i=0;i<narrators.size();i++) {
+		narrators[i]->serialize(chainOut);
+	}
+}
+void Biography::deserialize(QDataStream &chainIn){
+	int size;
+	chainIn>>start>>end>>size;
+	for (int i=0;i<size;i++) {
+		Narrator * n=new Narrator(text);
+		qint8 c;
+		chainIn>>c;
+		assert(c==getType(n));
+		n->deserialize(chainIn);
+		addNarrator(n);
+	}
+}
+void Biography::serialize(QTextStream &chainOut) const
+{
+	for (int i=0;i<narrators.size();i++) {
+		chainOut<<i<<": ";
+		narrators[i]->serialize(chainOut);
+		chainOut<<"\n";
+	}
 }

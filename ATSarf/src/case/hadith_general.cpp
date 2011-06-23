@@ -66,13 +66,72 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
+typedef struct chainDataBiography_ {
+	NamePrim *namePrim;
+	NameConnectorPrim *nameConnectorPrim;
+	NarratorConnectorPrim *narratorConnectorPrim;
+	TempConnectorPrimList * temp_nameConnectors;
+	Narrator *narrator;
+	Chain *chain;
+
+	void initialize(QString * text) {
+		delete namePrim;
+		delete nameConnectorPrim;
+		delete narratorConnectorPrim;
+		delete narrator;
+		delete chain;
+		/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
+			delete (*temp_nameConnectors)[i];*/
+		delete temp_nameConnectors;
+		namePrim=new NamePrim(text);
+		nameConnectorPrim=new NameConnectorPrim(text);
+		narratorConnectorPrim=new NarratorConnectorPrim(text) ;
+		narrator=new Narrator (text);
+		chain=new Chain(text);
+		temp_nameConnectors=new TempConnectorPrimList();
+	}
+} chainDataBiography;
+typedef struct stateDataBiography_ {
+	long  sanadStartIndex, narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
+	long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
+	bool nmcValid;
+	bool ibn_or_3abid;
+	bool nrcPunctuation;
+
+	void initialize() {
+		nmcCount=0;
+		narratorCount=0;
+		nrcCount=0;
+		narratorStartIndex=0;
+		narratorEndIndex=0;
+		nrcStartIndex=0;
+		nrcEndIndex=0;
+		nmcValid=false;
+		ibn_or_3abid=false;
+		nameStartIndex=0;
+		nmcStartIndex=0;
+	#ifdef PUNCTUATION
+		nrcPunctuation=false;
+	#endif
+	}
+
+} stateDataBiography;
+
 class HadithSegmentor {
 private:
-	stateData currentData;
+	stateDataBiography currentData;
 	QString * text;
 	long current_pos;
 
-	bool getNextState(StateInfo &  stateInfo,chainData *currentChain) {
+#ifdef STATS
+	QVector<map_entry*> temp_nrc_s, temp_nmc_s;
+	int temp_nrc_count,temp_nmc_count;
+	statistics stat;
+	int temp_names_per_narrator;
+	QString current_exact,current_stem;
+#endif
+
+	bool getNextState(StateInfo &  stateInfo,chainDataBiography *currentChain) {
 		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 		display(stateInfo.currentState);
@@ -1043,20 +1102,9 @@ private:
 	#endif
 		return return_value;
 	}
-
-	inline bool result(wordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
-	inline QString choose_stem(QList<QString> stems) //rule can be modified later
-	{
-		if (stems.size()==0)
-			return "";
-		QString result=stems[0];
-		for (int i=1;i<stems.size();i++)
-			if (result.length()>stems[i].length())
-				result=stems[i];
-		return result;
-	}
+	inline bool result(wordType t, StateInfo &  stateInfo,chainDataBiography *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
 #ifndef BUCKWALTER_INTERFACE
-	bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //does not fill stateInfo.currType
+	bool proceedInStateMachine(StateInfo &  stateInfo,chainDataBiography *currentChain) //does not fill stateInfo.currType
 	{
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
@@ -1358,16 +1406,6 @@ private:
 			return result(NMC,stateInfo,currentChain);
 	}
 #endif
-#ifdef STATS
-	void show_according_to_frequency(QList<int> freq,QList<QString> words) {
-		QList<QPair<int, QString> > l;
-		for (int i=0;i<freq.size() && i<words.size();i++)
-			l.append(QPair<int,QString>(freq[i],words[i]));
-		qSort(l.begin(),l.end());
-		for (int i=l.size()-1;i>=0;i--)
-			displayed_error <<"("<<l[i].first<<") "<<l[i].second<<"\n";
-	}
-#endif
 public:
 	int segment(QString input_str,ATMProgressIFC *prg)  {
 	#ifdef COMPARE_TO_BUCKWALTER
@@ -1425,7 +1463,7 @@ public:
 		currentData.initialize();
 
 	#ifdef CHAIN_BUILDING
-		chainData *currentChain=new chainData();
+		chainDataBiography *currentChain=new chainDataBiography();
 		currentChain->initialize(text);
 		display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 	#else

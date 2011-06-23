@@ -160,7 +160,7 @@ void MainWindow::on_pushButton_clicked()
 	else if (m_ui->chk_time->isChecked())
 		timeRecognize(input,this);
 
-	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked())
+	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);

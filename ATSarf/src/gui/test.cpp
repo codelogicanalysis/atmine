@@ -69,13 +69,18 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 	}
 	return 0;
 }
-int test(QString inputString,ATMProgressIFC *) {
+int test(QString inputString,ATMProgressIFC * prg) {
 #ifdef AUGMENT_DICTIONARY
 	if (augment()<0)
 		return -1;
 #else
+#if 0
 	if (timeTagger(inputString))
 		return -1;
+#else
+	if (biographyHelper(inputString,prg))
+		return -1;
+#endif
 #endif
 	return 0;
 }
