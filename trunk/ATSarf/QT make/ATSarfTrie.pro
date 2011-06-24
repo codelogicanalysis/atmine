@@ -64,7 +64,8 @@ HEADERS += util/text_handling.h \
     ../src/case/timeRecognizer.h \
     ../src/case/timeManualTagger.h \
     ../src/case/narratordetector.h \
-    ../src/case/hadithCommon.h
+    ../src/case/hadithCommon.h \
+    ../src/util/browseDialog.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \

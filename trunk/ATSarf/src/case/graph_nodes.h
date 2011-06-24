@@ -28,6 +28,7 @@ class NULLChainNarratorNode;
 
 typedef QList<Chain *> ChainsContainer;
 typedef QPair<NarratorNodeIfc &, ChainNarratorNode &> NodeAddress;
+typedef QList<int> BiographyIndicies;
 
 extern NodeAddress nullNodeAddress;
 extern NULLNarratorNodeIfc nullNarratorNodeIfc;
@@ -43,6 +44,7 @@ class ColorIndices;
 class NarratorNodeIfc //abstract interface
 {
 private:
+	BiographyIndicies indicies;
 	unsigned int color;
 	friend class LoopBreakingVisitor;
 protected:
@@ -73,8 +75,7 @@ public:
 	virtual bool isNull()=0;
 	virtual bool isGraphNode()=0;
 
-	virtual int getRank()
-	{
+	virtual int getRank() {
 		int savedRank=getSavedRank();
 		return (savedRank>=0?savedRank:getAutomaticRank());
 	}
@@ -84,6 +85,21 @@ public:
 	virtual QString toString() =0;
 	virtual bool isVisited(unsigned int bit) {return (color & (1 << bit)) != 0; }
 
+	void addBiographyIndex(int i) {
+		NarratorNodeIfc & n=getCorrespondingNarratorNode();
+		if (!n.indicies.contains(i)){
+			n.indicies.append(i);
+			/*qDebug()<<(long)this<<"-"<<(long)&n
+					<<"<"<<n.CanonicalName()<<">:"<<i;*/
+		}
+	}
+	bool hasBiographyIndex(int i) {
+		NarratorNodeIfc & n=getCorrespondingNarratorNode();
+		/*qDebug()<<"---"<<(long)&n<<"<"<<CanonicalName()<<">---";
+		for (int j=0;j<n.indicies.size();j++)
+			qDebug()<<n.indicies[j];*/
+		return (n.indicies.contains(i));
+	}
 };
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc
@@ -372,7 +388,7 @@ public:
 		equalChainNodes.append(&nar);
 		nar.setCorrespondingNarratorNode(this);
 	}
-	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return nullNarratorNodeIfc;}
+	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return *this;}
 	virtual int size(){ return equalChainNodes.size(); }
 	virtual NarratorNodeIfc & getChild(int index)
 	{

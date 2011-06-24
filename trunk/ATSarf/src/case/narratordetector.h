@@ -5,6 +5,11 @@
 #include "hadithCommon.h"
 #include "narrator_abstraction.h"
 
+typedef QList<Biography*> BiographyList;
+
 int biographyHelper(QString input_str,ATMProgressIFC *prg);
+#ifdef TEST_BIOGRAPHIES
+BiographyList * getBiographies(QString input_str,ATMProgressIFC *prg);
+#endif
 
 #endif // NARRATORDETECTOR_H
