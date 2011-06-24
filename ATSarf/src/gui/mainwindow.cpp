@@ -9,6 +9,7 @@
 #include "stemmer.h"
 #include "timeRecognizer.h"
 #include <QFileDialog>
+#include "browseDialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -206,21 +207,9 @@ void MainWindow::on_fill_clicked()
 
 void MainWindow::on_cmd_browse_clicked()
 {
-	//QString fileName = QFileDialog::getOpenFileName(this,
-//		tr("Open File"), "", tr("All Files (*)")); // /home/jad/Desktop/linux
-    if (browseFileDlg == NULL) {
-        QString dir = QDir::currentPath();
-        browseFileDlg = new QFileDialog(this, tr("Open File"), dir, tr("All Files (*)"));
-        browseFileDlg->setOptions(QFileDialog::DontUseNativeDialog);
-        browseFileDlg->setFileMode(QFileDialog::ExistingFile);
-        browseFileDlg->setViewMode(QFileDialog::Detail);
-    }
-    if (browseFileDlg->exec()){
-        QStringList files = browseFileDlg->selectedFiles();
-        QString fileName = files[0];
-        if (!fileName.isEmpty())
-            m_ui->input->setText(fileName);
-    }
+	QString fileName=getFileName(browseFileDlg);
+	if (!fileName.isEmpty())
+		m_ui->input->setText(fileName);
 }
 
 int main(int argc, char *argv[])

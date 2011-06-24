@@ -55,23 +55,26 @@ inline void display(QString t) {
 
 typedef struct stateData_ {
 	long  biographyStartIndex, narratorCount,narratorStartIndex,narratorEndIndex;
-	long  nmcCount, nameStartIndex,nmcStartIndex;
+	long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
 	bool nmcValid;
 	bool ibn_or_3abid;
 
 	void initialize() {
 		nmcCount=0;
 		narratorCount=0;
+		nrcCount=0;
 		narratorStartIndex=0;
 		narratorEndIndex=0;
 		nmcValid=false;
 		ibn_or_3abid=false;
 		nameStartIndex=0;
 		nmcStartIndex=0;
+		biographyStartIndex=0;
 	}
 
 } stateData;
-typedef struct BiographyData_ {
+class BiographyData {
+public:
 	NamePrim *namePrim;
 	NameConnectorPrim *nameConnectorPrim;
 	TempConnectorPrimList * temp_nameConnectors;
@@ -79,20 +82,34 @@ typedef struct BiographyData_ {
 	Biography *biography;
 
 	void initialize(QString * text) {
-		delete namePrim;
-		delete nameConnectorPrim;
-		delete narrator;
-		delete biography;
+		if (namePrim!=NULL)
+			delete namePrim;
+		if (nameConnectorPrim!=NULL)
+			delete nameConnectorPrim;
+		if (narrator!=NULL)
+			delete narrator;
+		int s=0;
+		if (biography!=NULL) {
+			s=biography->getStart();
+			delete biography;
+		}
 		/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
 			delete (*temp_nameConnectors)[i];*/
 		delete temp_nameConnectors;
 		namePrim=new NamePrim(text);
 		nameConnectorPrim=new NameConnectorPrim(text);
 		narrator=new Narrator (text);
-		biography=new Biography(text);
+		biography=new Biography(text,s);
 		temp_nameConnectors=new TempConnectorPrimList();
 	}
-} BiographyData;
+	BiographyData(){
+		namePrim=NULL;
+		nameConnectorPrim=NULL;
+		temp_nameConnectors=NULL;
+		narrator=NULL;
+		biography=NULL;
+	}
+};
 
 class NarratorDetector
 {
@@ -100,9 +117,13 @@ private:
 	stateData currentData;
 	QString * text;
 	long current_pos;
+public:
+	BiographyList * biographies;
+
 private:
 	bool getNextState(StateInfo &  stateInfo,BiographyData *currentBiography) {
 		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
+		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 		display(stateInfo.currentState);
 	#ifdef PUNCTUATION
 		if (stateInfo.currentPunctuationInfo.has_punctuation) {
@@ -144,6 +165,7 @@ private:
 					display("<punc1>");
 					currentData.narratorCount++;
 					stateInfo.nextState=NRC_S;
+					currentData.nrcCount=0;//punctuation is zero
 					currentData.narratorEndIndex=stateInfo.endPos;
 				#ifdef CHAIN_BUILDING
 					currentBiography->namePrim->m_end=stateInfo.endPos;
@@ -165,7 +187,6 @@ private:
 			else if (stateInfo.currentType==NMC && stateInfo.ibn) {
 				display("<IBN1>");
 				currentData.initialize();
-				currentBiography->biography->setStart(currentData.biographyStartIndex);
 				currentData.nmcStartIndex=stateInfo.startPos;
 				currentData.narratorStartIndex=stateInfo.startPos;
 				currentData.nmcCount=1;
@@ -205,7 +226,9 @@ private:
 			{
 				display("<STOP1>");
 				stateInfo.nextState=STOP_WORD_S;
+			#ifdef COUNT_RASOUL
 				currentData.narratorCount++;
+			#endif
 			#ifdef CHAIN_BUILDING
 				currentBiography->namePrim->m_end=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 				currentBiography->narrator->m_narrator.append(currentBiography->namePrim);
@@ -271,6 +294,7 @@ private:
 					display("<punc2>");
 					currentData.narratorCount++;
 					stateInfo.nextState=NRC_S;
+					currentData.nrcCount=0; //punctuation not counted
 					currentData.narratorEndIndex=stateInfo.endPos;
 				#ifdef CHAIN_BUILDING
 					currentBiography->namePrim->m_end=stateInfo.endPos;
@@ -297,6 +321,7 @@ private:
 				currentData.narratorCount++;
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				stateInfo.nextState=NAME_S;
+				currentData.nrcCount=0;
 
 				currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(currentData.nmcStartIndex);
 			#ifdef CHAIN_BUILDING
@@ -319,7 +344,9 @@ private:
 
 				currentData.narratorEndIndex=stateInfo.endPos;
 				stateInfo.nextState=STOP_WORD_S;
+			#ifdef COUNT_RASOUL
 				currentData.narratorCount++;
+			#endif
 				//return_value= false;
 				break;
 			}
@@ -341,6 +368,7 @@ private:
 					display("<punc3>");
 					currentData.narratorCount++;
 					stateInfo.nextState=NRC_S;
+					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
 				#ifdef CHAIN_BUILDING
 					currentBiography->namePrim->m_end=stateInfo.endPos;
@@ -504,7 +532,9 @@ private:
 
 				//2-add this narrator and end lookup
 				stateInfo.nextState=STOP_WORD_S;
+			#ifdef COUNT_RASOUL
 				currentData.narratorCount++;
+			#endif
 			#ifdef CHAIN_BUILDING
 				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
 				currentBiography->narrator->m_narrator.append(currentBiography->nameConnectorPrim);
@@ -523,6 +553,7 @@ private:
 			if (stateInfo.currentType==NAME) {
 		#endif
 				stateInfo.nextState=NAME_S;
+				currentData.nrcCount=1;
 				//currentData.nameStartIndex=start_index;
 			#ifdef CHAIN_BUILDING
 				//currentChain->namePrim->m_start=start_index;
@@ -549,6 +580,7 @@ private:
 					display("<punc4>");
 					currentData.narratorCount++;
 					stateInfo.nextState=NRC_S;
+					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
 				#ifdef CHAIN_BUILDING
 				#ifdef REFINEMENTS
@@ -578,7 +610,7 @@ private:
 			#endif
 			}
 		#ifdef PUNCTUATION
-			else if ( stateInfo.number) { // || currentData.nrcCount>=hadithParameters.nrc_max //if not in refinements mode stateInfo.number will always remain false
+			else if ( stateInfo.number || currentData.nrcCount>=hadithParameters.nrc_max) { //if not in refinements mode stateInfo.number will always remain false
 				stateInfo.nextState=TEXT_S;
 
 				//currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(start_index); //check this case
@@ -613,6 +645,7 @@ private:
 					display("<punc5>");
 					currentData.narratorCount++;
 					stateInfo.nextState=NRC_S;
+					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
 				#ifdef TRYTOLEARN
 					stateInfo.nrcIsPunctuation=true;
@@ -636,6 +669,7 @@ private:
 		#endif
 			else {
 				stateInfo.nextState=NRC_S;
+				currentData.nrcCount++;
 			#ifdef PUNCTUATION
 				if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
 					stateInfo.nextState=TEXT_S;
@@ -679,8 +713,7 @@ private:
 		return return_value;
 	}
 	inline bool result(wordType t, StateInfo &  stateInfo,BiographyData *currentBiography){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentBiography);}
-	bool proceedInStateMachine(StateInfo &  stateInfo,BiographyData *currentBiography) //does not fill stateInfo.currType
-	{
+	bool proceedInStateMachine(StateInfo &  stateInfo,BiographyData *currentBiography) { //does not fill stateInfo.currType
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
 		stateInfo.ibn=false;
@@ -948,15 +981,17 @@ public:
 				if (currentData.narratorCount>=hadithParameters.narr_min) {
 					//biographyEnd=currentData.narratorEndIndex;
 					biographyEnd=stateInfo.endPos;
+					currentBiography->biography->setEnd(biographyEnd);
 				#ifdef DISPLAY_HADITH_OVERVIEW
 					//biographyStart=currentData.biographyStartIndex;
-					biographyStart=stateInfo.nextPos;
+					biographyStart=currentBiography->biography->getStart();
 					//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 					//long end=stateInfo.endPos;
 					out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(biographyStart,display_letters)<<endl;
 					out<<"sanad end: "<<text->mid(biographyEnd-display_letters+1,display_letters)<<endl<<endl;
 				#ifdef CHAIN_BUILDING
 					currentBiography->biography->serialize(chainOut);
+					currentBiography->biography->setStart(stateInfo.nextPos);
 					//currentChain->chain->serialize(displayed_error);
 				#endif
 				#endif
@@ -1009,8 +1044,8 @@ public:
 		QDataStream tester(&chainOutput);
 		int tester_Counter=1;
 	#ifdef TEST_BIOGRAPHIES
-		QList<Biography *> biographies;
-		biographies.clear();
+		biographies=new BiographyList;
+		biographies->clear();
 	#endif
 	#if defined(TAG_HADITH)
 		prg->startTaggingText(*text);
@@ -1020,7 +1055,7 @@ public:
 			Biography * s=new Biography(text);
 			s->deserialize(tester);
 		#ifdef TEST_BIOGRAPHIES
-			biographies.append(s);
+			biographies->append(s);
 		#endif
 		#if defined(TAG_HADITH)
 			for (int j=0;j<s->size();j++)
@@ -1057,9 +1092,6 @@ public:
 		}
 		chainOutput.close();
 		f.close();
-	#ifdef TEST_BIOGRAPHIES
-		//test_GraphFunctionalities(biographies, prg);
-	#endif
 	#endif
 	#ifndef TAG_HADITH
 		prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
@@ -1068,7 +1100,7 @@ public:
 	#endif
 
 
-		delete text;
+		//delete text;
 		if (currentBiography!=NULL)
 			delete currentBiography;
 		return 0;
@@ -1080,5 +1112,18 @@ int biographyHelper(QString input_str,ATMProgressIFC *prg) {
 	input_str=input_str.split("\n")[0];
 	NarratorDetector s;
 	s.segment(input_str,prg);
+#ifdef TEST_BIOGRAPHIES
+	for (int i=0;i<s.biographies->size();i++)
+		delete (*s.biographies)[i];
+#endif
 	return 0;
 }
+
+#ifdef TEST_BIOGRAPHIES
+BiographyList * getBiographies(QString input_str,ATMProgressIFC *prg) {
+	input_str=input_str.split("\n")[0];
+	NarratorDetector s;
+	s.segment(input_str,prg);
+	return s.biographies;
+}
+#endif

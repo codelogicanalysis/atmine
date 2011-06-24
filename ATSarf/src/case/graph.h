@@ -2,7 +2,11 @@
 #define GRAPH_H
 
 #include "graph_nodes.h"
+#include "browseDialog.h"
+#include "narratordetector.h"
 #include <QStack>
+#include <QInputDialog>
+#include <QDir>
 
 typedef QList<NarratorNodeIfc *> NarratorNodesList;
 
@@ -244,6 +248,7 @@ protected:
 			}
 		}
 	}
+	virtual QString getOtherAttributes(NarratorNodeIfc & ) {return "";}
 	QString getAndInitializeDotNode(NarratorNodeIfc & n)
 	{
 		int curr_id=getUniqueNodeID(n);
@@ -257,7 +262,7 @@ protected:
 			#ifdef SHOW_RANKS
 				d_out<<n.rank2String();
 			#endif
-				d_out<<"\", shape=box];\n";
+				d_out<<"\",shape=box"<<getOtherAttributes(n)<<"];\n";
 				name=QString("g%1").arg(curr_id);
 			}
 			else
@@ -266,7 +271,7 @@ protected:
 			#ifdef SHOW_RANKS
 				d_out<<n.rank2String();
 			#endif
-				d_out<<"\"]"<<";\n";
+				d_out<<"\""<<getOtherAttributes(n)<<"]"<<";\n";
 				name=QString("c%1").arg(curr_id);
 			}
 			setGraphRank(n.getRank()+1,name);
@@ -397,6 +402,23 @@ public:
 
 };
 
+class DisplayNodeVisitorColored: public DisplayNodeVisitor {
+private:
+	int index;
+protected:
+	virtual QString getOtherAttributes(NarratorNodeIfc & n) {
+		if (n.hasBiographyIndex(index))
+			return ",style=filled, fillcolor=grey";
+		else
+			return "";
+	}
+public:
+	DisplayNodeVisitorColored(int biographyIndex) {
+		index=biographyIndex;
+	}
+
+};
+
 class FillNodesVisitor: public NodeVisitor
 {
 private:
@@ -484,6 +506,7 @@ private:
 	ColorIndices colorGuard;
 	NarratorNodesList	top_nodes,
 						bottom_nodes, all_nodes;
+
 	friend class ColorIndices;
 
 	ATMProgressIFC *prg;
@@ -491,8 +514,7 @@ private:
 	int highest_rank;//rank of the deapmost node;
 	int getDeapestRank(){return highest_rank;}
 
-	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2)
-	{
+	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2) {
 		NarratorNodeIfc & narr1=n1.getCorrespondingNarratorNode(),
 						& narr2=n2.getCorrespondingNarratorNode();
 		if (!narr1.isGraphNode() && !narr2.isGraphNode())
@@ -540,8 +562,8 @@ private:
 	friend class LoopBreakingVisitor;
 	friend class GraphVisitorController;
 
-	void transform2ChainNodes(ChainsContainer &chains)
-	{//pre-condition: chain contains the valid chains extracted from the hadith
+	void transform2ChainNodes(ChainsContainer &chains) {
+	//pre-condition: chain contains the valid chains extracted from the hadith
 		prg->setCurrentAction("Creating Nodes");
 		int num_chains=chains.count();
 		for (int chain_num=0;chain_num<num_chains;chain_num++)
@@ -575,8 +597,8 @@ private:
 	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
 	//				 chains and top_nodes stores the link to the first node of each chain
 	}
-	void buildGraph()
-	{ //note: compares chain by chain then moves to another
+	void buildGraph() {
+	//note: compares chain by chain then moves to another
 		//TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
 		int radius=hadithParameters.equality_radius;
 		double threshold=hadithParameters.equality_threshold;
@@ -637,8 +659,7 @@ private:
 		}
 		prg->report(100);
 	}
-	void computeRanks()
-	{
+	void computeRanks() {
 	#if 0
 		for (int trials=0;trials<2;trials++)
 		{
@@ -676,8 +697,7 @@ private:
 		highest_rank=r.getHighestRank();
 	#endif
 	}
-	void breakManageableCycles()
-	{
+	void breakManageableCycles() {
 		const double step=hadithParameters.equality_delta;
 		const int num_steps=3;
 		prg->setCurrentAction("Breaking Cycles");
@@ -695,8 +715,7 @@ private:
 		}
 
 	}
-	void correctTopNodesList()
-	{
+	void correctTopNodesList() {
 		prg->setCurrentAction("Correct TopList");
 		prg->report(0);
 		NarratorNodesList & new_top_list=*(new NarratorNodesList);
@@ -720,8 +739,7 @@ private:
 		NarratorNodesList *& temp=&top_nodes;
 		temp=&new_top_list;*/
 	}
-	void fillNodesLists()
-	{
+	void fillNodesLists() {
 		prg->setCurrentAction("Correct NodeList");
 		prg->report(0);
 		FillNodesVisitor visitor(&all_nodes, &bottom_nodes);
@@ -764,6 +782,7 @@ public:
 		if (hadithParameters.break_cycles)
 			breakManageableCycles();
 		computeRanks();
+		//fillNodesLists();
 	}
 	void DFS_traverse(GraphVisitorController & visitor)
 	{
@@ -813,14 +832,54 @@ public:
 		}
 		visitor.finish();
 	}
+	ChainNarratorNode * getNodeMatching(Narrator & n) {
+		double highest_equality=0;
+		ChainNarratorNode * correspondingNode=NULL;
+		for (int i=0;i<all_nodes.size();i++) {
+			for (int j=0;j<all_nodes[i]->size();j++) {
+				ChainNarratorNode * c=&(*all_nodes.at(i))[j];
+				Narrator * n2= &c->getNarrator();
+				double curr_equality=equal(n,*n2);
+				if (curr_equality>highest_equality){
+					highest_equality=curr_equality;
+					correspondingNode=c;//all_nodes[i];
+				}
+			}
+		}
+		if (highest_equality>=hadithParameters.equality_threshold)
+			return correspondingNode;
+		else
+			return NULL;
+	}
 };
 
 inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *prg)
 {
 	NarratorGraph graph(chains,prg);
+#ifdef TEST_BIOGRAPHIES
+	QString fileName=getFileName(NULL);
+	BiographyList * bioList=getBiographies(fileName,prg);
+	for (int i=0;i<bioList->size();i++) {
+		for (int j=0;j<bioList->at(i)->size();j++) {
+			Narrator * n=(*bioList->at(i))[j];
+			ChainNarratorNode * c=graph.getNodeMatching(*n);
+			if (c!=NULL)
+				c->addBiographyIndex(i);
+		}
+	}
+#endif
 	prg->setCurrentAction("Display Graph");
 	prg->report(0);
+#ifndef TEST_BIOGRAPHIES
 	DisplayNodeVisitor visitor;
+#else
+	bool ok;
+	int num = QInputDialog::getInt(NULL, QString("Enter Number of biography to highlight"),
+										  QString("User name:"),0,0,chains.size()-1,1,&ok/*,QLineEdit::Normal*/);
+	if (!ok)
+		num=0;
+	DisplayNodeVisitorColored visitor(num);
+#endif
 	GraphVisitorController c(&visitor,&graph);
 	graph.DFS_traverse(c);
 	prg->setCurrentAction("Completed");
