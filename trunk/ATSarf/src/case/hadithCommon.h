@@ -77,7 +77,8 @@
 		wordType currentType:3;
 		stateType currentState:4;
 		stateType nextState:4;
-		bool ibn:1;
+		bool familyNMC:1;
+		bool ibn;
 		bool _3abid:1;
 		bool possessivePlace:1;
 		bool number:1;
@@ -85,11 +86,11 @@
 		bool _3an:1;
 		bool learnedName:1;
 		bool nrcIsPunctuation:1; //if state is NRC and that is caused soley by punctuation
-		int unused:18;
+		int unused:17;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
-		void resetCurrentWordInfo()	{ibn=false;_3abid=false;possessivePlace=false;number=false;isWaw=false;_3an=false;learnedName=false;currentPunctuationInfo.reset();}
-		bool ibnOr3abid() { return ibn || _3abid;}
-		bool isIbnOrPossessivePlace(){return ibn || possessivePlace;}
+		void resetCurrentWordInfo()	{familyNMC=false;ibn=false;_3abid=false;possessivePlace=false;number=false;isWaw=false;_3an=false;learnedName=false;currentPunctuationInfo.reset();}
+		bool ibnOr3abid() { return familyNMC || _3abid;}
+		bool isFamilyConnectorOrPossessivePlace(){return familyNMC || possessivePlace;}
 	} StateInfo;
 
 #ifdef REFINEMENTS
@@ -101,7 +102,7 @@
 	extern QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
-	extern QHash<long,bool> NMC_descriptions;
+	extern QHash<long,bool> familyNMC_descriptions;
 	extern QHash<long,bool> NRC_descriptions;
 	extern QHash<long,bool> IBN_descriptions;
 #endif
@@ -147,7 +148,7 @@
 	#endif
 	public:
 		long finish_pos;
-		bool name:1, nrc:1, nmc,possessive:1, ibn:1,_3abid:1,stopword:1;
+		bool name:1, nrc:1, nmc,possessive:1, familyNMC:1,ibn:1,_3abid:1,stopword:1;
 	#ifdef GET_WAW
 		bool has_waw:1,is3an:1;
 	#endif
@@ -178,6 +179,7 @@
 			nrc=false;
 			possessive=false;
 			place=false;
+			familyNMC=false;
 			ibn=false;
 			_3abid=false;
 			stopword=false;
@@ -302,14 +304,16 @@
 		#ifndef PREPROCESS_DESCRIPTIONS
 			else if (description=="son")
 		#else
-			else if (NMC_descriptions.contains(stem_info->description_id))
+			else if (familyNMC_descriptions.contains(stem_info->description_id))
 		#endif
 			{
 			#ifdef STATS
 				stem=temp_stem;
 			#endif
 			#ifdef REFINEMENTS
-				ibn=true;
+				familyNMC=true;
+				if (IBN_descriptions.contains(stem_info->description_id))
+					ibn=true;
 				finishStem=Stem->info.finish;
 				startStem=Stem->info.start;
 			#endif
@@ -502,4 +506,18 @@
 			displayed_error <<"("<<l[i].first<<") "<<l[i].second<<"\n";
 	}
 #endif
+
+	inline bool isRelativeNarrator(const Narrator & n) { //needed in equality and narrator Hash
+		QString n_str=n.getString();
+		if (equal(n_str,abyi))
+			return true;
+		for (int i=1;i<n.m_narrator.size();i++) {
+			for (int j=0;j<suffixNames.size();j++) {
+				if (equal_ignore_diacritics(n.m_narrator[i]->getString(),suffixNames[j]))
+					return true;
+			}
+		}
+		return false;
+	}
+
 #endif // HADITHCOMMON_H

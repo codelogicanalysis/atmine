@@ -65,7 +65,9 @@ HEADERS += util/text_handling.h \
     ../src/case/timeManualTagger.h \
     ../src/case/narratordetector.h \
     ../src/case/hadithCommon.h \
-    ../src/util/browseDialog.h
+    ../src/util/browseDialog.h \
+    ../src/case/narratorHash.h \
+    ../src/case/biographies.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -107,7 +109,9 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/timeRecognizer.cpp \
     ../src/case/timeManualTagger.cpp \
     ../src/case/narratordetector.cpp \
-    ../src/case/hadithCommon.cpp
+    ../src/case/hadithCommon.cpp \
+    ../src/case/narratorHash.cpp \
+    ../src/case/biographies.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

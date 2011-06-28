@@ -256,7 +256,7 @@ private:
 			#endif
 			}
 	#ifdef IBN_START//needed in case a hadith starts by ibn such as "ibn yousef qal..."
-			else if (stateInfo.currentType==NMC && stateInfo.ibn) {
+			else if (stateInfo.currentType==NMC && stateInfo.familyNMC) {
 			#ifdef PUNCTUATION
 				if (!stateInfo.previousPunctuationInfo.fullstop) {
 					stateInfo.nextState=TEXT_S;
@@ -276,7 +276,9 @@ private:
 				display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 				currentChain->nameConnectorPrim->m_start=stateInfo.startPos;
 				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
-				currentChain->nameConnectorPrim->setIbn();
+				currentChain->nameConnectorPrim->setFamilyConnector();
+				if (stateInfo.ibn)
+					currentChain->nameConnectorPrim->setIbn();
 				currentChain->namePrim->m_start=stateInfo.nextPos;//added this now
 			#endif
 			#ifdef STATS
@@ -350,7 +352,7 @@ private:
 		#endif
 			if(stateInfo.currentType==NMC) {
 				stateInfo.nextState=NMC_S;
-				currentData.nmcValid=stateInfo.isIbnOrPossessivePlace();
+				currentData.nmcValid=stateInfo.isFamilyConnectorOrPossessivePlace();
 				currentData.nmcCount=1;
 				currentData.nmcStartIndex=stateInfo.startPos;
 			#ifdef CHAIN_BUILDING
@@ -359,9 +361,11 @@ private:
 				currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
-				if (stateInfo.ibn)
-					currentChain->nameConnectorPrim->setIbn();
-				else if (stateInfo.possessivePlace)
+				if (stateInfo.familyNMC) {
+					currentChain->nameConnectorPrim->setFamilyConnector();
+					if (stateInfo.ibn)
+						currentChain->nameConnectorPrim->setIbn();
+				} else if (stateInfo.possessivePlace)
 					currentChain->nameConnectorPrim->setPossessive();
 			#endif
 				/*for (int i=0;i<currentChain->temp_nameConnectors->count()-1;i++)
@@ -729,14 +733,16 @@ private:
 				currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
-				if (stateInfo.ibn)
-					currentChain->nameConnectorPrim->setIbn();
-				else if (stateInfo.possessivePlace)
+				if (stateInfo.familyNMC) {
+					currentChain->nameConnectorPrim->setFamilyConnector();
+					if (stateInfo.ibn)
+						currentChain->nameConnectorPrim->setIbn();
+				}else if (stateInfo.possessivePlace)
 					currentChain->nameConnectorPrim->setPossessive();
 			#endif
 			#endif
 				currentData.nmcCount++;
-				if (stateInfo.isIbnOrPossessivePlace())
+				if (stateInfo.isFamilyConnectorOrPossessivePlace())
 					currentData.nmcValid=true;
 				stateInfo.nextState=NMC_S;
 			#ifdef STATS
@@ -967,7 +973,7 @@ private:
 				break;
 			}
 		#ifdef IBN_START
-			else if (stateInfo.currentType==NMC && stateInfo.ibn) {
+			else if (stateInfo.currentType==NMC && stateInfo.familyNMC) {
 				display("<IBN3>");
 			#ifdef CHAIN_BUILDING
 				/*currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
@@ -1108,7 +1114,6 @@ private:
 	{
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
-		stateInfo.ibn=false;
 		stateInfo.possessivePlace=false;
 		stateInfo.resetCurrentWordInfo();
 	#if 0
@@ -1327,7 +1332,7 @@ private:
 		}
 		else if (s.nmc)
 		{
-			if (s.ibn) {
+			if (s.familyNMC) {
 			#if defined(GET_WAW) || defined(REFINEMENTS)
 				PunctuationInfo copyPunc=stateInfo.currentPunctuationInfo;
 			#endif
@@ -1347,8 +1352,10 @@ private:
 				}
 			#endif
 			#ifdef REFINEMENTS
-				display("Bin ");
-				stateInfo.ibn=true;
+				display("FamilyNMC ");
+				stateInfo.familyNMC=true;
+				if (s.ibn)
+					stateInfo.ibn=true;
 				stateInfo.startPos=s.startStem;
 				stateInfo.endPos=s.finishStem;
 				stateInfo.currentPunctuationInfo.reset();
@@ -1361,6 +1368,7 @@ private:
 				stateInfo.currentState=stateInfo.nextState;
 				stateInfo.lastEndPos=stateInfo.endPos;
 				if (s.finishStem<finish) {
+					stateInfo.familyNMC=false;
 					stateInfo.ibn=false;
 					stateInfo.startPos=s.finishStem+1;
 					stateInfo.endPos=finish;
@@ -1661,7 +1669,7 @@ public:
 							else
 								prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
 						}
-						else if (((NameConnectorPrim *)nar_struct)->isIbn())
+						else if (((NameConnectorPrim *)nar_struct)->isFamilyConnector())
 							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkRed,true);
 						else if (((NameConnectorPrim *)nar_struct)->isPossessive())
 							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkMagenta,true);
@@ -1736,7 +1744,7 @@ public:
 		displayed_error	<< (double)(total_solutions/(long double)stemmings)<<"\n"
 						<<stemmings<<"\n";
 	#endif
-		delete text;
+		//delete text;
 		if (currentChain!=NULL)
 			delete currentChain;
 		return 0;
