@@ -165,7 +165,8 @@ void MainWindow::on_pushButton_clicked()
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
-#ifdef TEST_NARRATOR_GRAPH
+#if defined(TEST_NARRATOR_GRAPH)
+#if 0
 	if (m_ui->chk_hadith->isChecked())
 	{
 		if (rc==0)
@@ -182,10 +183,11 @@ void MainWindow::on_pushButton_clicked()
 				sa->setWidget(pic);
 				mw->show();
 			}
-			catch(int i)
+			catch(...)
 			{}
 		}
 	}
+#endif
 #endif
 }
 void MainWindow::on_fill_clicked()

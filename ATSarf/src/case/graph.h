@@ -1,12 +1,15 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "graph_nodes.h"
-#include "browseDialog.h"
-#include "narratordetector.h"
 #include <QStack>
 #include <QInputDialog>
 #include <QDir>
+#include "narratorHash.h"
+#include "graph_nodes.h"
+#include "browseDialog.h"
+#include "narratordetector.h"
+
+extern void biographies(NarratorGraph * graph);
 
 typedef QList<NarratorNodeIfc *> NarratorNodesList;
 
@@ -423,13 +426,21 @@ class FillNodesVisitor: public NodeVisitor
 {
 private:
 	NarratorNodesList * list_all, * list_bottom;
+	NarratorHash * hash;
 public:
-	FillNodesVisitor(NarratorNodesList * list_all,NarratorNodesList * list_bottom){this->list_all=list_all; this->list_bottom=list_bottom;}
-	void initialize(){ list_all->clear(); list_bottom->clear();}
+	FillNodesVisitor(NarratorNodesList * list_all,NarratorNodesList * list_bottom,NarratorHash * hash){
+		this->list_all=list_all;
+		this->list_bottom=list_bottom;
+		this->hash=hash;
+	}
+	void initialize(){ list_all->clear(); list_bottom->clear();hash->clear();}
 	NarratorNodesList * getFilledList(){return list_all;}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
 	virtual void visit(NarratorNodeIfc & n) {
 		list_all->append(&n);
+		for (int i=0;i<n.size();i++) {
+			hash->addNode(&n[i]);
+		}
 		/*if (n.size()==0) //TODO: do a function that checks if it is a leaf node (needs a for loop in the case of a graph node)
 			list_bottom->append(&n);*/
 	}
@@ -510,6 +521,7 @@ private:
 	friend class ColorIndices;
 
 	ATMProgressIFC *prg;
+	NarratorHash hash;
 
 	int highest_rank;//rank of the deapmost node;
 	int getDeapestRank(){return highest_rank;}
@@ -742,7 +754,7 @@ private:
 	void fillNodesLists() {
 		prg->setCurrentAction("Correct NodeList");
 		prg->report(0);
-		FillNodesVisitor visitor(&all_nodes, &bottom_nodes);
+		FillNodesVisitor visitor(&all_nodes, &bottom_nodes,&hash);
 		GraphVisitorController c(&visitor,this);
 		DFS_traverse(c);
 		prg->report(100);
@@ -782,7 +794,6 @@ public:
 		if (hadithParameters.break_cycles)
 			breakManageableCycles();
 		computeRanks();
-		//fillNodesLists();
 	}
 	void DFS_traverse(GraphVisitorController & visitor)
 	{
@@ -833,6 +844,7 @@ public:
 		visitor.finish();
 	}
 	ChainNarratorNode * getNodeMatching(Narrator & n) {
+	#if 0
 		double highest_equality=0;
 		ChainNarratorNode * correspondingNode=NULL;
 		for (int i=0;i<all_nodes.size();i++) {
@@ -850,11 +862,15 @@ public:
 			return correspondingNode;
 		else
 			return NULL;
+	#else
+		return hash.findCorrespondingNode(&n);
+	#endif
 	}
 };
 
 inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *prg)
 {
+#if 0
 	NarratorGraph graph(chains,prg);
 #ifdef TEST_BIOGRAPHIES
 	QString fileName=getFileName(NULL);
@@ -884,6 +900,10 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	graph.DFS_traverse(c);
 	prg->setCurrentAction("Completed");
 	prg->report(100);
+#else
+	NarratorGraph *graph=new NarratorGraph(chains,prg);
+	biographies(graph);
+#endif
 	return 0;
 }
 

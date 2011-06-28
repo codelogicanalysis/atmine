@@ -29,7 +29,7 @@ HadithParameters hadithParameters;
 	QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
-	QHash<long,bool> NMC_descriptions;
+	QHash<long,bool> familyNMC_descriptions;
 	QHash<long,bool> NRC_descriptions;
 	QHash<long,bool> IBN_descriptions;
 #endif
@@ -49,7 +49,7 @@ void readFromDatabasePreProcessedDescriptions() {
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
 	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %' or name LIKE '% mother' or name LIKE 'mother' or name LIKE 'mother/%' or name LIKE 'grandfather' or name LIKE 'grandmother' or name LIKE 'father-in-law' or name LIKE 'mother-in-law' or name LIKE '% uncle' or name LIKE '% uncles'");
 	while (nmc_s.retrieve())
-		NMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
+		familyNMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
 	Retrieve_Template ibn_s("description","id","name='son'");
 	while (ibn_s.retrieve())
 		IBN_descriptions.insert(ibn_s.get(0).toULongLong(),true);
@@ -59,7 +59,7 @@ void readFromDatabasePreProcessedDescriptions() {
 	{
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< NRC_descriptions
-			<< NMC_descriptions
+			<< familyNMC_descriptions
 			<< IBN_descriptions;
 		file.close();
 	}
@@ -75,7 +75,7 @@ void readFromFilePreprocessedDescriptions() {
 	{
 		QDataStream in(&file);    // read the data serialized from the file
 		in	>> NRC_descriptions
-			>> NMC_descriptions
+			>> familyNMC_descriptions
 			>> IBN_descriptions;
 		file.close();
 	}

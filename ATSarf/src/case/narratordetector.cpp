@@ -184,7 +184,7 @@ private:
 			#endif
 			}
 	#ifdef IBN_START//needed in case a hadith starts by ibn such as "ibn yousef qal..."
-			else if (stateInfo.currentType==NMC && stateInfo.ibn) {
+			else if (stateInfo.currentType==NMC && stateInfo.familyNMC) {
 				display("<IBN1>");
 				currentData.initialize();
 				currentData.nmcStartIndex=stateInfo.startPos;
@@ -250,7 +250,7 @@ private:
 		#endif
 			if(stateInfo.currentType==NMC) {
 				stateInfo.nextState=NMC_S;
-				currentData.nmcValid=stateInfo.isIbnOrPossessivePlace();
+				currentData.nmcValid=stateInfo.isFamilyConnectorOrPossessivePlace();
 				currentData.nmcCount=1;
 				currentData.nmcStartIndex=stateInfo.startPos;
 			#ifdef CHAIN_BUILDING
@@ -259,9 +259,11 @@ private:
 				currentBiography->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
-				if (stateInfo.ibn)
-					currentBiography->nameConnectorPrim->setIbn();
-				else if (stateInfo.possessivePlace)
+				if (stateInfo.familyNMC) {
+					currentBiography->nameConnectorPrim->setFamilyConnector();
+					if (stateInfo.ibn)
+						currentBiography->nameConnectorPrim->setIbn();
+				} else if (stateInfo.possessivePlace)
 					currentBiography->nameConnectorPrim->setPossessive();
 			#endif
 				/*for (int i=0;i<currentChain->temp_nameConnectors->count()-1;i++)
@@ -275,7 +277,7 @@ private:
 					if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
 						stateInfo.nextState=TEXT_S;
 					#ifdef CHAIN_BUILDING
-						if (currentBiography->biography->size()>0) //not needed check
+						if (currentBiography->narrator->m_narrator.size()>0) //not needed check
 							currentBiography->biography->addNarrator(currentBiography->narrator);
 					#endif
 						currentData.narratorEndIndex=stateInfo.endPos;
@@ -327,7 +329,7 @@ private:
 			#ifdef CHAIN_BUILDING
 				/*for (int i=0;i<currentBiography->temp_nameConnectors->count();i++)
 					currentBiography->narrator->m_narrator.append(currentBiography->temp_nameConnectors->at(i));*/ //changed this
-				if (currentBiography->biography->size()>0)
+				if (currentBiography->narrator->m_narrator.size()>0)
 					currentBiography->biography->addNarrator(currentBiography->narrator);
 				display(currentBiography->narrator->getString()+"\n");
 			#endif
@@ -403,7 +405,7 @@ private:
 				#endif
 					currentData.narratorEndIndex=(currentBiography->narrator->m_narrator.size()!=0?
 												  currentBiography->narrator->getEnd():
-												  (currentBiography->biography->size()==0?
+												  (currentBiography->narrator->m_narrator.size()==0?
 												   stateInfo.lastEndPos:
 												   currentBiography->biography->getLastNarrator()->getEnd()));
 					currentData.narratorCount++;
@@ -442,7 +444,7 @@ private:
 					display("{check}");
 					currentData.narratorEndIndex=(currentBiography->narrator->m_narrator.size()!=0?
 												  currentBiography->narrator->getEnd():
-												  (currentBiography->biography->size()==0?
+												  (currentBiography->narrator->m_narrator.size()==0?
 												   stateInfo.lastEndPos:
 												   currentBiography->biography->getLastNarrator()->getEnd()));
 					//return_value= false; //changed this now
@@ -458,14 +460,16 @@ private:
 				currentBiography->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
-				if (stateInfo.ibn)
-					currentBiography->nameConnectorPrim->setIbn();
-				else if (stateInfo.possessivePlace)
+				if (stateInfo.familyNMC) {
+					currentBiography->nameConnectorPrim->setFamilyConnector();
+					if (stateInfo.ibn)
+						currentBiography->nameConnectorPrim->setIbn();
+				}else if (stateInfo.possessivePlace)
 					currentBiography->nameConnectorPrim->setPossessive();
 			#endif
 			#endif
 				currentData.nmcCount++;
-				if (stateInfo.isIbnOrPossessivePlace())
+				if (stateInfo.isFamilyConnectorOrPossessivePlace())
 					currentData.nmcValid=true;
 				stateInfo.nextState=NMC_S;
 			#ifdef PUNCTUATION
@@ -619,7 +623,7 @@ private:
 			}
 		#endif
 		#ifdef IBN_START
-			else if (stateInfo.currentType==NMC && stateInfo.ibn) {
+			else if (stateInfo.currentType==NMC && stateInfo.familyNMC) {
 				display("<IBN3>");
 			#ifdef CHAIN_BUILDING
 				/*currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
@@ -630,7 +634,9 @@ private:
 				currentBiography->narrator=new Narrator(text);
 				currentBiography->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
-				currentBiography->nameConnectorPrim->setIbn();
+				currentBiography->nameConnectorPrim->setFamilyConnector();
+				if (stateInfo.ibn)
+					currentBiography->nameConnectorPrim->setIbn();
 				currentBiography->temp_nameConnectors->clear();
 				//currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 			#endif
@@ -716,7 +722,6 @@ private:
 	bool proceedInStateMachine(StateInfo &  stateInfo,BiographyData *currentBiography) { //does not fill stateInfo.currType
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
-		stateInfo.ibn=false;
 		stateInfo.possessivePlace=false;
 		stateInfo.resetCurrentWordInfo();
 	#if 0
@@ -845,7 +850,7 @@ private:
 		}
 		else if (s.nmc)
 		{
-			if (s.ibn) {
+			if (s.familyNMC) {
 			#if defined(GET_WAW) || defined(REFINEMENTS)
 				PunctuationInfo copyPunc=stateInfo.currentPunctuationInfo;
 			#endif
@@ -866,7 +871,9 @@ private:
 			#endif
 			#ifdef REFINEMENTS
 				display("Bin ");
-				stateInfo.ibn=true;
+				stateInfo.familyNMC=true;
+				if (s.ibn)
+					stateInfo.ibn=true;
 				stateInfo.startPos=s.startStem;
 				stateInfo.endPos=s.finishStem;
 				stateInfo.currentPunctuationInfo.reset();
@@ -879,7 +886,7 @@ private:
 				stateInfo.currentState=stateInfo.nextState;
 				stateInfo.lastEndPos=stateInfo.endPos;
 				if (s.finishStem<finish) {
-					stateInfo.ibn=false;
+					stateInfo.familyNMC=false;
 					stateInfo.startPos=s.finishStem+1;
 					stateInfo.endPos=finish;
 					return result(NAME,stateInfo,currentBiography);
@@ -960,7 +967,7 @@ public:
 		chainData *currentBiography=NULL;
 	#endif
 		long  biographyEnd;
-		int hadith_Counter=1;
+		int biography_Counter=1;
 	#endif
 		StateInfo stateInfo;
 		stateInfo.resetCurrentWordInfo();
@@ -987,7 +994,7 @@ public:
 					biographyStart=currentBiography->biography->getStart();
 					//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 					//long end=stateInfo.endPos;
-					out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(biographyStart,display_letters)<<endl;
+					out<<"\n"<<biography_Counter<<" new biography start: "<<text->mid(biographyStart,display_letters)<<endl;
 					out<<"sanad end: "<<text->mid(biographyEnd-display_letters+1,display_letters)<<endl<<endl;
 				#ifdef CHAIN_BUILDING
 					currentBiography->biography->serialize(chainOut);
@@ -995,7 +1002,7 @@ public:
 					//currentChain->chain->serialize(displayed_error);
 				#endif
 				#endif
-					hadith_Counter++;
+					biography_Counter++;
 				}
 			}
 			stateInfo.currentState=stateInfo.nextState;
@@ -1026,18 +1033,18 @@ public:
 	#if defined(DISPLAY_HADITH_OVERVIEW)
 		if (biographyStart<0)
 		{
-			out<<"no hadith found\n";
+			out<<"no biography found\n";
 			chainOutput.close();
 			return 2;
 		}
 		chainOutput.close();
 	#endif
 	#ifdef CHAIN_BUILDING //just for testing deserialize
-		QFile f("hadith_chains.txt");
+		QFile f("biography_chains.txt");
 		if (!f.open(QIODevice::WriteOnly))
 			return 1;
-		QTextStream file_hadith(&f);
-			file_hadith.setCodec("utf-8");
+		QTextStream file_biography(&f);
+			file_biography.setCodec("utf-8");
 
 		if (!chainOutput.open(QIODevice::ReadWrite))
 			return 1;
@@ -1077,7 +1084,7 @@ public:
 						else
 							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
 					}
-					else if (((NameConnectorPrim *)nar_struct)->isIbn())
+					else if (((NameConnectorPrim *)nar_struct)->isFamilyConnector())
 						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkRed,true);
 					else if (((NameConnectorPrim *)nar_struct)->isPossessive())
 						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkMagenta,true);
@@ -1088,7 +1095,7 @@ public:
 			s->serialize(hadith_out);
 		#endif
 			tester_Counter++;
-			s->serialize(file_hadith);
+			s->serialize(file_biography);
 		}
 		chainOutput.close();
 		f.close();

@@ -410,23 +410,8 @@ public:
 typedef Triplet<NamePrim,NamePrim, Int2> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
 
-inline bool isRelativeNarrator(const Narrator & n) {
-	QString n_str=n.getString();
-	if (equal(n_str,abyi))
-		return true;
-	for (int i=1;i<n.m_narrator.size();i++) {
-		for (int j=0;j<suffixNames.size();j++) {
-			if (equal_ignore_diacritics(n.m_narrator[i]->getString(),suffixNames[j]))
-				return true;
-		}
-	}
-	return false;
-}
-
-static const double max_distance=3;
-inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use pointers instead of expensive operations.
-{
-
+inline double getdistance(const Narrator & n1,const Narrator & n2) {//TODO: use pointers instead of expensive operations.
+double max_distance=hadithParameters.equality_threshold*2;
 #ifdef REFINEMENTS
 	bool abihi1=isRelativeNarrator(n1), abihi2=isRelativeNarrator(n2);
 	if (abihi1 || abihi2)
@@ -463,9 +448,13 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 		#ifdef EQUALITY_REFINEMENTS
 			if (Names1.size()==0)
 			{
+			#if 0
 				IbnStemsDetector d(c.hadith_text,c.m_start,c.m_end);
 				d();
 				if (d.ibn)
+			#else
+				if (c.isIbn())
+			#endif
 					first_ibn1=true;
 			}
 		#endif
@@ -480,9 +469,13 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 		#ifdef EQUALITY_REFINEMENTS
 			if (Names2.size()==0)
 			{
+			#if 0
 				IbnStemsDetector d(c.hadith_text,c.m_start,c.m_end);
 				d();
 				if (d.ibn)
+			#else
+				if (c.isIbn())
+			#endif
 					first_ibn2=true;
 			}
 		#endif
@@ -658,7 +651,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 		}
 	}
 	else
-	{//revert wrong decision previosuly if needed
+	{//revert wrong decision previously if needed
 		if (equal_names.count()==min(Names1.count(),Names2.count()))
 		{
 			display("-{equal names} \\ ");//some names are not detected and from the number of ibn, we deduce they are not equal
@@ -686,6 +679,7 @@ inline double getdistance(const Narrator & n1,const Narrator & n2) //TODO: use p
 }
 double equal(const Narrator & n1,const  Narrator  & n2)
 {
+	double max_distance=hadithParameters.equality_threshold*2;
 	double val= max_distance - getdistance(n1,n2);
 	//out<<n1.getString()<<"{"<<val<<"}"<<n2.getString()<<"\n";
 	return val;

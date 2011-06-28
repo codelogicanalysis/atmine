@@ -97,13 +97,15 @@ public:
 };
 class NameConnectorPrim :public NarratorPrim {
 private:
-	enum Type {POS,IBN, OTHER};
+	enum Type {POS,IBN,FAMILY_OTHER, OTHER};
 	Type type;
 public:
 	void setPossessive(){type=POS;}
 	bool isPossessive(){return type==POS;}
 	void setIbn(){type=IBN;}
 	bool isIbn(){return type==IBN;}
+	void setFamilyConnector(){if (type!=IBN) type=FAMILY_OTHER;}
+	bool isFamilyConnector(){return type==IBN || type==FAMILY_OTHER;}
 	void setOther(){type=OTHER;}
 	bool isOther(){return type==OTHER;}
 	NameConnectorPrim(QString * hadith_text);
