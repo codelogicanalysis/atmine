@@ -14,6 +14,11 @@ inline bool possessivesCompare(const NameConnectorPrim * n1,const NameConnectorP
 }
 
 class NarratorHash {
+public:
+	class FoundAction {
+	public:
+		virtual void action(const QString & searchKey, ChainNarratorNode * node, double similarity) =0;
+	};
 private:
 	typedef QVector< NarratorPrim *> NamePrimList;
 	typedef QVector<NamePrimList> NamePrimHierarchy;
@@ -89,13 +94,13 @@ private:
 			hash->hashTable.insert(s,HashValue(c,value,total));
 		}
 	};
-	class FindVisitor: public Visitor {
+	class FindOneVisitor: public Visitor {
 	private:
 		NarratorHash * hash;
 		double largestEquality;
 		ChainNarratorNode * node;
 	public:
-		FindVisitor(NarratorHash * hash) {
+		FindOneVisitor(NarratorHash * hash) {
 			this->hash=hash;
 			largestEquality=0;
 			node=NULL;
@@ -115,6 +120,23 @@ private:
 		double getEqualityValue() { return largestEquality; }
 		ChainNarratorNode * getCorrespondingNode() { return node; }
 	};
+	class FindAllVisitor:public Visitor {
+	private:
+		FoundAction & visitor;
+		NarratorHash * hash;
+	public:
+		FindAllVisitor(NarratorHash * h,FoundAction & v):visitor(v),hash(h) {}
+		void visit(const QString & s, ChainNarratorNode *, int value, int total){
+			HashTable::iterator i = hash->hashTable.find(s);
+			while (i != hash->hashTable.end() && i.key() == s) {
+				HashValue v=*i;
+				double similarity=v.value/v.total*value/total;
+				visitor.action(s,v.node,similarity);
+				++i;
+			 }
+		}
+	};
+
 	class DebuggingVisitor: public Visitor {
 	public:
 		virtual void visit(const QString & s, ChainNarratorNode * , int value, int total){
@@ -258,7 +280,7 @@ public:
 	}
 	ChainNarratorNode * findCorrespondingNode(Narrator * n) {
 		ChainNarratorNode * node=new ChainNarratorNode(n,-1,-1);
-		FindVisitor v(this);
+		FindOneVisitor v(this);
 		generateAllPosibilities(node,v);
 		delete node;
 		ChainNarratorNode * c=v.getCorrespondingNode();
@@ -280,9 +302,17 @@ public:
 		return c;
 	#endif
 	}
+	void performActionToAllCorrespondingNodes(Narrator * n, FoundAction & visitor) {
+		ChainNarratorNode * node=new ChainNarratorNode(n,-1,-1);
+		FindAllVisitor v(this,visitor);
+		generateAllPosibilities(node,v);
+		delete node;
+	}
+
 	void clear() {
 		hashTable.clear();
 	}
+
 #endif
 };
 
