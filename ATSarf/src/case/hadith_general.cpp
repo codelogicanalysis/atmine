@@ -263,7 +263,7 @@ private:
 					break;
 				}
 			#endif
-				display("<IBN1>");
+				display("<Family1>");
 				currentData.initialize();
 				currentData.sanadStartIndex=stateInfo.startPos;
 				currentData.nmcStartIndex=stateInfo.startPos;
@@ -372,6 +372,11 @@ private:
 					delete (*currentChain->temp_nameConnectors)[i];*/
 				delete currentChain->temp_nameConnectors;
 				currentChain->temp_nameConnectors= new TempConnectorPrimList();
+				if (stateInfo.possessivePlace)
+					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+				else
+					currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
+				currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.nextPos);
 			#endif
 			#ifdef STATS
 				map_entry * entry=new map_entry;
@@ -513,15 +518,18 @@ private:
 				currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 
 			#ifdef CHAIN_BUILDING
+				/*currentChain->nameConnectorPrim->m_end=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
+				currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);*/
 				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 					currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+				currentChain->temp_nameConnectors->clear();
 				if (currentChain->chain->m_chain.size()>0)
 					currentChain->chain->m_chain.append(currentChain->narrator);
-				display(currentChain->narrator->getString()+"\n");
+				//display(currentChain->narrator->getString()+"\n");
 				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,currentData.nrcStartIndex);
 				currentChain->narratorConnectorPrim->m_end=currentData.nrcEndIndex;
 				currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
-				display(currentChain->narratorConnectorPrim->getString()+"\n");
+				//display(currentChain->narratorConnectorPrim->getString()+"\n");
 			#endif
 			//2-create a new narrator of just this stop word as name connector
 			#ifdef CHAIN_BUILDING
@@ -581,6 +589,7 @@ private:
 				currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 					currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+				currentChain->temp_nameConnectors->clear();
 				currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,stateInfo.startPos);
 				assert(currentChain->narrator->m_narrator.size()>0);
 				currentChain->chain->m_chain.append(currentChain->narrator);
@@ -614,6 +623,7 @@ private:
 				currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 					currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+				currentChain->temp_nameConnectors->clear();
 				currentChain->namePrim=new NamePrim(text,stateInfo.startPos);
 				currentChain->namePrim->m_end=stateInfo.endPos;
 			#endif
@@ -761,6 +771,7 @@ private:
 					currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 					for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 						currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+					currentChain->temp_nameConnectors->clear();
 					assert(currentChain->narrator->m_narrator.size()>0);
 					currentChain->chain->m_chain.append(currentChain->narrator);
 				#endif
@@ -793,6 +804,7 @@ private:
 					currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 					for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
 						currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors->at(i));
+					currentChain->temp_nameConnectors->clear();
 					assert(currentChain->narrator->m_narrator.size()>0);
 					currentChain->chain->m_chain.append(currentChain->narrator);
 				#endif
@@ -974,7 +986,7 @@ private:
 			}
 		#ifdef IBN_START
 			else if (stateInfo.currentType==NMC && stateInfo.familyNMC) {
-				display("<IBN3>");
+				display("<Family3>");
 			#ifdef CHAIN_BUILDING
 				/*currentChain->temp_nameConnectors->append(currentChain->nameConnectorPrim);
 				for (int i=0;i<currentChain->temp_nameConnectors->count();i++)
@@ -986,7 +998,9 @@ private:
 				currentChain->narrator=new Narrator(text);
 				currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
 				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
-				currentChain->nameConnectorPrim->setIbn();
+				currentChain->nameConnectorPrim->setFamilyConnector();
+				if (stateInfo.ibn)
+					currentChain->nameConnectorPrim->setIbn();
 				currentChain->temp_nameConnectors->clear();
 				//currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
 			#endif
