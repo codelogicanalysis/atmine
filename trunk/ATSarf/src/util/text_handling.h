@@ -47,7 +47,7 @@ inline bool equal(const QChar & c1, const QChar & c2)
 		return true;
 	return false;
 }
-inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//TODO: solve bug in index boundaries here
+inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)
 {
 	int length1=word1.length(),length2=word2.length();
 	int i=0,j=0;
@@ -73,15 +73,15 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)//
 		i++;
 		j++;
 	}
-	if (length1-(i+1)<=0)
+	if (length1-(i)<=0)
 	{
-		for (int f=j+1;f<length2;f++)
+		for (int f=j;f<length2;f++)
 			if (!isDiacritic(word2[f]))
 				return false;
 	}
-	else if (length2-(j+1)<=0)
+	else if (length2-(j)<=0)
 	{
-		for (int f=i+1;f<length1;f++)
+		for (int f=i;f<length1;f++)
 			if (!isDiacritic(word1[f]))
 				return false;
 	}

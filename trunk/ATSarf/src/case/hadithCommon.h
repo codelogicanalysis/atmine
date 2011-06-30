@@ -512,8 +512,9 @@
 		if (equal(n_str,abyi))
 			return true;
 		for (int i=1;i<n.m_narrator.size();i++) {
+			QString s=n.m_narrator[i]->getString();
 			for (int j=0;j<suffixNames.size();j++) {
-				if (equal_ignore_diacritics(n.m_narrator[i]->getString(),suffixNames[j]))
+				if (equal_ignore_diacritics(s,suffixNames[j]))
 					return true;
 			}
 		}
