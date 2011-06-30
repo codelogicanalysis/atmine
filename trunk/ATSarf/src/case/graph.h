@@ -405,7 +405,7 @@ public:
 
 };
 
-class DisplayNodeVisitorColored: public DisplayNodeVisitor {
+class DisplayNodeVisitorColoredBiography: public DisplayNodeVisitor {
 private:
 	int index;
 protected:
@@ -416,11 +416,35 @@ protected:
 			return "";
 	}
 public:
-	DisplayNodeVisitorColored(int biographyIndex) {
+	DisplayNodeVisitorColoredBiography(int biographyIndex) {
 		index=biographyIndex;
 	}
-
 };
+class DisplayNodeVisitorColoredNarrator: public DisplayNodeVisitor {
+public:
+	typedef QMap<NarratorNodeIfc*,double> DetectedNodesMap;
+private:
+	DetectedNodesMap & map;
+protected:
+	virtual QString getOtherAttributes(NarratorNodeIfc & n) {
+		DetectedNodesMap::iterator i = map.find(&n);
+		if (i!=map.end()) {
+			double v=*i;
+			QColor r=Qt::lightGray;
+			r=r.darker(v*300);
+			unsigned int color=r.toRgb().rgba();
+			QByteArray text = QByteArray::number(color,16);
+		#ifdef NARRATORHASH_DEBUG
+			qDebug()<<"["<<n.CanonicalName()<<"\t"<<v<<"]";
+		#endif
+			return QString(",style=filled, fillcolor=\"#").append(text.data()).append("\"");
+		} else
+			return "";
+	}
+public:
+	DisplayNodeVisitorColoredNarrator(DetectedNodesMap & m):map(m) {	}
+};
+
 
 class FillNodesVisitor: public NodeVisitor
 {

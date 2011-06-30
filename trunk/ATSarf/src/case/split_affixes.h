@@ -231,7 +231,7 @@ private:
 		return -1;
 	}
 
-public:
+private:
 	int source_id;
 	long cat_empty;
 	QTextEdit * affix;

@@ -19,7 +19,7 @@
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
 #define TAG_HADITH
-#define HADITHDEBUG  //just for additional debugging statements displayed
+//#define HADITHDEBUG  //just for additional debugging statements displayed
 #define PUNCTUATION
 #define TRYTOLEARN
 //#define ADD_ENARRATOR_NAMES
@@ -46,8 +46,9 @@
 //#define NARRATORDEBUG
 //#define COUNT_RASOUL
 #define TEST_BIOGRAPHIES
-#define NARRATORHASH_DEBUG
+//#define NARRATORHASH_DEBUG
 #define HASH_TOTAL_VALUES
+#define COLOR_ALL
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

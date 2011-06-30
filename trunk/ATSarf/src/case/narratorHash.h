@@ -130,7 +130,10 @@ private:
 			HashTable::iterator i = hash->hashTable.find(s);
 			while (i != hash->hashTable.end() && i.key() == s) {
 				HashValue v=*i;
-				double similarity=v.value/v.total*value/total;
+				double similarity=(double)(v.value)/v.total*value/total;
+			#ifdef NARRATORHASH_DEBUG
+				//qDebug()<<s<<"\t("<<v.value<<"/"<<v.total<<")\t("<<value<<"/"<<total<<")\t"<<similarity;
+			#endif
 				visitor.action(s,v.node,similarity);
 				++i;
 			 }

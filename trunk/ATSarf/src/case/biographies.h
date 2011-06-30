@@ -37,37 +37,51 @@ public:
 		this->graph=graph;
 		text=new QTextBrowser(this);
 		parse=new QPushButton("&Parse Biographies",this);
-		color=new QPushButton("&Color Biography",this);
+		colorBiography=new QPushButton("Color &Biography",this);
+		colorNarrators=new QPushButton("Color &Narrators",this);
 		browse=new QPushButton("&Browse",this);
 		input=new QTextEdit(this);
+		input->setMaximumHeight(30);
 		biographyNum=new QComboBox(this);
+		narratorListDisplay=new QTableWidget(0,2,this);
+		narratorListDisplay->clear();
+		QStringList v;
+		v<<"Narrator"<<"Biography";
+		narratorListDisplay->verticalHeader()->setHidden(true);
+		narratorListDisplay->setHorizontalHeaderLabels(v);
+		narratorListDisplay->setEditTriggers(QAbstractItemView::NoEditTriggers);
+		narratorListDisplay->setSelectionBehavior(QAbstractItemView::SelectRows);
+		narratorListDisplay->setSelectionMode(QAbstractItemView::MultiSelection);
 		scrollArea=new QScrollArea(this);
 		subScrollArea=new QScrollArea(scrollArea);
 		pic=new QLabel(subScrollArea);
 		subScrollArea->setWidget(pic);
 		progressBar=new QProgressBar(this);
 		grid=new QGridLayout(scrollArea);
-		grid->addWidget(input,0,0,1,3);
-		grid->addWidget(browse,0,3);
-		grid->addWidget(parse,0,4);
-		grid->addWidget(biographyNum,0,5);
-		grid->addWidget(color,0,6);
-		grid->addWidget(progressBar,0,7,1,3);
-		grid->addWidget(text,1,0,3,5);
-		grid->addWidget(subScrollArea,1,5,3,5);
+		grid->addWidget(input,0,0,1,4);
+		grid->addWidget(browse,0,4);
+		grid->addWidget(parse,0,5);
+		grid->addWidget(biographyNum,1,3);
+		grid->addWidget(colorBiography,1,4);
+		grid->addWidget(colorNarrators,1,5);
+		grid->addWidget(progressBar,1,0,1,3);
+		grid->addWidget(narratorListDisplay,0,6,2,4);
+		grid->addWidget(text,2,0,3,3);
+		grid->addWidget(subScrollArea,2,3,3,7);
 		grid->setRowMinimumHeight(0,50);
 		grid->setRowStretch(0,0);
-		grid->setRowStretch(1,150);
-		grid->setRowMinimumHeight(1,500);
-		grid->setRowMinimumHeight(2,300);
-		grid->setRowStretch(2,0);
-		grid->setColumnStretch(0,150);
-		grid->setColumnStretch(7,150);
+		grid->setRowStretch(2,150);
+		grid->setRowMinimumHeight(2,500);
+		grid->setRowMinimumHeight(3,300);
+		grid->setRowStretch(3,0);
+		//grid->setColumnStretch(0,150);
+		//grid->setColumnStretch(7,150);
 		subScrollArea->setWidget(pic);
 		setCentralWidget(scrollArea);
 		subScrollArea->setWidgetResizable(true);
 		connect(parse,SIGNAL(clicked()),this,SLOT(parse_clicked()));
-		connect(color,SIGNAL(clicked()),this,SLOT(color_clicked()));
+		connect(colorBiography,SIGNAL(clicked()),this,SLOT(colorBiography_clicked()));
+		connect(colorNarrators,SIGNAL(clicked()),this,SLOT(colorNarrators_clicked()));
 		connect(browse,SIGNAL(clicked()),this,SLOT(browse_clicked()));
 		setWindowTitle("Biographies");
 		this->resize(900,700);
@@ -77,7 +91,7 @@ public:
 		errors=new QTextBrowser(this);
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
-		grid->addWidget(errors,4,0,1,10);
+		grid->addWidget(errors,6,0,1,10);
 		displayed_error.setString(errors_text);
 		out.setString(errors_text);
 	#endif
@@ -92,16 +106,22 @@ public slots:
 		QString fileName=input->toPlainText();
 		biographyList=getBiographies(fileName,this);
 		biographyNum->clear();
+		int count=0;
 		for (int i=0;i<biographyList->size();i++) {
 			for (int j=0;j<biographyList->at(i)->size();j++) {
-			#if 0
+			#ifndef COLOR_ALL
 				Narrator * n=(*biographyList->at(i))[j];
 				ChainNarratorNode * c=graph->getNodeMatching(*n);
 				if (c!=NULL)
 					c->addBiographyIndex(i);
 			#else
 				Narrator * n=(*biographyList->at(i))[j];
-				ColorAction c(i);
+				narratorListDisplay->setRowCount(count+1);
+				narratorListDisplay->setItem(count,0,new QTableWidgetItem(n->getString()));
+				narratorListDisplay->setItem(count,1,new QTableWidgetItem(QString("%1").arg(i)));
+				narratorList.append(n);
+				count++;
+				ColorBiographiesAction c(i);
 				graph->performActionToAllCorrespondingNodes(n,c);
 			#endif
 			}
@@ -109,11 +129,11 @@ public slots:
 		}
 		displayUncoloredGraph();
 	}
-	void color_clicked() {
+	void colorBiography_clicked() {
 		int num=biographyNum->currentText().toInt();
 		setCurrentAction("Display Graph");
 		report(0);
-		DisplayNodeVisitorColored visitor(num);
+		DisplayNodeVisitorColoredBiography visitor(num);
 		GraphVisitorController c(&visitor,graph);
 		graph->DFS_traverse(c);
 		setCurrentAction("Completed");
@@ -123,7 +143,30 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
-
+	}
+	void colorNarrators_clicked() {
+		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
+		ColorNarratorsAction::DetectedNodesMap map;
+		ColorNarratorsAction action(map);
+		for (int i=0;i<selection.size();i++) {
+			int topRow=selection[i].topRow();
+			for (int j=0;j<selection[i].rowCount();j++) {
+				int row=topRow+j;
+				Narrator * n=narratorList[row];
+				graph->performActionToAllCorrespondingNodes(n,action);
+			}
+		}
+		report(0);
+		DisplayNodeVisitorColoredNarrator visitor(map);
+		GraphVisitorController c(&visitor,graph);
+		graph->DFS_traverse(c);
+		setCurrentAction("Completed");
+		report(100);
+		try{
+			system("dot -Tsvg graph.dot -o graph.svg");
+			pic->setPixmap(QPixmap("./graph.svg"));
+			subScrollArea->setWidget(pic);
+		}catch(...) {}
 	}
 	void browse_clicked() {
 		QString fileName=getFileName(browseFileDlg);
@@ -150,25 +193,56 @@ private:
 		}catch(...) {}
 	}
 
-	class ColorAction: public NarratorHash::FoundAction {
+	class ColorBiographiesAction: public NarratorHash::FoundAction {
 	private:
 		int biographyIndex;
 	public:
-		ColorAction(int biographyIndex) { this->biographyIndex=biographyIndex;}
+		ColorBiographiesAction(int biographyIndex) { this->biographyIndex=biographyIndex;}
 		virtual void action(const QString &, ChainNarratorNode * node, double ) {
 			node->addBiographyIndex(biographyIndex);
 		}
 	};
+	class ColorNarratorsAction: public NarratorHash::FoundAction {
+	public:
+		typedef QMap<NarratorNodeIfc*,double> DetectedNodesMap;
+	private:
+		DetectedNodesMap & map;
+	public:
+		ColorNarratorsAction(DetectedNodesMap & m):map(m) { }
+		virtual void action(const QString &, ChainNarratorNode * node, double v) {
+			NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
+			DetectedNodesMap::iterator i = map.find(n);
+			#ifdef NARRATORHASH_DEBUG
+				qDebug()<<"("<<n->CanonicalName()<<")";
+			#endif
+			if (i!=map.end()) {
+				double oldSimilarity=*i;
+				if (oldSimilarity<v) {
+					map[n]=v;
+				#ifdef NARRATORHASH_DEBUG
+					qDebug()<<oldSimilarity<<"--->\t"<<v;
+				#endif
+				}
+			} else {
+			#ifdef NARRATORHASH_DEBUG
+				qDebug()<<s<<"\t--->\t"<<v;
+			#endif
+				map[n]=v;
+			}
+		}
+	};
 
-public:
+private:
 
-	QPushButton * parse, *color, *browse;
+	QPushButton * parse, *colorBiography, *browse, *colorNarrators;
 	QTextBrowser * text;
 	QScrollArea *scrollArea,* subScrollArea;
 	QTextEdit *input;
 	QComboBox * biographyNum;
 	QLabel * pic;
 	QProgressBar *progressBar;
+	QTableWidget * narratorListDisplay;
+	QList<Narrator *> narratorList;
 #ifdef ERRORS_BIO
 	QTextBrowser * errors;
 	QString * errors_text;
@@ -181,7 +255,7 @@ public:
 
 	~BiographiesWindow() {
 		delete parse;
-		delete color;
+		delete colorBiography;
 		delete browse;
 		delete text;
 		delete input;
@@ -190,6 +264,8 @@ public:
 		delete subScrollArea;
 		delete pic;
 		delete progressBar;
+		delete narratorListDisplay;
+		delete colorNarrators;
 	#ifdef ERRORS_BIO
 		delete errors;
 		delete errors_text;
