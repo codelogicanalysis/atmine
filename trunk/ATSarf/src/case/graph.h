@@ -866,6 +866,9 @@ public:
 		return hash.findCorrespondingNode(&n);
 	#endif
 	}
+	void performActionToAllCorrespondingNodes(Narrator * n, NarratorHash::FoundAction & visitor) {
+		hash.performActionToAllCorrespondingNodes(n,visitor);
+	}
 };
 
 inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *prg)

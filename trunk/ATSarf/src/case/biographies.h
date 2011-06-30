@@ -94,10 +94,16 @@ public slots:
 		biographyNum->clear();
 		for (int i=0;i<biographyList->size();i++) {
 			for (int j=0;j<biographyList->at(i)->size();j++) {
+			#if 0
 				Narrator * n=(*biographyList->at(i))[j];
 				ChainNarratorNode * c=graph->getNodeMatching(*n);
 				if (c!=NULL)
 					c->addBiographyIndex(i);
+			#else
+				Narrator * n=(*biographyList->at(i))[j];
+				ColorAction c(i);
+				graph->performActionToAllCorrespondingNodes(n,c);
+			#endif
 			}
 			biographyNum->addItem(QString("%1").arg(i));
 		}
@@ -143,6 +149,16 @@ private:
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
 	}
+
+	class ColorAction: public NarratorHash::FoundAction {
+	private:
+		int biographyIndex;
+	public:
+		ColorAction(int biographyIndex) { this->biographyIndex=biographyIndex;}
+		virtual void action(const QString &, ChainNarratorNode * node, double ) {
+			node->addBiographyIndex(biographyIndex);
+		}
+	};
 
 public:
 
