@@ -18,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	m_ui->setupUi(this);
 	m_ui->pushButton->setVisible(false);
-	//m_ui->chk_testing->setVisible(false);
+#ifdef EQUAL_NEW
+	m_ui->EQ_threshold->setText("0.1");
+#endif
 }
 
 MainWindow::~MainWindow()

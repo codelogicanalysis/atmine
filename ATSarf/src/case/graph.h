@@ -431,7 +431,7 @@ protected:
 		if (i!=map.end()) {
 			double v=*i;
 			QColor r=Qt::lightGray;
-			r=r.darker(v*300);
+			r=r.darker(min(v*1000,100.0));
 			unsigned int color=r.toRgb().rgba();
 			QByteArray text = QByteArray::number(color,16);
 		#ifdef NARRATORHASH_DEBUG
@@ -535,8 +535,28 @@ public:
 	}
 	virtual void finish() { /*swapThresholds();*/ }
 };
-class NarratorGraph
-{
+class NarratorGraph {
+public:
+	class HadithFileDetails {
+	public:
+		HadithFileDetails(QString fileName) {this->fileName=fileName;}
+		HadithFileDetails(QDataStream &in) {deserialize(in);}
+		QString fileName;
+		//TODO: later add last modified date for check
+
+		void serialize(QDataStream &out) {
+			out << fileName;
+		}
+		void deserialize(QDataStream &in){
+			in>>fileName;
+		}
+	};
+
+	typedef QMap<NarratorNodeIfc *,int> Node2IntMap;
+	typedef QMap<int,NarratorNodeIfc *> Int2NodeMap;
+	typedef QMap<QString *,int> String2IntMap;
+	typedef QMap<int,QString *> Int2StringMap;
+	typedef QList<HadithFileDetails> HadithFilesList;
 private:
 	ColorIndices colorGuard;
 	NarratorNodesList	top_nodes,
@@ -547,8 +567,72 @@ private:
 	ATMProgressIFC *prg;
 	NarratorHash hash;
 
+	Node2IntMap node2IntMap;
+	Int2NodeMap int2NodeMap;
+	int nodesCount;
+	String2IntMap hadith2IntMap;
+	Int2StringMap int2HadithMap;
+	HadithFilesList hadithFileList;
+	friend class NarratorNodeIfc;
+	friend class GraphNarratorNode;
+	friend class ChainNarratorNode;
+	friend class NarratorHash;
+
 	int highest_rank;//rank of the deapmost node;
 	int getDeapestRank(){return highest_rank;}
+
+	int getSerializationNodeEquivalent(NarratorNodeIfc * n) {
+		if (n==NULL)
+			return 0;
+		Node2IntMap::iterator i=node2IntMap.find(n);
+		if (i!=node2IntMap.end()) {
+			return *i;
+		} else
+			return -1;
+	}
+	int allocateSerializationNodeEquivalent(NarratorNodeIfc * n) {
+		if (n==NULL)
+			return 0;
+		Node2IntMap::iterator i=node2IntMap.find(n);
+		if (i!=node2IntMap.end()) {
+			return *i;
+		} else {
+			node2IntMap[n]=nodesCount;
+			nodesCount++;
+			return nodesCount-1;
+		}
+	}
+	NarratorNodeIfc * getDeserializationIntEquivalent(int num) {
+		Int2NodeMap::iterator i=int2NodeMap.find(num);
+		if (i!=int2NodeMap.end()) {
+			return *i;
+		} else {
+			return NULL;
+		}
+	}
+	void setDeserializationIntEquivalent(int num,NarratorNodeIfc * node) {
+		int2NodeMap[num]=node;
+	}
+	int getHadithStringSerializationEquivalent(QString * text) {
+		assert(text!=NULL);
+		String2IntMap::iterator i=hadith2IntMap.find(text);
+		if (i!=hadith2IntMap.end()) {
+			return *i;
+		} else
+			return -1;
+	}
+	QString * getHadithStringDeserializationIntEquivalent(int num) {
+		Int2StringMap::iterator i=int2HadithMap.find(num);
+		if (i!=int2HadithMap.end()) {
+			return *i;
+		} else {
+			return NULL;
+		}
+	}
+	void setHadithStringDeserializationIntEquivalent(int num,QString * n) {
+		int2HadithMap[num]=n;
+	}
+	//TODO: create code to complete what is needed for HadithSerialization and deserialization and listFilling
 
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2) {
 		NarratorNodeIfc & narr1=n1.getCorrespondingNarratorNode(),
@@ -807,7 +891,7 @@ private:
 		visitor.finishVisit(n);
 	}
 public:
-	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg)
+	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg):hash(this)
 	{
 		this->prg=prg;
 		colorGuard.setGraph(this);
@@ -819,11 +903,18 @@ public:
 			breakManageableCycles();
 		computeRanks();
 	}
+	void setFileName(QString * text, QString fileName) {
+		assert(text!=NULL);
+		int size=hadithFileList.size();
+		hadith2IntMap[text]=size;
+		int2HadithMap[size]=text;
+		hadithFileList.append(HadithFileDetails(fileName));
+	}
 	void DFS_traverse(GraphVisitorController & visitor)
 	{
 		visitor.initialize();
-		int size=top_nodes.size();
-		for (int i=0; i<size;i++)
+		//int size=top_nodes.size();
+		for (int i=0; i<top_nodes.size();i++)
 		{
 			NarratorNodeIfc * node=top_nodes[i];
 			if (!visitor.isPreviouslyVisited(*node))
@@ -892,6 +983,121 @@ public:
 	}
 	void performActionToAllCorrespondingNodes(Narrator * n, NarratorHash::FoundAction & visitor) {
 		hash.performActionToAllCorrespondingNodes(n,visitor);
+	}
+	void serialize(QDataStream & streamOut) {
+	#define SERIALIZE_STOP -2
+		int size=hadithFileList.size();
+		streamOut<<size;
+		for (int i=0;i<size;i++) {
+			hadithFileList[i].serialize(streamOut);
+		}
+
+		node2IntMap.clear();
+		nodesCount=0;
+		for (int i=0;i<all_nodes.size();i++) {
+			int size=(*all_nodes[i]).size();
+			streamOut<<size;
+			for (int j=0;j<size;j++) {
+				streamOut<<allocateSerializationNodeEquivalent(&(*all_nodes[i])[j]);
+				(*all_nodes[i])[j].serialize(streamOut,*this);
+			}
+			if (size>1) {
+				streamOut<<allocateSerializationNodeEquivalent(all_nodes[i]);
+				all_nodes[i]->serialize(streamOut,*this);
+			}
+		}
+		streamOut<<SERIALIZE_STOP;
+
+		size=top_nodes.size();
+		streamOut<<size;
+		for (int i=0;i<size;i++) {
+			streamOut<<getSerializationNodeEquivalent(top_nodes[i]);
+		}
+
+		size=bottom_nodes.size();
+		streamOut<<size;
+		for (int i=0;i<size;i++) {
+			streamOut<<getSerializationNodeEquivalent(bottom_nodes[i]);
+		}
+
+		hash.serialize(streamOut);
+	}
+	void deserialize(QDataStream & streamIn) {
+		int2NodeMap.clear();
+		hadithFileList.clear();
+		int size;
+		streamIn>>size;
+		for (int i=0;i<size;i++) {
+			HadithFileDetails v(streamIn);
+			hadithFileList.append(v);
+			QFile input(v.fileName);
+			if (!input.open(QIODevice::ReadOnly))
+			{
+				out << "Hadith File needed but not found: "<<v.fileName<<"\n";
+				return;
+			}
+			QTextStream file(&input);
+			file.setCodec("utf-8");
+			QString *text=new QString(file.readAll());
+			setHadithStringDeserializationIntEquivalent(i,text);
+		}
+
+		int n;
+		streamIn>>n;
+		while(n!=SERIALIZE_STOP) {
+			int size=n;
+			ChainNarratorNode * c;
+			for (int j=0;j<size;j++) {
+				int cInt;
+				streamIn>>cInt;
+				c=(ChainNarratorNode *)NarratorNodeIfc::deserialize(streamIn,*this);
+				assert(c!=NULL);
+				setDeserializationIntEquivalent(cInt,c);
+			}
+			if (size==1) {
+				all_nodes.append(c);
+			} else {
+				int cInt;
+				streamIn>>cInt;
+				NarratorNodeIfc * n=NarratorNodeIfc::deserialize(streamIn,*this);
+				assert(n->isGraphNode());
+				setDeserializationIntEquivalent(cInt,n);
+				all_nodes.append(n);
+			}
+
+			streamIn>>n; //get next number
+		}
+
+		streamIn>>size;
+		for (int i=0;i<size;i++) {
+			int cInt;
+			streamIn>>cInt;
+			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
+			top_nodes.append(n);
+		}
+
+		streamIn>>size;
+		for (int i=0;i<size;i++) {
+			int cInt;
+			streamIn>>cInt;
+			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
+			bottom_nodes.append(n);
+		}
+
+		hash.deserialize(streamIn);
+	#undef SERIALIZE_STOP
+	}
+
+	~NarratorGraph() {
+		Int2StringMap::iterator i=int2HadithMap.begin();
+		for (;i!=int2HadithMap.end();i++)
+			delete *i;
+		for (int i=0;i<all_nodes.size();i++) {
+			for (int j=0;j<all_nodes.size();j++) {
+				delete &(*all_nodes[i])[j];
+			}
+			delete all_nodes[i];
+		}
 	}
 };
 

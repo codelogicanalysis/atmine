@@ -7,6 +7,7 @@
 #include "stemmer.h"
 #include <QPair>
 #include "hadith_utilities.h"
+#include "narratorHash.h"
 
 #ifdef EQUALITYDEBUG
 	inline void display(QString t) {
@@ -399,10 +400,8 @@ class Int2
 public:
 	int first:16;
 	int second:16;
-	Int2(int f,int s): first(f), second(s)
-	{	}
-	int difference()
-	{
+	Int2(int f,int s): first(f), second(s) { }
+	int difference() {
 		int d=first-second;
 		return (d>=0?d:-d);
 	}
@@ -410,7 +409,7 @@ public:
 typedef Triplet<NamePrim,NamePrim, Int2> EqualNamesStruct;
 typedef Triplet<NameConnectorPrim,NameConnectorPrim, int> EqualConnsStruct;
 
-inline double getdistance(const Narrator & n1,const Narrator & n2) {//TODO: use pointers instead of expensive operations.
+inline double getdistance(const Narrator & n1,const Narrator & n2) {
 double max_distance=hadithParameters.equality_threshold*2;
 #ifdef REFINEMENTS
 	bool abihi1=isRelativeNarrator(n1), abihi2=isRelativeNarrator(n2);
@@ -677,16 +676,107 @@ double max_distance=hadithParameters.equality_threshold*2;
 	display("\n");
 	return min(max(dist-equal_conns.count()*delta/2,0.0),max_distance);
 }
-double equal(const Narrator & n1,const  Narrator  & n2)
-{
+
+
+
+inline double equalNew(const Narrator & n1,const Narrator & n2) {
+	bool abihi1=isRelativeNarrator(n1), abihi2=isRelativeNarrator(n2);
+	if (abihi1 || abihi2)
+		return 0; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
+	if (n1.isRasoul || n2.isRasoul) {
+		if (n1.isRasoul && n2.isRasoul)
+			return 1;
+		else
+			return 0;
+	}
+	QString n1_str=n1.getString(),n2_str=n2.getString();
+	if (equal(n1_str,n2_str))
+		return 1;
+	NarratorHash::NamePrimHierarchy names1;
+	NarratorHash::PossessiveList possessives1;
+	int j=0; //index of names entry defined by bin
+	names1.append(NarratorHash::NamePrimList());
+	//qDebug()<< names.size();
+	for (int i=0;i<n1.m_narrator.count();i++) {
+		if (n1.m_narrator[i]->getString().isEmpty())
+			continue;
+		if (n1.m_narrator[i]->isNamePrim())
+			names1[j].append(n1.m_narrator[i]);
+		else {
+			NameConnectorPrim * c=(NameConnectorPrim*)n1.m_narrator[i];
+			if (c->isPossessive()) {
+				possessives1.append(c);
+			} else if (c->isIbn()){
+				names1.append(NarratorHash::NamePrimList());
+				j++;
+			} else if (c->isFamilyConnector()) {
+				names1[j].append(c);
+			}
+			//if (c->isOther()) do nothing
+		}
+	}
+	NarratorHash::NamePrimHierarchy names2;
+	NarratorHash::PossessiveList possessives2;
+	j=0; //index of names entry defined by bin
+	names2.append(NarratorHash::NamePrimList());
+	for (int i=0;i<n2.m_narrator.count();i++) {
+		if (n2.m_narrator[i]->getString().isEmpty())
+			continue;
+		if (n2.m_narrator[i]->isNamePrim())
+			names2[j].append(n2.m_narrator[i]);
+		else {
+			NameConnectorPrim * c=(NameConnectorPrim*)n2.m_narrator[i];
+			if (c->isPossessive()) {
+				possessives2.append(c);
+			} else if (c->isIbn()){
+				names2.append(NarratorHash::NamePrimList());
+				j++;
+			} else if (c->isFamilyConnector()) {
+				names2[j].append(c);
+			}
+			//if (c->isOther()) do nothing
+		}
+	}
+	//TODO: add sorting of names inside same level (pay attention to those after family connector) and possessives
+	qSort(possessives1.begin(),possessives1.end(),possessivesCompare);
+	qSort(possessives2.begin(),possessives2.end(),possessivesCompare);
+	//TODO: allow for skipping in the selection if total number is conserved
+
+	int levelMin=min(names1.size(),names2.size());
+	int levelMax=max(names1.size(),names2.size());
+	int levelsEqual=0;
+	for (int i=0;i<levelMin;i++) {
+		int namesMin=min(names1[i].size(),names2[i].size());
+		int equal=false;
+		for (int j=0;j<namesMin;j++) {
+			if (!names1[i][j]->isNamePrim() && !names2[i][j]->isNamePrim() )
+				continue;
+			if (names1[i][j]->getString()!=names2[i][j]->getString())
+				return 0;
+			else
+				equal=true;
+		}
+		if (equal)
+			levelsEqual++;
+	}
+	//till now possessives not even compared
+	return (double)levelsEqual/levelMax;
+
+}
+
+
+double equal(const Narrator & n1,const  Narrator  & n2) {
+#ifdef EQUAL_NEW
+	return equalNew(n1,n2);
+#else
 	double max_distance=hadithParameters.equality_threshold*2;
 	double val= max_distance - getdistance(n1,n2);
 	//out<<n1.getString()<<"{"<<val<<"}"<<n2.getString()<<"\n";
 	return val;
+#endif
 }
 
-double Narrator::equals(const Narrator & rhs) const
-{
+double Narrator::equals(const Narrator & rhs) const {
     return equal(*this,rhs);
 }
 

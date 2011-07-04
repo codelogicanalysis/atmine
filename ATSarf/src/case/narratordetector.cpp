@@ -273,7 +273,7 @@ private:
 			#endif
 			#ifdef PUNCTUATION
 				if (stateInfo.currentPunctuationInfo.has_punctuation) {
-					currentData.nmcCount=hadithParameters.nmc_max+1;
+					currentData.nmcCount=hadithParameters.bio_nmc_max+1;
 					if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
 						stateInfo.nextState=TEXT_S;
 					#ifdef CHAIN_BUILDING
@@ -391,7 +391,7 @@ private:
 		#ifdef PUNCTUATION
 			else if (stateInfo.currentPunctuationInfo.has_punctuation) { //TODO: if punctuation check is all what is required
 				stateInfo.nextState=NMC_S;
-				currentData.nmcCount=hadithParameters.nmc_max+1;
+				currentData.nmcCount=hadithParameters.bio_nmc_max+1;
 				currentData.nmcValid=false;
 				if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
 					stateInfo.nextState=TEXT_S;
@@ -414,13 +414,13 @@ private:
 				}
 			}
 		#endif
-			else if (currentData.nmcCount>hadithParameters.nmc_max
+			else if (currentData.nmcCount>hadithParameters.bio_nmc_max
 					#ifdef PUNCTUATION
 						 || stateInfo.number ||
 						 (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine)
 					#endif
 				) {
-				if (currentData.nmcCount>hadithParameters.nmc_max && currentData.nmcValid) {//number is severe condition no tolerance
+				if (currentData.nmcCount>hadithParameters.bio_nmc_max && currentData.nmcValid) {//number is severe condition no tolerance
 					currentData.nmcValid=false;
 					stateInfo.nextState=NMC_S;
 					currentData.nmcCount=0;
@@ -614,7 +614,7 @@ private:
 			#endif
 			}
 		#ifdef PUNCTUATION
-			else if ( stateInfo.number || currentData.nrcCount>=hadithParameters.nrc_max) { //if not in refinements mode stateInfo.number will always remain false
+			else if ( stateInfo.number || currentData.nrcCount>=hadithParameters.bio_nrc_max) { //if not in refinements mode stateInfo.number will always remain false
 				stateInfo.nextState=TEXT_S;
 
 				//currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(start_index); //check this case
@@ -985,7 +985,7 @@ public:
 	#endif
 		for (;stateInfo.startPos<text_size;) {
 			if((proceedInStateMachine(stateInfo,currentBiography)==false)) {
-				if (currentData.narratorCount>=hadithParameters.narr_min) {
+				if (currentData.narratorCount>=hadithParameters.bio_narr_min) {
 					//biographyEnd=currentData.narratorEndIndex;
 					biographyEnd=stateInfo.endPos;
 					currentBiography->biography->setEnd(biographyEnd);

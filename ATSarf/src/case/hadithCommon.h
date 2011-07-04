@@ -29,7 +29,10 @@
 		unsigned int equality_radius:5;
 		bool display_chain_num:1;
 		bool break_cycles:1;
-		unsigned int unused_int:10;
+		unsigned int bio_nmc_max:5;
+		unsigned int bio_nrc_max:10;
+		unsigned int bio_narr_min:5;
+		unsigned int unused_int:22;
 		double equality_delta;
 		double equality_threshold;
 		HadithParameters()
@@ -37,6 +40,9 @@
 			nmc_max=3;
 			narr_min=3;
 			nrc_max=5;
+			bio_nmc_max=1;
+			bio_narr_min=4;
+			bio_nrc_max=100;
 			equality_radius=3;
 			equality_delta=0.4;
 			equality_threshold=1;

@@ -49,6 +49,7 @@
 //#define NARRATORHASH_DEBUG
 #define HASH_TOTAL_VALUES
 #define COLOR_ALL
+#define EQUAL_NEW
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

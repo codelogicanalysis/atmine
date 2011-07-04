@@ -13,17 +13,19 @@ inline bool possessivesCompare(const NameConnectorPrim * n1,const NameConnectorP
 	return n1->getString()<n2->getString();
 }
 
+class NarratorGraph;
+
 class NarratorHash {
 public:
 	class FoundAction {
 	public:
 		virtual void action(const QString & searchKey, ChainNarratorNode * node, double similarity) =0;
 	};
-private:
-	typedef QVector< NarratorPrim *> NamePrimList;
+
+	typedef QVector<NarratorPrim *> NamePrimList;
 	typedef QVector<NamePrimList> NamePrimHierarchy;
 	typedef QVector<NameConnectorPrim *> PossessiveList;
-
+private:
 	class HashValue {
 	public:
 		HashValue(ChainNarratorNode * node, int value, int total) {
@@ -38,6 +40,7 @@ private:
 	typedef QMultiHash<QString,HashValue> HashTable;
 
 	HashTable hashTable;
+	NarratorGraph * graph;
 
 	QString getKey(const NamePrimHierarchy & hierarchy) {
 		QString key="";
@@ -271,6 +274,9 @@ private:
 	#endif
 	}
 public:
+	NarratorHash(NarratorGraph * graph) {this->graph=graph;}
+	void serialize(QDataStream & streamOut);
+	void deserialize(QDataStream & streamIn);
 #if defined(REFINEMENTS) && defined(EQUALITY_REFINEMENTS) //does not work otherwise, instead of doing different versions for combinations of them on/off
 	void addNode(ChainNarratorNode * node) {
 	#ifdef NARRATORHASH_DEBUG
@@ -311,11 +317,9 @@ public:
 		generateAllPosibilities(node,v);
 		delete node;
 	}
-
 	void clear() {
 		hashTable.clear();
 	}
-
 #endif
 };
 
