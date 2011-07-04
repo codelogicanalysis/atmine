@@ -39,6 +39,18 @@ public:
 		parse=new QPushButton("&Parse Biographies",this);
 		colorBiography=new QPushButton("Color &Biography",this);
 		colorNarrators=new QPushButton("Color &Narrators",this);
+		nmc_label=new QLabel("NMC min", this);
+		nrc_label=new QLabel("NRC min",this);
+		narr_label=new QLabel("NARR min",this);
+		nmc_max=new QTextEdit("1",this);
+		nmc_max->setAlignment(Qt::AlignCenter);
+		nmc_max->setMaximumHeight(30);
+		nrc_max=new QTextEdit("100",this);
+		nrc_max->setAlignment(Qt::AlignCenter);
+		nrc_max->setMaximumHeight(30);
+		narr_min=new QTextEdit("4",this);
+		narr_min->setAlignment(Qt::AlignCenter);
+		narr_min->setMaximumHeight(30);
 		browse=new QPushButton("&Browse",this);
 		input=new QTextEdit(this);
 		input->setMaximumHeight(30);
@@ -61,13 +73,19 @@ public:
 		grid->addWidget(input,0,0,1,4);
 		grid->addWidget(browse,0,4);
 		grid->addWidget(parse,0,5);
-		grid->addWidget(biographyNum,1,3);
-		grid->addWidget(colorBiography,1,4);
-		grid->addWidget(colorNarrators,1,5);
-		grid->addWidget(progressBar,1,0,1,3);
-		grid->addWidget(narratorListDisplay,0,6,2,4);
+		grid->addWidget(progressBar,0,6,1,4);
+		grid->addWidget(nmc_label,1,0);
+		grid->addWidget(nmc_max,1,1);
+		grid->addWidget(nrc_label,1,2);
+		grid->addWidget(nrc_max,1,3);
+		grid->addWidget(narr_label,1,4);
+		grid->addWidget(narr_min,1,5);
+		grid->addWidget(biographyNum,1,6);
+		grid->addWidget(colorBiography,1,7);
+		grid->addWidget(colorNarrators,1,8,1,2);
 		grid->addWidget(text,2,0,3,3);
-		grid->addWidget(subScrollArea,2,3,3,7);
+		grid->addWidget(subScrollArea,2,3,3,5);
+		grid->addWidget(narratorListDisplay,2,8,3,2);
 		grid->setRowMinimumHeight(0,50);
 		grid->setRowStretch(0,0);
 		grid->setRowStretch(2,150);
@@ -84,7 +102,7 @@ public:
 		connect(colorNarrators,SIGNAL(clicked()),this,SLOT(colorNarrators_clicked()));
 		connect(browse,SIGNAL(clicked()),this,SLOT(browse_clicked()));
 		setWindowTitle("Biographies");
-		this->resize(900,700);
+		this->resize(1100,700);
 		browseFileDlg=NULL;
 		biographyList=NULL;
 	#ifdef ERRORS_BIO
@@ -103,6 +121,15 @@ public:
 
 public slots:
 	void parse_clicked() {
+	#ifdef TEST_BIOGRAPHIES
+		bool v1,v2,v3;
+		hadithParameters.bio_narr_min=narr_min->toPlainText().toInt(&v1);
+		hadithParameters.bio_nmc_max=nmc_max->toPlainText().toInt(&v2);
+		hadithParameters.bio_nrc_max=nrc_max->toPlainText().toInt(&v3);
+		if  (!v1 || !v2 || !v3 ) {
+			text->setText("Parameters for Biography Segmentaion are not valid integers!\n");
+			return;
+		}
 		QString fileName=input->toPlainText();
 		biographyList=getBiographies(fileName,this);
 		biographyNum->clear();
@@ -128,6 +155,7 @@ public slots:
 			biographyNum->addItem(QString("%1").arg(i));
 		}
 		displayUncoloredGraph();
+	#endif
 	}
 	void colorBiography_clicked() {
 		int num=biographyNum->currentText().toInt();
@@ -209,7 +237,7 @@ private:
 		DetectedNodesMap & map;
 	public:
 		ColorNarratorsAction(DetectedNodesMap & m):map(m) { }
-		virtual void action(const QString &, ChainNarratorNode * node, double v) {
+		virtual void action(const QString & s, ChainNarratorNode * node, double v) {
 			NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
 			DetectedNodesMap::iterator i = map.find(n);
 			#ifdef NARRATORHASH_DEBUG
@@ -235,6 +263,8 @@ private:
 private:
 
 	QPushButton * parse, *colorBiography, *browse, *colorNarrators;
+	QLabel * nmc_label, *nrc_label, *narr_label;
+	QTextEdit *nmc_max,*nrc_max,*narr_min;
 	QTextBrowser * text;
 	QScrollArea *scrollArea,* subScrollArea;
 	QTextEdit *input;
@@ -266,6 +296,12 @@ private:
 		delete progressBar;
 		delete narratorListDisplay;
 		delete colorNarrators;
+		delete nmc_label;
+		delete nrc_label;
+		delete narr_label;
+		delete nmc_max;
+		delete nrc_max;
+		delete narr_min;
 	#ifdef ERRORS_BIO
 		delete errors;
 		delete errors_text;

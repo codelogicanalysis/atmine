@@ -10,6 +10,7 @@
 #include "logger.h"
 #include <QDebug>
 #include <QQueue>
+#include <QDataStream>
 #include "reference.h"
 #include "narrator_abstraction.h"
 #include "hadith_utilities.h"
@@ -41,16 +42,15 @@ class GraphVisitorController;
 class ColorIndices;
 
 
-class NarratorNodeIfc //abstract interface
-{
+class NarratorNodeIfc { //abstract interface
 private:
 	BiographyIndicies indicies;
 	unsigned int color;
 	friend class LoopBreakingVisitor;
 protected:
 	virtual void setRank(int rank)=0;
-	virtual int getSavedRank()=0;
-	virtual int getAutomaticRank()=0;
+	virtual int getSavedRank() const=0;
+	virtual int getAutomaticRank() const=0;
 	friend class RankCorrectorNodeVisitor;
 
 	virtual void setVisited(unsigned int bit) {	color |= 1 << bit; }
@@ -60,30 +60,33 @@ protected:
 	friend class NarratorGraph;
 	friend class ColorIndices;
 	friend class GraphVisitorController;
+
+	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const=0;
+	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) =0;
 public:
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode()=0; //if used on a graphNode returns null
 
-	virtual int size()=0;
+	virtual int size() const=0;
 	virtual NarratorNodeIfc & getChild(int index)=0;
 	virtual NarratorNodeIfc & getParent(int index)=0;
 	virtual ChainNarratorNode & operator [](int index)=0;
 
 	virtual NodeAddress prevInChain(ChainNarratorNode &)=0;
-	virtual NodeAddress nextInChain(ChainNarratorNode &)=0;
+	virtual NodeAddress nextInChain(ChainNarratorNode &) =0;
 
-	virtual QString CanonicalName()=0;
-	virtual bool isNull()=0;
-	virtual bool isGraphNode()=0;
+	virtual QString CanonicalName() const=0;
+	virtual bool isNull() const=0;
+	virtual bool isGraphNode() const=0;
 
-	virtual int getRank() {
+	virtual int getRank() const {
 		int savedRank=getSavedRank();
 		return (savedRank>=0?savedRank:getAutomaticRank());
 	}
-	virtual QString rank2String()=0;
+	virtual QString rank2String() const=0;
 
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)=0;
-	virtual QString toString() =0;
-	virtual bool isVisited(unsigned int bit) {return (color & (1 << bit)) != 0; }
+	virtual QString toString() const =0;
+	virtual bool isVisited(unsigned int bit) const {return (color & (1 << bit)) != 0; }
 
 	void addBiographyIndex(int i) {
 		NarratorNodeIfc & n=getCorrespondingNarratorNode();
@@ -100,38 +103,50 @@ public:
 			qDebug()<<n.indicies[j];*/
 		return (n.indicies.contains(i));
 	}
+
+	void serialize(QDataStream &chainOut,NarratorGraph & graph) const {
+		chainOut<<isNull();
+		chainOut<<isGraphNode();
+		if (!isNull()) {
+			chainOut<<indicies;
+			serializeHelper(chainOut,graph);
+		}
+	}
+	static NarratorNodeIfc * deserialize(QDataStream &chainIn,NarratorGraph & graph) ;
 };
 
-class NULLNarratorNodeIfc: public NarratorNodeIfc
-{
-	NarratorNodeIfc & getCorrespondingNarratorNode(){assert(false);}
+class NULLNarratorNodeIfc: public NarratorNodeIfc {
+	NarratorNodeIfc & getCorrespondingNarratorNode() {assert(false);}
 
-	int size(){assert(false);}
-	NarratorNodeIfc & getChild(int ){assert(false);}
-	NarratorNodeIfc & getParent(int){assert(false);}
+	int size() const{assert(false);}
+	NarratorNodeIfc & getChild(int ) {assert(false);}
+	NarratorNodeIfc & getParent(int) {assert(false);}
 	ChainNarratorNode & operator [](int){assert(false);}
 
-	ChainNarratorNode & firstChainNode(){assert(false);}
-	ChainNarratorNode & nextChainNode(ChainNarratorNode & ){assert(false);}
+	ChainNarratorNode & firstChainNode() {assert(false);}
+	ChainNarratorNode & nextChainNode(ChainNarratorNode & ) {assert(false);}
 
-	NodeAddress prevInChain(ChainNarratorNode &){assert(false);}
-	NodeAddress nextInChain(ChainNarratorNode &){assert(false);}
+	NodeAddress prevInChain(ChainNarratorNode &) {assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode &) {assert(false);}
 
-	QString CanonicalName(){assert(false);}
+	QString CanonicalName() const{assert(false);}
 
-	virtual bool isNull(){return true;}
+	virtual bool isNull() const {return true;}
 	void setRank(int ){assert(false);}
-	int getAutomaticRank(){assert(false);}
-	int getRank() {assert(false);}
-	int getSavedRank(){assert(false);}
-	virtual QString rank2String(){assert(false);}
-	virtual ChainNarratorNode & getChainNodeInChain(int){assert(false);}
-	virtual bool isGraphNode() {return false;}
-	virtual QString toString()   {return "NULLNarratorNodeIfc";}
+	int getAutomaticRank() const {assert(false);}
+	int getRank() const {assert(false);}
+	int getSavedRank() const{assert(false);}
+	virtual QString rank2String() const {assert(false);}
+	virtual ChainNarratorNode & getChainNodeInChain(int) {assert(false);}
+	virtual bool isGraphNode() const  {return false;}
+	virtual QString toString() const   {return "NULLNarratorNodeIfc";}
 	void setVisited(unsigned int ) { assert(false);}
 	void resetVisited(unsigned int ) { assert(false); }
-	bool isVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int ) const{ assert(false); }
 	void resetColor() { assert(false); }
+
+	virtual void serializeHelper(QDataStream &,NarratorGraph & ) const {}
+	virtual void deserializeHelper(QDataStream &,NarratorGraph & ) {}
 };
 
 class ChainContext
@@ -141,40 +156,29 @@ private:
 	int index:8;
 	int chain_num:23;
 public:
-	ChainContext()
-	{
-		valid=false;
-	}
-	ChainContext(int index, int chain_num)
-	{
-		set(index,chain_num);
-	}
-	void set(int index, int chain_num)
-	{
+	ChainContext()	{valid=false;}
+	ChainContext(int index, int chain_num){	set(index,chain_num);}
+	void set(int index, int chain_num) {
 		//assert(index<20);
 		this->index=index;
 		this->chain_num=chain_num;
 		valid=true;
 	}
-	int getIndex()
-	{
+	int getIndex() const {
 		assert(valid);
 		return index;
 	}
-	int getChainNum()
-	{
+	int getChainNum() const {
 		assert(valid);
 		return chain_num;
 	}
-	void printChainContext() //for debugging purposes only
-	{
+	void printChainContext() { //for debugging purposes only
 		out<<chain_num<<"["<<index<<"]\n";
 		//qDebug()<<chain_num<<"["<<index<<"]\n";;
 	}
 };
 
-class ChainNarratorNode:public NarratorNodeIfc
-{
+class ChainNarratorNode:public NarratorNodeIfc {
 private:
 	ChainNarratorNode * previous, * next;
 	Narrator * narrator;
@@ -187,9 +191,10 @@ private:
 	friend void buildChainNodes(ChainsContainer & chains);
 protected:
 	ChainNarratorNode() {} //to be used by NULLChainNarratorNode
-	virtual int getSavedRank(){	return savedRank;}
-	virtual int getAutomaticRank()
-	{
+	friend class NarratorNodeIfc;
+
+	virtual int getSavedRank() const{	return savedRank;}
+	virtual int getAutomaticRank() const {
 	#if 1
 		return (savedRank>=0?savedRank:getIndex());
 	#else
@@ -203,6 +208,9 @@ protected:
 	virtual void setRank(int rank) {savedRank=rank;}
 	virtual void setIndex(int index){chainContext.set(index, chainContext.getChainNum());}
 	friend class GraphNarratorNode;
+
+	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
+	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
 public:
 	ChainNarratorNode(Narrator * n,int index, int chain_num)
 	{
@@ -213,11 +221,11 @@ public:
 		graphNode=NULL;
 		chainContext.set(index, chain_num);
 	}
-	virtual NarratorNodeIfc & getCorrespondingNarratorNode();
+	virtual NarratorNodeIfc & getCorrespondingNarratorNode() ;
 	virtual void  setCorrespondingNarratorNode(GraphNarratorNode * graphNode) {this->graphNode=graphNode;}
-	virtual QString toString(){	return "("+CanonicalName()+")";}
-	virtual Narrator & getNarrator() {return (Narrator &)*narrator;}
-	virtual ChainNarratorNode & operator+(int n) const
+	virtual QString toString() const{	return "("+CanonicalName()+")";}
+	virtual Narrator & getNarrator() const {return (Narrator &)*narrator;}
+	virtual ChainNarratorNode & operator+(int n)
 	{
 		if (n>=0)
 		{
@@ -234,11 +242,11 @@ public:
 			return *c;
 		}
 	}
-	virtual ChainNarratorNode & operator-(int n) {return this->operator +(-n);}
-	virtual ChainNarratorNode & prevInChain();
-	virtual ChainNarratorNode & nextInChain();
-	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & ) {return nullNarratorNodeIfc;}
-	virtual int size() {return 1;}
+	virtual ChainNarratorNode & operator-(int n)  {return this->operator +(-n);}
+	virtual ChainNarratorNode & prevInChain() ;
+	virtual ChainNarratorNode & nextInChain() ;
+	virtual NarratorNodeIfc & nextChild(NarratorNodeIfc & )  {return nullNarratorNodeIfc;}
+	virtual int size() const{return 1;}
 	virtual NarratorNodeIfc & getChild(int index)
 	{
 		assert(index==0);
@@ -278,11 +286,11 @@ public:
 		else
 			return nullNodeAddress;
 	}
-	virtual QString CanonicalName(){return narrator->getString();}
-	virtual bool isFirst() {return previous==NULL;}
-	virtual bool isLast() {return next==NULL;}
-	virtual int getIndex() {return chainContext.getIndex();}
-	virtual QString rank2String()
+	virtual QString CanonicalName() const{return narrator->getString();}
+	virtual bool isFirst() const {return previous==NULL;}
+	virtual bool isLast() const {return next==NULL;}
+	virtual int getIndex() const {return chainContext.getIndex();}
+	virtual QString rank2String() const
 	{
 	#ifdef SHOW_VERBOSE_RANKS
 		return QString("[%1](%2)").arg(getAutomaticRank()).arg(getSavedRank());
@@ -291,11 +299,10 @@ public:
 	#endif
 
 	}
-	virtual int getChainNum() {return chainContext.getChainNum();}
-	virtual bool isNull() {	return false;}
-	virtual bool isGraphNode() { return false;}
-	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)
-	{
+	virtual int getChainNum() const {return chainContext.getChainNum();}
+	virtual bool isNull() const {	return false;}
+	virtual bool isGraphNode() const { return false;}
+	virtual ChainNarratorNode & getChainNodeInChain(int chain_num) 	{
 		if (getChainNum()==chain_num)
 			return *this;
 		else
@@ -306,36 +313,39 @@ public:
 class NULLChainNarratorNode: public ChainNarratorNode
 {
 protected:
-	int getSavedRank(){assert(false);}
-	int getAutomaticRank(){assert(false);}
+	int getSavedRank() const{assert(false);}
+	int getAutomaticRank() const{assert(false);}
 	void setRank(int ){assert(false);}
 	void setIndex(int ){assert(false);}
+
+	virtual void serializeHelper(QDataStream &, NarratorGraph & ) const {}
+	virtual void deserializeHelper(QDataStream &,NarratorGraph & ) {}
 public:
 	NULLChainNarratorNode() {}
-	bool isNull() {	return true;}
-	NarratorNodeIfc & getCorrespondingNarratorNode() {assert(false);}
-	Narrator & getNarrator(){assert(false);}
-	ChainNarratorNode & operator+(int){assert(false);}
-	ChainNarratorNode & operator-(int){assert(false);}
-	int size() {return 0;}
-	NarratorNodeIfc & getChild(int){assert(false);}
-	NarratorNodeIfc & getParent(int){assert(false);}
-	ChainNarratorNode & operator [](int){assert(false);}
-	NodeAddress prevInChain(ChainNarratorNode & ){assert(false);}
-	NodeAddress nextInChain(ChainNarratorNode & ){assert(false);}
-	ChainNarratorNode & prevInChain(){assert(false);}
-	ChainNarratorNode & nextInChain(){assert(false);}
-	bool isFirst(){assert(false);}
-	bool isLast(){assert(false);}
-	int getIndex(){assert(false);}
-	QString rank2String(){assert(false);}
-	QString CanonicalName(){assert(false);}
-	int getChainNum(){assert(false);}
-	ChainNarratorNode & getChainNodeInChain(int ){assert(false);}
-	QString toString(){	return "NULLChainNarratorNodeIterator";}
+	bool isNull() const {	return true;}
+	NarratorNodeIfc & getCorrespondingNarratorNode()  {assert(false);}
+	Narrator & getNarrator() const{assert(false);}
+	ChainNarratorNode & operator+(int) {assert(false);}
+	ChainNarratorNode & operator-(int) {assert(false);}
+	int size() const {return 0;}
+	NarratorNodeIfc & getChild(int) {assert(false);}
+	NarratorNodeIfc & getParent(int) {assert(false);}
+	ChainNarratorNode & operator [](int) {assert(false);}
+	NodeAddress prevInChain(ChainNarratorNode & ) {assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode & ) {assert(false);}
+	ChainNarratorNode & prevInChain() {assert(false);}
+	ChainNarratorNode & nextInChain() {assert(false);}
+	bool isFirst() const{assert(false);}
+	bool isLast() const{assert(false);}
+	int getIndex() const{assert(false);}
+	QString rank2String() const{assert(false);}
+	QString CanonicalName() const{assert(false);}
+	int getChainNum() const{assert(false);}
+	ChainNarratorNode & getChainNodeInChain(int ) {assert(false);}
+	QString toString() const{	return "NULLChainNarratorNodeIterator";}
 	void setVisited(unsigned int ) { assert(false);}
 	void resetVisited(unsigned int ) { assert(false); }
-	bool isVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int )  const{ assert(false); }
 	void resetColor() { assert(false); }
 };
 
@@ -349,7 +359,7 @@ protected:
 		for (int i=0;i<equalChainNodes.size();i++)
 			equalChainNodes[i]->setRank(rank);
 	}
-	virtual int getAutomaticRank()
+	virtual int getAutomaticRank() const
 	{
 		int smallest_rank=equalChainNodes[0]->getAutomaticRank();
 		for (int i=1;i<equalChainNodes.size();i++)
@@ -360,10 +370,14 @@ protected:
 		}
 		return smallest_rank;
 	}
-	virtual int getSavedRank(){return savedRank;}
+	virtual int getSavedRank() const{return savedRank;}
 	friend class LoopBreakingVisitor;
 
+	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
+	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
+
 	GraphNarratorNode(){} //to be used by NULLGraphNarratorNode
+	friend class NarratorNodeIfc;
 public:
 	//GraphNarratorNode(){savedRank=-1;}
 	GraphNarratorNode(ChainNarratorNode & nar1,ChainNarratorNode & nar2)
@@ -389,7 +403,7 @@ public:
 		nar.setCorrespondingNarratorNode(this);
 	}
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return *this;}
-	virtual int size(){ return equalChainNodes.size(); }
+	virtual int size() const{ return equalChainNodes.size(); }
 	virtual NarratorNodeIfc & getChild(int index)
 	{
 		assert(index>=0 && index<size());//check redundant will be done inside [] for QList
@@ -427,7 +441,7 @@ public:
 					? nullNodeAddress
 					:NodeAddress(next.getCorrespondingNarratorNode(), next));
 	}
-	virtual QString rank2String()
+	virtual QString rank2String() const
 	{
 		QString ranks;
 	#ifdef SHOW_VERBOSE_RANKS
@@ -439,7 +453,7 @@ public:
 		ranks+=QString("(%1)").arg(getSavedRank());
 		return ranks;
 	}
-	virtual QString CanonicalName()
+	virtual QString CanonicalName() const
 	{
 	#ifdef REFINEMENTS
 		if (isRasoul(equalChainNodes[0]->CanonicalName()))
@@ -482,7 +496,7 @@ public:
 		else
 			return "";
 	}
-	virtual bool isGraphNode() {return true;}
+	virtual bool isGraphNode() const {return true;}
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)
 	{
 		for (int i=0;i<equalChainNodes.size();i++)
@@ -490,7 +504,7 @@ public:
 				return *equalChainNodes[i];
 		return nullChainNarratorNode;
 	}
-	virtual QString toString()
+	virtual QString toString() const
 	{
 		QString s=QString("[");
 		for (int i=0;i<equalChainNodes.size();i++)
@@ -498,36 +512,36 @@ public:
 		s+="]";
 		return s;
 	}
-	virtual bool isNull(){return false;}
+	virtual bool isNull() const{return false;}
 };
 
 class NULLGraphNarratorNode: public GraphNarratorNode
 {
 protected:
-	int getSavedRank(){assert(false);}
-	int getAutomaticRank(){assert(false);}
+	int getSavedRank() const{assert(false);}
+	int getAutomaticRank() const{assert(false);}
 	void setRank(int ){assert(false);}
+	virtual void serializeHelper(QDataStream &,NarratorGraph & ) const {}
+	virtual void deserializeHelper(QDataStream &,NarratorGraph & ) {}
 public:
 	NULLGraphNarratorNode(){}
-	bool isNull() {return true;}
+	bool isNull() const {return true;}
 	void addNarrator(ChainNarratorNode &) {assert(false);}
-	NarratorNodeIfc & getCorrespondingNarratorNode() {assert(false);}
-	int size() {return 0;}
-	NarratorNodeIfc & getChild(int){assert(false);}
-	NarratorNodeIfc & getParent(int){assert(false);}
-	ChainNarratorNode & operator [](int){assert(false);}
-	NodeAddress prevInChain(ChainNarratorNode & ){assert(false);}
-	NodeAddress nextInChain(ChainNarratorNode & ){assert(false);}
-	QString rank2String(){assert(false);}
-	QString CanonicalName(){assert(false);}
-	ChainNarratorNode & getChainNodeInChain(int ){assert(false);}
-	QString toString(){	return "NULLChainNarratorNodeIterator";}
+	NarratorNodeIfc & getCorrespondingNarratorNode() const {assert(false);}
+	int size() const {return 0;}
+	NarratorNodeIfc & getChild(int) const{assert(false);}
+	NarratorNodeIfc & getParent(int) const{assert(false);}
+	ChainNarratorNode & operator [](int) const{assert(false);}
+	NodeAddress prevInChain(ChainNarratorNode & ) const{assert(false);}
+	NodeAddress nextInChain(ChainNarratorNode & ) const{assert(false);}
+	QString rank2String() const{assert(false);}
+	QString CanonicalName() const{assert(false);}
+	ChainNarratorNode & getChainNodeInChain(int ) const{assert(false);}
+	QString toString() const{	return "NULLChainNarratorNodeIterator";}
 	void setVisited(unsigned int ) { assert(false);}
 	void resetVisited(unsigned int ) { assert(false); }
-	bool isVisited(unsigned int ) { assert(false); }
+	bool isVisited(unsigned int ) const{ assert(false); }
 	void resetColor() { assert(false); }
 };
-
-
 
 #endif // GRAPH_STRUCTURE_H
