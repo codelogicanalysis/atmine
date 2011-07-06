@@ -132,6 +132,8 @@ public slots:
 		}
 		QString fileName=input->toPlainText();
 		biographyList=getBiographies(fileName,this);
+		if (biographyList==NULL)
+			return;
 		biographyNum->clear();
 		int count=0;
 		for (int i=0;i<biographyList->size();i++) {
@@ -171,6 +173,7 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+
 	}
 	void colorNarrators_clicked() {
 		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();

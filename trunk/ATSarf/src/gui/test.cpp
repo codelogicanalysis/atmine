@@ -17,6 +17,7 @@ extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
 extern void listAllAffixes(item_types type);
 extern int timeTagger(QString input_str);
+extern int deserializeGraph(ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str)
 {
@@ -77,8 +78,11 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #if 0
 	if (timeTagger(inputString))
 		return -1;
-#else
+#elif 0
 	if (biographyHelper(inputString,prg))
+		return -1;
+#else
+	if (deserializeGraph(prg))
 		return -1;
 #endif
 #endif

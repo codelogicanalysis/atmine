@@ -66,60 +66,60 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
-typedef struct chainDataBiography_ {
-	NamePrim *namePrim;
-	NameConnectorPrim *nameConnectorPrim;
-	NarratorConnectorPrim *narratorConnectorPrim;
-	TempConnectorPrimList * temp_nameConnectors;
-	Narrator *narrator;
-	Chain *chain;
-
-	void initialize(QString * text) {
-		delete namePrim;
-		delete nameConnectorPrim;
-		delete narratorConnectorPrim;
-		delete narrator;
-		delete chain;
-		/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
-			delete (*temp_nameConnectors)[i];*/
-		delete temp_nameConnectors;
-		namePrim=new NamePrim(text);
-		nameConnectorPrim=new NameConnectorPrim(text);
-		narratorConnectorPrim=new NarratorConnectorPrim(text) ;
-		narrator=new Narrator (text);
-		chain=new Chain(text);
-		temp_nameConnectors=new TempConnectorPrimList();
-	}
-} chainDataBiography;
-typedef struct stateDataBiography_ {
-	long  sanadStartIndex, narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
-	long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
-	bool nmcValid;
-	bool ibn_or_3abid;
-	bool nrcPunctuation;
-
-	void initialize() {
-		nmcCount=0;
-		narratorCount=0;
-		nrcCount=0;
-		narratorStartIndex=0;
-		narratorEndIndex=0;
-		nrcStartIndex=0;
-		nrcEndIndex=0;
-		nmcValid=false;
-		ibn_or_3abid=false;
-		nameStartIndex=0;
-		nmcStartIndex=0;
-	#ifdef PUNCTUATION
-		nrcPunctuation=false;
-	#endif
-	}
-
-} stateDataBiography;
-
 class HadithSegmentor {
 private:
-	stateDataBiography currentData;
+	typedef struct chainData_ {
+		NamePrim *namePrim;
+		NameConnectorPrim *nameConnectorPrim;
+		NarratorConnectorPrim *narratorConnectorPrim;
+		TempConnectorPrimList * temp_nameConnectors;
+		Narrator *narrator;
+		Chain *chain;
+
+		void initialize(QString * text) {
+			delete namePrim;
+			delete nameConnectorPrim;
+			delete narratorConnectorPrim;
+			delete narrator;
+			delete chain;
+			/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
+				delete (*temp_nameConnectors)[i];*/
+			delete temp_nameConnectors;
+			namePrim=new NamePrim(text);
+			nameConnectorPrim=new NameConnectorPrim(text);
+			narratorConnectorPrim=new NarratorConnectorPrim(text) ;
+			narrator=new Narrator (text);
+			chain=new Chain(text);
+			temp_nameConnectors=new TempConnectorPrimList();
+		}
+	} chainData;
+	typedef struct stateData_ {
+		long  sanadStartIndex, narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
+		long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
+		bool nmcValid;
+		bool ibn_or_3abid;
+		bool nrcPunctuation;
+
+		void initialize() {
+			nmcCount=0;
+			narratorCount=0;
+			nrcCount=0;
+			narratorStartIndex=0;
+			narratorEndIndex=0;
+			nrcStartIndex=0;
+			nrcEndIndex=0;
+			nmcValid=false;
+			ibn_or_3abid=false;
+			nameStartIndex=0;
+			nmcStartIndex=0;
+		#ifdef PUNCTUATION
+			nrcPunctuation=false;
+		#endif
+		}
+
+	} stateData;
+
+	stateData currentData;
 	QString * text;
 	long current_pos;
 
@@ -131,7 +131,7 @@ private:
 	QString current_exact,current_stem;
 #endif
 
-	bool getNextState(StateInfo &  stateInfo,chainDataBiography *currentChain) {
+	bool getNextState(StateInfo &  stateInfo,chainData *currentChain) {
 		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 		display(stateInfo.currentState);
@@ -1122,9 +1122,9 @@ private:
 	#endif
 		return return_value;
 	}
-	inline bool result(wordType t, StateInfo &  stateInfo,chainDataBiography *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
+	inline bool result(wordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
 #ifndef BUCKWALTER_INTERFACE
-	bool proceedInStateMachine(StateInfo &  stateInfo,chainDataBiography *currentChain) //does not fill stateInfo.currType
+	bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //does not fill stateInfo.currType
 	{
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
@@ -1485,7 +1485,7 @@ public:
 		currentData.initialize();
 
 	#ifdef CHAIN_BUILDING
-		chainDataBiography *currentChain=new chainDataBiography();
+		chainData *currentChain=new chainData();
 		currentChain->initialize(text);
 		display(QString("\ninit%1\n").arg(currentChain->narrator->m_narrator.size()));
 	#else
@@ -1702,7 +1702,7 @@ public:
 		chainOutput.close();
 		f.close();
 	#ifdef TEST_NARRATOR_GRAPH
-		test_GraphFunctionalities(chains, prg);
+		test_GraphFunctionalities(chains, prg,input_str);
 	#endif
 	#endif
 	#ifndef TAG_HADITH

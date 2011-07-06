@@ -53,67 +53,69 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
-typedef struct stateData_ {
-	long  biographyStartIndex, narratorCount,narratorStartIndex,narratorEndIndex;
-	long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
-	bool nmcValid;
-	bool ibn_or_3abid;
-
-	void initialize() {
-		nmcCount=0;
-		narratorCount=0;
-		nrcCount=0;
-		narratorStartIndex=0;
-		narratorEndIndex=0;
-		nmcValid=false;
-		ibn_or_3abid=false;
-		nameStartIndex=0;
-		nmcStartIndex=0;
-		biographyStartIndex=0;
-	}
-
-} stateData;
-class BiographyData {
-public:
-	NamePrim *namePrim;
-	NameConnectorPrim *nameConnectorPrim;
-	TempConnectorPrimList * temp_nameConnectors;
-	Narrator *narrator;
-	Biography *biography;
-
-	void initialize(QString * text) {
-		if (namePrim!=NULL)
-			delete namePrim;
-		if (nameConnectorPrim!=NULL)
-			delete nameConnectorPrim;
-		if (narrator!=NULL)
-			delete narrator;
-		int s=0;
-		if (biography!=NULL) {
-			s=biography->getStart();
-			delete biography;
-		}
-		/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
-			delete (*temp_nameConnectors)[i];*/
-		delete temp_nameConnectors;
-		namePrim=new NamePrim(text);
-		nameConnectorPrim=new NameConnectorPrim(text);
-		narrator=new Narrator (text);
-		biography=new Biography(text,s);
-		temp_nameConnectors=new TempConnectorPrimList();
-	}
-	BiographyData(){
-		namePrim=NULL;
-		nameConnectorPrim=NULL;
-		temp_nameConnectors=NULL;
-		narrator=NULL;
-		biography=NULL;
-	}
-};
-
 class NarratorDetector
 {
 private:
+	typedef struct stateData_ {
+		long  biographyStartIndex, narratorCount,narratorStartIndex,narratorEndIndex;
+		long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
+		bool nmcValid;
+		bool ibn_or_3abid;
+
+		void initialize() {
+			nmcCount=0;
+			narratorCount=0;
+			nrcCount=0;
+			narratorStartIndex=0;
+			narratorEndIndex=0;
+			nmcValid=false;
+			ibn_or_3abid=false;
+			nameStartIndex=0;
+			nmcStartIndex=0;
+			biographyStartIndex=0;
+		}
+
+	} stateData;
+	class BiographyData {
+	public:
+		NamePrim *namePrim;
+		NameConnectorPrim *nameConnectorPrim;
+		TempConnectorPrimList * temp_nameConnectors;
+		Narrator *narrator;
+		Biography *biography;
+
+		void initialize(QString * text) {
+			if (namePrim!=NULL)
+				delete namePrim;
+			if (nameConnectorPrim!=NULL)
+				delete nameConnectorPrim;
+			if (narrator!=NULL)
+				delete narrator;
+			int s=0;
+			if (biography!=NULL) {
+				s=biography->getStart();
+				delete biography;
+			}
+			/*for (int i=0;i<temp_nameConnectors->count()-1;i++)
+				delete (*temp_nameConnectors)[i];*/
+			delete temp_nameConnectors;
+			namePrim=new NamePrim(text);
+			nameConnectorPrim=new NameConnectorPrim(text);
+			narrator=new Narrator (text);
+			biography=new Biography(text,s);
+			temp_nameConnectors=new TempConnectorPrimList();
+		}
+		BiographyData(){
+			namePrim=NULL;
+			nameConnectorPrim=NULL;
+			temp_nameConnectors=NULL;
+			narrator=NULL;
+			biography=NULL;
+		}
+	};
+
+
+
 	stateData currentData;
 	QString * text;
 	long current_pos;
