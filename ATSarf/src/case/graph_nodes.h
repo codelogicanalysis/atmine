@@ -190,7 +190,7 @@ private:
 	ChainContext chainContext;
 	friend void buildChainNodes(ChainsContainer & chains);
 protected:
-	ChainNarratorNode() {} //to be used by NULLChainNarratorNode
+	ChainNarratorNode():NarratorNodeIfc() {} //to be used by NULLChainNarratorNode
 	friend class NarratorNodeIfc;
 
 	virtual int getSavedRank() const{	return savedRank;}
@@ -212,7 +212,7 @@ protected:
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
 	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
 public:
-	ChainNarratorNode(Narrator * n,int index, int chain_num)
+	ChainNarratorNode(Narrator * n,int index, int chain_num):NarratorNodeIfc()
 	{
 		previous=next=NULL;
 		graphNode=NULL;
@@ -376,12 +376,14 @@ protected:
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
 	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
 
-	GraphNarratorNode(){} //to be used by NULLGraphNarratorNode
+	GraphNarratorNode():NarratorNodeIfc(){} //to be used by NULLGraphNarratorNode
 	friend class NarratorNodeIfc;
 public:
 	//GraphNarratorNode(){savedRank=-1;}
-	GraphNarratorNode(ChainNarratorNode & nar1,ChainNarratorNode & nar2)
+	GraphNarratorNode(ChainNarratorNode & nar1,ChainNarratorNode & nar2):NarratorNodeIfc()
 	{
+		assert(nar1.graphNode==NULL);
+		assert(nar2.graphNode==NULL);
 		assert(&nar1!=&nar2); //make sure these are not just the same node
 		equalChainNodes.append(&nar1);
 		nar1.setCorrespondingNarratorNode(this);
@@ -391,6 +393,7 @@ public:
 	}
 	virtual void addNarrator(ChainNarratorNode & nar) //we dont check for duplicates here
 	{
+	#if 0
 		for (int i=0;i<size();i++)
 		{
 			ChainNarratorNode * n2=&(*this)[i];
@@ -399,6 +402,8 @@ public:
 				return;
 			//assert (n1!=n2); //TODO...
 		}
+	#endif
+		//assert(nar.graphNode==NULL);
 		equalChainNodes.append(&nar);
 		nar.setCorrespondingNarratorNode(this);
 	}

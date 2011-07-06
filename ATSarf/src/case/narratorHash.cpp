@@ -23,8 +23,13 @@ void NarratorHash::deserialize(QDataStream & streamIn) {
 		streamIn>>nInt
 				>>value
 				>>total;
-		ChainNarratorNode * n=graph->getDeserializationIntEquivalent(nInt);
+		NarratorNodeIfc * n=graph->getDeserializationIntEquivalent(nInt);
+		if (n==NULL) {
+			qDebug()<<key;
+			return;
+		}
 		assert(n!=NULL);
-		hashTable.insert(key,HashValue(n,value,total));
+		assert(!n->isGraphNode());
+		hashTable.insert(key,HashValue((ChainNarratorNode*)n,value,total));
 	}
 }

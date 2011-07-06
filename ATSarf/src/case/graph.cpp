@@ -7,12 +7,14 @@ void ColorIndices::unUse(unsigned int bit)//unuse and clear color bit for all no
 	usedBits &= (~(1 << bit));
 
 	int max=graph->all_nodes.size();
-	for (int i=0;i<max;i++)
-	{
+	for (int i=0;i<max;i++) {
 		graph->all_nodes[i]->resetVisited(bit);
+		assert(!graph->all_nodes[i]->isVisited(bit));
 		int size=graph->all_nodes[i]->size();
-		for (int j=0;j<size;j++)
+		for (int j=0;j<size;j++) {
 			(*graph->all_nodes[i])[j].resetVisited(bit);
+			assert(!(*graph->all_nodes[i])[j].isVisited(bit));
+		}
 	}
 
 	if (nextUnused>bit)
@@ -32,16 +34,16 @@ GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGra
 	construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
 	if (keep_track_of_nodes)
 	{
-		this->visitIndex=graph->colorGuard.getNextUnused();
+		visitIndex=graph->colorGuard.getNextUnused();
 		graph->colorGuard.use(visitIndex);
-		this->finishIndex=graph->colorGuard.getNextUnused();
+		finishIndex=graph->colorGuard.getNextUnused();
 		graph->colorGuard.use(finishIndex);
 	}
 }
 void GraphVisitorController::initialize()
 {
 	init();
-	graph->colorGuard.use(visitIndex);
+	//graph->colorGuard.use(visitIndex);
 	visitor->initialize();
 }
 void GraphVisitorController::finish()
@@ -51,46 +53,66 @@ void GraphVisitorController::finish()
 	visitor->finish();
 }
 
-void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc & n)
+void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 {
-	if (!n.isGraphNode())
+	if (n==NULL)
+		return;
+	if (!n->isGraphNode())
 		return; //unable to resolve
-	GraphNarratorNode & g=*(GraphNarratorNode *)&n;
+	GraphNarratorNode * g=(GraphNarratorNode *)n;
 #ifdef DISPLAY_NODES_BEING_BROKEN
-	qDebug()<<g.CanonicalName();
+	qDebug()<<g->CanonicalName();
 #endif
 	QList<ChainNarratorNode *> narrators;
-	for (int i=0;i<g.size();i++)
+	for (int i=0;i<g->size();i++)
 	{
-		narrators.append(&(g[i]));
-		g[i].setCorrespondingNarratorNode(NULL);
+		narrators.append(&(*g)[i]);
+		(*g)[i].setCorrespondingNarratorNode(NULL);
 	}
-	g.equalChainNodes.clear();
+	g->equalChainNodes.clear();
 	NarratorGraph* graph=controller->getGraph();
 	QList<NarratorNodeIfc *> new_nodes;
 	int size=narrators.size();
-	for (int j=0;j<size;j++)
-	{
-		for (int k=j+1;k<size;k++)
-		{
+	for (int j=0;j<size;j++) {
+		new_nodes.append(narrators[j]);
+	}
+	for (int j=0;j<size;j++) {
+		for (int k=j+1;k<size;k++) {
 			double eq_val=equal(narrators[j]->getNarrator(),narrators[k]->getNarrator());
-			if (eq_val>threshold)
-			{
-				NarratorNodeIfc & n_new=graph->mergeNodes(*narrators[j],*narrators[k]);
-				if (!new_nodes.contains(&n_new))
-					new_nodes.append(&n_new);
+			if (eq_val>threshold) {
+				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n_new=&graph->mergeNodes(*narrators[j],*narrators[k]);
+				if (new_nodes.contains(n1))
+					new_nodes.removeOne(n1);
+				if (new_nodes.contains(n2))
+					new_nodes.removeOne(n2);
+				if (!new_nodes.contains(n_new))
+					new_nodes.append(n_new);
 			}
 		}
 	}
 	//to keep all_nodes consistent
-	graph->all_nodes.removeOne(&g);
+	graph->all_nodes.removeOne(g);
 	graph->all_nodes.append(new_nodes);
-	if (graph->top_nodes.contains(&g))
-	{
-		graph->top_nodes.removeOne(&g);
+	if (graph->top_nodes.contains(g)) {
+		graph->top_nodes.removeOne(g);
+		//check if still top both
 		graph->top_nodes.append(new_nodes);
 	}
 	for (int i=0;i<new_nodes.size();i++)
-		new_nodes[i]->color=g.color;
-	//delete &g;
+		new_nodes[i]->color=g->color;
+	toDelete.append(g);
+}
+
+int deserializeGraph(ATMProgressIFC * prg) {
+	QFile file("graph.dat");
+	if (!file.open(QIODevice::ReadOnly))
+		return -1;
+	QDataStream fileStream(&file);
+	NarratorGraph *graph=new NarratorGraph(fileStream,prg);
+	file.close();
+
+	biographies(graph);
+	return 0;
 }
