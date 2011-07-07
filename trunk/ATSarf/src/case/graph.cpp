@@ -83,9 +83,9 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n_new=&graph->mergeNodes(*narrators[j],*narrators[k]);
-				if (new_nodes.contains(n1))
+				if (n1!=n_new && new_nodes.contains(n1))
 					new_nodes.removeOne(n1);
-				if (new_nodes.contains(n2))
+				if (n2!=n_new && new_nodes.contains(n2))
 					new_nodes.removeOne(n2);
 				if (!new_nodes.contains(n_new))
 					new_nodes.append(n_new);
@@ -102,17 +102,60 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 	}
 	for (int i=0;i<new_nodes.size();i++)
 		new_nodes[i]->color=g->color;
-	toDelete.append(g);
+	if (!toDelete.contains(g))
+		toDelete.append(g);
 }
 
-int deserializeGraph(ATMProgressIFC * prg) {
-	QFile file("graph.dat");
+int deserializeGraph(QString fileName,ATMProgressIFC * prg) {
+	fileName=fileName.split("\n")[0];
+	QFile file(fileName);
 	if (!file.open(QIODevice::ReadOnly))
 		return -1;
 	QDataStream fileStream(&file);
 	NarratorGraph *graph=new NarratorGraph(fileStream,prg);
 	file.close();
-
+#if 0
+	QFile file2("graph2.dat");
+	if (!file2.open(QIODevice::ReadWrite))
+		return -1;
+	QDataStream fileStream2(&file2);
+	graph->serialize(fileStream2);
+	file2.close();
+	delete graph;
+#else
 	biographies(graph);
+#endif
+	return 0;
+}
+
+int mergeGraphs(QString fileName1,QString fileName2,ATMProgressIFC * prg) {
+	fileName1=fileName1.split("\n")[0];
+	QFile file1(fileName1);
+	if (!file1.open(QIODevice::ReadOnly))
+		return -1;
+	QDataStream fileStream1(&file1);
+	NarratorGraph *graph1=new NarratorGraph(fileStream1,prg);
+	file1.close();
+	fileName2=fileName2.split("\n")[0];
+	QFile file2(fileName2);
+	if (!file2.open(QIODevice::ReadOnly))
+		return -1;
+	QDataStream fileStream2(&file2);
+	NarratorGraph *graph2=new NarratorGraph(fileStream2,prg);
+	file2.close();
+
+	graph1->mergeWith(graph2);
+	delete graph2;
+#if 0
+	QFile file("graphMerged.dat");
+	if (!file.open(QIODevice::ReadWrite))
+		return -1;
+	QDataStream fileStream(&file);
+	graph1->serialize(fileStream);
+	file.close();
+	delete graph1;
+#else
+	biographies(graph1);
+#endif
 	return 0;
 }

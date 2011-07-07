@@ -107,8 +107,7 @@ void ChainNarratorNode::deserializeHelper(QDataStream &streamIn,NarratorGraph & 
 	int chainNum,index;
 	streamIn>>chainNum
 			>>index;
-	/*if (chainNum==21)
-		qDebug()<<pInt<<"\t"<<(previous==NULL)<<"\t"<<nInt<<"\t"<<(next==NULL)<<"\t"<<CanonicalName();*/
+
 	chainContext.set(index,chainNum);
 }
 

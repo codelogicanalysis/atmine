@@ -640,14 +640,19 @@ private:
 	void setHadithStringDeserializationIntEquivalent(int num,QString * n) {
 		int2HadithMap[num]=n;
 	}
+	void setHadithStringSerializationEquivalent(QString * n,int num) {
+		hadith2IntMap[n]=num;
+	}
 	//TODO: create code to complete what is needed for HadithSerialization and deserialization and listFilling
 
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2) {
-		assert(!((NarratorNodeIfc &)n1).isGraphNode());
-		assert(!((NarratorNodeIfc &)n2).isGraphNode());
+		//assert(!((NarratorNodeIfc &)n1).isGraphNode());
+		//assert(!((NarratorNodeIfc &)n2).isGraphNode());
 		NarratorNodeIfc & narr1=n1.getCorrespondingNarratorNode(),
 						& narr2=n2.getCorrespondingNarratorNode();
-		if (!narr1.isGraphNode() && !narr2.isGraphNode())
+		bool graph1=narr1.isGraphNode(),
+			 graph2=narr2.isGraphNode();
+		if (!graph1 && !graph2)
 		{
 			GraphNarratorNode * g=new GraphNarratorNode(n1,n2);
 		#if 0
@@ -655,9 +660,9 @@ private:
 		#endif
 			return *g;
 		}
-		else if (narr1.isGraphNode() && !narr2.isGraphNode())
+		else if (graph1 && !graph2)
 		{
-			assert(&n2==&narr2);
+			//assert(&n2==&narr2);
 
 			((GraphNarratorNode &)narr1).addNarrator(n2);
 		#if 0
@@ -665,9 +670,9 @@ private:
 		#endif
 			return (GraphNarratorNode &)narr1;
 		}
-		else if (narr2.isGraphNode() && !narr1.isGraphNode())
+		else if (!graph1 && graph2)
 		{
-			assert(&n1==&narr1);
+			//assert(&n1==&narr1);
 			((GraphNarratorNode &)narr2).addNarrator(n1);
 		#if 0
 			out<<narr2.toString()<<"\n";
@@ -676,7 +681,7 @@ private:
 		}
 		else if (&narr1!=&narr2)
 		{
-			assert(narr1.isGraphNode() && narr2.isGraphNode());
+			//assert(narr1.isGraphNode() && narr2.isGraphNode());
 			GraphNarratorNode & g_node=(GraphNarratorNode &)narr2;
 			GraphNarratorNode * dlt_g_node= &(GraphNarratorNode &)narr1;
 			for (int i=0;i<narr1.size();i++)
@@ -687,7 +692,7 @@ private:
 		#if 0
 			out<<g_node.toString()<<"\n";
 		#endif
-			assert(&n1.getCorrespondingNarratorNode()!=&narr1);
+			//assert(&n1.getCorrespondingNarratorNode()!=&narr1);
 			delete dlt_g_node;
 			return g_node;
 		}
@@ -732,7 +737,7 @@ private:
 	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
 	//				 chains and top_nodes stores the link to the first node of each chain
 	}
-	void buildGraph() {
+	void buildGraph(int split=-1) {
 	//note: compares chain by chain then moves to another
 		//TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
 		int radius=hadithParameters.equality_radius;
@@ -740,11 +745,17 @@ private:
 		int num_chains=top_nodes.size();
 		prg->setCurrentAction("Merging Nodes");
 		prg->report(0);
-		for (int i=0;i<num_chains;i++)
+		int maxChains=num_chains;
+		if (split>0)
+			maxChains=split;
+		for (int i=0;i<maxChains;i++)
 		{
-			assert(!top_nodes[i]->isGraphNode());
+			//assert(!top_nodes[i]->isGraphNode());
 			ChainNarratorNode & c1= *(ChainNarratorNode *)top_nodes[i]; //since at this stage all are ChainNode's
-			for (int k=i+1;k<num_chains;k++)
+			int minChains=i+1;
+			if (split>0)
+				minChains=split+1;
+			for (int k=minChains;k<num_chains;k++)
 			{
 				ChainNarratorNode & c2= *(ChainNarratorNode *)top_nodes[k];
 				int needle=0;
@@ -791,7 +802,7 @@ private:
 						needle++;
 				}
 			}
-			prg->report(100.0*i/num_chains);
+			prg->report(100.0*i/maxChains);
 		}
 		prg->report(100);
 	}
@@ -855,7 +866,7 @@ private:
 	void correctTopNodesList() {
 		prg->setCurrentAction("Correct TopList");
 		prg->report(0);
-		NarratorNodesList & new_top_list=*(new NarratorNodesList);
+		NarratorNodesList new_top_list;
 		int size=top_nodes.size();
 		for (int i=0;i<size;i++)
 		{
@@ -873,9 +884,6 @@ private:
 		}
 		prg->report(100.0);
 		top_nodes=new_top_list; //TODO: try reduce copy cost
-		/*&delete &top_nodes; //we do this to reduce a copy operation
-		NarratorNodesList *& temp=&top_nodes;
-		temp=&new_top_list;*/
 	}
 	void fillNodesLists() {
 		//qDebug()<<"---Fill----";
@@ -894,7 +902,7 @@ private:
 			all_nodes.append(&n);
 			qDebug()<<"["<<n.CanonicalName()<<"]";
 		}
-	#else
+	#elif 0
 		assert(all_nodes.contains(&n));
 	#endif
 		//int size=n.size();
@@ -1017,29 +1025,100 @@ private:
 		}
 		return true;
 	}
-
-public:
-	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg):hash(this)
-	{
-		this->prg=prg;
-		colorGuard.setGraph(this);
-		transform2ChainNodes(chains);
-		buildGraph();
+	void init(int split=-1) {
+		buildGraph(split);
 		correctTopNodesList();
 		fillNodesLists();
 		if (hadithParameters.break_cycles){
 			breakManageableCycles();
 			correctTopNodesList();
 		}
-		//computeRanks();
-		fillNodesLists();
-		removeDuplicatesFromAllNodes();
+		computeRanks();
+		//fillNodesLists();
+		//removeDuplicatesFromAllNodes();
+	}
+	void clearStructures() {
+		top_nodes.clear();
+		bottom_nodes.clear();
+		all_nodes.clear();
+		int2HadithMap.clear();
+		hadith2IntMap.clear();
+		hadithFileList.clear();
+		int2NodeMap.clear();
+		node2IntMap.clear();
+		nodesCount=1;
+		highest_rank=-1;
+	}
+	int splitTopList() {
+		int largestChainNum=-1;
+		int allSize=top_nodes.size();
+		for (int i=0;i<allSize;i++) {
+			int size=top_nodes[i]->size();
+			if (size>1) {
+				for (int j=0;j<size;j++) {
+					ChainNarratorNode * c=&(*top_nodes[i])[j];
+					top_nodes.append(c);
+					int chain=c->getChainNum();
+					if (chain>largestChainNum)
+						largestChainNum=chain;
+				}
+				top_nodes.removeAt(i);
+				i--;
+				allSize--;//although the size has increased in practice no need to check those that we added here
+			} else {
+				int chain=((ChainNarratorNode*)top_nodes[i])->getChainNum();
+				if (chain>largestChainNum)
+					largestChainNum=chain;
+			}
+		}
+		assert(top_nodes.size()==largestChainNum+1);
+		return top_nodes.size();
+		//post-condition: top_nodes contains the chain nodes instead of the graph nodes (i.e. opposite of correctTopNodes() )
+		// return value=new size of top_nodes
+	}
+	void shiftChainsBy(int pos) {
+		int allSize=top_nodes.size();
+		for (int i=0;i<allSize;i++) {
+			int size=top_nodes[i]->size();
+			for (int j=0;j<size;j++) {
+				ChainNarratorNode *c=&(*top_nodes[i])[j];
+				if (c->isFirst()) {
+					for (;!c->isNull();c=&(c->nextInChain()))
+						c->setChainNum(c->getChainNum()+pos);
+				}
+			}
+		}
+	}
+
+public:
+	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg):hash(this) {
+		this->prg=prg;
+		colorGuard.setGraph(this);
+		transform2ChainNodes(chains);
+		init();
+	}
+	void mergeWith(NarratorGraph * graph2) {
+		int numChain1=splitTopList();
+		int numChain2=graph2->splitTopList();
+		graph2->shiftChainsBy(numChain1);
+		top_nodes.append(graph2->top_nodes);
+		assert(top_nodes.size()==numChain1+numChain2);
+		String2IntMap::iterator i=graph2->hadith2IntMap.begin();
+		for (;i!=graph2->hadith2IntMap.end();i++) {
+			QString * key=i.key();
+			int index=i.value();
+			QString fileName=graph2->hadithFileList[index].fileName;
+			setFileName(key,fileName);
+		}
+		graph2->clearStructures();
+
+		init(numChain1);
 	}
 	void setFileName(QString * text, QString fileName) {
 		assert(text!=NULL);
 		int size=hadithFileList.size();
-		hadith2IntMap[text]=size;
-		int2HadithMap[size]=text;
+		setHadithStringDeserializationIntEquivalent(size,text);
+		setHadithStringSerializationEquivalent(text, size);
 		hadithFileList.append(HadithFileDetails(fileName));
 	}
 	void DFS_traverse(GraphVisitorController & visitor)
@@ -1117,69 +1196,77 @@ public:
 	void performActionToAllCorrespondingNodes(Narrator * n, NarratorHash::FoundAction & visitor) {
 		hash.performActionToAllCorrespondingNodes(n,visitor);
 	}
+
 	void serialize(QDataStream & streamOut) {
 	#define SERIALIZE_STOP -2
 		int size=hadithFileList.size();
 		streamOut<<size;
-		//qDebug()<<size;
 		for (int i=0;i<size;i++) {
 			hadithFileList[i].serialize(streamOut);
 		}
-		//qDebug()<<"\n";
 		node2IntMap.clear();
 		nodesCount=1;
-		for (int i=0;i<all_nodes.size();i++) {
+	#ifdef PROGRESS_SERIALZATION
+		prg->setCurrentAction("Serializing");
+		prg->report(0);
+		int allSize=all_nodes.size();
+		int allnTopSize=allSize+top_nodes.size();
+		int total=allnTopSize+bottom_nodes.size();
+		streamOut<<total;
+	#endif
+
+		for (int i=0;i<allSize;i++) {
 			int size=(*all_nodes[i]).size();
 			streamOut<<size;
-			//qDebug()<<size;
 			for (int j=0;j<size;j++) {
 				int eq=allocateSerializationNodeEquivalent(&(*all_nodes[i])[j]);
 				streamOut<<eq;
-				//qDebug()<<eq;
 				(*all_nodes[i])[j].serialize(streamOut,*this);
 			}
-			//qDebug()<<"\n";
 			if (size>1) {
 				int eq=allocateSerializationNodeEquivalent(all_nodes[i]);;
 				streamOut<<eq;
-				//qDebug()<<eq;
 				all_nodes[i]->serialize(streamOut,*this);
 			}
-			//qDebug()<<"\n";
+		#ifdef PROGRESS_SERIALZATION
+			prg->report(i/total*100+0.5);
+		#endif
 		}
 		streamOut<<SERIALIZE_STOP;
-		//qDebug()<<SERIALIZE_STOP;
-		//qDebug()<<"---\n";
+
 		size=top_nodes.size();
 		streamOut<<size;
-		//qDebug()<<size;
 		for (int i=0;i<size;i++) {
 			int eq=getSerializationNodeEquivalent(top_nodes[i]);;
 			streamOut<<eq;
-			//qDebug()<<eq;
+		#ifdef PROGRESS_SERIALZATION
+			prg->report((i+allSize)/total*100+0.5);
+		#endif
 		}
-		//qDebug()<<"\n";
 		size=bottom_nodes.size();
 		streamOut<<size;
-		//qDebug()<<size;
 		for (int i=0;i<size;i++) {
 			int eq=getSerializationNodeEquivalent(bottom_nodes[i]);
 			streamOut<<eq;
-			//qDebug()<<eq;
+		#ifdef PROGRESS_SERIALZATION
+			prg->report((i+allnTopSize)/total*100+0.5);
+		#endif
 		}
-		//qDebug()<<"\n";
-
 		hash.serialize(streamOut);
-
+	#ifdef PROGRESS_SERIALZATION
+		prg->setCurrentAction("Completed");
+		prg->report(100);
+	#endif
 		//printChains();
 		//printInAll(37);
 	}
+	//#undef PROGRESS_SERIALZATION
 	NarratorGraph(QDataStream & streamIn,ATMProgressIFC * prg):hash(this) { //equivalent of deserialize
 		this->prg=prg;
 		colorGuard.setGraph(this);
 
 		int2NodeMap.clear();
-		hadithFileList.clear();
+
 		int size;
 		streamIn>>size;
 		for (int i=0;i<size;i++) {
@@ -1194,8 +1281,15 @@ public:
 			file.setCodec("utf-8");
 			QString *text=new QString(file.readAll());
 			setHadithStringDeserializationIntEquivalent(i,text);
+			setHadithStringSerializationEquivalent(text,i);
 		}
-
+	#ifdef PROGRESS_SERIALZATION
+		int total;
+		streamIn>>total;
+		prg->setCurrentAction("De-Serializing");
+		prg->report(0);
+		int counter=0;
+	#endif
 		int n;
 		streamIn>>n;
 		while(n!=SERIALIZE_STOP) {
@@ -1206,7 +1300,6 @@ public:
 				streamIn>>cInt;
 				c=(ChainNarratorNode *)NarratorNodeIfc::deserialize(streamIn,*this);
 				assert(c!=NULL);
-				//qDebug()<<cInt;
 				setDeserializationIntEquivalent(cInt,c);
 			}
 			if (size==1) {
@@ -1219,6 +1312,10 @@ public:
 				setDeserializationIntEquivalent(cInt,n);
 				all_nodes.append(n);
 			}
+		#ifdef PROGRESS_SERIALZATION
+			counter++;
+			prg->report(counter/total*100+0.5);
+		#endif
 
 			streamIn>>n; //get next number
 		}
@@ -1229,6 +1326,11 @@ public:
 			streamIn>>cInt;
 			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
 			top_nodes.append(n);
+
+		#ifdef PROGRESS_SERIALZATION
+			counter++;
+			prg->report(counter/total*100+0.5);
+		#endif
 		}
 
 		streamIn>>size;
@@ -1237,9 +1339,18 @@ public:
 			streamIn>>cInt;
 			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
 			bottom_nodes.append(n);
+
+		#ifdef PROGRESS_SERIALZATION
+			counter++;
+			prg->report(counter/total*100+0.5);
+		#endif
 		}
 
 		hash.deserialize(streamIn);
+	#ifdef PROGRESS_SERIALZATION
+		prg->setCurrentAction("Completed");
+		prg->report(100);
+	#endif
 		//printChains();
 	#undef SERIALIZE_STOP
 	}
@@ -1268,11 +1379,14 @@ public:
 		Int2StringMap::iterator i=int2HadithMap.begin();
 		for (;i!=int2HadithMap.end();i++)
 			delete *i;
-		for (int i=0;i<all_nodes.size();i++) {
-			for (int j=0;j<all_nodes.size();j++) {
+		int allSize=all_nodes.size();
+		for (int i=0;i<allSize;i++) {
+			int size=all_nodes[i]->size();
+			for (int j=0;j<size;j++) {
 				delete &(*all_nodes[i])[j];
 			}
-			delete all_nodes[i];
+			if (size>1)
+				delete all_nodes[i];
 		}
 	}
 };
@@ -1320,6 +1434,8 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	QDataStream fileStream(&file);
 	graph->serialize(fileStream);
 	file.close();
+	prg->setCurrentAction("Completed");
+	prg->report(100);
 #if 0
 	if (!file.open(QIODevice::ReadOnly))
 		return -1;
@@ -1328,11 +1444,13 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	file.close();
 	out<<"equal="<<graph->equalGraphs(graph2)<<"\n";
 #endif
-	biographies(graph);
+	delete graph;
+	//biographies(graph);
 #endif
 	return 0;
 }
 
-int deserializeGraph(ATMProgressIFC * prg);
+int deserializeGraph(QString fileName,ATMProgressIFC * prg);
+int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
 
 #endif // GRAPH_H

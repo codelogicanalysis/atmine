@@ -207,6 +207,7 @@ protected:
 	}
 	virtual void setRank(int rank) {savedRank=rank;}
 	virtual void setIndex(int index){chainContext.set(index, chainContext.getChainNum());}
+	virtual void setChainNum(int num){chainContext.set(chainContext.getIndex(), num);}
 	friend class GraphNarratorNode;
 
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;

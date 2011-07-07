@@ -11,13 +11,16 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "timeRecognizer.h"
+#include "browseDialog.h"
 #include <sys/time.h>
+
 
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
 extern void listAllAffixes(item_types type);
 extern int timeTagger(QString input_str);
-extern int deserializeGraph(ATMProgressIFC * prg);
+extern int deserializeGraph(QString fileName,ATMProgressIFC * prg);
+extern int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str)
 {
@@ -74,17 +77,21 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #ifdef AUGMENT_DICTIONARY
 	if (augment()<0)
 		return -1;
-#else
-#if 0
+#elif 0
 	if (timeTagger(inputString))
 		return -1;
 #elif 0
 	if (biographyHelper(inputString,prg))
 		return -1;
-#else
-	if (deserializeGraph(prg))
+#elif 0
+	if (deserializeGraph(inputString,prg))
 		return -1;
-#endif
+#else
+	QString fileName2=getFileName(NULL);
+	if (fileName2=="")
+		return -1;
+	if (mergeGraphs(inputString,fileName2,prg))
+		return -1;
 #endif
 	return 0;
 }
