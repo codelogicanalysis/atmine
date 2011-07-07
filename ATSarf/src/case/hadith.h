@@ -50,6 +50,7 @@
 #define HASH_TOTAL_VALUES
 #define COLOR_ALL
 #define EQUAL_NEW
+#define PROGRESS_SERIALZATION
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
