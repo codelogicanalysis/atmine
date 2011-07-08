@@ -146,7 +146,7 @@ int mergeGraphs(QString fileName1,QString fileName2,ATMProgressIFC * prg) {
 
 	graph1->mergeWith(graph2);
 	delete graph2;
-#if 0
+#if 1
 	QFile file("graphMerged.dat");
 	if (!file.open(QIODevice::ReadWrite))
 		return -1;

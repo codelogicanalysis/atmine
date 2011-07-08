@@ -1,4 +1,6 @@
 #include "narratordetector.h"
+#include "graph.h"
+#include "narratorHash.h"
 
 #ifdef NARRATORDEBUG
 inline QString type_to_text(wordType t) {
@@ -113,12 +115,15 @@ private:
 			biography=NULL;
 		}
 	};
-
-
+	typedef QList<ChainNarratorNode *> ChainNodeList;
 
 	stateData currentData;
 	QString * text;
 	long current_pos;
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+	NarratorGraph * graph;
+#endif
+
 public:
 	BiographyList * biographies;
 
@@ -932,8 +937,108 @@ private:
 		else
 			return result(NMC,stateInfo,currentBiography);
 	}
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+	class RealNarratorAction:public NarratorHash::FoundAction {
+	private:
+		ChainNodeList & list;
+		bool found;
+	public:
+		RealNarratorAction(ChainNodeList & nodeList):list(nodeList) {}
+		virtual void action(const QString & , ChainNarratorNode * node, double similarity){
+			if (similarity>hadithParameters.equality_threshold) {
+				found =true;
+				if (!list.contains(node))
+					list.append(node);
+			}
+		}
+		void resetFound() {found=false;}
+		bool isFound() {return found;}
+	};
+	bool near(ChainNarratorNode * c1, ChainNarratorNode * c2) {
+		NarratorNodeIfc & n1=c1->getCorrespondingNarratorNode();
+		NarratorNodeIfc & n2=c2->getCorrespondingNarratorNode();
+		for (int i=0;i<n1.size();i++) {
+			if (&n1.getChild(i)==&n2)
+				return true;
+			if (&n1.getParent(i)==&n2)
+				return true;
+		}
+		return false;
+	}
+	bool near(ChainNarratorNode * c, const ChainNodeList & list) {
+		for (int i=0;i<list.size();i++) {
+			if (near(c,list[i]))
+				return true;
+		}
+		return false;
+	}
+	int getNearestNodesNumber(ChainNodeList & list) {
+		QList<ChainNodeList> nearNodesLists;
+		//1-each node put it in its own list or merge it with a group of already found if it is near them
+		for (int i=0;i<list.size();i++) {
+			bool nearSomeNode=false;
+			for (int j=0;j<nearNodesLists.size();j++) {
+				if (near(list[i],nearNodesLists[j])) {
+					nearSomeNode=true;
+					nearNodesLists[j].append(list[i]);
+				}
+			}
+			if (!nearSomeNode) {
+				ChainNodeList newList;
+				newList.append(list[i]);
+				nearNodesLists.append(newList);
+			}
+		}
+		//2-merge seperate lists in case they turn to overlap at last in case they are near each other
+		for (int i=0;i<nearNodesLists.size();i++) {
+			for (int j=i+1;j<nearNodesLists.size();j++) {
+				for (int k=0;k<nearNodesLists[j].size();k++) {
+					if (near(nearNodesLists[j][k],nearNodesLists[i])) {
+						for (int r=0;r<nearNodesLists[j].size();r++) {
+							if (!nearNodesLists[i].contains(nearNodesLists[j][r])) //dont append nodes already there
+								nearNodesLists[i].append(nearNodesLists[j][r]);
+						}
+						nearNodesLists.removeAt(j);
+						j--;
+						break;
+					}
+				}
+			}
+		}
+		//3-return largest list size
+		int largest=0;
+		for (int i=0;i<nearNodesLists.size();i++) {
+			if (nearNodesLists[i].size()>largest)
+				largest=nearNodesLists[i].size();
+		}
+		return largest;
+	}
+	ChainNodeList getRealNarrators(Biography * biography) {
+		ChainNodeList list;
+		RealNarratorAction v(list);
+		for (int i=0;i<biography->size();i++) {
+			Narrator * n=(*biography)[i];
+			if (n->isRasoul) {
+				biography->removeNarrator(i);
+				i--;
+			} else {
+				v.resetFound();
+				graph->performActionToAllCorrespondingNodes(n,v);
+				if (!v.isFound()) {
+					biography->removeNarrator(i);
+					i--;
+				}
+			}
+		}
+		return list;
+	}
+#endif
 
 public:
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+	NarratorDetector(NarratorGraph * graph) {this->graph=graph; }
+	NarratorDetector() {}
+#endif
 	int segment(QString input_str,ATMProgressIFC *prg)  {
 		QFile chainOutput(chainDataStreamFileName);
 
@@ -987,7 +1092,13 @@ public:
 	#endif
 		for (;stateInfo.startPos<text_size;) {
 			if((proceedInStateMachine(stateInfo,currentBiography)==false)) {
+			#ifdef SEGMENT_BIOGRAPHY_USING_POR
+				ChainNodeList realNarrators=getRealNarrators(currentBiography->biography);
+				int num=getNearestNodesNumber(realNarrators);
+				if (num>=hadithParameters.bio_narr_min) {
+			#else
 				if (currentData.narratorCount>=hadithParameters.bio_narr_min) {
+			#endif
 					//biographyEnd=currentData.narratorEndIndex;
 					biographyEnd=stateInfo.endPos;
 					currentBiography->biography->setEnd(biographyEnd);
@@ -1129,9 +1240,13 @@ int biographyHelper(QString input_str,ATMProgressIFC *prg) {
 }
 
 #ifdef TEST_BIOGRAPHIES
-BiographyList * getBiographies(QString input_str,ATMProgressIFC *prg) {
+BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg) {
 	input_str=input_str.split("\n")[0];
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+	NarratorDetector s(graph);
+#else
 	NarratorDetector s;
+#endif
 	s.segment(input_str,prg);
 	return s.biographies;
 }

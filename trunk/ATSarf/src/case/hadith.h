@@ -51,6 +51,8 @@
 #define COLOR_ALL
 #define EQUAL_NEW
 #define PROGRESS_SERIALZATION
+#define SEGMENT_BIOGRAPHY_USING_POR
+#define DONT_DISPLAY_BIOGRAPHY_GRAPHY
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
