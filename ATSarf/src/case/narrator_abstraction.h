@@ -273,6 +273,9 @@ public:
 		else
 			return NULL;
 	}
+	void removeNarrator(int i) {
+		narrators.remove(i);
+	}
 	void serialize(QDataStream &chainOut) const;
 	void deserialize(QDataStream &chainIn);
 	void serialize(QTextStream &chainOut) const;

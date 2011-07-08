@@ -978,6 +978,34 @@ private:
 			}
 		}
 	}
+	void removeDuplicatesFromTopNodes() {
+		int topSize=top_nodes.size();
+		for (int i=0;i<topSize;i++) {
+			int size=top_nodes[i]->size();
+			if (size>1) {
+				bool hasFirst=false;
+				for (int j=0;j<size;j++) {
+					ChainNarratorNode * c=&(*top_nodes[i])[j];
+					if (c->isFirst()) {
+						hasFirst=true;
+						break;
+					}
+				}
+				if (!hasFirst) {
+					top_nodes.removeAt(i);
+					i--;
+					topSize--;
+				}
+			} else {
+				ChainNarratorNode * c=(ChainNarratorNode *)top_nodes[i];
+				if (!c->isFirst()) {
+					top_nodes.removeAt(i);
+					i--;
+					topSize--;
+				}
+			}
+		}
+	}
 
 	int findEquivalent(ChainNarratorNode * c,NarratorNodeIfc * n) {
 		for (int i=0;i<n->size();i++) {
@@ -1031,11 +1059,11 @@ private:
 		fillNodesLists();
 		if (hadithParameters.break_cycles){
 			breakManageableCycles();
-			correctTopNodesList();
+			removeDuplicatesFromTopNodes();
 		}
+		//removeDuplicatesFromAllNodes();
 		computeRanks();
 		//fillNodesLists();
-		//removeDuplicatesFromAllNodes();
 	}
 	void clearStructures() {
 		top_nodes.clear();
@@ -1057,10 +1085,12 @@ private:
 			if (size>1) {
 				for (int j=0;j<size;j++) {
 					ChainNarratorNode * c=&(*top_nodes[i])[j];
-					top_nodes.append(c);
-					int chain=c->getChainNum();
-					if (chain>largestChainNum)
-						largestChainNum=chain;
+					if (c->isFirst()) {
+						top_nodes.append(c);
+						int chain=c->getChainNum();
+						if (chain>largestChainNum)
+							largestChainNum=chain;
+					}
 				}
 				top_nodes.removeAt(i);
 				i--;
@@ -1071,8 +1101,15 @@ private:
 					largestChainNum=chain;
 			}
 		}
-		assert(top_nodes.size()==largestChainNum+1);
+	#if 1 //TODO: not equal always => top_nodes not totally correct
+		//qDebug()<<"top= "<<top_nodes.size()<<"\tlargest+1="<<largestChainNum+1;
+		if(top_nodes.size()!=largestChainNum+1){
+			removeDuplicatesFromTopNodes();
+			qDebug()<<"top= "<<top_nodes.size()<<"\tlargest+1="<<largestChainNum+1;
+			assert(top_nodes.size()==largestChainNum+1);
+		}
 		return top_nodes.size();
+	#endif
 		//post-condition: top_nodes contains the chain nodes instead of the graph nodes (i.e. opposite of correctTopNodes() )
 		// return value=new size of top_nodes
 	}
@@ -1444,8 +1481,11 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	file.close();
 	out<<"equal="<<graph->equalGraphs(graph2)<<"\n";
 #endif
+#if 0
 	delete graph;
-	//biographies(graph);
+#else
+	biographies(graph);
+#endif
 #endif
 	return 0;
 }

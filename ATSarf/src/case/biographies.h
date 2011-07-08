@@ -131,7 +131,11 @@ public slots:
 			return;
 		}
 		QString fileName=input->toPlainText();
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		biographyList=getBiographies(fileName,graph,this);
+	#else
 		biographyList=getBiographies(fileName,this);
+	#endif
 		if (biographyList==NULL)
 			return;
 		biographyNum->clear();
@@ -150,8 +154,10 @@ public slots:
 				narratorListDisplay->setItem(count,1,new QTableWidgetItem(QString("%1").arg(i)));
 				narratorList.append(n);
 				count++;
+			#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 				ColorBiographiesAction c(i);
 				graph->performActionToAllCorrespondingNodes(n,c);
+			#endif
 			#endif
 			}
 			biographyNum->addItem(QString("%1").arg(i));
@@ -160,6 +166,7 @@ public slots:
 	#endif
 	}
 	void colorBiography_clicked() {
+	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 		int num=biographyNum->currentText().toInt();
 		setCurrentAction("Display Graph");
 		report(0);
@@ -173,9 +180,10 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
-
+	#endif
 	}
 	void colorNarrators_clicked() {
+	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
 		ColorNarratorsAction::DetectedNodesMap map;
 		ColorNarratorsAction action(map);
@@ -198,6 +206,7 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+	#endif
 	}
 	void browse_clicked() {
 		QString fileName=getFileName(browseFileDlg);
@@ -214,6 +223,7 @@ private:
 	virtual void resetActionDisplay();
 
 	void displayUncoloredGraph(){
+	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 		DisplayNodeVisitor visitor;
 		GraphVisitorController c(&visitor,graph);
 		graph->DFS_traverse(c);
@@ -222,6 +232,7 @@ private:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+	#endif
 	}
 
 	class ColorBiographiesAction: public NarratorHash::FoundAction {
