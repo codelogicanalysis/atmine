@@ -10,10 +10,11 @@ void ColorIndices::unUse(unsigned int bit)//unuse and clear color bit for all no
 	for (int i=0;i<max;i++) {
 		graph->all_nodes[i]->resetVisited(bit);
 		assert(!graph->all_nodes[i]->isVisited(bit));
-		int size=graph->all_nodes[i]->size();
-		for (int j=0;j<size;j++) {
-			(*graph->all_nodes[i])[j].resetVisited(bit);
-			assert(!(*graph->all_nodes[i])[j].isVisited(bit));
+		ChainNodeIterator itr=graph->all_nodes[i]->begin();
+		for (;!itr.isFinished();++itr) {
+			ChainNarratorNode & c=*itr;
+			c.resetVisited(bit);
+			assert(!c.isVisited(bit));
 		}
 	}
 
@@ -64,12 +65,13 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 	qDebug()<<g->CanonicalName();
 #endif
 	QList<ChainNarratorNode *> narrators;
-	for (int i=0;i<g->size();i++)
-	{
-		narrators.append(&(*g)[i]);
-		(*g)[i].setCorrespondingNarratorNode(NULL);
+	ChainNodeIterator itr=g->begin();
+	for (;!itr.isFinished();++itr) {
+		ChainNarratorNode & c=*itr;
+		narrators.append(&c);
+		c.setCorrespondingNarratorNodeGroup(NULL);
 	}
-	g->equalChainNodes.clear();
+	g->groupList.clear();
 	NarratorGraph* graph=controller->getGraph();
 	QList<NarratorNodeIfc *> new_nodes;
 	int size=narrators.size();

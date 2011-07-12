@@ -9,10 +9,6 @@
 #include "graph_nodes.h"
 
 
-inline bool possessivesCompare(const NameConnectorPrim * n1,const NameConnectorPrim * n2) {
-	return n1->getString()<n2->getString();
-}
-
 class NarratorGraph;
 
 class NarratorHash {
@@ -22,27 +18,11 @@ public:
 		virtual void action(const QString & searchKey, ChainNarratorNode * node, double similarity) =0;
 	};
 
-	typedef QVector<NarratorPrim *> NamePrimList;
-	typedef QVector<NamePrimList> NamePrimHierarchy;
-	typedef QVector<NameConnectorPrim *> PossessiveList;
-private:
-	class HashValue {
-	public:
-		HashValue(ChainNarratorNode * node, int value, int total) {
-			this->node=node;
-			this->value=value;
-			this->total=total;
-		}
-		ChainNarratorNode * node;
-		int value,total;
-	};
+	typedef Narrator::NamePrimList NamePrimList;
+	typedef Narrator::NamePrimHierarchy NamePrimHierarchy;
+	typedef Narrator::PossessiveList PossessiveList;
 
-	typedef QMultiHash<QString,HashValue> HashTable;
-
-	HashTable hashTable;
-	NarratorGraph * graph;
-
-	QString getKey(const NamePrimHierarchy & hierarchy) {
+	static QString getKey(const NamePrimHierarchy & hierarchy) {
 		QString key="";
 		int size=hierarchy.size();
 		for (int i=0;i<size;i++) {
@@ -57,7 +37,7 @@ private:
 		}
 		return key;
 	}
-	inline QString getKey(const NamePrimHierarchy & hierarchy,const PossessiveList & possessives,int size, bool poss, bool skipFirst) {
+	inline static QString getKey(const NamePrimHierarchy & hierarchy,const PossessiveList & possessives,int size, bool poss, bool skipFirst) {
 		QString key="";
 		for (int i=0;i<size;i++) {
 			if (!skipFirst || i!=0) {
@@ -84,6 +64,24 @@ private:
 		}
 		return key;
 	}
+
+private:
+	class HashValue {
+	public:
+		HashValue(ChainNarratorNode * node, int value, int total) {
+			this->node=node;
+			this->value=value;
+			this->total=total;
+		}
+		ChainNarratorNode * node;
+		int value,total;
+	};
+
+	typedef QMultiHash<QString,HashValue> HashTable;
+
+	HashTable hashTable;
+	NarratorGraph * graph;
+
 	class Visitor {
 	public:
 		virtual void visit(const QString & s, ChainNarratorNode * c, int value, int total)=0;
@@ -142,7 +140,6 @@ private:
 			 }
 		}
 	};
-
 	class DebuggingVisitor: public Visitor {
 	public:
 		virtual void visit(const QString & s, ChainNarratorNode * , int value, int total){
@@ -168,31 +165,7 @@ private:
 		}
 		NamePrimHierarchy names;
 		PossessiveList possessives;
-		int j=0; //index of names entry defined by bin
-		names.append(NamePrimList());
-		//qDebug()<< names.size();
-		for (int i=0;i<n->m_narrator.count();i++) {
-			if (n->m_narrator[i]->getString().isEmpty())
-				continue;
-			if (n->m_narrator[i]->isNamePrim())
-				names[j].append(n->m_narrator[i]);
-			else {
-				NameConnectorPrim * c=(NameConnectorPrim*)n->m_narrator[i];
-				if (c->isPossessive()) {
-					possessives.append(c);
-				} else if (c->isIbn()){
-					names.append(NamePrimList());
-					j++;
-				} else if (c->isFamilyConnector()) {
-					names[j].append(c);
-				}
-				//if (c->isOther()) do nothing
-			}
-		}
-		//TODO: add sorting of names inside same level (pay attention to those after family connector) and possessives
-		qSort(possessives.begin(),possessives.end(),possessivesCompare);
-		//TODO: allow for skipping in the selection if total number is conserved
-
+		n->preProcessForEquality(names,possessives);
 		int levelSize=names.size();
 	#if 1
 		assert(levelSize>0);

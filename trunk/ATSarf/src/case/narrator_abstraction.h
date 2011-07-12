@@ -150,9 +150,15 @@ public:
         return m_end;}
 };
 
-
+inline bool possessivesCompare(const NameConnectorPrim * n1,const NameConnectorPrim * n2) {
+	return n1->getString()<n2->getString();
+}
 
 class Narrator : public ChainPrim{
+public:
+	typedef QVector<NarratorPrim *> NamePrimList;
+	typedef QVector<NamePrimList> NamePrimHierarchy;
+	typedef QVector<NameConnectorPrim *> PossessiveList;
 public:
 	Narrator(QString * hadith_text);
  //   QList <ChainNarratorPrim *> m_narrator; //modify back to here
@@ -188,6 +194,35 @@ public:
         return getString() == rhs.getString(); }
 
 	virtual double equals(const Narrator & rhs) const;
+
+	void preProcessForEquality(NamePrimHierarchy & names,PossessiveList & possessives) const{
+		int j=0; //index of names entry defined by bin
+		names.append(NamePrimList());
+		//qDebug()<< names.size();
+		for (int i=0;i<m_narrator.count();i++) {
+			if (m_narrator[i]->getString().isEmpty())
+				continue;
+			if (m_narrator[i]->isNamePrim())
+				names[j].append(m_narrator[i]);
+			else {
+				NameConnectorPrim * c=(NameConnectorPrim*)m_narrator[i];
+				if (c->isPossessive()) {
+					possessives.append(c);
+				} else if (c->isIbn()){
+					names.append(NamePrimList());
+					j++;
+				} else if (c->isFamilyConnector()) {
+					names[j].append(c);
+				}
+				//if (c->isOther()) do nothing
+			}
+		}
+		//TODO: add sorting of names inside same level (pay attention to those after family connector) and possessives
+		qSort(possessives.begin(),possessives.end(),possessivesCompare);
+		//TODO: allow for skipping in the selection if total number is conserved
+	}
+
+	QString getKey();
 };
 
 class Chain: public ChainNarratorPrim {
