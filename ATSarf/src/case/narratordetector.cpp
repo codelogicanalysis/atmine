@@ -957,10 +957,11 @@ private:
 	bool near(ChainNarratorNode * c1, ChainNarratorNode * c2) {
 		NarratorNodeIfc & n1=c1->getCorrespondingNarratorNode();
 		NarratorNodeIfc & n2=c2->getCorrespondingNarratorNode();
-		for (int i=0;i<n1.size();i++) {
-			if (&n1.getChild(i)==&n2)
+		ChainNodeIterator itr=n1.begin();
+		for (;!itr.isFinished();++itr) {
+			if (&itr.getChild()==&n2)
 				return true;
-			if (&n1.getParent(i)==&n2)
+			if (&itr.getParent()==&n2)
 				return true;
 		}
 		return false;
@@ -1007,9 +1008,19 @@ private:
 		}
 		//3-return largest list size
 		int largest=0;
+		int index=-1;
 		for (int i=0;i<nearNodesLists.size();i++) {
-			if (nearNodesLists[i].size()>largest)
+			if (nearNodesLists[i].size()>largest) {
 				largest=nearNodesLists[i].size();
+				index=i;
+			}
+		}
+		if (index>=0) {
+			qDebug()<<largest<<"\n";
+			for (int i=0;i<nearNodesLists[index].size();i++){
+				qDebug()<<nearNodesLists[index][i]->CanonicalName()<<"\n";
+			}
+			qDebug()<<"\n";
 		}
 		return largest;
 	}

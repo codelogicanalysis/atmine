@@ -690,57 +690,13 @@ inline double equalNew(const Narrator & n1,const Narrator & n2) {
 			return 0;
 	}
 	QString n1_str=n1.getString(),n2_str=n2.getString();
-	if (equal(n1_str,n2_str))
+	if (n1_str==n2_str)
 		return 1;
-	NarratorHash::NamePrimHierarchy names1;
-	NarratorHash::PossessiveList possessives1;
-	int j=0; //index of names entry defined by bin
-	names1.append(NarratorHash::NamePrimList());
-	//qDebug()<< names.size();
-	for (int i=0;i<n1.m_narrator.count();i++) {
-		if (n1.m_narrator[i]->getString().isEmpty())
-			continue;
-		if (n1.m_narrator[i]->isNamePrim())
-			names1[j].append(n1.m_narrator[i]);
-		else {
-			NameConnectorPrim * c=(NameConnectorPrim*)n1.m_narrator[i];
-			if (c->isPossessive()) {
-				possessives1.append(c);
-			} else if (c->isIbn()){
-				names1.append(NarratorHash::NamePrimList());
-				j++;
-			} else if (c->isFamilyConnector()) {
-				names1[j].append(c);
-			}
-			//if (c->isOther()) do nothing
-		}
-	}
-	NarratorHash::NamePrimHierarchy names2;
-	NarratorHash::PossessiveList possessives2;
-	j=0; //index of names entry defined by bin
-	names2.append(NarratorHash::NamePrimList());
-	for (int i=0;i<n2.m_narrator.count();i++) {
-		if (n2.m_narrator[i]->getString().isEmpty())
-			continue;
-		if (n2.m_narrator[i]->isNamePrim())
-			names2[j].append(n2.m_narrator[i]);
-		else {
-			NameConnectorPrim * c=(NameConnectorPrim*)n2.m_narrator[i];
-			if (c->isPossessive()) {
-				possessives2.append(c);
-			} else if (c->isIbn()){
-				names2.append(NarratorHash::NamePrimList());
-				j++;
-			} else if (c->isFamilyConnector()) {
-				names2[j].append(c);
-			}
-			//if (c->isOther()) do nothing
-		}
-	}
-	//TODO: add sorting of names inside same level (pay attention to those after family connector) and possessives
-	qSort(possessives1.begin(),possessives1.end(),possessivesCompare);
-	qSort(possessives2.begin(),possessives2.end(),possessivesCompare);
-	//TODO: allow for skipping in the selection if total number is conserved
+	Narrator::NamePrimHierarchy names1, names2;
+	Narrator::PossessiveList possessives1, possessives2;
+
+	n1.preProcessForEquality(names1,possessives1);
+	n2.preProcessForEquality(names2,possessives2);
 
 	int levelMin=min(names1.size(),names2.size());
 	int levelMax=max(names1.size(),names2.size());
@@ -778,6 +734,18 @@ double equal(const Narrator & n1,const  Narrator  & n2) {
 
 double Narrator::equals(const Narrator & rhs) const {
     return equal(*this,rhs);
+}
+
+QString Narrator::getKey(){
+	bool abihi=isRelativeNarrator(*this);
+	if (abihi)
+		return abyi+ha2; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
+	if (isRasoul)
+		return alrasoul;
+	NamePrimHierarchy names;
+	PossessiveList possessives;
+	preProcessForEquality(names,possessives);
+	return NarratorHash::getKey(names,possessives,names.size(),true,false);
 }
 
 void Biography::serialize(QDataStream &chainOut) const{

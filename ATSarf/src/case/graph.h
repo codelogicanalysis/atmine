@@ -134,33 +134,33 @@ public:
 		}
 		return visited;
 	}
-	bool isPreviouslyVisited( NarratorNodeIfc & n1, NarratorNodeIfc & n2,int child_num)
+	bool isPreviouslyVisited( NarratorNodeIfc & n1, NarratorNodeIfc & n2,int child_num1,int child_num2)
 	{
 		if (!keep_track_of_edges)
 			return false;
-		assert(&n2==&(n1.getChild(child_num))); //to check if the edge exists i.e. we can go from n1 to n2
+		assert(&n2==&(n1.getChild(child_num1,child_num2))); //to check if the edge exists i.e. we can go from n1 to n2
 		if (merged_edges_as_one)
 		{
-			child_num=0; //so that they will all be treated equally
+			int child_num=0; //so that they will all be treated equally
 			EdgeMap::iterator it=edgeMap.find(Edge(&n1,&n2,child_num));
 			return !(it==edgeMap.end());
 		}
 		else
-			return n1[child_num].isVisited(visitIndex);
+			return n1[child_num1][child_num2].isVisited(visitIndex);
 	}
 	void initialize();
-	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)
+	void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num1,int child_num2)
 	{
-		visitor->visit(n1,n2,child_num);
+		visitor->visit(n1,n2,child_num1);
 		if (!keep_track_of_edges)
 			return;
 		if (merged_edges_as_one)
 		{
-			child_num=0; //so that they will all be treated equally
-			edgeMap.insert(Edge(&n1,&n2,child_num),true);
+			child_num1=0; //so that they will all be treated equally
+			edgeMap.insert(Edge(&n1,&n2,child_num1),true);
 		}
 		else
-			n1[child_num].setVisited(visitIndex);
+			n1[child_num1][child_num2].setVisited(visitIndex);
 	}
 	void visit(NarratorNodeIfc & n)
 	{
@@ -237,16 +237,17 @@ protected:
 		if (hadithParameters.display_chain_num )
 		{
 			//qDebug()<<name;
-			for (int i=0;i<n.size();i++)
-			{
-				ChainNarratorNode & c=n[i];
-				if (c.isLast())
-				{
-					int num=c.getChainNum();
-					QString ch_node=QString("ch%1").arg(num+1);
-					d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
-					d_out<<name<<"->"<<ch_node<<";\n";
-					setGraphRank(n.getRank()+2,ch_node);
+			for (int i=0;i<n.size();i++) {
+				for (int j=0;j<n[i].size();j++) {
+					ChainNarratorNode & c=n[i][j];
+					if (c.isLast())
+					{
+						int num=c.getChainNum();
+						QString ch_node=QString("ch%1").arg(num+1);
+						d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
+						d_out<<name<<"->"<<ch_node<<";\n";
+						setGraphRank(n.getRank()+2,ch_node);
+					}
 				}
 			}
 		}
@@ -463,7 +464,9 @@ public:
 	virtual void visit(NarratorNodeIfc & n) {
 		list_all->append(&n);
 		for (int i=0;i<n.size();i++) {
-			hash->addNode(&n[i]);
+			for (int j=0;j<n[i].size();j++) {
+				hash->addNode(&n[i][j]);
+			}
 		}
 		/*if (n.size()==0) //TODO: do a function that checks if it is a leaf node (needs a for loop in the case of a graph node)
 			list_bottom->append(&n);*/
@@ -664,7 +667,7 @@ private:
 		{
 			//assert(&n2==&narr2);
 
-			((GraphNarratorNode &)narr1).addNarrator(n2);
+			((GraphNarratorNode &)narr1).addChainNode(n2);
 		#if 0
 			out<<narr1.toString()<<"\n";
 		#endif
@@ -673,7 +676,7 @@ private:
 		else if (!graph1 && graph2)
 		{
 			//assert(&n1==&narr1);
-			((GraphNarratorNode &)narr2).addNarrator(n1);
+			((GraphNarratorNode &)narr2).addChainNode(n1);
 		#if 0
 			out<<narr2.toString()<<"\n";
 		#endif
@@ -684,10 +687,11 @@ private:
 			//assert(narr1.isGraphNode() && narr2.isGraphNode());
 			GraphNarratorNode & g_node=(GraphNarratorNode &)narr2;
 			GraphNarratorNode * dlt_g_node= &(GraphNarratorNode &)narr1;
-			for (int i=0;i<narr1.size();i++)
-			{
-				ChainNarratorNode & c_node=narr1[i];
-				g_node.addNarrator(c_node);
+			for (int i=0;i<narr1.size();i++) {
+				for (int j=0;j<narr1[i].size();j++) {
+					ChainNarratorNode & c_node=narr1[i][j];
+					g_node.addChainNode(c_node);
+				}
 			}
 		#if 0
 			out<<g_node.toString()<<"\n";
@@ -905,20 +909,23 @@ private:
 	#elif 0
 		assert(all_nodes.contains(&n));
 	#endif
-		//int size=n.size();
 	#ifdef DEBUG_DFS_TRAVERSAL
-		out<<"parent:"<<n.toString()<<" "<<size<<"\n";
+		int size=n.size();
+		qDebug()<<"parent:"<<n.toString()<<" "<<size<<"\n";
 	#endif
-		for (int i=0;i<n.size();i++)//n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
-		{
-			NarratorNodeIfc & c=n.getChild(i);
+		//n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
+		ChainNodeIterator itr=n.begin();
+		for (;!itr.isFinished();++itr) {
+			NarratorNodeIfc & c=itr.getChild();
+			ChainNodeIterator::IndiciesPair p=itr.getIndicies();
+			int i=p.first,j=p.second;
 		#ifdef DEBUG_DFS_TRAVERSAL
-			out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+			qDebug()<<n.CanonicalName()<<".child("<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
 		#endif
-			if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i))
+			if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j))
 			{
 				bool prev_visited=visitor.isPreviouslyVisited(c);
-				visitor.visit(n,c,i);
+				visitor.visit(n,c,i,j);
 				if (!prev_visited)
 					DFS_traverse(c,visitor);
 			}
@@ -930,9 +937,9 @@ private:
 		QList<int> chainNums;
 		QList<ChainNarratorNode *> topOfChain;
 		for (int i=0;i<all_nodes.size();i++) {
-			int size=(*all_nodes[i]).size();
-			for (int j=0;j<size;j++) {
-				ChainNarratorNode* c=&(*all_nodes[i])[j];
+			ChainNodeIterator itr=all_nodes[i]->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode * c=&*itr;
 				int chainNum=c->getChainNum();
 				if (!chainNums.contains(chainNum)) {
 					chainNums.append(chainNum);
@@ -956,9 +963,9 @@ private:
 	void printInAll(int num){
 		qDebug()<<"";
 		for (int i=0;i<all_nodes.size();i++) {
-			int size=(*all_nodes[i]).size();
-			for (int j=0;j<size;j++) {
-				ChainNarratorNode* c=&(*all_nodes[i])[j];
+			ChainNodeIterator itr=all_nodes[i]->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode* c=&*itr;
 				int chainNum=c->getChainNum();
 				if (chainNum==num) {
 					qDebug()<<getSerializationNodeEquivalent(c)<<"\t"<< c->CanonicalName();
@@ -981,11 +988,11 @@ private:
 	void removeDuplicatesFromTopNodes() {
 		int topSize=top_nodes.size();
 		for (int i=0;i<topSize;i++) {
-			int size=top_nodes[i]->size();
-			if (size>1) {
+			if (top_nodes[i]->isGraphNode()) {
 				bool hasFirst=false;
-				for (int j=0;j<size;j++) {
-					ChainNarratorNode * c=&(*top_nodes[i])[j];
+				ChainNodeIterator itr=top_nodes[i]->begin();
+				for (;!itr.isFinished();++itr) {
+					ChainNarratorNode* c=&*itr;
 					if (c->isFirst()) {
 						hasFirst=true;
 						break;
@@ -1007,22 +1014,24 @@ private:
 		}
 	}
 
-	int findEquivalent(ChainNarratorNode * c,NarratorNodeIfc * n) {
-		for (int i=0;i<n->size();i++) {
-			ChainNarratorNode * c2=&(*n)[i];
+	ChainNodeIterator::IndiciesPair findEquivalent(ChainNarratorNode * c,NarratorNodeIfc * n) {
+		ChainNodeIterator itr=n->begin();
+		for (;!itr.isFinished();++itr) {
+			ChainNarratorNode* c2=&*itr;
 			if (c->getNarrator().getStart()==c2->getNarrator().getStart() && c->getNarrator().getEnd()==c2->getNarrator().getEnd()) {
-				return i;
+				return itr.getIndicies();
 			}
 		}
 		out<<"conflict at:"<<c->CanonicalName()<<"\t"<<n->CanonicalName()<<"\n";
-		return -1;
+		return ChainNodeIterator::IndiciesPair(-1,-1);
 	}
 	bool areEqual(NarratorNodeIfc * n1,NarratorNodeIfc * n2) {
 		for (int f=0;f<2;f++) {
-			for (int i=0;i<n1->size();i++) {
-				ChainNarratorNode * c1=&(*n1)[i];
-				int j2=findEquivalent(c1,n2);
-				if (j2<0)
+			ChainNodeIterator itr=n1->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode* c1=&*itr;
+				ChainNodeIterator::IndiciesPair j2=findEquivalent(c1,n2);
+				if (j2.first<0)
 					return false;
 			}
 			swap(n1,n2);
@@ -1040,12 +1049,13 @@ private:
 	bool equalHelper(NarratorNodeIfc * n1,NarratorNodeIfc * n2) {
 		if (n1->isNull() || n2->isNull())
 			return (n1->isNull() && n2->isNull());
-		for (int i=0;i<n1->size();i++) {
-			ChainNarratorNode * c1=&(*n1)[i];
-			int j=findEquivalent(c1,n2);
-			if (j<0)
+		ChainNodeIterator itr=n1->begin();
+		for (;!itr.isFinished();++itr) {
+			ChainNarratorNode* c1=&*itr;
+			ChainNodeIterator::IndiciesPair j=findEquivalent(c1,n2);
+			if (j.first<0)
 				return false;
-			NarratorNodeIfc * child1=&n1->getChild(i);
+			NarratorNodeIfc * child1=&n1->getChild(itr.getIndicies());
 			NarratorNodeIfc * child2=&n2->getChild(j);
 			if (!equalHelper(child1,child2))
 				return false;
@@ -1053,6 +1063,7 @@ private:
 		}
 		return true;
 	}
+
 	void init(int split=-1) {
 		buildGraph(split);
 		correctTopNodesList();
@@ -1081,10 +1092,10 @@ private:
 		int largestChainNum=-1;
 		int allSize=top_nodes.size();
 		for (int i=0;i<allSize;i++) {
-			int size=top_nodes[i]->size();
-			if (size>1) {
-				for (int j=0;j<size;j++) {
-					ChainNarratorNode * c=&(*top_nodes[i])[j];
+			if (top_nodes[i]->isGraphNode()) {
+				ChainNodeIterator itr=top_nodes[i]->begin();
+				for (;!itr.isFinished();++itr) {
+					ChainNarratorNode* c=&*itr;
 					if (c->isFirst()) {
 						top_nodes.append(c);
 						int chain=c->getChainNum();
@@ -1116,9 +1127,9 @@ private:
 	void shiftChainsBy(int pos) {
 		int allSize=top_nodes.size();
 		for (int i=0;i<allSize;i++) {
-			int size=top_nodes[i]->size();
-			for (int j=0;j<size;j++) {
-				ChainNarratorNode *c=&(*top_nodes[i])[j];
+			ChainNodeIterator itr=top_nodes[i]->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode* c=&*itr;
 				if (c->isFirst()) {
 					for (;!c->isNull();c=&(c->nextInChain()))
 						c->setChainNum(c->getChainNum()+pos);
@@ -1185,20 +1196,21 @@ public:
 		{
 			NarratorNodeIfc & n=*(queue.dequeue());
 			visitor.visit(n);
-			int size=n.size();
 		#ifdef DEBUG_BFS_TRAVERSAL
+			int size=n.size();
 			out<<"parent:"<<n.toString()<<" "<<size<<"\n";
 		#endif
-			for (int i=0;i<size;i++)
-			{
-				NarratorNodeIfc & c=n.getChild(i);
+			ChainNodeIterator itr=n.begin();
+			for (;!itr.isFinished();++itr) {
+				NarratorNodeIfc & c=itr.getChild();
 			#ifdef DEBUG_BFS_TRAVERSAL
 				out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
 			#endif
-				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i))
+				ChainNodeIterator::IndiciesPair p=itr.getIndicies();
+				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,p.first,p.second))
 				{
 					bool prev_visited=visitor.isPreviouslyVisited( c);
-					visitor.visit(n,c,i);
+					visitor.visit(n,c,p.first,p.second);
 					if (!prev_visited)
 						queue.enqueue(&c);
 				}
@@ -1254,13 +1266,20 @@ public:
 
 		for (int i=0;i<allSize;i++) {
 			int size=(*all_nodes[i]).size();
-			streamOut<<size;
+			streamOut<<size; //TODO: not correct size
 			for (int j=0;j<size;j++) {
-				int eq=allocateSerializationNodeEquivalent(&(*all_nodes[i])[j]);
-				streamOut<<eq;
-				(*all_nodes[i])[j].serialize(streamOut,*this);
+				int size2=(*all_nodes[i])[j].size();
+				streamOut<<size2;
+				for (int k=0;k<size2;k++) {
+					ChainNarratorNode & c=(*all_nodes[i])[j][k];
+					int eq=allocateSerializationNodeEquivalent(&c);
+					streamOut<<eq;
+					c.serialize(streamOut,*this);
+				}
 			}
-			if (size>1) {
+			bool isGraphNode=(*all_nodes[i]).isGraphNode();
+			streamOut<<isGraphNode;
+			if (isGraphNode) {
 				int eq=allocateSerializationNodeEquivalent(all_nodes[i]);;
 				streamOut<<eq;
 				all_nodes[i]->serialize(streamOut,*this);
@@ -1297,7 +1316,6 @@ public:
 		//printChains();
 		//printInAll(37);
 	}
-	//#undef PROGRESS_SERIALZATION
 	NarratorGraph(QDataStream & streamIn,ATMProgressIFC * prg):hash(this) { //equivalent of deserialize
 		this->prg=prg;
 		colorGuard.setGraph(this);
@@ -1333,13 +1351,19 @@ public:
 			int size=n;
 			ChainNarratorNode * c;
 			for (int j=0;j<size;j++) {
-				int cInt;
-				streamIn>>cInt;
-				c=(ChainNarratorNode *)NarratorNodeIfc::deserialize(streamIn,*this);
-				assert(c!=NULL);
-				setDeserializationIntEquivalent(cInt,c);
+				int size2;
+				streamIn>>size2;
+				for (int k=0;k<size2;k++) {
+					int cInt;
+					streamIn>>cInt;
+					c=(ChainNarratorNode *)NarratorNodeIfc::deserialize(streamIn,*this);
+					assert(c!=NULL);
+					setDeserializationIntEquivalent(cInt,c);
+				}
 			}
-			if (size==1) {
+			bool isGraphNode;
+			streamIn>>isGraphNode;
+			if (!isGraphNode) {
 				all_nodes.append(c);
 			} else {
 				int cInt;
@@ -1418,11 +1442,13 @@ public:
 			delete *i;
 		int allSize=all_nodes.size();
 		for (int i=0;i<allSize;i++) {
-			int size=all_nodes[i]->size();
-			for (int j=0;j<size;j++) {
-				delete &(*all_nodes[i])[j];
+			bool isGraph=all_nodes[i]->isGraphNode();
+			ChainNodeIterator itr=all_nodes[i]->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode & c=*itr;
+				delete &c;
 			}
-			if (size>1)
+			if (isGraph)
 				delete all_nodes[i];
 		}
 	}
