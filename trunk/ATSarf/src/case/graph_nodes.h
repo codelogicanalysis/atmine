@@ -391,9 +391,9 @@ public:
 		list.append(&nar);
 		nar.setCorrespondingNarratorNodeGroup(this);
 	}
-	GraphNarratorNode & getCorrespondingNarratorNode() {
-		assert(graphNode!=NULL);
-		return *graphNode;
+	GraphNarratorNode * getCorrespondingNarratorNode() {
+		//assert(graphNode!=NULL);
+		return graphNode;
 	}
 	int size() const{ return list.size(); }
 	QString CanonicalName() const {
@@ -438,13 +438,13 @@ public:
 		else
 			return "";
 	}
-	virtual ChainNarratorNode & getChainNodeInChain(int chain_num) {
+	ChainNarratorNode & getChainNodeInChain(int chain_num) {
 		for (int i=0;i<list.size();i++)
 			if (list[i]->getChainNum()==chain_num)
 				return *list[i];
 		return nullChainNarratorNode;
 	}
-	virtual QString toString() const {
+	QString toString() const {
 		QString s=QString("[");
 		for (int i=0;i<list.size();i++)
 			s+=list[i]->toString();
@@ -453,7 +453,7 @@ public:
 	}
 	QString getKey() { return key; }
 	int getSavedRank();
-	virtual int getAutomaticRank() const
+	int getAutomaticRank() const
 	{
 		int smallest_rank=list[0]->getAutomaticRank();
 		for (int i=1;i<list.size();i++)
@@ -464,6 +464,7 @@ public:
 		}
 		return smallest_rank;
 	}
+	void setGraphNode(GraphNarratorNode * node) {this->graphNode=node;}
 };
 
 class GraphNarratorNode: public NarratorNodeIfc
@@ -497,11 +498,10 @@ protected:
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
 	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
 
-	GraphNarratorNode():NarratorNodeIfc(){} //to be used by NULLGraphNarratorNode
+	GraphNarratorNode():NarratorNodeIfc(){savedRank=-1;} //to be used by NULLGraphNarratorNode
 	friend class NarratorNodeIfc;
 	friend class ChainNarratorNodeGroup;
 public:
-	//GraphNarratorNode(){savedRank=-1;}
 	GraphNarratorNode(ChainNarratorNode & nar1,ChainNarratorNode & nar2):NarratorNodeIfc()
 	{
 		assert(nar1.group==NULL);

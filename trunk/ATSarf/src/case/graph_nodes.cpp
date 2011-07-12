@@ -17,7 +17,7 @@ ChainNodeIterator NarratorNodeIfc::begin() {
 NarratorNodeIfc & ChainNarratorNode::getCorrespondingNarratorNode()
 {
 	if (group!=NULL)
-		return (*group).getCorrespondingNarratorNode();
+		return *(*group).getCorrespondingNarratorNode();
 	else
 		return (*this);
 }

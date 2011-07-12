@@ -517,6 +517,8 @@ private:
 		threshold=temp;
 	}
 	void reMergeNodes(NarratorNodeIfc * n);
+	GraphNarratorNode * mergeNodes(ChainNarratorNodeGroup & g1,ChainNarratorNodeGroup & g2);
+
 public:
 	LoopBreakingVisitor(double equality_threshold) {threshold=equality_threshold; }
 	virtual void initialize() {  }
@@ -901,7 +903,7 @@ private:
 	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
 		visitor.visit(n);
-	#if 0
+	#if 1
 		if(!all_nodes.contains(&n)) {
 			all_nodes.append(&n);
 			qDebug()<<"["<<n.CanonicalName()<<"]";
