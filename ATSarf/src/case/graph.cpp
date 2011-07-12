@@ -53,6 +53,42 @@ void GraphVisitorController::finish()
 	graph->colorGuard.unUse(finishIndex);
 	visitor->finish();
 }
+GraphNarratorNode * LoopBreakingVisitor::mergeNodes(ChainNarratorNodeGroup & g1,ChainNarratorNodeGroup & g2) {
+	NarratorNodeIfc * narr1=g1.getCorrespondingNarratorNode(),
+					* narr2=g2.getCorrespondingNarratorNode();
+	bool null1=(narr1==NULL),
+		 null2=(narr2==NULL);
+	if (null1 && null2) {
+		GraphNarratorNode * g=new GraphNarratorNode();
+		g->groupList.append(&g1);
+		g->groupList.append(&g2);
+		g1.setGraphNode(g);
+		g2.setGraphNode(g);
+		return g;
+	} else if (!null1 && null2) {
+		GraphNarratorNode * g=(GraphNarratorNode *)narr1;
+		g->groupList.append(&g2);
+		g2.setGraphNode(g);
+		return (GraphNarratorNode *)narr1;
+	} else if (null1 && !null2) {
+		GraphNarratorNode * g=(GraphNarratorNode *)narr2;
+		g->groupList.append(&g1);
+		g1.setGraphNode(g);
+		return (GraphNarratorNode *)narr2;
+	} else if (narr1!=narr2) {
+		GraphNarratorNode & g_node=*(GraphNarratorNode *)narr2;
+		GraphNarratorNode * dlt_g_node= (GraphNarratorNode *)narr1;
+		for (int i=0;i<dlt_g_node->size();i++) {
+			g_node.groupList.append(dlt_g_node->groupList[i]);
+			dlt_g_node->groupList[i]->setGraphNode(&g_node);
+		}
+		dlt_g_node->groupList.clear();
+		if (!toDelete.contains(dlt_g_node))
+			toDelete.append(dlt_g_node);
+		return &g_node;
+	} else
+		return (GraphNarratorNode *)narr1;
+}
 
 void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 {
@@ -64,36 +100,56 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 #ifdef DISPLAY_NODES_BEING_BROKEN
 	qDebug()<<g->CanonicalName();
 #endif
-	QList<ChainNarratorNode *> narrators;
-	ChainNodeIterator itr=g->begin();
-	for (;!itr.isFinished();++itr) {
-		ChainNarratorNode & c=*itr;
+	QList<ChainNarratorNodeGroup *> narrators;
+	int size=g->size();
+	for (int i=0;i<size;i++) {
+		ChainNarratorNodeGroup & c=(*g)[i];
 		narrators.append(&c);
-		c.setCorrespondingNarratorNodeGroup(NULL);
+		c.setGraphNode(NULL);
 	}
 	g->groupList.clear();
 	NarratorGraph* graph=controller->getGraph();
 	QList<NarratorNodeIfc *> new_nodes;
-	int size=narrators.size();
+	QList<ChainNarratorNodeGroup *> unmatchedGroups;
+	size=narrators.size();
 	for (int j=0;j<size;j++) {
-		new_nodes.append(narrators[j]);
+		unmatchedGroups.append(narrators[j]);
 	}
 	for (int j=0;j<size;j++) {
+		assert(narrators[j]->size()>0);
+		Narrator & n1=(*narrators[j])[0].getNarrator();
 		for (int k=j+1;k<size;k++) {
-			double eq_val=equal(narrators[j]->getNarrator(),narrators[k]->getNarrator());
+			assert(narrators[k]->size()>0);
+			Narrator & n2=(*narrators[k])[0].getNarrator();
+			double eq_val=equal(n1,n2);
 			if (eq_val>threshold) {
-				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
-				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
-				NarratorNodeIfc * n_new=&graph->mergeNodes(*narrators[j],*narrators[k]);
-				if (n1!=n_new && new_nodes.contains(n1))
+				NarratorNodeIfc * n1=narrators[j]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n2=narrators[k]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n_new=mergeNodes((*narrators[j]),(*narrators[k]));
+				if (n1!=n_new && n1!=NULL && new_nodes.contains(n1))
 					new_nodes.removeOne(n1);
-				if (n2!=n_new && new_nodes.contains(n2))
+				if (n2!=n_new && n2!=NULL && new_nodes.contains(n2))
 					new_nodes.removeOne(n2);
+				unmatchedGroups.removeOne(narrators[j]);
+				unmatchedGroups.removeOne(narrators[k]);
 				if (!new_nodes.contains(n_new))
 					new_nodes.append(n_new);
 			}
 		}
 	}
+	for (int i=0;i<unmatchedGroups.size();i++) {
+		if (unmatchedGroups[i]->size()>1) {
+			GraphNarratorNode * g=new GraphNarratorNode();
+			g->groupList.append(unmatchedGroups[i]);
+			unmatchedGroups[i]->setGraphNode(g);
+			new_nodes.append(g);
+		} else {
+			ChainNarratorNode * c=&(*unmatchedGroups[i])[0];
+			c->setCorrespondingNarratorNodeGroup(NULL);
+			new_nodes.append(c);
+		}
+	}
+
 	//to keep all_nodes consistent
 	graph->all_nodes.removeOne(g);
 	graph->all_nodes.append(new_nodes);
