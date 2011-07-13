@@ -8,18 +8,24 @@ void ColorIndices::unUse(unsigned int bit)//unuse and clear color bit for all no
 
 	int max=graph->all_nodes.size();
 	for (int i=0;i<max;i++) {
-		graph->all_nodes[i]->resetVisited(bit);
-		assert(!graph->all_nodes[i]->isVisited(bit));
-		ChainNodeIterator itr=graph->all_nodes[i]->begin();
-		for (;!itr.isFinished();++itr) {
-			ChainNarratorNode & c=*itr;
-			c.resetVisited(bit);
-			assert(!c.isVisited(bit));
+		NarratorNodeIfc *n = graph->all_nodes[i];
+		if (n!=NULL) {
+			n->resetVisited(bit);
 		}
 	}
 
 	if (nextUnused>bit)
 		nextUnused=bit;
+}
+void ColorIndices::setAllNodesVisited(unsigned int bit) {
+	assert (bit<maxBits());
+	int max=graph->all_nodes.size();
+	for (int i=0;i<max;i++) {
+		NarratorNodeIfc *n = graph->all_nodes[i];
+		if (n!=NULL) {
+			n->setVisited(bit);
+		}
+	}
 }
 
 GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges, bool merged_edges_as_one) //assumes keep_track_of_nodes by default
@@ -53,17 +59,13 @@ void GraphVisitorController::finish()
 	graph->colorGuard.unUse(finishIndex);
 	visitor->finish();
 }
-GraphNarratorNode * LoopBreakingVisitor::mergeNodes(ChainNarratorNodeGroup & g1,ChainNarratorNodeGroup & g2) {
-	NarratorNodeIfc * narr1=g1.getCorrespondingNarratorNode(),
-					* narr2=g2.getCorrespondingNarratorNode();
+GraphNarratorNode * LoopBreakingVisitor::mergeNodes(GroupNode & g1,GroupNode & g2) {
+	NarratorNodeIfc * narr1=&g1.getCorrespondingNarratorNode(),
+					* narr2=&g2.getCorrespondingNarratorNode();
 	bool null1=(narr1==NULL),
 		 null2=(narr2==NULL);
 	if (null1 && null2) {
-		GraphNarratorNode * g=new GraphNarratorNode();
-		g->groupList.append(&g1);
-		g->groupList.append(&g2);
-		g1.setGraphNode(g);
-		g2.setGraphNode(g);
+		GraphNarratorNode * g=new GraphNarratorNode(*controller->getGraph(),g1,g2);
 		return g;
 	} else if (!null1 && null2) {
 		GraphNarratorNode * g=(GraphNarratorNode *)narr1;
@@ -96,21 +98,22 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 		return;
 	if (!n->isGraphNode())
 		return; //unable to resolve
+	assert(!n->isChainNode());
 	GraphNarratorNode * g=(GraphNarratorNode *)n;
 #ifdef DISPLAY_NODES_BEING_BROKEN
 	qDebug()<<g->CanonicalName();
 #endif
-	QList<ChainNarratorNodeGroup *> narrators;
+	QList<GroupNode *> narrators;
 	int size=g->size();
 	for (int i=0;i<size;i++) {
-		ChainNarratorNodeGroup & c=(*g)[i];
+		GroupNode & c=(*g)[i];
 		narrators.append(&c);
 		c.setGraphNode(NULL);
 	}
 	g->groupList.clear();
 	NarratorGraph* graph=controller->getGraph();
 	QList<NarratorNodeIfc *> new_nodes;
-	QList<ChainNarratorNodeGroup *> unmatchedGroups;
+	QList<GroupNode *> unmatchedGroups;
 	size=narrators.size();
 	for (int j=0;j<size;j++) {
 		unmatchedGroups.append(narrators[j]);
@@ -123,8 +126,8 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 			Narrator & n2=(*narrators[k])[0].getNarrator();
 			double eq_val=equal(n1,n2);
 			if (eq_val>threshold) {
-				NarratorNodeIfc * n1=narrators[j]->getCorrespondingNarratorNode();
-				NarratorNodeIfc * n2=narrators[k]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
+				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n_new=mergeNodes((*narrators[j]),(*narrators[k]));
 				if (n1!=n_new && n1!=NULL && new_nodes.contains(n1))
 					new_nodes.removeOne(n1);
@@ -139,9 +142,7 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 	}
 	for (int i=0;i<unmatchedGroups.size();i++) {
 		if (unmatchedGroups[i]->size()>1) {
-			GraphNarratorNode * g=new GraphNarratorNode();
-			g->groupList.append(unmatchedGroups[i]);
-			unmatchedGroups[i]->setGraphNode(g);
+			GraphNarratorNode * g=new GraphNarratorNode(*controller->getGraph(),*unmatchedGroups[i]);
 			new_nodes.append(g);
 		} else {
 			ChainNarratorNode * c=&(*unmatchedGroups[i])[0];
@@ -151,8 +152,6 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 	}
 
 	//to keep all_nodes consistent
-	graph->all_nodes.removeOne(g);
-	graph->all_nodes.append(new_nodes);
 	if (graph->top_nodes.contains(g)) {
 		graph->top_nodes.removeOne(g);
 		//check if still top both
@@ -162,6 +161,14 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 		new_nodes[i]->color=g->color;
 	if (!toDelete.contains(g))
 		toDelete.append(g);
+}
+
+void LoopBreakingVisitor::finish() {
+	for (int i=0;i<toDelete.size();i++) {
+		controller->getGraph()->removeNode(toDelete[i]);
+		delete toDelete[i];
+	}
+	toDelete.clear();
 }
 
 int deserializeGraph(QString fileName,ATMProgressIFC * prg) {

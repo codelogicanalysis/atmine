@@ -115,7 +115,7 @@ private:
 			biography=NULL;
 		}
 	};
-	typedef QList<ChainNarratorNode *> ChainNodeList;
+	typedef QList<NarratorNodeIfc *> NarratorNodeList;
 
 	stateData currentData;
 	QString * text;
@@ -940,23 +940,59 @@ private:
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
 	class RealNarratorAction:public NarratorHash::FoundAction {
 	private:
-		ChainNodeList & list;
+		NarratorNodeList & list;
 		bool found;
 	public:
-		RealNarratorAction(ChainNodeList & nodeList):list(nodeList) {}
-		virtual void action(const QString & , ChainNarratorNode * node, double similarity){
+		RealNarratorAction(NarratorNodeList & nodeList):list(nodeList) {}
+		virtual void action(const QString & , GraphNodeItem * node, double similarity){
 			if (similarity>hadithParameters.equality_threshold) {
+				NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
 				found =true;
-				if (!list.contains(node))
-					list.append(node);
+				if (!list.contains(n))
+					list.append(n);
 			}
 		}
 		void resetFound() {found=false;}
 		bool isFound() {return found;}
 	};
-	bool near(ChainNarratorNode * c1, ChainNarratorNode * c2) {
-		NarratorNodeIfc & n1=c1->getCorrespondingNarratorNode();
-		NarratorNodeIfc & n2=c2->getCorrespondingNarratorNode();
+	class ReachableVisitor:public NodeVisitor {
+		NarratorNodeIfc * target;
+		ColorIndices & colorGuard;
+		bool found;
+	public:
+		ReachableVisitor(NarratorNodeIfc * aTarget,ColorIndices & guard):colorGuard(guard) {target=aTarget;}
+		void initialize(){
+			found=false;
+		}
+		virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int) {	}
+		virtual void visit(NarratorNodeIfc & n) {
+			if (&n==target) {
+				found=true;
+				colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
+				colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
+			}
+		}
+		virtual void finishVisit(NarratorNodeIfc & ){ }
+		virtual void detectedCycle(NarratorNodeIfc & ){ }
+		virtual void finish(){	}
+		bool isFound() {return found;}
+	};
+	class NodeItem {
+	public:
+		NarratorNodeIfc * node;
+		int cluster_id;
+		int inDegree;
+		int outDegree;
+	};
+	class Cluster {
+	public:
+		typedef QList<NodeItem> NodeItemList;
+		NodeItemList list;
+	};
+	typedef QList<Cluster> ClusterList;
+
+	bool near(NarratorNodeIfc *n1, NarratorNodeIfc *n2) {
+	#if 0
 		ChainNodeIterator itr=n1.begin();
 		for (;!itr.isFinished();++itr) {
 			if (&itr.getChild()==&n2)
@@ -965,16 +1001,27 @@ private:
 				return true;
 		}
 		return false;
+	#else
+		ReachableVisitor v(n2,graph->colorGuard);
+		GraphVisitorController controller(&v,graph);
+		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);
+		bool found=v.isFound();
+		if (!found) {
+			graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,-1);
+			found=v.isFound();
+		}
+		return found;
+	#endif
 	}
-	bool near(ChainNarratorNode * c, const ChainNodeList & list) {
+	bool near(NarratorNodeIfc * n, const NarratorNodeList & list) {
 		for (int i=0;i<list.size();i++) {
-			if (near(c,list[i]))
+			if (near(n,list[i]))
 				return true;
 		}
 		return false;
 	}
-	int getNearestNodesNumber(ChainNodeList & list) {
-		QList<ChainNodeList> nearNodesLists;
+	int getNearestNodesNumber(NarratorNodeList & list) {
+		QList<NarratorNodeList> nearNodesLists;
 		//1-each node put it in its own list or merge it with a group of already found if it is near them
 		for (int i=0;i<list.size();i++) {
 			bool nearSomeNode=false;
@@ -985,7 +1032,7 @@ private:
 				}
 			}
 			if (!nearSomeNode) {
-				ChainNodeList newList;
+				NarratorNodeList newList;
 				newList.append(list[i]);
 				nearNodesLists.append(newList);
 			}
@@ -1015,6 +1062,7 @@ private:
 				index=i;
 			}
 		}
+	#if 0
 		if (index>=0) {
 			qDebug()<<largest<<"\n";
 			for (int i=0;i<nearNodesLists[index].size();i++){
@@ -1022,10 +1070,11 @@ private:
 			}
 			qDebug()<<"\n";
 		}
+	#endif
 		return largest;
 	}
-	ChainNodeList getRealNarrators(Biography * biography) {
-		ChainNodeList list;
+	NarratorNodeList getRealNarrators(Biography * biography) {
+		NarratorNodeList list;
 		RealNarratorAction v(list);
 		for (int i=0;i<biography->size();i++) {
 			Narrator * n=(*biography)[i];
@@ -1104,7 +1153,7 @@ public:
 		for (;stateInfo.startPos<text_size;) {
 			if((proceedInStateMachine(stateInfo,currentBiography)==false)) {
 			#ifdef SEGMENT_BIOGRAPHY_USING_POR
-				ChainNodeList realNarrators=getRealNarrators(currentBiography->biography);
+				NarratorNodeList realNarrators=getRealNarrators(currentBiography->biography);
 				int num=getNearestNodesNumber(realNarrators);
 				if (num>=hadithParameters.bio_narr_min) {
 			#else

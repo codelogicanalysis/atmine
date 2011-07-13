@@ -42,15 +42,23 @@ public:
 		nmc_label=new QLabel("NMC min", this);
 		nrc_label=new QLabel("NRC min",this);
 		narr_label=new QLabel("NARR min",this);
+		reachability_label=new QLabel("REACH max",this);
 		nmc_max=new QTextEdit("1",this);
 		nmc_max->setAlignment(Qt::AlignCenter);
 		nmc_max->setMaximumHeight(30);
+		nmc_max->setMaximumWidth(40);
 		nrc_max=new QTextEdit("100",this);
 		nrc_max->setAlignment(Qt::AlignCenter);
 		nrc_max->setMaximumHeight(30);
+		nrc_max->setMaximumWidth(40);
 		narr_min=new QTextEdit("4",this);
 		narr_min->setAlignment(Qt::AlignCenter);
 		narr_min->setMaximumHeight(30);
+		narr_min->setMaximumWidth(40);
+		reachability_radius=new QTextEdit("0",this);
+		reachability_radius->setAlignment(Qt::AlignCenter);
+		reachability_radius->setMaximumHeight(30);
+		reachability_radius->setMaximumWidth(40);
 		browse=new QPushButton("&Browse",this);
 		input=new QTextEdit(this);
 		input->setMaximumHeight(30);
@@ -70,22 +78,24 @@ public:
 		subScrollArea->setWidget(pic);
 		progressBar=new QProgressBar(this);
 		grid=new QGridLayout(scrollArea);
-		grid->addWidget(input,0,0,1,4);
-		grid->addWidget(browse,0,4);
-		grid->addWidget(parse,0,5);
-		grid->addWidget(progressBar,0,6,1,4);
+		grid->addWidget(input,0,0,1,6);
+		grid->addWidget(browse,0,6);
+		grid->addWidget(parse,0,7);
+		grid->addWidget(progressBar,0,8,1,4);
 		grid->addWidget(nmc_label,1,0);
 		grid->addWidget(nmc_max,1,1);
 		grid->addWidget(nrc_label,1,2);
 		grid->addWidget(nrc_max,1,3);
 		grid->addWidget(narr_label,1,4);
 		grid->addWidget(narr_min,1,5);
-		grid->addWidget(biographyNum,1,6);
-		grid->addWidget(colorBiography,1,7);
-		grid->addWidget(colorNarrators,1,8,1,2);
+		grid->addWidget(reachability_label,1,6);
+		grid->addWidget(reachability_radius,1,7);
+		grid->addWidget(biographyNum,1,8);
+		grid->addWidget(colorBiography,1,9);
+		grid->addWidget(colorNarrators,1,10,1,2);
 		grid->addWidget(text,2,0,3,3);
-		grid->addWidget(subScrollArea,2,3,3,5);
-		grid->addWidget(narratorListDisplay,2,8,3,2);
+		grid->addWidget(subScrollArea,2,3,3,7);
+		grid->addWidget(narratorListDisplay,2,10,3,2);
 		grid->setRowMinimumHeight(0,50);
 		grid->setRowStretch(0,0);
 		grid->setRowStretch(2,150);
@@ -109,7 +119,7 @@ public:
 		errors=new QTextBrowser(this);
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
-		grid->addWidget(errors,6,0,1,10);
+		grid->addWidget(errors,6,0,1,12);
 		displayed_error.setString(errors_text);
 		out.setString(errors_text);
 	#endif
@@ -122,11 +132,12 @@ public:
 public slots:
 	void parse_clicked() {
 	#ifdef TEST_BIOGRAPHIES
-		bool v1,v2,v3;
+		bool v1,v2,v3,v4;
 		hadithParameters.bio_narr_min=narr_min->toPlainText().toInt(&v1);
 		hadithParameters.bio_nmc_max=nmc_max->toPlainText().toInt(&v2);
 		hadithParameters.bio_nrc_max=nrc_max->toPlainText().toInt(&v3);
-		if  (!v1 || !v2 || !v3 ) {
+		hadithParameters.bio_max_reachability=reachability_radius->toPlainText().toInt(&v4);
+		if  (!v1 || !v2 || !v3 || !v4 ) {
 			text->setText("Parameters for Biography Segmentaion are not valid integers!\n");
 			return;
 		}
@@ -134,7 +145,7 @@ public slots:
 	#ifdef SEGMENT_BIOGRAPHY_USING_POR
 		biographyList=getBiographies(fileName,graph,this);
 	#else
-		biographyList=getBiographies(fileName,this);
+		biographyList=getBiographies(fileName,NULL,this);
 	#endif
 		if (biographyList==NULL)
 			return;
@@ -240,7 +251,7 @@ private:
 		int biographyIndex;
 	public:
 		ColorBiographiesAction(int biographyIndex) { this->biographyIndex=biographyIndex;}
-		virtual void action(const QString &, ChainNarratorNode * node, double ) {
+		virtual void action(const QString &, GraphNodeItem * node, double ) {
 			node->addBiographyIndex(biographyIndex);
 		}
 	};
@@ -251,7 +262,7 @@ private:
 		DetectedNodesMap & map;
 	public:
 		ColorNarratorsAction(DetectedNodesMap & m):map(m) { }
-		virtual void action(const QString & s, ChainNarratorNode * node, double v) {
+		virtual void action(const QString & s, GraphNodeItem * node, double v) {
 			NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
 			DetectedNodesMap::iterator i = map.find(n);
 			#ifdef NARRATORHASH_DEBUG
@@ -277,8 +288,8 @@ private:
 private:
 
 	QPushButton * parse, *colorBiography, *browse, *colorNarrators;
-	QLabel * nmc_label, *nrc_label, *narr_label;
-	QTextEdit *nmc_max,*nrc_max,*narr_min;
+	QLabel * nmc_label, *nrc_label, *narr_label,*reachability_label;
+	QTextEdit *nmc_max,*nrc_max,*narr_min, *reachability_radius;
 	QTextBrowser * text;
 	QScrollArea *scrollArea,* subScrollArea;
 	QTextEdit *input;

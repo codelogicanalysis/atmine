@@ -15,7 +15,7 @@ class NarratorHash {
 public:
 	class FoundAction {
 	public:
-		virtual void action(const QString & searchKey, ChainNarratorNode * node, double similarity) =0;
+		virtual void action(const QString & searchKey, GraphNodeItem * node, double similarity) =0;
 	};
 
 	typedef Narrator::NamePrimList NamePrimList;
@@ -68,12 +68,12 @@ public:
 private:
 	class HashValue {
 	public:
-		HashValue(ChainNarratorNode * node, int value, int total) {
+		HashValue(GraphNodeItem * node, int value, int total) {
 			this->node=node;
 			this->value=value;
 			this->total=total;
 		}
-		ChainNarratorNode * node;
+		GraphNodeItem * node;
 		int value,total;
 	};
 
@@ -84,14 +84,14 @@ private:
 
 	class Visitor {
 	public:
-		virtual void visit(const QString & s, ChainNarratorNode * c, int value, int total)=0;
+		virtual void visit(const QString & s, GraphNodeItem * c, int value, int total)=0;
 	};
 	class InsertVisitor: public Visitor {
 	private:
 		NarratorHash * hash;
 	public:
 		InsertVisitor(NarratorHash * hash) {this->hash=hash;}
-		void visit(const QString & s, ChainNarratorNode * c, int value, int total){
+		void visit(const QString & s, GraphNodeItem * c, int value, int total){
 			hash->hashTable.insert(s,HashValue(c,value,total));
 		}
 	};
@@ -99,14 +99,14 @@ private:
 	private:
 		NarratorHash * hash;
 		double largestEquality;
-		ChainNarratorNode * node;
+		GraphNodeItem * node;
 	public:
 		FindOneVisitor(NarratorHash * hash) {
 			this->hash=hash;
 			largestEquality=0;
 			node=NULL;
 		}
-		void visit(const QString & s, ChainNarratorNode *, int value, int total){
+		void visit(const QString & s, GraphNodeItem *, int value, int total){
 			HashTable::iterator i = hash->hashTable.find(s);
 			 while (i != hash->hashTable.end() && i.key() == s) {
 				 HashValue v=*i;
@@ -119,7 +119,7 @@ private:
 			 }
 		}
 		double getEqualityValue() { return largestEquality; }
-		ChainNarratorNode * getCorrespondingNode() { return node; }
+		GraphNodeItem * getCorrespondingNode() { return node; }
 	};
 	class FindAllVisitor:public Visitor {
 	private:
@@ -127,7 +127,7 @@ private:
 		NarratorHash * hash;
 	public:
 		FindAllVisitor(NarratorHash * h,FoundAction & v):visitor(v),hash(h) {}
-		void visit(const QString & s, ChainNarratorNode *, int value, int total){
+		void visit(const QString & s, GraphNodeItem *, int value, int total){
 			HashTable::iterator i = hash->hashTable.find(s);
 			while (i != hash->hashTable.end() && i.key() == s) {
 				HashValue v=*i;
@@ -142,12 +142,12 @@ private:
 	};
 	class DebuggingVisitor: public Visitor {
 	public:
-		virtual void visit(const QString & s, ChainNarratorNode * , int value, int total){
+		virtual void visit(const QString & s, GraphNodeItem * , int value, int total){
 			qDebug()<<"\t"<<s<<"\t"<<value<<"/"<<total;
 		}
 	};
 
-	void generateAllPosibilities(ChainNarratorNode * node, Visitor & v) {
+	void generateAllPosibilities(GraphNodeItem * node, Visitor & v) {
 	#if 0
 	#ifdef NARRATORHASH_DEBUG
 		qDebug()<<node->getNarrator().getString();
@@ -155,7 +155,8 @@ private:
 		double max_equality=hadithParameters.equality_threshold*2,
 			   delta=hadithParameters.equality_delta;
 	#endif
-		Narrator * n=&node->getNarrator();
+		assert(node->size()>0);
+		Narrator * n=&((ChainNarratorNode&)(*node)[0]).getNarrator();
 		bool abihi=isRelativeNarrator(*n);
 		if (abihi)
 			return; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
@@ -251,25 +252,26 @@ public:
 	void serialize(QDataStream & streamOut);
 	void deserialize(QDataStream & streamIn);
 #if defined(REFINEMENTS) && defined(EQUALITY_REFINEMENTS) //does not work otherwise, instead of doing different versions for combinations of them on/off
-	void addNode(ChainNarratorNode * node) {
+	void addNode(GraphNodeItem * node) {
 	#ifdef NARRATORHASH_DEBUG
-		qDebug()<<node->getNarrator().getString();
+		qDebug()<<node->CanonicalName();
 		DebuggingVisitor d;
 		generateAllPosibilities(node,d);
 	#endif
 		InsertVisitor v(this);
 		generateAllPosibilities(node,v);
 	}
-	ChainNarratorNode * findCorrespondingNode(Narrator * n) {
-		ChainNarratorNode * node=new ChainNarratorNode(n,-1,-1);
+	GraphNodeItem * findCorrespondingNode(Narrator * n) {
+		ChainNarratorNode * node=new ChainNarratorNode();
+		node->narrator=n;
 		FindOneVisitor v(this);
 		generateAllPosibilities(node,v);
 		delete node;
-		ChainNarratorNode * c=v.getCorrespondingNode();
+		GraphNodeItem * c=v.getCorrespondingNode();
 	#ifdef NARRATORHASH_DEBUG
 		qDebug()<<n->getString();
 		DebuggingVisitor d;
-		generateAllPosibilities(node,d);
+		generateAllPosibilities(group,d);
 	#endif
 	#if 0
 		double val=v.getEqualityValue();
@@ -285,7 +287,8 @@ public:
 	#endif
 	}
 	void performActionToAllCorrespondingNodes(Narrator * n, FoundAction & visitor) {
-		ChainNarratorNode * node=new ChainNarratorNode(n,-1,-1);
+		ChainNarratorNode * node=new ChainNarratorNode();
+		node->narrator=n;
 		FindAllVisitor v(this,visitor);
 		generateAllPosibilities(node,v);
 		delete node;

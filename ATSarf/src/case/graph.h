@@ -69,6 +69,7 @@ public:
 		}
 	}
 	void unUse(unsigned int bit);//unuse and clear color bit for all nodes in graph
+	void setAllNodesVisited(unsigned int bit);
 	bool isUsed(unsigned int bit)
 	{
 		assert (bit<maxBits());
@@ -217,8 +218,7 @@ protected:
 	{
 		int curr_id;
 		IDMap::iterator it=nodeMap.find(&n);
-		if (it==nodeMap.end())
-		{
+		if (it==nodeMap.end()) {
 			curr_id=++last_id;
 			nodeMap.insert(&n,curr_id);
 		}
@@ -237,17 +237,16 @@ protected:
 		if (hadithParameters.display_chain_num )
 		{
 			//qDebug()<<name;
-			for (int i=0;i<n.size();i++) {
-				for (int j=0;j<n[i].size();j++) {
-					ChainNarratorNode & c=n[i][j];
-					if (c.isLast())
-					{
-						int num=c.getChainNum();
-						QString ch_node=QString("ch%1").arg(num+1);
-						d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
-						d_out<<name<<"->"<<ch_node<<";\n";
-						setGraphRank(n.getRank()+2,ch_node);
-					}
+			ChainNodeIterator itr =n.begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode &c=*itr;
+				if (c.isLast())
+				{
+					int num=c.getChainNum();
+					QString ch_node=QString("ch%1").arg(num+1);
+					d_out<<ch_node<<" [label=\""<<num+1<<"\", shape=triangle];\n";
+					d_out<<name<<"->"<<ch_node<<";\n";
+					setGraphRank(n.getRank()+2,ch_node);
 				}
 			}
 		}
@@ -447,29 +446,21 @@ public:
 };
 
 
-class FillNodesVisitor: public NodeVisitor
+class HashNodesVisitor: public NodeVisitor
 {
 private:
-	NarratorNodesList * list_all, * list_bottom;
 	NarratorHash * hash;
 public:
-	FillNodesVisitor(NarratorNodesList * list_all,NarratorNodesList * list_bottom,NarratorHash * hash){
-		this->list_all=list_all;
-		this->list_bottom=list_bottom;
+	HashNodesVisitor(NarratorHash * hash){
 		this->hash=hash;
 	}
-	void initialize(){ list_all->clear(); list_bottom->clear();hash->clear();}
-	NarratorNodesList * getFilledList(){return list_all;}
+	void initialize(){ hash->clear();}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
 	virtual void visit(NarratorNodeIfc & n) {
-		list_all->append(&n);
 		for (int i=0;i<n.size();i++) {
-			for (int j=0;j<n[i].size();j++) {
-				hash->addNode(&n[i][j]);
-			}
+			GraphNodeItem * c=&n[i];
+			hash->addNode(c);
 		}
-		/*if (n.size()==0) //TODO: do a function that checks if it is a leaf node (needs a for loop in the case of a graph node)
-			list_bottom->append(&n);*/
 	}
 	virtual void finishVisit(NarratorNodeIfc & ){}
 	virtual void detectedCycle(NarratorNodeIfc & ){}
@@ -517,7 +508,7 @@ private:
 		threshold=temp;
 	}
 	void reMergeNodes(NarratorNodeIfc * n);
-	GraphNarratorNode * mergeNodes(ChainNarratorNodeGroup & g1,ChainNarratorNodeGroup & g2);
+	GraphNarratorNode * mergeNodes(GroupNode & g1,GroupNode & g2);
 
 public:
 	LoopBreakingVisitor(double equality_threshold) {threshold=equality_threshold; }
@@ -539,13 +530,12 @@ public:
 			reMergeNodes(current);
 		}
 	}
-	virtual void finish() {
-		for (int i=0;i<toDelete.size();i++) {
-			delete toDelete[i];
-		}
-		toDelete.clear();
-	}
+	virtual void finish();
 };
+
+class NarratorDetector;
+
+
 class NarratorGraph {
 public:
 	class HadithFileDetails {
@@ -570,61 +560,50 @@ public:
 	typedef QList<HadithFileDetails> HadithFilesList;
 private:
 	ColorIndices colorGuard;
-	NarratorNodesList	top_nodes,
-						bottom_nodes, all_nodes;
+	NarratorNodesList	top_nodes, all_nodes;
 
 	friend class ColorIndices;
+	friend class NarratorDetector;
 
 	ATMProgressIFC *prg;
 	NarratorHash hash;
 
+#if 0
 	Node2IntMap node2IntMap;
 	Int2NodeMap int2NodeMap;
-	int nodesCount;
+#endif
+	unsigned int nodesCount;
 	String2IntMap hadith2IntMap;
 	Int2StringMap int2HadithMap;
 	HadithFilesList hadithFileList;
 	friend class NarratorNodeIfc;
 	friend class GraphNarratorNode;
 	friend class ChainNarratorNode;
+	friend class GroupNode;
 	friend class NarratorHash;
 
 	int highest_rank;//rank of the deapmost node;
 	int getDeapestRank(){return highest_rank;}
 
 	int getSerializationNodeEquivalent(NarratorNodeIfc * n) {
-		if (n==NULL)
-			return 0;
-		Node2IntMap::iterator i=node2IntMap.find(n);
-		if (i!=node2IntMap.end()) {
-			return *i;
-		} else
-			return -1;
+		return n->getId();
 	}
 	int allocateSerializationNodeEquivalent(NarratorNodeIfc * n) {
-		if (n==NULL)
-			return 0;
-		Node2IntMap::iterator i=node2IntMap.find(n);
-		if (i!=node2IntMap.end()) {
-			return *i;
-		} else {
-			node2IntMap[n]=nodesCount;
-			nodesCount++;
-			return nodesCount-1;
-		}
+		return n->getId();
 	}
 	NarratorNodeIfc * getDeserializationIntEquivalent(int num) {
-		Int2NodeMap::iterator i=int2NodeMap.find(num);
-		if (i!=int2NodeMap.end()) {
-			return *i;
-		} else {
+		if (num>=0 && num<all_nodes.size())
+			return all_nodes[num];
+		else
 			return NULL;
-		}
 	}
 	void setDeserializationIntEquivalent(int num,NarratorNodeIfc * node) {
-		if(getDeserializationIntEquivalent(num)!=NULL)
+		node->setId(num);
+		if(getDeserializationIntEquivalent(num)==node)
 			return;
-		int2NodeMap[num]=node;
+		for (int i=nodesCount;i<=num;i++)
+			addNode(NULL);
+		all_nodes[num]=node;
 	}
 	int getHadithStringSerializationEquivalent(QString * text) {
 		assert(text!=NULL);
@@ -659,7 +638,7 @@ private:
 			 graph2=narr2.isGraphNode();
 		if (!graph1 && !graph2)
 		{
-			GraphNarratorNode * g=new GraphNarratorNode(n1,n2);
+			GraphNarratorNode * g=new GraphNarratorNode(*this,n1,n2);
 		#if 0
 			out<<g->toString()<<"\n";
 		#endif
@@ -668,8 +647,7 @@ private:
 		else if (graph1 && !graph2)
 		{
 			//assert(&n2==&narr2);
-
-			((GraphNarratorNode &)narr1).addChainNode(n2);
+			((GraphNarratorNode &)narr1).addChainNode(this,n2);
 		#if 0
 			out<<narr1.toString()<<"\n";
 		#endif
@@ -678,7 +656,7 @@ private:
 		else if (!graph1 && graph2)
 		{
 			//assert(&n1==&narr1);
-			((GraphNarratorNode &)narr2).addChainNode(n1);
+			((GraphNarratorNode &)narr2).addChainNode(this,n1);
 		#if 0
 			out<<narr2.toString()<<"\n";
 		#endif
@@ -689,16 +667,16 @@ private:
 			//assert(narr1.isGraphNode() && narr2.isGraphNode());
 			GraphNarratorNode & g_node=(GraphNarratorNode &)narr2;
 			GraphNarratorNode * dlt_g_node= &(GraphNarratorNode &)narr1;
-			for (int i=0;i<narr1.size();i++) {
-				for (int j=0;j<narr1[i].size();j++) {
-					ChainNarratorNode & c_node=narr1[i][j];
-					g_node.addChainNode(c_node);
-				}
+			ChainNodeIterator itr=narr1.begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode & c_node=*itr;
+				g_node.addChainNode(this,c_node);
 			}
 		#if 0
 			out<<g_node.toString()<<"\n";
 		#endif
 			//assert(&n1.getCorrespondingNarratorNode()!=&narr1);
+			removeNode(dlt_g_node);
 			delete dlt_g_node;
 			return g_node;
 		}
@@ -721,7 +699,7 @@ private:
 				if (chains.at(chain_num)->m_chain[j]->isNarrator())
 				{
 					Narrator *n=(Narrator *)(chains.at(chain_num)->m_chain[j]);
-					ChainNarratorNode* current= new ChainNarratorNode(n,0,chain_num);
+					ChainNarratorNode* current= new ChainNarratorNode(*this,n,0,chain_num);
 					if (last !=NULL)
 					{
 						last->previous=current;
@@ -891,11 +869,11 @@ private:
 		prg->report(100.0);
 		top_nodes=new_top_list; //TODO: try reduce copy cost
 	}
-	void fillNodesLists() {
-		//qDebug()<<"---Fill----";
-		prg->setCurrentAction("Correct NodeList");
+	void hashNodes() {
+		//qDebug()<<"---Hash----";
+		prg->setCurrentAction("Hash Nodes");
 		prg->report(0);
-		FillNodesVisitor visitor(&all_nodes, &bottom_nodes,&hash);
+		HashNodesVisitor visitor(&hash);
 		GraphVisitorController c(&visitor,this);
 		DFS_traverse(c);
 		prg->report(100);
@@ -903,7 +881,7 @@ private:
 	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
 	{
 		visitor.visit(n);
-	#if 1
+	#if 0
 		if(!all_nodes.contains(&n)) {
 			all_nodes.append(&n);
 			qDebug()<<"["<<n.CanonicalName()<<"]";
@@ -919,8 +897,7 @@ private:
 		ChainNodeIterator itr=n.begin();
 		for (;!itr.isFinished();++itr) {
 			NarratorNodeIfc & c=itr.getChild();
-			ChainNodeIterator::IndiciesPair p=itr.getIndicies();
-			int i=p.first,j=p.second;
+			int i=itr.getGroupIndex(),j=itr.getChainIndex();
 		#ifdef DEBUG_DFS_TRAVERSAL
 			qDebug()<<n.CanonicalName()<<".child("<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
 		#endif
@@ -1016,24 +993,24 @@ private:
 		}
 	}
 
-	ChainNodeIterator::IndiciesPair findEquivalent(ChainNarratorNode * c,NarratorNodeIfc * n) {
+	ChainNodeIterator findEquivalent(ChainNarratorNode * c,NarratorNodeIfc * n) {
 		ChainNodeIterator itr=n->begin();
 		for (;!itr.isFinished();++itr) {
 			ChainNarratorNode* c2=&*itr;
 			if (c->getNarrator().getStart()==c2->getNarrator().getStart() && c->getNarrator().getEnd()==c2->getNarrator().getEnd()) {
-				return itr.getIndicies();
+				return itr;
 			}
 		}
 		out<<"conflict at:"<<c->CanonicalName()<<"\t"<<n->CanonicalName()<<"\n";
-		return ChainNodeIterator::IndiciesPair(-1,-1);
+		return ChainNodeIterator::null;
 	}
 	bool areEqual(NarratorNodeIfc * n1,NarratorNodeIfc * n2) {
 		for (int f=0;f<2;f++) {
 			ChainNodeIterator itr=n1->begin();
 			for (;!itr.isFinished();++itr) {
 				ChainNarratorNode* c1=&*itr;
-				ChainNodeIterator::IndiciesPair j2=findEquivalent(c1,n2);
-				if (j2.first<0)
+				ChainNodeIterator j2=findEquivalent(c1,n2);
+				if (j2==ChainNodeIterator::null)
 					return false;
 			}
 			swap(n1,n2);
@@ -1054,11 +1031,11 @@ private:
 		ChainNodeIterator itr=n1->begin();
 		for (;!itr.isFinished();++itr) {
 			ChainNarratorNode* c1=&*itr;
-			ChainNodeIterator::IndiciesPair j=findEquivalent(c1,n2);
-			if (j.first<0)
+			ChainNodeIterator j=findEquivalent(c1,n2);
+			if (j.isNull())
 				return false;
-			NarratorNodeIfc * child1=&n1->getChild(itr.getIndicies());
-			NarratorNodeIfc * child2=&n2->getChild(j);
+			NarratorNodeIfc * child1=&itr.getChild();
+			NarratorNodeIfc * child2=&j.getChild();
 			if (!equalHelper(child1,child2))
 				return false;
 
@@ -1069,24 +1046,20 @@ private:
 	void init(int split=-1) {
 		buildGraph(split);
 		correctTopNodesList();
-		fillNodesLists();
 		if (hadithParameters.break_cycles){
 			breakManageableCycles();
 			removeDuplicatesFromTopNodes();
 		}
+		hashNodes();
 		//removeDuplicatesFromAllNodes();
 		computeRanks();
-		//fillNodesLists();
 	}
 	void clearStructures() {
 		top_nodes.clear();
-		bottom_nodes.clear();
 		all_nodes.clear();
 		int2HadithMap.clear();
 		hadith2IntMap.clear();
 		hadithFileList.clear();
-		int2NodeMap.clear();
-		node2IntMap.clear();
 		nodesCount=1;
 		highest_rank=-1;
 	}
@@ -1139,19 +1112,51 @@ private:
 			}
 		}
 	}
+	void addNodesToCurrentGraph(const NarratorNodesList & nodes) {
+		for (int i=0;i<nodes.size();i++) {
+			nodes[i]->setId(nodesCount);
+			addNode(nodes[i]);
+		}
+	}
+	void printAllNodesList() {
+		for (int i=0;i<all_nodes.size();i++) {
+			NarratorNodeIfc *n=all_nodes[i];
+			if (n==NULL)
+				qDebug()<<i<<": NULL";
+			else
+				qDebug()<<i<<": "<<n->toString();
+		}
+	}
+
+protected:
+	void addNode(NarratorNodeIfc * node) { //TODO: check all_nodes is used correctly, not modified in another place
+		all_nodes.push_back(node);
+		assert(node==NULL || node->getId()==nodesCount);
+		nodesCount++;
+	}
+	void removeNode(NarratorNodeIfc * node) {
+		int id=node->getId();
+		assert(all_nodes[id]==node);
+		all_nodes[id]=NULL;
+	}
 
 public:
 	NarratorGraph(ChainsContainer & chains, ATMProgressIFC *prg):hash(this) {
+		nodesCount=1;
 		this->prg=prg;
 		colorGuard.setGraph(this);
+		all_nodes.push_back(NULL);
 		transform2ChainNodes(chains);
 		init();
+		//printAllNodesList();
 	}
+
 	void mergeWith(NarratorGraph * graph2) {
 		int numChain1=splitTopList();
 		int numChain2=graph2->splitTopList();
 		graph2->shiftChainsBy(numChain1);
 		top_nodes.append(graph2->top_nodes);
+		addNodesToCurrentGraph(graph2->all_nodes);
 		assert(top_nodes.size()==numChain1+numChain2);
 		String2IntMap::iterator i=graph2->hadith2IntMap.begin();
 		for (;i!=graph2->hadith2IntMap.end();i++) {
@@ -1182,21 +1187,40 @@ public:
 				DFS_traverse(*node,visitor);
 		}
 		visitor.finish();
-		//qDebug()<<"\n";
 	}
-	void BFS_traverse(GraphVisitorController & visitor)
-	{
+	void BFS_traverse(GraphVisitorController & visitor, int maxLevels=-1,NarratorNodeIfc* node=NULL,int direction=1)
+	{//if direction>0, we go to child,else to parent
+	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
+	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
 		visitor.initialize();
 		QQueue<NarratorNodeIfc *> queue;
-		int size=top_nodes.size();
-		for (int i=0; i<size;i++)
-		{
-			NarratorNodeIfc * node=top_nodes[i];
+		int size;
+		if (node==NULL) {
+			size=top_nodes.size();
+			for (int i=0; i<size;i++) {
+				NarratorNodeIfc * tNode=top_nodes[i];
+				queue.enqueue(tNode);
+			}
+			direction=1; //if we are starting at top nodes, it is understood that direction is toward children
+		} else {
+			size=1;
 			queue.enqueue(node);
 		}
-		while (!queue.isEmpty())
-		{
+		int levelCount=1;
+		int numNodesPerLevel=size;
+		while (!queue.isEmpty()) {
 			NarratorNodeIfc & n=*(queue.dequeue());
+			if (maxLevels>=0){ //if we are interested to stop after some level
+				numNodesPerLevel--;
+				if (numNodesPerLevel==0) {
+					levelCount++;
+					if (levelCount>maxLevels) {
+						visitor.finish();
+						return;
+					}
+					numNodesPerLevel=queue.size();
+				}
+			}
 			visitor.visit(n);
 		#ifdef DEBUG_BFS_TRAVERSAL
 			int size=n.size();
@@ -1204,7 +1228,7 @@ public:
 		#endif
 			ChainNodeIterator itr=n.begin();
 			for (;!itr.isFinished();++itr) {
-				NarratorNodeIfc & c=itr.getChild();
+				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
 			#ifdef DEBUG_BFS_TRAVERSAL
 				out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
 			#endif
@@ -1221,7 +1245,7 @@ public:
 		}
 		visitor.finish();
 	}
-	ChainNarratorNode * getNodeMatching(Narrator & n) {
+	GraphNodeItem * getNodeMatching(Narrator & n) {
 	#if 0
 		double highest_equality=0;
 		ChainNarratorNode * correspondingNode=NULL;
@@ -1255,34 +1279,30 @@ public:
 		for (int i=0;i<size;i++) {
 			hadithFileList[i].serialize(streamOut);
 		}
-		node2IntMap.clear();
-		nodesCount=1;
 	#ifdef PROGRESS_SERIALZATION
 		prg->setCurrentAction("Serializing");
 		prg->report(0);
 		int allSize=all_nodes.size();
-		int allnTopSize=allSize+top_nodes.size();
-		int total=allnTopSize+bottom_nodes.size();
+		int total=allSize+top_nodes.size();
 		streamOut<<total;
 	#endif
-
 		for (int i=0;i<allSize;i++) {
-			int size=(*all_nodes[i]).size();
-			streamOut<<size; //TODO: not correct size
-			for (int j=0;j<size;j++) {
-				int size2=(*all_nodes[i])[j].size();
-				streamOut<<size2;
-				for (int k=0;k<size2;k++) {
-					ChainNarratorNode & c=(*all_nodes[i])[j][k];
-					int eq=allocateSerializationNodeEquivalent(&c);
-					streamOut<<eq;
-					c.serialize(streamOut,*this);
+			NarratorNodeIfc & n= (*all_nodes[i]);
+			if (&n!=NULL && !n.isGroupNode()) {
+				int size=n.size();
+				streamOut<<size;
+				bool isGraphNode=n.isGraphNode();
+				streamOut<<isGraphNode;
+				if (isGraphNode) {
+					GraphNarratorNode & g=(GraphNarratorNode&)n;
+					for (int j=0;j<g.size();j++) {
+						int eq=allocateSerializationNodeEquivalent(&g[j]);
+						streamOut<<eq;
+						g[j].serialize(streamOut,*this);
+					}
 				}
-			}
-			bool isGraphNode=(*all_nodes[i]).isGraphNode();
-			streamOut<<isGraphNode;
-			if (isGraphNode) {
-				int eq=allocateSerializationNodeEquivalent(all_nodes[i]);;
+				int eq=allocateSerializationNodeEquivalent(all_nodes[i]);
+				assert(eq==i);
 				streamOut<<eq;
 				all_nodes[i]->serialize(streamOut,*this);
 			}
@@ -1301,28 +1321,18 @@ public:
 			prg->report((i+allSize)/total*100+0.5);
 		#endif
 		}
-		size=bottom_nodes.size();
-		streamOut<<size;
-		for (int i=0;i<size;i++) {
-			int eq=getSerializationNodeEquivalent(bottom_nodes[i]);
-			streamOut<<eq;
-		#ifdef PROGRESS_SERIALZATION
-			prg->report((i+allnTopSize)/total*100+0.5);
-		#endif
-		}
 		hash.serialize(streamOut);
 	#ifdef PROGRESS_SERIALZATION
 		prg->setCurrentAction("Completed");
 		prg->report(100);
 	#endif
-		//printChains();
-		//printInAll(37);
 	}
 	NarratorGraph(QDataStream & streamIn,ATMProgressIFC * prg):hash(this) { //equivalent of deserialize
 		this->prg=prg;
 		colorGuard.setGraph(this);
-
-		int2NodeMap.clear();
+		all_nodes.clear();
+		nodesCount=1;
+		all_nodes.append(NULL);
 
 		int size;
 		streamIn>>size;
@@ -1351,30 +1361,20 @@ public:
 		streamIn>>n;
 		while(n!=SERIALIZE_STOP) {
 			int size=n;
-			ChainNarratorNode * c;
-			for (int j=0;j<size;j++) {
-				int size2;
-				streamIn>>size2;
-				for (int k=0;k<size2;k++) {
-					int cInt;
-					streamIn>>cInt;
-					c=(ChainNarratorNode *)NarratorNodeIfc::deserialize(streamIn,*this);
-					assert(c!=NULL);
-					setDeserializationIntEquivalent(cInt,c);
-				}
-			}
 			bool isGraphNode;
 			streamIn>>isGraphNode;
-			if (!isGraphNode) {
-				all_nodes.append(c);
-			} else {
-				int cInt;
-				streamIn>>cInt;
-				NarratorNodeIfc * n=NarratorNodeIfc::deserialize(streamIn,*this);
-				assert(n->isGraphNode());
-				setDeserializationIntEquivalent(cInt,n);
-				all_nodes.append(n);
+			if (isGraphNode) {
+				for (int j=0;j<size;j++) {
+					int cInt;
+					streamIn>>cInt;
+					NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
+					setDeserializationIntEquivalent(cInt,node);
+				}
 			}
+			int cInt;
+			streamIn>>cInt;
+			NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
+			setDeserializationIntEquivalent(cInt,node);
 		#ifdef PROGRESS_SERIALZATION
 			counter++;
 			prg->report(counter/total*100+0.5);
@@ -1396,25 +1396,13 @@ public:
 		#endif
 		}
 
-		streamIn>>size;
-		for (int i=0;i<size;i++) {
-			int cInt;
-			streamIn>>cInt;
-			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
-			bottom_nodes.append(n);
-
-		#ifdef PROGRESS_SERIALZATION
-			counter++;
-			prg->report(counter/total*100+0.5);
-		#endif
-		}
-
 		hash.deserialize(streamIn);
 	#ifdef PROGRESS_SERIALZATION
 		prg->setCurrentAction("Completed");
 		prg->report(100);
 	#endif
 		//printChains();
+		//printAllNodesList();
 	#undef SERIALIZE_STOP
 	}
 
@@ -1444,14 +1432,16 @@ public:
 			delete *i;
 		int allSize=all_nodes.size();
 		for (int i=0;i<allSize;i++) {
-			bool isGraph=all_nodes[i]->isGraphNode();
-			ChainNodeIterator itr=all_nodes[i]->begin();
-			for (;!itr.isFinished();++itr) {
-				ChainNarratorNode & c=*itr;
-				delete &c;
+			if (all_nodes[i]!=NULL) {
+				bool isGraph=all_nodes[i]->isGraphNode();
+				ChainNodeIterator itr=all_nodes[i]->begin();
+				for (;!itr.isFinished();++itr) {
+					ChainNarratorNode & c=*itr;
+					delete &c;
+				}
+				if (isGraph)
+					delete all_nodes[i];
 			}
-			if (isGraph)
-				delete all_nodes[i];
 		}
 	}
 };
