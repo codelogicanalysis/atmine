@@ -9,6 +9,14 @@ NULLNarratorNodeIfc nullNarratorNodeIfc;
 NULLGraphNarratorNode nullGraphNarratorNode;
 ChainsContainer chains;
 NodeAddress nullNodeAddress((NarratorNodeIfc &)nullNarratorNodeIfc,(ChainNarratorNode &)nullChainNarratorNode);
+ChainNodeIterator ChainNodeIterator::null(NULL,-1,-1);
+
+NarratorNodeIfc::NarratorNodeIfc(NarratorGraph & g)
+	: id(g.nodesCount){
+	resetColor();
+	g.addNode(this);
+}
+
 
 ChainNodeIterator NarratorNodeIfc::begin() {
 	return ChainNodeIterator(this,0,0);
@@ -17,7 +25,7 @@ ChainNodeIterator NarratorNodeIfc::begin() {
 NarratorNodeIfc & ChainNarratorNode::getCorrespondingNarratorNode()
 {
 	if (group!=NULL)
-		return *(*group).getCorrespondingNarratorNode();
+		return (*group).getCorrespondingNarratorNode();
 	else
 		return (*this);
 }
@@ -45,40 +53,43 @@ void ChainNarratorNode::setRank(int rank) {
 		group->setRank(rank);
 }
 
-void ChainNarratorNodeGroup::setRank(int rank) {
+void GroupNode::setRank(int rank) {
 	assert(graphNode!=NULL);
 	graphNode->setRank(rank);
 }
 
-int ChainNarratorNodeGroup::getSavedRank() {
+int GroupNode::getSavedRank() const {
 	assert(graphNode!=NULL);
 	return graphNode->getSavedRank();
 }
 
+NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
+	//assert(graphNode!=NULL);
+	return *graphNode;
+}
+
 NarratorNodeIfc * NarratorNodeIfc::deserialize(QDataStream &chainIn, NarratorGraph & graph) {
-	bool isNull,isGraph;
+	bool isNull,isGraph,isChain;
 	chainIn >>isNull
-			>>isGraph;
+			>>isGraph
+			>>isChain;
+	if (isNull)
+		return NULL;
 	NarratorNodeIfc * n;
 	if (isGraph) {
-		if (isNull) {
-			return NULL;//(NarratorNodeIfc*)&nullGraphNarratorNode;
-		} else {
-			n=new GraphNarratorNode();
-			chainIn>>n->indicies;
-			n->deserializeHelper(chainIn,graph);
-			return n;
-		}
+		n=new GraphNarratorNode();
+	} else if (isChain) {
+		n=new ChainNarratorNode();
 	} else {
-		if (isNull) {
-			return NULL;//(NarratorNodeIfc*)&nullChainNarratorNode;
-		} else {
-			n=new ChainNarratorNode();
-			chainIn>>n->indicies;
-			n->deserializeHelper(chainIn,graph);
-			return n;
-		}
+		n=new GroupNode();
 	}
+#if 0
+	n->setId(graph.nodesCount);
+	graph.addNode(n);
+#endif
+	chainIn>>n->indicies;
+	n->deserializeHelper(chainIn,graph);
+	return n;
 }
 
 void ChainNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
@@ -138,14 +149,10 @@ void GraphNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & g
 	int size=groupList.size();
 	chainOut<<size;
 	for (int i=0;i<size;i++) {
-		int size2=groupList[i]->size();
-		chainOut<<size2;
-		for (int j=0;j<size2;j++) {
-			ChainNarratorNode & c=(*groupList[i])[j];
-			int cInt=graph.allocateSerializationNodeEquivalent(&c);
-			assert(cInt>0); //not null
-			chainOut<<cInt;
-		}
+		GraphNodeItem & c=(*groupList[i]);
+		int cInt=graph.allocateSerializationNodeEquivalent(&c);
+		assert(cInt>0); //not null
+		chainOut<<cInt;
 	}
 
 	chainOut<<savedRank;
@@ -153,26 +160,57 @@ void GraphNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & g
 }
 void GraphNarratorNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
 	groupList.clear();
-	int size,size2,cInt;
+	int size,cInt;
 	chainIn >>size;
 	for (int i=0;i<size;i++) {
-		chainIn >>size2;
-		for (int j=0;j<size2;j++) {
-			chainIn>>cInt;
-			assert(cInt>0); //not null
-			NarratorNodeIfc * c=graph.getDeserializationIntEquivalent(cInt);
-			assert(c!=NULL);
-			assert(!c->isGraphNode());
-			addChainNode(*(ChainNarratorNode*)c);
-		}
+		chainIn>>cInt;
+		assert(cInt>0); //not null
+		NarratorNodeIfc * c=graph.getDeserializationIntEquivalent(cInt);
+		assert(c!=NULL);
+		assert(!c->isGraphNode());
+		GroupNode* g=(GroupNode*)c;
+		groupList.append(g);
+		g->setGraphNode(this);
 	}
 
 	chainIn>>savedRank;
 
 }
 
-NarratorNodeIfc & ChainNarratorNode::getChild(int index1,int index2)
-{
+void GroupNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
+	int s=size();
+	chainOut<<s;
+	for (int i=0;i<s;i++) {
+		ChainNarratorNode & c=(*list[i]);
+		int cInt=graph.allocateSerializationNodeEquivalent(&c);
+		assert(cInt>0); //not null
+		chainOut<<cInt;
+	}
+
+	chainOut<<key;
+
+}
+void GroupNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
+	list.clear();
+	int size,cInt;
+	chainIn >>size;
+	for (int i=0;i<size;i++) {
+		chainIn>>cInt;
+		assert(cInt>0); //not null
+		NarratorNodeIfc * c=graph.getDeserializationIntEquivalent(cInt);
+		assert(c!=NULL);
+		assert(!c->isGraphNode());
+		ChainNarratorNode* n=(ChainNarratorNode*)c;
+		list.append(n);
+		n->setCorrespondingNarratorNodeGroup(this);
+	}
+
+	chainIn>>key;
+	setGraphNode(NULL);
+
+}
+
+NarratorNodeIfc & ChainNarratorNode::getChild(int index1,int index2) {
 	assert(index1==0 && index2==0);
 	if (isLast())
 		return (NarratorNodeIfc &)nullChainNarratorNode;

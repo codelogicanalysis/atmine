@@ -9,7 +9,7 @@
 //#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
 
 //#define DEBUG_BFS_TRAVERSAL
-//#define DEBUG_DFS_TRAVERSAL
+#define DEBUG_DFS_TRAVERSAL
 //#define DEBUG_BUILDGRAPH
 #define GENERAL_HADITH
 //#define FORCE_RANKS
@@ -51,7 +51,7 @@
 #define COLOR_ALL
 #define EQUAL_NEW
 #define PROGRESS_SERIALZATION
-#define SEGMENT_BIOGRAPHY_USING_POR
+//#define SEGMENT_BIOGRAPHY_USING_POR
 //#define DONT_DISPLAY_BIOGRAPHY_GRAPHY
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);

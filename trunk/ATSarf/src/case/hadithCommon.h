@@ -32,7 +32,8 @@
 		unsigned int bio_nmc_max:5;
 		unsigned int bio_nrc_max:10;
 		unsigned int bio_narr_min:5;
-		unsigned int unused_int:22;
+		unsigned int bio_max_reachability:5;
+		unsigned int unused_int:17;
 		double equality_delta;
 		double equality_threshold;
 		HadithParameters()
@@ -46,6 +47,7 @@
 			equality_radius=3;
 			equality_delta=0.4;
 			equality_threshold=1;
+			bio_max_reachability=0;
 			display_chain_num=true;
 			break_cycles=true;
 		}
