@@ -106,11 +106,14 @@ private:
 			largestEquality=0;
 			node=NULL;
 		}
-		void visit(const QString & s, GraphNodeItem *, int value, int total){
+		void visit(const QString & s, GraphNodeItem * node1, int /*value*/, int /*total*/){
 			HashTable::iterator i = hash->hashTable.find(s);
 			 while (i != hash->hashTable.end() && i.key() == s) {
 				 HashValue v=*i;
-				 double curr_equality=v.value/v.total*value/total;
+				 Narrator & narr1=((ChainNarratorNode&)node1[0]).getNarrator();
+				 Narrator & narr2=((ChainNarratorNode&)v.node[0]).getNarrator();
+				 double curr_equality=equal(narr1,narr2);
+				 //double curr_equality=v.value/v.total*value/total;
 				 if (curr_equality>largestEquality) {
 					 largestEquality=curr_equality;
 					 node=v.node;
@@ -127,11 +130,14 @@ private:
 		NarratorHash * hash;
 	public:
 		FindAllVisitor(NarratorHash * h,FoundAction & v):visitor(v),hash(h) {}
-		void visit(const QString & s, GraphNodeItem *, int value, int total){
+		void visit(const QString & s, GraphNodeItem * node, int /*value*/, int /*total*/){
 			HashTable::iterator i = hash->hashTable.find(s);
 			while (i != hash->hashTable.end() && i.key() == s) {
 				HashValue v=*i;
-				double similarity=(double)(v.value)/v.total*value/total;
+				Narrator & narr1=((ChainNarratorNode&)node[0]).getNarrator();
+				Narrator & narr2=((ChainNarratorNode&)(*v.node)[0]).getNarrator();
+				double similarity=equal(narr1,narr2);
+				//double similarity=(double)(v.value)/v.total*value/total;
 			#ifdef NARRATORHASH_DEBUG
 				//qDebug()<<s<<"\t("<<v.value<<"/"<<v.total<<")\t("<<value<<"/"<<total<<")\t"<<similarity;
 			#endif

@@ -823,9 +823,9 @@ bool Biography::isRealNarrator(Narrator * n) {
 		v.resetFound();
 		graph->performActionToAllCorrespondingNodes(n,v);
 		if (!v.isFound())
-			return true;
-		else
 			return false;
+		else
+			return true;
 	}
 }
 
