@@ -151,8 +151,10 @@ public slots:
 			return;
 		biographyNum->clear();
 		int count=0;
-		for (int i=0;i<biographyList->size();i++) {
-			for (int j=0;j<biographyList->at(i)->size();j++) {
+		int size=biographyList->size();
+		for (int i=0;i<size;i++) {
+			int bioSize=(*biographyList)[i]->size();
+			for (int j=0;j<bioSize;j++) {
 			#ifndef COLOR_ALL
 				Narrator * n=(*biographyList->at(i))[j];
 				ChainNarratorNode * c=graph->getNodeMatching(*n);

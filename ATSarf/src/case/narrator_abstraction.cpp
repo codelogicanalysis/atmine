@@ -8,6 +8,7 @@
 #include <QPair>
 #include "hadith_utilities.h"
 #include "narratorHash.h"
+#include "graph.h"
 
 #ifdef EQUALITYDEBUG
 	inline void display(QString t) {
@@ -736,7 +737,7 @@ double Narrator::equals(const Narrator & rhs) const {
     return equal(*this,rhs);
 }
 
-QString Narrator::getKey(){
+QString Narrator::getKey() const{
 	bool abihi=isRelativeNarrator(*this);
 	if (abihi)
 		return abyi+ha2; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
@@ -752,7 +753,14 @@ void Biography::serialize(QDataStream &chainOut) const{
 	int size=narrators.size();
 	chainOut<<start<<end<<size;
 	for (int i=0;i<narrators.size();i++) {
-		narrators[i]->serialize(chainOut);
+		narrators[i]->narrator->serialize(chainOut);
+		chainOut<< narrators[i]->isRealNarrator;
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		chainOut<<nodeList.size();
+		for (int j=0;j<nodeList.size();j++) {
+			chainOut<<nodeList[j]->getId();
+		}
+	#endif
 	}
 }
 void Biography::deserialize(QDataStream &chainIn){
@@ -764,14 +772,62 @@ void Biography::deserialize(QDataStream &chainIn){
 		chainIn>>c;
 		assert(c==getType(n));
 		n->deserialize(chainIn);
-		addNarrator(n);
+		BiographyNarrator * bio_narr= new BiographyNarrator(n);
+		chainIn>>bio_narr->isRealNarrator;
+		narrators.append(bio_narr);
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		int size;
+		chainIn>>size;
+		for (int j=0;j<size;j++) {
+			int cInt;
+			chainIn>>cInt;
+			NarratorNodeIfc * n=graph->getNode(cInt);
+			assert(n!=NULL);
+			nodeList.append(n);
+		}
+	#endif
 	}
 }
 void Biography::serialize(QTextStream &chainOut) const
 {
 	for (int i=0;i<narrators.size();i++) {
-		chainOut<<i<<": ";
-		narrators[i]->serialize(chainOut);
+		chainOut<<i<<": "<<(narrators[i]->isRealNarrator?"Real Narrator":"");
+		narrators[i]->narrator->serialize(chainOut);
 		chainOut<<"\n";
 	}
 }
+
+class RealNarratorAction:public NarratorHash::FoundAction {
+private:
+	Biography::NarratorNodeList & list;
+	bool found;
+public:
+	RealNarratorAction(Biography::NarratorNodeList & nodeList):list(nodeList) {}
+	virtual void action(const QString & , GraphNodeItem * node, double similarity){
+		if (similarity>hadithParameters.equality_threshold) {
+			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
+			found =true;
+			if (!list.contains(n))
+				list.append(n);
+		}
+	}
+	void resetFound() {found=false;}
+	bool isFound() {return found;}
+};
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+bool Biography::isRealNarrator(Narrator * n) {
+	RealNarratorAction v(nodeList);
+	if (n->isRasoul) {
+		return false;
+	} else {
+		v.resetFound();
+		graph->performActionToAllCorrespondingNodes(n,v);
+		if (!v.isFound())
+			return true;
+		else
+			return false;
+	}
+}
+
+#endif
+

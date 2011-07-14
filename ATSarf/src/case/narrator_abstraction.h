@@ -222,7 +222,7 @@ public:
 		//TODO: allow for skipping in the selection if total number is conserved
 	}
 
-	QString getKey();
+	QString getKey() const;
 };
 
 class Chain: public ChainNarratorPrim {
@@ -258,22 +258,68 @@ public:
 //    }
 
 };
-
+class NarratorNodeIfc;
+class NarratorGraph;
 class Biography {
 public:
-	typedef QVector<Narrator *> NarratorVector;
+	class BiographyNarrator{
+	public:
+		BiographyNarrator(){
+			narrator=NULL;
+			isRealNarrator=false;
+		}
+		BiographyNarrator(Narrator * narrator) {
+			this->narrator=narrator;
+			isRealNarrator=false;
+		}
+		Narrator * narrator;
+		bool isRealNarrator; //i.e. found in POR
+		~BiographyNarrator() {
+			if (narrator!=NULL)
+				delete narrator;
+		}
+	};
+	typedef QVector<BiographyNarrator *> NarratorVector;
 private:
 
 	QString * text;
 	int start, end;
 
 	NarratorVector narrators;
-
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
+private:
+	NarratorGraph * graph;
+	bool isRealNarrator(Narrator * n);
+public:
+	typedef QList<NarratorNodeIfc *> NarratorNodeList;
+	NarratorNodeList nodeList; //for the moment no serialized
+#endif
 public:
 	//Biography() { this->text=NULL; start=0;end=0;}
-	Biography(QString * text) { this->text=text; start=0;end=0;}
-	Biography(QString * text,long start) { this->text=text; this->start=start;end=start;}
-	Biography(QString * text,long start, long end) { this->text=text; this->start=start;this->end=end;}
+	Biography(NarratorGraph * graph,QString * text) {
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		this->graph=graph;
+	#endif
+		this->text=text;
+		start=0;
+		end=0;
+	}
+	Biography(NarratorGraph * graph,QString * text,long start) {
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		this->graph=graph;
+	#endif
+		this->text=text;
+		this->start=start;
+		end=start;
+	}
+	Biography(NarratorGraph * graph,QString * text,long start, long end) {
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		this->graph=graph;
+	#endif
+		this->text=text;
+		this->start=start;
+		this->end=end;
+	}
 	void setStart(long s) { start=s;}
 	void setEnd(long e) { end=e; }
 	int getStart() const {return start;}
@@ -286,8 +332,13 @@ public:
 		return text->mid(getStart(), length);
 	}
 	void addNarrator(Narrator & n) {
-		if (n.getStart()>=this->start)// && n.getEnd()<=this->end)
-			narrators.append(&n);
+		if (n.getStart()>=this->start) {// && n.getEnd()<=this->end)
+			BiographyNarrator * b =new BiographyNarrator(&n);
+		#ifdef SEGMENT_BIOGRAPHY_USING_POR
+			b->isRealNarrator=isRealNarrator(&n);
+		#endif
+			narrators.append(b);
+		}
 	}
 	void addNarrator(Narrator * n) {
 		if (n!=NULL)
@@ -298,13 +349,17 @@ public:
 	}
 	Narrator * operator [] (int i) {
 		assert(i>=0 && i<narrators.size());
-		return narrators[i];
+		return narrators[i]->narrator;
+	}
+	bool isReal(int i) {
+		assert(i>=0 && i<narrators.size());
+		return narrators[i]->isRealNarrator;
 	}
 
 	//const NarratorVector & getNarrators() const { return narrators;}
 	Narrator * getLastNarrator() {
 		if (narrators.size()>0)
-			return narrators[narrators.size()-1];
+			return narrators[narrators.size()-1]->narrator;
 		else
 			return NULL;
 	}
@@ -314,11 +369,11 @@ public:
 	void serialize(QDataStream &chainOut) const;
 	void deserialize(QDataStream &chainIn);
 	void serialize(QTextStream &chainOut) const;
-	/*~Biography(){
-		for (int i=0;i<narrators.size();i++) {
+	~Biography(){
+		/*for (int i=0;i<narrators.size();i++) {
 			delete narrators[i];
-		}
-	}*/
+		}*/
+	}
 };
 
 
