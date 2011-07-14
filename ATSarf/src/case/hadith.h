@@ -8,7 +8,7 @@
 
 //#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
 
-//#define DEBUG_BFS_TRAVERSAL
+#define DEBUG_BFS_TRAVERSAL
 //#define DEBUG_DFS_TRAVERSAL
 //#define DEBUG_BUILDGRAPH
 #define GENERAL_HADITH

@@ -83,10 +83,12 @@ public:
 
 class GraphVisitorController
 {
+private:
+	bool firstCall;
 public:
 	typedef QStack< NarratorNodeIfc*> ParentStack;
 protected:
-	typedef Triplet<NarratorNodeIfc *,NarratorNodeIfc*,int> Edge;
+	typedef QPair<NarratorNodeIfc *,NarratorNodeIfc*> Edge;
 	typedef QMap<Edge, bool> EdgeMap;
 	EdgeMap edgeMap;
 	ParentStack parentStack;
@@ -99,14 +101,10 @@ protected:
 
 	friend class NarratorGraph;
 
-	void init()
-	{
-		if (keep_track_of_edges)
-			edgeMap.clear();
-		parentStack.clear();
-	}
+	void init();
 	void construct(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
 	{
+		firstCall=true;
 		this->visitor=visitor;
 		assert(visitor!=NULL);
 		this->visitor->controller=this;
@@ -128,8 +126,7 @@ public:
 		if (!keep_track_of_nodes)
 			return false;
 		bool visited= node.isVisited(visitIndex);
-		if (visited)
-		{
+		if (visited) {
 			if (!isFinished(node))
 				visitor->detectedCycle(node);
 		}
@@ -140,13 +137,11 @@ public:
 		if (!keep_track_of_edges)
 			return false;
 		//assert(&n2==&(n1.getChild(child_num1,child_num2))); //to check if the edge exists i.e. we can go from n1 to n2
-		if (merged_edges_as_one)
-		{
-			int child_num=0; //so that they will all be treated equally
-			EdgeMap::iterator it=edgeMap.find(Edge(&n1,&n2,child_num));
+		if (merged_edges_as_one) {
+			//only end-point nodes make a difference
+			EdgeMap::iterator it=edgeMap.find(Edge(&n1,&n2));
 			return !(it==edgeMap.end());
-		}
-		else
+		}else
 			return n1[child_num1][child_num2].isVisited(visitIndex);
 	}
 	void initialize();
@@ -155,12 +150,10 @@ public:
 		visitor->visit(n1,n2,child_num1);
 		if (!keep_track_of_edges)
 			return;
-		if (merged_edges_as_one)
-		{
-			child_num1=0; //so that they will all be treated equally
-			edgeMap.insert(Edge(&n1,&n2,child_num1),true);
-		}
-		else
+		if (merged_edges_as_one) {
+			//only end point nodes make a difference
+			edgeMap.insert(Edge(&n1,&n2),true);
+		} else
 			n1[child_num1][child_num2].setVisited(visitIndex);
 	}
 	void visit(NarratorNodeIfc & n)
@@ -1206,7 +1199,7 @@ public:
 			size=1;
 			queue.enqueue(node);
 		}
-		int levelCount=1;
+		int levelCount=0;
 		int numNodesPerLevel=size;
 		while (!queue.isEmpty()) {
 			if (maxLevels>=0){ //if we are interested to stop after some level
@@ -1222,21 +1215,25 @@ public:
 			}
 			NarratorNodeIfc & n=*(queue.dequeue());
 			visitor.visit(n);
+			if (maxLevels>=0 && levelCount==maxLevels) //if we are on last level no need to enque its children or parents
+				continue;
 		#ifdef DEBUG_BFS_TRAVERSAL
 			int size=n.size();
-			out<<"parent:"<<n.toString()<<" "<<size<<"\n";
+			qDebug()<<(direction>0?"parent:":"child:")<<n.toString()<<" "<<size<<"\n";
 		#endif
 			ChainNodeIterator itr=n.begin();
 			for (;!itr.isFinished();++itr) {
 				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
+				int i=itr.getGroupIndex(),j=itr.getChainIndex();
 			#ifdef DEBUG_BFS_TRAVERSAL
-				out<<n.CanonicalName()<<".child("<<i<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+				qDebug()<<n.CanonicalName()<<(direction>0?".child(":".parent(")<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
 			#endif
-				ChainNodeIterator::IndiciesPair p=itr.getIndicies();
-				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,p.first,p.second))
-				{
+				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j)) {
+					#ifdef DEBUG_BFS_TRAVERSAL
+						qDebug()<<"\t-->traversed\n";
+					#endif
 					bool prev_visited=visitor.isPreviouslyVisited( c);
-					visitor.visit(n,c,p.first,p.second);
+					visitor.visit(n,c,i,j);
 					if (!prev_visited)
 						queue.enqueue(&c);
 				}

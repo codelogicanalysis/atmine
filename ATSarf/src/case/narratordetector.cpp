@@ -1059,6 +1059,7 @@ private:
 		}
 		return false;
 	#else
+		qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
 		ReachableVisitor v(n2,graph->colorGuard);
 		GraphVisitorController controller(&v,graph);
 		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);
@@ -1094,7 +1095,7 @@ private:
 			}
 		}
 		//3-return largest list size
-		int largest=0;
+		int largest=1;
 		int index=-1;
 		for (int i=0;i<clusters.size();i++) {
 			if (clusters[i]->size()>largest) {
@@ -1267,7 +1268,10 @@ public:
 					out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
 					continue;
 				}
-				prg->tag(n->getStart(),n->getLength(),Qt::darkYellow,false);
+				if (s->isReal(j))
+					prg->tag(n->getStart(),n->getLength(),Qt::darkYellow,false);
+				else
+					prg->tag(n->getStart(),n->getLength(),Qt::darkGray,false);
 				for (int i=0;i<n->m_narrator.size();i++)
 				{
 					NarratorPrim * nar_struct=n->m_narrator[i];
@@ -1300,14 +1304,16 @@ public:
 	#else
 		prg->finishTaggingText();
 	#endif
-
-
-		//delete text;
-		//if (currentBiography!=NULL)
-			//delete currentBiography;
+		if (currentBiography!=NULL)
+			delete currentBiography;
 		return 0;
 	}
-		
+
+	void freeMemory() { //called if we no longer need stuctures of this class
+		for (int i=0;i<biographies->size();i++)
+			delete (*biographies)[i];
+		delete text;
+	}
 };
 
 int biographyHelper(QString input_str,ATMProgressIFC *prg) {
@@ -1315,8 +1321,7 @@ int biographyHelper(QString input_str,ATMProgressIFC *prg) {
 	NarratorDetector s;
 	s.segment(input_str,prg);
 #ifdef TEST_BIOGRAPHIES
-	for (int i=0;i<s.biographies->size();i++)
-		delete (*s.biographies)[i];
+	s.freeMemory();
 #endif
 	return 0;
 }

@@ -55,7 +55,7 @@ public:
 		narr_min->setAlignment(Qt::AlignCenter);
 		narr_min->setMaximumHeight(30);
 		narr_min->setMaximumWidth(40);
-		reachability_radius=new QTextEdit("0",this);
+		reachability_radius=new QTextEdit("1",this);
 		reachability_radius->setAlignment(Qt::AlignCenter);
 		reachability_radius->setMaximumHeight(30);
 		reachability_radius->setMaximumWidth(40);
@@ -155,21 +155,24 @@ public slots:
 		for (int i=0;i<size;i++) {
 			int bioSize=(*biographyList)[i]->size();
 			for (int j=0;j<bioSize;j++) {
-			#ifndef COLOR_ALL
-				Narrator * n=(*biographyList->at(i))[j];
-				ChainNarratorNode * c=graph->getNodeMatching(*n);
-				if (c!=NULL)
-					c->addBiographyIndex(i);
-			#else
-				Narrator * n=(*biographyList->at(i))[j];
-				narratorListDisplay->setRowCount(count+1);
-				narratorListDisplay->setItem(count,0,new QTableWidgetItem(n->getString()));
-				narratorListDisplay->setItem(count,1,new QTableWidgetItem(QString("%1").arg(i)));
-				narratorList.append(n);
-				count++;
-			#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
-				ColorBiographiesAction c(i);
-				graph->performActionToAllCorrespondingNodes(n,c);
+				Biography & b=*(*biographyList)[i];
+				if (b.isReal(j)) {
+				#ifndef COLOR_ALL
+					Narrator * n=b[j];
+					ChainNarratorNode * c=graph->getNodeMatching(*n);
+					if (c!=NULL)
+						c->addBiographyIndex(i);
+				#else
+					Narrator * n=b[j];
+					narratorListDisplay->setRowCount(count+1);
+					narratorListDisplay->setItem(count,0,new QTableWidgetItem(n->getString()));
+					narratorListDisplay->setItem(count,1,new QTableWidgetItem(QString("%1").arg(i)));
+					narratorList.append(n);
+					count++;
+				#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
+					ColorBiographiesAction c(i);
+					graph->performActionToAllCorrespondingNodes(n,c);
+				}
 			#endif
 			#endif
 			}

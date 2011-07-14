@@ -47,10 +47,23 @@ GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGra
 		graph->colorGuard.use(finishIndex);
 	}
 }
+void GraphVisitorController::init()
+{
+	if (firstCall) {
+		firstCall=false;
+	} else {
+		graph->colorGuard.unUse(visitIndex); //to clear color bits
+		graph->colorGuard.unUse(finishIndex);
+		graph->colorGuard.use(visitIndex);
+		graph->colorGuard.use(finishIndex);
+	}
+	if (keep_track_of_edges)
+		edgeMap.clear();
+	parentStack.clear();
+}
 void GraphVisitorController::initialize()
 {
 	init();
-	//graph->colorGuard.use(visitIndex);
 	visitor->initialize();
 }
 void GraphVisitorController::finish()
