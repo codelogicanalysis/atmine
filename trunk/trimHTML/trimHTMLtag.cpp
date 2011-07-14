@@ -49,10 +49,11 @@ char * currOut=outBuffer;
   	currOut+=delta;
   	char * close=strstr(needle+1,endP.c_str());
   	if (close==NULL) {
-  		cerr<<"Error: Found Open no close\n";
-  		return 1;
-  	}
-  	curr=close+endP.size()+1;		
+  		cerr<<"Error: Found Open no close at "<<needle-buffer<<"\n";
+  		curr=needle+beginP.size()+1;
+  		//return 1;
+  	} else
+  		curr=close+endP.size()/*+1*/;		
   }
 	cout<<outBuffer;
   delete[] buffer;
