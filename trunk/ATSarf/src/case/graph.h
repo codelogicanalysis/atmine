@@ -139,7 +139,7 @@ public:
 	{
 		if (!keep_track_of_edges)
 			return false;
-		assert(&n2==&(n1.getChild(child_num1,child_num2))); //to check if the edge exists i.e. we can go from n1 to n2
+		//assert(&n2==&(n1.getChild(child_num1,child_num2))); //to check if the edge exists i.e. we can go from n1 to n2
 		if (merged_edges_as_one)
 		{
 			int child_num=0; //so that they will all be treated equally
@@ -1209,9 +1209,7 @@ public:
 		int levelCount=1;
 		int numNodesPerLevel=size;
 		while (!queue.isEmpty()) {
-			NarratorNodeIfc & n=*(queue.dequeue());
 			if (maxLevels>=0){ //if we are interested to stop after some level
-				numNodesPerLevel--;
 				if (numNodesPerLevel==0) {
 					levelCount++;
 					if (levelCount>maxLevels) {
@@ -1220,7 +1218,9 @@ public:
 					}
 					numNodesPerLevel=queue.size();
 				}
+				numNodesPerLevel--; //we check then decrement, to make sure we are visiting the last valid node
 			}
+			NarratorNodeIfc & n=*(queue.dequeue());
 			visitor.visit(n);
 		#ifdef DEBUG_BFS_TRAVERSAL
 			int size=n.size();
@@ -1424,6 +1424,10 @@ public:
 				return false;
 		}
 		return true;
+	}
+	NarratorNodeIfc * getNode (int i) const {
+		assert(i>=0 && i<all_nodes.size());
+		return all_nodes[i];
 	}
 
 	~NarratorGraph() {

@@ -86,13 +86,13 @@ private:
 		Narrator *narrator;
 		Biography *biography;
 
-		void initialize(QString * text) {
+		void initialize(NarratorGraph *graph,QString * text) {
 			if (namePrim!=NULL)
 				delete namePrim;
 			if (nameConnectorPrim!=NULL)
 				delete nameConnectorPrim;
-			if (narrator!=NULL)
-				delete narrator;
+			/*if (narrator!=NULL && biography->getLastNarrator()!=narrator)
+				delete narrator;*/
 			int s=0;
 			if (biography!=NULL) {
 				s=biography->getStart();
@@ -104,7 +104,7 @@ private:
 			namePrim=new NamePrim(text);
 			nameConnectorPrim=new NameConnectorPrim(text);
 			narrator=new Narrator (text);
-			biography=new Biography(text,s);
+			biography=new Biography(graph,text,s);
 			temp_nameConnectors=new TempConnectorPrimList();
 		}
 		BiographyData(){
@@ -162,7 +162,7 @@ private:
 				currentData.biographyStartIndex=stateInfo.startPos;
 				currentData.narratorStartIndex=stateInfo.startPos;
 			#ifdef CHAIN_BUILDING
-				currentBiography->initialize(text);
+				currentBiography->initialize(graph,text);
 				display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
 				currentBiography->namePrim->m_start=stateInfo.startPos; //changed this now
 				currentBiography->namePrim->m_end=stateInfo.endPos;
@@ -200,7 +200,7 @@ private:
 				stateInfo.nextState=NMC_S;
 				currentData.nmcValid=true;
 			#ifdef CHAIN_BUILDING
-				currentBiography->initialize(text);
+				currentBiography->initialize(graph,text);
 				display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
 				currentBiography->nameConnectorPrim->m_start=stateInfo.startPos;
 				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
@@ -938,23 +938,6 @@ private:
 			return result(NMC,stateInfo,currentBiography);
 	}
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
-	class RealNarratorAction:public NarratorHash::FoundAction {
-	private:
-		NarratorNodeList & list;
-		bool found;
-	public:
-		RealNarratorAction(NarratorNodeList & nodeList):list(nodeList) {}
-		virtual void action(const QString & , GraphNodeItem * node, double similarity){
-			if (similarity>hadithParameters.equality_threshold) {
-				NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
-				found =true;
-				if (!list.contains(n))
-					list.append(n);
-			}
-		}
-		void resetFound() {found=false;}
-		bool isFound() {return found;}
-	};
 	class ReachableVisitor:public NodeVisitor {
 		NarratorNodeIfc * target;
 		ColorIndices & colorGuard;
@@ -977,19 +960,93 @@ private:
 		virtual void finish(){	}
 		bool isFound() {return found;}
 	};
+	class Cluster;
 	class NodeItem {
 	public:
 		NarratorNodeIfc * node;
-		int cluster_id;
+		Cluster* cluster;
 		int inDegree;
 		int outDegree;
+		NodeItem(NarratorNodeIfc * n) {
+			node=n;
+			cluster=NULL;
+			inDegree=0;
+			outDegree=0;
+		}
 	};
+	typedef QList<NodeItem *> NodeItemList;
 	class Cluster {
 	public:
-		typedef QList<NodeItem> NodeItemList;
+		int id;
 		NodeItemList list;
+		Cluster(NodeItem * n1,NodeItem * n2,int cluster_id){
+			list.append(n1);
+			list.append(n2);
+			n1->cluster=this;
+			n2->cluster=this;
+			id=cluster_id;
+		}
+		void addNodeItem(NodeItem * n) {
+			list.append(n);
+			n->cluster=this;
+		}
+		int size() {
+			return list.size();
+		}
+		NodeItem * operator[](int i){
+			return list[i];
+		}
+		~Cluster() {
+			for (int i=0;i<list.size();i++)
+				delete list[i];
+		}
 	};
-	typedef QList<Cluster> ClusterList;
+	class ClusterList {
+	private:
+		QList<Cluster *> list;
+	public:
+		void addCluster(Cluster * c,int id=-1){
+			if (id<0 && c->id>=0)
+				id=c->id;
+			if (id>=0 && c->id<0)
+				c->id=id;
+			if (id<0 && c->id<0) {
+				id=list.size();
+				c->id=id;
+			}
+			assert(c->id==id);
+			assert(list.size()<=id || list[id]==NULL);
+			for (int i=list.size();i<=id;i++)
+				list.append(NULL);
+			list[id]=c;
+		}
+		int size() {
+			return list.size();
+		}
+		Cluster * operator[](int i){
+			return list[i];
+		}
+		~ClusterList() {
+			for (int i=0;i<list.size();i++)
+				if (list[i]!=NULL)
+					delete list[i];
+		}
+		void mergeNodeItems(NodeItem * n1,NodeItem * n2) {
+			if (n1->cluster==NULL && n2->cluster==NULL){
+				Cluster * c=new Cluster(n1,n2,size());
+				addCluster(c);
+			} else if (n1->cluster!=NULL && n2->cluster==NULL) {
+				n1->cluster->addNodeItem(n2);
+				assert(n2->cluster==n1->cluster);
+			} else if (n2->cluster!=NULL && n1->cluster==NULL) {
+				n2->cluster->addNodeItem(n1);
+				assert(n2->cluster==n1->cluster);
+			} else {//in both cases:n1!=n2 or n1==n2
+				return;
+			}
+		}
+	};
+
 
 	bool near(NarratorNodeIfc *n1, NarratorNodeIfc *n2) {
 	#if 0
@@ -1020,78 +1077,43 @@ private:
 		}
 		return false;
 	}
-	int getNearestNodesNumber(NarratorNodeList & list) {
-		QList<NarratorNodeList> nearNodesLists;
-		//1-each node put it in its own list or merge it with a group of already found if it is near them
+	int getLargestClusterSize(NarratorNodeList & list) {
+		NodeItemList nodeItemList;
+		//1-transform to nodeItems:
 		for (int i=0;i<list.size();i++) {
-			bool nearSomeNode=false;
-			for (int j=0;j<nearNodesLists.size();j++) {
-				if (near(list[i],nearNodesLists[j])) {
-					nearSomeNode=true;
-					nearNodesLists[j].append(list[i]);
-				}
-			}
-			if (!nearSomeNode) {
-				NarratorNodeList newList;
-				newList.append(list[i]);
-				nearNodesLists.append(newList);
-			}
+			NodeItem * node=new NodeItem(list[i]);
+			nodeItemList.append(node);
 		}
-		//2-merge seperate lists in case they turn to overlap at last in case they are near each other
-		for (int i=0;i<nearNodesLists.size();i++) {
-			for (int j=i+1;j<nearNodesLists.size();j++) {
-				for (int k=0;k<nearNodesLists[j].size();k++) {
-					if (near(nearNodesLists[j][k],nearNodesLists[i])) {
-						for (int r=0;r<nearNodesLists[j].size();r++) {
-							if (!nearNodesLists[i].contains(nearNodesLists[j][r])) //dont append nodes already there
-								nearNodesLists[i].append(nearNodesLists[j][r]);
-						}
-						nearNodesLists.removeAt(j);
-						j--;
-						break;
-					}
+		ClusterList clusters;
+		//1-each node put it in its own list or merge it with a group of already found if it is near them
+		for (int i=0;i<nodeItemList.size();i++) {
+			for (int j=i+1;j<nodeItemList.size();j++) {
+				if (near(nodeItemList[i]->node,nodeItemList[j]->node)) {
+					clusters.mergeNodeItems(nodeItemList[i],nodeItemList[j]);
 				}
 			}
 		}
 		//3-return largest list size
 		int largest=0;
 		int index=-1;
-		for (int i=0;i<nearNodesLists.size();i++) {
-			if (nearNodesLists[i].size()>largest) {
-				largest=nearNodesLists[i].size();
+		for (int i=0;i<clusters.size();i++) {
+			if (clusters[i]->size()>largest) {
+				largest=clusters[i]->size();
 				index=i;
 			}
 		}
-	#if 0
+	#if 1
 		if (index>=0) {
 			qDebug()<<largest<<"\n";
-			for (int i=0;i<nearNodesLists[index].size();i++){
-				qDebug()<<nearNodesLists[index][i]->CanonicalName()<<"\n";
+			for (int i=0;i<clusters[index]->size();i++){
+				qDebug()<<(*clusters[index])[i]->node->CanonicalName()<<"\n";
 			}
 			qDebug()<<"\n";
 		}
 	#endif
 		return largest;
 	}
-	NarratorNodeList getRealNarrators(Biography * biography) {
-		NarratorNodeList list;
-		RealNarratorAction v(list);
-		for (int i=0;i<biography->size();i++) {
-			Narrator * n=(*biography)[i];
-			if (n->isRasoul) {
-				biography->removeNarrator(i);
-				i--;
-			} else {
-				v.resetFound();
-				graph->performActionToAllCorrespondingNodes(n,v);
-				if (!v.isFound()) {
-					biography->removeNarrator(i);
-					i--;
-				}
-			}
-		}
-		return list;
-	}
+
 #endif
 
 public:
@@ -1128,7 +1150,7 @@ public:
 
 	#ifdef CHAIN_BUILDING
 		BiographyData *currentBiography=new BiographyData();
-		currentBiography->initialize(text);
+		currentBiography->initialize(graph,text);
 		display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
 	#else
 		chainData *currentBiography=NULL;
@@ -1153,8 +1175,8 @@ public:
 		for (;stateInfo.startPos<text_size;) {
 			if((proceedInStateMachine(stateInfo,currentBiography)==false)) {
 			#ifdef SEGMENT_BIOGRAPHY_USING_POR
-				NarratorNodeList realNarrators=getRealNarrators(currentBiography->biography);
-				int num=getNearestNodesNumber(realNarrators);
+				NarratorNodeList & realNarrators=currentBiography->biography->nodeList;
+				int num=getLargestClusterSize(realNarrators);
 				if (num>=hadithParameters.bio_narr_min) {
 			#else
 				if (currentData.narratorCount>=hadithParameters.bio_narr_min) {
@@ -1192,7 +1214,7 @@ public:
 			if (stateInfo.previousPunctuationInfo.fullstop) {
 				if (currentBiography->biography!=NULL)
 					delete currentBiography->biography;
-				currentBiography->biography=new Biography(text,stateInfo.startPos);
+				currentBiography->biography=new Biography(graph,text,stateInfo.startPos);
 			}
 
 
@@ -1232,7 +1254,7 @@ public:
 	#endif
 		while (!tester.atEnd())
 		{
-			Biography * s=new Biography(text);
+			Biography * s=new Biography(graph,text);
 			s->deserialize(tester);
 		#ifdef TEST_BIOGRAPHIES
 			biographies->append(s);
@@ -1281,8 +1303,8 @@ public:
 
 
 		//delete text;
-		if (currentBiography!=NULL)
-			delete currentBiography;
+		//if (currentBiography!=NULL)
+			//delete currentBiography;
 		return 0;
 	}
 		
