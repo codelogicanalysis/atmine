@@ -172,8 +172,8 @@ public slots:
 				#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 					ColorBiographiesAction c(i);
 					graph->performActionToAllCorrespondingNodes(n,c);
+				#endif
 				}
-			#endif
 			#endif
 			}
 			biographyNum->addItem(QString("%1").arg(i));
