@@ -142,12 +142,15 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n_new=mergeNodes((*narrators[j]),(*narrators[k]));
+				assert(n_new->isGraphNode());
 				if (n1!=n_new && n1!=NULL && new_nodes.contains(n1))
 					new_nodes.removeOne(n1);
 				if (n2!=n_new && n2!=NULL && new_nodes.contains(n2))
 					new_nodes.removeOne(n2);
 				unmatchedGroups.removeOne(narrators[j]);
 				unmatchedGroups.removeOne(narrators[k]);
+				assert(&narrators[j]->getCorrespondingNarratorNode()!=NULL);
+				assert(&narrators[k]->getCorrespondingNarratorNode()!=NULL);
 				if (!new_nodes.contains(n_new))
 					new_nodes.append(n_new);
 			}
@@ -157,8 +160,10 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 		if (unmatchedGroups[i]->size()>1) {
 			GraphNarratorNode * g=new GraphNarratorNode(*controller->getGraph(),*unmatchedGroups[i]);
 			new_nodes.append(g);
+			assert(controller->getGraph()->getNode(g->getId())==g);
 		} else {
 			ChainNarratorNode * c=&(*unmatchedGroups[i])[0];
+			graph->removeNode(unmatchedGroups[i]);
 			c->setCorrespondingNarratorNodeGroup(NULL);
 			new_nodes.append(c);
 		}
@@ -178,6 +183,8 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 
 void LoopBreakingVisitor::finish() {
 	for (int i=0;i<toDelete.size();i++) {
+		if (toDelete[i]->getId()==1173)
+			qDebug()<<"check";
 		controller->getGraph()->removeNode(toDelete[i]);
 		delete toDelete[i];
 	}

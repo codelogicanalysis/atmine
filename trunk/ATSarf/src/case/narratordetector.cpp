@@ -1059,7 +1059,7 @@ private:
 		}
 		return false;
 	#else
-		qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
+		//qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
 		ReachableVisitor v(n2,graph->colorGuard);
 		GraphVisitorController controller(&v,graph);
 		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);

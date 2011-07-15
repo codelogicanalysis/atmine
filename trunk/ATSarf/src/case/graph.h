@@ -1107,8 +1107,10 @@ private:
 	}
 	void addNodesToCurrentGraph(const NarratorNodesList & nodes) {
 		for (int i=0;i<nodes.size();i++) {
-			nodes[i]->setId(nodesCount);
-			addNode(nodes[i]);
+			if (nodes[i]!=NULL) {
+				nodes[i]->setId(nodesCount);
+				addNode(nodes[i]);
+			}
 		}
 	}
 	void printAllNodesList() {
@@ -1119,6 +1121,31 @@ private:
 			else
 				qDebug()<<i<<": "<<n->toString();
 		}
+	}
+	void checkAllGroupHaveCorresponding(){
+		for (int i=0;i<all_nodes.size();i++){
+			if (all_nodes[i]!=NULL && all_nodes[i]->isGroupNode()){
+				GroupNode * n=(GroupNode *)all_nodes[i];
+				if(&n->getCorrespondingNarratorNode()==NULL)
+					qDebug()<<i<<n->toString();
+			}
+		}
+	}
+	bool checkForNode(GroupNode * g){
+		for (int i=0;i<all_nodes.size();i++){
+			if (all_nodes[i]!=NULL && all_nodes[i]->isGraphNode()){
+				GraphNarratorNode * n=(GraphNarratorNode *)all_nodes[i];
+				for (int j=0;j<n->size();j++){
+					if (&(*n)[j]==g) {
+						qDebug()<<n->getId();
+						assert(all_nodes[n->getId()]==n);
+						assert(all_nodes[g->getId()]==g);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 protected:
@@ -1285,19 +1312,9 @@ public:
 	#endif
 		for (int i=0;i<allSize;i++) {
 			NarratorNodeIfc & n= (*all_nodes[i]);
-			if (&n!=NULL && !n.isGroupNode()) {
-				int size=n.size();
-				streamOut<<size;
-				bool isGraphNode=n.isGraphNode();
-				streamOut<<isGraphNode;
-				if (isGraphNode) {
-					GraphNarratorNode & g=(GraphNarratorNode&)n;
-					for (int j=0;j<g.size();j++) {
-						int eq=allocateSerializationNodeEquivalent(&g[j]);
-						streamOut<<eq;
-						g[j].serialize(streamOut,*this);
-					}
-				}
+			if (&n==NULL) {
+				streamOut<<-1;
+			} else if (n.isActualNode()) {
 				int eq=allocateSerializationNodeEquivalent(all_nodes[i]);
 				assert(eq==i);
 				streamOut<<eq;
@@ -1357,21 +1374,11 @@ public:
 		int n;
 		streamIn>>n;
 		while(n!=SERIALIZE_STOP) {
-			int size=n;
-			bool isGraphNode;
-			streamIn>>isGraphNode;
-			if (isGraphNode) {
-				for (int j=0;j<size;j++) {
-					int cInt;
-					streamIn>>cInt;
-					NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
-					setDeserializationIntEquivalent(cInt,node);
-				}
+			int cInt=n;
+			if (cInt>0) {
+				NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
+				setDeserializationIntEquivalent(cInt,node);
 			}
-			int cInt;
-			streamIn>>cInt;
-			NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
-			setDeserializationIntEquivalent(cInt,node);
 		#ifdef PROGRESS_SERIALZATION
 			counter++;
 			prg->report(counter/total*100+0.5);
@@ -1400,6 +1407,8 @@ public:
 	#endif
 		//printChains();
 		//printAllNodesList();
+		//checkAllGroupHaveCorresponding();
+		//qDebug()<<"\n";
 	#undef SERIALIZE_STOP
 	}
 
@@ -1434,14 +1443,7 @@ public:
 		int allSize=all_nodes.size();
 		for (int i=0;i<allSize;i++) {
 			if (all_nodes[i]!=NULL) {
-				bool isGraph=all_nodes[i]->isGraphNode();
-				ChainNodeIterator itr=all_nodes[i]->begin();
-				for (;!itr.isFinished();++itr) {
-					ChainNarratorNode & c=*itr;
-					delete &c;
-				}
-				if (isGraph)
-					delete all_nodes[i];
+				delete all_nodes[i];
 			}
 		}
 	}

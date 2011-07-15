@@ -103,6 +103,7 @@ public:
 	virtual bool isGraphNode() const{return false;}
 	virtual bool isChainNode() const{return false;}
 	virtual bool isGroupNode() const{return false;}
+	virtual bool isActualNode() const {return false;}
 
 	virtual int getRank() const {
 		int savedRank=getSavedRank();
@@ -338,6 +339,7 @@ public:
 	virtual int getChainNum() const {return chainContext.getChainNum();}
 	virtual bool isNull() const {return false;}
 	virtual bool isChainNode() const{return true;}
+	virtual bool isActualNode() const { return group==NULL;	}
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num);
 };
 
@@ -398,18 +400,25 @@ protected:
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key)
 		:GraphNodeItem(g),graphNode(gNode) {
+		assert(gNode==NULL || ((NarratorNodeIfc*)gNode)->isGraphNode());
+		if (gNode!=NULL && ((NarratorNodeIfc*)gNode)->getId()==1173)
+			qDebug()<<"check";
 		list.append(cNode);
 		this->key=key;
 		cNode->setCorrespondingNarratorNodeGroup(this);
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode)
 		:GraphNodeItem(g),graphNode(gNode) {
+		assert(gNode==NULL || ((NarratorNodeIfc*)gNode)->isGraphNode());
+		if (gNode!=NULL && ((NarratorNodeIfc*)gNode)->getId()==1173)
+			qDebug()<<"check";
 		list.append(cNode);
 		this->key=cNode->getNarrator().getKey();
 		cNode->setCorrespondingNarratorNodeGroup(this);
 	}
 
 	virtual NarratorNodeIfc & getChild(int index1,int ) {
+		assert(false);
 		return list[index1]->getChild(0,0);
 	}
 	virtual NarratorNodeIfc & getParent(int index1,int ){
@@ -500,7 +509,12 @@ public:
 		}
 		return smallest_rank;
 	}
-	void setGraphNode(GraphNarratorNode * node) {this->graphNode=node;}
+	void setGraphNode(GraphNarratorNode * node) {
+		assert(node==NULL || ((NarratorNodeIfc*)node)->isGraphNode());
+		if (node!=NULL && ((NarratorNodeIfc*)node)->getId()==1173)
+			qDebug()<<"check";
+		this->graphNode=node;
+	}
 	virtual bool isNull() const{ return false;}
 
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
@@ -695,6 +709,7 @@ public:
 			return "";
 	}
 	virtual bool isGraphNode() const {return true;}
+	virtual bool isActualNode() const { return true;}
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num)
 	{
 		for (int i=0;i<groupList.size();i++) {
