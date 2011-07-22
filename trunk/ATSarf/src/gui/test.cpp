@@ -83,7 +83,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #elif 0
 	if (biographyHelper(inputString,prg))
 		return -1;
-#elif 1
+#elif 0
 	if (deserializeGraph(inputString,prg))
 		return -1;
 #else

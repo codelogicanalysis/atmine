@@ -1,9 +1,21 @@
-#include "narratordetector.h"
-#include "graph.h"
-#include "narratorHash.h"
+#if 1
+#include "hadith.h"
 
-#ifdef NARRATORDEBUG
-inline QString type_to_text(wordType t) {
+#ifdef GENERAL_HADITH
+#include <QTextBrowser>
+#include <assert.h>
+
+#include "ATMProgressIFC.h"
+#include "Math_functions.h"
+#include "graph.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+#include "hadithCommon.h"
+
+
+#ifdef HADITHDEBUG
+inline QString type_to_text(WordType t) {
 	switch(t)
 	{
 		case NAME:
@@ -20,7 +32,7 @@ inline QString type_to_text(wordType t) {
 			return "UNDEFINED-TYPE";
 	}
 }
-inline QString type_to_text(stateType t) {
+inline QString type_to_text(StateType t) {
 	switch(t)
 	{
 		case TEXT_S:
@@ -39,11 +51,11 @@ inline QString type_to_text(stateType t) {
 			return "UNDEFINED-TYPE";
 	}
 }
-inline void display(wordType t) {
+inline void display(WordType t) {
 	out<<type_to_text(t)<<" ";
 	//qDebug() <<type_to_text(t)<<" ";
 }
-inline void display(stateType t) {
+inline void display(StateType t) {
 	out<<type_to_text(t)<<" ";
 	//qDebug() <<type_to_text(t);
 }
@@ -55,38 +67,26 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
-class NarratorDetector
-{
+class HadithSegmentor {
 private:
-	typedef struct stateData_ {
-		long  biographyStartIndex, narratorCount,narratorStartIndex,narratorEndIndex;
-		long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
-		bool nmcValid;
-		bool ibn_or_3abid;
-
-		void initialize() {
-			nmcCount=0;
-			narratorCount=0;
-			nrcCount=0;
-			narratorStartIndex=0;
-			narratorEndIndex=0;
-			nmcValid=false;
-			ibn_or_3abid=false;
-			nameStartIndex=0;
-			nmcStartIndex=0;
-			biographyStartIndex=0;
-		}
-
-	} stateData;
-	class BiographyData {
+	class chainData {
 	public:
 		NamePrim *namePrim;
 		NameConnectorPrim *nameConnectorPrim;
+		NarratorConnectorPrim *narratorConnectorPrim;
 		TempConnectorPrimList temp_nameConnectors;
 		Narrator *narrator;
-		Biography *biography;
+		Chain *chain;
 
-		void initialize(NarratorGraph *graph,QString * text) {
+		chainData() {
+			namePrim=NULL;
+			nameConnectorPrim=NULL;
+			narratorConnectorPrim=NULL;
+			narrator=NULL;
+			chain=NULL;
+		}
+
+		void initialize(QString * text) {
 			if (namePrim!=NULL) {
 				delete namePrim;
 				namePrim=NULL;
@@ -95,41 +95,61 @@ private:
 				delete nameConnectorPrim;
 				nameConnectorPrim=NULL;
 			}
+			if (narratorConnectorPrim!=NULL) {
+				delete narratorConnectorPrim;
+				narratorConnectorPrim=NULL;
+			}
 			if (narrator!=NULL) {
 				delete narrator;
 				narrator=NULL;
 			}
-			int s=0;
-			if (biography!=NULL) {
-				s=biography->getStart();
-				delete biography;
-			}
+			if (chain!=NULL)
+				delete chain;
 			for (int i=0;i<temp_nameConnectors.size();i++)
 				delete temp_nameConnectors[i];
 			temp_nameConnectors.clear();
-			biography=new Biography(graph,text,s);
-		}
-		BiographyData(){
-			namePrim=NULL;
-			nameConnectorPrim=NULL;
-			narrator=NULL;
-			biography=NULL;
+			chain=new Chain(text);
 		}
 	};
-	typedef QList<NarratorNodeIfc *> NarratorNodeList;
+	typedef struct stateData_ {
+		long  sanadStartIndex, narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
+		long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
+		bool nmcValid;
+		bool ibn_or_3abid;
+		bool nrcPunctuation;
+
+		void initialize() {
+			nmcCount=0;
+			narratorCount=0;
+			nrcCount=0;
+			narratorStartIndex=0;
+			narratorEndIndex=0;
+			nrcStartIndex=0;
+			nrcEndIndex=0;
+			nmcValid=false;
+			ibn_or_3abid=false;
+			nameStartIndex=0;
+			nmcStartIndex=0;
+		#ifdef PUNCTUATION
+			nrcPunctuation=false;
+		#endif
+		}
+
+	} stateData;
 
 	stateData currentData;
 	QString * text;
 	long current_pos;
 
-	NarratorGraph * graph;
+#ifdef STATS
+	QVector<map_entry*> temp_nrc_s, temp_nmc_s;
+	int temp_nrc_count,temp_nmc_count;
+	statistics stat;
+	int temp_names_per_narrator;
+	QString current_exact,current_stem;
+#endif
 
-public:
-	BiographyList * biographies;
-
-private:
-
-	inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStructure,BiographyData *currentBiography,bool punc=false,bool ending_punc=false) {
+	inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStructure,chainData *currentChain,bool punc=false,bool ending_punc=false) {
 	#ifdef CHAIN_BUILDING
 		assert(!ending_punc || (punc&& ending_punc));
 		/*if (currentStructure==INITIALIZE && stateInfo.processedStructure!=RASOUL_WORD && !punc) {
@@ -145,34 +165,42 @@ private:
 				break;
 			}
 			case NAME_PRIM: {
-				assert(currentBiography->narrator!=NULL);
-				assert(currentBiography->narrator->m_narrator.size()>0);
-				currentBiography->biography->addNarrator(currentBiography->narrator);
-				currentBiography->narrator=NULL;
+				assert(currentChain->narrator!=NULL);
+				assert(currentChain->narrator->m_narrator.size()>0);
+				currentChain->chain->m_chain.append(currentChain->narrator);
+				currentChain->narrator=NULL;
 				assert(currentStructure==NARRATOR_CONNECTOR);
 				break;
 			}
 			case NARRATOR_CONNECTOR: {
 				if (!ending_punc) {
+					assert (currentChain->narratorConnectorPrim!=NULL);
+					currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+					currentChain->narratorConnectorPrim=NULL;
 					assert(currentStructure==NAME_PRIM);
+				} else { //used to indicate that tolerance is over (not used for punctuation)
+					if (currentChain->narratorConnectorPrim!=NULL) {
+						delete currentChain->narratorConnectorPrim;
+						currentChain->narratorConnectorPrim=NULL;
+					}
 				}
 				break;
 			}
 			case NAME_CONNECTOR: {
-				int size=currentBiography->temp_nameConnectors.size();
+				int size=currentChain->temp_nameConnectors.size();
 				if (!ending_punc) {//check if we should add these
-					assert(currentBiography->narrator!=NULL);
+					assert(currentChain->narrator!=NULL);
 					for (int i=0;i<size;i++)
-						currentBiography->narrator->m_narrator.append(currentBiography->temp_nameConnectors[i]);
+						currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors[i]);
 				} else {
 					for (int i=0;i<size;i++)
-						delete currentBiography->temp_nameConnectors[i];
+						delete currentChain->temp_nameConnectors[i];
 				}
-				currentBiography->temp_nameConnectors.clear();
-				if (currentBiography->narrator!=NULL) {
-					assert(currentBiography->narrator->m_narrator.size()>0);
-					currentBiography->biography->addNarrator(currentBiography->narrator);
-					currentBiography->narrator=NULL;
+				currentChain->temp_nameConnectors.clear();
+				if (currentChain->narrator!=NULL) {
+					assert(currentChain->narrator->m_narrator.size()>0);
+					currentChain->chain->m_chain.append(currentChain->narrator);
+					currentChain->narrator=NULL;
 				}
 				break;
 			}
@@ -183,40 +211,43 @@ private:
 			if (currentStructure!=INITIALIZE) {
 				switch(stateInfo.processedStructure) {
 				case INITIALIZE:
-					currentBiography->initialize(graph,text);
-					display(QString("\ninit%1\n").arg(currentBiography->biography->m_chain.size()));
+					currentChain->initialize(text);
+					display(QString("\ninit%1\n").arg(currentChain->chain->m_chain.size()));
 					assert(currentStructure!=INITIALIZE); //must not happen
 					break;
 				case NARRATOR_CONNECTOR:
+					if (currentStructure!=NARRATOR_CONNECTOR && currentStructure!=INITIALIZE) {
+						if(currentChain->narratorConnectorPrim==NULL) {
+							currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,stateInfo.lastEndPos+1);
+							currentChain->narratorConnectorPrim->m_end=stateInfo.startPos-1;
+							//qDebug()<<currentChain->narratorConnectorPrim->getString();
+						}
+						currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+						currentChain->narratorConnectorPrim=NULL;
+					}
 					break;
 				case NAME_CONNECTOR:
 					if (currentStructure!=NAME_CONNECTOR) {
-						if (currentBiography->narrator==NULL)
-							currentBiography->narrator=new Narrator(text);
-						int size=currentBiography->temp_nameConnectors.size();
+						if (currentChain->narrator==NULL)
+							currentChain->narrator=new Narrator(text);
+						int size=currentChain->temp_nameConnectors.size();
 						for (int i=0;i<size;i++)
-							currentBiography->narrator->m_narrator.append(currentBiography->temp_nameConnectors[i]);
-						currentBiography->temp_nameConnectors.clear();
+							currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors[i]);
+						currentChain->temp_nameConnectors.clear();
 						if (currentStructure==NARRATOR_CONNECTOR) {
-							currentBiography->biography->addNarrator(currentBiography->narrator);
-							currentBiography->narrator=NULL;
+							currentChain->chain->m_chain.append(currentChain->narrator);
+							currentChain->narrator=NULL;
 						}
 					}
 					break;
 				case RASOUL_WORD:
-					if (currentStructure!=RASOUL_WORD) {
-						if (currentStructure==NARRATOR_CONNECTOR) {
-							fillStructure(stateInfo,INITIALIZE,currentBiography,punc,ending_punc);
-							stateInfo.processedStructure=NARRATOR_CONNECTOR;
-							return;
-						} else
-							assert(currentStructure==INITIALIZE);
-					}
+					if (currentStructure!=RASOUL_WORD)
+						assert(currentStructure==INITIALIZE);
 					break;
 				case NAME_PRIM:
 					if (currentStructure==NARRATOR_CONNECTOR) {
-						currentBiography->biography->addNarrator(currentBiography->narrator);
-						currentBiography->narrator=NULL;
+						currentChain->chain->m_chain.append(currentChain->narrator);
+						currentChain->narrator=NULL;
 					}
 					break;
 				default:
@@ -227,16 +258,20 @@ private:
 			case INITIALIZE: {
 				switch(stateInfo.processedStructure) {
 				case RASOUL_WORD:
-					if (currentBiography->narrator==NULL)
-						currentBiography->narrator=new Narrator(text);
-					assert(currentBiography->nameConnectorPrim!=NULL);
-					currentBiography->narrator->m_narrator.append(currentBiography->nameConnectorPrim);
-					currentBiography->nameConnectorPrim=NULL;
-					currentBiography->narrator->isRasoul=true;
-					currentBiography->biography->addNarrator(currentBiography->narrator);
-					currentBiography->narrator=NULL;
+					if (currentChain->narrator==NULL)
+						currentChain->narrator=new Narrator(text);
+					assert(currentChain->nameConnectorPrim!=NULL);
+					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+					currentChain->nameConnectorPrim=NULL;
+					currentChain->narrator->isRasoul=true;
+					currentChain->chain->m_chain.append(currentChain->narrator);
+					currentChain->narrator=NULL;
 					break;
 				case NARRATOR_CONNECTOR:
+					if (currentChain->narratorConnectorPrim!=NULL) {
+						delete currentChain->narratorConnectorPrim;
+						currentChain->narratorConnectorPrim=NULL;
+					}
 					break;
 				}
 
@@ -244,53 +279,56 @@ private:
 				break;
 			}
 			case NAME_PRIM: {
-				if (currentBiography->namePrim==NULL)
-					currentBiography->namePrim=new NamePrim(text,stateInfo.startPos);
-				currentBiography->namePrim->m_end=stateInfo.endPos;
+				if (currentChain->namePrim==NULL)
+					currentChain->namePrim=new NamePrim(text,stateInfo.startPos);
+				currentChain->namePrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
-				currentBiography->namePrim->learnedName=stateInfo.learnedName;
+				currentChain->namePrim->learnedName=stateInfo.learnedName;
 			#endif
-				if (currentBiography->narrator==NULL)
-					currentBiography->narrator=new Narrator(text);
-				currentBiography->narrator->m_narrator.append(currentBiography->namePrim);
-				currentBiography->namePrim=NULL;
+				if (currentChain->narrator==NULL)
+					currentChain->narrator=new Narrator(text);
+				currentChain->narrator->m_narrator.append(currentChain->namePrim);
+				currentChain->namePrim=NULL;
 				break;
 			}
 			case NARRATOR_CONNECTOR: {
+				if (currentChain->narratorConnectorPrim==NULL)
+					currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,stateInfo.startPos);
+				currentChain->narratorConnectorPrim->m_end=stateInfo.endPos;
 				break;
 			}
 			case NAME_CONNECTOR: {
-				if (currentBiography->nameConnectorPrim==NULL)
-					currentBiography->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
-				currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
+				if (currentChain->nameConnectorPrim==NULL)
+					currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos);
+				currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
 			#ifdef REFINEMENTS
 				if (stateInfo.familyNMC){
-					assert(currentBiography->nameConnectorPrim->isOther());
-					currentBiography->nameConnectorPrim->setFamilyConnector();
+					assert(currentChain->nameConnectorPrim->isOther());
+					currentChain->nameConnectorPrim->setFamilyConnector();
 					if (stateInfo.ibn)
-						currentBiography->nameConnectorPrim->setIbn();
+						currentChain->nameConnectorPrim->setIbn();
 					else if (stateInfo._2ab)
-						currentBiography->nameConnectorPrim->setAB();
+						currentChain->nameConnectorPrim->setAB();
 					else if (stateInfo._2om)
-						currentBiography->nameConnectorPrim->setOM();
+						currentChain->nameConnectorPrim->setOM();
 					//TODO: learn that word that comes after is a name
 				} else if (stateInfo.possessivePlace) {
-					assert(currentBiography->nameConnectorPrim->isOther());
-					currentBiography->nameConnectorPrim->setPossessive();
+					assert(currentChain->nameConnectorPrim->isOther());
+					currentChain->nameConnectorPrim->setPossessive();
 				}
 			#endif
 				if (stateInfo.isFamilyConnectorOrPossessivePlace()) {
-					if (currentBiography->narrator==NULL)
-						currentBiography->narrator=new Narrator(text);
-					int size=currentBiography->temp_nameConnectors.size();
+					if (currentChain->narrator==NULL)
+						currentChain->narrator=new Narrator(text);
+					int size=currentChain->temp_nameConnectors.size();
 					for (int i=0;i<size;i++)
-						currentBiography->narrator->m_narrator.append(currentBiography->temp_nameConnectors[i]);
-					currentBiography->narrator->m_narrator.append(currentBiography->nameConnectorPrim);
-					currentBiography->nameConnectorPrim=NULL;
-					currentBiography->temp_nameConnectors.clear();
+						currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors[i]);
+					currentChain->narrator->m_narrator.append(currentChain->nameConnectorPrim);
+					currentChain->nameConnectorPrim=NULL;
+					currentChain->temp_nameConnectors.clear();
 				} else {
-					currentBiography->temp_nameConnectors.append(currentBiography->nameConnectorPrim);
-					currentBiography->nameConnectorPrim=NULL;
+					currentChain->temp_nameConnectors.append(currentChain->nameConnectorPrim);
+					currentChain->nameConnectorPrim=NULL;
 				}
 				break;
 			}
@@ -298,53 +336,51 @@ private:
 				switch(stateInfo.processedStructure) {
 				case NAME_CONNECTOR: {
 					//1-finish old narrator and use last nmc as nrc
-					if (currentBiography->narrator==NULL)
-						currentBiography->narrator=new Narrator(text);
-					int size=currentBiography->temp_nameConnectors.size();
+					if (currentChain->narrator==NULL)
+						currentChain->narrator=new Narrator(text);
+					int size=currentChain->temp_nameConnectors.size();
 					for (int i=0;i<size-1;i++)
-						currentBiography->narrator->m_narrator.append(currentBiography->temp_nameConnectors[i]);
+						currentChain->narrator->m_narrator.append(currentChain->temp_nameConnectors[i]);
 					if (size>1) {
-						if (currentBiography->narrator->m_narrator.size()>0) {
-							currentBiography->biography->addNarrator(currentBiography->narrator);
-							currentBiography->narrator=NULL;
-							NameConnectorPrim *n=currentBiography->temp_nameConnectors[size-1];
-						#if 0
-							currentBiography->narratorConnectorPrim=new NarratorConnectorPrim(text,n->getStart());
-							currentBiography->narratorConnectorPrim->m_end=n->getEnd();
-							currentBiography->biography->addNarrator(currentBiography->narratorConnectorPrim);
-							currentBiography->narratorConnectorPrim=NULL;
-						#endif
+						if (currentChain->narrator->m_narrator.size()>0) {
+							currentChain->chain->m_chain.append(currentChain->narrator);
+							currentChain->narrator=NULL;
+							NameConnectorPrim *n=currentChain->temp_nameConnectors[size-1];
+							currentChain->narratorConnectorPrim=new NarratorConnectorPrim(text,n->getStart());
+							currentChain->narratorConnectorPrim->m_end=n->getEnd();
+							currentChain->chain->m_chain.append(currentChain->narratorConnectorPrim);
+							currentChain->narratorConnectorPrim=NULL;
 							delete n;
 						}
 					} else {
-						if (currentBiography->narrator->m_narrator.size()>0) {
-							currentBiography->biography->addNarrator(currentBiography->narrator);
-							currentBiography->narrator=NULL;
+						if (currentChain->narrator->m_narrator.size()>0) {
+							currentChain->chain->m_chain.append(currentChain->narrator);
+							currentChain->narrator=NULL;
 						}
 					}
-					currentBiography->temp_nameConnectors.clear();
+					currentChain->temp_nameConnectors.clear();
 					//display(currentChain->narratorConnectorPrim->getString()+"\n");
 				}
 					//2-create a new narrator of just this stop word as name connector, so we dont insert "break;"
 				case NARRATOR_CONNECTOR:
 				case NAME_PRIM: {
-					assert(currentBiography->nameConnectorPrim==NULL);
-					currentBiography->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos); //we added this to previous name bc assumed this will only happen if it is muhamad and "sal3am"
-					currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
-					if (currentBiography->narrator!=NULL) {
-						if (!currentBiography->narrator->m_narrator.isEmpty()) {
-							NarratorPrim * n=currentBiography->narrator->m_narrator.last();
+					assert(currentChain->nameConnectorPrim==NULL);
+					currentChain->nameConnectorPrim=new NameConnectorPrim(text,stateInfo.startPos); //we added this to previous name bc assumed this will only happen if it is muhamad and "sal3am"
+					currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
+					if (currentChain->narrator!=NULL) {
+						if (!currentChain->narrator->m_narrator.isEmpty()) {
+							NarratorPrim * n=currentChain->narrator->m_narrator.last();
 							if (n->isNamePrim() && !((NamePrim *)n)->learnedName) {//if last has not a learned name, we split both narrators. maybe this must happen to all narrators
-								currentBiography->biography->addNarrator(currentBiography->narrator);
-								currentBiography->narrator=NULL;
+								currentChain->chain->m_chain.append(currentChain->narrator);
+								currentChain->narrator=NULL;
 							}
 						}
 					}
 					break;
 				}
 				case RASOUL_WORD: {
-					assert(currentBiography->nameConnectorPrim!=NULL);
-					currentBiography->nameConnectorPrim->m_end=stateInfo.endPos;
+					assert(currentChain->nameConnectorPrim!=NULL);
+					currentChain->nameConnectorPrim->m_end=stateInfo.endPos;
 					break;
 				}
 				default:
@@ -365,7 +401,7 @@ private:
 	#endif
 	}
 
-	bool getNextState(StateInfo &  stateInfo,BiographyData *currentChain) {
+	bool getNextState(StateInfo &  stateInfo,chainData *currentChain) {
 		display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
 		display(QString(" nrcsize: %1 ").arg(currentData.nrcCount));
 		display(stateInfo.currentState);
@@ -384,9 +420,12 @@ private:
 			stateInfo.currentPunctuationInfo.newLine=true;
 		}
 	#endif
+	#ifdef TRYTOLEARN
+		stateInfo.nrcIsPunctuation=false;
+	#endif
 	#ifdef REFINEMENTS
-		bool reachedRasoul= (stateInfo.currentType== STOP_WORD && !stateInfo.familyConnectorOr3abid());//stop_word not preceeded by 3abid or ibn
-		if (stateInfo.currentType== STOP_WORD && !reachedRasoul)
+		bool should_stop= (stateInfo.currentType== STOP_WORD && !stateInfo.familyConnectorOr3abid());//stop_word not preceeded by 3abid or ibn
+		if (stateInfo.currentType== STOP_WORD && !should_stop)
 			stateInfo.currentType=NAME;
 	#endif
 		bool return_value=true;
@@ -395,9 +434,16 @@ private:
 		case TEXT_S:
 			assertStructure(stateInfo,INITIALIZE);
 			if(stateInfo.currentType==NAME) {
+			#ifdef PUNCTUATION
+				if (!stateInfo.previousPunctuationInfo.fullstop) {
+					stateInfo.nextState=TEXT_S;
+					break;
+				}
+			#endif
+
 				currentData.initialize();
 				stateInfo.nextState=NAME_S;
-				currentData.biographyStartIndex=stateInfo.startPos;
+				currentData.sanadStartIndex=stateInfo.startPos;
 				currentData.narratorStartIndex=stateInfo.startPos;
 
 				fillStructure(stateInfo,NAME_PRIM,currentChain);
@@ -412,7 +458,10 @@ private:
 					stateInfo.nextState=NRC_S;
 					currentData.nrcCount=0;//punctuation is zero
 					currentData.narratorEndIndex=stateInfo.endPos;
-					//currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+					currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+				#ifdef TRYTOLEARN
+					stateInfo.nrcIsPunctuation=true;
+				#endif
 
 					fillStructure(stateInfo,NAME_CONNECTOR,currentChain,true);
 
@@ -426,9 +475,15 @@ private:
 			#endif
 			}
 			else if (stateInfo.currentType==NRC) {
+			/*#ifdef PUNCTUATION
+				if (!stateInfo.previousPunctuationInfo.fullstop && stateInfo._3an) {
+					stateInfo.nextState=TEXT_S;
+					break;
+				}
+			#endif*/
 				currentData.initialize();
-				currentData.biographyStartIndex=stateInfo.startPos;
-				//currentData.nrcStartIndex=stateInfo.startPos;
+				currentData.sanadStartIndex=stateInfo.startPos;
+				currentData.nrcStartIndex=stateInfo.startPos;
 				stateInfo.nextState=NRC_S;
 				currentData.nrcCount=1;
 
@@ -446,7 +501,7 @@ private:
 			#ifdef REFINEMENTS
 				if (stateInfo._3an) {
 					currentData.nrcCount=1;
-					//currentData.nrcEndIndex=stateInfo.endPos;
+					currentData.nrcEndIndex=stateInfo.endPos;
 
 					assertStructure(stateInfo,NARRATOR_CONNECTOR);
 					fillStructure(stateInfo,NAME_PRIM,currentChain,true);
@@ -472,7 +527,7 @@ private:
 			#endif
 				display("<Family1>");
 				currentData.initialize();
-				currentData.biographyStartIndex=stateInfo.startPos;
+				currentData.sanadStartIndex=stateInfo.startPos;
 				currentData.nmcStartIndex=stateInfo.startPos;
 				currentData.narratorStartIndex=stateInfo.startPos;
 				currentData.nmcCount=1;
@@ -511,7 +566,7 @@ private:
 		case NAME_S:
 			assertStructure(stateInfo,NAME_PRIM);
 		#ifdef REFINEMENTS
-			if(reachedRasoul)
+			if(should_stop)
 			{
 				display("<STOP1>");
 				stateInfo.nextState=STOP_WORD_S;
@@ -592,14 +647,14 @@ private:
 				display(QString("counter%1\n").arg(currentData.narratorCount));
 				currentData.nrcCount=1;
 				currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
-				//currentData.nrcStartIndex=stateInfo.startPos;
+				currentData.nrcStartIndex=stateInfo.startPos;
 
 				fillStructure(stateInfo,NARRATOR_CONNECTOR,currentChain);
 
 			#ifdef REFINEMENTS
 				if (stateInfo._3an) {
 					currentData.nrcCount=1;
-					//currentData.nrcEndIndex=stateInfo.endPos;
+					currentData.nrcEndIndex=stateInfo.endPos;
 
 					assertStructure(stateInfo,NARRATOR_CONNECTOR);
 					fillStructure(stateInfo,NAME_PRIM,currentChain,true);
@@ -636,7 +691,7 @@ private:
 					stateInfo.nextState=NRC_S;
 					currentData.nrcCount=0; //punctuation not counted
 					currentData.narratorEndIndex=stateInfo.endPos;
-					//currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+					currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 
 					fillStructure(stateInfo,NARRATOR_CONNECTOR,currentChain,true);
 
@@ -653,7 +708,7 @@ private:
 		case NMC_S:
 			assertStructure(stateInfo,NAME_CONNECTOR);
 		#ifdef REFINEMENTS
-			if(reachedRasoul) {
+			if(should_stop) {
 				display("<STOP2>");
 				//1-finish old narrator and use last nmc as nrc
 				currentData.narratorCount++;
@@ -674,8 +729,8 @@ private:
 				stateInfo.nextState=NRC_S;
 
 				currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(currentData.nmcStartIndex);
-				//currentData.nrcStartIndex=currentData.nmcStartIndex;
-				//currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
+				currentData.nrcStartIndex=currentData.nmcStartIndex;
+				currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 
 				//2-create a new narrator of just this stop word as name connector
 				currentData.narratorEndIndex=stateInfo.endPos;
@@ -722,14 +777,14 @@ private:
 				stateInfo.nextState=NRC_S;
 
 				currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
-				//currentData.nrcStartIndex=stateInfo.startPos;
+				currentData.nrcStartIndex=stateInfo.startPos;
 
 				fillStructure(stateInfo,NARRATOR_CONNECTOR,currentChain);
 
 			#ifdef REFINEMENTS
 				if (stateInfo._3an) {
 					currentData.nrcCount=1;
-					//currentData.nrcEndIndex=stateInfo.endPos;
+					currentData.nrcEndIndex=stateInfo.endPos;
 
 					assertStructure(stateInfo,NARRATOR_CONNECTOR);
 					fillStructure(stateInfo,NAME_PRIM,currentChain,true);
@@ -761,7 +816,7 @@ private:
 					stateInfo.nextState=NRC_S;
 					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
-					//currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+					currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 				/*#ifdef TRYTOLEARN
 					stateInfo.nrcIsPunctuation=true;
 				#endif*/
@@ -796,12 +851,13 @@ private:
 				}
 			}
 		#endif
-			else if (currentData.nmcCount>hadithParameters.bio_nmc_max
+			else if (currentData.nmcCount>hadithParameters.nmc_max
 					#ifdef PUNCTUATION
-						 || (ending_punc)
+						 || stateInfo.number ||
+						 (ending_punc)
 					#endif
 				) {
-				if (currentData.nmcCount>hadithParameters.nmc_max && currentData.nmcValid) {
+				if (currentData.nmcCount>hadithParameters.nmc_max && currentData.nmcValid) {//number is severe condition no tolerance
 					currentData.nmcValid=false;
 					stateInfo.nextState=NMC_S;
 					currentData.nmcCount=0;
@@ -809,9 +865,9 @@ private:
 					fillStructure(stateInfo,NAME_CONNECTOR,currentChain);
 
 				} else {
-					stateInfo.nextState=NRC_S; //was TEXT_S;
+					stateInfo.nextState=TEXT_S;
 
-					fillStructure(stateInfo,NARRATOR_CONNECTOR,currentChain,true,true);
+					fillStructure(stateInfo,INITIALIZE,currentChain,true,true);
 
 					// TODO: added this later to the code, check if really is in correct place, but seemed necessary
 					currentData.narratorCount++;
@@ -833,7 +889,7 @@ private:
 
 					display("{check}");
 					currentData.narratorEndIndex=stateInfo.lastEndPos;//TODO: find a better representation
-					//return_value= false;
+					return_value= false;
 					break;
 				}
 				//currentData.narratorEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(start_index); check this case
@@ -873,12 +929,12 @@ private:
 		case NRC_S:
 			assertStructure(stateInfo,NARRATOR_CONNECTOR);
 		#ifdef REFINEMENTS
-			if(reachedRasoul) {
+			if(should_stop) {
 				display("<STOP3>");
 
 				fillStructure(stateInfo,RASOUL_WORD,currentChain);
 
-				//currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
+				currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 				currentData.nmcCount=1;
 			#ifdef STATS
 				map_entry * entry=new map_entry;
@@ -913,6 +969,10 @@ private:
 				break;
 			}
 		#endif
+		#ifdef PUNCTUATION
+			if(stateInfo.currentType==NAME || stateInfo.currentType ==NRC)
+				currentData.nrcPunctuation=false;
+		#endif
 		#ifdef REFINEMENTS
 			if (stateInfo.currentType==NAME || stateInfo.possessivePlace) {
 		#else
@@ -930,7 +990,7 @@ private:
 				fillStructure(stateInfo,(stateInfo.currentType==NAME?NAME_PRIM:NAME_CONNECTOR),currentChain);
 				stateInfo.processedStructure=NAME_PRIM; //to have consistency with nextState in case it was NAME_CONNECTOR
 
-				//currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
+				currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 			#ifdef STATS
 				temp_names_per_narrator++;//found another name
 			#endif
@@ -942,7 +1002,7 @@ private:
 					stateInfo.nextState=NRC_S;
 					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
-					//currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+					currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 				/*#ifdef TRYTOLEARN
 					stateInfo.nrcIsPunctuation=true;
 				#endif*/
@@ -959,9 +1019,9 @@ private:
 			#endif
 			}
 		#ifdef PUNCTUATION
-			else if (currentData.nrcCount>=hadithParameters.bio_nrc_max ||stateInfo.number) { //if not in refinements mode stateInfo.number will always remain false
+			else if (currentData.nrcCount>=hadithParameters.nrc_max || currentData.nrcPunctuation ||stateInfo.number) { //if not in refinements mode stateInfo.number will always remain false
 		#else
-			else if (currentData.nrcCount>=hadithParameters.bio_nrc_max) {
+			else if (currentData.nrcCount>=hadithParameters.nrc_max) {
 		#endif
 				stateInfo.nextState=TEXT_S;
 			#ifdef STATS
@@ -989,7 +1049,7 @@ private:
 
 				fillStructure(stateInfo,NAME_CONNECTOR,currentChain);
 
-				//currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
+				currentData.nrcEndIndex=stateInfo.lastEndPos;//getLastLetter_IN_previousWord(stateInfo.startPos);
 				currentData.nmcValid=true;
 				currentData.nmcCount=1;
 			#ifdef STATS
@@ -1011,7 +1071,7 @@ private:
 					stateInfo.nextState=NRC_S;
 					currentData.nrcCount=0;
 					currentData.narratorEndIndex=stateInfo.endPos;
-					//currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+					currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
 				#ifdef TRYTOLEARN
 					stateInfo.nrcIsPunctuation=true;
 				#endif
@@ -1057,7 +1117,7 @@ private:
 			#ifdef REFINEMENTS
 				if (stateInfo._3an) {
 					currentData.nrcCount=1;
-					//currentData.nrcEndIndex=stateInfo.endPos;
+					currentData.nrcEndIndex=stateInfo.endPos;
 
 					assertStructure(stateInfo,NARRATOR_CONNECTOR);
 					fillStructure(stateInfo,NAME_PRIM,currentChain,true);
@@ -1067,6 +1127,10 @@ private:
 				}
 			#endif
 			}
+		#ifdef PUNCTUATION
+			if (stateInfo.currentPunctuationInfo.has_punctuation && stateInfo.nextState==NRC_S && stateInfo.currentType!=NAME && stateInfo.currentType!=NRC)
+				currentData.nrcPunctuation=true;
+		#endif
 			break;
 	#ifdef REFINEMENTS
 		case STOP_WORD_S:
@@ -1087,10 +1151,10 @@ private:
 				}
 			#endif
 			} else {
-				fillStructure(stateInfo,NARRATOR_CONNECTOR,currentChain);
+				fillStructure(stateInfo,INITIALIZE,currentChain);
 
-				stateInfo.nextState=NRC_S; //was TEXT_S
-				//return_value=false;
+				stateInfo.nextState=TEXT_S;
+				return_value=false;
 			}
 			break;
 	#endif
@@ -1107,16 +1171,16 @@ private:
 			assert (currentChain->narrator==NULL);
 		return return_value;
 	}
-
-	inline bool result(WordType t, StateInfo &  stateInfo,BiographyData *currentBiography){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentBiography);}
-	bool proceedInStateMachine(StateInfo &  stateInfo,BiographyData *currentBiography) { //does not fill stateInfo.currType
+	inline bool result(WordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
+#ifndef BUCKWALTER_INTERFACE
+	bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //does not fill stateInfo.currType
+	{
 		hadith_stemmer s(text,stateInfo.startPos);
 		if (stateInfo.familyNMC)
 			s.tryToLearnNames=true;
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
 		stateInfo.possessivePlace=false;
-		stateInfo.resetCurrentWordInfo();
 	#if 0
 		static hadith_stemmer * s_p=NULL;
 		if (s_p==NULL)
@@ -1125,6 +1189,7 @@ private:
 			s_p->init(stateInfo.startPos);
 		hadith_stemmer & s=*s_p;
 	#endif
+
 	#ifdef REFINEMENTS
 	#ifdef TRYTOLEARN
 		if (stateInfo.currentState==NRC_S && currentData.nrcCount<=1
@@ -1141,33 +1206,108 @@ private:
 			stateInfo.endPos=finish;
 			stateInfo.nextPos=next_positon(text,finish+1,stateInfo.currentPunctuationInfo);
 			display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-			return result(NMC,stateInfo,currentBiography);
+			return result(NMC,stateInfo,currentChain);
 		}
 	#endif
 
 		QString c;
 		bool found,phrase=false,stop_word=false;
-		foreach (c, rasoul_words) {
+		foreach (c, rasoul_words)
+		{
+		#if 1
 			int pos;
-			if (startsWith(text->midRef(stateInfo.startPos),c,pos))	{
+			if (startsWith(text->midRef(stateInfo.startPos),c,pos))
+			{
 				stop_word=true;
 				found=true;
 				finish=pos+stateInfo.startPos;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
 				break;
 			}
+		#else
+			found=true;
+			int pos=current_pos;
+			for (int i=0;i<c.length();)
+			{
+				if (!isDiacritic(text->at(pos)))
+				{
+					if (!equal(c[i],text->at(pos)))
+					{
+						found=false;
+						break;
+					}
+					i++;
+				}
+				pos++;
+			}
+			if (found)
+			{
+				stop_word=true;
+				finish=pos-1;
+			#ifdef STATS
+				current_stem=c;
+				current_exact=c;
+			#endif
+				break;
+			}
+		#endif
 		}
-		if (!stop_word) {//TODO: maybe modified to be set as a utility function, and just called from here
-			foreach (c, compound_words)	{
+		QStringRef startText=text->midRef(stateInfo.startPos);
+		if (!stop_word)//TODO: maybe modified to be set as a utility function, and just called from here
+		{
+			foreach (c, compound_words)
+			{
+			#if 1
 				int pos;
-				if (startsWith(text->midRef(stateInfo.startPos),c,pos))	{
+				if (startsWith(startText,c,pos))
+				{
 					phrase=true;
 					found=true;
 					finish=pos+stateInfo.startPos;
+				#ifdef STATS
+					current_stem=c;
+					current_exact=c;
+				#endif
 					break;
 				}
+			#else
+				found=true;
+				int pos=stateInfo.startPos;
+				for (int i=0;i<c.length();)
+				{
+					if (!isDiacritic(text->at(pos)))
+					{
+						if (!equal(c[i],text->at(pos)))
+						{
+							found=false;
+							break;
+						}
+						i++;
+					}
+					pos++;
+				}
+				while (isDiacritic(text->at(pos)))
+					pos++;
+				if (isDiacritic(text->at(pos)))
+				if (found)
+				{
+					phrase=true;
+					finish=pos-1;
+				#ifdef STATS
+					current_stem=c;
+					current_exact=c;
+				#endif
+					break;
+				}
+			#endif
 			}
 		}
-		if (!stop_word && !phrase)	{
+		if (!stop_word && !phrase)
+		{
+	#endif
 			s();
 			finish=max(s.info.finish,s.finish_pos);
 			if (finish==stateInfo.startPos) {
@@ -1181,6 +1321,14 @@ private:
 				}
 			#endif
 			}
+			#ifdef STATS
+				current_exact=removeDiacritics(s.info.text->mid(stateInfo.startPos,finish-stateInfo.startPos+1));
+				current_stem=s.stem;
+				if (current_stem=="")
+					current_stem=choose_stem(s.stems);
+				if (current_stem=="")
+					current_stem=current_exact;
+			#endif
 	#ifdef REFINEMENTS
 		}
 	#endif
@@ -1189,13 +1337,13 @@ private:
 		display(text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 	#ifdef REFINEMENTS
 		if (stop_word || s.stopword) {
-			return result(STOP_WORD,stateInfo,currentBiography);
+			return result(STOP_WORD,stateInfo,currentChain);
 		}
 		if (phrase)
 		{
 			display("PHRASE ");
 			//isBinOrPossessive=true; //same behaviour as Bin
-			return result(NMC,stateInfo,currentBiography);
+			return result(NMC,stateInfo,currentChain);
 		}
 		stateInfo._3abid=s._3abid;
 	#endif
@@ -1246,7 +1394,7 @@ private:
 			#endif
 			}
 		#endif
-			return result(NRC,stateInfo,currentBiography);
+			return result(NRC,stateInfo,currentChain);
 		}
 		else if (s.nmc)
 		{
@@ -1263,7 +1411,7 @@ private:
 					stateInfo.endPos=s.wawEnd;
 					stateInfo.nextPos=s.wawEnd+1;
 					stateInfo.currentPunctuationInfo.reset();
-					if (!result(NRC,stateInfo,currentBiography))
+					if (!result(NRC,stateInfo,currentChain))
 						return false;
 					stateInfo.isWaw=false;
 					stateInfo.currentState=stateInfo.nextState;
@@ -1290,7 +1438,7 @@ private:
 					stateInfo.currentPunctuationInfo=copyPunc;
 					stateInfo.nextPos=nextpos;
 				}
-				if (!result(NMC,stateInfo,currentBiography))
+				if (!result(NMC,stateInfo,currentChain))
 					return false;
 				stateInfo.currentState=stateInfo.nextState;
 				stateInfo.lastEndPos=stateInfo.endPos;
@@ -1301,18 +1449,18 @@ private:
 					stateInfo.endPos=finish;
 					stateInfo.nextPos=nextpos;
 					stateInfo.currentPunctuationInfo=copyPunc;
-					return result(NAME,stateInfo,currentBiography);
+					return result(NAME,stateInfo,currentChain);
 				}
 				return true;
 			#else
-				return result(NMC,stateInfo,currentBiography);
+				return result(NMC,stateInfo,currentChain);
 			#endif
 			}
 			if (s.possessive) {
 				display("Possessive ");
-				return result(NMC,stateInfo,currentBiography);
+				return result(NMC,stateInfo,currentChain);
 			}
-			return result(NMC,stateInfo,currentBiography);
+			return result(NMC,stateInfo,currentChain);
 		}
 		else if (s.name){
 		#ifdef GET_WAW
@@ -1325,7 +1473,7 @@ private:
 				stateInfo.endPos=s.wawEnd;
 				stateInfo.nextPos=s.wawEnd+1;
 				stateInfo.currentPunctuationInfo.reset();
-				if (!result(NRC,stateInfo,currentBiography))
+				if (!result(NRC,stateInfo,currentChain))
 					return false;
 				stateInfo.isWaw=false;
 				stateInfo.currentState=stateInfo.nextState;
@@ -1339,252 +1487,77 @@ private:
 			stateInfo.endPos=s.finishStem;
 			stateInfo.nextPos=nextpos;
 		#endif
-			return result(NAME,stateInfo,currentBiography);
+			return result(NAME,stateInfo,currentChain);
 		}
 		else
-			return result(NMC,stateInfo,currentBiography);
+			return result(NMC,stateInfo,currentChain);
 	}
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
-	class ReachableVisitor:public NodeVisitor {
-		NarratorNodeIfc * target;
-		ColorIndices & colorGuard;
-		bool found;
-	public:
-		ReachableVisitor(NarratorNodeIfc * aTarget,ColorIndices & guard):colorGuard(guard) {target=aTarget;}
-		void initialize(){
-			found=false;
-		}
-		virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int) {	}
-		virtual void visit(NarratorNodeIfc & n) {
-			if (&n==target) {
-				found=true;
-				colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
-				colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
-			}
-		}
-		virtual void finishVisit(NarratorNodeIfc & ){ }
-		virtual void detectedCycle(NarratorNodeIfc & ){ }
-		virtual void finish(){	}
-		bool isFound() {return found;}
-	};
-	class Cluster;
-	class NodeItem {
-	public:
-		NarratorNodeIfc * node;
-		Cluster* cluster;
-		int inDegree;
-		int outDegree;
-		NodeItem(NarratorNodeIfc * n) {
-			node=n;
-			cluster=NULL;
-			inDegree=0;
-			outDegree=0;
-		}
-	};
-	typedef QList<NodeItem *> NodeItemList;
-	typedef QList<NodeItemList> NodeItemGroup;
-	class Cluster {
-	public:
-		int id;
-		NodeItemList list;
-		Cluster(NodeItem * n1,NodeItem * n2,int cluster_id){
-			list.append(n1);
-			list.append(n2);
-			n1->cluster=this;
-			n2->cluster=this;
-			id=cluster_id;
-		}
-		void addNodeItem(NodeItem * n) {
-			list.append(n);
-			n->cluster=this;
-		}
-		int size() {
-			return list.size();
-		}
-		NodeItem * operator[](int i){
-			return list[i];
-		}
-		~Cluster() {
-			for (int i=0;i<list.size();i++)
-				delete list[i];
-		}
-	};
-	class ClusterList {
-	private:
-		QList<Cluster *> list;
-	public:
-		void addCluster(Cluster * c,int id=-1){
-			if (id<0 && c->id>=0)
-				id=c->id;
-			if (id>=0 && c->id<0)
-				c->id=id;
-			if (id<0 && c->id<0) {
-				id=list.size();
-				c->id=id;
-			}
-			assert(c->id==id);
-			assert(list.size()<=id || list[id]==NULL);
-			for (int i=list.size();i<=id;i++)
-				list.append(NULL);
-			list[id]=c;
-		}
-		int size() {
-			return list.size();
-		}
-		Cluster * operator[](int i){
-			return list[i];
-		}
-		~ClusterList() {
-			for (int i=0;i<list.size();i++)
-				if (list[i]!=NULL)
-					delete list[i];
-		}
-		void mergeNodeItems(NodeItem * n1,NodeItem * n2) {
-			if (n1->cluster==NULL && n2->cluster==NULL){
-				Cluster * c=new Cluster(n1,n2,size());
-				addCluster(c);
-			} else if (n1->cluster!=NULL && n2->cluster==NULL) {
-				n1->cluster->addNodeItem(n2);
-				assert(n2->cluster==n1->cluster);
-			} else if (n2->cluster!=NULL && n1->cluster==NULL) {
-				n2->cluster->addNodeItem(n1);
-				assert(n2->cluster==n1->cluster);
-			} else {//in both cases:n1!=n2 or n1==n2
-				return;
-			}
-		}
-	};
-
-
-	bool near(NarratorNodeIfc *n1, NarratorNodeIfc *n2) {
-	#if 0
-		ChainNodeIterator itr=n1.begin();
-		for (;!itr.isFinished();++itr) {
-			if (&itr.getChild()==&n2)
-				return true;
-			if (&itr.getParent()==&n2)
-				return true;
-		}
-		return false;
-	#else
-		//qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
-		if (n1==n2)
-			return false;
-		ReachableVisitor v(n2,graph->colorGuard);
-		GraphVisitorController controller(&v,graph);
-		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);
-		bool found=v.isFound();
-		if (!found) {
-			graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,-1);
-			found=v.isFound();
-		}
-		return found;
-	#endif
-	}
-	bool near(NarratorNodeIfc * n, const NarratorNodeList & list) {
-		for (int i=0;i<list.size();i++) {
-			if (near(n,list[i]))
-				return true;
-		}
-		return false;
-	}
-	int getLargestClusterSize(Biography::NarratorNodeGroups & list) {
-		NodeItemGroup nodeItemgroups;
-		//1-transform to nodeItems:
-		for (int i=0;i<list.size();i++) {
-			int size=list[i].size();
-			if (size>0) {
-				nodeItemgroups.append(NodeItemList());
-				for (int j=0;j<size;j++) {
-					NodeItem * node=new NodeItem(list[i][j]);
-					nodeItemgroups[i].append(node);
-				}
-			}
-		}
-		ClusterList clusters;
-		//1-each node put it in its own list or merge it with a group of already found if it is near them
-		int size=nodeItemgroups.size();
-		for (int i=0;i<size;i++) {
-			for (int j=i+1;j<size;j++) {
-				int size1=nodeItemgroups[i].size();
-				int size2=nodeItemgroups[j].size();
-				for (int i2=0;i2<size1;i2++) {
-					for (int j2=0;j2<size2;j2++) {
-						NodeItem * item1=nodeItemgroups[i][i2],
-								 * item2=nodeItemgroups[j][j2];
-						if (near(item1->node,item2->node)) {
-							clusters.mergeNodeItems(item1,item2);
-						}
-					}
-				}
-			}
-		}
-		//3-return largest list size
-		int largest=1;
-		int index=-1;
-		for (int i=0;i<clusters.size();i++) {
-			if (clusters[i]->size()>largest) {
-				largest=clusters[i]->size();
-				index=i;
-			}
-		}
-	#if 1
-		if (index>=0) {
-			qDebug()<<largest<<"\n";
-			for (int i=0;i<clusters[index]->size();i++){
-				qDebug()<<(*clusters[index])[i]->node->CanonicalName()<<"\n";
-			}
-			qDebug()<<"\n";
-		}
-	#endif
-		return largest;
-	}
-
 #endif
-
 public:
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
-	NarratorDetector(NarratorGraph * graph) {this->graph=graph; }
-	NarratorDetector() {}
-#else
-	NarratorDetector() {graph=NULL;}
-#endif
 	int segment(QString input_str,ATMProgressIFC *prg)  {
+	#ifdef COMPARE_TO_BUCKWALTER
+		QFile myfile("output");
+
+		myfile.remove();
+		if (!myfile.open(QIODevice::ReadWrite))
+			return 1;
+		QByteArray output_to_file;
+		myoutPtr= new QTextStream(&output_to_file);
+	#else
 		QFile chainOutput(chainDataStreamFileName);
 
 		chainOutput.remove();
 		if (!chainOutput.open(QIODevice::ReadWrite))
 			return 1;
 		QDataStream chainOut(&chainOutput);
+	#endif
+	#ifdef BUCKWALTER_INTERFACE
+		timeval tim;
+		gettimeofday(&tim,NULL);
+		double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+	#endif
 		QFile input(input_str);
-		if (!input.open(QIODevice::ReadOnly)) {
+		if (!input.open(QIODevice::ReadOnly))
+		{
 			out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
 		text=new QString(file.readAll());
-		if (text==NULL)	{
+		if (text->isNull())
+		{
 			out<<"file error:"<<input.errorString()<<"\n";
 			return 1;
 		}
-		if (text->isEmpty()) { //ignore empty files
+		if (text->isEmpty()) //ignore empty files
+		{
 			out<<"empty file\n";
 			return 0;
 		}
 		long text_size=text->size();
-		long  biographyStart=-1;
+	#ifdef BUCKWALTER_INTERFACE
+		gettimeofday(&tim,NULL);
+		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+		out	<<"="<<t2-t1<<"-";
+	#endif
+	#ifdef COUNT_AVERAGE_SOLUTIONS
+		total_solutions=0;
+		stemmings=0;
+	#endif
+	#ifndef COMPARE_TO_BUCKWALTER
+		long  newHadithStart=-1;
 		currentData.initialize();
 
 	#ifdef CHAIN_BUILDING
-		BiographyData *currentBiography=new BiographyData();
-		currentBiography->initialize(graph,text);
-		display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
+		chainData *currentChain=new chainData();
+		currentChain->initialize(text);
+		display(QString("\ninit0\n"));
 	#else
-		chainData *currentBiography=NULL;
+		chainData *currentChain=NULL;
 	#endif
-		long  biographyEnd;
-		int biography_Counter=1;
+		long  sanadEnd;
+		int hadith_Counter=1;
 	#endif
 		StateInfo stateInfo;
 		stateInfo.resetCurrentWordInfo();
@@ -1592,40 +1565,106 @@ public:
 		stateInfo.nextState=TEXT_S;
 		stateInfo.lastEndPos=0;
 		stateInfo.startPos=0;
+		stateInfo.processedStructure=INITIALIZE;
 	#ifdef PUNCTUATION
 		stateInfo.previousPunctuationInfo.fullstop=true;
 	#endif
+	#ifndef BUCKWALTER_INTERFACE
 		while(stateInfo.startPos<text->length() && isDelimiter(text->at(stateInfo.startPos)))
 			stateInfo.startPos++;
+	#else
+		QString line =getnext();//just for first line
+		assert(line=="");
+	#endif
 	#ifdef PROGRESSBAR
-		prg->setCurrentAction("Parsing Biography");
+		prg->setCurrentAction("Parsing Hadith");
 	#endif
 		for (;stateInfo.startPos<text_size;) {
-			if((proceedInStateMachine(stateInfo,currentBiography)==false)) {
-			#ifdef SEGMENT_BIOGRAPHY_USING_POR
-				Biography::NarratorNodeGroups & realNarrators=currentBiography->biography->nodeGroups;
-				int num=getLargestClusterSize(realNarrators);
-				if (num>=hadithParameters.bio_narr_min) {
-			#else
-				if (currentData.narratorCount>=hadithParameters.bio_narr_min) {
-			#endif
-					//biographyEnd=currentData.narratorEndIndex;
-					biographyEnd=stateInfo.endPos;
-					currentBiography->biography->setEnd(biographyEnd);
+	#ifndef COMPARE_TO_BUCKWALTER
+			if((proceedInStateMachine(stateInfo,currentChain)==false)) {
+				assert (currentChain->narrator==NULL);
+				if (currentData.narratorCount>=hadithParameters.narr_min) {
+					sanadEnd=currentData.narratorEndIndex;
 				#ifdef DISPLAY_HADITH_OVERVIEW
-					//biographyStart=currentData.biographyStartIndex;
-					biographyStart=currentBiography->biography->getStart();
+					newHadithStart=currentData.sanadStartIndex;
 					//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 					//long end=stateInfo.endPos;
-					out<<"\n"<<biography_Counter<<" new biography start: "<<text->mid(biographyStart,display_letters)<<endl;
-					out<<"sanad end: "<<text->mid(biographyEnd-display_letters+1,display_letters)<<endl<<endl;
+					out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
+					out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
 				#ifdef CHAIN_BUILDING
-					currentBiography->biography->serialize(chainOut);
-					currentBiography->biography->setStart(stateInfo.nextPos);
+					currentChain->chain->serialize(chainOut);
 					//currentChain->chain->serialize(displayed_error);
 				#endif
 				#endif
-					biography_Counter++;
+					hadith_Counter++;
+				#ifdef STATS
+					int additional_names=temp_names_per_narrator;
+					temp_names_per_narrator=0;
+					for (int i=1;i<=currentData.narratorCount;i++)
+						additional_names+=stat.name_per_narrator[stat.name_per_narrator.size()-i];//we are sure names found are in narrators
+					stat.names_in+=additional_names;
+					stat.chains++;
+					stat.narrator_per_chain.append(currentData.narratorCount);
+					stat.narrators+=currentData.narratorCount;
+					display(QString("narrator_per_chain=")+QString::number(currentData.narratorCount)+", names="+QString::number(additional_names)+"\n");
+
+					for (int i=0;i<temp_nmc_s.count();i++)
+					{
+						if (!stat.nmc_stem.contains(temp_nmc_s[i]->stem))
+							stat.nmc_stem[temp_nmc_s[i]->stem]=1;
+						else
+							stat.nmc_stem[temp_nmc_s[i]->stem]++;
+						if (!stat.nmc_exact.contains(temp_nmc_s[i]->exact))
+							stat.nmc_exact.insert(temp_nmc_s[i]->exact,temp_nmc_s[i]);
+						else
+						{
+							map_entry * entry=stat.nmc_exact.value(temp_nmc_s[i]->exact);
+							assert (entry->stem==temp_nmc_s[i]->stem);
+							entry->frequency++;
+							delete  temp_nmc_s[i];
+						}
+					}
+					temp_nmc_s.clear();
+					temp_nmc_count=0;
+					for (int i=0;i<temp_nrc_s.count();i++)
+					{
+						if (!stat.nrc_stem.contains(temp_nrc_s[i]->stem))
+							stat.nrc_stem[temp_nrc_s[i]->stem]=1;
+						else
+							stat.nrc_stem[temp_nrc_s[i]->stem]++;
+						if (!stat.nrc_exact.contains(temp_nrc_s[i]->exact))
+							stat.nrc_exact.insert(temp_nrc_s[i]->exact,temp_nrc_s[i]);
+						else
+						{
+							map_entry * entry=stat.nrc_exact.value(temp_nrc_s[i]->exact);
+							assert (entry->stem==temp_nrc_s[i]->stem);
+							entry->frequency++;
+							delete  temp_nrc_s[i];
+						}
+					}
+					temp_nrc_s.clear();
+					temp_nrc_count=0;
+				#endif
+				}
+				else {
+				#ifdef STATS
+					int additional_names=temp_names_per_narrator;
+					temp_names_per_narrator=0;
+					for (int i=1;i<=currentData.narratorCount;i++)
+						additional_names+=stat.name_per_narrator[stat.name_per_narrator.size()-i];//we are sure names found are in not inside valid narrators
+					stat.names_out+=additional_names;
+					stat.name_per_narrator.remove(stat.name_per_narrator.size()-currentData.narratorCount,currentData.narratorCount);
+					display(QString("additional names out names =")+QString::number(additional_names)+"\n");
+
+					for (int i=0;i<temp_nmc_s.count();i++)
+						delete temp_nmc_s[i];
+					temp_nmc_s.clear();
+					for (int i=0;i<temp_nrc_s.count();i++)
+						delete temp_nrc_s[i];
+					temp_nrc_s.clear();
+					temp_nmc_count=0;
+					temp_nrc_count=0;
+				#endif
 				}
 			}
 			stateInfo.currentState=stateInfo.nextState;
@@ -1637,131 +1676,344 @@ public:
 				stateInfo.previousPunctuationInfo.fullstop=true;
 				stateInfo.previousPunctuationInfo.has_punctuation=true;
 			}
-			/*if (stateInfo.previousPunctuationInfo.has_punctuation)
-				stateInfo.previousPunctuationInfo.fullstop=true;*/
-			if (stateInfo.previousPunctuationInfo.fullstop) {
-				if (currentBiography->biography!=NULL)
-					delete currentBiography->biography;
-				currentBiography->biography=new Biography(graph,text,stateInfo.startPos);
-			}
-
-
+			if (stateInfo.previousPunctuationInfo.has_punctuation)
+				stateInfo.previousPunctuationInfo.fullstop=true;
 		#endif
+	#else
+			hadith_stemmer s(text,stateInfo.startPos);
+			s();
+			long finish=max(s.info.finish,s.finish_pos);
+			if (finish==current_pos)
+				finish=getLastLetter_IN_currentWord(stateInfo.startPos);
+			stateInfo.startPos=next_positon(finish);
+	#endif
 	#ifdef PROGRESSBAR
 			prg->report((double)stateInfo.startPos/text_size*100+0.5);
 			if (stateInfo.startPos==text_size-1)
 				break;
 	#endif
 		}
-	#if defined(DISPLAY_HADITH_OVERVIEW)
-		if (biographyStart<0)
+	#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
+		if (newHadithStart<0)
 		{
-			out<<"no biography found\n";
+			out<<"no hadith found\n";
 			chainOutput.close();
 			return 2;
 		}
 		chainOutput.close();
 	#endif
 	#ifdef CHAIN_BUILDING //just for testing deserialize
-		QFile f("biography_chains.txt");
+		QFile f("hadith_chains.txt");
 		if (!f.open(QIODevice::WriteOnly))
 			return 1;
-		QTextStream file_biography(&f);
-			file_biography.setCodec("utf-8");
+		QTextStream file_hadith(&f);
+			file_hadith.setCodec("utf-8");
 
 		if (!chainOutput.open(QIODevice::ReadWrite))
 			return 1;
 		QDataStream tester(&chainOutput);
 		int tester_Counter=1;
-	#ifdef TEST_BIOGRAPHIES
-		biographies=new BiographyList;
-		biographies->clear();
+	#ifdef TEST_NARRATOR_GRAPH
+		ChainsContainer chains;
+		chains.clear();
 	#endif
 	#if defined(TAG_HADITH)
 		prg->startTaggingText(*text);
 	#endif
 		while (!tester.atEnd())
 		{
-			Biography * s=new Biography(graph,text);
+			Chain * s=new Chain(text);
 			s->deserialize(tester);
-		#ifdef TEST_BIOGRAPHIES
-			biographies->append(s);
+		#ifdef TEST_NARRATOR_GRAPH
+			chains.append(s);
 		#endif
 		#if defined(TAG_HADITH)
-			for (int j=0;j<s->size();j++)
+			for (int j=0;j<s->m_chain.size();j++)
 			{
-				const Narrator * n=(*s)[j];
-				if (n->m_narrator.size()==0) {
-					out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
-					continue;
-				}
-				if (s->isReal(j))
-					prg->tag(n->getStart(),n->getLength(),Qt::darkYellow,false);
-				else
-					prg->tag(n->getStart(),n->getLength(),Qt::darkGray,false);
-				for (int i=0;i<n->m_narrator.size();i++)
+				ChainPrim * curr_struct=s->m_chain[j];
+				if (curr_struct->isNarrator())
 				{
-					NarratorPrim * nar_struct=n->m_narrator[i];
-					if (nar_struct->isNamePrim()) {
-						if (((NamePrim*)nar_struct)->learnedName) {
-							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::blue,true);
-							//error<<nar_struct->getString()<<"\n";
-						}
-						else
-							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
+					Narrator * n=(Narrator *)curr_struct;
+					if (n->m_narrator.size()==0) {
+						out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
+						continue;
 					}
-					else if (((NameConnectorPrim *)nar_struct)->isFamilyConnector())
-						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkRed,true);
-					else if (((NameConnectorPrim *)nar_struct)->isPossessive())
-						prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkMagenta,true);
+					prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::darkYellow,false);
+					for (int i=0;i<n->m_narrator.size();i++)
+					{
+						NarratorPrim * nar_struct=n->m_narrator[i];
+						if (nar_struct->isNamePrim()) {
+							if (((NamePrim*)nar_struct)->learnedName) {
+								prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::blue,true);
+								//error<<nar_struct->getString()<<"\n";
+							}
+							else
+								prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::white,true);
+						}
+						else if (((NameConnectorPrim *)nar_struct)->isFamilyConnector())
+							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkRed,true);
+						else if (((NameConnectorPrim *)nar_struct)->isPossessive())
+							prg->tag(nar_struct->getStart(),nar_struct->getLength(),Qt::darkMagenta,true);
+					}
 				}
+				else
+					prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::gray,false);
 			}
 		#else
 			hadith_out<<tester_Counter<<" ";
 			s->serialize(hadith_out);
 		#endif
 			tester_Counter++;
-			s->serialize(file_biography);
+			s->serialize(file_hadith);
 		}
 		chainOutput.close();
 		f.close();
+	#ifdef TEST_NARRATOR_GRAPH
+		test_GraphFunctionalities(chains, prg,input_str);
+	#endif
 	#endif
 	#ifndef TAG_HADITH
 		prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
 	#else
 		prg->finishTaggingText();
 	#endif
-		if (currentBiography!=NULL)
-			delete currentBiography;
-		return 0;
-	}
 
-	void freeMemory() { //called if we no longer need stuctures of this class
-		for (int i=0;i<biographies->size();i++)
-			delete (*biographies)[i];
-		delete text;
+
+	#endif
+	#ifdef STATS
+		double avg_narrators_per_chain=average(stat.narrator_per_chain);
+		double avg_names_per_narrator=average(stat.name_per_narrator);
+
+		displayed_error	<<"Chains=\t\t"<<stat.chains<<"\n"
+						<<"Narrators=\t\t"<<stat.narrators<<"\n"
+						<<"Names IN=\t\t"<<stat.names_in<<"\n"
+						<<"Names OUT=\t\t"<<stat.names_out<<"\n"
+						<<"Avg Names/Narr=\t"<<avg_names_per_narrator<<"\n"
+						<<"Avg Narr/Chain=\t"<<avg_narrators_per_chain<<"\n"
+						<<"Median Names/Narr=\t"<<median(stat.name_per_narrator)<<"\n"
+						<<"Median Narr/Chain=\t"<<median(stat.narrator_per_chain)<<"\n"
+						<<"St Dev Names/Narr=\t"<<standard_deviation(stat.name_per_narrator,avg_names_per_narrator)<<"\n"
+						<<"St Dev Narr/Chain=\t"<<standard_deviation(stat.narrator_per_chain,avg_narrators_per_chain)<<"\n";
+		displayed_error <<"\nNMC:\n";
+		show_according_to_frequency(stat.nmc_stem.values(),stat.nmc_stem.keys());
+		displayed_error <<"\nNRC:\n";
+		show_according_to_frequency(stat.nrc_stem.values(),stat.nrc_stem.keys());
+		displayed_error <<"\n\nNMC-exact:\n";
+		QList<int> freq;
+		QList<map_entry *> temp=stat.nmc_exact.values();
+		for (int i=0;i<temp.size();i++)
+			freq.append(temp[i]->frequency);
+		show_according_to_frequency(freq,stat.nmc_exact.keys());
+		displayed_error <<"\nNRC-exact:\n";
+		freq.clear();
+		temp=stat.nrc_exact.values();
+		for (int i=0;i<temp.size();i++)
+			freq.append(temp[i]->frequency);
+		show_according_to_frequency(freq,stat.nrc_exact.keys());
+		displayed_error <<"\n";
+		temp=stat.nmc_exact.values();
+		for (int i=0;i<temp.size();i++)
+			delete temp[i];
+		temp=stat.nrc_exact.values();
+		for (int i=0;i<temp.size();i++)
+			delete temp[i];
+	#endif
+	#ifdef COMPARE_TO_BUCKWALTER
+		myfile.write(output_to_file);
+	#endif
+	#ifdef COUNT_AVERAGE_SOLUTIONS
+		displayed_error	<< (double)(total_solutions/(long double)stemmings)<<"\n"
+						<<stemmings<<"\n";
+	#endif
+		//delete text;
+		if (currentChain!=NULL)
+			delete currentChain;
+		return 0;
 	}
 };
 
-int biographyHelper(QString input_str,ATMProgressIFC *prg) {
-	input_str=input_str.split("\n")[0];
-	NarratorDetector s;
-	s.segment(input_str,prg);
-#ifdef TEST_BIOGRAPHIES
-	s.freeMemory();
-#endif
+#ifdef IMAN_CODE
+class adjective_stemmer: public Stemmer
+{
+public:
+	bool adj ;
+	long finish_pos;
+
+	adjective_stemmer(QString * word, int start):Stemmer(word,start/*,false*/)
+	{
+		adj=false;
+		finish_pos=start;
+	}
+	bool on_match()
+	{
+		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
+			if (stem_info->abstract_categories[i] && get_abstractCategory_id(i)>=0)
+			{
+				if (getColumn("category","name",get_abstractCategory_id(i))=="ADJ")
+				{
+					adj=true;
+					finish_pos=info.finish;
+					return false;
+				}
+			}
+		return true;
+	}
+};
+
+int adjective_detector(QString input_str)
+{
+	QFile input(input_str);
+	if (!input.open(QIODevice::ReadWrite))
+	{
+		out << "File not found\n";
+		return 1;
+	}
+	QTextStream file(&input);
+	file.setCodec("utf-8");
+	text=new QString(file.readAll());
+	if (text->isNull())
+	{
+		out<<"file error:"<<input.errorString()<<"\n";
+		return 1;
+	}
+	if (text->isEmpty()) //ignore empty files
+	{
+		out<<"empty file\n";
+		return 0;
+	}
+	long text_size=text->size();
+
+	while(current_pos<text->length() && delimiters.contains(text->at(current_pos)))
+		current_pos++;
+	for (;current_pos<text_size;)
+	{
+		adjective_stemmer s(text,current_pos);
+		s();
+		long finish=max(s.info.finish,s.finish_pos);
+		if (s.adj )
+			out <<text->mid(current_pos,finish-current_pos+1)+":ADJECTIVE\n";
+		current_pos=next_positon(finish);;//here current_pos is changed
+	}
 	return 0;
 }
-
-#ifdef TEST_BIOGRAPHIES
-BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg) {
-	input_str=input_str.split("\n")[0];
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
-	NarratorDetector s(graph);
-#else
-	NarratorDetector s;
 #endif
+
+#ifdef BUCKWALTER_INTERFACE //i dont think this code functional anymore
+class machine_info
+{
+public:
+	bool name:1;
+	bool nrc:1;
+	bool nmc:1;
+
+	machine_info()
+	{
+		name=false;
+		nrc=false;
+		nmc=false;
+	}
+};
+
+inline QString getnext()
+{
+	long next_pos=text->indexOf('\n',current_pos);
+	QString line=text->mid(current_pos,next_pos-current_pos);
+	current_pos=next_pos+1;
+	//qDebug()<<line;
+	return line;
+}
+#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
+#define check(n) ;
+#else
+#define check(n) assert(n)
+#endif
+machine_info readNextWord()
+{
+	machine_info info;
+	QString line;
+	line=getnext();
+	if (line=="")
+	{
+		current_pos=text->size();
+		return info;
+	}
+	check(line.contains("INPUT STRING"));
+	line=getnext();
+	if (line.contains("Non-Alphabetic Data"))
+	{
+		line=getnext();
+		check (line=="");
+		return info;
+	}
+	check(line.contains("LOOK-UP WORD"));
+	while(1)
+	{
+		line=getnext();
+		if (line=="")
+			break;
+		while (line.contains("NOT FOUND"))
+		{
+			line=getnext();
+			if (line=="")
+				return info;
+			else if (line.contains("ALTERNATIVE"))
+			{
+				line=getnext();
+				if (line=="")
+					return info;
+			}
+		}
+		check(line.contains("SOLUTION"));
+		QString raw_data=line.split('(').at(1).split(')').at(0);
+		/*line=getnext();
+		check(line.startsWith(']'));*/
+		if (line.contains("NOUN_PROP"))
+			info.name=true;
+		line=getnext();
+		check(line.contains("(GLOSS)"));
+		QString description=line.split(" + ").at(1);
+		if (raw_data.contains("Hdv"))
+			info.nrc=true;
+		else if (description=="son")
+			info.nmc=true;
+		else if (description=="said" || description=="say" || description=="notify/communicate" || description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") || description.contains("narrate"))
+			info.nrc=true;
+	}
+	return info;
+}
+
+wordType getWordType(bool & isBinOrPossessive,bool & possessive, long &next_pos)
+{
+	isBinOrPossessive=false;
+	possessive=false;
+	machine_info s=readNextWord();
+	next_pos=current_pos;
+	if (s.nrc )
+		return result(NRC);
+	else if (s.nmc)
+	{
+		display("NMC-Bin/Pos ");
+		isBinOrPossessive=true;
+		return NMC;
+	}
+	else if (s.name)
+		return result(NAME);
+	else
+		return result(NMC);
+}
+#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
+#undef check
+#endif
+#include <sys/time.h>
+#endif
+
+int hadithHelper(QString input_str,ATMProgressIFC *prg) {
+	input_str=input_str.split("\n")[0];
+#ifdef IMAN_CODE
+	return adjective_detector(input_str);
+#endif
+	HadithSegmentor s;
 	s.segment(input_str,prg);
-	return s.biographies;
+	return 0;
 }
 #endif

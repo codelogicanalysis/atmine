@@ -97,15 +97,19 @@ public:
 };
 class NameConnectorPrim :public NarratorPrim {
 private:
-	enum Type {POS,IBN,FAMILY_OTHER, OTHER};
+	enum Type {POS,IBN,AB,OM,FAMILY_OTHER, OTHER};
 	Type type;
 public:
 	void setPossessive(){type=POS;}
 	bool isPossessive(){return type==POS;}
 	void setIbn(){type=IBN;}
 	bool isIbn(){return type==IBN;}
-	void setFamilyConnector(){if (type!=IBN) type=FAMILY_OTHER;}
-	bool isFamilyConnector(){return type==IBN || type==FAMILY_OTHER;}
+	void setAB(){type=AB;}
+	bool isAB(){return type==AB;}
+	void setOM(){type=OM;}
+	bool isOM(){return type==OM;}
+	void setFamilyConnector(){if (type!=IBN && type!=OM && type!=AB) type=FAMILY_OTHER;}
+	bool isFamilyConnector(){return type==IBN || type==OM || type==AB || type==FAMILY_OTHER;}
 	void setOther(){type=OTHER;}
 	bool isOther(){return type==OTHER;}
 	NameConnectorPrim(QString * hadith_text);
@@ -210,6 +214,7 @@ public:
 					possessives.append(c);
 				} else if (c->isIbn()){
 					names.append(NamePrimList());
+					//qDebug()<<"\t"<<c->getString();
 					j++;
 				} else if (c->isFamilyConnector()) {
 					names[j].append(c);
@@ -292,7 +297,8 @@ private:
 	bool isRealNarrator(Narrator * n);
 public:
 	typedef QList<NarratorNodeIfc *> NarratorNodeList;
-	NarratorNodeList nodeList; //for the moment no serialized
+	typedef QList<NarratorNodeList> NarratorNodeGroups;
+	NarratorNodeGroups nodeGroups;
 #endif
 public:
 	//Biography() { this->text=NULL; start=0;end=0;}

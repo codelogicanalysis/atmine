@@ -24,7 +24,7 @@ HadithParameters hadithParameters;
 	bool runon;
 #endif
 
-	QString hadath,abid,alrasoul,abyi,_3an;
+	QString hadath,abid,alrasoul,abyi,_3an,_2ama,_3ama;
 	int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP;
 	QList<int> bits_NAME;
 
@@ -32,6 +32,8 @@ HadithParameters hadithParameters;
 	QHash<long,bool> familyNMC_descriptions;
 	QHash<long,bool> NRC_descriptions;
 	QHash<long,bool> IBN_descriptions;
+	QHash<long,bool> OM_descriptions;
+	QHash<long,bool> AB_descriptions;
 #endif
 #ifdef COMPARE_TO_BUCKWALTER
 	QTextStream * myoutPtr;
@@ -49,10 +51,17 @@ void readFromDatabasePreProcessedDescriptions() {
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
 	Retrieve_Template nmc_s("description","id","name='son' or name LIKE '% father' or name LIKE 'father' or name LIKE 'father %' or name LIKE '% mother' or name LIKE 'mother' or name LIKE 'mother/%' or name LIKE 'grandfather' or name LIKE 'grandmother' or name LIKE 'father-in-law' or name LIKE 'mother-in-law' or name LIKE '% uncle' or name LIKE '% uncles'");
 	while (nmc_s.retrieve())
-		familyNMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);//TODO: this used to mean definite NMC along with POSSESSIVE, but called ibn_possesive should be termed in code definite NMC
+		familyNMC_descriptions.insert(nmc_s.get(0).toULongLong(),true);
 	Retrieve_Template ibn_s("description","id","name='son'");
 	while (ibn_s.retrieve())
 		IBN_descriptions.insert(ibn_s.get(0).toULongLong(),true);
+	Retrieve_Template ab_s("description","id","name LIKE '% father' or name LIKE 'father' or name LIKE 'father %'");
+	while (ab_s.retrieve())
+		AB_descriptions.insert(ab_s.get(0).toULongLong(),true);
+	Retrieve_Template om_s("description","id","name LIKE '% mother' or name LIKE 'mother' or name LIKE 'mother/%'");
+	while (om_s.retrieve())
+		OM_descriptions.insert(om_s.get(0).toULongLong(),true);
+
 
 	QFile file(preProcessedDescriptionsFileName.toStdString().data());
 	if (file.open(QIODevice::WriteOnly))
@@ -88,6 +97,8 @@ void readFromFilePreprocessedDescriptions() {
 void hadith_initialize() {
 	hadath.append(_7a2).append(dal).append(tha2);
 	abid.append(_3yn).append(ba2).append(dal);
+	_2ama.append(alef).append(meem).append(alef);
+	_3ama.append(_3yn).append(meem).append(alef);
 	//abihi.append(alef).append(ba2).append(ya2).append(ha2);
 	abyi.append(alef).append(ba2).append(ya2);
 	suffixNames.append(QString("")+ha2);
