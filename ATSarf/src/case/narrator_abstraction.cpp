@@ -756,9 +756,13 @@ void Biography::serialize(QDataStream &chainOut) const{
 		narrators[i]->narrator->serialize(chainOut);
 		chainOut<< narrators[i]->isRealNarrator;
 	#ifdef SEGMENT_BIOGRAPHY_USING_POR
-		chainOut<<nodeList.size();
-		for (int j=0;j<nodeList.size();j++) {
-			chainOut<<nodeList[j]->getId();
+		chainOut<<nodeGroups.size();
+		for (int j=0;j<nodeGroups.size();j++) {
+			int size=nodeGroups[j].size();
+			chainOut<<size;
+			for (int k=0;k<size;k++) {
+				chainOut<<nodeGroups[j][k]->getId();
+			}
 		}
 	#endif
 	}
@@ -779,11 +783,16 @@ void Biography::deserialize(QDataStream &chainIn){
 		int size;
 		chainIn>>size;
 		for (int j=0;j<size;j++) {
-			int cInt;
-			chainIn>>cInt;
-			NarratorNodeIfc * n=graph->getNode(cInt);
-			assert(n!=NULL);
-			nodeList.append(n);
+			int size;
+			chainIn>>size;
+			nodeGroups.append(NarratorNodeList());
+			for (int k=0;k<size;k++) {
+				int cInt;
+				chainIn>>cInt;
+				NarratorNodeIfc * n=graph->getNode(cInt);
+				assert(n!=NULL);
+				nodeGroups[j].append(n);
+			}
 		}
 	#endif
 	}
@@ -797,6 +806,7 @@ void Biography::serialize(QTextStream &chainOut) const
 	}
 }
 
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
 class RealNarratorAction:public NarratorHash::FoundAction {
 private:
 	Biography::NarratorNodeList & list;
@@ -814,9 +824,22 @@ public:
 	void resetFound() {found=false;}
 	bool isFound() {return found;}
 };
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
+
 bool Biography::isRealNarrator(Narrator * n) {
-	RealNarratorAction v(nodeList);
+	int i;
+	if (!nodeGroups.isEmpty()) {
+		if (nodeGroups.last().size()>0) {
+			nodeGroups.append(NarratorNodeList());
+			i=nodeGroups.size()-1;
+		} else {
+			i=nodeGroups.size()-1;
+		}
+	} else {
+		nodeGroups.append(NarratorNodeList());
+		i=0;
+	}
+
+	RealNarratorAction v(nodeGroups[i]);
 	if (n->isRasoul) {
 		return false;
 	} else {

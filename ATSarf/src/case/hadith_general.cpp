@@ -1,5 +1,6 @@
 #include "hadith.h"
 
+#if 0
 #ifdef GENERAL_HADITH
 #include <QTextBrowser>
 #include <assert.h>
@@ -152,7 +153,7 @@ private:
 		stateInfo.nrcIsPunctuation=false;
 	#endif
 	#ifdef REFINEMENTS
-		bool should_stop= (stateInfo.currentType== STOP_WORD && !stateInfo.ibnOr3abid());//stop_word not preceeded by 3abid or ibn
+		bool should_stop= (stateInfo.currentType== STOP_WORD && !stateInfo.familyConnectorOr3abid());//stop_word not preceeded by 3abid or ibn
 	#endif
 		bool return_value=true;
 		switch(stateInfo.currentState)
@@ -1118,11 +1119,11 @@ private:
 		}
 		display("\n");
 	#ifdef REFINEMENTS
-		currentData.ibn_or_3abid=stateInfo.ibnOr3abid(); //for it to be saved for next time use
+		currentData.ibn_or_3abid=stateInfo.familyConnectorOr3abid(); //for it to be saved for next time use
 	#endif
 		return return_value;
 	}
-	inline bool result(wordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
+	inline bool result(WordType t, StateInfo &  stateInfo,chainData *currentChain){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain);}
 #ifndef BUCKWALTER_INTERFACE
 	bool proceedInStateMachine(StateInfo &  stateInfo,chainData *currentChain) //does not fill stateInfo.currType
 	{
@@ -1370,6 +1371,10 @@ private:
 				stateInfo.familyNMC=true;
 				if (s.ibn)
 					stateInfo.ibn=true;
+				if (s._2ab)
+					stateInfo._2ab=true;
+				if (s._2om)
+					stateInfo._2om=true;
 				stateInfo.startPos=s.startStem;
 				stateInfo.endPos=s.finishStem;
 				stateInfo.currentPunctuationInfo.reset();
@@ -1949,3 +1954,4 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 	s.segment(input_str,prg);
 	return 0;
 }
+#endif

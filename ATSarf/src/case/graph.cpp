@@ -232,7 +232,7 @@ int mergeGraphs(QString fileName1,QString fileName2,ATMProgressIFC * prg) {
 	graph1->mergeWith(graph2);
 	delete graph2;
 #if 1
-	QFile file("graphMerged.dat");
+	QFile file(fileName1.remove(".por")+"Merged.por");
 	if (!file.open(QIODevice::ReadWrite))
 		return -1;
 	QDataStream fileStream(&file);

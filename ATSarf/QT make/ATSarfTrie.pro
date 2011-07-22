@@ -111,7 +111,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/narratordetector.cpp \
     ../src/case/hadithCommon.cpp \
     ../src/case/narratorHash.cpp \
-    ../src/case/biographies.cpp
+    ../src/case/biographies.cpp \
+    ../src/case/hadithRefactored.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
@@ -119,14 +120,14 @@ LIBS += -L$$TOP/datrie/datrie/.libs/ \
 CONFIG += qt
 CONFIG += debug_and_release
 
- #-Q suppresses the call graph data
- #QMAKE_CFLAGS += -pg
- #QMAKE_CXXFLAGS += -pg
- #QMAKE_LFLAGS += -pg
- #QMAKE_CFLAGS += -O3
- #QMAKE_CXXFLAGS += -O3
- #QMAKE_LFLAGS += -O3
- #debug
+# -Q suppresses the call graph data
+# QMAKE_CFLAGS += -pg
+# QMAKE_CXXFLAGS += -pg
+# QMAKE_LFLAGS += -pg
+# QMAKE_CFLAGS += -O3
+# QMAKE_CXXFLAGS += -O3
+# QMAKE_LFLAGS += -O3
+# debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui
 OTHER_FILES += 

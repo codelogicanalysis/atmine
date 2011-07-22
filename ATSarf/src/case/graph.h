@@ -1485,7 +1485,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	NarratorGraph *graph=new NarratorGraph(chains,prg);
 	if (chains.size()>0)
 		graph->setFileName(chains[0]->hadith_text,fileName);
-	QFile file("graph.dat");
+	QFile file(fileName.remove(".txt")+".por");
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
 		return -1;
