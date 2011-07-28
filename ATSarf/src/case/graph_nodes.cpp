@@ -9,7 +9,12 @@ NULLNarratorNodeIfc nullNarratorNodeIfc;
 NULLGraphNarratorNode nullGraphNarratorNode;
 ChainsContainer chains;
 NodeAddress nullNodeAddress((NarratorNodeIfc &)nullNarratorNodeIfc,(ChainNarratorNode &)nullChainNarratorNode);
-ChainNodeIterator ChainNodeIterator::null(NULL,-1,-1);
+#ifdef ITERATORS_SEPERATED
+ChainNodeIterator ChainNodeIterator::null(NULL);
+FilledNodeIterator FilledNodeIterator::null(NULL);
+#else
+NodeIterator NodeIterator::null(NULL);
+#endif
 
 NarratorNodeIfc::NarratorNodeIfc(NarratorGraph & g)
 	: id(g.nodesCount){
@@ -18,8 +23,36 @@ NarratorNodeIfc::NarratorNodeIfc(NarratorGraph & g)
 }
 
 
-ChainNodeIterator NarratorNodeIfc::begin() {
-	return ChainNodeIterator(this,0,0);
+NodeIterator NarratorNodeIfc::begin() {
+	assert(!isNull());
+	return NodeIterator(this);
+}
+
+NodeIterator NarratorNodeIfc::childrenBegin() {
+	assert(!isNull());
+	return NodeIterator(this);
+}
+
+NodeIterator NarratorNodeIfc::parentsBegin() {
+	assert(!isNull());
+	return NodeIterator(this);
+}
+
+NodeIterator GraphNarratorNode::childrenBegin() {
+	assert(!isNull());
+	if (children.isEmpty()) {
+		return NodeIterator(this);
+	} else {
+		return NodeIterator(this,true);
+	}
+}
+NodeIterator GraphNarratorNode::parentsBegin() {
+	assert(!isNull());
+	if (parents.isEmpty()) {
+		return NodeIterator(this);
+	} else {
+		return NodeIterator(this,false);
+	}
 }
 
 void NarratorNodeIfc::BFS_traverse(GraphVisitorController & visitor, int maxLevels,int direction) {
@@ -160,6 +193,17 @@ void ChainNarratorNode::deserializeHelper(QDataStream &streamIn,NarratorGraph & 
 	chainContext.set(index,chainNum);
 }
 
+void GraphNarratorNode::serializeCache(QDataStream &chainOut, NarratorGraph & graph,const NodeList & list) const {
+	int size=list.size();
+	chainOut<<size;
+	for (int i=0;i<size;i++) {
+		NarratorNodeIfc & n=(*list[i]);
+		int nInt=graph.getSerializationNodeEquivalent(&n);
+		assert(nInt>0); //not null
+		chainOut<<nInt;
+	}
+}
+
 void GraphNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
 	int size=groupList.size();
 	chainOut<<size;
@@ -171,9 +215,29 @@ void GraphNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & g
 		c.serialize(chainOut,graph);
 	}
 
+	//serializeCache(chainOut,graph,parents);
+	//serializeCache(chainOut,graph,children);
 	chainOut<<savedRank;
 
 }
+
+void GraphNarratorNode::deserializeCache(QDataStream &chainIn,NarratorGraph & graph,NodeList & list) {
+	bool allAvaialble=false;
+	int size,nInt;
+	chainIn >>size;
+	for (int i=0;i<size;i++) {
+		chainIn>>nInt;
+		assert(nInt>0); //not null
+		NarratorNodeIfc * n=graph.getDeserializationIntEquivalent(nInt);
+		if(n==NULL)
+			allAvaialble=true;
+		if (allAvaialble) //all avialable till now (might be in future false)
+			list.append(n);
+	}
+	if (!allAvaialble)
+		list.clear();
+}
+
 void GraphNarratorNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
 	groupList.clear();
 	int size,cInt;
@@ -190,6 +254,8 @@ void GraphNarratorNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & g
 		g->setGraphNode(this);
 	}
 
+	//deserializeCache(chainIn,graph,parents);
+	//deserializeCache(chainIn,graph,children);
 	chainIn>>savedRank;
 
 }
@@ -255,6 +321,13 @@ ChainNarratorNode & ChainNarratorNode::getChainNodeInChain(int chain_num) 	{
 		return (ChainNarratorNode &)nullChainNarratorNode;
 }
 
+bool ChainNarratorNode::isActualNode() const {
+	//assert(group==NULL && group->graphNode!=NULL);
+	if (group==NULL || group->graphNode==NULL) //TODO: check how such nodes are created, must not be there
+		return true;
+	return (group->graphNode->isChainNode());
+}
+
 class OneDegreeVisitor: public NodeVisitor {
 private:
 	NarratorNodeIfc * node;
@@ -263,7 +336,9 @@ public:
 	OneDegreeVisitor(QList<NarratorNodeIfc *> & aL,NarratorNodeIfc * node):list(aL) {
 		this->node=node;
 	}
-	void initialize() {}
+	void initialize() {
+		assert(list.isEmpty());
+	}
 	void visit(NarratorNodeIfc & n) {
 		if (&n!=node)
 			list.append(&n);
@@ -278,7 +353,8 @@ bool GraphNarratorNode::fillChildren() {
 	if (children.size()!=0)
 		return true;
 	OneDegreeVisitor v(children,this);
-	GraphVisitorController c(&v,NULL,true,true,false);
+	GraphVisitorController c(&v,NULL,false,false);
+	c.disableFillChildren=true;
 	BFS_traverse(c,1,1);
 	return false;
 }
@@ -287,7 +363,8 @@ bool GraphNarratorNode::fillParents() {
 	if (parents.size()!=0)
 		return true;
 	OneDegreeVisitor v(parents,this);
-	GraphVisitorController c(&v,NULL,true,true,false);
+	GraphVisitorController c(&v,NULL,false,false);
+	c.disableFillChildren=true;
 	BFS_traverse(c,1,-1);
 	return false;
 }

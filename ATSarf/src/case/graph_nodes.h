@@ -27,7 +27,7 @@ class GroupNode;
 class NULLGraphNarratorNode;
 class NULLNarratorNodeIfc;
 class NULLChainNarratorNode;
-class ChainNodeIterator;
+class NodeIterator;
 class GraphNodeItem;
 class NarratorGraph;
 
@@ -72,7 +72,7 @@ protected:
 	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) =0;
 
 
-	friend class ChainNodeIterator;
+	friend class NodeIterator;
 	virtual NarratorNodeIfc & getChild(int index1,int index2)=0;
 	virtual NarratorNodeIfc & getParent(int index1,int index2)=0;
 	virtual NarratorNodeIfc & getChild(const QPair<int,int> & p){
@@ -91,7 +91,9 @@ public:
 	virtual int getNumParents() const {return size();}
 
 	virtual GraphNodeItem & operator [](int index)=0;
-	virtual ChainNodeIterator begin();
+	NodeIterator begin();
+	virtual NodeIterator childrenBegin();
+	virtual NodeIterator parentsBegin();
 	void setId(unsigned int aId) { id = aId;}
 	unsigned int  getId() const {
 		if (this==NULL)
@@ -354,7 +356,7 @@ public:
 	virtual int getChainNum() const {return chainContext.getChainNum();}
 	virtual bool isNull() const {return false;}
 	virtual bool isChainNode() const{return true;}
-	virtual bool isActualNode() const { return group==NULL;	}
+	virtual bool isActualNode() const;
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num);
 	virtual GroupNode & getGroupNode() { return *group; }
 };
@@ -553,11 +555,15 @@ public:
 	typedef QList<NarratorNodeIfc *> NodeList;
 private:
 
+	void serializeCache(QDataStream &chainIn,NarratorGraph & graph,const NodeList & list) const;
+	void deserializeCache(QDataStream &chainIn,NarratorGraph & graph,NodeList & list);
+
+	friend class GraphVisitorController;
 	bool fillChildren();
 	bool fillParents();
 
 protected:
-	friend class FilledNodeIterator;
+	friend class NodeIterator;
 	NodeList parents,children;
 
 	friend class NarratorGraph;
@@ -640,6 +646,8 @@ public:
 		groupList.append(&group);
 		group.setGraphNode(this);
 	}
+	virtual NodeIterator childrenBegin();
+	virtual NodeIterator parentsBegin();
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return *this;}
 	virtual int size() const{ return groupList.size(); }
 	virtual int getNumChildren() const { //may result in a problem if called while 'children' is being filled
@@ -800,7 +808,7 @@ public:
 	bool isVisited(unsigned int ) const{ assert(false); }
 	void resetColor() { assert(false); }
 };
-
+#ifdef ITERATORS_SEPERATED
 class NodeIterator {
 protected:
 	NarratorNodeIfc * node;
@@ -831,7 +839,6 @@ public:
 	virtual bool isNull() const{
 		return false;
 	}
-
 };
 
 class ChainNodeIterator: public NodeIterator {
@@ -840,7 +847,7 @@ private:
 
 private:
 	friend class NarratorNodeIfc;
-	ChainNodeIterator(NarratorNodeIfc * n,int index1,int index2):NodeIterator(n,index1),j(index2) { }
+	ChainNodeIterator(NarratorNodeIfc * n):NodeIterator(n,0),j(0) { }
 public:
 	NodeIterator & operator++() {
 		if(i>=node->size())
@@ -883,7 +890,6 @@ public:
 	bool operator == ( const ChainNodeIterator & rhs) const {
 		return (NodeIterator::operator ==(rhs) && j==rhs.j);
 	}
-
 	bool isNull() const{
 	#if 0
 		return this==&null;
@@ -941,7 +947,6 @@ public:
 		assert(false);
 		return nullNarratorNodeIfc;
 	}
-
 	NarratorNodeIfc & getParent() {
 		assert(false);
 		return nullNarratorNodeIfc;
@@ -960,7 +965,6 @@ public:
 	bool operator == ( const FilledNodeIterator & rhs) const {
 		return (NodeIterator::operator ==(rhs) && list==rhs.list);
 	}
-
 	bool isNull() const{
 	#if 0
 		return this==&null;
@@ -971,6 +975,118 @@ public:
 
 	static FilledNodeIterator null;
 };
+#else
+class NodeIterator {
+protected:
+	typedef enum{CHILDREN,PARENTS,CHAINS,UNDEFINED_TYPE} Type;
+	NarratorNodeIfc * node;
+	int i:30;
+	Type type:2;
+	union {
+		int j;
+		GraphNarratorNode::NodeList * list;
+	};
+private:
+	GraphNarratorNode * gn() {return dynamic_cast<GraphNarratorNode *>(node);}
+
+	friend class NarratorNodeIfc;
+	NodeIterator(NarratorNodeIfc * n):node(n) { //unfilled type
+		if (n!=NULL) {
+			//assert(!n->isGroupNode()); no problem in being group node, it will return its chain nodes
+			i=0;
+			j=0;
+			type=CHAINS;
+		} else {
+			i=-1;
+			j=-1;
+			type=UNDEFINED_TYPE;
+		}
+	}
+
+	friend class GraphNarratorNode;
+	NodeIterator(NarratorNodeIfc * n,bool child):node(n) { //(Parent or Child) and GraphNode
+														   //if it is chainNode, we call first constructor
+		assert(n->isGraphNode());
+		type=(child ? CHILDREN : PARENTS);
+		i=0;
+		list=&(child? gn()->children: gn()->parents);
+	}
+
+public:
+	NodeIterator & operator++() {
+		if (type==CHAINS) {
+			if(i>=node->size())
+				return *this;
+			j++;
+			if (j==(*node)[i].size()) {
+				j=0;
+				i++;
+			}
+			return *this;
+		} else {
+			i++;
+			return *this;
+		}
+	}
+	bool isFinished() const {
+		if (type==CHAINS)
+			return (i>= node->size());
+		else
+			return (i>= list->size());
+	}
+	NarratorNodeIfc & operator * () { //if we are using a chain iterator means get chain else means get parent or child
+		if (type==CHAINS)
+			return (ChainNarratorNode &)(*node)[i][j];
+		else
+			return *(*list)[i];
+	}
+	NarratorNodeIfc * getNode() {
+		return &operator *();
+	}
+	NarratorNodeIfc & getChild() {
+		if (type==CHAINS)
+			return node->getChild(i,j);
+		assert (type==CHILDREN);
+		return operator *();
+	}
+	NarratorNodeIfc & getParent() {
+		if (type==CHAINS)
+			return node->getParent(i,j);
+		assert (type==PARENTS);
+		return operator *();
+	}
+	int getGroupIndex() const {
+		assert(type==CHAINS);
+		return i;
+	}
+	int getChainIndex() const {
+		assert(type==CHAINS);
+		return j;
+	}
+	int getIndex() const {
+		assert(type!=CHAINS);
+		return i;
+	}
+	NarratorNodeIfc * getBaseNode() const {
+		return node;
+	}
+	bool operator ==( const NodeIterator & rhs) const {
+		return (node==rhs.node && i==rhs.i && j==rhs.j && type==rhs.type); //if we are using list instead of list, no problem also (will be just compared)
+	}
+	bool isNull() const{
+	#if 0
+		return this==&null;
+	#else
+		return operator ==(null);
+	#endif
+	}
+	bool isChainIterator() const {
+		return type==CHAINS;
+	}
+	static NodeIterator null;
+};
+
+#endif
 
 
 #endif // GRAPH_STRUCTURE_H

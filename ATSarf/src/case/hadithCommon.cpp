@@ -340,8 +340,10 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 				break;
 			case NAME_PRIM:
 				if (currentStructure==NARRATOR_CONNECTOR) {
-					addNarrator(structures->narrator);
-					structures->narrator=NULL;
+					if (structures->narrator!=NULL) {
+						addNarrator(structures->narrator);
+						structures->narrator=NULL;
+					}
 				}
 				break;
 			default:
@@ -568,7 +570,7 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, stateData & cur
 				stateInfo.nrcIsPunctuation=true;
 			#endif
 
-				fillStructure(stateInfo,NAME_CONNECTOR,structures,true);
+				fillStructure(stateInfo,NARRATOR_CONNECTOR,structures,true);
 
 				if (ending_punc) {
 					stateInfo.nextState=TEXT_S;

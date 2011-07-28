@@ -225,7 +225,7 @@ public slots:
 	#endif
 	}
 	void browse_clicked() {
-		QString fileName=getFileName(browseFileDlg);
+		QString fileName=getFileName(&browseFileDlg);
 		if (!fileName.isEmpty())
 			input->setText(fileName);
 	}

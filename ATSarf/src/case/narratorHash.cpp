@@ -24,10 +24,12 @@ void NarratorHash::deserialize(QDataStream & streamIn) {
 				>>value
 				>>total;
 		NarratorNodeIfc * n=graph->getDeserializationIntEquivalent(nInt);
+	#if 1
 		if (n==NULL) {
 			qDebug()<<key;
-			return;
+			continue;
 		}
+	#endif
 		assert(n!=NULL);
 		assert(n->isGroupNode());
 		hashTable.insert(key,HashValue((GroupNode*)n,value,total));

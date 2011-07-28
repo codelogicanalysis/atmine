@@ -47,6 +47,23 @@ GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGra
 		graph->colorGuard.use(finishIndex);
 	}
 }
+void GraphVisitorController::construct(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
+{
+	assert(!(!keep_track_of_edges && !keep_track_of_nodes)); //i dont want both to be false at same time=> no exponential traversal
+	assert(!(keep_track_of_edges && !merged_edges_as_one && graph==NULL));//bc we cannot clear them after traversal if so
+	graphBuilt=(graph!=NULL?graph->isBuilt():true); //we are assuming if we are doing a traversal without a graph then graph has been built
+	firstCall=true;
+	disableFillChildren=false;
+	this->visitor=visitor;
+	assert(visitor!=NULL);
+	this->visitor->controller=this;
+	this->keep_track_of_edges=keep_track_of_edges || merged_edges_as_one;//if merged_edges_as_one is needed we must keep_track_of_edges
+	this->keep_track_of_nodes=keep_track_of_nodes;
+	this->merged_edges_as_one=merged_edges_as_one;
+	this->graph=graph;
+	init();
+}
+
 void GraphVisitorController::init()
 {
 	if (firstCall) {
@@ -66,9 +83,10 @@ void GraphVisitorController::init()
 		edgeMap.clear();
 	parentStack.clear();
 }
-void GraphVisitorController::initialize()
+void GraphVisitorController::initialize(int direction)
 {
 	init();
+	this->direction=direction;
 	visitor->initialize();
 }
 void GraphVisitorController::finish()
@@ -208,7 +226,7 @@ int mergeGraphs(QString fileName1,QString fileName2,ATMProgressIFC * prg) {
 
 	graph1->mergeWith(graph2);
 	delete graph2;
-#if 1
+#if 0
 	QFile file(fileName1.remove(".por")+"Merged.por");
 	if (!file.open(QIODevice::ReadWrite))
 		return -1;
