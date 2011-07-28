@@ -697,6 +697,8 @@ the POR graph.
 
 \subsection{Graph merge Algorithm}
 
+(modify according to hash)
+
 \begin{table}[tb]
 %\centering
 %\resizebox{.9\columnwidth}{!}{
@@ -1032,6 +1034,12 @@ This measure is equivalent to the concept of recall; nonetheless, precision
 in this context is not applicable since by default the input is required 
 to represent correctly extracted narrations.
 
+\subsubsection{On Test-suite Of iTree}
+
+(report on the 90 hadith used in paper of iTree)
+
+\subsubsection{On More Representative Test-suite}
+
 In order to evaluate the approaches used by iTree and NaGEMA without bias,
 we augmented the list of names used by 
 iTree with those available in the lexicon of Sarf.
@@ -1074,6 +1082,10 @@ indicative phrase.
 
 Narrator boundary accuracy showed similar results between iTree and 
 NaGEMA since we augmented iTree with the names from the lexicon of Sarf. 
+
+\subsection{On Unorganized hadith books}
+
+(report results on such hadith books)
 
 \subsection{Effect of punctuation and learning}
 
@@ -1139,10 +1151,20 @@ In particular, sometimes the presence of a specific narrator in the chain can re
 hadith as not trustworthy since the narrator is not considered credible.
 %That's why it is important not to lose any of the narrators that appear in the sanad. 
 
-
 \subsection{Distance metric}
 Finally, the distance metric had 0.993 precision,
 0.999 recall and an F-score of 0.997.
+
+(explain why successful on this problem)
+
+(show detailed statistics and compare against that of eNarrator)
+
+\subsection{POR Correctness}
+
+(report recall and precision of nodes missing or those added, bc edges cannot be mistaken other than that)
+
+(report recall and precision on the chainnodes per graphnode, that is all what retains to correctness resulting from algorithm)
+
 
 \section{Conclusion and future work}
 \label{sec:future}

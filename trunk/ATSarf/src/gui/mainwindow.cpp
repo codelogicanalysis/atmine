@@ -211,7 +211,7 @@ void MainWindow::on_fill_clicked()
 
 void MainWindow::on_cmd_browse_clicked()
 {
-	QString fileName=getFileName(browseFileDlg);
+	QString fileName=getFileName(&browseFileDlg);
 	if (!fileName.isEmpty())
 		m_ui->input->setText(fileName);
 }
