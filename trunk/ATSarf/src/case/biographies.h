@@ -187,7 +187,7 @@ public slots:
 		setCurrentAction("Display Graph");
 		report(0);
 		DisplayNodeVisitorColoredBiography visitor(num);
-		GraphVisitorController c(&visitor,graph);
+		GraphVisitorController c(&visitor,graph,true,true);
 		graph->DFS_traverse(c);
 		setCurrentAction("Completed");
 		report(100);
@@ -213,7 +213,7 @@ public slots:
 		}
 		report(0);
 		DisplayNodeVisitorColoredNarrator visitor(map);
-		GraphVisitorController c(&visitor,graph);
+		GraphVisitorController c(&visitor,graph,true,true);
 		graph->DFS_traverse(c);
 		setCurrentAction("Completed");
 		report(100);
@@ -241,7 +241,7 @@ private:
 	void displayUncoloredGraph(){
 	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
 		DisplayNodeVisitor visitor;
-		GraphVisitorController c(&visitor,graph);
+		GraphVisitorController c(&visitor,graph,true,true);
 		graph->DFS_traverse(c);
 		try{
 			system("dot -Tsvg graph.dot -o graph.svg");
@@ -256,7 +256,7 @@ private:
 		int biographyIndex;
 	public:
 		ColorBiographiesAction(int biographyIndex) { this->biographyIndex=biographyIndex;}
-		virtual void action(const QString &, GraphNodeItem * node, double ) {
+		virtual void action(const QString &, GroupNode * node, double ) {
 			node->addBiographyIndex(biographyIndex);
 		}
 	};
@@ -267,7 +267,7 @@ private:
 		DetectedNodesMap & map;
 	public:
 		ColorNarratorsAction(DetectedNodesMap & m):map(m) { }
-		virtual void action(const QString & s, GraphNodeItem * node, double v) {
+		virtual void action(const QString & s, GroupNode * node, double v) {
 			NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
 			DetectedNodesMap::iterator i = map.find(n);
 			#ifdef NARRATORHASH_DEBUG

@@ -160,8 +160,8 @@ inline bool possessivesCompare(const NameConnectorPrim * n1,const NameConnectorP
 
 class Narrator : public ChainPrim{
 public:
-	typedef QVector<NarratorPrim *> NamePrimList;
-	typedef QVector<NamePrimList> NamePrimHierarchy;
+	typedef QVector<NarratorPrim *> NarratorPrimList;
+	typedef QVector<NarratorPrimList> NarratorPrimHierarchy;
 	typedef QVector<NameConnectorPrim *> PossessiveList;
 public:
 	Narrator(QString * hadith_text);
@@ -199,9 +199,9 @@ public:
 
 	virtual double equals(const Narrator & rhs) const;
 
-	void preProcessForEquality(NamePrimHierarchy & names,PossessiveList & possessives) const{
+	void preProcessForEquality(NarratorPrimHierarchy & names,PossessiveList & possessives) const{
 		int j=0; //index of names entry defined by bin
-		names.append(NamePrimList());
+		names.append(NarratorPrimList());
 		//qDebug()<< names.size();
 		for (int i=0;i<m_narrator.count();i++) {
 			if (m_narrator[i]->getString().isEmpty())
@@ -213,7 +213,7 @@ public:
 				if (c->isPossessive()) {
 					possessives.append(c);
 				} else if (c->isIbn()){
-					names.append(NamePrimList());
+					names.append(NarratorPrimList());
 					//qDebug()<<"\t"<<c->getString();
 					j++;
 				} else if (c->isFamilyConnector()) {

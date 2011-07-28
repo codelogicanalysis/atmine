@@ -82,11 +82,14 @@ protected:
 		return getParent(p.first,p.second);
 	}
 
-	NarratorNodeIfc() {resetColor();}
+	NarratorNodeIfc() {resetColor();id=-1;}
 public:
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode()=0; //if used on a graphNode returns null
 
 	virtual int size() const=0;
+	virtual int getNumChildren() const {return size();}
+	virtual int getNumParents() const {return size();}
+
 	virtual GraphNodeItem & operator [](int index)=0;
 	virtual ChainNodeIterator begin();
 	void setId(unsigned int aId) { id = aId;}
@@ -116,11 +119,13 @@ public:
 	virtual bool isVisited(unsigned int bit) const {return (color & (1 << bit)) != 0; }
 
 	void addBiographyIndex(int i) {
-		NarratorNodeIfc & n=getCorrespondingNarratorNode();
-		if (!n.indicies.contains(i)){
-			n.indicies.append(i);
-			/*qDebug()<<(long)this<<"-"<<(long)&n
-					<<"<"<<n.CanonicalName()<<">:"<<i;*/
+		NarratorNodeIfc * n=&getCorrespondingNarratorNode();
+		if (n==NULL)
+			n=(NarratorNodeIfc*)&operator [](0);
+		if (!n->indicies.contains(i)){
+			n->indicies.append(i);
+			/*qDebug()<<(long)this<<"-"<<(long)n
+					<<"<"<<n->CanonicalName()<<">:"<<i;*/
 		}
 	}
 	bool hasBiographyIndex(int i) {
@@ -141,6 +146,10 @@ public:
 		}
 	}
 	static NarratorNodeIfc * deserialize(QDataStream &chainIn,NarratorGraph & graph) ;
+
+	void BFS_traverse(GraphVisitorController & visitor, int maxLevels=-1,int direction=1);
+
+
 };
 
 class NULLNarratorNodeIfc: public NarratorNodeIfc {
@@ -178,8 +187,13 @@ class NULLNarratorNodeIfc: public NarratorNodeIfc {
 
 class GraphNodeItem: public NarratorNodeIfc { //abstract class
 protected:
+	QString key;
 	GraphNodeItem(){}
 public:
+	QString getKey() {
+		assert(!isNull());
+		return key;
+	}
 	GraphNodeItem(NarratorGraph&g):NarratorNodeIfc (g){}
 };
 
@@ -266,6 +280,7 @@ public:
 		previous=next=NULL;
 		group=NULL;
 		narrator=n;
+		key=n->getKey();
 		savedRank=-1;
 		group=NULL;
 		chainContext.set(index, chain_num);
@@ -341,6 +356,7 @@ public:
 	virtual bool isChainNode() const{return true;}
 	virtual bool isActualNode() const { return group==NULL;	}
 	virtual ChainNarratorNode & getChainNodeInChain(int chain_num);
+	virtual GroupNode & getGroupNode() { return *group; }
 };
 
 class NULLChainNarratorNode: public ChainNarratorNode
@@ -384,10 +400,13 @@ public:
 };
 
 class GroupNode:public GraphNodeItem {
+public:
+	typedef Triplet<QString,int,int> KeyInfo; //(key, value,total)
+	typedef QList<KeyInfo> KeyList;
 private:
 	GraphNarratorNode * graphNode;
-	QString key;
 	QList<ChainNarratorNode *> list;
+	KeyList allKeys;
 private:
 	friend class GraphNarratorNode;
 	friend class ChainNarratorNode;
@@ -395,25 +414,20 @@ private:
 	void setRank(int rank);
 protected:
 	friend class NarratorHash;
+	friend class NarratorGraph;
 	GroupNode():GraphNodeItem() {
 		graphNode=NULL;
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key)
 		:GraphNodeItem(g),graphNode(gNode) {
-		assert(gNode==NULL || ((NarratorNodeIfc*)gNode)->isGraphNode());
-		if (gNode!=NULL && ((NarratorNodeIfc*)gNode)->getId()==1173)
-			qDebug()<<"check";
 		list.append(cNode);
 		this->key=key;
 		cNode->setCorrespondingNarratorNodeGroup(this);
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode)
 		:GraphNodeItem(g),graphNode(gNode) {
-		assert(gNode==NULL || ((NarratorNodeIfc*)gNode)->isGraphNode());
-		if (gNode!=NULL && ((NarratorNodeIfc*)gNode)->getId()==1173)
-			qDebug()<<"check";
 		list.append(cNode);
-		this->key=cNode->getNarrator().getKey();
+		this->key=cNode->getKey();//cNode->getNarrator().getKey();
 		cNode->setCorrespondingNarratorNodeGroup(this);
 	}
 
@@ -432,6 +446,7 @@ protected:
 	}
 
 public:
+	const KeyList & getKeyList() const { return allKeys; }
 	ChainNarratorNode & operator [](int index) {
 		assert(index>=0 && index<size());//check redundant will be done inside [] for QList
 		return *list[index];
@@ -510,9 +525,7 @@ public:
 		return smallest_rank;
 	}
 	void setGraphNode(GraphNarratorNode * node) {
-		assert(node==NULL || ((NarratorNodeIfc*)node)->isGraphNode());
-		if (node!=NULL && ((NarratorNodeIfc*)node)->getId()==1173)
-			qDebug()<<"check";
+		//assert(node==NULL || !((NarratorNodeIfc*)node)->isGroupNode());
 		this->graphNode=node;
 	}
 	virtual bool isNull() const{ return false;}
@@ -536,7 +549,18 @@ public:
 
 class GraphNarratorNode: public NarratorNodeIfc
 {
+public:
+	typedef QList<NarratorNodeIfc *> NodeList;
+private:
+
+	bool fillChildren();
+	bool fillParents();
+
 protected:
+	friend class FilledNodeIterator;
+	NodeList parents,children;
+
+	friend class NarratorGraph;
 	QList<GroupNode *>  groupList;
 	int savedRank;
 	virtual void setRank(int rank){
@@ -582,7 +606,7 @@ public:
 	GraphNarratorNode(NarratorGraph &graph,GroupNode & g)
 		:NarratorNodeIfc(graph)
 	{
-		assert(g.graphNode==NULL);
+		assert(g.graphNode==NULL || g.graphNode->isChainNode());
 		assert(g.size()>1); //not allowed to have just one chain node
 		groupList.append(&g);
 		g.setGraphNode(this);
@@ -591,8 +615,8 @@ public:
 	GraphNarratorNode(NarratorGraph &graph,GroupNode & g1,GroupNode & g2)
 		:NarratorNodeIfc(graph)
 	{
-		assert(g1.graphNode==NULL);
-		assert(g2.graphNode==NULL);
+		assert(g1.graphNode==NULL || g1.graphNode->isChainNode());
+		assert(g2.graphNode==NULL || g2.graphNode->isChainNode());
 		assert(&g1!=&g2); //make sure these are not just the same node
 		groupList.append(&g1);
 		groupList.append(&g2);
@@ -601,7 +625,7 @@ public:
 		savedRank=-1;
 	}
 	virtual void addChainNode(NarratorGraph *g, ChainNarratorNode & nar) { //we dont check for duplicates here
-		QString key=nar.getNarrator().getKey();
+		QString key=nar.getKey();
 		for (int i=0;i<size();i++) {
 			GroupNode & group=(*this)[i];
 			if (group.getKey()==key) {
@@ -612,8 +636,24 @@ public:
 		GroupNode * newGoup=new GroupNode(*g,this,&nar,key);
 		groupList.append(newGoup);
 	}
+	void addGroupNode(GroupNode & group) { //we dont check for duplicates here
+		groupList.append(&group);
+		group.setGraphNode(this);
+	}
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return *this;}
 	virtual int size() const{ return groupList.size(); }
+	virtual int getNumChildren() const { //may result in a problem if called while 'children' is being filled
+		if (children.isEmpty())
+			return size();
+		else
+			return children.size();
+	}
+	virtual int getNumParents() const {
+		if (parents.isEmpty())
+			return size();
+		else
+			return parents.size();
+	}
 	virtual NarratorNodeIfc & getChild(int index1,int index2)
 	{
 		assert(index1>=0 && index1<size());//check redundant will be done inside [] for QList
@@ -761,20 +801,50 @@ public:
 	void resetColor() { assert(false); }
 };
 
-class ChainNodeIterator {
-private:
+class NodeIterator {
+protected:
 	NarratorNodeIfc * node;
-	int i,j;
-private:
+	int i;
+	NodeIterator(NarratorNodeIfc * aNode, int index):node(aNode),i(index){}
+public:
+	virtual NodeIterator & operator++()=0;
+	virtual bool isFinished() const {
+		return false;
+	}
+	virtual NarratorNodeIfc & operator * ()=0;
+	virtual NarratorNodeIfc * getChainNode() {
+		return NULL;
+	}
+	virtual NarratorNodeIfc & getChild() =0;
+	virtual NarratorNodeIfc & getParent() =0;
+	virtual int getGroupIndex() const =0;
+	virtual int getChainIndex() const =0;
+	virtual int getIndex() const {
+		return i;
+	}
+	NarratorNodeIfc * getBaseNode() const {
+		return node;
+	}
+	virtual bool operator ==( const NodeIterator & rhs) const {
+		return (node==rhs.node && i==rhs.i);
+	}
+	virtual bool isNull() const{
+		return false;
+	}
 
+};
+
+class ChainNodeIterator: public NodeIterator {
+private:
+	int j;
+
+private:
 	friend class NarratorNodeIfc;
-	ChainNodeIterator(NarratorNodeIfc * n,int index1,int index2):node(n),i(index1),j(index2) {}
+	ChainNodeIterator(NarratorNodeIfc * n,int index1,int index2):NodeIterator(n,index1),j(index2) { }
 public:
-	typedef QPair<int,int> IndiciesPair;
-public:
-	ChainNodeIterator & operator++() {
+	NodeIterator & operator++() {
 		if(i>=node->size())
-			return *this; //force reaching end to be last iteration
+			return *this;
 		j++;
 		if (j==(*node)[i].size()) {
 			j=0;
@@ -797,20 +867,21 @@ public:
 	NarratorNodeIfc & getParent() {
 		return node->getParent(i,j);
 	}
+	NarratorNodeIfc & getNode() {
+		assert(false);
+		return nullNarratorNodeIfc;
+	}
 	int getGroupIndex() const {
 		return i;
 	}
 	int getChainIndex() const {
 		return j;
 	}
-	NarratorNodeIfc * getBaseNode() const {
-		return node;
+	int getIndex() const {
+		assert(false);
 	}
-	IndiciesPair getIndicies() const {
-		return IndiciesPair(i,j);
-	}
-	bool operator ==( const ChainNodeIterator & rhs) const {
-		return (node==rhs.node && i==rhs.i && j==rhs.j);
+	bool operator == ( const ChainNodeIterator & rhs) const {
+		return (NodeIterator::operator ==(rhs) && j==rhs.j);
 	}
 
 	bool isNull() const{
@@ -822,6 +893,83 @@ public:
 	}
 
 	static ChainNodeIterator null;
+};
+
+class FilledNodeIterator: public NodeIterator {
+private:
+	GraphNarratorNode::NodeList * list;
+
+private:
+	GraphNarratorNode * gn() {return dynamic_cast<GraphNarratorNode *>(node);}
+	friend class NarratorNodeIfc;
+	FilledNodeIterator(NarratorNodeIfc * n,bool child=true):NodeIterator(n,0) {
+		assert(!n->isGroupNode());
+		if (n->isGraphNode()) {
+			list=&(child? gn()->children: gn()->parents);
+		} else
+			list=NULL;
+
+	}
+public:
+	NodeIterator & operator++() {
+		i++;
+		return *this;
+	}
+	bool isFinished() const {
+		if (node->isGraphNode())
+			return (i>= list->size());
+		else
+			return (i>0);
+	}
+	ChainNarratorNode & operator * () {
+		assert(false);
+		return nullChainNarratorNode;
+	}
+	ChainNarratorNode * getChainNode() {
+		assert(false);
+		return &nullChainNarratorNode;
+	}
+	NarratorNodeIfc & getNode() {
+		if (list!=NULL)
+			return *(*list)[i];
+		else {
+			assert(i==0);
+			return (*node)[i];
+		}
+	}
+	NarratorNodeIfc & getChild() {
+		assert(false);
+		return nullNarratorNodeIfc;
+	}
+
+	NarratorNodeIfc & getParent() {
+		assert(false);
+		return nullNarratorNodeIfc;
+	}
+	int getGroupIndex() const {
+		assert(false);
+		return -1;
+	}
+	int getChainIndex() const {
+		assert(false);
+		return -1;
+	}
+	int getIndex() const {
+		return i;
+	}
+	bool operator == ( const FilledNodeIterator & rhs) const {
+		return (NodeIterator::operator ==(rhs) && list==rhs.list);
+	}
+
+	bool isNull() const{
+	#if 0
+		return this==&null;
+	#else
+		return operator ==(null);
+	#endif
+	}
+
+	static FilledNodeIterator null;
 };
 
 

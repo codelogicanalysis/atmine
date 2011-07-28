@@ -29,7 +29,7 @@ void NarratorHash::deserialize(QDataStream & streamIn) {
 			return;
 		}
 		assert(n!=NULL);
-		assert(!n->isGraphNode());
-		hashTable.insert(key,HashValue((ChainNarratorNode*)n,value,total));
+		assert(n->isGroupNode());
+		hashTable.insert(key,HashValue((GroupNode*)n,value,total));
 	}
 }

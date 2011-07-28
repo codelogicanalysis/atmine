@@ -36,10 +36,10 @@ GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGra
 	this->finishIndex=finishIndex; //assumed already cleared
 	graph->colorGuard.use(finishIndex);
 }
-GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
+GraphVisitorController::GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges, bool merged_edges_as_one)
 {
-	construct(visitor,graph,keep_track_of_edges,keep_track_of_nodes,merged_edges_as_one);
-	if (keep_track_of_nodes)
+	construct(visitor,graph,keep_track_of_edges,true,merged_edges_as_one);
+	if (keep_track_of_nodes && graph!=NULL)
 	{
 		visitIndex=graph->colorGuard.getNextUnused();
 		graph->colorGuard.use(visitIndex);
@@ -52,10 +52,15 @@ void GraphVisitorController::init()
 	if (firstCall) {
 		firstCall=false;
 	} else {
-		graph->colorGuard.unUse(visitIndex); //to clear color bits
-		graph->colorGuard.unUse(finishIndex);
-		graph->colorGuard.use(visitIndex);
-		graph->colorGuard.use(finishIndex);
+		if (graph!=NULL) {
+			graph->colorGuard.unUse(visitIndex); //to clear color bits
+			graph->colorGuard.unUse(finishIndex);
+			graph->colorGuard.use(visitIndex);
+			graph->colorGuard.use(finishIndex);
+			visitedMap=NULL;
+		} else {
+			visitedMap=new ColorMap();
+		}
 	}
 	if (keep_track_of_edges)
 		edgeMap.clear();
@@ -68,41 +73,13 @@ void GraphVisitorController::initialize()
 }
 void GraphVisitorController::finish()
 {
-	graph->colorGuard.unUse(visitIndex);
-	graph->colorGuard.unUse(finishIndex);
+	if (graph!=NULL) {
+		graph->colorGuard.unUse(visitIndex);
+		graph->colorGuard.unUse(finishIndex);
+	} else {
+		delete visitedMap;
+	}
 	visitor->finish();
-}
-GraphNarratorNode * LoopBreakingVisitor::mergeNodes(GroupNode & g1,GroupNode & g2) {
-	NarratorNodeIfc * narr1=&g1.getCorrespondingNarratorNode(),
-					* narr2=&g2.getCorrespondingNarratorNode();
-	bool null1=(narr1==NULL),
-		 null2=(narr2==NULL);
-	if (null1 && null2) {
-		GraphNarratorNode * g=new GraphNarratorNode(*controller->getGraph(),g1,g2);
-		return g;
-	} else if (!null1 && null2) {
-		GraphNarratorNode * g=(GraphNarratorNode *)narr1;
-		g->groupList.append(&g2);
-		g2.setGraphNode(g);
-		return (GraphNarratorNode *)narr1;
-	} else if (null1 && !null2) {
-		GraphNarratorNode * g=(GraphNarratorNode *)narr2;
-		g->groupList.append(&g1);
-		g1.setGraphNode(g);
-		return (GraphNarratorNode *)narr2;
-	} else if (narr1!=narr2) {
-		GraphNarratorNode & g_node=*(GraphNarratorNode *)narr2;
-		GraphNarratorNode * dlt_g_node= (GraphNarratorNode *)narr1;
-		for (int i=0;i<dlt_g_node->size();i++) {
-			g_node.groupList.append(dlt_g_node->groupList[i]);
-			dlt_g_node->groupList[i]->setGraphNode(&g_node);
-		}
-		dlt_g_node->groupList.clear();
-		if (!toDelete.contains(dlt_g_node))
-			toDelete.append(dlt_g_node);
-		return &g_node;
-	} else
-		return (GraphNarratorNode *)narr1;
 }
 
 void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
@@ -141,7 +118,7 @@ void LoopBreakingVisitor::reMergeNodes(NarratorNodeIfc * n)
 			if (eq_val>threshold) {
 				NarratorNodeIfc * n1=&narrators[j]->getCorrespondingNarratorNode();
 				NarratorNodeIfc * n2=&narrators[k]->getCorrespondingNarratorNode();
-				NarratorNodeIfc * n_new=mergeNodes((*narrators[j]),(*narrators[k]));
+				NarratorNodeIfc * n_new=controller->getGraph()->mergeNodes((*narrators[j]),(*narrators[k]),&toDelete);
 				assert(n_new->isGraphNode());
 				if (n1!=n_new && n1!=NULL && new_nodes.contains(n1))
 					new_nodes.removeOne(n1);

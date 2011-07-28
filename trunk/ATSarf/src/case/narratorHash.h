@@ -15,47 +15,45 @@ class NarratorHash {
 public:
 	class FoundAction {
 	public:
-		virtual void action(const QString & searchKey, GraphNodeItem * node, double similarity) =0;
+		virtual void action(const QString & searchKey, GroupNode * node, double similarity) =0;
 	};
 
-	typedef Narrator::NamePrimList NamePrimList;
-	typedef Narrator::NamePrimHierarchy NamePrimHierarchy;
+	typedef Narrator::NarratorPrimList NarratorPrimList;
+	typedef Narrator::NarratorPrimHierarchy NarratorPrimHierarchy;
 	typedef Narrator::PossessiveList PossessiveList;
 
-	static QString getKey(const NamePrimHierarchy & hierarchy) {
-		QString key="";
-		int size=hierarchy.size();
-		for (int i=0;i<size;i++) {
-			int levelSize=hierarchy[i].size();
-			for (int j=0; j<levelSize;j++) {
-				key.append(hierarchy[i][j]->getString());
-				if (j!=levelSize-1)
-					key.append(" ");
-			}
-			if (i!=size-1)
-				key.append("-");
-		}
-		return key;
-	}
-	inline static QString getKey(const NamePrimHierarchy & hierarchy,const PossessiveList & possessives,int size, bool poss, bool skipFirst) {
+	inline static QString getKey(const NarratorPrimHierarchy & hierarchy,const PossessiveList & possessives,int size, bool poss, bool skipFirst) {
 		QString key="";
 		for (int i=0;i<size;i++) {
 			if (!skipFirst || i!=0) {
-				int levelSize=hierarchy[i].size();
+				const NarratorPrimList & list=hierarchy[i];
+				int levelSize=list.size();
 				for (int j=0; j<levelSize;j++) {
-					key.append(hierarchy[i][j]->getString());
+					NarratorPrim * prim=list[j];
+					if (!prim->isNamePrim()) {
+						NameConnectorPrim * connector=(NameConnectorPrim *)prim;
+						if (connector->isAB())
+							key.append("AB");
+						else if (connector->isOM())
+							key.append("OM");
+						else
+							key.append(connector->getString());
+					} else
+						key.append(prim->getString());
 					if (j!=levelSize-1)
 						key.append(" ");
 				}
 			}
 			if (i==size-1) {
 				if (poss) {
-					key.append(":");
-					int levelSize=possessives.size();
-					for (int j=0; j<levelSize;j++) {
-						key.append(possessives[j]->getString());
-						if (j!=levelSize-1)
-							key.append(" ");
+					int possSize=possessives.size();
+					if (possSize>0) {
+						key.append(":");
+						for (int j=0; j<possSize;j++) {
+							key.append(possessives[j]->getString());
+							if (j!=possSize-1)
+								key.append(" ");
+						}
 					}
 				}
 			} else {
@@ -68,12 +66,12 @@ public:
 private:
 	class HashValue {
 	public:
-		HashValue(GraphNodeItem * node, int value, int total) {
+		HashValue(GroupNode * node, int value, int total) {
 			this->node=node;
 			this->value=value;
 			this->total=total;
 		}
-		GraphNodeItem * node;
+		GroupNode * node;
 		int value,total;
 	};
 
@@ -84,6 +82,7 @@ private:
 
 	class Visitor {
 	public:
+		virtual void initialize(GraphNodeItem * ) {	}
 		virtual void visit(const QString & s, GraphNodeItem * c, int value, int total)=0;
 	};
 	class InsertVisitor: public Visitor {
@@ -91,8 +90,17 @@ private:
 		NarratorHash * hash;
 	public:
 		InsertVisitor(NarratorHash * hash) {this->hash=hash;}
+		void initialize(GraphNodeItem * node) {
+			GroupNode * n=dynamic_cast<GroupNode *>(node);
+			n->allKeys.clear();
+		}
 		void visit(const QString & s, GraphNodeItem * c, int value, int total){
-			hash->hashTable.insert(s,HashValue(c,value,total));
+			GroupNode * node=dynamic_cast<GroupNode *>(c);
+		#ifdef DEBUG_BUILDGRAPH
+			qDebug()<<"\t"<<s;//node->toString();
+		#endif
+			hash->hashTable.insert(s,HashValue(node,value,total));
+			node->allKeys.append(GroupNode::KeyInfo(s,value,total));
 		}
 	};
 	class FindOneVisitor: public Visitor {
@@ -153,7 +161,7 @@ private:
 		}
 	};
 
-	void generateAllPosibilities(GraphNodeItem * node, Visitor & v) {
+	void generateAllPosibilities(GraphNodeItem * node, Visitor & v) { //can be ChainNode only if we are searching, not if we are inserting
 	#if 0
 	#ifdef NARRATORHASH_DEBUG
 		qDebug()<<node->getNarrator().getString();
@@ -162,6 +170,18 @@ private:
 			   delta=hadithParameters.equality_delta;
 	#endif
 		assert(node->size()>0);
+		v.initialize(node);
+		if (node->isGroupNode()) { //if we are searching and isGroupNode, use its keys
+			GroupNode * n=(GroupNode *)node;
+			int size=n->allKeys.size();
+			if (size>0) {
+				for (int i=0;i<size;i++) {
+					GroupNode::KeyInfo & key=n->allKeys[i];
+					v.visit(key.first,node,key.second,key.third); //TODO: save numbers along with keys
+				}
+				return;
+			}
+		}
 		Narrator * n=&((ChainNarratorNode&)(*node)[0]).getNarrator();
 		bool abihi=isRelativeNarrator(*n);
 		if (abihi)
@@ -170,7 +190,7 @@ private:
 			v.visit(alrasoul,node,1,1);
 			return;
 		}
-		NamePrimHierarchy names;
+		NarratorPrimHierarchy names;
 		PossessiveList possessives;
 		n->preProcessForEquality(names,possessives);
 		int levelSize=names.size();
@@ -258,7 +278,7 @@ public:
 	void serialize(QDataStream & streamOut);
 	void deserialize(QDataStream & streamIn);
 #if defined(REFINEMENTS) && defined(EQUALITY_REFINEMENTS) //does not work otherwise, instead of doing different versions for combinations of them on/off
-	void addNode(GraphNodeItem * node) {
+	void addNode(GroupNode * node) {
 	#ifdef NARRATORHASH_DEBUG
 		qDebug()<<node->CanonicalName();
 		DebuggingVisitor d;
@@ -292,13 +312,22 @@ public:
 		return c;
 	#endif
 	}
+	void performActionToAllCorrespondingNodes(GraphNodeItem * node, FoundAction & visitor) {
+		FindAllVisitor v(this,visitor);
+		generateAllPosibilities(node,v);
+	}
 	void performActionToAllCorrespondingNodes(Narrator * n, FoundAction & visitor) {
 		ChainNarratorNode * node=new ChainNarratorNode();
 		node->narrator=n;
-		FindAllVisitor v(this,visitor);
-		generateAllPosibilities(node,v);
+		performActionToAllCorrespondingNodes(node,visitor);
 		delete node;
 	}
+	void performActionToExactCorrespondingNodes(GraphNodeItem * node, FoundAction & visitor) { //dont generate all keys, just use the primary key
+		FindAllVisitor v(this,visitor);
+		v.initialize(node);
+		v.visit(node->getKey(),node,1,1);
+	}
+
 	void clear() {
 		hashTable.clear();
 	}

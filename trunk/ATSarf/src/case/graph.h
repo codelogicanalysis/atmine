@@ -84,7 +84,11 @@ public:
 class GraphVisitorController
 {
 private:
+	typedef enum{NOT_VISITED,VISITED,FINISHED} Status;
+	typedef QMap<NarratorNodeIfc *, Status>  ColorMap;
+
 	bool firstCall;
+	ColorMap * visitedMap;
 public:
 	typedef QStack< NarratorNodeIfc*> ParentStack;
 protected:
@@ -104,6 +108,8 @@ protected:
 	void init();
 	void construct(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges,bool keep_track_of_nodes, bool merged_edges_as_one)
 	{
+		assert(!(!keep_track_of_edges && !keep_track_of_nodes)); //i dont want both to be false at same time=> no exponential traversal
+		assert(!(keep_track_of_edges && !merged_edges_as_one && graph==NULL));//bc we cannot clear them after traversal if so
 		firstCall=true;
 		this->visitor=visitor;
 		assert(visitor!=NULL);
@@ -119,13 +125,25 @@ protected:
 
 public:
 
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=true, bool merged_edges_as_one=true); //assumes keep_track_of_nodes by default
-	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true,bool keep_track_of_nodes=true, bool merged_edges_as_one=true);
+#ifdef DEFAULT_MERGE_NODES
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=true, bool merged_edges_as_one=true);
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=true, bool merged_edges_as_one=true);
+#else
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,unsigned int visitIndex,unsigned int finishIndex,bool keep_track_of_edges=false, bool merged_edges_as_one=false);
+	GraphVisitorController(NodeVisitor * visitor,NarratorGraph * graph,bool keep_track_of_edges=false, bool merged_edges_as_one=false);
+#endif
 	bool isPreviouslyVisited( NarratorNodeIfc & node)
 	{
 		if (!keep_track_of_nodes)
 			return false;
-		bool visited= node.isVisited(visitIndex);
+
+		bool visited=false;
+		if (graph!=NULL){
+			visited= node.isVisited(visitIndex);
+		} else {
+			ColorMap::iterator i=visitedMap->find(&node);
+			visited= (i!=visitedMap->end());
+		}
 		if (visited) {
 			if (!isFinished(node))
 				visitor->detectedCycle(node);
@@ -153,8 +171,14 @@ public:
 		if (merged_edges_as_one) {
 			//only end point nodes make a difference
 			edgeMap.insert(Edge(&n1,&n2),true);
-		} else
-			n1[child_num1][child_num2].setVisited(visitIndex);
+		} else {
+			if (child_num1<n1.size()) { //these checks are needed in case this node has been alterred inside visit of the visitor
+				GraphNodeItem & g=n1[child_num1];
+				if (child_num2<g.size()) {
+					g[child_num2].setVisited(visitIndex);
+				}
+			}
+		}
 	}
 	void visit(NarratorNodeIfc & n)
 	{
@@ -165,22 +189,40 @@ public:
 
 		if (!keep_track_of_nodes)
 			return ;
-		n.setVisited(visitIndex);
+		if (graph!=NULL)
+			n.setVisited(visitIndex);
+		else {
+			(*visitedMap)[&n]=VISITED;
+		}
 	}
 	bool isFinished( NarratorNodeIfc & node)
 	{
 		if (!keep_track_of_nodes)
 			return false;
-		return node.isVisited(finishIndex);
+		if (graph!=NULL)
+			return node.isVisited(finishIndex);
+		else {
+			ColorMap::iterator i=visitedMap->find(&node);
+			assert(i!=visitedMap->end());
+			Status s=*i;
+			return (s==FINISHED);
+		}
 	}
 	void finishVisit(NarratorNodeIfc & n)
 	{
-		if (keep_track_of_nodes)
+		/*if (keep_track_of_nodes) //TODO: check this
+			n.setVisited(finishIndex);*/
+		if (!keep_track_of_nodes)
+			return;
+		if (graph!=NULL)
 			n.setVisited(finishIndex);
-		n.setVisited(finishIndex);
+		else {
+			(*visitedMap)[&n]=FINISHED;
+		}
 		visitor->finishVisit(n);
 		parentStack.pop();
 	}
+
 	void finish();
 	unsigned int getVisitColorIndex(){return visitIndex;}
 	unsigned int getFinishColorIndex(){return finishIndex;}
@@ -450,9 +492,17 @@ public:
 	void initialize(){ hash->clear();}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
 	virtual void visit(NarratorNodeIfc & n) {
-		for (int i=0;i<n.size();i++) {
-			GraphNodeItem * c=&n[i];
-			hash->addNode(c);
+		assert(!n.isGroupNode());
+		if (n.isGraphNode()) {
+			for (int i=0;i<n.size();i++) {
+				GroupNode * g=dynamic_cast<GroupNode*>(&n[i]);
+				hash->addNode(g);
+			}
+		} else {
+			ChainNarratorNode * c=dynamic_cast<ChainNarratorNode*>(&n);
+			GroupNode * g=&c->getGroupNode();
+			assert(g!=NULL);
+			hash->addNode(g);
 		}
 	}
 	virtual void finishVisit(NarratorNodeIfc & ){}
@@ -501,7 +551,6 @@ private:
 		threshold=temp;
 	}
 	void reMergeNodes(NarratorNodeIfc * n);
-	GraphNarratorNode * mergeNodes(GroupNode & g1,GroupNode & g2);
 
 public:
 	LoopBreakingVisitor(double equality_threshold) {threshold=equality_threshold; }
@@ -620,8 +669,142 @@ private:
 	void setHadithStringSerializationEquivalent(QString * n,int num) {
 		hadith2IntMap[n]=num;
 	}
-	//TODO: create code to complete what is needed for HadithSerialization and deserialization and listFilling
 
+	friend class LoopBreakingVisitor;
+	friend class GraphVisitorController;
+	GraphNarratorNode * mergeNodes(GroupNode & g1,GroupNode & g2,QList<NarratorNodeIfc *> * toDelete=NULL) {
+	//if toDelete=NULL, delete what is needed directly, else append to list and pospone deletion
+		NarratorNodeIfc * narr1=&g1.getCorrespondingNarratorNode(),
+						* narr2=&g2.getCorrespondingNarratorNode();
+		bool null1=(narr1==NULL || narr1->isChainNode()),
+			 null2=(narr2==NULL || narr2->isChainNode());
+		if (null1 && null2) {
+			GraphNarratorNode * g=new GraphNarratorNode(*this,g1,g2);
+			return g;
+		} else if (!null1 && null2) {
+			GraphNarratorNode * g=(GraphNarratorNode *)narr1;
+			g->addGroupNode(g2);
+			return (GraphNarratorNode *)narr1;
+		} else if (null1 && !null2) {
+			GraphNarratorNode * g=(GraphNarratorNode *)narr2;
+			g->addGroupNode(g1);
+			return (GraphNarratorNode *)narr2;
+		} else if (narr1!=narr2) {
+			GraphNarratorNode & g_node=*(GraphNarratorNode *)narr2;
+			GraphNarratorNode * dlt_g_node= (GraphNarratorNode *)narr1;
+			for (int i=0;i<dlt_g_node->size();i++) {
+				g_node.addGroupNode((*dlt_g_node)[i]);
+			}
+			dlt_g_node->groupList.clear();
+			if (toDelete!=NULL) {
+				if (!toDelete->contains(dlt_g_node))
+					toDelete->append(dlt_g_node);
+			} else
+				delete dlt_g_node;
+			return &g_node;
+		} else {
+			return (GraphNarratorNode *)narr1;
+		}
+	}
+	void transform2ChainNodes(ChainsContainer &chains) {
+	//pre-condition: chain contains the valid chains extracted from the hadith
+		prg->setCurrentAction("Creating Nodes");
+		int num_chains=chains.count();
+		for (int chain_num=0;chain_num<num_chains;chain_num++)
+		{
+			int size=chains.at(chain_num)->m_chain.count();
+			ChainNarratorNode* last=NULL;
+			for (int j=0;j<size;j++)
+			{
+				if (chains.at(chain_num)->m_chain[j]->isNarrator())
+				{
+					Narrator *n=(Narrator *)(chains.at(chain_num)->m_chain[j]);
+					ChainNarratorNode* current= new ChainNarratorNode(*this,n,0,chain_num);
+					if (last !=NULL)
+					{
+						last->previous=current;
+						current->next=last;
+					}
+					last=current;
+				}
+			}
+			top_nodes.append(last);
+			//code below to correct index
+			int index=0;
+			for (ChainNarratorNode * current=last;!current->isNull();current=&current->nextInChain())
+			{
+				current->setIndex(index);
+				index++;
+			}
+			prg->report(100.0*chain_num/num_chains+0.5);
+		}
+	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
+	//				 chains and top_nodes stores the link to the first node of each chain
+	}
+#ifdef HASH_GRAPH_BUILDING
+	static bool mustMerge(GroupNode * g_node,ChainNarratorNode * c_node) {
+		int chainNum=c_node->getChainNum();
+		ChainNarratorNode & c2_node=g_node->getChainNodeInChain(chainNum);
+		if (!c2_node.isNull() && c2_node.getIndex()>c_node->getIndex())
+			return false;
+		//check if it is within radius
+		int c_index=c_node->getIndex();
+		int size=g_node->size();
+		for (int i=0;i<size;i++) {
+			int index=((ChainNarratorNode &)(*g_node)[i]).getIndex();
+			if (abs(index-c_index)<hadithParameters.equality_radius) {
+				return true; //indicator that it must be merged and after function returns that it was merged
+			}
+		}
+		return false;
+	}
+	class BuildAction: public NarratorHash::FoundAction {
+	private:
+		NarratorGraph * graph;
+		ChainNarratorNode * node;
+		bool merged;
+	public:
+		BuildAction(ChainNarratorNode * aNode,NarratorGraph * graph){
+			node=aNode;
+			this->graph=graph;
+			merged=false;
+		}
+		virtual void action(const QString &, GroupNode * hashedNode, double val) {
+			if (val==1.0 && !merged) {
+				merged=mustMerge(hashedNode,node);
+				if (merged) {
+					hashedNode->addChainNode(graph,*node);
+					if (hashedNode->getCorrespondingNarratorNode().isChainNode()) {
+						new GraphNarratorNode(*graph,*hashedNode);
+					}
+				}
+			}
+		}
+		bool isMerged() {return merged;}
+	};
+	class MergeAction: public NarratorHash::FoundAction {
+	private:
+		NarratorGraph * graph;
+		ChainNarratorNode * node;
+		bool merged;
+	public:
+		MergeAction(ChainNarratorNode * aNode,NarratorGraph * graph){
+			node=aNode;
+			this->graph=graph;
+			merged=false;
+		}
+		virtual void action(const QString &, GroupNode * hashedNode, double val) {
+			if (!merged && val>hadithParameters.equality_threshold) {
+				merged=mustMerge(hashedNode,node);
+				if (merged) {
+					GroupNode * group=new GroupNode(*graph,NULL,node);
+					graph->mergeNodes(*group,*hashedNode);
+				}
+			}
+		}
+		bool isMerged() {return merged;}
+	};
+#else
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2) {
 		//assert(!((NarratorNodeIfc &)n1).isGraphNode());
 		//assert(!((NarratorNodeIfc &)n2).isGraphNode());
@@ -676,46 +859,46 @@ private:
 		else
 			return (GraphNarratorNode &)narr1;
 	}
-	friend class LoopBreakingVisitor;
-	friend class GraphVisitorController;
-
-	void transform2ChainNodes(ChainsContainer &chains) {
-	//pre-condition: chain contains the valid chains extracted from the hadith
-		prg->setCurrentAction("Creating Nodes");
-		int num_chains=chains.count();
-		for (int chain_num=0;chain_num<num_chains;chain_num++)
-		{
-			int size=chains.at(chain_num)->m_chain.count();
-			ChainNarratorNode* last=NULL;
-			for (int j=0;j<size;j++)
-			{
-				if (chains.at(chain_num)->m_chain[j]->isNarrator())
-				{
-					Narrator *n=(Narrator *)(chains.at(chain_num)->m_chain[j]);
-					ChainNarratorNode* current= new ChainNarratorNode(*this,n,0,chain_num);
-					if (last !=NULL)
-					{
-						last->previous=current;
-						current->next=last;
+#endif
+	void buildGraph(int split=-1) {
+	#ifdef HASH_GRAPH_BUILDING
+		int num_chains=top_nodes.size();
+		prg->setCurrentAction("Merging Nodes");
+		prg->report(0);
+		int minChains=0;
+		if (split>0)
+			minChains=split;
+		int total=num_chains-minChains;
+		for (int i=minChains;i<num_chains;i++) {
+			ChainNarratorNode & c1= *(ChainNarratorNode *)top_nodes[i]; //since at this stage all are ChainNode's
+			ChainNarratorNode * n1=&c1; //start from beginning of c1
+			for (;!n1->isNull();n1=&(n1->nextInChain())) {
+				//check if there is a group node equal to it fully and merge them together.
+			#ifdef DEBUG_BUILDGRAPH
+				qDebug()<<n1->toString();
+			#endif
+				BuildAction bAction(n1,this);
+				performActionToExactCorrespondingNodes(n1,bAction); //search for matches for this key only
+				if (!bAction.isMerged()) {
+					//1-merge with node that it is equal to
+					MergeAction mAction(n1,this);
+					performActionToAllCorrespondingNodes(n1,mAction);
+					//2-add to hash
+					GroupNode * g_node=NULL;
+					if (mAction.isMerged()) {
+						g_node=&n1->getGroupNode();
+						assert(g_node!=NULL); //was merged already
+					} else {
+						g_node=new GroupNode(*this,(GraphNarratorNode*)n1,n1);
 					}
-					last=current;
+					hash.addNode(g_node);
 				}
 			}
-			top_nodes.append(last);
-			//code below to correct index
-			int index=0;
-			for (ChainNarratorNode * current=last;!current->isNull();current=&current->nextInChain())
-			{
-				current->setIndex(index);
-				index++;
-			}
-			prg->report(100.0*chain_num/num_chains+0.5);
+			prg->report(100.0*(total-(num_chains-i))/total+0.5);
 		}
-	//postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
-	//				 chains and top_nodes stores the link to the first node of each chain
-	}
-	void buildGraph(int split=-1) {
-	//note: compares chain by chain then moves to another
+		prg->report(100);
+	#else
+		//note: compares chain by chain then moves to another
 		//TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
 		int radius=hadithParameters.equality_radius;
 		double threshold=hadithParameters.equality_threshold;
@@ -731,7 +914,7 @@ private:
 			ChainNarratorNode & c1= *(ChainNarratorNode *)top_nodes[i]; //since at this stage all are ChainNode's
 			int minChains=i+1;
 			if (split>0)
-				minChains=split+1;
+				minChains=split+1; //TODO: check if must start from 'split'
 			for (int k=minChains;k<num_chains;k++)
 			{
 				ChainNarratorNode & c2= *(ChainNarratorNode *)top_nodes[k];
@@ -782,6 +965,7 @@ private:
 			prg->report(100.0*i/maxChains);
 		}
 		prg->report(100);
+	#endif
 	}
 	void computeRanks() {
 	#if 0
@@ -890,6 +1074,7 @@ private:
 		ChainNodeIterator itr=n.begin();
 		for (;!itr.isFinished();++itr) {
 			NarratorNodeIfc & c=itr.getChild();
+
 			int i=itr.getGroupIndex(),j=itr.getChainIndex();
 		#ifdef DEBUG_DFS_TRAVERSAL
 			qDebug()<<n.CanonicalName()<<".child("<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
@@ -903,6 +1088,70 @@ private:
 			}
 		}
 		visitor.finishVisit(n);
+	}
+	static void BFS_traverse(GraphVisitorController & visitor, int maxLevels,NarratorNodeIfc* node=NULL,int direction=1)
+	{//if direction>0, we go to child,else to parent
+	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
+	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
+
+		assert(visitor.getGraph()==NULL || node==NULL); //use controller graph or nodes we have
+		visitor.initialize();
+		QQueue<NarratorNodeIfc *> queue;
+		int size;
+		if (node==NULL) {
+			NarratorGraph * graph=visitor.getGraph();
+			size=graph->top_nodes.size();
+			for (int i=0; i<size;i++) {
+				NarratorNodeIfc * tNode=graph->top_nodes[i];
+				queue.enqueue(tNode);
+			}
+			direction=1; //if we are starting at top nodes, it is understood that direction is toward children
+		} else {
+			size=1;
+			queue.enqueue(node);
+		}
+		int levelCount=0;
+		int numNodesPerLevel=size;
+		while (!queue.isEmpty()) {
+			if (maxLevels>=0){ //if we are interested to stop after some level
+				if (numNodesPerLevel==0) {
+					levelCount++;
+					if (levelCount>maxLevels) {
+						visitor.finish();
+						return;
+					}
+					numNodesPerLevel=queue.size();
+				}
+				numNodesPerLevel--; //we check then decrement, to make sure we are visiting the last valid node
+			}
+			NarratorNodeIfc & n=*(queue.dequeue());
+			visitor.visit(n);
+			if (maxLevels>=0 && levelCount==maxLevels) //if we are on last level no need to enque its children or parents
+				continue;
+		#ifdef DEBUG_BFS_TRAVERSAL
+			int size=n.size();
+			qDebug()<<(direction>0?"parent:":"child:")<<n.toString()<<" "<<size<<"\n";
+		#endif
+			ChainNodeIterator itr=n.begin();
+			for (;!itr.isFinished();++itr) {
+				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
+				int i=itr.getGroupIndex(),j=itr.getChainIndex();
+			#ifdef DEBUG_BFS_TRAVERSAL
+				qDebug()<<n.CanonicalName()<<(direction>0?".child(":".parent(")<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+			#endif
+				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j)) {
+					#ifdef DEBUG_BFS_TRAVERSAL
+						qDebug()<<"\t-->traversed\n";
+					#endif
+					bool prev_visited=visitor.isPreviouslyVisited( c);
+					visitor.visit(n,c,i,j);
+					if (!prev_visited)
+						queue.enqueue(&c);
+				}
+			}
+			visitor.finishVisit(n);
+		}
+		visitor.finish();
 	}
 
 	void printChains(){
@@ -1043,7 +1292,7 @@ private:
 			breakManageableCycles();
 			removeDuplicatesFromTopNodes();
 		}
-		hashNodes();
+		//hashNodes();
 		//removeDuplicatesFromAllNodes();
 		computeRanks();
 	}
@@ -1208,66 +1457,8 @@ public:
 		}
 		visitor.finish();
 	}
-	void BFS_traverse(GraphVisitorController & visitor, int maxLevels=-1,NarratorNodeIfc* node=NULL,int direction=1)
-	{//if direction>0, we go to child,else to parent
-	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
-	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
-		visitor.initialize();
-		QQueue<NarratorNodeIfc *> queue;
-		int size;
-		if (node==NULL) {
-			size=top_nodes.size();
-			for (int i=0; i<size;i++) {
-				NarratorNodeIfc * tNode=top_nodes[i];
-				queue.enqueue(tNode);
-			}
-			direction=1; //if we are starting at top nodes, it is understood that direction is toward children
-		} else {
-			size=1;
-			queue.enqueue(node);
-		}
-		int levelCount=0;
-		int numNodesPerLevel=size;
-		while (!queue.isEmpty()) {
-			if (maxLevels>=0){ //if we are interested to stop after some level
-				if (numNodesPerLevel==0) {
-					levelCount++;
-					if (levelCount>maxLevels) {
-						visitor.finish();
-						return;
-					}
-					numNodesPerLevel=queue.size();
-				}
-				numNodesPerLevel--; //we check then decrement, to make sure we are visiting the last valid node
-			}
-			NarratorNodeIfc & n=*(queue.dequeue());
-			visitor.visit(n);
-			if (maxLevels>=0 && levelCount==maxLevels) //if we are on last level no need to enque its children or parents
-				continue;
-		#ifdef DEBUG_BFS_TRAVERSAL
-			int size=n.size();
-			qDebug()<<(direction>0?"parent:":"child:")<<n.toString()<<" "<<size<<"\n";
-		#endif
-			ChainNodeIterator itr=n.begin();
-			for (;!itr.isFinished();++itr) {
-				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
-				int i=itr.getGroupIndex(),j=itr.getChainIndex();
-			#ifdef DEBUG_BFS_TRAVERSAL
-				qDebug()<<n.CanonicalName()<<(direction>0?".child(":".parent(")<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
-			#endif
-				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j)) {
-					#ifdef DEBUG_BFS_TRAVERSAL
-						qDebug()<<"\t-->traversed\n";
-					#endif
-					bool prev_visited=visitor.isPreviouslyVisited( c);
-					visitor.visit(n,c,i,j);
-					if (!prev_visited)
-						queue.enqueue(&c);
-				}
-			}
-			visitor.finishVisit(n);
-		}
-		visitor.finish();
+	void BFS_traverse(GraphVisitorController & visitor){
+		BFS_traverse(visitor,1);
 	}
 	GraphNodeItem * getNodeMatching(Narrator & n) {
 	#if 0
@@ -1294,6 +1485,12 @@ public:
 	}
 	void performActionToAllCorrespondingNodes(Narrator * n, NarratorHash::FoundAction & visitor) {
 		hash.performActionToAllCorrespondingNodes(n,visitor);
+	}
+	void performActionToAllCorrespondingNodes(GraphNodeItem * n, NarratorHash::FoundAction & visitor) {
+		hash.performActionToAllCorrespondingNodes(n,visitor);
+	}
+	void performActionToExactCorrespondingNodes(GraphNodeItem * n, NarratorHash::FoundAction & visitor) {
+		hash.performActionToExactCorrespondingNodes(n,visitor);
 	}
 
 	void serialize(QDataStream & streamOut) {
