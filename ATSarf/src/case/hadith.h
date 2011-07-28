@@ -47,12 +47,14 @@
 //#define COUNT_RASOUL
 #define TEST_BIOGRAPHIES
 //#define NARRATORHASH_DEBUG
+//#define DEFAULT_MERGE_NODES
 #define HASH_TOTAL_VALUES
 #define COLOR_ALL
 #define EQUAL_NEW
 #define PROGRESS_SERIALZATION
 #define SEGMENT_BIOGRAPHY_USING_POR
 //#define DONT_DISPLAY_BIOGRAPHY_GRAPHY
+#define HASH_GRAPH_BUILDING
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

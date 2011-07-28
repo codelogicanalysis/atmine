@@ -32,8 +32,11 @@ private:
 		virtual void visit(NarratorNodeIfc & n) {
 			if (&n==target) {
 				found=true;
+			#if 0 //find a way to stop early even in a traversal where we are using a map
 				colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
 				colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
+			#endif
+				qDebug()<<"<found>";
 			}
 		}
 		virtual void finishVisit(NarratorNodeIfc & ){ }
@@ -140,16 +143,19 @@ private:
 		}
 		return false;
 	#else
-		//qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
+		qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
 		if (n1==n2)
 			return false;
 		ReachableVisitor v(n2,graph->colorGuard);
-		GraphVisitorController controller(&v,graph);
+		GraphVisitorController controller(&v,NULL);
 		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);
 		bool found=v.isFound();
 		if (!found) {
 			graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,-1);
 			found=v.isFound();
+		}
+		if (found) {
+			qDebug()<<"found";
 		}
 		return found;
 	#endif

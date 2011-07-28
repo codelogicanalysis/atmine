@@ -693,7 +693,7 @@ inline double equalNew(const Narrator & n1,const Narrator & n2) {
 	QString n1_str=n1.getString(),n2_str=n2.getString();
 	if (n1_str==n2_str)
 		return 1;
-	Narrator::NamePrimHierarchy names1, names2;
+	Narrator::NarratorPrimHierarchy names1, names2;
 	Narrator::PossessiveList possessives1, possessives2;
 
 	n1.preProcessForEquality(names1,possessives1);
@@ -743,7 +743,7 @@ QString Narrator::getKey() const{
 		return abyi+ha2; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
 	if (isRasoul)
 		return alrasoul;
-	NamePrimHierarchy names;
+	NarratorPrimHierarchy names;
 	PossessiveList possessives;
 	preProcessForEquality(names,possessives);
 	return NarratorHash::getKey(names,possessives,names.size(),true,false);
@@ -813,11 +813,13 @@ private:
 	bool found;
 public:
 	RealNarratorAction(Biography::NarratorNodeList & nodeList):list(nodeList) {}
-	virtual void action(const QString & , GraphNodeItem * node, double similarity){
+	virtual void action(const QString & , GroupNode * node, double similarity){
 		if (similarity>hadithParameters.equality_threshold) {
 			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
 			found =true;
-			if (!list.contains(n))
+			if(n==NULL) //is a chain node
+				list.append(&(*node)[0]);
+			else if (!list.contains(n))
 				list.append(n);
 		}
 	}
@@ -830,10 +832,8 @@ bool Biography::isRealNarrator(Narrator * n) {
 	if (!nodeGroups.isEmpty()) {
 		if (nodeGroups.last().size()>0) {
 			nodeGroups.append(NarratorNodeList());
-			i=nodeGroups.size()-1;
-		} else {
-			i=nodeGroups.size()-1;
 		}
+		i=nodeGroups.size()-1;
 	} else {
 		nodeGroups.append(NarratorNodeList());
 		i=0;

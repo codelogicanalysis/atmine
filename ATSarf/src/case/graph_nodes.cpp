@@ -22,11 +22,19 @@ ChainNodeIterator NarratorNodeIfc::begin() {
 	return ChainNodeIterator(this,0,0);
 }
 
-NarratorNodeIfc & ChainNarratorNode::getCorrespondingNarratorNode()
-{
-	if (group!=NULL)
-		return (*group).getCorrespondingNarratorNode();
-	else
+void NarratorNodeIfc::BFS_traverse(GraphVisitorController & visitor, int maxLevels,int direction) {
+	NarratorGraph::BFS_traverse(visitor,maxLevels,this,direction);
+}
+
+
+NarratorNodeIfc & ChainNarratorNode::getCorrespondingNarratorNode() {
+	if (group!=NULL) {
+		NarratorNodeIfc & g=(*group).getCorrespondingNarratorNode();
+		if (&g==NULL)
+			return (*this);
+		else
+			return g;
+	} else
 		return (*this);
 }
 
@@ -45,11 +53,13 @@ ChainNarratorNode & ChainNarratorNode::nextInChain()
 }
 
 int ChainNarratorNode::getSavedRank() const {
-	return (group==NULL?savedRank:group->getSavedRank());
+	return (&((ChainNarratorNode*)this)->getCorrespondingNarratorNode()==this //to make sure it is not the case of an empty graph node even if it belongs to a group node
+			?savedRank
+			:group->getSavedRank());
 }
 void ChainNarratorNode::setRank(int rank) {
 	savedRank=rank;
-	if(group!=NULL)
+	if(&getCorrespondingNarratorNode()!=this)
 		group->setRank(rank);
 }
 
@@ -65,7 +75,12 @@ int GroupNode::getSavedRank() const {
 
 NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
 	//assert(graphNode!=NULL);
-	return *graphNode;
+	//if (graphNode!=NULL)
+		return *graphNode;
+	/*else { //in case we have a group that has just one node
+		assert (size()==1);
+		return operator [](0);
+	}*/
 }
 
 NarratorNodeIfc * NarratorNodeIfc::deserialize(QDataStream &chainIn, NarratorGraph & graph) {
@@ -190,7 +205,8 @@ void GroupNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) co
 		c.serialize(chainOut,graph);
 	}
 
-	chainOut<<key;
+	chainOut<<key
+			<<allKeys;
 
 }
 void GroupNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
@@ -209,7 +225,9 @@ void GroupNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
 		n->setCorrespondingNarratorNodeGroup(this);
 	}
 
-	chainIn>>key;
+	chainIn >>key
+			>>allKeys;
+
 	setGraphNode(NULL);
 
 }
@@ -236,3 +254,41 @@ ChainNarratorNode & ChainNarratorNode::getChainNodeInChain(int chain_num) 	{
 	else
 		return (ChainNarratorNode &)nullChainNarratorNode;
 }
+
+class OneDegreeVisitor: public NodeVisitor {
+private:
+	NarratorNodeIfc * node;
+	QList<NarratorNodeIfc *> & list;
+public:
+	OneDegreeVisitor(QList<NarratorNodeIfc *> & aL,NarratorNodeIfc * node):list(aL) {
+		this->node=node;
+	}
+	void initialize() {}
+	void visit(NarratorNodeIfc & n) {
+		if (&n!=node)
+			list.append(&n);
+	}
+	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ){}
+	virtual void finish(){}
+	virtual void detectedCycle(NarratorNodeIfc & ){}
+	virtual void finishVisit(NarratorNodeIfc & ){}
+};
+
+bool GraphNarratorNode::fillChildren() {
+	if (children.size()!=0)
+		return true;
+	OneDegreeVisitor v(children,this);
+	GraphVisitorController c(&v,NULL,true,true,false);
+	BFS_traverse(c,1,1);
+	return false;
+}
+
+bool GraphNarratorNode::fillParents() {
+	if (parents.size()!=0)
+		return true;
+	OneDegreeVisitor v(parents,this);
+	GraphVisitorController c(&v,NULL,true,true,false);
+	BFS_traverse(c,1,-1);
+	return false;
+}
+
