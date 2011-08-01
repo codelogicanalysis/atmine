@@ -708,11 +708,19 @@ inline double equalNew(const Narrator & n1,const Narrator & n2) {
 		for (int j=0;j<namesMin;j++) {
 			if (!names1[i][j]->isNamePrim() && !names2[i][j]->isNamePrim() )
 				continue;
-			if (names1[i][j]->getString()!=names2[i][j]->getString())
+			QString name1=names1[i][j]->getString(),
+					name2=names2[i][j]->getString();
+			if (name1.size()>0 && alefs.contains(name1[0]))
+				name1[0]=alef;
+			if (name2.size()>0 && alefs.contains(name2[0]))
+				name2[0]=alef;
+			if (name1!=name2)
 				return 0;
 			else
 				equal=true;
 		}
+		if (names1[i].size()==names2[i].size() && names1[i].size()==0)
+			equal=true;
 		if (equal)
 			levelsEqual++;
 	}

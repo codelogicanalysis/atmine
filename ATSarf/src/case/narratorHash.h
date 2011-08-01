@@ -17,7 +17,25 @@ public:
 	public:
 		virtual void action(const QString & searchKey, GroupNode * node, double similarity) =0;
 	};
+	class HashValue {
+	public:
+		HashValue(GroupNode * node, int value, int total) {
+			this->node=node;
+			this->value=value;
+			this->total=total;
+		}
+		bool operator==(const HashValue& rhs) {
+			if (node==rhs.node) {
+				assert(value==rhs.value && total==rhs.total);
+				return true;
+			}
+			return false;
+		}
 
+		GroupNode * node;
+		int value,total;
+	};
+	typedef QMultiHash<QString,HashValue> HashTable;
 	typedef Narrator::NarratorPrimList NarratorPrimList;
 	typedef Narrator::NarratorPrimHierarchy NarratorPrimHierarchy;
 	typedef Narrator::PossessiveList PossessiveList;
@@ -38,8 +56,12 @@ public:
 							key.append("OM");
 						else
 							key.append(connector->getString());
-					} else
-						key.append(prim->getString());
+					} else {
+						QString s=prim->getString();
+						if (s.size()>0 && alefs.contains(s[0]))
+							s[0]=alef;
+						key.append(s);
+					}
 					if (j!=levelSize-1)
 						key.append(" ");
 				}
@@ -64,19 +86,6 @@ public:
 	}
 
 private:
-	class HashValue {
-	public:
-		HashValue(GroupNode * node, int value, int total) {
-			this->node=node;
-			this->value=value;
-			this->total=total;
-		}
-		GroupNode * node;
-		int value,total;
-	};
-
-	typedef QMultiHash<QString,HashValue> HashTable;
-
 	HashTable hashTable;
 	NarratorGraph * graph;
 
@@ -91,6 +100,7 @@ private:
 	public:
 		InsertVisitor(NarratorHash * hash) {this->hash=hash;}
 		void initialize(GraphNodeItem * node) {
+			assert(node->size()>0);
 			GroupNode * n=dynamic_cast<GroupNode *>(node);
 			n->allKeys.clear();
 		}
@@ -101,6 +111,20 @@ private:
 		#endif
 			hash->hashTable.insert(s,HashValue(node,value,total));
 			node->allKeys.append(GroupNode::KeyInfo(s,value,total));
+		}
+	};
+	class DeleteVisitor: public Visitor {
+	private:
+		NarratorHash * hash;
+	public:
+		DeleteVisitor(NarratorHash * hash) {this->hash=hash;}
+		void initialize(GraphNodeItem * node) {
+			GroupNode * n=dynamic_cast<GroupNode *>(node);
+			assert(!n->allKeys.isEmpty());
+		}
+		void visit(const QString & s, GraphNodeItem * c, int value, int total){
+			GroupNode * node=dynamic_cast<GroupNode *>(c);
+			hash->hashTable.remove(s,HashValue(node,value,total));
 		}
 	};
 	class FindOneVisitor: public Visitor {
@@ -118,8 +142,8 @@ private:
 			HashTable::iterator i = hash->hashTable.find(s);
 			 while (i != hash->hashTable.end() && i.key() == s) {
 				 HashValue v=*i;
-				 Narrator & narr1=((ChainNarratorNode&)node1[0]).getNarrator();
-				 Narrator & narr2=((ChainNarratorNode&)v.node[0]).getNarrator();
+				 Narrator & narr1=(dynamic_cast<ChainNarratorNode&>((*node1)[0])).getNarrator();
+				 Narrator & narr2=(dynamic_cast<ChainNarratorNode&>((*v.node)[0])).getNarrator();
 				 double curr_equality=equal(narr1,narr2);
 				 //double curr_equality=v.value/v.total*value/total;
 				 if (curr_equality>largestEquality) {
@@ -142,14 +166,18 @@ private:
 			HashTable::iterator i = hash->hashTable.find(s);
 			while (i != hash->hashTable.end() && i.key() == s) {
 				HashValue v=*i;
-				Narrator & narr1=((ChainNarratorNode&)node[0]).getNarrator();
-				Narrator & narr2=((ChainNarratorNode&)(*v.node)[0]).getNarrator();
+				Narrator & narr1=(dynamic_cast<ChainNarratorNode&>((*node)[0])).getNarrator();
+				Narrator & narr2=(dynamic_cast<ChainNarratorNode&>((*v.node)[0])).getNarrator();
 				double similarity=equal(narr1,narr2);
 				//double similarity=(double)(v.value)/v.total*value/total;
 			#ifdef NARRATORHASH_DEBUG
 				//qDebug()<<s<<"\t("<<v.value<<"/"<<v.total<<")\t("<<value<<"/"<<total<<")\t"<<similarity;
 			#endif
-				visitor.action(s,v.node,similarity);
+				if (similarity>0.0001) {
+					if (node->getKey()==v.node->getKey() && similarity<1)
+						similarity=equal(narr1,narr2);
+					visitor.action(s,v.node,similarity);
+				}
 				++i;
 			 }
 		}
@@ -169,7 +197,6 @@ private:
 		double max_equality=hadithParameters.equality_threshold*2,
 			   delta=hadithParameters.equality_delta;
 	#endif
-		assert(node->size()>0);
 		v.initialize(node);
 		if (node->isGroupNode()) { //if we are searching and isGroupNode, use its keys
 			GroupNode * n=(GroupNode *)node;
@@ -182,7 +209,7 @@ private:
 				return;
 			}
 		}
-		Narrator * n=&((ChainNarratorNode&)(*node)[0]).getNarrator();
+		Narrator * n=&(dynamic_cast<ChainNarratorNode&>((*node)[0])).getNarrator();
 		bool abihi=isRelativeNarrator(*n);
 		if (abihi)
 			return; //we dont know yet to what person is the ha2 in abihi a reference so they might not be equal.
@@ -328,8 +355,13 @@ public:
 		v.visit(node->getKey(),node,1,1);
 	}
 
-	void clear() {
-		hashTable.clear();
+	void clear() { hashTable.clear(); }
+	HashTable::iterator begin() { return hashTable.begin();}
+	HashTable::iterator end() { return hashTable.end();}
+	int size() const {return hashTable.size();}
+	void remove(GroupNode * node) {
+		DeleteVisitor v(this);
+		generateAllPosibilities(node,v);
 	}
 #endif
 };

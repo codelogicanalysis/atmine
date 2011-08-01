@@ -192,9 +192,9 @@ and the word means ``his Ahmad''.
 
 The morphological analysis of the word \RL{.hd_tnA} 
 ``narrated to us'' that starts the hadith in Figure~\ref{f:exhadith}
-returns the stem \RL{.hd_t}.
+returns the stem \RL{.hd_t} ``narrated''.
 The stem  \RL{.hd_t} is also the stem of other 
-words such as \RL{.hd_tny} and \RL{.hd_thm}.
+words such as \RL{.hd_tny} ``narrated to me'' and \RL{.hd_thm} ``narrated to them''.
 The stem also shares similar part of speech (POS)
 and English meaning gloss annotations with words
 such as \RL{qaal} ``said'' and \RL{'a_hbar} ``told''. 
@@ -281,9 +281,7 @@ Buckwalter~\shortcite{Buckwalter:02}
 with proper and location names extracted from different online 
 sources~\footnote{\href{http://alasmaa.net/}{http://alasmaa.net/ }, 
 \href{http://ar.wikipedia.org/}{http://ar.wikipedia.org/}}
-%as well as biblical sources~\footnote{Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}.
-as well as biblical sources.
-%~\footnote{Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}.
+as well as biblical sources~\footnote{Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}.
 
 %Each alive machine in Sarf takes as input one letter at a time 
 %from a text stream. 
@@ -296,10 +294,14 @@ morphological solutions.
 
 In this paper we make the following contributions. 
 \begin{itemize}
-\item We automate the segmentation of hadith books into separate narrations and extract chains of narrators into a partial order relation graph using a knowledge based approach with morphological analysis.
+\item We automate the segmentation of hadith books into separate narrations and extract chains of narrators 
+%into a partial order relation graph 
+using a knowledge based approach with morphological analysis.
+\item We optimize our analysis through utilizing punctuation and learning previously unknown names.
+\item We build from different chains of narrators a partial order relation graph based on merging common narrators.
 \item We introduce a specialized distance metric for Arabic names used in Arabic literature. 
-\item We provide a working and efficient implementation of
-our work. 
+\item We highly outperform the currently available narrator extraction tool. 
+\item We provide a working and efficient implementation of our work. 
 \end{itemize}
 
 The rest of this paper is organized as follows. 
@@ -528,6 +530,8 @@ Once we meet a name connector or a narrator
 connector word we reset the word counters that we
 compare against the thresholds. 
 
+(Figure~\ref{f:chain} is confusing since it misses some information uses other symbols like 
+those of $\theta$ and is redundant anyways)
 
 
 \subsection{The hadith controller}
@@ -627,6 +631,8 @@ we report in Section~\ref{sec:results}.
 %under both Sarf and a refined version of Sarf.
 
 \subsection{Optimizations}
+
+(explain better and merged information present about them in "Results" section)
 
 In addition to the controller, 
 NaGEMA uses punctuation marks to refine its analysis and 
@@ -818,22 +824,32 @@ existing metrics~\cite{Azmi-2010} as it can detect that
 while other distance metrics based on simple
 string similarity techniques can not. 
 
+\subsection{Speedup Optimizations for Large Datasets}
+
+\subsubsection{MultiKey Hashing}
+
+(explain why suitable)
+
+\subsubsection{Three-Level Hierarchy Structure for Graph Nodes}
+
+(possibly omit this info, since is complicated)
+
 
 \section{Related work }
 \label{sec:related}
 
-\transfalse
-\novocalize
-\begin{figure*}[tb]
-\center{
-\resizebox{1.8\columnwidth}{!}
-%{ \input{iTreeMohamada}}
-{\includegraphics{iTreeMohamada}}
-\caption{Output of iTree fails to detect \RL{m_hmdA}.}
-\label{f:mohamada}
-}
-\end{figure*}
-\transtrue
+%\transfalse
+%\novocalize
+%\begin{figure*}[tb]
+%\center{
+%\resizebox{1.8\columnwidth}{!}
+%%{ \input{iTreeMohamada}}
+%{\includegraphics{iTreeMohamada}}
+%\caption{Output of iTree fails to detect \RL{m_hmdA}.}
+%\label{f:mohamada}
+%}
+%\end{figure*}
+%\transtrue
 
 The closest work to NaGEMA is 
 iTree~\cite{Azmi-2010,iTree}, a 
@@ -991,8 +1007,10 @@ results to iTree.
 The results are detailed in 
 Tables~\ref{t:hadithresults} and \ref{t:nopunctlearnresults}. 
 The numbers we present in the tables are the result of a 
-manual verification of the correctness of the outputs of 
+manual verification of the correctness of %the outputs of 
 10\% of the narrations in the books under consideration.
+
+(discuss annotation and verification process and mention smg about inter-annotator agreement)
 
 We used recall and precision as our evaluation metrics.
 We report results on three levels of accuracy: segmentation, sanad boundary and
@@ -1058,7 +1076,7 @@ the books of both Kafi and Istibsar, resulting in a recall of less than 5\%.
 This is due to the less structured nature of the narrations of those books.
 For example, iTree's grammar is defined such that a hadith starts by 
 an Ikhbar word (\noVocRL{AdaT al-A_hbAar}) such as
-\noVocRL{qAl}, \noVocRL{.hadda_t}, etc...; 
+\noVocRL{qAl} ``said'', \noVocRL{.hadda_t} ``narrated'', etc...; 
 however, the Kafi and Istibsar books followed a flexible style to express the narration 
 and most narrations started directly by a narrator name without a preceding Ikhbar word. 
 This is a strong evidence of the superiority and tolerance of NaGEMA 
@@ -1165,6 +1183,19 @@ Finally, the distance metric had 0.993 precision,
 
 (report recall and precision on the chainnodes per graphnode, that is all what retains to correctness resulting from algorithm)
 
+\section{Significance \& Extensions -- Named Entity Extraction in Other Contexts}
+
+\subsection{Genealogical Lists in the Bible}
+
+(explain what will be equivalent of NMC and NRC and how it will work
+
+\subsection{Place Names in Travel Itineraries}
+
+(check if it can be applicable)
+
+\subsection{Extending Arabic People Name Gazetteers}
+
+(briefly explain how this specific application has general value through contributing to the general task of entity extraction [learned names])
 
 \section{Conclusion and future work}
 \label{sec:future}

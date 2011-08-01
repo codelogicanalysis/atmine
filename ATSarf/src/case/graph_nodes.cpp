@@ -116,6 +116,31 @@ NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
 	}*/
 }
 
+void GroupNode::addChainNode(NarratorGraph */*g*/,ChainNarratorNode & nar) { //we dont check for duplicates here
+#if 0
+	for (int i=0;i<size();i++)
+	{
+		ChainNarratorNode * n2=&(*this)[i];
+		ChainNarratorNode * n1=&nar;
+		if (n1==n2)
+			return;
+		//assert (n1!=n2); //TODO...
+	}
+#endif
+	//assert(nar.graphNode==NULL);
+	list.append(&nar);
+	nar.setCorrespondingNarratorNodeGroup(this);
+	int index=nar.getIndex();
+	if (lowestIndex<0 || lowestIndex>index)
+		lowestIndex=index;
+	if (highestIndex<index)
+		highestIndex=index;
+	if (graphNode!=NULL && graphNode->isGraphNode()) {
+		graphNode->lowestIndex=max(graphNode->lowestIndex,lowestIndex);
+		graphNode->highestIndex=max(graphNode->highestIndex,highestIndex);
+	}
+}
+
 NarratorNodeIfc * NarratorNodeIfc::deserialize(QDataStream &chainIn, NarratorGraph & graph) {
 	bool isNull,isGraph,isChain;
 	chainIn >>isNull
@@ -287,8 +312,7 @@ void GroupNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) {
 		assert(c!=NULL);
 		assert(!c->isGraphNode());
 		ChainNarratorNode* n=(ChainNarratorNode*)c;
-		list.append(n);
-		n->setCorrespondingNarratorNodeGroup(this);
+		addChainNode(NULL,*n);
 	}
 
 	chainIn >>key

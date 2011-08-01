@@ -153,4 +153,6 @@ static const QString stem_info_path=".stem_info.dat";
 #define resetReverseDirection(abstractCat) abstractCat.setBit(REVERSEDESCBIT,false)
 #define isReverseDirection(abstractCat) abstractCat.getBit(REVERSEDESCBIT)
 
+#define absVal(v) (v>=0?v:-v)
+
 #endif

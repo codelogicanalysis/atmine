@@ -362,7 +362,9 @@ public:
 	#endif
 	#endif
 	#ifndef TAG_HADITH
+	#if 0
 		prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
+	#endif
 	#else
 		prg->finishTaggingText();
 	#endif

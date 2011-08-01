@@ -177,6 +177,7 @@ public:
 		if (keep_track_of_nodes && graph!=NULL) {
 			n.resetVisited(finishIndex);
 		}
+		assert(!n.isGroupNode());
 		parentStack.push(&n);
 		if (!disableFillChildren && graphBuilt && n.isGraphNode()) {
 			GraphNarratorNode * g=dynamic_cast<GraphNarratorNode *>(&n);
@@ -221,7 +222,7 @@ public:
 			(*visitedMap)[&n]=FINISHED;
 		}
 		visitor->finishVisit(n);
-		parentStack.pop();
+		assert(&n==parentStack.pop());
 	}
 
 	void finish();
@@ -675,37 +676,63 @@ private:
 	friend class LoopBreakingVisitor;
 	friend class GraphVisitorController;
 	GraphNarratorNode * mergeNodes(GroupNode & g1,GroupNode & g2,QList<NarratorNodeIfc *> * toDelete=NULL) {
-	//if toDelete=NULL, delete what is needed directly, else append to list and pospone deletion
+	//if toDelete=NULL, delete what is needed directly, else append to list and postpone deletion
 		NarratorNodeIfc * narr1=&g1.getCorrespondingNarratorNode(),
 						* narr2=&g2.getCorrespondingNarratorNode();
 		bool null1=(narr1==NULL || narr1->isChainNode()),
-			 null2=(narr2==NULL || narr2->isChainNode());
-		if (null1 && null2) {
-			GraphNarratorNode * g=new GraphNarratorNode(*this,g1,g2);
-			return g;
-		} else if (!null1 && null2) {
-			GraphNarratorNode * g=(GraphNarratorNode *)narr1;
-			g->addGroupNode(g2);
-			return (GraphNarratorNode *)narr1;
-		} else if (null1 && !null2) {
-			GraphNarratorNode * g=(GraphNarratorNode *)narr2;
-			g->addGroupNode(g1);
-			return (GraphNarratorNode *)narr2;
-		} else if (narr1!=narr2) {
-			GraphNarratorNode & g_node=*(GraphNarratorNode *)narr2;
-			GraphNarratorNode * dlt_g_node= (GraphNarratorNode *)narr1;
-			for (int i=0;i<dlt_g_node->size();i++) {
-				g_node.addGroupNode((*dlt_g_node)[i]);
+			 null2=(narr2==NULL || narr2->isChainNode()),
+			 sameKey=g1.getKey()==g2.getKey();
+		if (sameKey) {
+			if (&g1==&g2)
+				return narr1->isGraphNode()?(GraphNarratorNode *)narr1:NULL;
+			GroupNode & g_node=(null2?g1:g2);
+			GroupNode & dlt_g_node=(null2?g2:g1);
+			for (int i=0;i<dlt_g_node.size();i++) {
+				g_node.addChainNode(this,dlt_g_node[i]);
 			}
-			dlt_g_node->groupList.clear();
+			dlt_g_node.list.clear();
 			if (toDelete!=NULL) {
-				if (!toDelete->contains(dlt_g_node))
-					toDelete->append(dlt_g_node);
-			} else
-				delete dlt_g_node;
-			return &g_node;
+				assert(!toDelete->contains(&dlt_g_node));
+				toDelete->append(&dlt_g_node);
+			} else {
+				all_nodes[dlt_g_node.getId()]=NULL;
+				delete &dlt_g_node;
+			}
+			if (null1 && null2) {
+				return new GraphNarratorNode(*this,g_node);
+			} else {
+				return dynamic_cast<GraphNarratorNode*>(&g_node.getCorrespondingNarratorNode());
+			}
 		} else {
-			return (GraphNarratorNode *)narr1;
+			if (null1 && null2) {
+				GraphNarratorNode * g=new GraphNarratorNode(*this,g1,g2);
+				return g;
+			} else if (!null1 && null2) {
+				GraphNarratorNode * g=(GraphNarratorNode *)narr1;
+				g->addGroupNode(g2);
+				return (GraphNarratorNode *)narr1;
+			} else if (null1 && !null2) {
+				GraphNarratorNode * g=(GraphNarratorNode *)narr2;
+				g->addGroupNode(g1);
+				return (GraphNarratorNode *)narr2;
+			} else if (narr1!=narr2) {
+				GraphNarratorNode & g_node=*(GraphNarratorNode *)narr2;
+				GraphNarratorNode * dlt_g_node= (GraphNarratorNode *)narr1;
+				for (int i=0;i<dlt_g_node->size();i++) {
+					g_node.addGroupNode((*dlt_g_node)[i]);
+				}
+				dlt_g_node->groupList.clear();
+				if (toDelete!=NULL) {
+					assert (!toDelete->contains(dlt_g_node));
+					toDelete->append(dlt_g_node);
+				} else {
+					all_nodes[dlt_g_node->getId()]=NULL;
+					delete dlt_g_node;
+				}
+				return &g_node;
+			} else {
+				return (GraphNarratorNode *)narr1;
+			}
 		}
 	}
 	void transform2ChainNodes(ChainsContainer &chains) {
@@ -745,45 +772,80 @@ private:
 	}
 #ifdef HASH_GRAPH_BUILDING
 	static bool mustMerge(GroupNode * g_node,ChainNarratorNode * c_node) {
-		int chainNum=c_node->getChainNum();
-		ChainNarratorNode & c2_node=g_node->getChainNodeInChain(chainNum);
 		//TODO: we must add also another check that makes sure no nodes in chains of this group have been merged after this possible merge (but very expensive)
-		if (!c2_node.isNull() /*&& c2_node.getIndex()>=c_node->getIndex()*/)
-			return false;
-		//check if it is within radius
+
+		int chainNum=c_node->getChainNum();
 		int c_index=c_node->getIndex();
-		int size=g_node->size();
-		for (int i=0;i<size;i++) {
-			int index=((ChainNarratorNode &)(*g_node)[i]).getIndex();
-			if (abs(index-c_index)<hadithParameters.equality_radius) {
-				return true; //indicator that it must be merged and after function returns that it was merged
-			}
+		int least,highest;
+		ChainNarratorNode & c2_node=g_node->getChainNodeInChain(chainNum);
+		if (!c2_node.isNull())
+			return false;
+		NarratorNodeIfc * n=&g_node->getCorrespondingNarratorNode();
+		if (n!=NULL && n->isGraphNode()) {
+			GraphNarratorNode * g=(GraphNarratorNode *)n;
+			ChainNarratorNode & c2_node=g->getChainNodeInChain(chainNum);
+			if (!c2_node.isNull())
+				return false;
+
+			least=min(c_index,g->getLowestIndex());
+			highest=max(c_index,g->getHighestIndex());
+		} else {
+			least=min(c_index,g_node->getLowestIndex());
+			highest=max(c_index,g_node->getHighestIndex());
 		}
+		//check if it is within radius
+		if (highest-least<=hadithParameters.equality_radius)
+			return true;
 		return false;
 	}
 	class BuildAction: public NarratorHash::FoundAction {
 	private:
 		NarratorGraph * graph;
-		ChainNarratorNode * node;
+		GraphNodeItem * node;
+		QList<NarratorNodeIfc *> * toDelete;
 		bool merged;
+	private:
+		ChainNarratorNode * cn() {return dynamic_cast<ChainNarratorNode*>(node);}
+		GroupNode * gn() {return dynamic_cast<GroupNode*>(node);}
+		bool isTotalEquality(double val) {
+		#if 0
+			return (val==1.0);
+		#else
+			double a=absVal(1.0-val);
+			assert(a>=0);
+			return a<0.0001;
+		#endif
+		}
 	public:
-		BuildAction(ChainNarratorNode * aNode,NarratorGraph * graph){
+		BuildAction(GraphNodeItem * aNode,NarratorGraph * graph,QList<NarratorNodeIfc *> * toDelete=NULL){
 			node=aNode;
 			this->graph=graph;
+			this->toDelete=toDelete;
 			merged=false;
 		}
+
 		virtual void action(const QString &, GroupNode * hashedNode, double val) {
-			if (val==1.0 && !merged) {
-				merged=mustMerge(hashedNode,node);
+			if (
+			#if 0
+					isTotalEquality(val)
+			#else
+					node->getKey()==hashedNode->getKey()
+			#endif
+				&& !merged) {
+				assert(isTotalEquality(val));
+				if (node->isChainNode())
+					merged=mustMerge(hashedNode,cn());
+				else
+					merged=true;
 				if (merged) {
-					GroupNode * group=&node->getGroupNode();
+					GroupNode * group=(node->isChainNode()?&cn()->getGroupNode():gn());
 					if (group==NULL) {
-						hashedNode->addChainNode(graph,*node);
+						hashedNode->addChainNode(graph,*cn());
 						if (hashedNode->getCorrespondingNarratorNode().isChainNode()) {
 							new GraphNarratorNode(*graph,*hashedNode);
 						}
 					} else {
-						graph->mergeNodes(*group,*hashedNode);
+						graph->mergeNodes(*group,*hashedNode,toDelete);
 					}
 				}
 			}
@@ -793,27 +855,79 @@ private:
 	class MergeAction: public NarratorHash::FoundAction {
 	private:
 		NarratorGraph * graph;
-		ChainNarratorNode * node;
+		GraphNodeItem * node;
+		QList<NarratorNodeIfc *> * toDelete;
 		bool merged;
+	private:
+		ChainNarratorNode * cn() {return dynamic_cast<ChainNarratorNode*>(node);}
+		GroupNode * gn() {return dynamic_cast<GroupNode*>(node);}
 	public:
-		MergeAction(ChainNarratorNode * aNode,NarratorGraph * graph){
+		MergeAction(GraphNodeItem * aNode,NarratorGraph * graph,QList<NarratorNodeIfc *> * toDelete=NULL){
 			node=aNode;
 			this->graph=graph;
+			this->toDelete=toDelete;
 			merged=false;
 		}
 		virtual void action(const QString &, GroupNode * hashedNode, double val) {
 			if (!merged && val>hadithParameters.equality_threshold) {
-				merged=mustMerge(hashedNode,node);
+				if (node->isChainNode())
+					merged=mustMerge(hashedNode,cn());
+				else
+					merged=true;
 				if (merged) {
-					GroupNode * group=&node->getGroupNode();
-					if (group==NULL)
-						group=new GroupNode(*graph,NULL,node);
-					graph->mergeNodes(*group,*hashedNode);
+					GroupNode * group=(node->isChainNode()?&cn()->getGroupNode():gn());
+					if (group==NULL) {
+						group=new GroupNode(*graph,NULL,cn());
+					#if 0
+						NarratorNodeIfc & n=hashedNode->getCorrespondingNarratorNode();
+						if (n.isGraphNode()) {
+							GraphNarratorNode & g=(GraphNarratorNode &)n;
+							for (int i=0;i<g.size();i++) {
+								assert(g[i].getKey()!=node->getKey());
+							}
+						}
+					#endif
+					}
+					assert(group->getKey()!=hashedNode->getKey());
+					graph->mergeNodes(*group,*hashedNode,toDelete);
 				}
 			}
 		}
 		bool isMerged() {return merged;}
 	};
+	void mergeGraphs(NarratorHash & otherHash) {
+		QList<NarratorNodeIfc *> deleteList;
+		prg->setCurrentAction("Merging Nodes");
+		prg->report(0);
+		unsigned int bit=colorGuard.getNextUnused();
+		colorGuard.use(bit);
+		int i=0,size=otherHash.size();
+		for (NarratorHash::HashTable::iterator itr=otherHash.begin();itr!=otherHash.end();itr++ ) {
+			GroupNode * node=(*itr).node;
+			if (!node->isVisited(bit)) {
+				node->setVisited(bit);
+				BuildAction bAction(node,this,&deleteList);
+				performActionToExactCorrespondingNodes(node,bAction); //search for matches for this key only
+				if (!bAction.isMerged()) {
+					//1-merge with node that it is equal to
+					MergeAction mAction(node,this,&deleteList);
+					performActionToAllCorrespondingNodes(node,mAction);
+					//2-add to hash
+					hash.addNode(node);
+				}
+			}
+			prg->report(100.0*i/size+0.5);
+			i++;
+		}
+		for (int i=0;i<deleteList.size();i++) {
+			GroupNode * g=dynamic_cast<GroupNode*>(deleteList[i]); //here we are sure all are group nodes
+			hash.remove(g);
+			all_nodes[g->getId()]=NULL;
+			delete g;
+		}
+		colorGuard.unUse(bit);
+		prg->report(100);
+	}
 #else
 	GraphNarratorNode & mergeNodes(ChainNarratorNode & n1,ChainNarratorNode & n2) {
 		//assert(!((NarratorNodeIfc &)n1).isGraphNode());
@@ -1307,7 +1421,10 @@ private:
 	}
 
 	void init(int split=-1) {
-		buildGraph(split);
+	#ifdef HASH_GRAPH_BUILDING
+		if (split<0)
+	#endif
+			buildGraph(split);
 		correctTopNodesList();
 		if (hadithParameters.break_cycles){
 			breakManageableCycles();
@@ -1441,6 +1558,8 @@ protected:
 		int id=node->getId();
 		assert(all_nodes[id]==node);
 		all_nodes[id]=NULL;
+		if (node->isGroupNode())
+			hash.remove(dynamic_cast<GroupNode*>(node));
 	}
 
 public:
@@ -1473,9 +1592,11 @@ public:
 			QString fileName=graph2->hadithFileList[index].fileName;
 			setFileName(key,fileName);
 		}
-		graph2->clearStructures();
-
+	#ifdef HASH_GRAPH_BUILDING
+		mergeGraphs(graph2->hash);
+	#endif
 		init(numChain1);
+		graph2->clearStructures();
 	}
 	void setFileName(QString * text, QString fileName) {
 		assert(text!=NULL);

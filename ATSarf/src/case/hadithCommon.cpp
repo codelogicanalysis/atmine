@@ -69,7 +69,9 @@ void readFromDatabasePreProcessedDescriptions() {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< NRC_descriptions
 			<< familyNMC_descriptions
-			<< IBN_descriptions;
+			<< IBN_descriptions
+			<< AB_descriptions
+			<< OM_descriptions;
 		file.close();
 	}
 	else
@@ -85,7 +87,9 @@ void readFromFilePreprocessedDescriptions() {
 		QDataStream in(&file);    // read the data serialized from the file
 		in	>> NRC_descriptions
 			>> familyNMC_descriptions
-			>> IBN_descriptions;
+			>> IBN_descriptions
+			>> AB_descriptions
+			>> OM_descriptions;
 		file.close();
 	}
 	else
@@ -300,7 +304,7 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 			switch(stateInfo.processedStructure) {
 			case INITIALIZE:
 				structures->initialize(structures->text);
-				display(QString("\ninit%1\n").arg(structures->chain->m_chain.size()));
+				display(structures->hadith?QString("\ninit%1\n").arg(structures->chain->m_chain.size()):"");
 				assert(currentStructure!=INITIALIZE); //must not happen
 				break;
 			case NARRATOR_CONNECTOR:
@@ -407,7 +411,6 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 					structures->nameConnectorPrim->setAB();
 				else if (stateInfo._2om)
 					structures->nameConnectorPrim->setOM();
-				//TODO: learn that word that comes after is a name
 			} else if (stateInfo.possessivePlace) {
 				assert(structures->nameConnectorPrim->isOther());
 				structures->nameConnectorPrim->setPossessive();
@@ -495,6 +498,35 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 
 #endif
 }
+inline int removeLastSpuriousNarrators(HadithData *structures) { // returns number of narrators removed
+#ifdef CHAIN_BUILDING
+	if (structures->hadith) {
+		assert(structures->chain!=NULL);
+		ChainPrim *c;
+		int removed=0;
+		while(structures->chain->m_chain.size()>0) {
+			c=structures->chain->m_chain.last();
+			if (c->isNarrator()) {
+				Narrator * n=(Narrator *)c;
+				if (n->isRasoul)
+					return removed;
+				for (int i=0;i<n->m_narrator.size();i++) {
+					if (n->m_narrator[i]->isNamePrim())
+						return removed;
+				}
+				structures->chain->m_chain.removeLast();
+				removed++;
+			}
+			else {
+				structures->chain->m_chain.removeLast();
+			}
+		}
+		return removed;
+	} else
+		return 0;
+#endif
+}
+
 inline void assertStructure(StateInfo & stateInfo,const Structure s) {
 #ifdef CHAIN_BUILDING
 	assert(stateInfo.processedStructure==s);
@@ -508,13 +540,6 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, stateData & cur
 	display(stateInfo.currentState);
 	bool ending_punc=false;
 #ifdef PUNCTUATION
-	if (stateInfo.currentPunctuationInfo.has_punctuation) {
-		display("<has punctuation>");
-		if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
-			ending_punc=true;
-			display("<ending Punctuation>");
-		}
-	}
 	if (structures->hadith) {
 		if (stateInfo.number) {
 			stateInfo.currentPunctuationInfo.has_punctuation=true;
@@ -523,6 +548,13 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, stateData & cur
 		}
 	} else {
 		stateInfo.number=false;//numbers may appear in many places in biography
+	}
+	if (stateInfo.currentPunctuationInfo.has_punctuation) {
+		display("<has punctuation>");
+		if (stateInfo.currentPunctuationInfo.fullstop && stateInfo.currentPunctuationInfo.newLine) {
+			ending_punc=true;
+			display("<ending Punctuation>");
+		}
 	}
 #endif
 	int nrc_max= (structures->hadith?hadithParameters.nrc_max:hadithParameters.bio_nrc_max);
@@ -1282,10 +1314,12 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, stateData & cur
 #ifdef REFINEMENTS
 	currentData.ibn_or_3abid=stateInfo.familyConnectorOr3abid(); //for it to be saved for next time use
 #endif
-	if (!return_value /*&& stateInfo.processedStructure!=INITIALIZE*/)
+	if (!return_value /*&& stateInfo.processedStructure!=INITIALIZE*/) {
 		fillStructure(stateInfo,INITIALIZE,structures);
-	else if (return_value==false)
+		currentData.narratorCount-=removeLastSpuriousNarrators(structures);
+	} else if (return_value==false) {
 		assert (structures->narrator==NULL);
+	}
 	return return_value;
 }
 inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, stateData & currentData){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain,currentData);}
@@ -1294,8 +1328,11 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 	bool proceedInStateMachine(StateInfo &  stateInfo,HadithData *structures, stateData & currentData ) //does not fill stateInfo.currType
 	{
 		hadith_stemmer s(structures->text,stateInfo.startPos);
-		if (stateInfo.familyNMC)
+		bool family=false;
+		if (stateInfo.familyNMC) {
 			s.tryToLearnNames=true;
+			family=true;
+		}
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
 		stateInfo.possessivePlace=false;
@@ -1432,6 +1469,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 				finish=getLastLetter_IN_currentWord(structures->text,stateInfo.startPos);
 			#ifdef REFINEMENTS
 				if (s.tryToLearnNames && removeDiacritics(structures->text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
+					display("{learned}");
 					s.name=true;
 					s.finishStem=finish;
 					s.startStem=stateInfo.startPos;
@@ -1468,7 +1506,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 	#ifdef TRYTOLEARN
 		if (!s.name && !s.nmc && !s.nrc &&!s.stopword) {
 			QString word=s.getString().toString();
-			if (stateInfo.currentPunctuationInfo.has_punctuation && s.tryToLearnNames && removeDiacritics(word).count()>=3) {
+			if ((stateInfo.currentPunctuationInfo.has_punctuation || family) && s.tryToLearnNames && removeDiacritics(word).count()>=3) {
 				display("{learned}");
 				s.name=true;
 				s.nmc=false;
