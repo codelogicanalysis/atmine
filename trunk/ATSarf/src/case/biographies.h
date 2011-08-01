@@ -169,7 +169,7 @@ public slots:
 					narratorListDisplay->setItem(count,1,new QTableWidgetItem(QString("%1").arg(i)));
 					narratorList.append(n);
 					count++;
-				#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
+				#ifdef DISPLAY_BIOGRAPHY_GRAPHY
 					ColorBiographiesAction c(i);
 					graph->performActionToAllCorrespondingNodes(n,c);
 				#endif
@@ -182,7 +182,7 @@ public slots:
 	#endif
 	}
 	void colorBiography_clicked() {
-	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
+	#ifdef DISPLAY_BIOGRAPHY_GRAPH
 		int num=biographyNum->currentText().toInt();
 		setCurrentAction("Display Graph");
 		report(0);
@@ -199,7 +199,7 @@ public slots:
 	#endif
 	}
 	void colorNarrators_clicked() {
-	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
+	#ifdef DISPLAY_BIOGRAPHY_GRAPH
 		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
 		ColorNarratorsAction::DetectedNodesMap map;
 		ColorNarratorsAction action(map);
@@ -239,7 +239,7 @@ private:
 	virtual void resetActionDisplay();
 
 	void displayUncoloredGraph(){
-	#ifndef DONT_DISPLAY_BIOGRAPHY_GRAPHY
+	#ifdef DISPLAY_BIOGRAPHY_GRAPH
 		DisplayNodeVisitor visitor;
 		GraphVisitorController c(&visitor,graph,true,true);
 		graph->DFS_traverse(c);

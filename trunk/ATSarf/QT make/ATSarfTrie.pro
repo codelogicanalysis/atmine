@@ -95,8 +95,6 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/common/global_variables.cpp \
     ../src/common/StemNode.cpp \
     ../src/common/atmTrie.cpp \
-    ../src/case/hadith_general.cpp \
-    ../src/case/hadith_1.cpp \
     ../src/case/narrator_abstraction.cpp \
     ../src/util/Math_functions.cpp \
     ../src/cache/Search_by_item_locally.cpp \

@@ -409,6 +409,7 @@ private:
 	GraphNarratorNode * graphNode;
 	QList<ChainNarratorNode *> list;
 	KeyList allKeys;
+	int lowestIndex:16, highestIndex:16;
 private:
 	friend class GraphNarratorNode;
 	friend class ChainNarratorNode;
@@ -419,18 +420,24 @@ protected:
 	friend class NarratorGraph;
 	GroupNode():GraphNodeItem() {
 		graphNode=NULL;
+		lowestIndex=-1;
+		highestIndex=-1;
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key)
 		:GraphNodeItem(g),graphNode(gNode) {
 		list.append(cNode);
 		this->key=key;
 		cNode->setCorrespondingNarratorNodeGroup(this);
+		lowestIndex=cNode->getIndex();
+		highestIndex=lowestIndex;
 	}
 	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode)
 		:GraphNodeItem(g),graphNode(gNode) {
 		list.append(cNode);
 		this->key=cNode->getKey();//cNode->getNarrator().getKey();
 		cNode->setCorrespondingNarratorNodeGroup(this);
+		lowestIndex=cNode->getIndex();
+		highestIndex=lowestIndex;
 	}
 
 	virtual NarratorNodeIfc & getChild(int index1,int ) {
@@ -453,21 +460,9 @@ public:
 		assert(index>=0 && index<size());//check redundant will be done inside [] for QList
 		return *list[index];
 	}
-	void addChainNode(NarratorGraph */*g*/,ChainNarratorNode & nar) { //we dont check for duplicates here
-	#if 0
-		for (int i=0;i<size();i++)
-		{
-			ChainNarratorNode * n2=&(*this)[i];
-			ChainNarratorNode * n1=&nar;
-			if (n1==n2)
-				return;
-			//assert (n1!=n2); //TODO...
-		}
-	#endif
-		//assert(nar.graphNode==NULL);
-		list.append(&nar);
-		nar.setCorrespondingNarratorNodeGroup(this);
-	}
+	void addChainNode(NarratorGraph * g,ChainNarratorNode & nar);  //we dont check for duplicates here
+	int getLowestIndex() {return lowestIndex;}
+	int getHighestIndex() {return highestIndex; }
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode() ;
 	int size() const{ return list.size(); }
 	QString CanonicalName() const {
@@ -553,6 +548,7 @@ class GraphNarratorNode: public NarratorNodeIfc
 {
 public:
 	typedef QList<NarratorNodeIfc *> NodeList;
+	int lowestIndex:16, highestIndex:16;
 private:
 
 	void serializeCache(QDataStream &chainIn,NarratorGraph & graph,const NodeList & list) const;
@@ -595,7 +591,11 @@ protected:
 	virtual void serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const;
 	virtual void deserializeHelper(QDataStream &chainIn,NarratorGraph & graph) ;
 
-	GraphNarratorNode():NarratorNodeIfc(){savedRank=-1;} //to be used by NULLGraphNarratorNode
+	GraphNarratorNode():NarratorNodeIfc(){//to be used by NULLGraphNarratorNode
+		savedRank=-1;
+		lowestIndex=-1;
+		highestIndex=-1;
+	}
 	friend class NarratorNodeIfc;
 	friend class GroupNode;
 public:
@@ -605,6 +605,8 @@ public:
 		assert(nar1.group==NULL);
 		assert(nar2.group==NULL);
 		assert(&nar1!=&nar2); //make sure these are not just the same node
+		lowestIndex=nar1.getIndex();
+		highestIndex=lowestIndex;
 		addChainNode(&g,nar1);
 		addChainNode(&g,nar2);
 		savedRank=-1;
@@ -616,6 +618,8 @@ public:
 		assert(g.size()>1); //not allowed to have just one chain node
 		groupList.append(&g);
 		g.setGraphNode(this);
+		lowestIndex=g.getLowestIndex();
+		highestIndex=g.getHighestIndex();
 		savedRank=-1;
 	}
 	GraphNarratorNode(NarratorGraph &graph,GroupNode & g1,GroupNode & g2)
@@ -628,6 +632,8 @@ public:
 		groupList.append(&g2);
 		g1.setGraphNode(this);
 		g2.setGraphNode(this);
+		lowestIndex=min(g1.getLowestIndex(),g2.getLowestIndex());
+		highestIndex=max(g1.getHighestIndex(),g2.getHighestIndex());
 		savedRank=-1;
 	}
 	virtual void addChainNode(NarratorGraph *g, ChainNarratorNode & nar) { //we dont check for duplicates here
@@ -641,11 +647,24 @@ public:
 		}
 		GroupNode * newGoup=new GroupNode(*g,this,&nar,key);
 		groupList.append(newGoup);
+		int index=nar.getIndex();
+		if (lowestIndex<0 || lowestIndex>index)
+			lowestIndex=index;
+		if (highestIndex<index)
+			highestIndex=index;
 	}
 	void addGroupNode(GroupNode & group) { //we dont check for duplicates here
 		groupList.append(&group);
 		group.setGraphNode(this);
+		int lIndex=group.getLowestIndex(),
+			hIndex=group.getHighestIndex();
+		if (lowestIndex<0 || lowestIndex>lIndex)
+			lowestIndex=lIndex;
+		if (highestIndex<hIndex)
+			highestIndex=hIndex;
 	}
+	int getLowestIndex() {return lowestIndex;}
+	int getHighestIndex() {return highestIndex; }
 	virtual NodeIterator childrenBegin();
 	virtual NodeIterator parentsBegin();
 	virtual NarratorNodeIfc & getCorrespondingNarratorNode() {return *this;}

@@ -206,9 +206,9 @@ public:
 		for (int i=0;i<m_narrator.count();i++) {
 			if (m_narrator[i]->getString().isEmpty())
 				continue;
-			if (m_narrator[i]->isNamePrim())
+			if (m_narrator[i]->isNamePrim()){
 				names[j].append(m_narrator[i]);
-			else {
+			} else {
 				NameConnectorPrim * c=(NameConnectorPrim*)m_narrator[i];
 				if (c->isPossessive()) {
 					possessives.append(c);
