@@ -32,6 +32,7 @@ void NarratorHash::deserialize(QDataStream & streamIn) {
 	#endif
 		assert(n!=NULL);
 		assert(n->isGroupNode());
+		assert(n->size()>0);
 		hashTable.insert(key,HashValue((GroupNode*)n,value,total));
 	}
 }

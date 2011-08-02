@@ -113,7 +113,7 @@ public:
 		connect(browse,SIGNAL(clicked()),this,SLOT(browse_clicked()));
 		setWindowTitle("Biographies");
 		this->resize(1100,700);
-		browseFileDlg=NULL;
+
 		biographyList=NULL;
 	#ifdef ERRORS_BIO
 		errors=new QTextBrowser(this);
@@ -225,7 +225,7 @@ public slots:
 	#endif
 	}
 	void browse_clicked() {
-		QString fileName=getFileName(&browseFileDlg);
+		QString fileName=graph->prg->getFileName();
 		if (!fileName.isEmpty())
 			input->setText(fileName);
 	}
@@ -237,6 +237,7 @@ private:
 	virtual void finishTaggingText();
 	virtual void setCurrentAction(const QString & s);
 	virtual void resetActionDisplay();
+	virtual QString getFileName() { return "";}
 
 	void displayUncoloredGraph(){
 	#ifdef DISPLAY_BIOGRAPHY_GRAPH
@@ -308,7 +309,6 @@ private:
 	QString * errors_text;
 #endif
 	QGridLayout * grid;
-	QFileDialog * browseFileDlg;
 
 	NarratorGraph * graph;
 	BiographyList * biographyList;
@@ -341,8 +341,7 @@ private:
 		delete graph;
 		if (biographyList!=NULL)
 			delete biographyList;
-		if (browseFileDlg!=NULL)
-			delete browseFileDlg;
+
 	}
 };
 #endif // BIOGRAPHIES_H

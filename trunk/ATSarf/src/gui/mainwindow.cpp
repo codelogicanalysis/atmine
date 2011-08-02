@@ -9,7 +9,6 @@
 #include "stemmer.h"
 #include "timeRecognizer.h"
 #include <QFileDialog>
-#include "browseDialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -64,7 +63,7 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 		c.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,-diff);
 	c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,length);
 #else
-	if (length>100) {
+	if (length>200) {
 		start=start+length-1;
 		length=5;
 		color=Qt::red;
@@ -108,6 +107,22 @@ void MainWindow::finishTaggingText()
 	c.movePosition(QTextCursor::End,QTextCursor::MoveAnchor);
 #endif
 	taggedBox->setTextCursor(c);
+}
+
+QString MainWindow::getFileName() {
+	if (browseFileDlg == NULL) {
+		QString dir = QDir::currentPath();
+		browseFileDlg = new QFileDialog(NULL, QString("Open File"), dir, QString("All Files (*)"));
+		browseFileDlg->setOptions(QFileDialog::DontUseNativeDialog);
+		browseFileDlg->setFileMode(QFileDialog::ExistingFile);
+		browseFileDlg->setViewMode(QFileDialog::Detail);
+	}
+	if (browseFileDlg->exec()){
+		QStringList files = browseFileDlg->selectedFiles();
+		QString fileName = files[0];
+		return fileName;
+	}
+	return "";
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -211,7 +226,7 @@ void MainWindow::on_fill_clicked()
 
 void MainWindow::on_cmd_browse_clicked()
 {
-	QString fileName=getFileName(&browseFileDlg);
+	QString fileName=getFileName();
 	if (!fileName.isEmpty())
 		m_ui->input->setText(fileName);
 }

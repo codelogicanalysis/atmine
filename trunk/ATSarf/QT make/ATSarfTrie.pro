@@ -65,7 +65,6 @@ HEADERS += util/text_handling.h \
     ../src/case/timeManualTagger.h \
     ../src/case/narratordetector.h \
     ../src/case/hadithCommon.h \
-    ../src/util/browseDialog.h \
     ../src/case/narratorHash.h \
     ../src/case/biographies.h
 HEADERS += trie.h \

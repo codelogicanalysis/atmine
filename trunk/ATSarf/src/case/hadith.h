@@ -14,7 +14,7 @@
 #define GENERAL_HADITH
 //#define FORCE_RANKS
 #define DISPLAY_GRAPHNODES_CONTENT
-#define DISPLAY_NODES_BEING_BROKEN
+//#define DISPLAY_NODES_BEING_BROKEN
 //#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
@@ -53,9 +53,14 @@
 #define PROGRESS_SERIALZATION
 #define SEGMENT_BIOGRAPHY_USING_POR
 #define HASH_GRAPH_BUILDING
+#define TAG_BIOGRAPHY
 
 //#define DISPLAY_BIOGRAPHY_GRAPH
 //#define TAG_HADITH
+
+#define SAVE_MERGED_GRAPH_ONLY
+#define DESERIALIZE_POR
+//#define DEBUG_BIOGRAPHY_CLUSTERING
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

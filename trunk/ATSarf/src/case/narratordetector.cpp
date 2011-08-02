@@ -36,7 +36,9 @@ private:
 				colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
 				colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
 			#endif
+			#ifdef DEBUG_BIOGRAPHY_CLUSTERING
 				qDebug()<<"<found>";
+			#endif
 			}
 		}
 		virtual void finishVisit(NarratorNodeIfc & ){ }
@@ -143,7 +145,9 @@ private:
 		}
 		return false;
 	#else
+	#ifdef DEBUG_BIOGRAPHY_CLUSTERING
 		qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
+	#endif
 		if (n1==n2)
 			return false;
 		ReachableVisitor v(n2,graph->colorGuard);
@@ -155,7 +159,9 @@ private:
 			found=v.isFound();
 		}
 		if (found) {
+		#ifdef DEBUG_BIOGRAPHY_CLUSTERING
 			qDebug()<<"found";
+		#endif
 		}
 		return found;
 	#endif
@@ -280,7 +286,7 @@ public:
 		prg->setCurrentAction("Parsing Biography");
 	#endif
 		for (;stateInfo.startPos<text_size;) {
-			if((proceedInStateMachine(stateInfo,currentBiography,currentData)==false)) {
+			if((proceedInStateMachine(stateInfo,currentBiography,currentData)==false) ||(stateInfo.nextPos>=text_size-1)) {
 			#ifdef SEGMENT_BIOGRAPHY_USING_POR
 				Biography::NarratorNodeGroups & realNarrators=currentBiography->biography->nodeGroups;
 				int num=getLargestClusterSize(realNarrators);
@@ -318,11 +324,11 @@ public:
 			}
 			/*if (stateInfo.previousPunctuationInfo.has_punctuation)
 				stateInfo.previousPunctuationInfo.fullstop=true;*/
-			if (stateInfo.previousPunctuationInfo.fullstop) {
+			/*if (stateInfo.previousPunctuationInfo.fullstop) {
 				if (currentBiography->biography!=NULL)
 					delete currentBiography->biography;
 				currentBiography->biography=new Biography(graph,text,stateInfo.startPos);
-			}
+			}*/
 
 
 		#endif
@@ -337,7 +343,7 @@ public:
 		{
 			out<<"no biography found\n";
 			chainOutput.close();
-		#if defined(TAG_HADITH)
+		#if defined(TAG_BIOGRAPHY)
 			prg->startTaggingText(*text);
 			prg->finishTaggingText();
 		#endif
@@ -360,7 +366,7 @@ public:
 		biographies=new BiographyList;
 		biographies->clear();
 	#endif
-	#if defined(TAG_HADITH)
+	#if defined(TAG_BIOGRAPHY)
 		prg->startTaggingText(*text);
 	#endif
 		while (!tester.atEnd())
@@ -370,7 +376,7 @@ public:
 		#ifdef TEST_BIOGRAPHIES
 			biographies->append(s);
 		#endif
-		#if defined(TAG_HADITH)
+		#if defined(TAG_BIOGRAPHY)
 			for (int j=0;j<s->size();j++)
 			{
 				const Narrator * n=(*s)[j];
@@ -400,8 +406,8 @@ public:
 				}
 			}
 		#else
-			hadith_out<<tester_Counter<<" ";
-			s->serialize(hadith_out);
+			//hadith_out<<tester_Counter<<" ";
+			//s->serialize(hadith_out);
 		#endif
 			tester_Counter++;
 			s->serialize(file_biography);
@@ -409,8 +415,8 @@ public:
 		chainOutput.close();
 		f.close();
 	#endif
-	#ifndef TAG_HADITH
-		prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
+	#ifndef TAG_BIOGRAPHY
+		//prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
 	#else
 		prg->finishTaggingText();
 	#endif

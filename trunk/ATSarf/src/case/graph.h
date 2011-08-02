@@ -6,7 +6,6 @@
 #include <QDir>
 #include "narratorHash.h"
 #include "graph_nodes.h"
-#include "browseDialog.h"
 #include "narratordetector.h"
 
 extern void biographies(NarratorGraph * graph);
@@ -609,6 +608,7 @@ private:
 	friend class ColorIndices;
 	friend class NarratorDetector;
 
+	friend class BiographiesWindow;
 	ATMProgressIFC *prg;
 	NarratorHash hash;
 	bool built; //needed to check if we are to fillNodes
@@ -691,6 +691,28 @@ private:
 				g_node.addChainNode(this,dlt_g_node[i]);
 			}
 			dlt_g_node.list.clear();
+
+			if (!null1 && !null2) {
+				GraphNarratorNode & graph_node=dynamic_cast<GraphNarratorNode &>(g_node.getCorrespondingNarratorNode());
+				GraphNarratorNode * dlt_graph_node= &dynamic_cast<GraphNarratorNode &>(dlt_g_node.getCorrespondingNarratorNode());
+				if(&graph_node!=dlt_graph_node) { //not enough also need to merge other corresponding group nodes
+					int size=dlt_graph_node->size();
+					for (int i=0;i<size;i++) {
+						GroupNode * dlt_group=&(*dlt_graph_node)[i];
+						if (&dlt_g_node!=dlt_group)
+							graph_node.addGroupNode(*dlt_group);
+					}
+					dlt_graph_node->groupList.clear();
+					if (toDelete!=NULL) {
+						assert (!toDelete->contains(dlt_graph_node));
+						toDelete->append(dlt_graph_node);
+					} else {
+						all_nodes[dlt_graph_node->getId()]=NULL;
+						delete dlt_graph_node;
+					}
+				}
+			}
+
 			if (toDelete!=NULL) {
 				assert(!toDelete->contains(&dlt_g_node));
 				toDelete->append(&dlt_g_node);
@@ -700,7 +722,7 @@ private:
 			}
 			if (null1 && null2) {
 				return new GraphNarratorNode(*this,g_node);
-			} else {
+			} else  {
 				return dynamic_cast<GraphNarratorNode*>(&g_node.getCorrespondingNarratorNode());
 			}
 		} else {
@@ -906,6 +928,7 @@ private:
 			GroupNode * node=(*itr).node;
 			if (!node->isVisited(bit)) {
 				node->setVisited(bit);
+				int d1=deleteList.size();
 				BuildAction bAction(node,this,&deleteList);
 				performActionToExactCorrespondingNodes(node,bAction); //search for matches for this key only
 				if (!bAction.isMerged()) {
@@ -915,15 +938,21 @@ private:
 					//2-add to hash
 					hash.addNode(node);
 				}
+				int d2=deleteList.size();
+				if (d2>d1) {
+					assert(d2-d1<=2);
+					NarratorNodeIfc * n=deleteList.last(); //even if 2 nodes have been deleted the last is the group node
+					if (n->isGroupNode())
+						hash.remove(dynamic_cast<GroupNode*>(n));
+				}
 			}
 			prg->report(100.0*i/size+0.5);
 			i++;
 		}
 		for (int i=0;i<deleteList.size();i++) {
-			GroupNode * g=dynamic_cast<GroupNode*>(deleteList[i]); //here we are sure all are group nodes
-			hash.remove(g);
-			all_nodes[g->getId()]=NULL;
-			delete g;
+			NarratorNodeIfc * n=deleteList[i];
+			all_nodes[n->getId()]=NULL;
+			delete n;
 		}
 		colorGuard.unUse(bit);
 		prg->report(100);
