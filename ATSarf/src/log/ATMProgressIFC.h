@@ -11,6 +11,7 @@ public:
 	virtual void finishTaggingText()=0;
 	virtual void setCurrentAction(const QString & s)=0;
 	virtual void resetActionDisplay()=0;
+	virtual QString getFileName()=0;
 };
 
 #endif // ATMPROGRESSIFC_H

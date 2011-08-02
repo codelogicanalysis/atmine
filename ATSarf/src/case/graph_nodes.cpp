@@ -168,7 +168,9 @@ NarratorNodeIfc * NarratorNodeIfc::deserialize(QDataStream &chainIn, NarratorGra
 void ChainNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
 	int pInt=graph.allocateSerializationNodeEquivalent(previous),
 		nInt=graph.allocateSerializationNodeEquivalent(next);
-	assert(pInt>0 || nInt>0); //at least one not null
+	//assert(pInt>0 || nInt>0); //at least one not null
+	if(!(pInt>0 || nInt>0))
+		qDebug()<<toString();
 	chainOut<<pInt
 			<<nInt;
 
@@ -232,6 +234,7 @@ void GraphNarratorNode::serializeCache(QDataStream &chainOut, NarratorGraph & gr
 void GraphNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
 	int size=groupList.size();
 	chainOut<<size;
+	assert(size>0);
 	for (int i=0;i<size;i++) {
 		GraphNodeItem & c=(*groupList[i]);
 		int cInt=graph.allocateSerializationNodeEquivalent(&c);
@@ -275,8 +278,7 @@ void GraphNarratorNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & g
 		assert(c!=NULL);
 		assert(!c->isGraphNode());
 		GroupNode* g=(GroupNode*)c;
-		groupList.append(g);
-		g->setGraphNode(this);
+		addGroupNode(*g);
 	}
 
 	//deserializeCache(chainIn,graph,parents);
@@ -288,6 +290,7 @@ void GraphNarratorNode::deserializeHelper(QDataStream &chainIn,NarratorGraph & g
 void GroupNode::serializeHelper(QDataStream &chainOut, NarratorGraph & graph) const {
 	int s=size();
 	chainOut<<s;
+	assert(s>0);
 	for (int i=0;i<s;i++) {
 		ChainNarratorNode & c=(*list[i]);
 		int cInt=graph.allocateSerializationNodeEquivalent(&c);

@@ -11,7 +11,6 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "timeRecognizer.h"
-#include "browseDialog.h"
 #include <sys/time.h>
 
 
@@ -83,12 +82,11 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #elif 0
 	if (biographyHelper(inputString,prg))
 		return -1;
-#elif 0
+#elif defined(DESERIALIZE_POR)
 	if (deserializeGraph(inputString,prg))
 		return -1;
 #else
-	QFileDialog * browseFileDlg=NULL;
-	QString fileName2=getFileName(&browseFileDlg);
+	QString fileName2=prg->getFileName();
 	if (fileName2=="")
 		return -1;
 	if (mergeGraphs(inputString,fileName2,prg))

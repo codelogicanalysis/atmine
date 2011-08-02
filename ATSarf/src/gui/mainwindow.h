@@ -20,6 +20,7 @@ public:
 	virtual void finishTaggingText();
 	virtual void setCurrentAction(const QString & s);
 	virtual void resetActionDisplay();
+	virtual QString getFileName();
 
 protected:
     void changeEvent(QEvent *e);

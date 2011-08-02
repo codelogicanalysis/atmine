@@ -164,9 +164,9 @@ private:
 		FindAllVisitor(NarratorHash * h,FoundAction & v):visitor(v),hash(h) {}
 		void visit(const QString & s, GraphNodeItem * node, int /*value*/, int /*total*/){
 			HashTable::iterator i = hash->hashTable.find(s);
+			Narrator & narr1=(dynamic_cast<ChainNarratorNode&>((*node)[0])).getNarrator();
 			while (i != hash->hashTable.end() && i.key() == s) {
 				HashValue v=*i;
-				Narrator & narr1=(dynamic_cast<ChainNarratorNode&>((*node)[0])).getNarrator();
 				Narrator & narr2=(dynamic_cast<ChainNarratorNode&>((*v.node)[0])).getNarrator();
 				double similarity=equal(narr1,narr2);
 				//double similarity=(double)(v.value)/v.total*value/total;
@@ -174,8 +174,10 @@ private:
 				//qDebug()<<s<<"\t("<<v.value<<"/"<<v.total<<")\t("<<value<<"/"<<total<<")\t"<<similarity;
 			#endif
 				if (similarity>0.0001) {
+				#if 0
 					if (node->getKey()==v.node->getKey() && similarity<1)
 						similarity=equal(narr1,narr2);
+				#endif
 					visitor.action(s,v.node,similarity);
 				}
 				++i;
