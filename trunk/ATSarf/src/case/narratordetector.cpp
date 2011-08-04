@@ -1,13 +1,15 @@
 #include "narratordetector.h"
 #include "graph.h"
 #include "narratorHash.h"
+#include <QPair>
 
 
 class NarratorDetector
 {
 private:
+	typedef Biography::MatchingNode MatchingNode;
 
-	stateData currentData;
+	StateData currentData;
 	QString * text;
 	long current_pos;
 
@@ -19,6 +21,140 @@ public:
 private:
 
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
+	class ClusterGroup;
+	class NodeItem {
+	public:
+		NarratorNodeIfc * node;
+		ClusterGroup* cluster;
+		double similarity;
+		int inDegree;
+		int outDegree;
+		int stepsToCenter;
+
+		NodeItem(const MatchingNode & mNode) {
+			node=mNode.node;
+			cluster=NULL;
+			inDegree=0;
+			outDegree=0;
+			stepsToCenter=0;
+			similarity=mNode.similarity;
+		}
+		NodeItem(NarratorNodeIfc * node,ClusterGroup* cluster,int stepsToCenter,double similarity) {
+			this->node=node;
+			this->cluster=cluster;
+			this->stepsToCenter=stepsToCenter;
+			this->similarity=similarity;
+			inDegree=0;
+			outDegree=0;
+		}
+	};
+	typedef QList<NodeItem *> NodeItemList;
+	typedef QList<NodeItemList> NodeItemGroup;
+	class ClusterGroup {
+	private:
+		int numNarrators;
+	public:
+		NarratorNodeIfc * center;
+		NodeItemGroup groups;
+	public:
+		ClusterGroup(NarratorNodeIfc * center) {
+			this->center=center;
+			numNarrators=0;
+		}
+		void addNodeItem(NodeItem * n,int narId) {
+			while (groups.size()<=narId) {
+				groups.append(NodeItemList());
+			}
+			if (groups[narId].size()==0)
+				numNarrators++;
+			groups[narId].append(n);
+			n->cluster=this;
+		}
+		int size() {
+			return groups.size();
+		}
+		NodeItemList & operator[](int i){
+			return groups[i];
+		}
+		int getNumNarrators() { //i.e. no empty size
+			return numNarrators;
+		}
+		~ClusterGroup() {
+			int size=groups.size();
+			for (int i=0;i<size;i++) {
+				int size=groups[i].size();
+				for (int j=0;j<size;j++)
+					delete groups[i][j];
+			}
+		}
+	};
+	class ClusterList {
+	private:
+		QList<ClusterGroup *> list;
+	public:
+		void addCluster(ClusterGroup * c,int id=-1){
+			if (id<0) {
+				id=list.size();
+			}
+			assert(list.size()<=id || list[id]==NULL);
+			for (int i=list.size();i<=id;i++)
+				list.append(NULL);
+			list[id]=c;
+		}
+		int size() {
+			return list.size();
+		}
+		ClusterGroup * operator[](int i){
+			return list[i];
+		}
+		~ClusterList() {
+			for (int i=0;i<list.size();i++)
+				if (list[i]!=NULL)
+					delete list[i];
+		}
+	};
+	typedef QList<NodeItem *> Cluster;
+	class ClusterScore {
+	public:
+		int narrCount, stepCount;
+		double similarityProduct;
+		ClusterScore (int narr,int steps, double similarity): narrCount(narr),stepCount(steps), similarityProduct(similarity) {}
+	};
+	class ScoredCluster {
+	public:
+		Cluster * cluster;
+		ClusterScore score;
+		NarratorNodeIfc * center;
+		ScoredCluster(NarratorNodeIfc * center,int narr,int steps=0, double similarity=0):score(narr,steps,similarity) {
+			cluster=new Cluster;
+			this->center=center;
+		}
+
+		bool operator <(const ScoredCluster & rhs) const{
+			return !(score.narrCount<rhs.score.narrCount ||
+					 (score.narrCount==rhs.score.narrCount && score.stepCount>rhs.score.stepCount) ||
+					 (score.narrCount==rhs.score.narrCount && score.stepCount==rhs.score.stepCount
+							&& score.similarityProduct<rhs.score.similarityProduct)
+					);
+		}
+	};
+	typedef QList<ScoredCluster> ScoredClusterList;
+	class Trash { //all items saved in its structures are deleted when object goes out of scope
+	public:
+		QList<Cluster *> clusters;
+		QList<ClusterGroup*> clusterGroups;
+		~Trash() {
+			int size=clusters.size();
+			for (int i=0;i<size;i++) {
+				delete clusters[i];
+			}
+			size=clusterGroups.size();
+			for (int i=0;i<size;i++) {
+				delete clusterGroups[i];
+			}
+		}
+	};
+
 	class ReachableVisitor:public NodeVisitor {
 		NarratorNodeIfc * target;
 		ColorIndices & colorGuard;
@@ -29,210 +165,190 @@ private:
 			found=false;
 		}
 		virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int) {	}
-		virtual void visit(NarratorNodeIfc & n) {
-			if (&n==target) {
-				found=true;
-			#if 0 //find a way to stop early even in a traversal where we are using a map
-				colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
-				colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
-			#endif
-			#ifdef DEBUG_BIOGRAPHY_CLUSTERING
-				qDebug()<<"<found>";
-			#endif
+		virtual bool visit(NarratorNodeIfc & n) {
+			if (!found) {
+				if (&n==target) {
+					found=true;
+				#if 0 //find a way to stop early even in a traversal where we are using a map
+					colorGuard.setAllNodesVisited(controller->getVisitColorIndex()); //to stop further traversal
+					colorGuard.setAllNodesVisited(controller->getFinishColorIndex());
+				#endif
+				#ifdef DEBUG_BIOGRAPHY_CLUSTERING
+					qDebug()<<"<found>";
+				#endif
+				}
 			}
+			return !found;
 		}
 		virtual void finishVisit(NarratorNodeIfc & ){ }
 		virtual void detectedCycle(NarratorNodeIfc & ){ }
 		virtual void finish(){	}
 		bool isFound() {return found;}
 	};
-	class Cluster;
-	class NodeItem {
+	class ClusteringVisitor:public NodeVisitor {
+		ClusterGroup & cluster;
+		NodeItemGroup & groups;
 	public:
-		NarratorNodeIfc * node;
-		Cluster* cluster;
-		int inDegree;
-		int outDegree;
-		NodeItem(NarratorNodeIfc * n) {
-			node=n;
-			cluster=NULL;
-			inDegree=0;
-			outDegree=0;
+		ClusteringVisitor(ClusterGroup & aCluster,NodeItemGroup & g):cluster(aCluster),groups(g) {}
+		void initialize(){	}
+		virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int) {	}
+		virtual bool visit(NarratorNodeIfc & n) {
+			if (!n.hasSomeBiographyIndex())
+				return false;
+			int size=n.getBiographIndexCount();
+			for (int i=0;i<size;i++) {
+				int index=n.getBiographyIndex(i);
+			#if 0
+				double similarity=-1;
+				NodeItemList & l=groups[index];
+				for (int j=0;j<l.size();j++) {
+					if (l.at(j)->node==&n) {
+						similarity=l.at(j)->similarity;
+						break;
+					}
+				}
+				assert(similarity>0);
+			#else
+				double similarity=1;
+			#endif
+				NodeItem * item=new NodeItem(&n,&cluster,controller->getParentStack().size(),similarity);
+				cluster.addNodeItem(item,index);
+			}
+			return true;
 		}
+		virtual void finishVisit(NarratorNodeIfc & ){ }
+		virtual void detectedCycle(NarratorNodeIfc & ){ }
+		virtual void finish(){	}
 	};
-	typedef QList<NodeItem *> NodeItemList;
-	typedef QList<NodeItemList> NodeItemGroup;
-	class Cluster {
-	public:
-		int id;
-		NodeItemList list;
-		Cluster(NodeItem * n1,NodeItem * n2,int cluster_id){
-			list.append(n1);
-			list.append(n2);
-			n1->cluster=this;
-			n2->cluster=this;
-			id=cluster_id;
-		}
-		void addNodeItem(NodeItem * n) {
-			list.append(n);
-			n->cluster=this;
-		}
-		int size() {
-			return list.size();
-		}
-		NodeItem * operator[](int i){
-			return list[i];
-		}
-		~Cluster() {
-			for (int i=0;i<list.size();i++)
-				delete list[i];
-		}
-	};
-	class ClusterList {
+
+	class ClusterIterator {
 	private:
-		QList<Cluster *> list;
+		ClusterGroup & clusterGroup;
+		QList<int> indicies;
+		int currentIndex;
 	public:
-		void addCluster(Cluster * c,int id=-1){
-			if (id<0 && c->id>=0)
-				id=c->id;
-			if (id>=0 && c->id<0)
-				c->id=id;
-			if (id<0 && c->id<0) {
-				id=list.size();
-				c->id=id;
+		ClusterIterator(ClusterGroup & c): clusterGroup(c) {
+			assert(c.size()>0);
+			for (int i=0;i<clusterGroup.size();i++) {
+				indicies<<0;
 			}
-			assert(c->id==id);
-			assert(list.size()<=id || list[id]==NULL);
-			for (int i=list.size();i<=id;i++)
-				list.append(NULL);
-			list[id]=c;
+			currentIndex=0;
 		}
-		int size() {
-			return list.size();
-		}
-		Cluster * operator[](int i){
-			return list[i];
-		}
-		~ClusterList() {
-			for (int i=0;i<list.size();i++)
-				if (list[i]!=NULL)
-					delete list[i];
-		}
-		void mergeNodeItems(NodeItem * n1,NodeItem * n2) {
-			if (n1->cluster==NULL && n2->cluster==NULL){
-				Cluster * c=new Cluster(n1,n2,size());
-				addCluster(c);
-			} else if (n1->cluster!=NULL && n2->cluster==NULL) {
-				n1->cluster->addNodeItem(n2);
-				assert(n2->cluster==n1->cluster);
-			} else if (n2->cluster!=NULL && n1->cluster==NULL) {
-				n2->cluster->addNodeItem(n1);
-				assert(n2->cluster==n1->cluster);
-			} else {//in both cases:n1!=n2 or n1==n2
-				return;
+		ClusterIterator & operator++() {
+			if	(clusterGroup[currentIndex].size()==0 || indicies[currentIndex]==clusterGroup[currentIndex].size()-1 ||
+					(clusterGroup[currentIndex].size()>0 && clusterGroup[currentIndex][indicies[currentIndex]]->stepsToCenter==1)
+				) {
+				indicies[currentIndex]=0;
+				while (++currentIndex<clusterGroup.size() && clusterGroup[currentIndex].size()==0)
+					;
+				if (!isFinished()) {
+					operator ++();
+				#if 0
+					for (int i=0;i<currentIndex;i++) {
+						assert (indicies[i]==0);
+					}
+				#endif
+					if (!isFinished())
+						currentIndex=0;
+				}
+			} else {
+				indicies[currentIndex]++;
 			}
+			return *this;
+		}
+		bool isFinished() const {
+			assert(currentIndex<=clusterGroup.size());
+			return currentIndex==clusterGroup.size();
+		}
+		ScoredCluster operator*() {
+			ScoredCluster sc(clusterGroup.center,clusterGroup.getNumNarrators(),0,1);
+			Cluster &c=*sc.cluster;
+			ClusterScore &s=sc.score;
+			for (int i=0;i<indicies.size();i++) {
+				if (clusterGroup[i].size()>0) {
+					NodeItem * n=clusterGroup[i][indicies[i]];
+					c<<n;
+					s.stepCount+=n->stepsToCenter;
+					s.similarityProduct*=n->similarity;
+				}
+			}
+			return sc;
 		}
 	};
 
-	bool near(NarratorNodeIfc *n1, NarratorNodeIfc *n2) {
-	#if 0
-		ChainNodeIterator itr=n1.begin();
-		for (;!itr.isFinished();++itr) {
-			if (&itr.getChild()==&n2)
-				return true;
-			if (&itr.getParent()==&n2)
-				return true;
-		}
-		return false;
-	#else
-	#ifdef DEBUG_BIOGRAPHY_CLUSTERING
-		qDebug()<<"--test if near--("<<n1->CanonicalName()<<","<<n2->CanonicalName()<<")";
-	#endif
-		if (n1==n2)
-			return false;
-		ReachableVisitor v(n2,graph->colorGuard);
-		GraphVisitorController controller(&v,NULL);
-		graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,1);
-		bool found=v.isFound();
-		if (!found) {
-			graph->BFS_traverse(controller,hadithParameters.bio_max_reachability,n1,-1);
-			found=v.isFound();
-		}
-		if (found) {
-		#ifdef DEBUG_BIOGRAPHY_CLUSTERING
-			qDebug()<<"found";
-		#endif
-		}
-		return found;
-	#endif
-	}
-	bool near(NarratorNodeIfc * n, const Biography::NarratorNodeList & list) {
-		for (int i=0;i<list.size();i++) {
-			if (near(n,list[i]))
-				return true;
-		}
-		return false;
-	}
+
 	int getLargestClusterSize(Biography::NarratorNodeGroups & list) {
+		Trash trash; //for no leakage
+
 		NodeItemGroup nodeItemgroups;
 		//1-transform to nodeItems:
-		for (int i=0;i<list.size();i++) {
+		int listCount=list.size();
+		for (int i=0;i<listCount;i++) {
 			int size=list[i].size();
 			if (size>0) {
 				nodeItemgroups.append(NodeItemList());
 				for (int j=0;j<size;j++) {
 					NodeItem * node=new NodeItem(list[i][j]);
 					nodeItemgroups[i].append(node);
+					node->node->addBiographyIndex(i);
 				}
+				qSort(nodeItemgroups[i]);
 			}
 		}
-		ClusterList clusters;
-		//1-each node put it in its own list or merge it with a group of already found if it is near them
-		int size=nodeItemgroups.size();
-		for (int i=0;i<size;i++) {
-			for (int j=i+1;j<size;j++) {
-				int size1=nodeItemgroups[i].size();
-				int size2=nodeItemgroups[j].size();
-				for (int i2=0;i2<size1;i2++) {
-					for (int j2=0;j2<size2;j2++) {
-						NodeItem * item1=nodeItemgroups[i][i2],
-								 * item2=nodeItemgroups[j][j2];
-						if (near(item1->node,item2->node)) {
-							clusters.mergeNodeItems(item1,item2);
-						}
+
+		//find all possible clusters (from all possible cluster centers)
+		ScoredClusterList clusters;
+		int groupSize=nodeItemgroups.size();
+		for (int i=0;i<groupSize;i++) {
+			for (int j=0;j<nodeItemgroups[i].size();j++) {
+				NarratorNodeIfc * n=nodeItemgroups[i][j]->node;
+				ClusterGroup *c =new ClusterGroup(n);
+				ClusteringVisitor v(*c,nodeItemgroups);
+				GraphVisitorController cont(&v,graph);
+				graph->DFS_traverse(*n,cont,groupSize-1,1);
+				graph->DFS_traverse(*n,cont,groupSize-1,-1);
+				if (c->getNumNarrators()>=hadithParameters.bio_narr_min) {
+					ClusterIterator itr(*c);
+					for (;!itr.isFinished();++itr) {
+						clusters.append(*itr);
+						trash.clusters.append(clusters.last().cluster);
 					}
 				}
+				trash.clusterGroups.append(c);
 			}
 		}
-		//3-return largest list size
-		int largest=1;
-		int index=-1;
-		for (int i=0;i<clusters.size();i++) {
-			if (clusters[i]->size()>largest) {
-				largest=clusters[i]->size();
-				index=i;
+		listCount=nodeItemgroups.size();
+		for (int i=0;i<listCount;i++) {
+			NodeItemList & l=nodeItemgroups[i];
+			int size=l.size();
+			for (int j=0;j<size;j++) {
+				l[j]->node->clearBiographyIndicies();
 			}
 		}
+
+		//3- Sort clusters according to scores and return first in the list
+		qSort(clusters);
+		if (clusters.size()==0)
+			return 0;
 	#if 1
-		if (index>=0) {
-			qDebug()<<largest<<"\n";
-			for (int i=0;i<clusters[index]->size();i++){
-				qDebug()<<(*clusters[index])[i]->node->CanonicalName()<<"\n";
-			}
-			qDebug()<<"\n";
+		ScoredCluster & c=clusters[0];
+		qDebug()<<"["<<c.center->CanonicalName()<<"]\n("<<c.score.narrCount<<","<<c.score.stepCount<<","<<c.score.similarityProduct<<")\n";
+		for (int i=0;i<c.cluster->size();i++){
+			qDebug()<<(*c.cluster)[i]->node->CanonicalName()<<"\n";
 		}
+		qDebug()<<"\n";
 	#endif
-		return largest;
+		return c.score.narrCount;
 	}
 
 #endif
 
 public:
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
-	NarratorDetector(NarratorGraph * graph) {this->graph=graph; }
-	NarratorDetector() {}
+	NarratorDetector(NarratorGraph * graph) {this->graph=graph; biographies=NULL; }
+	NarratorDetector() {biographies=NULL;}
 #else
-	NarratorDetector() {graph=NULL;}
+	NarratorDetector() {graph=NULL; biographies=NULL;}
 #endif
 	int segment(QString input_str,ATMProgressIFC *prg)  {
 		QFile chainOutput(chainDataStreamFileName);

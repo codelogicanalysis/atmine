@@ -39,8 +39,8 @@ public:
 		parse=new QPushButton("&Parse Biographies",this);
 		colorBiography=new QPushButton("Color &Biography",this);
 		colorNarrators=new QPushButton("Color &Narrators",this);
-		nmc_label=new QLabel("NMC min", this);
-		nrc_label=new QLabel("NRC min",this);
+		nmc_label=new QLabel("NMC max", this);
+		nrc_label=new QLabel("NRC max",this);
 		narr_label=new QLabel("NARR min",this);
 		reachability_label=new QLabel("REACH max",this);
 		nmc_max=new QTextEdit("1",this);

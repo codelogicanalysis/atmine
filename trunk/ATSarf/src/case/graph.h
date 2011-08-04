@@ -21,7 +21,7 @@ protected:
 	friend class GraphVisitorController;
 public:
 	virtual void initialize()=0;
-	virtual void visit(NarratorNodeIfc & n)=0;
+	virtual bool visit(NarratorNodeIfc & n)=0;
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int child_num)=0;
 	virtual void finish()=0;
 
@@ -171,7 +171,7 @@ public:
 			}
 		}
 	}
-	void visit(NarratorNodeIfc & n)
+	bool visit(NarratorNodeIfc & n)
 	{
 		if (keep_track_of_nodes && graph!=NULL) {
 			n.resetVisited(finishIndex);
@@ -185,16 +185,17 @@ public:
 			else
 				g->fillParents();
 		}
-		visitor->visit(n);
+		bool retVal=visitor->visit(n);
 
 		if (!keep_track_of_nodes)
-			return ;
+			return retVal;
 		if (graph!=NULL) {
 			n.setVisited(visitIndex);
 		}
 		else {
 			(*visitedMap)[&n]=VISITED;
 		}
+		return retVal;
 	}
 	bool isFinished( NarratorNodeIfc & node)
 	{
@@ -343,7 +344,7 @@ public:
 		QString s1=getAndInitializeDotNode(n1), s2=getAndInitializeDotNode(n2);
 		d_out<<s1<<"->"<<s2<<";\n";
 	}
-	virtual void visit(NarratorNodeIfc & n) //this is enough
+	virtual bool visit(NarratorNodeIfc & n) //this is enough
 	{
 		QString s=getAndInitializeDotNode(n);
 		displayChainNumsEndingJustAfter(n,s);
@@ -351,6 +352,7 @@ public:
 		if (n.isGraphNode())
 			out<<n.toString()<<"\n";
 	#endif
+		return true;
 	}
 	virtual void finishVisit(NarratorNodeIfc & ){}
 	virtual void detectedCycle(NarratorNodeIfc & n)
@@ -492,7 +494,7 @@ public:
 	}
 	void initialize(){ hash->clear();}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc &, int ){	}
-	virtual void visit(NarratorNodeIfc & n) {
+	virtual bool visit(NarratorNodeIfc & n) {
 		assert(!n.isGroupNode());
 		if (n.isGraphNode()) {
 			for (int i=0;i<n.size();i++) {
@@ -505,6 +507,7 @@ public:
 			assert(g!=NULL);
 			hash->addNode(g);
 		}
+		return true;
 	}
 	virtual void finishVisit(NarratorNodeIfc & ){}
 	virtual void detectedCycle(NarratorNodeIfc & ){}
@@ -533,9 +536,8 @@ public:
 		n1.setRank(rank1);
 		if (rank2>highest_rank)
 			highest_rank=rank2;
-
 	}
-	virtual void visit(NarratorNodeIfc &) {	}
+	virtual bool visit(NarratorNodeIfc &) { return true; }
 	virtual void finishVisit(NarratorNodeIfc & ){ }
 	virtual void detectedCycle(NarratorNodeIfc & ){ }
 	virtual void finish(){	}
@@ -556,8 +558,8 @@ private:
 public:
 	LoopBreakingVisitor(double equality_threshold) {threshold=equality_threshold; }
 	virtual void initialize() {  }
-	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ) { 	}
-	virtual void visit(NarratorNodeIfc &) {	}
+	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ) {  }
+	virtual bool visit(NarratorNodeIfc &) {	return true; }
 	virtual void finishVisit(NarratorNodeIfc & ){}
 	virtual void detectedCycle(NarratorNodeIfc & n)
 	{
@@ -1208,116 +1210,6 @@ private:
 		DFS_traverse(c);
 		prg->report(100);
 	}
-	void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor)
-	{
-		visitor.visit(n);
-	#if 0
-		if(!all_nodes.contains(&n)) {
-			all_nodes.append(&n);
-			qDebug()<<"["<<n.CanonicalName()<<"]";
-		}
-	#elif 0
-		assert(all_nodes.contains(&n));
-	#endif
-	#ifdef DEBUG_DFS_TRAVERSAL
-		int size=n.size();
-		qDebug()<<"parent:"<<n.toString()<<" "<<size<<"\n";
-	#endif
-		//n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
-		NodeIterator itr=n.childrenBegin();
-		for (;!itr.isFinished();++itr) {
-			NarratorNodeIfc & c=itr.getChild();
-			int i=0,j=0;
-			if (itr.isChainIterator()) {
-				i=itr.getGroupIndex();
-				j=itr.getChainIndex();
-			} else {
-				i=itr.getIndex();
-			}
-		#ifdef DEBUG_DFS_TRAVERSAL
-			qDebug()<<n.CanonicalName()<<".child("<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
-		#endif
-			if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j))
-			{
-				bool prev_visited=visitor.isPreviouslyVisited(c);
-				visitor.visit(n,c,i,j);
-				if (!prev_visited)
-					DFS_traverse(c,visitor);
-			}
-		}
-		visitor.finishVisit(n);
-	}
-	static void BFS_traverse(GraphVisitorController & visitor, int maxLevels,NarratorNodeIfc* node=NULL,int direction=1)
-	{//if direction>0, we go to child,else to parent
-	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
-	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
-
-		assert(visitor.getGraph()==NULL || node==NULL); //use controller graph or nodes we have
-		visitor.initialize(direction);
-		QQueue<NarratorNodeIfc *> queue;
-		int size;
-		if (node==NULL) {
-			NarratorGraph * graph=visitor.getGraph();
-			size=graph->top_nodes.size();
-			for (int i=0; i<size;i++) {
-				NarratorNodeIfc * tNode=graph->top_nodes[i];
-				queue.enqueue(tNode);
-			}
-			direction=1; //if we are starting at top nodes, it is understood that direction is toward children
-		} else {
-			size=1;
-			queue.enqueue(node);
-		}
-		int levelCount=0;
-		int numNodesPerLevel=size;
-		while (!queue.isEmpty()) {
-			if (maxLevels>=0){ //if we are interested to stop after some level
-				if (numNodesPerLevel==0) {
-					levelCount++;
-					if (levelCount>maxLevels) {
-						visitor.finish();
-						return;
-					}
-					numNodesPerLevel=queue.size();
-				}
-				numNodesPerLevel--; //we check then decrement, to make sure we are visiting the last valid node
-			}
-			NarratorNodeIfc & n=*(queue.dequeue());
-			visitor.visit(n);
-			if (maxLevels>=0 && levelCount==maxLevels) //if we are on last level no need to enque its children or parents
-				continue;
-		#ifdef DEBUG_BFS_TRAVERSAL
-			int size=n.size();
-			qDebug()<<(direction>0?"parent:":"child:")<<n.toString()<<" "<<size<<"\n";
-		#endif
-			NodeIterator itr=(direction>0?n.childrenBegin():n.parentsBegin());
-			for (;!itr.isFinished();++itr) {
-				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
-				int i=0,j=0;
-				if (itr.isChainIterator()) {
-					i=itr.getGroupIndex();
-					j=itr.getChainIndex();
-				} else {
-					i=itr.getIndex();
-				}
-			#ifdef DEBUG_BFS_TRAVERSAL
-				qDebug()<<n.CanonicalName()<<(direction>0?".child(":".parent(")<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
-			#endif
-				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j)) {
-					#ifdef DEBUG_BFS_TRAVERSAL
-						qDebug()<<"\t-->traversed\n";
-					#endif
-					bool prev_visited=visitor.isPreviouslyVisited( c);
-					visitor.visit(n,c,i,j);
-					if (!prev_visited)
-						queue.enqueue(&c);
-				}
-			}
-			visitor.finishVisit(n);
-		}
-		visitor.finish();
-	}
-
 	void printChains(){
 		QList<int> chainNums;
 		QList<ChainNarratorNode *> topOfChain;
@@ -1577,6 +1469,102 @@ private:
 		return false;
 	}
 
+	class DFS_Helper {
+	private:
+		GraphVisitorController & visitor;
+		NarratorNodeIfc * node;
+		int direction;
+		int maxLevels;
+	private:
+		inline void continueTraversal(NarratorNodeIfc & n,int levelsLeft=-1) {
+		#if 0
+			if(!all_nodes.contains(&n)) {
+				all_nodes.append(&n);
+				qDebug()<<"["<<n.CanonicalName()<<"]";
+			}
+		#elif 0
+			assert(all_nodes.contains(&n));
+		#endif
+		#ifdef DEBUG_DFS_TRAVERSAL
+			int size=n.size();
+			qDebug()<<"parent:"<<n.toString()<<" "<<size<<"\n";
+		#endif
+			//n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
+			NodeIterator itr=(direction>0?n.childrenBegin():n.parentsBegin());
+			for (;!itr.isFinished();++itr) {
+				NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
+				int i=0,j=0;
+				if (itr.isChainIterator()) {
+					i=itr.getGroupIndex();
+					j=itr.getChainIndex();
+				} else {
+					i=itr.getIndex();
+				}
+			#ifdef DEBUG_DFS_TRAVERSAL
+				qDebug()<<n.CanonicalName()<<".child("<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+			#endif
+				if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j))
+				{
+					bool prev_visited=visitor.isPreviouslyVisited(c);
+					visitor.visit(n,c,i,j);
+					if (!prev_visited) {
+						if (levelsLeft<0) //i think this reduces the stack size, but i am not sure
+							traverse(c);
+						else
+							traverse(c,levelsLeft);
+					}
+				}
+			}
+		}
+		void traverse(NarratorNodeIfc & n,int levelsLeft) {
+			if (visitor.visit(n)) {
+				if (levelsLeft>0) {
+					levelsLeft--;
+				} else if (levelsLeft==0) {
+					visitor.finishVisit(n);
+					return;
+				}
+				continueTraversal(n,levelsLeft);
+			}
+			visitor.finishVisit(n);
+		}
+		void traverse(NarratorNodeIfc & n) {
+			if (visitor.visit(n))
+				continueTraversal(n);
+			visitor.finishVisit(n);
+		}
+
+	public:
+		DFS_Helper(GraphVisitorController & aVisitor):visitor(aVisitor),direction(1),maxLevels(-1) {
+		//traversal of all graph
+			NarratorGraph * graph=visitor.getGraph();
+			assert(graph!=NULL);
+			node=NULL;
+		}
+		DFS_Helper(GraphVisitorController & aVisitor, NarratorNodeIfc * node,int direction=1,int levels=-1):visitor(aVisitor),maxLevels(levels){
+		//if direction>0, we go to child,else to parent
+		//maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
+			this->direction=direction;
+			this->node=node;
+			assert(node!=NULL);
+		}
+		void operator()() {
+			visitor.initialize();
+			NarratorGraph * graph=visitor.getGraph();
+			if (node==NULL) {
+				assert(graph!=NULL);
+				for (int i=0; i<graph->top_nodes.size();i++) {
+					NarratorNodeIfc * node=graph->top_nodes[i];
+					if (!visitor.isPreviouslyVisited(*node))
+						traverse(*node);
+				}
+			} else {
+				traverse(*node,maxLevels);
+			}
+			visitor.finish();
+		}
+	};
+
 protected:
 	void addNode(NarratorNodeIfc * node) { //TODO: check all_nodes is used correctly, not modified in another place
 		all_nodes.push_back(node);
@@ -1634,20 +1622,91 @@ public:
 		setHadithStringSerializationEquivalent(text, size);
 		hadithFileList.append(HadithFileDetails(fileName));
 	}
-	void DFS_traverse(GraphVisitorController & visitor)
-	{
-		visitor.initialize();
-		//int size=top_nodes.size();
-		for (int i=0; i<top_nodes.size();i++)
-		{
-			NarratorNodeIfc * node=top_nodes[i];
-			if (!visitor.isPreviouslyVisited(*node))
-				DFS_traverse(*node,visitor);
-		}
-		visitor.finish();
+	void DFS_traverse(GraphVisitorController & visitor) {
+		DFS_Helper d(visitor);
+		d();
 	}
 	void BFS_traverse(GraphVisitorController & visitor){
 		BFS_traverse(visitor,1);
+	}
+	static void DFS_traverse(NarratorNodeIfc & n,GraphVisitorController & visitor,int maxLevels=-1,int direction=1) {
+		//if direction>0, we go to child,else to parent
+		//maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
+		DFS_Helper d(visitor,&n,direction,maxLevels);
+		d();
+	}
+	static void BFS_traverse(GraphVisitorController & visitor, int maxLevels,NarratorNodeIfc* node=NULL,int direction=1)
+	{//if direction>0, we go to child,else to parent
+	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
+	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
+
+		assert(visitor.getGraph()==NULL || node==NULL); //use controller graph or nodes we have
+		visitor.initialize(direction);
+		QQueue<NarratorNodeIfc *> queue;
+		int size;
+		if (node==NULL) {
+			NarratorGraph * graph=visitor.getGraph();
+			size=graph->top_nodes.size();
+			for (int i=0; i<size;i++) {
+				NarratorNodeIfc * tNode=graph->top_nodes[i];
+				queue.enqueue(tNode);
+			}
+			direction=1; //if we are starting at top nodes, it is understood that direction is toward children
+		} else {
+			size=1;
+			queue.enqueue(node);
+		}
+		int levelCount=0;
+		int numNodesPerLevel=size;
+		while (!queue.isEmpty()) {
+			if (maxLevels>=0){ //if we are interested to stop after some level
+				if (numNodesPerLevel==0) {
+					levelCount++;
+					if (levelCount>maxLevels) {
+						visitor.finish();
+						return;
+					}
+					numNodesPerLevel=queue.size();
+				}
+				numNodesPerLevel--; //we check then decrement, to make sure we are visiting the last valid node
+			}
+			NarratorNodeIfc & n=*(queue.dequeue());
+			if (visitor.visit(n)) {
+				if (maxLevels>=0 && levelCount==maxLevels) { //if we are on last level no need to enque its children or parents
+					visitor.finishVisit(n);
+					continue;
+				}
+			#ifdef DEBUG_BFS_TRAVERSAL
+				int size=n.size();
+				qDebug()<<(direction>0?"parent:":"child:")<<n.toString()<<" "<<size<<"\n";
+			#endif
+				NodeIterator itr=(direction>0?n.childrenBegin():n.parentsBegin());
+				for (;!itr.isFinished();++itr) {
+					NarratorNodeIfc & c=(direction>0?itr.getChild():itr.getParent());
+					int i=0,j=0;
+					if (itr.isChainIterator()) {
+						i=itr.getGroupIndex();
+						j=itr.getChainIndex();
+					} else {
+						i=itr.getIndex();
+					}
+				#ifdef DEBUG_BFS_TRAVERSAL
+					qDebug()<<n.CanonicalName()<<(direction>0?".child(":".parent(")<<i<<","<<j<<"):"<<(!c.isNull()?c.CanonicalName():"null")<<"\n";
+				#endif
+					if (!c.isNull() && !visitor.isPreviouslyVisited(n, c,i,j)) {
+						#ifdef DEBUG_BFS_TRAVERSAL
+							qDebug()<<"\t-->traversed\n";
+						#endif
+						bool prev_visited=visitor.isPreviouslyVisited( c);
+						visitor.visit(n,c,i,j);
+						if (!prev_visited)
+							queue.enqueue(&c);
+					}
+				}
+			}
+			visitor.finishVisit(n);
+		}
+		visitor.finish();
 	}
 	GraphNodeItem * getNodeMatching(Narrator & n) {
 	#if 0

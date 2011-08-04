@@ -531,7 +531,7 @@ connector word we reset the word counters that we
 compare against the thresholds. 
 
 (Figure~\ref{f:chain} is confusing since it misses some information uses other symbols like 
-those of $\theta$ and is redundant anyways)
+those of $\theta$ and is redundant with what follows)
 
 
 \subsection{The hadith controller}
@@ -632,8 +632,6 @@ we report in Section~\ref{sec:results}.
 
 \subsection{Optimizations}
 
-(explain better and merged information present about them in "Results" section)
-
 In addition to the controller, 
 NaGEMA uses punctuation marks to refine its analysis and 
 increase the accuracy of name detection, narration detection and narrator boundaries. 
@@ -644,6 +642,8 @@ NaGEMA learns names of narrators that consist of words missing from
 the Sarf lexicon.
 NaGEMA learns the narrator names based on their context as they occurred 
 between narrator connectors or contained name connectors. 
+
+(explain better and merged information present about them in "Results" section)
 
 \section{The narrator graph}
 \label{sec:graph}
@@ -828,11 +828,7 @@ string similarity techniques can not.
 
 \subsubsection{MultiKey Hashing}
 
-(explain why suitable)
-
-\subsubsection{Three-Level Hierarchy Structure for Graph Nodes}
-
-(possibly omit this info, since is complicated)
+(explain what are the keys used for each value and why suitable)
 
 
 \section{Related work }
@@ -1101,9 +1097,9 @@ indicative phrase.
 Narrator boundary accuracy showed similar results between iTree and 
 NaGEMA since we augmented iTree with the names from the lexicon of Sarf. 
 
-\subsection{On Unorganized hadith books}
-
-(report results on such hadith books)
+%\subsection{On Unorganized hadith books}
+%
+%(report results on such hadith books)
 
 \subsection{Effect of punctuation and learning}
 
@@ -1175,7 +1171,7 @@ Finally, the distance metric had 0.993 precision,
 
 (explain why successful on this problem)
 
-(show detailed statistics and compare against that of eNarrator)
+(show detailed statistics and compare against that of eNarrator which uses a similarity string comparison appraoch)
 
 \subsection{POR Correctness}
 
@@ -1187,11 +1183,58 @@ Finally, the distance metric had 0.993 precision,
 
 \subsection{Genealogical Lists in the Bible}
 
-(explain what will be equivalent of NMC and NRC and how it will work
+(explain what will be equivalent of NMC and NRC and how it will work)
+
+(Here is a sophisticated example:
+``This is the book of Adam’s history. In the day of God’s creating Adam he made him in the likeness of God. Male and female he created them. After that he blessed them and called their name Man in the day of their being created. And Adam lived on for a hundred and thirty years. Then he became father to a son in his likeness, in his image, and called his name Seth. And the days of Adam after his fathering Seth came to be eight hundred years. Meanwhile he became father to sons and daughters. So all the days of Adam that he lived amounted to nine hundred and thirty years and he died. And Seth lived on for a hundred and five years. Then he became father to E′nosh. And after his fathering E′nosh Seth continued to live eight hundred and seven years. Meanwhile he became father to sons and daughters. So all the days of Seth amounted to nine hundred and twelve years and he died. And E′nosh lived on for ninety years. Then he became father to Ke′nan. And after his fathering Ke′nan E′nosh continued to live eight hundred and fifteen years. Meanwhile he became father to sons and daughters. So all the days of E′nosh amounted to nine hundred and five years and he died...'' (Genesis 5:1-11)
+
+
+Here is a simple example:
+
+``Adam, Seth, E′nosh,  Ke′nan, Ma‧hal′a‧lel, Ja′red,  E′noch, Me‧thu′se‧lah, La′mech,  Noah, Shem, Ham and Ja′pheth. The sons of Ja′pheth were Go′mer and Ma′gog and Ma′da‧i and Ja′van and Tu′bal and Me′shech and Ti′ras. And the sons of Go′mer were Ash′ke‧naz and Ri′phath and To‧gar′mah. And the sons of Ja′van were E‧li′shah and Tar′shish, Kit′tim and Ro′da‧nim. The sons of Ham were Cush and Miz′ra‧im, Put and Ca′naan.'' (1 Chronicles 1:1-8)
+)
+
+In many cases, such lists cover overlapping sections and when they do, they sometimes exhibit some seeming contradictions 
+due to nicknames and other reasons. Detecting those conflicts is a task that has been performed by countless 
+number of Bible students, theologians and historians. 
+Their results have been published in articles and books; however, almost all of them are in written format 
+and rarely displayed the genealogical graphs to make it easier for the reader to pinpoint those conflicts and visualize them.
+
+In addition, being able to create a comprehensive genealogical graph from all biblical accounts would greatly enhance its study,
+since readers would be able to better understand a character's genealogical context and life span. Such comprehensive graphs can be tagged
+with time durations between a father and his giving birth of his sons as is common in many biblical accounts...
+
+\subsection{Organizing Quoted Email Replies/Forwards}
+
+(we can use the "FROM:" and punctuation to extract the sender and the body of the email and organize a 
+received email into individual chains of replies/forwards. Also the Inbox can be merged into a POR of contacts with whom a user communicates and the history of their communication, as in the case of the hadith...)
 
 \subsection{Place Names in Travel Itineraries}
 
 (check if it can be applicable)
+
+(Here is an example from wikipedia ($http://wikitravel.org/en/Silk_Road$):
+
+-Northern Silk Route \\
+Dunhuang to Hami \\
+Hami to Turfan \\ 
+Turfan to Korla \\
+Korla to Kashgar  
+
+-Middle Silk Route \\ 
+Dunhuang to Cherchen \\
+Cherchen to Korla \\
+Korla to Kashgar 
+
+-Southern (Jade) Silk Route \\
+Dunhuang to Cherchen \\
+Cherchen to Khotan \\
+Khotan to Yarkand \\
+Yarkand to Kashgar \\
+)
+
+In many cases, these itineraries contain some common places and merging them in a POR is much more illustrative than having them in text format.
+Also, when electronic maps are available, such textual itineraries can automatically be turned into emphasized routes on maps.
 
 \subsection{Extending Arabic People Name Gazetteers}
 

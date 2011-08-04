@@ -130,6 +130,14 @@ public:
 					<<"<"<<n->CanonicalName()<<">:"<<i;*/
 		}
 	}
+	int getBiographIndexCount() {
+		NarratorNodeIfc & n=getCorrespondingNarratorNode();
+		return (n.indicies.size());
+	}
+	int getBiographyIndex(int i) {
+		NarratorNodeIfc & n=getCorrespondingNarratorNode();
+		return (n.indicies[i]);
+	}
 	bool hasBiographyIndex(int i) {
 		NarratorNodeIfc & n=getCorrespondingNarratorNode();
 		/*qDebug()<<"---"<<(long)&n<<"<"<<CanonicalName()<<">---";
@@ -137,7 +145,13 @@ public:
 			qDebug()<<n.indicies[j];*/
 		return (n.indicies.contains(i));
 	}
-
+	bool hasSomeBiographyIndex() {
+		NarratorNodeIfc & n=getCorrespondingNarratorNode();
+		return (!n.indicies.isEmpty());
+	}
+	void clearBiographyIndicies() {
+		indicies.clear();
+	}
 	void serialize(QDataStream &chainOut,NarratorGraph & graph) const {
 		chainOut<<isNull();
 		chainOut<<isGraphNode();
