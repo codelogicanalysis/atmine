@@ -296,7 +296,28 @@ private:
 	NarratorGraph * graph;
 	bool isRealNarrator(Narrator * n);
 public:
-	typedef QList<NarratorNodeIfc *> NarratorNodeList;
+
+	class MatchingNode {
+	public:
+		NarratorNodeIfc * node;
+		double similarity;
+		MatchingNode(NarratorNodeIfc * node,double similarity) {
+			this->node=node;
+			this->similarity=similarity;
+		}
+		static bool contains(const QList<MatchingNode> & list, NarratorNodeIfc * node) {
+			int size=list.size();
+			for (int i=0;i<size;i++) {
+				if (list[i].node==node)
+					return true;
+			}
+			return false;
+		}
+		bool operator <(const MatchingNode & rhs) {
+			return similarity>rhs.similarity; //to get descending order
+		}
+	};
+	typedef QList<MatchingNode> NarratorNodeList;
 	typedef QList<NarratorNodeList> NarratorNodeGroups;
 	NarratorNodeGroups nodeGroups;
 #endif
@@ -337,18 +358,23 @@ public:
 			return "";
 		return text->mid(getStart(), length);
 	}
-	void addNarrator(Narrator & n) {
+	bool addNarrator(Narrator & n) {
 		if (n.getStart()>=this->start) {// && n.getEnd()<=this->end)
+			bool real=false;
 			BiographyNarrator * b =new BiographyNarrator(&n);
 		#ifdef SEGMENT_BIOGRAPHY_USING_POR
 			b->isRealNarrator=isRealNarrator(&n);
+			real=b->isRealNarrator;
 		#endif
 			narrators.append(b);
+			return real;
 		}
+		return false;
 	}
-	void addNarrator(Narrator * n) {
+	bool addNarrator(Narrator * n) {
 		if (n!=NULL)
-			addNarrator(*n);
+			return addNarrator(*n);
+		return false;
 	}
 	int size() {
 		return narrators.size();

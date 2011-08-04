@@ -70,7 +70,7 @@ inline void display(QString t) {
 class HadithSegmentor {
 private:
 
-	stateData currentData;
+	StateData currentData;
 	QString * text;
 	long current_pos;
 

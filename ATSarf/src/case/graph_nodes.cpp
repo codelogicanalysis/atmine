@@ -366,9 +366,10 @@ public:
 	void initialize() {
 		assert(list.isEmpty());
 	}
-	void visit(NarratorNodeIfc & n) {
+	bool visit(NarratorNodeIfc & n) {
 		if (&n!=node)
 			list.append(&n);
+		return true;
 	}
 	virtual void visit(NarratorNodeIfc & ,NarratorNodeIfc & , int ){}
 	virtual void finish(){}

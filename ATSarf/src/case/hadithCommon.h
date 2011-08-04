@@ -547,13 +547,15 @@
 	}
 
 #if 1
-	typedef struct stateData_ {
+	typedef struct StateData_ {
 		long  mainStructureStartIndex;
-		long narratorCount,narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex;
-		long  nmcCount, nrcCount,nameStartIndex,nmcStartIndex;
-		bool nmcValid;
-		bool ibn_or_3abid;
-		bool nrcPunctuation;
+		long narratorStartIndex,narratorEndIndex,nrcStartIndex,nrcEndIndex,nameStartIndex,nmcStartIndex;
+		int  nmcCount, nrcCount,narratorCount, bio_nrcCount ; //bio_nrcCount needed bc dont want finding an NRC to change the tolerance breaking count
+
+		bool nmcValid:1;
+		bool ibn_or_3abid:1;
+		bool nrcPunctuation:1;
+		int unused:29;
 
 		void initialize() {
 			nmcCount=0;
@@ -568,12 +570,13 @@
 			mainStructureStartIndex=0;
 			nrcStartIndex=0;
 			nrcEndIndex=0;
+			bio_nrcCount=0;
 		#ifdef PUNCTUATION
 			nrcPunctuation=false;
 		#endif
 		}
 
-	} stateData;
+	} StateData;
 	class HadithData {
 	public:
 		QString * text;
@@ -636,7 +639,7 @@
 
 
 #ifndef BUCKWALTER_INTERFACE
-	bool proceedInStateMachine(StateInfo &  stateInfo,HadithData *structures, stateData & currentData ) ;
+	bool proceedInStateMachine(StateInfo &  stateInfo,HadithData *structures, StateData & currentData ) ;
 #endif
 
 #endif

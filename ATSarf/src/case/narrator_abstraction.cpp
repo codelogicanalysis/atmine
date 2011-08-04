@@ -769,7 +769,8 @@ void Biography::serialize(QDataStream &chainOut) const{
 			int size=nodeGroups[j].size();
 			chainOut<<size;
 			for (int k=0;k<size;k++) {
-				chainOut<<nodeGroups[j][k]->getId();
+				const MatchingNode & m=nodeGroups[j][k];
+				chainOut<<m.node->getId()<<m.similarity;
 			}
 		}
 	#endif
@@ -796,10 +797,12 @@ void Biography::deserialize(QDataStream &chainIn){
 			nodeGroups.append(NarratorNodeList());
 			for (int k=0;k<size;k++) {
 				int cInt;
-				chainIn>>cInt;
+				double similarity;
+				chainIn	>>cInt
+						>>similarity;
 				NarratorNodeIfc * n=graph->getNode(cInt);
 				assert(n!=NULL);
-				nodeGroups[j].append(n);
+				nodeGroups[j].append(MatchingNode(n,similarity));
 			}
 		}
 	#endif
@@ -825,10 +828,15 @@ public:
 		if (similarity>hadithParameters.equality_threshold) {
 			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
 			found =true;
+		#if 1
 			if(n==NULL) //is a chain node
-				list.append(&(*node)[0]);
-			else if (!list.contains(n))
-				list.append(n);
+				list.append(Biography::MatchingNode(&(*node)[0],similarity));
+			else 
+		#else
+			assert(n!=NULL);
+		#endif
+			if (!Biography::MatchingNode::contains(list,n))
+				list.append(Biography::MatchingNode(n,similarity));
 		}
 	}
 	void resetFound() {found=false;}
