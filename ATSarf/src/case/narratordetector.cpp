@@ -25,7 +25,6 @@ private:
 	class NodeItem {
 	public:
 		NarratorNodeIfc * node;
-		ClusterGroup* cluster;
 		double similarity;
 		int inDegree;
 		int outDegree;
@@ -33,15 +32,13 @@ private:
 
 		NodeItem(const MatchingNode & mNode) {
 			node=mNode.node;
-			cluster=NULL;
 			inDegree=0;
 			outDegree=0;
 			stepsToCenter=0;
 			similarity=mNode.similarity;
 		}
-		NodeItem(NarratorNodeIfc * node,ClusterGroup* cluster,int stepsToCenter,double similarity) {
+		NodeItem(NarratorNodeIfc * node,int stepsToCenter,double similarity) {
 			this->node=node;
-			this->cluster=cluster;
 			this->stepsToCenter=stepsToCenter;
 			this->similarity=similarity;
 			inDegree=0;
@@ -68,7 +65,6 @@ private:
 			if (groups[narId].size()==0)
 				numNarrators++;
 			groups[narId].append(n);
-			n->cluster=this;
 		}
 		int size() {
 			return groups.size();
@@ -131,7 +127,7 @@ private:
 		}
 
 		bool operator <(const ScoredCluster & rhs) const{
-			return !(score.narrCount<rhs.score.narrCount ||
+			return (score.narrCount<rhs.score.narrCount ||
 					 (score.narrCount==rhs.score.narrCount && score.stepCount>rhs.score.stepCount) ||
 					 (score.narrCount==rhs.score.narrCount && score.stepCount==rhs.score.stepCount
 							&& score.similarityProduct<rhs.score.similarityProduct)
@@ -211,7 +207,7 @@ private:
 			#else
 				double similarity=1;
 			#endif
-				NodeItem * item=new NodeItem(&n,&cluster,controller->getParentStack().size(),similarity);
+				NodeItem * item=new NodeItem(&n,controller->getParentStack().size(),similarity);
 				cluster.addNodeItem(item,index);
 			}
 			return true;
@@ -297,7 +293,7 @@ private:
 		}
 
 		//find all possible clusters (from all possible cluster centers)
-		ScoredClusterList clusters;
+		ScoredCluster bestCluster(NULL,0,(unsigned int)-1,0);
 		int groupSize=nodeItemgroups.size();
 		for (int i=0;i<groupSize;i++) {
 			for (int j=0;j<nodeItemgroups[i].size();j++) {
@@ -305,16 +301,35 @@ private:
 				ClusterGroup *c =new ClusterGroup(n);
 				ClusteringVisitor v(*c,nodeItemgroups);
 				GraphVisitorController cont(&v,graph);
-				graph->DFS_traverse(*n,cont,groupSize-1,1);
-				graph->DFS_traverse(*n,cont,groupSize-1,-1);
+				graph->DFS_traverse(*n,cont,1,1);
+				graph->DFS_traverse(*n,cont,1,-1);
+				bool chosen=false;
 				if (c->getNumNarrators()>=hadithParameters.bio_narr_min) {
 					ClusterIterator itr(*c);
 					for (;!itr.isFinished();++itr) {
-						clusters.append(*itr);
-						trash.clusters.append(clusters.last().cluster);
+						ScoredCluster cluster=*itr;
+						if (bestCluster<cluster) {
+							if (bestCluster.center!=NULL) {
+								assert(trash.clusters.contains(bestCluster.cluster));
+								trash.clusters.removeOne(bestCluster.cluster);
+								delete bestCluster.cluster;
+							}
+							bestCluster=cluster;
+							trash.clusters.append(cluster.cluster);
+							chosen=true;
+						} else
+							delete cluster.cluster;
 					}
 				}
-				trash.clusterGroups.append(c);
+				if (chosen) {
+					if (trash.clusterGroups.size()>0) {
+						assert (trash.clusterGroups.size()==1);
+						delete trash.clusterGroups[0];
+						trash.clusterGroups.clear();
+						trash.clusterGroups.append(c);
+					}
+				} else
+					delete c;
 			}
 		}
 		listCount=nodeItemgroups.size();
@@ -326,12 +341,10 @@ private:
 			}
 		}
 
-		//3- Sort clusters according to scores and return first in the list
-		qSort(clusters);
-		if (clusters.size()==0)
+		if (bestCluster.center==NULL)
 			return 0;
 	#if 1
-		ScoredCluster & c=clusters[0];
+		ScoredCluster & c=bestCluster;
 		qDebug()<<"["<<c.center->CanonicalName()<<"]\n("<<c.score.narrCount<<","<<c.score.stepCount<<","<<c.score.similarityProduct<<")\n";
 		for (int i=0;i<c.cluster->size();i++){
 			qDebug()<<(*c.cluster)[i]->node->CanonicalName()<<"\n";
