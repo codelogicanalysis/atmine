@@ -326,8 +326,7 @@ protected:
 	}
 public:
 	DisplayNodeVisitor(){	}
-	virtual void initialize()
-	{
+	virtual void initialize() {
 		nodeMap.clear();
 		last_id=0;
 		ranksList.clear();
@@ -489,7 +488,20 @@ protected:
 public:
 	DisplayNodeVisitorColoredNarrator(DetectedNodesMap & m):map(m) {	}
 };
-
+class DsiplayLocalNodesVisitor: public DisplayNodeVisitorColoredNarrator {
+public:
+	DsiplayLocalNodesVisitor(DetectedNodesMap & m):DisplayNodeVisitorColoredNarrator(m) {	}
+	virtual void initialize() {
+		if (controller->isTop2Bottom()) {
+			DisplayNodeVisitorColoredNarrator::initialize();
+		}
+	}
+	virtual void finish() {
+		if (!controller->isTop2Bottom()) {
+			DisplayNodeVisitorColoredNarrator::finish();
+		}
+	}
+};
 
 class HashNodesVisitor: public NodeVisitor
 {

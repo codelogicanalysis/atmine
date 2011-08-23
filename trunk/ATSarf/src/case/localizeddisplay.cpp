@@ -45,7 +45,7 @@ void LocalizedDisplay::display_action() {
 		return;
 	}
 	report(0);
-	DisplayNodeVisitorColoredNarrator visitor(nodeMap);
+	DsiplayLocalNodesVisitor visitor(nodeMap);
 	GraphVisitorController c(&visitor,graph,true,true);
 	node->BFS_traverse(c,num_steps,1);
 	node->BFS_traverse(c,num_steps,-1);
