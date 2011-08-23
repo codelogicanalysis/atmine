@@ -527,9 +527,6 @@ p, li { white-space: pre-wrap; }
     <property name="text">
      <string>Display Chain Numbers</string>
     </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QCheckBox" name="chk_breakCycles">
     <property name="geometry">

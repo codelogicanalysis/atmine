@@ -13,20 +13,37 @@ class NarratorGraph;
 
 class NarratorHash {
 public:
-	class FoundAction {
+	class Action {
+	public:
+		virtual bool isFoundAction() {return false;}
+	};
+	class FoundAction: public Action {
 	public:
 		virtual void action(const QString & searchKey, GroupNode * node, double similarity) =0;
+		virtual bool isFoundAction() {return true;}
 	};
+	class BiographyAction: public Action {
+	public:
+		virtual void action(const QString & searchKey, GroupNode * node,int position, double similarity) =0;
+	};
+
 	class HashValue {
 	public:
 		HashValue(GroupNode * node, int value, int total) {
 			this->node=node;
 			this->value=value;
 			this->total=total;
+			index=-1;
+		}
+		HashValue(GroupNode * node,int index, int value, int total) {
+			this->node=node;
+			this->value=value;
+			this->total=total;
+			this->index=index;
 		}
 		bool operator==(const HashValue& rhs) {
 			if (node==rhs.node) {
-				assert(value==rhs.value && total==rhs.total);
+				assert(value==rhs.value && total==rhs.total && index==rhs.index);
 				return true;
 			}
 			return false;
@@ -34,6 +51,7 @@ public:
 
 		GroupNode * node;
 		int value,total;
+		int index;
 	};
 	typedef QMultiHash<QString,HashValue> HashTable;
 	typedef Narrator::NarratorPrimList NarratorPrimList;
@@ -96,21 +114,26 @@ private:
 	};
 	class InsertVisitor: public Visitor {
 	private:
+		int index;
 		NarratorHash * hash;
 	public:
-		InsertVisitor(NarratorHash * hash) {this->hash=hash;}
+		InsertVisitor(NarratorHash * hash,int index=-1) {this->hash=hash; this->index=index;}
 		void initialize(GraphNodeItem * node) {
 			assert(node->size()>0);
 			GroupNode * n=dynamic_cast<GroupNode *>(node);
-			n->allKeys.clear();
+			if (index<0)
+				n->allKeys.clear();
+			else
+				assert(n->allKeys.size()>0);
 		}
 		void visit(const QString & s, GraphNodeItem * c, int value, int total){
 			GroupNode * node=dynamic_cast<GroupNode *>(c);
 		#ifdef DEBUG_BUILDGRAPH
 			qDebug()<<"\t"<<s;//node->toString();
 		#endif
-			hash->hashTable.insert(s,HashValue(node,value,total));
-			node->allKeys.append(GroupNode::KeyInfo(s,value,total));
+			hash->hashTable.insert(s,HashValue(node,index,value,total));
+			if (index<0)
+				node->allKeys.append(GroupNode::KeyInfo(s,value,total));
 		}
 	};
 	class DeleteVisitor: public Visitor {
@@ -158,10 +181,10 @@ private:
 	};
 	class FindAllVisitor:public Visitor {
 	private:
-		FoundAction & visitor;
+		Action & visitor;
 		NarratorHash * hash;
 	public:
-		FindAllVisitor(NarratorHash * h,FoundAction & v):visitor(v),hash(h) {}
+		FindAllVisitor(NarratorHash * h,Action & v):visitor(v),hash(h) {}
 		void visit(const QString & s, GraphNodeItem * node, int /*value*/, int /*total*/){
 			HashTable::iterator i = hash->hashTable.find(s);
 			Narrator & narr1=(dynamic_cast<ChainNarratorNode&>((*node)[0])).getNarrator();
@@ -178,7 +201,13 @@ private:
 					if (node->getKey()==v.node->getKey() && similarity<1)
 						similarity=equal(narr1,narr2);
 				#endif
-					visitor.action(s,v.node,similarity);
+					if (visitor.isFoundAction()) {
+						assert(v.index<0);
+						dynamic_cast<FoundAction&>(visitor).action(s,v.node,similarity);
+					} else {
+						assert(v.index>=0);
+						dynamic_cast<BiographyAction&>(visitor).action(s,v.node,v.index,similarity);
+					}
 				}
 				++i;
 			 }
@@ -234,7 +263,7 @@ private:
 	#endif
 		int minLevel=(levelOneEmpty?2:1);
 		int value;
-		for (int level=minLevel;level<=levelSize;level++) {
+		for (int level=levelSize;level>=minLevel;level--) {
 		#ifdef HASH_TOTAL_VALUES
 			value=(level-minLevel+1)*(!levelOneEmpty?2:1)+(minLevel-2);
 		#else
@@ -307,13 +336,13 @@ public:
 	void serialize(QDataStream & streamOut);
 	void deserialize(QDataStream & streamIn);
 #if defined(REFINEMENTS) && defined(EQUALITY_REFINEMENTS) //does not work otherwise, instead of doing different versions for combinations of them on/off
-	void addNode(GroupNode * node) {
+	void addNode(GroupNode * node,int index=-1) {
 	#ifdef NARRATORHASH_DEBUG
 		qDebug()<<node->CanonicalName();
 		DebuggingVisitor d;
 		generateAllPosibilities(node,d);
 	#endif
-		InsertVisitor v(this);
+		InsertVisitor v(this,index);
 		generateAllPosibilities(node,v);
 	}
 	GraphNodeItem * findCorrespondingNode(Narrator * n) {
@@ -341,17 +370,17 @@ public:
 		return c;
 	#endif
 	}
-	void performActionToAllCorrespondingNodes(GraphNodeItem * node, FoundAction & visitor) {
+	void performActionToAllCorrespondingNodes(GraphNodeItem * node, Action & visitor) {
 		FindAllVisitor v(this,visitor);
 		generateAllPosibilities(node,v);
 	}
-	void performActionToAllCorrespondingNodes(Narrator * n, FoundAction & visitor) {
+	void performActionToAllCorrespondingNodes(Narrator * n, Action & visitor) {
 		ChainNarratorNode * node=new ChainNarratorNode();
 		node->narrator=n;
 		performActionToAllCorrespondingNodes(node,visitor);
 		delete node;
 	}
-	void performActionToExactCorrespondingNodes(GraphNodeItem * node, FoundAction & visitor) { //dont generate all keys, just use the primary key
+	void performActionToExactCorrespondingNodes(GraphNodeItem * node, Action & visitor) { //dont generate all keys, just use the primary key
 		FindAllVisitor v(this,visitor);
 		v.initialize(node);
 		v.visit(node->getKey(),node,1,1);

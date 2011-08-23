@@ -70,6 +70,7 @@ inline void display(QString t) {
 class HadithSegmentor {
 private:
 
+	QString fileName;
 	StateData currentData;
 	QString * text;
 	long current_pos;
@@ -81,9 +82,7 @@ private:
 	int temp_names_per_narrator;
 	QString current_exact,current_stem;
 #endif
-
-public:
-	int segment(QString input_str,ATMProgressIFC *prg)  {
+	int segmentHelper(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg) {
 	#ifdef COMPARE_TO_BUCKWALTER
 		QFile myfile("output");
 
@@ -105,25 +104,8 @@ public:
 		gettimeofday(&tim,NULL);
 		double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
 	#endif
-		QFile input(input_str);
-		if (!input.open(QIODevice::ReadOnly))
-		{
-			out << "File not found\n";
-			return 1;
-		}
-		QTextStream file(&input);
-		file.setCodec("utf-8");
-		text=new QString(file.readAll());
-		if (text->isNull())
-		{
-			out<<"file error:"<<input.errorString()<<"\n";
-			return 1;
-		}
-		if (text->isEmpty()) //ignore empty files
-		{
-			out<<"empty file\n";
-			return 0;
-		}
+		if (text==NULL)
+			return -1;
 		long text_size=text->size();
 	#ifdef BUCKWALTER_INTERFACE
 		gettimeofday(&tim,NULL);
@@ -282,6 +264,7 @@ public:
 				break;
 	#endif
 		}
+		prg->report(100);
 	#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
 		if (newHadithStart<0)
 		{
@@ -358,7 +341,7 @@ public:
 		chainOutput.close();
 		f.close();
 	#ifdef TEST_NARRATOR_GRAPH
-		test_GraphFunctionalities(chains, prg,input_str);
+		(*functionUsingChains)(chains, prg,fileName);
 	#endif
 	#endif
 	#ifndef TAG_HADITH
@@ -420,6 +403,32 @@ public:
 		if (currentChain!=NULL)
 			delete currentChain;
 		return 0;
+	}
+
+public:
+	int segment(QString input_str,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg)  {
+		fileName=input_str;
+		QFile input(input_str);
+		if (!input.open(QIODevice::ReadOnly)) {
+			out << "File not found\n";
+			return 1;
+		}
+		QTextStream file(&input);
+		file.setCodec("utf-8");
+		text=new QString(file.readAll());
+		if (text->isNull())	{
+			out<<"file error:"<<input.errorString()<<"\n";
+			return 1;
+		}
+		if (text->isEmpty()) {//ignore empty files
+			out<<"empty file\n";
+			return 0;
+		}
+		return segmentHelper(text,functionUsingChains,prg);
+	}
+	int segment(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg)  {
+		fileName="";
+		return segmentHelper(text,functionUsingChains,prg);
 	}
 };
 
@@ -604,7 +613,20 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 	return adjective_detector(input_str);
 #endif
 	HadithSegmentor s;
-	s.segment(input_str,prg);
+	s.segment(input_str,&test_GraphFunctionalities,prg);
 	return 0;
 }
+
+int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg) {
+	int narr_min=hadithParameters.narr_min;
+	hadithParameters.narr_min=0;
+	int size=text->size();
+	text->append(QString(" stop").repeated(hadithParameters.nmc_max+2));
+	HadithSegmentor s;
+	s.segment(text,functionUsingChains,prg);
+	hadithParameters.narr_min=narr_min;
+	text->remove(size,10);
+	return 0;
+}
+
 #endif

@@ -108,12 +108,12 @@ int GroupNode::getSavedRank() const {
 
 NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
 	//assert(graphNode!=NULL);
-	//if (graphNode!=NULL)
+	if (graphNode!=NULL)
 		return *graphNode;
-	/*else { //in case we have a group that has just one node
+	else { //in case we have a group that has just one node
 		assert (size()==1);
 		return operator [](0);
-	}*/
+	}
 }
 
 void GroupNode::addChainNode(NarratorGraph */*g*/,ChainNarratorNode & nar) { //we dont check for duplicates here
