@@ -13,6 +13,10 @@
 
 
 class ChainNarratorPrim;
+class Chain;
+typedef QList<Chain *> ChainsContainer;
+
+extern int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg);
 
 //typedef QList <ChainNarratorPrim *>::iterator CNPIterator;
 
@@ -305,15 +309,26 @@ public:
 			this->node=node;
 			this->similarity=similarity;
 		}
-		static bool contains(const QList<MatchingNode> & list, NarratorNodeIfc * node) {
+		static bool contains(const QList<MatchingNode> & list, NarratorNodeIfc * node, double similarity, int & index) {
+			//if found with a larger similarity will return true and index=-1,
+			//if found with a smaller similarity will return true and index = index of the found
+			//if not found return false and index=-1
 			int size=list.size();
 			for (int i=0;i<size;i++) {
-				if (list[i].node==node)
-					return true;
+				if (list[i].node==node) {
+					if (list[i].similarity>=similarity) {
+						index=-1;
+						return true;
+					} else {
+						index=i;
+						return true;
+					}
+				}
 			}
+			index=-1;
 			return false;
 		}
-		bool operator <(const MatchingNode & rhs) {
+		bool operator <(const MatchingNode & rhs) const {
 			return similarity>rhs.similarity; //to get descending order
 		}
 	};
@@ -376,6 +391,15 @@ public:
 			return addNarrator(*n);
 		return false;
 	}
+	void addRealNarrator(Narrator * n) {
+		assert(n!=NULL);
+		BiographyNarrator * b =new BiographyNarrator(n);
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		b->isRealNarrator=true;
+	#endif
+		narrators.append(b);
+	}
+
 	int size() {
 		return narrators.size();
 	}
@@ -401,7 +425,7 @@ public:
 	void serialize(QDataStream &chainOut) const;
 	void deserialize(QDataStream &chainIn);
 	void serialize(QTextStream &chainOut) const;
-	~Biography(){
+	~Biography(){ //TODO: check there are no memory leaks
 		/*for (int i=0;i<narrators.size();i++) {
 			delete narrators[i];
 		}*/

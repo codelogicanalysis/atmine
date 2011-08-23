@@ -9,6 +9,7 @@
 #include "narratordetector.h"
 
 extern void biographies(NarratorGraph * graph);
+extern void localizedDisplay(NarratorGraph * graph);
 
 typedef QList<NarratorNodeIfc *> NarratorNodesList;
 
@@ -180,7 +181,7 @@ public:
 		parentStack.push(&n);
 		if (!disableFillChildren && graphBuilt && n.isGraphNode()) {
 			GraphNarratorNode * g=dynamic_cast<GraphNarratorNode *>(&n);
-			if (direction>0)
+			if (direction)
 				g->fillChildren();
 			else
 				g->fillParents();
@@ -230,6 +231,9 @@ public:
 	unsigned int getFinishColorIndex(){return finishIndex;}
 	const ParentStack & getParentStack() {return parentStack;}
 	NarratorGraph * getGraph(){return graph;}
+	bool isTop2Bottom() {
+		return direction;
+	}
 };
 
 class DisplayNodeVisitor: public NodeVisitor
@@ -342,7 +346,10 @@ public:
 	virtual void visit(NarratorNodeIfc & n1,NarratorNodeIfc & n2, int /*child_num*/)
 	{
 		QString s1=getAndInitializeDotNode(n1), s2=getAndInitializeDotNode(n2);
-		d_out<<s1<<"->"<<s2<<";\n";
+		if (controller->isTop2Bottom())
+			d_out<<s1<<"->"<<s2<<";\n";
+		else
+			d_out<<s2<<"->"<<s1<<";\n";
 	}
 	virtual bool visit(NarratorNodeIfc & n) //this is enough
 	{
@@ -1549,7 +1556,7 @@ private:
 			assert(node!=NULL);
 		}
 		void operator()() {
-			visitor.initialize();
+			visitor.initialize(direction);
 			NarratorGraph * graph=visitor.getGraph();
 			if (node==NULL) {
 				assert(graph!=NULL);
@@ -1640,7 +1647,7 @@ public:
 	 //if node==NULL, we start by top_nodes (direction is disregarded and assumed as child), else by the specified node (direction is used)
 	 //maxLevels = level after which we stop traversing further, if maxLevels<0, => infinite
 
-		assert(visitor.getGraph()==NULL || node==NULL); //use controller graph or nodes we have
+		assert(visitor.getGraph()!=NULL || node!=NULL); //use controller graph or nodes we have
 		visitor.initialize(direction);
 		QQueue<NarratorNodeIfc *> queue;
 		int size;

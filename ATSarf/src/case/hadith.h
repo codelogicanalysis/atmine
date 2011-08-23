@@ -54,6 +54,7 @@
 #define SEGMENT_BIOGRAPHY_USING_POR
 #define HASH_GRAPH_BUILDING
 #define TAG_BIOGRAPHY
+#define SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
 //#define DISPLAY_BIOGRAPHY_GRAPH
 //#define TAG_HADITH
@@ -64,6 +65,5 @@
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();
-
 
 #endif // HADITH_H

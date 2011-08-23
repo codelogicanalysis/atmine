@@ -30,12 +30,13 @@
 		bool display_chain_num:1;
 		bool break_cycles:1;
 		unsigned int bio_nmc_max:5;
-		unsigned int bio_nrc_max:10;
+		unsigned int bio_nrc_max:15;
 		unsigned int bio_narr_min:5;
 		unsigned int bio_max_reachability:5;
-		unsigned int unused_int:17;
+		unsigned int unused:12;
 		double equality_delta;
 		double equality_threshold;
+		double bio_threshold;
 		HadithParameters()
 		{
 			nmc_max=3;
@@ -47,7 +48,8 @@
 			equality_radius=3;
 			equality_delta=0.4;
 			equality_threshold=1;
-			bio_max_reachability=0;
+			bio_max_reachability=1;
+			bio_threshold=5.0;
 			display_chain_num=true;
 			break_cycles=true;
 		}

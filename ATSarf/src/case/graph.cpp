@@ -86,7 +86,7 @@ void GraphVisitorController::init()
 void GraphVisitorController::initialize(int direction)
 {
 	init();
-	this->direction=direction;
+	this->direction=direction>0;
 	visitor->initialize();
 }
 void GraphVisitorController::finish()
@@ -207,8 +207,10 @@ int deserializeGraph(QString fileName,ATMProgressIFC * prg) {
 	graph->serialize(fileStream2);
 	file2.close();
 	delete graph;
-#else
+#elif 0
 	biographies(graph);
+#else
+	localizedDisplay(graph);
 #endif
 	return 0;
 }

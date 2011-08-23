@@ -31,7 +31,7 @@ class NodeIterator;
 class GraphNodeItem;
 class NarratorGraph;
 
-typedef QList<Chain *> ChainsContainer;
+
 typedef QPair<NarratorNodeIfc &, ChainNarratorNode &> NodeAddress;
 typedef QList<int> BiographyIndicies;
 

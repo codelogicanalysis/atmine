@@ -826,8 +826,9 @@ public:
 	RealNarratorAction(Biography::NarratorNodeList & nodeList):list(nodeList) {}
 	virtual void action(const QString & , GroupNode * node, double similarity){
 		if (similarity>hadithParameters.equality_threshold) {
-			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
 			found =true;
+		#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
+			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
 		#if 1
 			if(n==NULL) //is a chain node
 				list.append(Biography::MatchingNode(&(*node)[0],similarity));
@@ -835,8 +836,15 @@ public:
 		#else
 			assert(n!=NULL);
 		#endif
-			if (!Biography::MatchingNode::contains(list,n))
+		#else
+			NarratorNodeIfc *n=node;
+		#endif
+			int index;
+			if (!Biography::MatchingNode::contains(list,n,similarity,index)) {
 				list.append(Biography::MatchingNode(n,similarity));
+			} else if (index>=0) { //i.e. found but with a smaller similarity
+				list[index]=Biography::MatchingNode(n,similarity);
+			}
 		}
 	}
 	void resetFound() {found=false;}
@@ -862,10 +870,9 @@ bool Biography::isRealNarrator(Narrator * n) {
 		v.resetFound();
 		graph->performActionToAllCorrespondingNodes(n,v);
 		if (!v.isFound()) {
-			return false;
 			nodeGroups.removeLast();
-		}
-		else
+			return false;
+		} else
 			return true;
 	}
 }
