@@ -33,7 +33,8 @@ using namespace std;
 class BiographiesWindow:public QMainWindow,public ATMProgressIFC{
 	Q_OBJECT
 public:
-	BiographiesWindow(NarratorGraph * graph):QMainWindow() {
+	BiographiesWindow(NarratorGraph * graph, int nodeId=-1):QMainWindow() {
+		this->nodeId=nodeId;
 		this->graph=graph;
 		text=new QTextBrowser(this);
 		parse=new QPushButton("&Parse Biographies",this);
@@ -50,19 +51,19 @@ public:
 		nmc_max=new QTextEdit("1",this);
 		nmc_max->setAlignment(Qt::AlignCenter);
 		nmc_max->setMaximumHeight(30);
-		nmc_max->setMaximumWidth(40);
-		nrc_max=new QTextEdit("100",this);
+		nmc_max->setMaximumWidth(60);
+		nrc_max=new QTextEdit("1000",this);
 		nrc_max->setAlignment(Qt::AlignCenter);
 		nrc_max->setMaximumHeight(30);
-		nrc_max->setMaximumWidth(40);
-		narr_min=new QTextEdit("4",this);
+		nrc_max->setMaximumWidth(60);
+		narr_min=new QTextEdit("5",this);
 		narr_min->setAlignment(Qt::AlignCenter);
 		narr_min->setMaximumHeight(30);
-		narr_min->setMaximumWidth(40);
+		narr_min->setMaximumWidth(60);
 		reachability_radius=new QTextEdit("1",this);
 		reachability_radius->setAlignment(Qt::AlignCenter);
 		reachability_radius->setMaximumHeight(30);
-		reachability_radius->setMaximumWidth(40);
+		reachability_radius->setMaximumWidth(60);
 		browse=new QPushButton("&Browse",this);
 		input=new QTextEdit(this);
 		input->setMaximumHeight(30);
@@ -151,7 +152,7 @@ public slots:
 		}
 		QString fileName=input->toPlainText();
 	#ifdef SEGMENT_BIOGRAPHY_USING_POR
-		biographyList=getBiographies(fileName,graph,this);
+		biographyList=getBiographies(fileName,graph,this,nodeId);
 	#else
 		biographyList=getBiographies(fileName,NULL,this);
 	#endif
@@ -159,6 +160,7 @@ public slots:
 			return;
 		biographyNum->clear();
 		narratorList.clear();
+		narratorListDisplay->setRowCount(0);
 		int count=0;
 		int size=biographyList->size();
 		for (int i=0;i<size;i++) {
@@ -301,7 +303,7 @@ private:
 	};
 
 private:
-
+	int nodeId;
 	QPushButton * parse, *colorBiography, *browse, *colorNarrators;
 	QLabel * nmc_label, *nrc_label, *narr_label,*reachability_label;
 	QTextEdit *nmc_max,*nrc_max,*narr_min, *reachability_radius;

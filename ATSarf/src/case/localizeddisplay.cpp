@@ -1,4 +1,5 @@
 #include "localizeddisplay.h"
+#include "biographies.h"
 
 void localizedDisplay(NarratorGraph * graph) {
 	LocalizedDisplay * l=new LocalizedDisplay(graph);
@@ -26,15 +27,7 @@ void LocalizedDisplay::find_action() {
 }
 void LocalizedDisplay::display_action() {
 	errors_text->clear();
-	QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
-	NarratorNodeIfc * node=NULL;
-	for (int i=0;i<selection.size();i++) {
-		int topRow=selection[i].topRow();
-		for (int j=0;j<selection[i].rowCount();j++) {
-			int row=topRow+j;
-			node=nodeList[row];
-		}
-	}
+	NarratorNodeIfc * node=getSelectedNode();
 	if (node==NULL)
 		return;
 	bool v=false;
@@ -57,4 +50,12 @@ void LocalizedDisplay::display_action() {
 		subScrollArea->setWidget(pic);
 	}catch(...) {}
 	errors->setText(*errors_text);
+}
+
+void LocalizedDisplay::biography_action() {
+	NarratorNodeIfc * node=getSelectedNode();
+	if (node==NULL)
+		return;
+	BiographiesWindow * g=new BiographiesWindow(graph,node->getId() );
+	g->show();
 }

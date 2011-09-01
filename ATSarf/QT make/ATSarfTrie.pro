@@ -67,7 +67,8 @@ HEADERS += util/text_handling.h \
     ../src/case/hadithCommon.h \
     ../src/case/narratorHash.h \
     ../src/case/biographies.h \
-    ../src/case/localizeddisplay.h
+    ../src/case/localizeddisplay.h \
+    ../src/util/mergeLists.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
