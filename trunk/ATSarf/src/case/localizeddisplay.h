@@ -40,6 +40,7 @@ public:
 		input->setMaximumHeight(30);
 		find=new QPushButton("&Find Narrator",this);
 		display=new QPushButton("Display Neighborhood",this);
+		biography=new QPushButton("Find Biography",this);
 		steps_label=new QLabel("Steps",this);
 		steps=new QTextEdit("1",this);
 		steps->setAlignment(Qt::AlignCenter);
@@ -66,9 +67,10 @@ public:
 		grid->addWidget(steps_label,0,7);
 		grid->addWidget(steps,0,8);
 		grid->addWidget(display,0,9);
+		grid->addWidget(biography,0,10);
 		grid->addWidget(narratorListDisplay,1,0,4,3);
-		grid->addWidget(progressBar,1,3,1,7);
-		grid->addWidget(subScrollArea,2,3,3,7);
+		grid->addWidget(progressBar,1,3,1,8);
+		grid->addWidget(subScrollArea,2,3,3,8);
 		grid->setRowMinimumHeight(0,50);
 		grid->setRowStretch(0,0);
 		grid->setRowStretch(2,150);
@@ -82,8 +84,11 @@ public:
 		subScrollArea->setWidgetResizable(true);
 		connect(find,SIGNAL(clicked()),this,SLOT(find_clicked()));
 		connect(display,SIGNAL(clicked()),this,SLOT(display_clicked()));
+		connect(biography,SIGNAL(clicked()),this,SLOT(biography_clicked()));
 		setWindowTitle("Localized Graph Display");
 		this->resize(1100,700);
+
+		hadith_text=new QString();
 		hadith_out.setString(hadith_text);
 		out.setString(hadith_text);
 
@@ -91,7 +96,7 @@ public:
 		errors=new QTextBrowser(this);
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
-		grid->addWidget(errors,6,0,1,10);
+		grid->addWidget(errors,6,0,1,11);
 		displayed_error.setString(errors_text);
 
 
@@ -106,10 +111,26 @@ public slots:
 	void display_clicked() {
 		display_action();
 	}
-
+	void biography_clicked() {
+		biography_action();
+	}
 private:
+	NarratorNodeIfc * getSelectedNode() {
+		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
+		NarratorNodeIfc * node=NULL;
+		for (int i=0;i<selection.size();i++) {
+			int topRow=selection[i].topRow();
+			for (int j=0;j<selection[i].rowCount();j++) {
+				int row=topRow+j;
+				node=nodeList[row];
+			}
+		}
+		return node;
+	}
+
 	void find_action();
 	void display_action();
+	void biography_action();
 	static int searchNarratorsInHash(ChainsContainer & chains, ATMProgressIFC * prg, QString) {
 		LocalizedDisplay * this_=(LocalizedDisplay *)prg;
 		int size=chains.size();
@@ -182,7 +203,7 @@ private:
 private:
 
 	ColorNarratorsAction::DetectedNodesMap nodeMap;
-	QPushButton * find, *display;
+	QPushButton * find, *display, * biography;
 	QLabel *steps_label, *input_label;
 	QTextEdit *steps;
 	QTextBrowser * text;
@@ -203,6 +224,7 @@ private:
 	~LocalizedDisplay() {
 		delete find;
 		delete display;
+		delete biography;
 		delete input;
 		delete input_label;
 		delete scrollArea;

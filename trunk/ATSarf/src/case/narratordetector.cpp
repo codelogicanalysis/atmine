@@ -1,8 +1,9 @@
+#include <QPair>
+#include <QInputDialog>
 #include "narratordetector.h"
 #include "graph.h"
 #include "narratorHash.h"
-#include <QPair>
-#include <QInputDialog>
+#include "mergeLists.h"
 
 
 class NarratorDetector
@@ -15,9 +16,11 @@ private:
 	long current_pos;
 
 	NarratorGraph * graph;
+	ATMProgressIFC *prg;
 
 public:
 	BiographyList * biographies;
+	QList<int> nodeIds;
 
 private:
 
@@ -371,95 +374,66 @@ private:
 	typedef QList<ScoredSet> NodeGroups;
 	class NodePositionMap {
 	private:
-		typedef QMultiMap<NarratorNodeIfc *,int> Map;
+		typedef QMap<NarratorNodeIfc *,int> Map;
+		int max;
 		Map map;
 	public:
-		bool isVisited(NarratorNodeIfc * node, int position) {
-			 Map::const_iterator i = map.find(node);
-			 while (i != map.end() && i.key() == node) {
-				 if (i.value()==position)
-					 return true;
-				 ++i;
-			 }
-			 return false;
+		NodePositionMap() {
+			max=0;
 		}
-		void setVisited(NarratorNodeIfc * node, int position) {
-			//assert(!isVisited(node,position));
-			map.insert(node,position);
+		int getIndex(NarratorNodeIfc * node) {
+			Map::const_iterator i = map.find(node);
+			if (i != map.end()) {
+				return i.value();
+			} else {
+				map[node]=max;
+				max++;
+				return max-1;
+			}
 		}
 	};
+	typedef QList<int> IndexList;
+	typedef QList<IndexList *> IndexLists;
 
+	void getSortedIndexList(NarratorNodeIfc * node,IndexList & list) {
+		assert(!node->isGroupNode());
+		IndexLists lists;
+		FindIndiciesAction action(node,lists);
+		if (node->isGraphNode()) {
+			for (int i=0;i<node->size();i++) {
+				hash.performActionToAllCorrespondingNodes(&(*node)[i],action);
+			}
+		} else {
+			ChainNarratorNode & c_node=dynamic_cast<ChainNarratorNode &>(*node);
+			hash.performActionToAllCorrespondingNodes(&c_node,action);
+		}
+	#ifndef ASSUMESORTED
+		for (int i=0;i<lists.size();i++) {
+			qSort(*lists[i]);
+		}
+	#endif
+		MergeLists<int> merge(lists,list);
+		merge.mergeLists();
+		for (int i=1;i<list.size();i++) {
+			assert(list[i-1]<=list[i]);
+		}
+	}
 
-	class BiographyVisitor: public NodeVisitor {
+	class GetNeighborIndexListsVisitor: public NodeVisitor {
 	private:
-		class NeighborsAction: public NarratorHash::BiographyAction {
-		private:
-			NodePositionMap visitedMap;
-			ScoredSet & set;
-			NarratorList & narratorList;
-			int index;
-			double similarity;
-			bool found;
-
-			inline bool areNear(int index1,int index2) {
-				int diff1=narratorList[index1]->getEnd()-narratorList[index2]->getStart(),
-					diff2=narratorList[index1]->getStart()-narratorList[index2]->getEnd();
-				return absVal(diff1)<hadithParameters.bio_nrc_max ||
-					absVal(diff2)<hadithParameters.bio_nrc_max;
-			}
-
-		public:
-			NeighborsAction(ScoredSet & scoredSet,NarratorList & narList,int index,double similarity)
-					:set(scoredSet),narratorList(narList) {
-				this->index=index;
-				this->similarity=similarity;
-				found=false;
-			}
-			void action(const QString &, GroupNode *node, int index, double similarity) {
-				if (!found) {
-					NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
-					assert(n!=NULL);
-					if (!visitedMap.isVisited(n,index)) {
-						visitedMap.setVisited(n,index);
-						if (areNear(index,this->index)) {
-							if (!set.setBioNarrIndicies.contains(index) && !set.setGraphNodes.contains(n)) {
-								found=true;
-								set.setBioNarrIndicies.insert(index);
-								set.setGraphNodes.insert(n);
-								set.score+=similarity*this->similarity;
-							}
-						}
-					}
-				}
-			}
-		};
-	private:
-		ScoredSet & set;
+		NarratorDetector & detector;
 		NarratorNodeIfc * center;
-		int index;
-		double similarity;
-		NarratorHash & hash;
-		NarratorList & narratorList;
+		IndexLists & indexlists;
 	public:
-		BiographyVisitor(ScoredSet & scoredSet,NarratorHash & bioHash,NarratorList & narList,NarratorNodeIfc * center,int index,double similarity)
-				:set(scoredSet),hash(bioHash),narratorList(narList) {
+		GetNeighborIndexListsVisitor(NarratorDetector & aDetector,NarratorNodeIfc * center, IndexLists & lists)
+				:detector(aDetector),indexlists(lists) {
 			this->center=center;
-			this->index=index;
-			this->similarity=similarity;
 		}
 		virtual void initialize(){}
 		virtual bool visit(NarratorNodeIfc & n){
 			if (&n!=center) {
-				assert(!n.isGroupNode());
-				NeighborsAction action(set,narratorList,index,similarity);
-				if (n.isGraphNode()) {
-					for (int i=0;i<n.size();i++) {
-						hash.performActionToAllCorrespondingNodes(&n[i],action);
-					}
-				} else {
-					ChainNarratorNode & c_node=dynamic_cast<ChainNarratorNode &>(n);
-					hash.performActionToAllCorrespondingNodes(&c_node,action);
-				}
+				indexlists.append(new IndexList);
+				detector.getSortedIndexList(&n,*indexlists.last());
 			}
 			return true;
 		}
@@ -468,60 +442,59 @@ private:
 		virtual void detectedCycle(NarratorNodeIfc & ){}
 		virtual void finishVisit(NarratorNodeIfc & ){}
 	};
-	class BiographyAction: public NarratorHash::BiographyAction {
-	#define MAX_SIZE 3
+
+	class FindIndiciesAction: public NarratorHash::BiographyAction {
 	private:
 		NarratorNodeIfc * node;
-		NodeGroups & groups;
-		NodePositionMap & visitedMap;
-		NarratorHash & hash;
-		NarratorList & narratorList;
-
-		bool updateGroups(ScoredSet & set) { //return true if changes occured
-			if (set.score>=hadithParameters.bio_threshold) {
-				bool add=false;
-				for (int i=0;i<groups.size();i++) {
-					if (groups[i].score<set.score) {
-						add=true;
-					} else if (add) {
-						groups.insert(i,set);
-						break;
-					}
-				}
-				if (groups.size()>MAX_SIZE) {
-					assert(add);
-					assert(groups.size()==MAX_SIZE+1);
-					groups.removeLast();
-				} else if (!add && groups.size()<MAX_SIZE) {
-					groups.append(set);
-					return true;
-				}
-				return add;
-			}
-			return false;
-		}
-
+		NodePositionMap indexMap;
+		IndexLists & lists;
 	public:
-		BiographyAction(NarratorNodeIfc * node, NodeGroups & g,NodePositionMap & map,NarratorHash & aHash,NarratorList & narList)
-				:groups(g),visitedMap(map),hash(aHash),narratorList(narList) {
+		FindIndiciesAction(NarratorNodeIfc * node, IndexLists & indexLists): lists(indexLists){
 			this->node=node;
 		}
-		void action(const QString &, GroupNode *node, int index, double similarity) {
-			NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
+		void action(const QString &, GroupNode *gnode, int index, double similarity) {
+			NarratorNodeIfc * n=&gnode->getCorrespondingNarratorNode();
 			assert(n!=NULL);
-			if (!visitedMap.isVisited(n,index)) {
-				ScoredSet set(0);
-				BiographyVisitor visitor(set,hash,narratorList,n,index,similarity);
-				GraphVisitorController cont(&visitor,NULL);
-				set.setBioNarrIndicies.insert(index);
-				set.setGraphNodes.insert(n);
-				n->BFS_traverse(cont,1,1);
-				n->BFS_traverse(cont,1,-1);
-				if (updateGroups(set))
-					visitedMap.setVisited(n,index);
+			if (n==this->node) {
+				int listIndex=indexMap.getIndex(gnode);
+				if (listIndex>=lists.size()) {
+					assert(listIndex==lists.size());
+					IndexList * PositionList=new IndexList;
+					lists.append(PositionList);
+				}
+			#ifdef ASSUMESORTED
+				if (lists[listIndex]->size()>0)
+					assert(index>lists[listIndex]->last());
+			#endif
+				lists[listIndex]->append(index);
 			}
 		}
 	};
+
+	bool updateGroups(ScoredSet & set,NodeGroups & groups) { //return true if changes occured
+		#define MAX_SIZE 3
+		if (set.score>=hadithParameters.bio_threshold) {
+			bool add=false;
+			for (int i=0;i<groups.size();i++) {
+				if (groups[i].score<set.score) {
+					add=true;
+				} else if (add) {
+					groups.insert(i,set);
+					break;
+				}
+			}
+			if (groups.size()>MAX_SIZE) {
+				assert(add);
+				assert(groups.size()==MAX_SIZE+1);
+				groups.removeLast();
+			} else if (!add && groups.size()<MAX_SIZE) {
+				groups.append(set);
+				return true;
+			}
+			return add;
+		}
+		return false;
+	}
 
 	void addNarrators(Biography* biography) {
 		Biography::NarratorNodeGroups & realNodes=biography->nodeGroups;
@@ -542,18 +515,56 @@ private:
 		}
 	}
 
+	inline bool areNear(int index1,int index2) {
+		int diff1=narratorList[index1]->getEnd()-narratorList[index2]->getStart(),
+			diff2=narratorList[index1]->getStart()-narratorList[index2]->getEnd();
+		return absVal(diff1)<hadithParameters.bio_nrc_max ||
+			absVal(diff2)<hadithParameters.bio_nrc_max;
+	}
+
 	void segmentChosenBiography(NarratorNodeIfc * node,NodeGroups & topSets) {
-		NodePositionMap visitedMap;
-		assert(!node->isGroupNode());
-		BiographyAction action(node,topSets,visitedMap,hash,narratorList);
-		if (node->isGraphNode()) {
-			for (int i=0;i<node->size();i++) {
-				hash.performActionToAllCorrespondingNodes(&(*node)[i],action);
+		topSets.clear();
+		IndexList centerIndicies;
+		getSortedIndexList(node,centerIndicies);
+
+		IndexLists indexLists;
+		GetNeighborIndexListsVisitor visitor(*this,node,indexLists);
+		GraphVisitorController cont(&visitor,NULL);
+		node->BFS_traverse(cont,1,1);
+		node->BFS_traverse(cont,1,-1);
+
+		prg->setCurrentAction("Checking Neighborhood for '"+node->CanonicalName()+"'");
+		prg->report(0);
+		for (int i=0;i<centerIndicies.size();i++) {
+			int centerIndex=centerIndicies[i];
+			ScoredSet set(0);
+			set.setBioNarrIndicies.insert(centerIndex);
+			for (int j=0;j<indexLists.size();j++) {
+				IndexList & neighboringIndicies=*indexLists[j];
+				IndexList::const_iterator itr=qLowerBound(neighboringIndicies,centerIndex);
+				for (int i=0;i<2;i++) {
+					if (itr!=neighboringIndicies.end()) {
+						int neighborIndex=*itr;
+						if (areNear(centerIndex,neighborIndex)) {
+							if (!set.setBioNarrIndicies.contains(neighborIndex)) {
+								set.score++;
+								set.setBioNarrIndicies.insert(neighborIndex);
+								break;
+							}
+						}
+					}
+					if (itr!=neighboringIndicies.begin())
+						itr--;
+				}
 			}
-		} else {
-			ChainNarratorNode & c_node=dynamic_cast<ChainNarratorNode &>(*node);
-			hash.performActionToAllCorrespondingNodes(&c_node,action);
+			updateGroups(set,topSets);
+			prg->report((double)i/centerIndicies.size()*100+0.5);
 		}
+		for (int i=0; i<indexLists.size();i++) {
+			delete indexLists[i];
+		}
+		prg->setCurrentAction("Complete");
+		prg->report(100);
 	}
 
 	int getNextRealNodeId(int id) {
@@ -591,6 +602,7 @@ public:
 	NarratorDetector() {graph=NULL; biographies=NULL;}
 #endif
 	int segment(QString input_str,ATMProgressIFC *prg)  {
+		this->prg=prg;
 		QFile chainOutput(chainDataStreamFileName);
 
 		chainOutput.remove();
@@ -637,6 +649,7 @@ public:
 		stateInfo.nextState=TEXT_S;
 		stateInfo.lastEndPos=0;
 		stateInfo.startPos=0;
+		stateInfo.processedStructure=INITIALIZE;
 	#ifdef PUNCTUATION
 		stateInfo.previousPunctuationInfo.fullstop=true;
 	#endif
@@ -703,6 +716,7 @@ public:
 				break;
 	#endif
 		}
+		prg->report(100);
 	#if defined(DISPLAY_HADITH_OVERVIEW) && !defined(SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY)
 		if (biographyStart<0)
 		{
@@ -727,25 +741,27 @@ public:
 			return 1;
 		QDataStream tester(&chainOutput);
 	#else
-		graph->printAllNodesList();
-		QList<int> ids;
-		bool ok;
-		do {
-			int i = QInputDialog::getInt(NULL, QString("Find Biography for:"),
-										QString("Id of Node "),0, 0, graph->all_nodes.size()-1,1, &ok);
-			 if (ok)
-				 ids<<i;
-		 } while (ok);
-		for (int i=0;i<ids.size();i++) {
-			int id=getNextRealNodeId(ids[i]);
-			if (id>=0) {
-				ids[i]=id;
-				qDebug()<<graph->all_nodes[id]->toString();
-			} else {
-				ids.removeAt(i);
-				i--;
+		if (nodeIds.size()==0) {
+			graph->printAllNodesList();
+			bool ok;
+			do {
+				int i = QInputDialog::getInt(NULL, QString("Find Biography for:"),
+											QString("Id of Node "),0, 0, graph->all_nodes.size()-1,1, &ok);
+				 if (ok)
+					 nodeIds<<i;
+			} while (ok);
+			for (int i=0;i<nodeIds.size();i++) {
+				int id=getNextRealNodeId(nodeIds[i]);
+				if (id>=0) {
+					nodeIds[i]=id;
+					qDebug()<<graph->all_nodes[id]->toString();
+				} else {
+					nodeIds.removeAt(i);
+					i--;
+				}
 			}
 		}
+		assert(nodeIds.size()>0);
 	#endif
 	#if defined(TAG_BIOGRAPHY)
 		prg->startTaggingText(*text);
@@ -760,9 +776,9 @@ public:
 			for (int j=0;j<s->size();j++) {
 				const Narrator * n=(*s)[j];
 	#else
-		for (int i=0;i<ids.size();i++) {
+		for (int i=0;i<nodeIds.size();i++) {
 			NodeGroups topSets;
-			segmentChosenBiography(graph->getNode(ids[i]),topSets);
+			segmentChosenBiography(graph->getNode(nodeIds[i]),topSets);
 			for (int k=0;k<topSets.size();k++) {
 				Biography * bio=new Biography(graph,text);
 				biographies->append(bio);
@@ -843,13 +859,15 @@ int biographyHelper(QString input_str,ATMProgressIFC *prg) {
 }
 
 #ifdef TEST_BIOGRAPHIES
-BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg) {
+BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg, int nodeID) {
 	input_str=input_str.split("\n")[0];
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
 	NarratorDetector s(graph);
 #else
 	NarratorDetector s;
 #endif
+	if (nodeID>=0)
+		s.nodeIds.append(nodeID);
 	s.segment(input_str,prg);
 	return s.biographies;
 }
