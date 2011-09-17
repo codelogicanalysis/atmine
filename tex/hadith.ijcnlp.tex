@@ -11,6 +11,7 @@
 %\DeclareMathOperator*{\argmax}{arg\,max}
 %\setlength\titlebox{6.5cm}    % Expanding the titlebox
 
+
 \usepackage{arabtex}
 \usepackage{amssymb}
 \usepackage{caption}
@@ -24,7 +25,7 @@
 
 \usepackage{relsize}
 \usepackage{fancyvrb}
-\usepackage[colorlinks=false]{hyperref}
+\usepackage[colorlinks=false,draft]{hyperref}
 
 \usepackage{utf8}
 \setarab
@@ -1183,37 +1184,217 @@ Finally, the distance metric had 0.993 precision,
 
 \subsection{Genealogical Lists in the Bible}
 
-(explain what will be equivalent of NMC and NRC and how it will work)
+Bible contains numerous genealogical lists which are of interest to Bible scholars, historians and critics. 
+The genealogies in the Bible trace key figures especially kings of the nation of Israel back to Adam; 
+the genealogy of Jesus is also recorded in the New testament by two of his followers: Matthew and Luke. 
 
-(Here is a sophisticated example:
-``This is the book of Adam’s history. In the day of God’s creating Adam he made him in the likeness of God. Male and female he created them. After that he blessed them and called their name Man in the day of their being created. And Adam lived on for a hundred and thirty years. Then he became father to a son in his likeness, in his image, and called his name Seth. And the days of Adam after his fathering Seth came to be eight hundred years. Meanwhile he became father to sons and daughters. So all the days of Adam that he lived amounted to nine hundred and thirty years and he died. And Seth lived on for a hundred and five years. Then he became father to E′nosh. And after his fathering E′nosh Seth continued to live eight hundred and seven years. Meanwhile he became father to sons and daughters. So all the days of Seth amounted to nine hundred and twelve years and he died. And E′nosh lived on for ninety years. Then he became father to Ke′nan. And after his fathering Ke′nan E′nosh continued to live eight hundred and fifteen years. Meanwhile he became father to sons and daughters. So all the days of E′nosh amounted to nine hundred and five years and he died...'' (Genesis 5:1-11)
+%In many cases, 
+%there is an overlap between the many individual lists available across the Bible. When such an overlap occurs 
+%meticulous readers can detect some seeming contradictions, in many cases due to conflicts or omissions.
+%Detecting those conflicts is a task that has been performed by countless 
+%number of Bible students, theologians and historians. 
 
+The importance of such lists was profound for the old nation of Israel. They helped establish the kingship lineage, determining 
+those eligible to work as priests and in the temple. The whole concept of land ownership was also tied to descent. Most importantly,
+genealogical links were preserved due to the possible privilege of being the ancestor of the awaited Messiah.~\cite{catholicEncyclopedia:Online}
 
-Here is a simple example:
+For many believers, genealogies are used as the main indicators of chronology especially when calculating the age of mankind~\cite{Thomas:92}.
+They where always used to defend the historicity of the events and characters recorded in the Bible in contrast to those present in other religious 
+texts of old nations which contain much fables and myths. However, it is known that when different genealogical lists overlap, they are
+not always identical and contain some seeming contradictions. Those conflicts are in many cases due to nicknames and omissions and need to be examined
+carefully and justified if possible.
 
-``Adam, Seth, E′nosh,  Ke′nan, Ma‧hal′a‧lel, Ja′red,  E′noch, Me‧thu′se‧lah, La′mech,  Noah, Shem, Ham and Ja′pheth. The sons of Ja′pheth were Go′mer and Ma′gog and Ma′da‧i and Ja′van and Tu′bal and Me′shech and Ti′ras. And the sons of Go′mer were Ash′ke‧naz and Ri′phath and To‧gar′mah. And the sons of Ja′van were E‧li′shah and Tar′shish, Kit′tim and Ro′da‧nim. The sons of Ham were Cush and Miz′ra‧im, Put and Ca′naan.'' (1 Chronicles 1:1-8)
-)
+%In many cases, such lists cover overlapping sections and when they do, they sometimes exhibit some seeming contradictions 
+%due to nicknames and other reasons.
+Detecting those conflicts is a task that has been performed by countless 
+number of Bible students, theologians and historians~\cite{catholicEncyclopedia:Online,Belote:Online,completeBibleGenealogy:Online}. 
+Their results have been published in articles and books; however, most of them are in written format 
+and rarely display the genealogical graphs to make it easier for the reader to pinpoint those conflicts and visualize them. 
 
-In many cases, such lists cover overlapping sections and when they do, they sometimes exhibit some seeming contradictions 
-due to nicknames and other reasons. Detecting those conflicts is a task that has been performed by countless 
-number of Bible students, theologians and historians. 
-Their results have been published in articles and books; however, almost all of them are in written format 
-and rarely displayed the genealogical graphs to make it easier for the reader to pinpoint those conflicts and visualize them.
-
-In addition, being able to create a comprehensive genealogical graph from all biblical accounts would greatly enhance its study,
+In addition, being able to create a comprehensive genealogical graph from all biblical accounts greatly enhances its study,
 since readers would be able to better understand a character's genealogical context and life span. Such comprehensive graphs can be tagged
-with time durations between a father and his giving birth of his sons as is common in many biblical accounts...
+with time durations between a father and his giving birth of his sons as is common in many biblical accounts. 
+Attempts have been made for such endeavor, but resulted in manually performed unappealing pseudo-complete graphs as in \cite{Belote:Online,SoulLiberty:Online}. The main difficulty that hindered this task was the huge size of the resulting graphs whose layout becomes
+challenging. This difficulty is also present in the hadith problem we undertook in this paper; however, we were able to tackle this issue by 
+allowing for partial layout to be drawn on the fly as the user navigates in the POR which is already computed, 
+instead of precomputed complete layouting of the graph on which plain scrolling is used to navigate. (check the accompanying software).
+In all cases, it is noteworthy, that all genealogical trees/lineages available in any literature today are the product of manual work. 
+In what follows, we explain how NaGEMA can be easily manipulated to be utilized to generate this information automatically.
+
+%is in establishing the historicity of characters under consideration,
+%Such lists had and still have an utmost importance for Jews because heritage
+%according to their law dictates the land's ownership according to their inheritance which cannot be sold perminantly, they also 
+
+Before presenting the necessary modifications for the state-machine used by NaGEMA, we present two representative biblical sections that
+contain genealogical lists. These sections contain overlapping linages, however stated with different styles: \\
+
+``This is the written account of {\bf Adam}'s line...
+
+%When God created man, he made him in the likeness of God. He created them male and female and blessed them. 
+%And when they were created, he called them `man'.
+
+When {\bf Adam} had lived 130 years, he had a son in his own likeness, in his own image; and he named him {\bf Seth}. 
+After Seth was born, {\bf Adam} lived 800 years and had other sons and daughters. 
+Altogether, {\bf Adam} lived 930 years, and then he died.
+
+When {\bf Seth} had lived 105 years, he became the father of {\bf Enosh}. 
+And after he became the father of {\bf Enosh}, {\bf Seth} lived 807 years and had other sons and daughters. 
+Altogether, {\bf Seth} lived 912 years, and then he died.
+
+When {\bf Enosh} had lived 90 years, he became the father of {\bf Kenan}. 
+And after he became the father of {\bf Kenan}, {\bf Enosh} lived 815 years and had other sons and daughters. 
+Altogether, {\bf Enosh} lived 905 years, and then he died.'' (Genesis 5:1-11) \\
+
+
+``{\bf Adam}, {\bf Seth}, {\bf Enosh}, {\bf Kenan}, {\bf Mahalalel}, {\bf Jared}, {\bf Enoch}, 
+{\bf Methuselah}, {\bf Lamech}, {\bf Noah}. 
+The sons of {\bf Noah}: {\bf Shem}, {\bf Ham} and {\bf Japheth}.
+The sons of {\bf Japheth}: {\bf Gomer}, {\bf Magog}, {\bf Madai}, {\bf Javan}, {\bf Tubal}, {\bf Meshech} and {\bf Tiras}.
+The sons of {\bf Gomer}: {\bf Ashkenaz}, {\bf Riphath} and {\bf Togarmah}.
+The sons of {\bf Javan}: {\bf Elishah}, {\bf Tarshish}, the {\bf Kittim} and the {\bf Rodanim}.
+The sons of {\bf Ham}: {\bf Cush}, {\bf Mizraim}, {\bf Put} and {\bf Canaan}.
+The sons of {\bf Cush}: {\bf Seba}, {\bf Havilah}, {\bf Sabta}, {\bf Raamah} and {\bf Sabteca}.
+The sons of {\bf Raamah}: {\bf Sheba} and {\bf Dedan}. 
+{\bf Cush} was the father of {\bf Nimrod}, who grew to be a mighty warrior on earth. ...'' (1 Chronicles 1:1-8) \\
+
+\begin{figure}[tb]
+\center{
+\resizebox{1\columnwidth}{!}
+%{\includegraphics{figs/narrator_chain_output.pdf}}
+{\includegraphics{figs/controller_bible.pdf}}
+\caption{Controller of biblical genealogies}
+\label{f:bible} 
+}
+\end{figure}
+
+The problem at hand can be stated as follows: Given the whole text of the Bible detect all sections that have genealogical lists
+and extract from them the names structured in a genealogical tree. The resemblance between this problem and that of hadith is evident; 
+but still there are some differences that should be highlighted. 
+First, in biblical genealogies, the individual names are simple in contrast to those present in hadith; 
+consequently, the concept of a `name connector (NMC)' is unnecessary in the problem at hand.
+Second, genealogies are not a flat sequence of narrators as in hadith but a branching tree of decedents; 
+for this reason, it is necessary to detect not just the names in the text but also the node to which they are to be attached.
+Those two differences are treated in the state-machine presented in Figure~\ref{f:bible} that contains all changes necessary to adapt NAGEMA to detect 
+biblical genealogies.
+
+The controller has three states that correspond to 
+the sentence structure under consideration. 
+State $\mathit{TEXT\_S}$ is the initial state and denotes 
+that the controller is outside the context of a genealogical list.
+State $\mathit{NAME\_S}$ denotes that the controller is in
+the middle of a list and has last met some names. 
+State $\mathit{SONS\_S}$ denotes that the controller is in
+the middle of sentence that lists the sons of a previously named ancestor such as sentences that appeared in the second quoted biblical texts. 
+
+
+The conditions that appear in the controller, are as based on the following symbols:
+\begin{itemize}
+\item {\bf NEW\_NAME} denotes that the word at had is a name not present in the
+	currently built tree.
+\item {\bf LEAF\_NAME} denotes a name that appears as a leaf in the tree (i.e. has no
+	descendants attached to it).
+\item {\bf CORE\_NAME} denotes a name that has already descendants attached to it (i.e. 
+	non-leaf node).
+\item {\bf DC} denotes a descent connector such as "the son of", "became father to",
+	"begot", etc... that help indicate -- in addition to the names -- that the current text
+	is a genealogical list. They also have the role of indicating the type of link and its 
+	direction (father-son or son-father); such role is omitted in the state-machine for clarity.
+\item {\bf OTHER} denotes any other word.
+\end{itemize}
+The threshold $\theta_{\mathit{o}}$ 
+corresponds to the number of tolerated words that are not names 
+or descent connectors (DC); while 
+$i_{\mathit{o}}$ corresponds to their current count in the state-machine. 
+Another threshold which is used is $\mathit{N_{min}}$ which denotes the number of minimum
+levels that are necessarily available in the tree to be considered a valid genealogical
+tree instead of an erroneous one generated from a group of coincidental names. The
+concept of tolerance and minimum number of structures have been inspired from the
+hadith controller and are suitable for detecting texts that contain lists of similar
+type structures.
+
+The function $\mathit{n_1.setFather(n_2)}$ creates a node in the tree 
+for $\mathit{n_1}$ and creates
+a link between $\mathit{n_1}$ and the already present node $\mathit{n_2}$. 
+The function $\mathit{getLevels()}$ 
+returns the number of generations already present in the tree. This number
+assesses whether the currently built tree is an acceptable one or not upon
+transitioning from sate $\mathit{NAME\_S}$ to $\mathit{TEXT\_S}$
+
+We used the values of 3 and 20 for $\theta_{\mathit{o}}$ and 
+$N_{\mathit{min}}$ respectively, to run the experiments 
+we report in what follows.
+
+(report preliminary results on bible genealogy)
+
 
 \subsection{Organizing Quoted Email Replies/Forwards}
 
-(we can use the "FROM:" and punctuation to extract the sender and the body of the email and organize a 
-received email into individual chains of replies/forwards. Also the Inbox can be merged into a POR of contacts with whom a user communicates and the history of their communication, as in the case of the hadith...)
+\begin{figure}[b]
+\center{
+\resizebox{1\columnwidth}{!}
+%{\includegraphics{figs/narrator_chain_output.pdf}}
+{\includegraphics{figs/email1.pdf}}
+\caption{Thread tree generated from flat emails}
+\label{f:email1} 
+}
+\end{figure}
+
+\begin{figure}[tb]
+\center{
+\resizebox{0.7\columnwidth}{!}
+%{\includegraphics{figs/narrator_chain_output.pdf}}
+{\includegraphics{figs/email2.pdf}}
+\caption{Graph of contacts and other people known through the threads available}
+\label{f:email2} 
+}
+\end{figure}
+
+Emails have been one of the most important tool for communication in business, distant family members and friends.
+In many cases, one email may trigger a thread of replies and forwards that may circulate between different people. It may even
+end up after several replies being sent to someone new to the whole thread and he/she might consider navigating through
+the lengthy list of quoted replies/forwards to get a better understanding of the conversations which have been going prior to his
+receiving the email. However, the lengthy lists of conversations with some added indentation or symbols each possibly in a different
+format may be a cumbersome task to do. That's why email clients such as gmail try organizing each conversation in a separate tab for
+better use. Nonetheless, such clients are restricted to emails that are already available in the recipient's `Inbox' or `Sent Mails'.
+In other words, even if the email client receives an email which has 
+tens of separate replies/forwards but that are not previously available for the client, it 
+fails to organize them and instead keeps them as one list of quoted conversations.
+
+In hadith, we have a similar concept: a narration from the prophet that has been orally transmitted and ends up being written
+at the end with all the narrators in between being quoted by the last narrator who receives the narration. 
+It is interesting to be able to solve the `reincarnated' version of
+the problem that appears in our technological world.
+
+It is noteworthy that the problem at had is easier than its historical counterpart, due to the semi-structured nature of emails.
+For instance, the senders, co-recipients, subject, body and so on of the email follow clear rules. Since in our case, we need not 
+to mine the unstructured content of the email, the problem is clearly much easier than the ones presented earlier. 
+Consequently by considering the `From', `To', `CC' and `BCC' fields one can construct the `narrator' chains for conversation
+threads, each tagged with the body of the the individual reply/forward conversation. Consider a sample email tree that
+can be generated as shown in Figure~\ref{f:email1}. Notice that the four flat emails shown to the right of the figure,
+three of which lie in the `Inbox' and one of which in the `Sent Mails' were used to generate the more instructive structure
+to the left. Although in literature~\cite{Smith:00,Venolia:03} 
+alternative tree-like structures where proposed, however, they were restricted to emails
+available in the Inbox/Sent-Mails; consequently they will be unable to recover the top three levels of the tree generated through 
+the quoted previously unknown emails. % (search more extensively literature, if this is true)
+
+Furthermore, it can be envisioned that the Inbox or subset of it, can be merged into a graph structure of people with 
+whom a user communicates and the
+history of their communication as in the case of the hadith. 
+%This structure might be useful to extract other relations
+%such as the importance and priority of emails sent by certain contacts and for predicting any possibly forgotten recipient of an email to be sent.
+Consider a sample graph depicted in Figure~\ref{f:email2} 
+that shows the people involved in the thread of figure~\ref{f:email1} along with others of previous threads.
+With such a graph, the user can get to learn about people that are not known to him and are possible contacts because they are involved 
+in threads that reach him/her.
+
+%(we can use the "FROM:" and punctuation to extract the sender and the body of the email and organize a 
+%received email into individual chains of replies/forwards. Also the Inbox can be merged into a POR of contacts with whom a user communicates and the history of their communication, as in the case of the hadith...)
 
 \subsection{Place Names in Travel Itineraries}
 
 (check if it can be applicable)
 
-(Here is an example from wikipedia ($http://wikitravel.org/en/Silk_Road$):
+(Here is an example from wikipedia (\url{http://wikitravel.org/en/Silk_Road}):
 
 -Northern Silk Route \\
 Dunhuang to Hami \\
@@ -1319,5 +1500,5 @@ narrator merging algorithms.
 %\bibliographystyle{naaclhlt2010}
 \bibliographystyle{acl}
 {\small \bibliography{fzAr}}
-
+\nocite{completeBibleGenealogy:Online}
 \end{document}
