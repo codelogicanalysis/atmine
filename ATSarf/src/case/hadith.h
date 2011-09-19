@@ -62,6 +62,8 @@
 #define SAVE_MERGED_GRAPH_ONLY
 #define DESERIALIZE_POR
 //#define DEBUG_BIOGRAPHY_CLUSTERING
+#define BIBLE
+
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);
 void hadith_initialize();

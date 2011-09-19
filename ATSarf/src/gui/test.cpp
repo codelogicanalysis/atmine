@@ -11,6 +11,7 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "timeRecognizer.h"
+#include "bibleGeneology.h"
 #include <sys/time.h>
 
 
@@ -55,8 +56,7 @@ int morphology(QString input_str,ATMProgressIFC *) {
 	return 0;
 }
 int hadith(QString input_str,ATMProgressIFC * prg) {
-	for (int i=0;i<REPETITIONS;i++)
-	{
+	for (int i=0;i<REPETITIONS;i++) {
 		timeval tim;
 		gettimeofday(&tim,NULL);
 		double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -81,6 +81,9 @@ int test(QString inputString,ATMProgressIFC * prg) {
 		return -1;
 #elif 0
 	if (biographyHelper(inputString,prg))
+		return -1;
+#elif defined(BIBLE)
+	if (genealogyHelper(inputString,prg))
 		return -1;
 #elif defined(DESERIALIZE_POR)
 	if (deserializeGraph(inputString,prg))
