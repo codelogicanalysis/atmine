@@ -1354,7 +1354,7 @@ In many cases, one email may trigger a thread of replies and forwards that may c
 end up after several replies being sent to someone new to the whole thread and he/she might consider navigating through
 the lengthy list of quoted replies/forwards to get a better understanding of the conversations which have been going prior to his
 receiving the email. However, the lengthy lists of conversations with some added indentation or symbols each possibly in a different
-format may be a cumbersome task to do. That's why email clients such as gmail try organizing each conversation in a separate tab for
+format may be a cumbersome task to do. That's why email clients such as Gmail try organizing each conversation in a separate tab for
 better use. Nonetheless, such clients are restricted to emails that are already available in the recipient's `Inbox' or `Sent Mails'.
 In other words, even if the email client receives an email which has 
 tens of separate replies/forwards but that are not previously available for the client, it 
@@ -1392,34 +1392,61 @@ in threads that reach him/her.
 
 \subsection{Place Names in Travel Itineraries}
 
-(check if it can be applicable)
+Travel Itineraries are plans of travel or routes. They are usually used as guides for travelers. They list different
+places through which the route to the destination passes. 
+In many cases, those guides are provided in written format
+It is also common that alternative routes be suggested to the same destination.
+Consider the example below for the itineraries known as the `Silk Road'\footnote{from \url{http://wikitravel.org/en/Silk_Road}}:
 
-(Here is an example from wikipedia (\url{http://wikitravel.org/en/Silk_Road}):
+{\setlength{\parindent}{20pt} 
+\setlength{\parskip}{1ex}
+\indent-Northern Silk Route \\
+\indent \indent Dunhuang to Hami \\
+\indent \indent Hami to Turfan \\ 
+\indent \indent Turfan to Korla \\
+\indent \indent Korla to Kashgar  
 
--Northern Silk Route \\
-Dunhuang to Hami \\
-Hami to Turfan \\ 
-Turfan to Korla \\
-Korla to Kashgar  
+\indent -Middle Silk Route \\ 
+\indent \indent Dunhuang to Cherchen \\
+\indent \indent Cherchen to Korla \\
+\indent \indent Korla to Kashgar 
 
--Middle Silk Route \\ 
-Dunhuang to Cherchen \\
-Cherchen to Korla \\
-Korla to Kashgar 
+\indent -Southern (Jade) Silk Route \\
+\indent \indent Dunhuang to Cherchen \\
+\indent \indent Cherchen to Khotan \\
+\indent \indent Khotan to Yarkand \\
+\indent \indent Yarkand to Kashgar \\ }
 
--Southern (Jade) Silk Route \\
-Dunhuang to Cherchen \\
-Cherchen to Khotan \\
-Khotan to Yarkand \\
-Yarkand to Kashgar \\
-)
 
-In many cases, these itineraries contain some common places and merging them in a POR is much more illustrative than having them in text format.
-Also, when electronic maps are available, such textual itineraries can automatically be turned into emphasized routes on maps.
+In a similar manner to extracting hadith, a controller that looks for aggregations of Place names
+with the NRC equivalent being phrases such as `to', `pass in', `stop at', etc... 
+Afterwards, itineraries can be merged into a POR by merging common locations.
+Clearly, such a display is much more illustrative than having them in text format.
+Also, when electronic maps are available, POR's can automatically be turned into emphasized routes on maps.
 
 \subsection{Extending Arabic People Name Gazetteers}
 
-(briefly explain how this specific application has general value through contributing to the general task of entity extraction [learned names])
+The problem at hand has significant contribution to the general task of Named Entity Recognition (NER). It has been noted that
+gazetteers play an important role in the accuracy of knowledge-based approaches and bootstrapping learning
+approaches~\cite{Kozareva:06,Carlson:09,Toral:06,Benajiba:07,Kazama:08,Nadeau:06}. Nonetheless, although gazetteers result in high accuracy,
+they are hard to obtain and mantain. % They are also language and domain-dependent. 
+Consequently, many automatic methods have been proposed to generate extensive gazetteers instead of relying on the time-consuming manual work
+to compile such lists. Proposed methods include: writing some rules for the context of the named entities targeted such as propositions that
+introduce them, also known as trigger gazetteers~\cite{Kozareva:06,Toral:06}; utilizing free online encyclopedias such as Wikipedia which are 
+continually mantained~\cite{Benajiba:07,Kazama:08}; in addition to reliance on web search engines starting from a small list of words and extracting
+similar that appear in the extracted pages~\cite{Nadeau:06}.
+
+As previously noted, when solving the hadith problem, we were able to learn much previously unknown names using their context. We have used methods
+relating to those found in~\cite{Traboulsi:09,Kozareva:06}; however, our learned lists appear to be more accurate than their counterparts due to the
+the more characteristics of the hadith corpus and the wider context on which we rely on. Particularly, we learn only names that appear in the hadith sanad
+detected through the presence of an aggregation of previously known names in its neighborhood along with name connectors such as narration verbs and 
+prepositions. In Table X, we compare the results of our learning methods to evaluate the role of the sand context. Clearly, the sanad context provides 
+a higher confidence in the accuracy of our extracted names. Accordingly, our generated gazetteers are superior than those extracted otherwise and 
+enrich the task of Arabic Named Entity Extraction resources. The same applies to that of Place names that can be discovered in the context of travel
+itineraries and the people names that appear in biblical genealogical lists. Since the latter sources are available in multitude of languages, they
+can be a rich source for building gazetteers for resource-poor languages.
+
+(present the necessary table and expand upon its significance)
 
 \section{Conclusion and future work}
 \label{sec:future}
