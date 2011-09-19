@@ -9,12 +9,10 @@
 #include "stemmer.h"
 #include "timeRecognizer.h"
 #include <QFileDialog>
+#include "bibleGeneology.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    browseFileDlg(NULL),
-    m_ui(new Ui::MainWindow)
-{
+		QMainWindow(parent), browseFileDlg(NULL), m_ui(new Ui::MainWindow) {
 	m_ui->setupUi(this);
 	m_ui->pushButton->setVisible(false);
 #ifdef EQUAL_NEW
@@ -22,34 +20,29 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete m_ui;
 }
 
-void MainWindow::report(int value)
-{
+void MainWindow::report(int value) {
 	if (this==NULL)
 		return;
 	m_ui->progressBar->setValue(value);
 }
-void MainWindow::setCurrentAction(const QString & s)
-{
+void MainWindow::setCurrentAction(const QString & s) {
 	if (this==NULL)
 		return;
 	m_ui->progressBar->setFormat(s+"(%p%)");
 }
 
-void MainWindow::resetActionDisplay()
-{
+void MainWindow::resetActionDisplay(){
 	if (this==NULL)
 		return;
 	m_ui->progressBar->setFormat("%p%");
 	m_ui->progressBar->reset();
 }
 
-void MainWindow::tag(int start, int length,QColor color, bool textcolor)
-{
+void MainWindow::tag(int start, int length,QColor color, bool textcolor){
 	if (this==NULL)
 		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
@@ -78,8 +71,7 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor)
 		taggedBox->setTextBackgroundColor(color);
 }
 
-void MainWindow::startTaggingText(QString & text)
-{
+void MainWindow::startTaggingText(QString & text){
 	if (this==NULL)
 		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
@@ -95,8 +87,7 @@ void MainWindow::startTaggingText(QString & text)
 
 }
 
-void MainWindow::finishTaggingText()
-{
+void MainWindow::finishTaggingText(){
 	if (this==NULL)
 		return;
 	QTextBrowser * taggedBox=m_ui->hadith_display;
@@ -125,8 +116,7 @@ QString MainWindow::getFileName() {
 	return "";
 }
 
-void MainWindow::changeEvent(QEvent *e)
-{
+void MainWindow::changeEvent(QEvent *e){
     QMainWindow::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
@@ -137,8 +127,7 @@ void MainWindow::changeEvent(QEvent *e)
     }
 }
 
-void MainWindow::on_pushButton_clicked()
-{
+void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
 	hadithParameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
@@ -150,8 +139,7 @@ void MainWindow::on_pushButton_clicked()
 	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
 	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();
 	sarfParameters.enableRunonwords=m_ui->chk_runon->isChecked();
-	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6))
-	{
+	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6)){
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
@@ -184,10 +172,8 @@ void MainWindow::on_pushButton_clicked()
 	m_ui->output->setText(output_str);
 #if defined(TEST_NARRATOR_GRAPH)
 #if 0
-	if (m_ui->chk_hadith->isChecked())
-	{
-		if (rc==0)
-		{
+	if (m_ui->chk_hadith->isChecked()){
+		if (rc==0)	{
 			setWindowTitle(QString("Sarf (")+m_ui->input->toPlainText()+")");
 			try{
 				system("dot -Tsvg graph.dot -o graph.svg");
@@ -207,8 +193,7 @@ void MainWindow::on_pushButton_clicked()
 #endif
 #endif
 }
-void MainWindow::on_fill_clicked()
-{
+void MainWindow::on_fill_clicked(){
 	initialize_variables();
 #ifndef SUBMISSION
 	start_connection(this);
@@ -219,20 +204,19 @@ void MainWindow::on_fill_clicked()
 
 	database_info.fill(this);
 	hadith_initialize();
+	geneology_initialize();
 	time_initialize();
 	m_ui->pushButton->setVisible(true);
 	m_ui->fill->setVisible(false);
 }
 
-void MainWindow::on_cmd_browse_clicked()
-{
+void MainWindow::on_cmd_browse_clicked(){
 	QString fileName=getFileName();
 	if (!fileName.isEmpty())
 		m_ui->input->setText(fileName);
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	QFileInfo fileinfo(argv[0]);
 	executable_timestamp=fileinfo.lastModified();
 	QApplication app(argc, argv);
@@ -241,7 +225,6 @@ int main(int argc, char *argv[])
 	return app.exec();
 }
 
-void MainWindow::on_exit_clicked()
-{
+void MainWindow::on_exit_clicked(){
 	exit(0);
 }
