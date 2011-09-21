@@ -26,8 +26,7 @@ void compatibility_rules::fill() //TODO: solve issue of abstract not read correc
 		int i=0;
 		absCatIDForBits.clear();
 		absCatBitMap.clear();
-		while (abstCatID.retrieve())
-		{
+		while (abstCatID.retrieve()){
 			int id=abstCatID.get(0).toInt();
 			absCatIDForBits.append(id);
 			absCatBitMap.insert(id,i);
@@ -49,29 +48,23 @@ void compatibility_rules::fill() //TODO: solve issue of abstract not read correc
 		Retrieve_Template category_table("category",cols,"");
 		crlTable.resize(size);
 		cat_names.resize(size);
-		for (int i=0;i<size;i++)
-		{
+		for (int i=0;i<size;i++){
 			crlTable[i]=QVector<comp_rule_t> (size);
 			//cat_names[i].valid=false; //not needed since by default is false
 		}
 		int row=0, id=0;
-		if (category_table.retrieve())
-		{
-			while(row<size) //just in case some ID's are not there we fill them invalid
-			{
+		if (category_table.retrieve()){
+			while(row<size) { //just in case some ID's are not there we fill them invalid
 				if (row==id+1)
 					assert (category_table.retrieve());
 				id=category_table.get(0).toLongLong();
 				item_types t;
 				bool abstract;
-				if (row==id)
-				{
+				if (row==id){
 					t=(item_types)category_table.get(1).toInt();
 					//abstract=category_table.get(2).toInt(); does not work
 					abstract= (absCatBitMap.find(id)!=absCatBitMap.end());
-				}
-				else
-				{
+				}else{
 					t=ITEM_TYPES_LAST_ONE;//INVALID
 					abstract=false;
 				}

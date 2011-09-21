@@ -1184,50 +1184,13 @@ Finally, the distance metric had 0.993 precision,
 
 \subsection{Genealogical Lists in the Bible}
 
-Bible contains numerous genealogical lists which are of interest to Bible scholars, historians and critics. 
-The genealogies in the Bible trace key figures especially kings of the nation of Israel back to Adam; 
-the genealogy of Jesus is also recorded in the New testament by two of his followers: Matthew and Luke. 
+Biblical genealogical lists describe family trees up to Adam and are of interest to Bible scholars including historians and critics. 
+They trace key figures such as Israelite kings and prophets. Figure~\ref{f:gene1} shows an excerpt from Genesis 5:1-11.
 
-%In many cases, 
-%there is an overlap between the many individual lists available across the Bible. When such an overlap occurs 
-%meticulous readers can detect some seeming contradictions, in many cases due to conflicts or omissions.
-%Detecting those conflicts is a task that has been performed by countless 
-%number of Bible students, theologians and historians. 
-
-The importance of such lists was profound for the old nation of Israel. They helped establish the kingship lineage, determining 
-those eligible to work as priests and in the temple. The whole concept of land ownership was also tied to descent. Most importantly,
-genealogical links were preserved due to the possible privilege of being the ancestor of the awaited Messiah.~\cite{catholicEncyclopedia:Online}
-
-For many believers, genealogies are used as the main indicators of chronology especially when calculating the age of mankind~\cite{Thomas:92}.
-They where always used to defend the historicity of the events and characters recorded in the Bible in contrast to those present in other religious 
-texts of old nations which contain much fables and myths. However, it is known that when different genealogical lists overlap, they are
-not always identical and contain some seeming contradictions. Those conflicts are in many cases due to nicknames and omissions and need to be examined
-carefully and justified if possible.
-
-%In many cases, such lists cover overlapping sections and when they do, they sometimes exhibit some seeming contradictions 
-%due to nicknames and other reasons.
-Detecting those conflicts is a task that has been performed by countless 
-number of Bible students, theologians and historians~\cite{catholicEncyclopedia:Online,Belote:Online,completeBibleGenealogy:Online}. 
-Their results have been published in articles and books; however, most of them are in written format 
-and rarely display the genealogical graphs to make it easier for the reader to pinpoint those conflicts and visualize them. 
-
-In addition, being able to create a comprehensive genealogical graph from all biblical accounts greatly enhances its study,
-since readers would be able to better understand a character's genealogical context and life span. Such comprehensive graphs can be tagged
-with time durations between a father and his giving birth of his sons as is common in many biblical accounts. 
-Attempts have been made for such endeavor, but resulted in manually performed unappealing pseudo-complete graphs as in \cite{Belote:Online,SoulLiberty:Online}. The main difficulty that hindered this task was the huge size of the resulting graphs whose layout becomes
-challenging. This difficulty is also present in the hadith problem we undertook in this paper; however, we were able to tackle this issue by 
-allowing for partial layout to be drawn on the fly as the user navigates in the POR which is already computed, 
-instead of precomputed complete layouting of the graph on which plain scrolling is used to navigate. (check the accompanying software).
-In all cases, it is noteworthy, that all genealogical trees/lineages available in any literature today are the product of manual work. 
-In what follows, we explain how NaGEMA can be easily manipulated to be utilized to generate this information automatically.
-
-%is in establishing the historicity of characters under consideration,
-%Such lists had and still have an utmost importance for Jews because heritage
-%according to their law dictates the land's ownership according to their inheritance which cannot be sold perminantly, they also 
-
-Before presenting the necessary modifications for the state-machine used by NaGEMA, we present two representative biblical sections that
-contain genealogical lists. These sections contain overlapping linages, however stated with different styles: \\
-
+\begin{figure}\centering
+\resizebox{0.9\columnwidth}{!}{
+\parbox[t]{1\columnwidth}{
+\tiny
 ``This is the written account of {\bf Adam}'s line...
 
 %When God created man, he made him in the likeness of God. He created them male and female and blessed them. 
@@ -1243,9 +1206,15 @@ Altogether, {\bf Seth} lived 912 years, and then he died.
 
 When {\bf Enosh} had lived 90 years, he became the father of {\bf Kenan}. 
 And after he became the father of {\bf Kenan}, {\bf Enosh} lived 815 years and had other sons and daughters. 
-Altogether, {\bf Enosh} lived 905 years, and then he died.'' (Genesis 5:1-11) \\
+Altogether, {\bf Enosh} lived 905 years, and then he died.''
+}}
+\caption{Genealogical list from Genesis 5:1-11}
+\end{figure}
 
-
+\begin{figure}\centering
+\resizebox{0.9\columnwidth}{!}{
+\parbox[t]{1\columnwidth}{
+\tiny
 ``{\bf Adam}, {\bf Seth}, {\bf Enosh}, {\bf Kenan}, {\bf Mahalalel}, {\bf Jared}, {\bf Enoch}, 
 {\bf Methuselah}, {\bf Lamech}, {\bf Noah}. 
 The sons of {\bf Noah}: {\bf Shem}, {\bf Ham} and {\bf Japheth}.
@@ -1255,7 +1224,59 @@ The sons of {\bf Javan}: {\bf Elishah}, {\bf Tarshish}, the {\bf Kittim} and the
 The sons of {\bf Ham}: {\bf Cush}, {\bf Mizraim}, {\bf Put} and {\bf Canaan}.
 The sons of {\bf Cush}: {\bf Seba}, {\bf Havilah}, {\bf Sabta}, {\bf Raamah} and {\bf Sabteca}.
 The sons of {\bf Raamah}: {\bf Sheba} and {\bf Dedan}. 
-{\bf Cush} was the father of {\bf Nimrod}, who grew to be a mighty warrior on earth. ...'' (1 Chronicles 1:1-8) \\
+{\bf Cush} was the father of {\bf Nimrod}, who grew to be a mighty warrior on earth. ...'' }}
+\caption{Genealogical list from 1 Chronicles 1:1-8}
+\end{figure}
+
+%In many cases, 
+%there is an overlap between the many individual lists available across the Bible. When such an overlap occurs 
+%meticulous readers can detect some seeming contradictions, in many cases due to conflicts or omissions.
+%Detecting those conflicts is a task that has been performed by countless 
+%number of Bible students, theologians and historians. 
+
+%The importance of such lists was profound for the old nation of Israel. They 
+The genealogical lists established the kingship lineage and determined
+rights and privileges in the temple. Genealogical lists also determined descent with all its implications in biblical times
+such as the concept of reverted ownership of sold real estate; every fifty years ownership of sold land reverted to the 
+original owners and their inheritors. Genealogical lists were preserved due to the possible privilege of being the ancestor of the awaited Messiah.~\cite{catholicEncyclopedia:Online}
+
+For many believers, genealogies are used as the main indicators of chronology especially when calculating the age of mankind~\cite{Thomas:92}.
+Believers used them to defend the historicity of Biblical events and characters against other accounts from other 
+texts thought of as fables and myths. 
+However, separate genealogical lists that overlap suffer from consistency issues. 
+For example, Matthew and Luke report two different genealogies of Jesus. 
+Several biblical researchers studied the consistency of the lists~\cite{catholicEncyclopedia:Online,Belote:Online,completeBibleGenealogy:Online}, 
+and published articles and books on the topic. Up to our knowledge very few include graphical illustrations such as family trees and graphs 
+which makes it easier for the reader to visualize the differences. 
+Our methodology can automatically create such illustrations.
+
+create a comprehensive genealogical graph from all biblical accounts greatly enhances its study,
+since readers would be able to better understand a character's genealogical context and life span. Such comprehensive graphs can be tagged
+with time durations between a father and his giving birth of his sons as is common in many biblical accounts. 
+
+Work such as~\cite{Belote:Online,SoulLiberty:Online} constructed partial genealogical graphs manually from several lists.
+This work is short from being comprehensive. 
+
+In what follows, we explain how NaGEMA can be easily manipulated to be utilized 
+to generate this information automatically.
+
+
+%The main difficulty that hindered this task was the huge size of the resulting graphs whose layout becomes
+%challenging. This difficulty is also present in the hadith problem we undertook in this paper; however, we were able to tackle this issue by 
+%allowing for partial layout to be drawn on the fly as the user navigates in the POR which is already computed, 
+%instead of precomputed complete layouting of the graph on which plain scrolling is used to navigate. (check the accompanying software).
+%In all cases, it is noteworthy, that all genealogical trees/lineages available in any literature today are the product of manual work. 
+
+
+%is in establishing the historicity of characters under consideration,
+%Such lists had and still have an utmost importance for Jews because heritage
+%according to their law dictates the land's ownership according to their inheritance which cannot be sold perminantly, they also 
+
+%Before presenting the necessary modifications for the state-machine used by NaGEMA, we present two representative biblical sections that
+%contain genealogical lists. 
+%NaGEMA can handle 
+%These sections contain overlapping linages, however stated with different styles: \\
+
 
 \begin{figure}[tb]
 \center{
@@ -1267,8 +1288,8 @@ The sons of {\bf Raamah}: {\bf Sheba} and {\bf Dedan}.
 }
 \end{figure}
 
-The problem at hand can be stated as follows: Given the whole text of the Bible detect all sections that have genealogical lists
-and extract from them the names structured in a genealogical tree. The resemblance between this problem and that of hadith is evident; 
+Given the whole text of the Bible, NaGEMA detects all sections that have genealogical lists
+and extract from them the names structured in a genealogical DAG. The resemblance between this problem and that of hadith is evident; 
 but still there are some differences that should be highlighted. 
 First, in biblical genealogies, the individual names are simple in contrast to those present in hadith; 
 consequently, the concept of a `name connector (NMC)' is unnecessary in the problem at hand.
@@ -1352,7 +1373,7 @@ we report in what follows.
 Emails have been one of the most important tool for communication in business, distant family members and friends.
 In many cases, one email may trigger a thread of replies and forwards that may circulate between different people. It may even
 end up after several replies being sent to someone new to the whole thread and he/she might consider navigating through
-the lengthy list of quoted replies/forwards to get a better understanding of the conversations which have been going prior to his
+the lengthy list of quoted replies/forwards to get a better understanding of the conversations which have been going prior to 
 receiving the email. However, the lengthy lists of conversations with some added indentation or symbols each possibly in a different
 format may be a cumbersome task to do. That's why email clients such as Gmail try organizing each conversation in a separate tab for
 better use. Nonetheless, such clients are restricted to emails that are already available in the recipient's `Inbox' or `Sent Mails'.

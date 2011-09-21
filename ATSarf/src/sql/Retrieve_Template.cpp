@@ -5,8 +5,7 @@
 typedef QVector<QString> Columns;
 typedef QVector<QVariant> Elements;
 
-void Retrieve_Template::intitialize(QString table,Columns columns,QString where)
-{
+void Retrieve_Template::intitialize(QString table,Columns columns,QString where){
 	this->query=new QSqlQuery (db);
 	QString cols;
 	for(int i=0;i<columns.count();i++)
@@ -77,7 +76,7 @@ int Retrieve_Template::size()
 }
 QVariant Retrieve_Template::get(int index)
 {
-	assert (index>=0 && index<size());
+	//assert (index>=0 && index<size());
 	return this->query->value(index);
 }
 QVariant Retrieve_Template::get(QString col)

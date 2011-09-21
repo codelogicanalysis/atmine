@@ -8,35 +8,44 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "Search_Compatibility.h"
+#include "test.h"
 
 //#define ONLY_SUFFIXES
 
 bool pos=false;
 long abstract_possessive;
 
-int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds to them the support for Al
-{
+int insert_rules_for_Nprop_Al() {//copies all rules of Nprop to Aprop_Al and adds to them the support for Al
 	int source_id=insert_source("Jad and Hamza modifications","as needed","Hamza Harkous and Jad Makhlouta");
 	QStringList added_prefixes;
 	added_prefixes<<"NPref-Al"<<"NPref-BiAl"<<"NPref-Lil"<<"NPref-LiAl";
+	QStringList added_suffixes;
+	added_suffixes<<"NSuff-AF";
 	long prefix_cat_id,suffix_cat_id;
 	long stem_cat_id_Nprop=getID("category","Nprop");
 	long stem_cat_id_Nprop_Al=insert_category("Nprop_Al",STEM,source_id,false);
 	Search_Compatibility search_suffixes(BC,stem_cat_id_Nprop,true);
-	while (search_suffixes.retrieve(suffix_cat_id))
-	{
+	while (search_suffixes.retrieve(suffix_cat_id)) {
 		Search_Compatibility search_prefixes(AB,stem_cat_id_Nprop,false);
 		//qDebug()<<search_prefixes.size()<<" "<<search_suffixes.size()<<"\n";
-		while (search_prefixes.retrieve(prefix_cat_id))
-		{
+		while (search_prefixes.retrieve(prefix_cat_id)) {
 			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
 			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
 			insert_compatibility_rules(BC,stem_cat_id_Nprop_Al,suffix_cat_id,source_id);
 		}
 		QString prefix_cat;
-		foreach(prefix_cat,added_prefixes)
-		{
+		foreach(prefix_cat,added_prefixes) {
 			prefix_cat_id=getID("category",prefix_cat);
+			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
+			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
+			insert_compatibility_rules(BC,stem_cat_id_Nprop_Al,suffix_cat_id,source_id);
+		}
+	}
+	Search_Compatibility search_prefixes(AB,stem_cat_id_Nprop,false);
+	while (search_prefixes.retrieve(prefix_cat_id)) {
+		QString suffix_cat;
+		foreach(suffix_cat,added_suffixes) {
+			suffix_cat_id=getID("category",suffix_cat);
 			insert_compatibility_rules(AB,prefix_cat_id,stem_cat_id_Nprop_Al,source_id);
 			insert_compatibility_rules(AC,prefix_cat_id,suffix_cat_id,source_id);
 			insert_compatibility_rules(BC,stem_cat_id_Nprop_Al,suffix_cat_id,source_id);
@@ -46,8 +55,7 @@ int insert_rules_for_Nprop_Al()//copies all rules of Nprop to Aprop_Al and adds 
 }
 
 //utility function for insert scripts used in insert_propernames() and insert_placenames()
-int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, QString description="Proper noun")
-{
+int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, QString description="Proper noun") {
 	bool hasAL= removeAL(word);
 	//insert word as is
 	int stem_id=insert_item(STEM,removeDiacritics(word),word,(hasAL?"Nprop_Al":"Nprop_Al"),source_id,abstract_categories,description,"","","");
@@ -270,9 +278,12 @@ int insert_propernames()
 	foreach (file_name,folder.entryList())
 	{
 		QString ab=file_name.split(".").at(0);
-		if (file_name=="all_n.txt")
-		{
-			out << "Ignored all_n.txt file\n";
+	#ifdef INSERT_ONLY_NAMES
+		if (!file_name.contains("Hebrew")) {
+	#else
+		if (file_name=="all_n.txt")	{
+	#endif
+			out << "Ignored "+file_name +" file\n";
 			continue;
 		}
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));

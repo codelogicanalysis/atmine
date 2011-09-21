@@ -56,11 +56,11 @@ void MainWindow::tag(int start, int length,QColor color, bool textcolor){
 		c.movePosition(QTextCursor::Left,QTextCursor::MoveAnchor,-diff);
 	c.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,length);
 #else
-	if (length>200) {
+	/*if (length>200) {
 		start=start+length-1;
 		length=5;
 		color=Qt::red;
-	}
+	}*/
 	c.setPosition(start,QTextCursor::MoveAnchor);
 	c.setPosition(start+length,QTextCursor::KeepAnchor);
 #endif
@@ -131,7 +131,9 @@ void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
 	hadithParameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
+	geneologyParameters.N_min=hadithParameters.narr_min;
 	hadithParameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
+	geneologyParameters.theta_0=hadithParameters.nmc_max;
 	hadithParameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
 	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
 	hadithParameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);

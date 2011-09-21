@@ -20,8 +20,6 @@
 #include "textParsing.h"
 #include "common.h"
 
-#define GET_WAW
-
 
 enum WordType { NEW_NAME,CORE_NAME, LEAF_NAME, DC,ENDING_PUNC, OTHER};
 enum StateType { TEXT_S , NAME_S, SONS_S};
@@ -75,17 +73,6 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
-class GeneologyParameters {
-public:
-	unsigned int theta_0:10;
-	unsigned int N_min:10;
-	unsigned int unused:12;
-	GeneologyParameters() {
-		theta_0=20;
-		N_min=3;
-	}
-};
-
 GeneologyParameters geneologyParameters;
 QList<int> bits_gene_NAME;
 
@@ -127,8 +114,7 @@ public:
 #ifndef COMPARE_TO_BUCKWALTER
 	bool on_match()	{
 		solution_position * S_inf=Stem->computeFirstSolution();
-		do
-		{
+		do {
 			stem_info=Stem->solution;
 		#ifdef GET_AFFIXES_ALSO
 			solution_position * p_inf=Prefix->computeFirstSolution();
@@ -180,12 +166,8 @@ public:
 		if (info.finish>info.start) { //more than one letter to be tested for being a name
 			int bitsNamesSize=bits_gene_NAME.size();
 			for (int i=0;i<bitsNamesSize;i++) {
-				if (stem_info->abstract_categories.getBit(bits_gene_NAME[i])
-					#ifdef REFINEMENTS
-						&& Suffix->info.finish-Suffix->info.start<0 && Stem->info.finish>Stem->info.start) //i.e. has no suffix and stem > a letter
-					#else
-						)
-					#endif
+				if (stem_info->abstract_categories.getBit(bits_gene_NAME[i]))
+						//&& Suffix->info.finish-Suffix->info.start<0 && Stem->info.finish>Stem->info.start) //i.e. has no suffix and stem > a letter
 				{
 					name=true;
 					if (info.finish>finish_pos) {
@@ -205,22 +187,18 @@ public:
 };
 
 void geneology_initialize() {
-
-	long abstract_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryID("Compound Names");
-	int bit_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
-	bits_gene_NAME.append(bit_COMPOUND_NAMES);
-#if 0
-	long abstract_NOUN_PROP=database_info.comp_rules->getAbstractCategoryID("Female Names");//"NOUN_PROP"
-	int bit_NOUN_PROP=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
-#endif
-#ifdef ADD_ENARRATOR_NAMES
-	long abstract_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
-	int bit_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
-	bits_NAME.append(bit_ENARRATOR_NAMES);
-#endif
-	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Hebrew Bible Names");
 	int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
 	bits_gene_NAME.append(bit_NAME);
+#if 0
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("christian names");
+	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_gene_NAME.append(bit_NAME);
+
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_gene_NAME.append(bit_NAME);
+#endif
 }
 
 
@@ -236,15 +214,40 @@ private:
 		WordType currentType:3;
 		StateType currentState:2;
 		StateType nextState:2;
-		int unused:25;
+		bool precededByWaw:1;
+		int unused:24;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
-		void resetCurrentWordInfo()	{currentPunctuationInfo.reset();}
+		void resetCurrentWordInfo()	{currentPunctuationInfo.reset();precededByWaw=false;}
 		QString getWord() {
 			return text->mid(startPos,endPos-startPos+1);
 		}
 	};
+	class Name {
+	private:
+		long start,end;
+		QString * text;
+	public:
+		Name(QString * text,long start, long end) {
+			this->start=start;
+			this->end=end;
+			this->text=text;
+		}
+		Name operator=(const Name & n2) {
+			text=n2.text;
+			start=n2.start;
+			end=n2.end;
+			return *this;
+		}
+		QString getString() {
+			return text->mid(start,end-start+1);
+		}
+		long getStart() const{return start;}
+		long getLength() const{return end-start+1;}
+	};
+	class GeneTree;
 	class GeneNode {
 	private:
+		friend class GeneTree;
 		void setParentHeight(int height) {
 			if (parent!=NULL) {
 				parent->height=max(parent->height,height);
@@ -258,7 +261,7 @@ private:
 			delete this;
 		}
 		GeneNode * getNodeInSubTree(QString word) {
-			if (word==name)
+			if (equal_ignore_diacritics(word,name.getString()))
 				return this;
 			for (int i=0;i<children.size();i++) {
 				GeneNode * found=children[i]->getNodeInSubTree(word);
@@ -267,14 +270,25 @@ private:
 			}
 			return NULL;
 		}
+		void printTree(int indentation) {
+			if (this==NULL)
+				out<<"NULL";
+			else {
+				out<<QString(indentation,'>')<<name.getString()<<"\n";
+				for (int i=0;i<children.size();i++) {
+					children[i]->printTree(indentation+1);
+				}
+			}
+		}
+
 	public:
-		QString name;
+		Name name;
 		GeneNode * parent;
 		QList<GeneNode *> children;
 		int height;
 
-		GeneNode(QString name, GeneNode * parent ) {
-			this->name=name;
+		GeneNode(Name & n, GeneNode * parent ):name(n) {
+			assert(parent!=this);
 			this->parent=parent;
 			height=0; //since no children
 			setParentHeight(1);
@@ -295,44 +309,90 @@ private:
 		bool isLeaf() {
 			return children.size()==0;
 		}
-		GeneNode * getTreeRoot() {
-			if (this ==NULL)
-				return NULL;
-			if (parent==NULL)
-				return this;
-			else
-				return parent->getTreeRoot();
-		}
-		void deleteCurrentTree() {
-			if (this==NULL)
-				return;
-			GeneNode * root=getTreeRoot();
-			root->deleteSubTree();
-		}
-		void outputTree() {
-			out<<"Output";
-		}
-		int getTreeLevels() {
-			if (this==NULL)
-				return 0;
-			return getTreeRoot()->height+1;
-		}
-		GeneNode * findTreeNode(QString word) {
-			if (this==NULL)
-				return NULL;
-			GeneNode * root=getTreeRoot();
-			return root->getNodeInSubTree(word);
-		}
 		QString toString() {
 			if (this==NULL)
 				return "NULL";
 			else
-				return name;
+				return name.getString();
 		}
 	};
+	class GeneTree {
+	private:
+		GeneNode * root;
+	public:
+		GeneTree() {
+			root=NULL;
+		}
+		GeneTree(GeneNode * root) {
+			this->root=root;
+		}
+		void setRoot(GeneNode * node) {
+			root=node;
+		}
+		GeneNode * getRoot() {
+			if (this==NULL)
+				return NULL;
+			return root;
+		}
+		void deleteTree() {
+			if (this==NULL)
+				return;
+			out<<"\n{deleting}\n";
+			root->printTree(0);
+			root->deleteSubTree();
+			delete this;
+		}
+		void outputTree() {
+			out<<"\n{Output}\n";
+			if (this==NULL)
+				out<<"NULL";
+			else
+				root->printTree(0);
+		}
+		int getTreeLevels() {
+			if (this==NULL)
+				return 0;
+			return root->height+1;
+		}
+		GeneNode * findTreeNode(QString word) {
+			if (this==NULL)
+				return NULL;
+			return root->getNodeInSubTree(word);
+		}
+	};
+	class GeneVisitor {
+	private:
+		void visit(const GeneNode * node) {
+			if (node==NULL)
+				return;
+			visit(node->name,node->height);
+			for (int i=0;i<node->children.size();i++)
+				visit(node->children[i]);
+		}
+
+	public:
+		virtual void visit(const Name & name, int height)=0;
+		void operator ()(GeneTree * tree) {
+			GeneNode * root=tree->getRoot();
+			visit(root);
+		}
+	};
+	class GeneTagVisitor: public GeneVisitor {
+	private:
+		ATMProgressIFC *prg;
+	public:
+		GeneTagVisitor(ATMProgressIFC *prg) {
+			this->prg=prg;
+		}
+		void visit(const Name & name, int) {
+			prg->tag(name.getStart(),name.getLength(),Qt::white,true);
+		}
+	};
+
 	class StateData {
 	public:
 		int i0;
+		GeneTree * tree;
 		GeneNode * last;
 		long startGene;
 		StateData() {
@@ -341,29 +401,36 @@ private:
 		void initialize() {
 			i0=0;
 			last=NULL;
+			tree=NULL;
+			startGene=-1;
 		}
 	};
 private:
 	QString fileName;
 	StateData currentData;
 	QString * text;
-	long current_pos;
+	ATMProgressIFC *prg;
 
-	bool getNextState(StateInfo &  stateInfo, StateData & currentData) {
+	bool getNextState(StateInfo &  stateInfo, StateData & currentData, bool addCounters=true) {
 		display(QString(" i0: %1 ").arg(currentData.i0));
-		display(QString(" currNode: %1 ").arg(currentData.last->toString()));
+		display(QString("currNode: %1 ").arg(currentData.last->toString()));
+		display(QString("startGene: %1\n").arg(currentData.startGene));
+		//currentData.tree->outputTree();
 		display(stateInfo.currentState);
-		QString word=stateInfo.getWord();
+		bool ret_val=true;
+		Name name(stateInfo.text,stateInfo.startPos,stateInfo.endPos);
 		switch(stateInfo.currentState) {
 		case TEXT_S:
 			if(stateInfo.currentType==DC) {
 				currentData.initialize();
 				currentData.startGene=stateInfo.startPos;
+				currentData.tree=new GeneTree();
 				stateInfo.nextState=NAME_S;
 			}
 			else if (stateInfo.currentType==NEW_NAME) {
 				currentData.initialize();
-				currentData.last=new GeneNode(word,NULL);
+				currentData.last=new GeneNode(name,NULL);
+				currentData.tree=new GeneTree(currentData.last);
 				currentData.startGene=stateInfo.startPos;
 				stateInfo.nextState=NAME_S;
 			} else {
@@ -374,25 +441,77 @@ private:
 			if (stateInfo.currentType==DC) {
 				currentData.i0=0;
 				stateInfo.nextState=NAME_S;
-			} else if (stateInfo.currentType==NEW_NAME) {
-				currentData.last=new GeneNode(word,currentData.last);
+			} else if (stateInfo.currentType==ENDING_PUNC) {
+				currentData.last=NULL;
 				stateInfo.nextState=NAME_S;
-			} else if (stateInfo.currentType==CORE_NAME || stateInfo.currentType==OTHER) {
-				if (currentData.i0>=geneologyParameters.theta_0) {
-					if (currentData.last->getTreeLevels()>geneologyParameters.N_min) {
-						currentData.last->outputTree();
-						return false;
+			} else if (stateInfo.currentType==NEW_NAME /*||
+					   ((stateInfo.currentType==CORE_NAME || stateInfo.currentType==LEAF_NAME) && currentData.last==NULL)*/) {
+				if (stateInfo.precededByWaw) {
+					if (currentData.last!=NULL && currentData.last->parent==NULL) {
+						currentData.tree->deleteTree();
+						currentData.last=NULL;
+						currentData.tree=NULL;
+						stateInfo.nextState=TEXT_S;
+						display("{Waw resulted in deletion}\n");
 					} else {
-						currentData.last->deleteCurrentTree();
+						if (currentData.last!=NULL)
+							new GeneNode(name,currentData.last->parent);
+						else {
+							#ifndef TRUST_OLD
+								if (currentData.tree->getTreeLevels()>geneologyParameters.N_min) {
+									outputAndTag(stateInfo);
+									ret_val= false;
+								} else {
+									currentData.tree->deleteTree();
+								}
+								currentData.last=new GeneNode(name,NULL);
+								currentData.tree=new GeneTree(currentData.last);
+								currentData.startGene=stateInfo.startPos;
+							#else
+								currentData.i0=0;
+								//we decide to trust previously present tree in this case and leave things as they are
+							#endif
+
+						}
+						stateInfo.nextState=NAME_S;
 					}
-					currentData.last=NULL;
-					stateInfo.nextState=TEXT_S;
 				} else {
-					currentData.i0++;
+					if (currentData.last==NULL) {
+					#ifndef TRUST_OLD
+						if (currentData.tree->getTreeLevels()>geneologyParameters.N_min) {
+							outputAndTag(stateInfo);
+							ret_val= false;
+						} else {
+							currentData.tree->deleteTree();
+						}
+						currentData.last=new GeneNode(name,NULL);
+						currentData.tree=new GeneTree(currentData.last);
+						currentData.startGene=stateInfo.startPos;
+					#endif
+					} else {
+						currentData.last=new GeneNode(name,currentData.last);
+					}
+					currentData.i0=0;
 					stateInfo.nextState=NAME_S;
 				}
-			} else if (stateInfo.currentType==LEAF_NAME) {
-				currentData.last=currentData.last->findTreeNode(word);
+			} else if (/*stateInfo.currentType==CORE_NAME || */stateInfo.currentType==OTHER) {
+				if (currentData.i0>=geneologyParameters.theta_0) {
+					if (currentData.tree->getTreeLevels()>geneologyParameters.N_min) {
+						outputAndTag(stateInfo);
+						ret_val= false;
+					} else {
+						currentData.tree->deleteTree();
+					}
+					currentData.last=NULL;
+					currentData.tree=NULL;
+					stateInfo.nextState=TEXT_S;
+				} else {
+					if (addCounters)
+						currentData.i0++;
+					stateInfo.nextState=NAME_S;
+				}
+			} else if (stateInfo.currentType==CORE_NAME || stateInfo.currentType==LEAF_NAME) {
+				currentData.last=currentData.tree->findTreeNode(name.getString());
 				stateInfo.nextState=SONS_S;
 			} else {
 				stateInfo.nextState=NAME_S;
@@ -401,11 +520,12 @@ private:
 
 		case SONS_S:
 			if (stateInfo.currentType==NEW_NAME) {
-				new GeneNode(word,currentData.last);
+				new GeneNode(name,currentData.last);
 				stateInfo.nextState=SONS_S;
 			} else if (stateInfo.currentType==ENDING_PUNC) {
 				currentData.i0=0;
 				stateInfo.nextState=NAME_S;
+				currentData.last=NULL;
 			} else {
 				stateInfo.nextState=SONS_S;
 			}
@@ -413,12 +533,12 @@ private:
 		default:
 			assert(false);
 		}
-		return true;
+		return ret_val;
 	}
-	inline bool result(WordType t, StateInfo &  stateInfo, StateData & currentData) {
+	inline bool result(WordType t, StateInfo &  stateInfo, StateData & currentData,bool addCounters=true) {
 		display(t);
 		stateInfo.currentType=t;
-		return getNextState(stateInfo,currentData);
+		return getNextState(stateInfo,currentData,addCounters);
 	}
 	bool proceedInStateMachine(StateInfo &  stateInfo, StateData & currentData ) {//does not fill stateInfo.currType
 		genealogy_stemmer s(stateInfo.text,stateInfo.startPos);
@@ -452,10 +572,11 @@ private:
 				stateInfo.endPos=s.wawEnd;
 				stateInfo.nextPos=s.wawEnd+1;
 				stateInfo.currentPunctuationInfo.reset();
-				if (!result(OTHER,stateInfo,currentData))
+				if (!result(OTHER,stateInfo,currentData,true))
 					return false;
 				stateInfo.currentState=stateInfo.nextState;
 				stateInfo.lastEndPos=stateInfo.endPos;
+				stateInfo.precededByWaw=true;
 			}
 			stateInfo.currentPunctuationInfo=copyPunc;
 		#endif
@@ -464,7 +585,7 @@ private:
 			stateInfo.nextPos=nextpos;
 			WordType type;
 			QString word=stateInfo.getWord();
-			GeneNode * node=currentData.last->findTreeNode(word);
+			GeneNode * node=currentData.tree->findTreeNode(word);
 			if (node==NULL)
 				type=NEW_NAME;
 			else if (node->isLeaf())
@@ -473,26 +594,32 @@ private:
 				type=CORE_NAME;
 			if (!(result(type,stateInfo,currentData)))
 				return false;
-			if (stateInfo.currentPunctuationInfo.hasEndingPunctuation()) {
-				stateInfo.startPos=stateInfo.endPos+1;
-				stateInfo.endPos=stateInfo.nextPos-1;
-				return result(ENDING_PUNC,stateInfo,currentData);
-			} else
-				return true;
-
+		} else {
+			stateInfo.precededByWaw=false;
+			if (!result(OTHER,stateInfo,currentData))
+				return false;
 		}
-		if (!result(OTHER,stateInfo,currentData))
-			return false;
+		stateInfo.precededByWaw=false;
 		if (stateInfo.currentPunctuationInfo.hasEndingPunctuation()) {
+			stateInfo.currentState=stateInfo.nextState;
 			stateInfo.startPos=stateInfo.endPos+1;
 			stateInfo.endPos=stateInfo.nextPos-1;
-			return result(ENDING_PUNC,stateInfo,currentData);
+			return result(ENDING_PUNC,stateInfo,currentData,false);
 		} else
 			return true;
 
 	}
 
+	void outputAndTag(const StateInfo & stateInfo) {
+		long geneStart=currentData.startGene,geneEnd=stateInfo.endPos;
+		prg->tag(geneStart,geneEnd-geneStart+1,Qt::darkYellow,false);
+		GeneTagVisitor v(prg);
+		v(currentData.tree);
+		currentData.tree->outputTree();
+		currentData.tree->deleteTree();
+	}
 	int segmentHelper(QString * text,ATMProgressIFC *prg) {
+		this->prg=prg;
 		if (text==NULL)
 			return -1;
 		long text_size=text->size();
@@ -512,8 +639,6 @@ private:
 		prg->setCurrentAction("Parsing Biblical Text");
 		for (;stateInfo.startPos<text_size;) {
 			if(!(proceedInStateMachine(stateInfo,currentData))) {
-				long geneStart=currentData.startGene,geneEnd=stateInfo.endPos;
-				prg->tag(geneStart,geneEnd-geneStart+1,Qt::darkYellow,false);
 				geneCounter++;
 			}
 			stateInfo.currentState=stateInfo.nextState;
@@ -521,8 +646,13 @@ private:
 			stateInfo.lastEndPos=stateInfo.endPos;
 			stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
 			prg->report((double)stateInfo.startPos/text_size*100+0.5);
-			if (stateInfo.startPos==text_size-1)
+			if (stateInfo.startPos==text_size-1) {
 				break;
+			}
+		}
+		if (stateInfo.currentState!=TEXT_S && currentData.tree->getTreeLevels()>=geneologyParameters.N_min) {
+			outputAndTag(stateInfo);
+			geneCounter++;
 		}
 		prg->report(100);
 		prg->finishTaggingText();
