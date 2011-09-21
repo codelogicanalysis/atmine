@@ -22,30 +22,32 @@ extern int timeTagger(QString input_str);
 extern int deserializeGraph(QString fileName,ATMProgressIFC * prg);
 extern int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
 
-int word_sarf_test(QString input_str)
-{
+int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
 	Stemmer stemmer(&line,0);
 	stemmer();
 	return 0;
 }
-int augment()
-{
-#ifndef INSERT_ONLY_TIME
+int augment(){
+#if !defined(INSERT_ONLY_TIME) && !defined(INSERT_ONLY_NAMES)
 	if (insert_buckwalter()<0)
 		return -1;
 #endif
 #ifndef JUST_BUCKWALTER
 #ifndef INSERT_ONLY_TIME
+#ifndef INSERT_ONLY_NAMES
 	if (insert_rules_for_Nprop_Al())
-		return -1;
-	if (insert_propernames()<0)
 		return -1;
 	if (insert_placenames()<0)
 		return -1;
 #endif
+	if (insert_propernames()<0)
+		return -1;
+#endif
+#ifndef INSERT_ONLY_NAMES
 	if (insert_time_categorizations()<0)
 		return -1;
+#endif
 #endif
 	return 0;
 }
