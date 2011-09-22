@@ -21,6 +21,7 @@ public:
 		newLine=false;
 	}
 	bool hasEndingPunctuation() { return fullstop || newLine;}
+	bool hasParagraphPunctuation() { return fullstop && newLine;}
 	bool update(const QChar & letter) { //returns true if this letter is a delimiter
 		if (non_punctuation_delimiters.contains(letter))
 			return true;

@@ -31,25 +31,23 @@ void TreeSearch::fill_details() //this function fills the public member function
 		possible_raw_datasOFCurrentMatch.prepend(((result_node *)reached_node)->raw_datas);
 		//qDebug()<<position<<":"<<((result_node *)reached_node)->raw_datas[0];
 	#endif
-		sub_positionsOFCurrentMatch.prepend(position);
+		int index=getPositionOneLetterBackward(position,info.text);
+		sub_positionsOFCurrentMatch.prepend(index);
         letter_node * tree_head=(letter_node*)Tree->getFirstNode();
         node * current_parent=((result_node *)reached_node)->parent;
 		assert(current_parent->getResultChildren()->contains(reached_node));
 
-        int count=0;
-        while (current_parent!=tree_head)
-        {
+		while (current_parent!=tree_head) {
 			if (current_parent->isLetterNode()) {
+				index=getLastLetter_index(*info.text,index);
 				if (((letter_node* )current_parent)->getLetter()!='\0')
-					count++;
-			}
-			else
-			{
+					index--;
+			} else {
 			#ifndef MULTIPLICATION
 				catsOFCurrentMatch.insert(0,((result_node *)current_parent)->get_previous_category_id());
 				idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
 			#endif
-				sub_positionsOFCurrentMatch.prepend(position-count);
+				sub_positionsOFCurrentMatch.prepend(index);
 			#ifdef REDUCE_THRU_DIACRITICS
 				possible_raw_datasOFCurrentMatch.prepend(((result_node *)current_parent)->raw_datas);
 				//qDebug()<<position-count<<":"<<((result_node *)current_parent)->raw_datas[0];
@@ -215,8 +213,7 @@ bool TreeSearch::operator ()()
 	}
 	return (!stop);
 }
-bool TreeSearch::on_match_helper()
-{
+bool TreeSearch::on_match_helper() {
 	//check if matches with Diacritics
 #ifdef PARENT
 	filled_details=false;
@@ -224,43 +221,38 @@ bool TreeSearch::on_match_helper()
 #endif
 	int startPos=info.start, subpos, last;
 #ifdef REDUCE_THRU_DIACRITICS
-	if (reduce_thru_diacritics)
-	{
+	if (reduce_thru_diacritics) {
 		int count=sub_positionsOFCurrentMatch.count();
-		for (int k=0;k<count;k++)
-		{
-			subpos=(k!=count-1?sub_positionsOFCurrentMatch[k]-1:getLastDiacritic(position-1,info.text)-1);
+		//out<<"<"<<position<<">\n";
+		for (int k=0;k<count;k++) {
+			subpos=sub_positionsOFCurrentMatch[k];//getLastDiacritic(position-1,info.text)-1);
 			QStringRef subword=addlastDiacritics(startPos,subpos, info.text, last);
-			for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++)
-			{
-				if (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) //in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
-				{
-					static const QString empty="";
-					QStringRef diacritics_of_word=isDiacritic(info.text->at(subpos))?addlastDiacritics(subpos,subpos,info.text):QStringRef(&empty),
+			//qDebug() <<subword;
+			for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++) {
+				if (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) {//in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
+					QStringRef diacritics_of_word=getDiacriticsBeforePosition(startPos,info.text),
 							   diacritics_of_rawdata=addlastDiacritics(0,0,&possible_raw_datasOFCurrentMatch[k][j]);//to get first couple of diacritics of raw_data without letters
-					if (!equal(diacritics_of_word,diacritics_of_rawdata))
-					{
+					qDebug() <<diacritics_of_word<<"\t"<<diacritics_of_rawdata;
+					if (!equal(diacritics_of_word,diacritics_of_rawdata)) {
 						possible_raw_datasOFCurrentMatch[k].removeAt(j);
 						j--;
 						continue;
 					}
 				}
 			#ifdef DEBUG
-				out<<"p-S:"<<subword.toString()<<"-"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
+				out<<"p-S:"<<k<<"<"<<sub_positionsOFCurrentMatch[k]<<">"<<"\t"<<subword.toString()<<"\t"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			#endif
-				if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j]))
-				{
+				if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j])) {
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;
 				}
 			}
-			startPos=sub_positionsOFCurrentMatch[k];
+			startPos=subpos+1;
 		}
 		for (int i=0;i<possible_raw_datasOFCurrentMatch.count();i++)
 			if (0==possible_raw_datasOFCurrentMatch[i].count())
 				return true; //not matching, continue without doing anything
-	}
-	else
+	} else
 		last=getLastDiacritic(position-1,info.text);
 #else
 	last=getLastDiacritic(position-1,info.text);

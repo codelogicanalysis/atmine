@@ -135,6 +135,7 @@ void MainWindow::on_pushButton_clicked(){
 	hadithParameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
 	geneologyParameters.theta_0=hadithParameters.nmc_max;
 	hadithParameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
+	geneologyParameters.C_max=hadithParameters.nrc_max;
 	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
 	hadithParameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);

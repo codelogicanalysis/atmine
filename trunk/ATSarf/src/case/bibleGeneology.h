@@ -13,10 +13,12 @@ class GeneologyParameters {
 public:
 	unsigned int theta_0:10;
 	unsigned int N_min:10;
-	unsigned int unused:12;
+	unsigned int C_max:10;
+	unsigned int unused:2;
 	GeneologyParameters() {
 		theta_0=30;
 		N_min=5;
+		C_max=3;
 	}
 };
 

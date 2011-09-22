@@ -31,7 +31,7 @@ inline int getLastLetter_index(const QString & word, int pos)//last non-Diacriti
 {
 	int length=word.length();
 	if (length<=pos)
-		return -1;
+		pos=length-1;
 	while (pos>=0 && isDiacritic(word[pos]))
 		pos--;
 	return pos; //even if -1 is returned it shows that all characters are diactrics
@@ -78,5 +78,26 @@ inline QStringRef addlastDiacritics(int start, int position, QString * diacritic
 	int last;
 	return addlastDiacritics(start, position, diacritic_word, last);
 }
+#include "QDebug"
+inline QStringRef getDiacriticsBeforePosition(int pos,QString * text) {
+	static const QString empty="";
+	if (pos<1 && pos>text->size())
+		return QStringRef(&empty);
+	if (!isDiacritic(text->at(pos-1)))
+		return QStringRef(&empty);
+	else {
+		int start=pos-1;
+		while (start>0 && isDiacritic(text->at(start))) {
+			start--;
+		}
+		return text->midRef(start+1,pos-start-1);
+	}
+}
+
+inline int getPositionOneLetterBackward(int pos,QString * text) {
+	return getLastLetter_index(*text,pos)-1;
+}
+
+
 #endif	/* _DIACRITICS_H */
 
