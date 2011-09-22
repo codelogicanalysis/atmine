@@ -6,6 +6,7 @@
 class PrefixSearch : public TreeSearch
 {
     public:
+		virtual bool isPrefix() const{ return true;}
 		PrefixSearch(QString * text,int start):TreeSearch(PREFIX,text,start) { }
 		virtual bool onMatch()=0;
 		virtual ~PrefixSearch(){}

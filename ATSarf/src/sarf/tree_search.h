@@ -36,6 +36,7 @@ class TreeSearch
 	#endif
         long resulting_category_idOFCurrentMatch;
 	public:
+		virtual bool isPrefix() const{ return false;}
 		const AffixSolutionVector & getSolution() const {return affix_info;}//make sure affix_info is not null!!
 		node_info * previousNode(node_info * current)
 		{
@@ -74,7 +75,7 @@ class TreeSearch
 			last->node=reached_node->getPreviousResultNode();
 			last->pos_in_tree=position-1;
 			last->finish=info.finish;
-			last->start=(sub_positionsOFCurrentMatch.size()>1?sub_positionsOFCurrentMatch[sub_positionsOFCurrentMatch.size()-2]-1:info.start);
+			last->start=(sub_positionsOFCurrentMatch.size()>1?sub_positionsOFCurrentMatch[sub_positionsOFCurrentMatch.size()-2]:info.start);
 			return last;
 		}
 		QList<result_node *> * getSplitList()
