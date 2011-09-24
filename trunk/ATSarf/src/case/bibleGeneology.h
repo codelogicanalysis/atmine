@@ -6,15 +6,16 @@
 #include "ATMProgressIFC.h"
 
 #define GET_WAW
-#define TRUST_OLD
-#define GENEOLOGYDEBUG
+//#define TRUST_OLD
+//#define GENEOLOGYDEBUG
+//#define DISPLAY_INDIVIDUAL
 
 class GeneologyParameters {
 public:
-	unsigned int theta_0:10;
+	unsigned int theta_0:12;
 	unsigned int N_min:10;
 	unsigned int C_max:10;
-	unsigned int unused:2;
+	//unsigned int unused:0;
 	GeneologyParameters() {
 		theta_0=30;
 		N_min=5;

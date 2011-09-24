@@ -136,8 +136,7 @@ QStringList relativeSuffixes;
 int bit_VERB_PERFECT;
 DescentConnectors descentConnectors;
 
-#define display_letters 30
-class genealogy_stemmer: public Stemmer { //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
+class GeneStemmer: public Stemmer { //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
 private:
 	bool place;
 public:
@@ -150,7 +149,7 @@ public:
 #endif
 	long startStem, finishStem,wawStart,wawEnd;
 
-	genealogy_stemmer(QString * word, int start)
+	GeneStemmer(QString * word, int start)
 #ifndef COMPARE_TO_BUCKWALTER
 		:Stemmer(word,start,false)
 #else
@@ -325,8 +324,9 @@ private:
 		StateType nextState:2;
 		bool precededByWaw:1;
 		bool precededBygaveBirth:1;
+		bool sonsFoundName:1;
 		DescentDirection descentDirection:3;
-		int unused:20;
+		//int unused:19;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
 		void resetCurrentWordInfo()	{
 			currentPunctuationInfo.reset();
@@ -365,17 +365,24 @@ private:
 			end=n2.end;
 			return *this;
 		}
-		QString getString() {
+		QString getString() const {
 			return text->mid(start,end-start+1);
 		}
 		long getStart() const{return start;}
 		long getLength() const{return end-start+1;}
+		bool operator<(const Name & n) const {
+			return getString()<n.getString();
+		}
 	};
 	class GeneTree;
 	class GeneNode {
 	private:
 		friend class GeneTree;
 		void setParentHeight(int height) {
+			if (this==parent) {
+				qDebug() << parent->toString();
+				return;
+			}
 			if (parent!=NULL) {
 				parent->height=max(parent->height,height);
 				parent->setParentHeight(parent->height+1);
@@ -398,19 +405,22 @@ private:
 			}
 			return count;
 		}
-		GeneNode * getNodeInSubTree(QString word) {
+		GeneNode * getNodeInSubTree(QString word, int maxDepth=-1) {
 			if (this==NULL)
 				return NULL;
-			if (equal_ignore_diacritics(word,name.getString()))
+			if (!ignoreInSearch && equal_ignore_diacritics(word,name.getString()))
 				return this;
 			for (int i=0;i<spouses.size();i++) {
 				if (equal_ignore_diacritics(word,spouses[i].getString()))
 					return this;
 			}
-			for (int i=0;i<children.size();i++) {
-				GeneNode * found=children[i]->getNodeInSubTree(word);
-				if (found!=NULL)
-					return found;
+			if (maxDepth<0 || maxDepth>0) {
+				int new_maxDepth=(maxDepth<0 ?maxDepth: maxDepth-1);
+				for (int i=0;i<children.size();i++) {
+					GeneNode * found=children[i]->getNodeInSubTree(word,new_maxDepth);
+					if (found!=NULL)
+						return found;
+				}
 			}
 			return NULL;
 		}
@@ -439,6 +449,7 @@ private:
 		QList<Name> spouses;
 		QList<GeneNode *> children;
 		int height;
+		bool ignoreInSearch;
 
 		GeneNode(Name & n, GeneNode * parent ):name(n) {
 			assert(parent!=this);
@@ -447,6 +458,7 @@ private:
 			setParentHeight(1);
 			if (parent!=NULL)
 				parent->addChild(this);
+			ignoreInSearch=false;
 		}
 		GeneNode * addChild(GeneNode * n) { //return itself
 			if (this!=NULL) {
@@ -507,13 +519,17 @@ private:
 	};
 	class GeneTree {
 	private:
+		class MergeVisitor;
+		MergeVisitor * mergeVisitor;
 		GeneNode * root;
 	public:
 		GeneTree() {
 			root=NULL;
+			mergeVisitor=NULL;
 		}
 		GeneTree(GeneNode * root) {
 			this->root=root;
+			mergeVisitor=NULL;
 		}
 		void setRoot(GeneNode * node) {
 			root=node;
@@ -540,11 +556,12 @@ private:
 				root=root->parent;
 		}
 		void outputTree() {
-			out<<"\n{Output}\n";
+			//out<<"{Output}\n";
 			if (this==NULL)
 				out<<"NULL";
 			else
 				root->printTree(0);
+			out<<"\n";
 		}
 		int getTreeLevels() {
 			if (this==NULL)
@@ -563,6 +580,13 @@ private:
 				return NULL;
 			return root->getNodeInSubTree(word);
 		}
+		void mergeTrees(GeneTree * tree);
+		void mergeLeftovers();
+		~GeneTree() {
+			if (mergeVisitor!=NULL) {
+				delete mergeVisitor;
+			}
+		}
 	};
 	class GeneVisitor {
 	private:
@@ -570,12 +594,21 @@ private:
 			if (node==NULL)
 				return;
 			visit(node->name,node->height);
-			for (int i=0;i<node->children.size();i++)
+			for (int i=0;i<node->spouses.size();i++) {
+				visit(node->name,node->spouses[i],true);
+				visit(node->spouses[i],node->height);
+			}
+			for (int i=0;i<node->children.size();i++) {
+				if (node->children[i]!=NULL)
+					visit(node->name,node->children[i]->name,false);
 				visit(node->children[i]);
-		}
 
+			}
+
+		}
 	public:
 		virtual void visit(const Name & name, int height)=0;
+		virtual void visit(const Name & name1, const Name & name2, bool isSpouse)=0;
 		void operator ()(GeneTree * tree) {
 			GeneNode * root=tree->getRoot();
 			visit(root);
@@ -591,16 +624,258 @@ private:
 		void visit(const Name & name, int) {
 			prg->tag(name.getStart(),name.getLength(),Qt::white,true);
 		}
+		void visit(const Name & ,const Name &,bool) {}
+	};
+	class GeneDisplayVisitor: public GeneVisitor {
+	protected:
+		QFile * file;
+		QTextStream * dot_out;
+		#define d_out (*dot_out)
+		QList<QStringList> ranksList;
+		QSet<long> set;
+
+		long getUniqueNodeID(const Name & n,bool isSpouse) {//if not there returns -1
+			long id=(long)&n;
+			if (!set.contains(id)) {
+				d_out<<QString("n%1 [label=\"%2\" %3]\n").arg(id).arg(n.getString()).arg((isSpouse?",style=filled, fillcolor=grey":""));
+			}
+			return id;
+		}
+		void setGraphRank(int rank, QString s)	{
+			while(rank>=ranksList.size())
+				ranksList.append(QStringList());
+			ranksList[rank].append(s);
+		}
+		QString getAndInitializeDotNode(const Name & n,bool isSpouse) {
+			long curr_id=getUniqueNodeID(n,isSpouse);
+			return QString("n%1").arg(curr_id);
+		}
+		virtual void initialize() {
+			ranksList.clear();
+			file=new QFile("graph.dot");
+			file->remove();
+			if (!file->open(QIODevice::ReadWrite)) {
+				out<<"Error openning file\n";
+				return;
+			}
+
+			dot_out=new QTextStream(file);
+			d_out.setCodec("utf-8");
+			d_out<<"digraph gene_graph {\n";
+		}
+		virtual void visit(const Name & n1,const Name & n2, bool isSpouse)	{
+			QString s1=getAndInitializeDotNode(n1,false), s2=getAndInitializeDotNode(n2,isSpouse);
+			d_out<<s1<<"->"<<s2<<" ;\n";
+		}
+		virtual void visit(const Name & n, int) {
+			getAndInitializeDotNode(n,false);
+		}
+		virtual void finish() {
+		#ifdef FORCE_RANKS
+			QString s;
+			int startingRank=(parameters.display_chain_num?0:1);
+			int currRank=startingRank,lastRank=startingRank;
+			if (ranksList.size()>0)
+			{
+				while (ranksList[currRank].size()==0)
+					currRank++;
+				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+				d_out<<"{ rank = source;";
+				foreach(s,ranksList[currRank])
+					d_out<<s<<";";
+				d_out<<QString("r%1;").arg(lastRank);
+				d_out<<"}\n";
+				lastRank++;
+			}
+
+			for (int rank=currRank+1;rank<ranksList.size()-1;rank++)
+			{
+				if (ranksList[rank].size()>0)
+				{
+					d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+					d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+					d_out<<"{ rank = same;";
+					foreach(s,ranksList[rank])
+						d_out<<s<<";";
+					d_out<<QString("r%1;").arg(lastRank);
+					d_out<<"}\n";
+					lastRank++;
+				}
+			}
+
+			int rank=ranksList.size()-1;
+			if (rank>startingRank)
+			{
+				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+				d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+				d_out<<"{ rank = sink;";
+				foreach(s,ranksList[rank])
+					d_out<<s<<";";
+				d_out<<QString("r%1;").arg(lastRank);
+				d_out<<"}\n";
+			}
+		#endif
+			d_out<<"}\n";
+			delete dot_out;
+			file->close();
+			delete file;
+		}
+	public:
+		GeneDisplayVisitor(){
+			initialize();
+		}
+		~GeneDisplayVisitor(){
+			finish();
+		}
+	};
+	class GeneTree::MergeVisitor:public GeneVisitor{
+	private:
+		typedef QPair<Name,Name> Edge;
+		typedef QMap<Edge,bool> EdgeMap;
+	private:
+		GeneTree * mainTree;
+		GeneNode * topMostNode;
+		EdgeMap unPerformedEdges;
+		void addUnPerformedEdge(const Name & n1,const Name & n2, bool isSpouse=false) {
+			unPerformedEdges[Edge(n1,n2)]=isSpouse;
+		}
+		GeneNode * find(const Name & name) {
+			if (topMostNode==NULL) {
+				GeneNode * node=mainTree->findTreeNode(name.getString());
+				if (node!=NULL)
+					topMostNode=node;
+				return node;
+			} else {
+				GeneNode * node= topMostNode->getNodeInSubTree(name.getString());
+			#if 0
+				if (node==NULL) {
+					node=mainTree->findTreeNode(name.getString());
+				}
+			#endif
+				return node;
+			}
+		}
+		bool notFoundWithinRadius(GeneNode * node, const Name & searchedName) {
+			int radius=3;
+			GeneNode * temp=node->parent;
+			for (int i=0;i<radius;i++) {
+				if (temp!=NULL) {
+					if (equal_ignore_diacritics(temp->toString(),searchedName.getString()))
+						return false;
+					for (int j=0;j<temp->spouses.size();j++) {
+						if (equal_ignore_diacritics(temp->spouses[j].getString(),searchedName.getString()))
+							return false;
+					}
+					temp=temp->parent;
+				}
+			}
+			node->ignoreInSearch=true;
+			temp=node->getNodeInSubTree(searchedName.getString(),radius);
+			node->ignoreInSearch=false;
+			if (temp!=NULL)
+				return false;
+			return true;
+		}
+
+	public:
+		MergeVisitor(GeneTree * tree2){
+			this->mainTree=tree2;
+			topMostNode=NULL;
+		}
+		void operator ()(GeneTree * tree) {
+			topMostNode=find(tree->root->name);
+			GeneVisitor::operator ()(tree);
+		}
+
+		virtual void visit(const Name & , int ){	}
+		virtual void visit(const Name & name1, const Name & name2, bool isSpouse){
+			GeneNode * n1=find(name1);
+			GeneNode * n2=find(name2);
+			if (isSpouse) {
+				if (n1==n2) {
+					if (n1!=NULL) {
+						//correctly placed
+					} else {
+						addUnPerformedEdge(name1,name2,isSpouse);
+					}
+				} else {
+					if (n1==NULL) {
+						if (notFoundWithinRadius(n2,name1))
+							n2->addSpouse(name1);
+					} else if (n2==NULL) {
+						if (notFoundWithinRadius(n1,name2))
+							n1->addSpouse(name2);
+					} else {
+					#if 0
+						//try merging spouses 2 nodes if possible
+						GeneNode * main=n1;
+						if (n1->ignoreInSearch) {
+							bool found=false;
+							for (int j=0;j<2;j++) {
+								GeneNode * s=(j==0?n1:n2);
+								for (int i=0;i<s->spouses.size();i++) {
+									GeneNode * n=mainTree->findTreeNode(s->spouses[i].getString());
+									if (n!=NULL && !n->ignoreInSearch) {
+										main=n;
+										found=true;
+										break;
+									}
+								}
+								if (found)
+									break;
+							}
+							assert(found);
+						}
+						for (int i=0;i<n2->children.size();i++) {
+							n2->children[i]->parent=NULL;
+							main->addChild(n2->children[i]);
+						}
+						n2->ignoreInSearch=true;
+					#endif
+					}
+				}
+			} else {
+				if (n1==n2) {
+					if (n1!=NULL) {
+						error<< "Conflict ("<<n1->toString()<<","<<n2->toString()<<") old relationship is spouse, new is child.\n";
+						//conflict but trust old (this means the nodes correspond to spouses)
+					} else {
+						addUnPerformedEdge(name1,name2,isSpouse);
+					}
+				} else {
+					if (n1==NULL) {
+						if (notFoundWithinRadius(n2,name1))
+							n2->addParent(new GeneNode((Name & )name1,NULL));
+					} else if (n2==NULL) {
+						if (notFoundWithinRadius(n1,name2))
+							n1->addChild(new GeneNode((Name & )name2,NULL));
+					} else {
+						if (n2->parent!=n1) {
+							//conflict but trust old
+							error<< "Conflict ("<<n1->toString()<<","<<n2->toString()<<") newly must be child relationship but previously is not.\n";
+						}
+					}
+				}
+			}
+		}
+		void tryPerformingUnperformedNodes() {
+			EdgeMap::iterator itr=unPerformedEdges.begin();
+			for (;itr!=unPerformedEdges.end();itr++) {
+				visit(itr.key().first,itr.key().second,itr.value());
+			}
+		}
 	};
 	class StateData {
 	public:
 		int i0;
+		GeneTree * globalTree;
 		GeneTree * tree;
 		GeneNode * last;
 		QString lastName;
 		long startGene;
 		StateData() {
 			initialize();
+			globalTree=NULL;
 		}
 		void initialize() {
 			i0=0;
@@ -615,6 +890,7 @@ private:
 	StateInfo stateInfo;
 	QString * text;
 	ATMProgressIFC *prg;
+
 	inline bool conditionToOutput() {
 		return currentData.tree->getTreeLevels()>=geneologyParameters.N_min ||
 				currentData.tree->getTreeNodesCount()>=geneologyParameters.C_max;
@@ -636,6 +912,7 @@ private:
 	}
 	inline bool doParaCheck() {
 		int count=currentData.tree->getTreeNodesCount();
+		display(QString("{keep? count %1}").arg(count));
 		bool keep=count<=geneologyParameters.C_max && count>1;
 		bool ret_val=checkIfDisplay(keep);
 		if (!keep)
@@ -657,19 +934,22 @@ private:
 	}
 	inline bool doActionNewNameAndNullLast(Name & name) {
 		bool ret_value=true;
-	#ifndef TRUST_OLD
+	#ifdef TRUST_OLD
 		if (currentData.tree->getTreeNodesCount()==0) {
 	#endif
+			DescentDirection dir=stateInfo.descentDirection;
 			ret_value=doParaCheck();
 			currentData.startGene=stateInfo.startPos;
 			currentData.last=new GeneNode(name,NULL);
 			currentData.tree=new GeneTree(currentData.last);
 			currentData.i0=0;
-			if (stateInfo.descentDirection!=UNDEFINED_DIRECTION)
+			if (dir!=UNDEFINED_DIRECTION) {
 				stateInfo.nextState=SONS_S;
-			else
+				stateInfo.sonsFoundName=true;
+				stateInfo.descentDirection=dir;
+			} else
 				stateInfo.nextState=NAME_S;
-	#ifndef TRUST_OLD
+	#ifdef TRUST_OLD
 		} else {
 			stateInfo.nextState=NAME_S;
 		}
@@ -731,7 +1011,10 @@ private:
 			switch (stateInfo.currentType) {
 			case DC:
 				//currentData.i0=0;
+				if (currentData.last==NULL)
+					currentData.last=currentData.tree->findTreeNode(currentData.lastName);
 				stateInfo.nextState=SONS_S;//NAME_S;
+				stateInfo.sonsFoundName=false;
 				break;
 			case ENDING_PUNC:
 				currentData.last=NULL;
@@ -752,23 +1035,34 @@ private:
 							new GeneNode(name,currentData.last->parent);
 							stateInfo.nextState=NAME_S;
 						} else {
-							doActionNewNameAndNullLast(name); //choses also nextState
+							ret_val=doActionNewNameAndNullLast(name); //choses also nextState
 						}
 					}
 				} else {
 					if (currentData.last==NULL) {
-						doActionNewNameAndNullLast(name); //choses also nextState
+						ret_val=doActionNewNameAndNullLast(name); //choses also nextState
 					} else {
 						if (currentData.tree==NULL)
 							currentData.tree=new GeneTree(currentData.last);
-						currentData.last=new GeneNode(name,currentData.last);
-						currentData.i0=0;
-						stateInfo.nextState=NAME_S;
+						if (stateInfo.descentDirection==SON) {
+							currentData.last=new GeneNode(name,currentData.last);
+							currentData.i0=0;
+							stateInfo.nextState=NAME_S;
+						} else {
+						#ifndef TRUST_OLD
+							doActionNewNameAndNullLast(name); //choses also nextState
+						#else
+							assert(stateInfo.descentDirection==UNDEFINED_DIRECTION);
+							stateInfo.nextState=NAME_S;
+						#endif
+						}
+
 					}
 				}
 				break;
 			/*case CORE_NAME:*/
 			case OTHER:
+				display(QString("{here threshold: %1}").arg(geneologyParameters.theta_0));
 				if (currentData.i0>=geneologyParameters.theta_0) {
 					ret_val=checkIfDisplay();
 					stateInfo.nextState=TEXT_S;
@@ -782,6 +1076,7 @@ private:
 			case LEAF_NAME:
 				currentData.last=currentData.tree->findTreeNode(name.getString());
 				stateInfo.nextState=SONS_S;
+				stateInfo.sonsFoundName=false;
 				break;
 			case PARA_PUNC:
 				ret_val=doParaCheck(); //choses also nextState
@@ -794,15 +1089,21 @@ private:
 			switch (stateInfo.currentType) {
 			case NEW_NAME:
 				addToTree(name);
-				if (stateInfo.descentDirection!=UNDEFINED_DIRECTION)
+				if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
 					currentData.i0=0;
+					stateInfo.sonsFoundName=true;
+				}
 				stateInfo.nextState=SONS_S;
 				break;
 			case ENDING_PUNC:
 				//currentData.i0=0;
 				stateInfo.nextState=NAME_S;
-				stateInfo.descentDirection=UNDEFINED_DIRECTION;
-				currentData.last=NULL;
+				if (stateInfo.descentDirection==SON /*&& stateInfo.precededBygaveBirth*/ && !stateInfo.sonsFoundName) //maybe name in next sentence
+					stateInfo.descentDirection=SON;
+				else {
+					stateInfo.descentDirection=UNDEFINED_DIRECTION;
+					currentData.last=NULL;
+				}
 				break;
 			case PARA_PUNC:
 				ret_val=doParaCheck(); //choses also nextState
@@ -829,7 +1130,7 @@ private:
 		return getNextState(addCounters);
 	}
 	bool proceedInStateMachine() {//does not fill stateInfo.currType
-		genealogy_stemmer s(stateInfo.text,stateInfo.startPos);
+		GeneStemmer s(stateInfo.text,stateInfo.startPos);
 		stateInfo.resetCurrentWordInfo();
 		long  finish;
 		if (isNumber(stateInfo.text,stateInfo.startPos,finish)) {
@@ -877,7 +1178,7 @@ private:
 				type=LEAF_NAME;
 			else
 				type=CORE_NAME;
-			if (stateInfo.currentType==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
+			if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
 				stateInfo.descentDirection=SON;
 			if (!(result(type)))
 				return false;
@@ -905,13 +1206,31 @@ private:
 		} else
 			return true;
 	}
+	void displayTree(GeneTree * tree) {
+		if (tree!=NULL) {
+			GeneDisplayVisitor * d=new GeneDisplayVisitor();
+			(*d)(tree);
+			delete d;
+			prg->displayGraph();
+		}
+	}
 	void outputAndTag() {
 		long geneStart=currentData.startGene,geneEnd=stateInfo.endPos;
 		prg->tag(geneStart,geneEnd-geneStart+1,Qt::darkYellow,false);
 		GeneTagVisitor v(prg);
 		v(currentData.tree);
-		currentData.tree->outputTree();
-		currentData.tree->deleteTree();
+	#ifdef DISPLAY_INDIVIDUAL
+		displayTree(currentData.globalTree);
+	#endif
+		if (currentData.globalTree==NULL) {
+			currentData.globalTree=currentData.tree;
+			currentData.tree->outputTree();
+		}else {
+			currentData.globalTree->mergeTrees(currentData.tree);
+
+			currentData.tree->outputTree();
+			currentData.tree->deleteTree();
+		}
 	}
 	int segmentHelper(QString * text,ATMProgressIFC *prg) {
 		this->prg=prg;
@@ -942,6 +1261,8 @@ private:
 		}
 		prg->report(100);
 		prg->finishTaggingText();
+		displayTree(currentData.globalTree);
+		currentData.globalTree->deleteTree();
 		return 0;
 	}
 
@@ -972,9 +1293,22 @@ public:
 	}
 };
 
+void GenealogySegmentor::GeneTree::mergeTrees(GeneTree *tree) {
+	if (mergeVisitor==NULL)
+		mergeVisitor=new GenealogySegmentor::GeneTree::MergeVisitor(this);
+	(*mergeVisitor)(tree);
+}
+void GenealogySegmentor::GeneTree::mergeLeftovers() {
+	if (mergeVisitor!=NULL)
+		mergeVisitor->tryPerformingUnperformedNodes();
+}
+
+
 int genealogyHelper(QString input_str,ATMProgressIFC *prgs){
 	input_str=input_str.split("\n")[0];
 	GenealogySegmentor s;
 	s.segment(input_str,prgs);
 	return 0;
 }
+
+

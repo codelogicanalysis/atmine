@@ -38,7 +38,7 @@ bool StemSearch::check_for_terminal(int letter_index,ATTrie::Position pos)
 void StemSearch::traverse(int letter_index,ATTrie::Position pos)
 {
 	int length=info.text->length();
-	for (int i=letter_index;i<length && !stop;i++)
+	for (int i=max(letter_index,0);i<length && !stop;i++)
 	{
 #ifdef USE_TRIE
 #ifdef USE_TRIE_WALK
