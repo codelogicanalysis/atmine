@@ -21,6 +21,7 @@ public:
 	virtual void setCurrentAction(const QString & s);
 	virtual void resetActionDisplay();
 	virtual QString getFileName();
+	virtual void displayGraph();
 
 protected:
     void changeEvent(QEvent *e);

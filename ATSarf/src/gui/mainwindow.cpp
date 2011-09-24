@@ -130,12 +130,15 @@ void MainWindow::changeEvent(QEvent *e){
 void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
-	hadithParameters.narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
-	geneologyParameters.N_min=hadithParameters.narr_min;
-	hadithParameters.nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
-	geneologyParameters.theta_0=hadithParameters.nmc_max;
-	hadithParameters.nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
-	geneologyParameters.C_max=hadithParameters.nrc_max;
+	int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
+	hadithParameters.narr_min=narr_min;
+	geneologyParameters.N_min=narr_min;
+	int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
+	hadithParameters.nmc_max=nmc_max;
+	geneologyParameters.theta_0=nmc_max;
+	int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
+	hadithParameters.nrc_max=nrc_max;
+	geneologyParameters.C_max=nrc_max;
 	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
 	hadithParameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
@@ -196,6 +199,22 @@ void MainWindow::on_pushButton_clicked(){
 #endif
 #endif
 }
+void MainWindow::displayGraph() {
+	try{
+		system("dot -Tsvg graph.dot -o graph.svg");
+		QMainWindow * mw =new QMainWindow(NULL);
+		mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
+		QScrollArea * sa=new QScrollArea(mw);
+		mw->setCentralWidget(sa);
+		QLabel *pic=new QLabel(sa);
+		pic->setPixmap(QPixmap("./graph.svg"));
+		sa->setWidget(pic);
+		mw->show();
+	}
+	catch(...)
+	{}
+}
+
 void MainWindow::on_fill_clicked(){
 	initialize_variables();
 #ifndef SUBMISSION
