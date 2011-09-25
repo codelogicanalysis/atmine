@@ -36,6 +36,8 @@ private slots:
 	void on_fill_clicked();
 	void on_exit_clicked();
 	void on_cmd_browse_clicked();
+	void on_chk_hadith_toggled(bool checked);
+	void on_chk_bible_toggled(bool checked);
 	//void on_destroyed();
 };
 

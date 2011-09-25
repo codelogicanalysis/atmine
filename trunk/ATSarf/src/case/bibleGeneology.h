@@ -7,19 +7,21 @@
 
 #define GET_WAW
 //#define TRUST_OLD
-//#define GENEOLOGYDEBUG
+#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
+#define REDUCE_AFFIX_SEARCH
 
 class GeneologyParameters {
 public:
-	unsigned int theta_0:12;
-	unsigned int N_min:10;
-	unsigned int C_max:10;
-	//unsigned int unused:0;
+	unsigned int theta_0:10;
+	unsigned int N_min:8;
+	unsigned int C_max:8;
+	unsigned int radius:8;
 	GeneologyParameters() {
-		theta_0=30;
-		N_min=5;
+		theta_0=35;
+		N_min=3;
 		C_max=3;
+		radius=3;
 	}
 };
 

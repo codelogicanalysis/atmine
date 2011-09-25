@@ -37,8 +37,7 @@
 		double equality_delta;
 		double equality_threshold;
 		double bio_threshold;
-		HadithParameters()
-		{
+		HadithParameters() {
 			nmc_max=3;
 			narr_min=3;
 			nrc_max=5;
@@ -46,8 +45,8 @@
 			bio_narr_min=4;
 			bio_nrc_max=100;
 			equality_radius=3;
-			equality_delta=0.4;
-			equality_threshold=1;
+			equality_delta=0.3;
+			equality_threshold=0.1;
 			bio_max_reachability=1;
 			bio_threshold=5.0;
 			display_chain_num=true;

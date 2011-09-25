@@ -74,21 +74,29 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 	}
 	return 0;
 }
+int genealogy(QString inputString,ATMProgressIFC *prg) {
+	if (genealogyHelper(inputString,prg))
+		return -1;
+	return 0;
+}
+
+int biography(QString inputString,ATMProgressIFC *prg) {
+	if (deserializeGraph(inputString,prg))
+		return -1;
+	return 0;
+}
+int time_anotation(QString inputString,ATMProgressIFC *) {
+	if (timeTagger(inputString))
+		return -1;
+	return 0;
+}
+
 int test(QString inputString,ATMProgressIFC * prg) {
 #ifdef AUGMENT_DICTIONARY
 	if (augment()<0)
 		return -1;
 #elif 0
-	if (timeTagger(inputString))
-		return -1;
-#elif 0
 	if (biographyHelper(inputString,prg))
-		return -1;
-#elif defined(BIBLE)
-	if (genealogyHelper(inputString,prg))
-		return -1;
-#elif defined(DESERIALIZE_POR)
-	if (deserializeGraph(inputString,prg))
 		return -1;
 #else
 	QString fileName2=prg->getFileName();
