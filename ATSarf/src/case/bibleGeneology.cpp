@@ -107,8 +107,18 @@ public:
 	DescentConnectorGroup(DescentDirection dir) {
 		this->dir=dir;
 	}
+	DescentConnectorGroup() {
+		this->dir=UNDEFINED_DIRECTION;
+	}
 	void addDescription(long description_id) {
 		descriptions<<description_id;
+	}
+	bool isDescription(long description_id) {
+		for (int j=0;j<size();j++) {
+			if (descriptions[j]==description_id)
+				return true;
+		}
+		return false;
 	}
 };
 class DescentConnectors {
@@ -120,10 +130,8 @@ public:
 	}
 	DescentDirection getDirection(long description_id) {
 		for (int i=0;i<groups.size();i++) {
-			for (int j=0;j<groups[i].size();j++) {
-				if (groups[i][j]==description_id)
-					return groups[i].dir;
-			}
+			if (groups[i].isDescription(description_id))
+				return groups[i].dir;
 		}
 		return UNDEFINED_DIRECTION;
 	}
@@ -134,7 +142,9 @@ GeneologyParameters geneologyParameters;
 QList<int> bits_gene_NAME;
 QStringList relativeSuffixes;
 int bit_VERB_PERFECT;
+int bit_LAND;
 DescentConnectors descentConnectors;
+DescentConnectorGroup landDesc;
 
 class GeneStemmer: public Stemmer { //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
 private:
@@ -143,9 +153,11 @@ public:
 	long finish_pos;
 	bool name:1;
 	bool gaveBirth:1;
+	bool land:1;
 	DescentDirection descentDir:3;
 #ifdef GET_WAW
 	bool has_waw:1;
+	bool has_li:1;
 #endif
 	long startStem, finishStem,wawStart,wawEnd;
 
@@ -165,6 +177,7 @@ public:
 		name=false;
 		descentDir=UNDEFINED_DIRECTION;
 		gaveBirth=false;
+		land=false;
 		finish_pos=start;
 		startStem=start;
 		finishStem=start;
@@ -172,6 +185,7 @@ public:
 		wawStart=start;
 		wawEnd=start;
 		has_waw=false;
+		has_li=false;
 	#endif
 	}
 #ifndef COMPARE_TO_BUCKWALTER
@@ -206,18 +220,29 @@ public:
 #ifdef GET_WAW
 	void checkForWaw() {
 		has_waw=false;
+		has_li=false;
 	#ifndef GET_AFFIXES_ALSO
 		solution_position * p_inf=Prefix->computeFirstSolution();
 		do {
 			prefix_infos=&Prefix->affix_info;
 	#endif
-			for (int i=0;i<prefix_infos->size();i++)
-				if (prefix_infos->at(i).POS=="wa/CONJ+") {
+		#ifndef REDUCE_AFFIX_SEARCH
+			for (int i=0;i<prefix_infos->size();i++) {
+		#else
+			if (prefix_infos->size()>0) {
+				int i=0;
+		#endif
+				has_waw=prefix_infos->at(i).POS=="wa/CONJ+";
+				if (!has_waw)
+					has_li=prefix_infos->at(i).POS=="li/PREP+";
+				if (has_waw || has_li) {
 					wawStart=(i==0?Prefix->info.start:Prefix->getSplitPositions().at(i-1)-1);
 					wawEnd=Prefix->getSplitPositions().at(i)-1;
-					has_waw=true;
 					break;
 				}
+			}
+			if (has_waw || has_li)
+				break;
 	#ifndef GET_AFFIXES_ALSO
 		}while (Prefix->computeNextSolution(p_inf));
 		delete p_inf;
@@ -227,6 +252,10 @@ public:
 
 	bool analyze()	{
 		if (info.finish>info.start) { //more than one letter to be tested for being a name
+			if (landDesc.isDescription(stem_info->description_id)) {
+				land=true;
+				return false;
+			}
 			descentDir=descentConnectors.getDirection(stem_info->description_id);
 			if (descentDir!=UNDEFINED_DIRECTION) {
 				int suffSize=Suffix->info.finish - Suffix->info.start+1;
@@ -255,10 +284,10 @@ public:
 						finish_pos=info.finish;
 						finishStem=Stem->info.finish;
 						startStem=Stem->info.start;
-					#ifdef GET_WAW
-						checkForWaw();
-					#endif
 					}
+				#ifdef GET_WAW
+					checkForWaw();
+				#endif
 					return true;
 				}
 			}
@@ -282,7 +311,7 @@ void geneology_initialize() {
 #endif
 
 	DescentConnectorGroup spouse(SPOUSE);
-	Retrieve_Template d_spouse("description","id","name='woman' OR name LIKE '%spouse%'");
+	Retrieve_Template d_spouse("description","id","name='woman' OR name LIKE '%spouse%' OR name='concubine'");
 	while (d_spouse.retrieve())
 		spouse.addDescription(d_spouse.get(0).toULongLong());
 	DescentConnectorGroup sibling(SIBLING);
@@ -290,17 +319,21 @@ void geneology_initialize() {
 	while (d_sibling.retrieve())
 		sibling.addDescription(d_sibling.get(0).toULongLong());
 	DescentConnectorGroup father(FATHER);
-	Retrieve_Template d_father("description","id","name='son'");
+	Retrieve_Template d_father("description","id","name='son' OR name='daughter/girl'");
 	while (d_father.retrieve())
 		father.addDescription(d_father.get(0).toULongLong());
 	DescentConnectorGroup son(SON);
-	Retrieve_Template d_son("description","id","name='father' OR name='mother/maternal' OR name='mother' OR name='give birth to' OR name='be born' OR name LIKE 'sons/children%'");
+	Retrieve_Template d_son("description","id","name='father' OR name='mother/maternal' OR name='mother' OR name='give birth to' OR name='be born' OR name LIKE 'sons/children%' OR name='daughters/girls'");
 	while (d_son.retrieve())
 		son.addDescription(d_son.get(0).toULongLong());
 	descentConnectors.addDescentGroup(spouse);
 	descentConnectors.addDescentGroup(sibling);
 	descentConnectors.addDescentGroup(father);
 	descentConnectors.addDescentGroup(son);
+
+	Retrieve_Template d_land("description","id","name='earth/territory' OR name LIKE 'feddan%'");
+	while (d_land.retrieve())
+		landDesc.addDescription(d_land.get(0).toULongLong());
 
 	//abou ... bani and kharaja minho/minhoma/minhom => non direct descent
 
@@ -322,15 +355,18 @@ private:
 		WordType currentType:3;
 		StateType currentState:2;
 		StateType nextState:2;
-		bool precededByWaw:1;
-		bool precededBygaveBirth:1;
+		bool preceededByWaw:1;
+		bool preceededByLi:1;
+		bool preceededBygaveBirth:1;
 		bool sonsFoundName:1;
+		bool land:1;
 		DescentDirection descentDirection:3;
 		//int unused:19;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
 		void resetCurrentWordInfo()	{
 			currentPunctuationInfo.reset();
-			precededByWaw=false;
+			preceededByWaw=false;
+			preceededByLi=false;
 			//descentDirection=UNDEFINED_DIRECTION;
 		}
 		QString getWord() {	return text->mid(startPos,endPos-startPos+1); }
@@ -342,8 +378,10 @@ private:
 			startPos=0;
 			previousPunctuationInfo.fullstop=true;
 			this->text=text;
-			precededByWaw=false;
-			precededBygaveBirth=false;
+			preceededByWaw=false;
+			preceededByLi=false;
+			preceededBygaveBirth=false;
+			land=false;
 		}
 		StateInfo() {
 			initialize(NULL);
@@ -405,19 +443,21 @@ private:
 			}
 			return count;
 		}
-		GeneNode * getNodeInSubTree(QString word, int maxDepth=-1) {
+		GeneNode * getNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
 			if (this==NULL)
 				return NULL;
 			if (!ignoreInSearch && equal_ignore_diacritics(word,name.getString()))
 				return this;
-			for (int i=0;i<spouses.size();i++) {
-				if (equal_ignore_diacritics(word,spouses[i].getString()))
-					return this;
+			if (checkSpouses) {
+				for (int i=0;i<spouses.size();i++) {
+					if (equal_ignore_diacritics(word,spouses[i].getString()))
+						return this;
+				}
 			}
 			if (maxDepth<0 || maxDepth>0) {
 				int new_maxDepth=(maxDepth<0 ?maxDepth: maxDepth-1);
 				for (int i=0;i<children.size();i++) {
-					GeneNode * found=children[i]->getNodeInSubTree(word,new_maxDepth);
+					GeneNode * found=children[i]->getNodeInSubTree(word,checkSpouses,new_maxDepth);
 					if (found!=NULL)
 						return found;
 				}
@@ -488,7 +528,16 @@ private:
 			} else
 				return n;
 		}
-		GeneNode * addSpouse(Name n) { //return itself
+		bool hasSpouse(Name & n) {
+			if (this==NULL)
+				return false;
+			for (int i=0;i<spouses.size();i++) {
+				if (equal_ignore_diacritics(n.getString(),spouses[i].getString()))
+					return true;
+			}
+			return false;
+		}
+		GeneNode * addSpouse(const Name & n) { //return itself
 			if (this!=NULL) {
 				spouses.append(n);
 			}
@@ -575,10 +624,10 @@ private:
 				return 0;
 			return root->getSubTreeCount();
 		}
-		GeneNode * findTreeNode(QString word) {
+		GeneNode * findTreeNode(QString word, bool checkSpouses=false) {
 			if (this==NULL)
 				return NULL;
-			return root->getNodeInSubTree(word);
+			return root->getNodeInSubTree(word,checkSpouses);
 		}
 		void mergeTrees(GeneTree * tree);
 		void mergeLeftovers();
@@ -739,17 +788,17 @@ private:
 		void addUnPerformedEdge(const Name & n1,const Name & n2, bool isSpouse=false) {
 			unPerformedEdges[Edge(n1,n2)]=isSpouse;
 		}
-		GeneNode * find(const Name & name) {
+		GeneNode * find(const Name & name, bool checkSpouses=false) {
 			if (topMostNode==NULL) {
-				GeneNode * node=mainTree->findTreeNode(name.getString());
+				GeneNode * node=mainTree->findTreeNode(name.getString(),checkSpouses);
 				if (node!=NULL)
 					topMostNode=node;
 				return node;
 			} else {
-				GeneNode * node= topMostNode->getNodeInSubTree(name.getString());
+				GeneNode * node= topMostNode->getNodeInSubTree(name.getString(),checkSpouses);
 			#if 0
 				if (node==NULL) {
-					node=mainTree->findTreeNode(name.getString());
+					node=mainTree->findTreeNode(name.getString(),checkSpouses);
 				}
 			#endif
 				return node;
@@ -770,7 +819,7 @@ private:
 				}
 			}
 			node->ignoreInSearch=true;
-			temp=node->getNodeInSubTree(searchedName.getString(),radius);
+			temp=node->getNodeInSubTree(searchedName.getString(),false,radius);
 			node->ignoreInSearch=false;
 			if (temp!=NULL)
 				return false;
@@ -789,8 +838,8 @@ private:
 
 		virtual void visit(const Name & , int ){	}
 		virtual void visit(const Name & name1, const Name & name2, bool isSpouse){
-			GeneNode * n1=find(name1);
-			GeneNode * n2=find(name2);
+			GeneNode * n1=find(name1,true);
+			GeneNode * n2=find(name2,true);
 			if (isSpouse) {
 				if (n1==n2) {
 					if (n1!=NULL) {
@@ -944,7 +993,10 @@ private:
 			currentData.tree=new GeneTree(currentData.last);
 			currentData.i0=0;
 			if (dir!=UNDEFINED_DIRECTION) {
-				stateInfo.nextState=SONS_S;
+				if (dir==SON)
+					stateInfo.nextState=SONS_S;
+				else
+					stateInfo.nextState=NAME_S;
 				stateInfo.sonsFoundName=true;
 				stateInfo.descentDirection=dir;
 			} else
@@ -960,7 +1012,8 @@ private:
 		switch (stateInfo.descentDirection) {
 		case SON:
 		//case UNDEFINED_DIRECTION:
-			new GeneNode(name,currentData.last);
+			if (!currentData.last->hasSpouse(name))
+				new GeneNode(name,currentData.last);
 			break;
 		case FATHER:
 			currentData.last->addParent(new GeneNode(name,NULL));
@@ -1008,117 +1061,141 @@ private:
 			}
 			break;
 		case NAME_S:
-			switch (stateInfo.currentType) {
-			case DC:
-				//currentData.i0=0;
-				if (currentData.last==NULL)
-					currentData.last=currentData.tree->findTreeNode(currentData.lastName);
-				stateInfo.nextState=SONS_S;//NAME_S;
-				stateInfo.sonsFoundName=false;
-				break;
-			case ENDING_PUNC:
-				currentData.last=NULL;
-				stateInfo.nextState=NAME_S;
-				stateInfo.descentDirection=UNDEFINED_DIRECTION;
-				break;
-			case NEW_NAME: /*|| ((stateInfo.currentType==CORE_NAME || stateInfo.currentType==LEAF_NAME) && currentData.last==NULL)*/
-				if (stateInfo.precededByWaw) {
-					if (currentData.last!=NULL && currentData.last->parent==NULL) {
-						currentData.tree->deleteTree();
-						currentData.last=NULL;
-						currentData.tree=NULL;
-						stateInfo.nextState=TEXT_S;
-						display("{Waw resulted in deletion}\n");
+			if (!stateInfo.preceededByLi) {
+				switch (stateInfo.currentType) {
+				case DC:
+					//currentData.i0=0;
+					if (currentData.last==NULL)
+						currentData.last=currentData.tree->findTreeNode(currentData.lastName,stateInfo.descentDirection==SON ||stateInfo.descentDirection==FATHER);
+					if (stateInfo.descentDirection==SON)
+						stateInfo.nextState=SONS_S;//NAME_S;
+					else
 						stateInfo.nextState=NAME_S;
-					} else {
-						if (currentData.last!=NULL) {
-							new GeneNode(name,currentData.last->parent);
+					stateInfo.sonsFoundName=false;
+					break;
+				case ENDING_PUNC:
+					currentData.last=NULL;
+					stateInfo.nextState=NAME_S;
+					stateInfo.descentDirection=UNDEFINED_DIRECTION;
+					break;
+				case NEW_NAME: /*|| ((stateInfo.currentType==CORE_NAME || stateInfo.currentType==LEAF_NAME) && currentData.last==NULL)*/
+					if (stateInfo.preceededByWaw) {
+						if (currentData.last!=NULL && currentData.last->parent==NULL) {
+							currentData.tree->deleteTree();
+							currentData.last=NULL;
+							currentData.tree=NULL;
+							stateInfo.nextState=TEXT_S;
+							display("{Waw resulted in deletion}\n");
 							stateInfo.nextState=NAME_S;
 						} else {
+							if (currentData.last!=NULL) {
+								//new GeneNode(name,currentData.last->parent);
+								addToTree(name);
+								stateInfo.nextState=NAME_S;
+							} else {
+								ret_val=doActionNewNameAndNullLast(name); //choses also nextState
+							}
+						}
+					} else {
+						if (currentData.last==NULL) {
 							ret_val=doActionNewNameAndNullLast(name); //choses also nextState
-						}
-					}
-				} else {
-					if (currentData.last==NULL) {
-						ret_val=doActionNewNameAndNullLast(name); //choses also nextState
-					} else {
-						if (currentData.tree==NULL)
-							currentData.tree=new GeneTree(currentData.last);
-						if (stateInfo.descentDirection==SON) {
-							currentData.last=new GeneNode(name,currentData.last);
-							currentData.i0=0;
-							stateInfo.nextState=NAME_S;
 						} else {
-						#ifndef TRUST_OLD
-							doActionNewNameAndNullLast(name); //choses also nextState
-						#else
-							assert(stateInfo.descentDirection==UNDEFINED_DIRECTION);
-							stateInfo.nextState=NAME_S;
-						#endif
+							if (currentData.tree==NULL)
+								currentData.tree=new GeneTree(currentData.last);
+							if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
+								addToTree(name);
+								currentData.last=currentData.tree->findTreeNode(name.getString(),true);
+								currentData.i0=0;
+								stateInfo.nextState=NAME_S;
+							} else {
+							#ifndef TRUST_OLD
+								doActionNewNameAndNullLast(name); //choses also nextState
+							#else
+								assert(stateInfo.descentDirection==UNDEFINED_DIRECTION);
+								stateInfo.nextState=NAME_S;
+							#endif
+							}
 						}
-
 					}
-				}
-				break;
-			/*case CORE_NAME:*/
-			case OTHER:
-				display(QString("{here threshold: %1}").arg(geneologyParameters.theta_0));
-				if (currentData.i0>=geneologyParameters.theta_0) {
-					ret_val=checkIfDisplay();
-					stateInfo.nextState=TEXT_S;
-				} else {
-					if (addCounters)
-						currentData.i0++;
+					break;
+				/*case CORE_NAME:*/
+				case OTHER:
+					display(QString("{here threshold: %1}").arg(geneologyParameters.theta_0));
+					if (currentData.i0>=geneologyParameters.theta_0) {
+						ret_val=checkIfDisplay();
+						stateInfo.nextState=TEXT_S;
+					} else {
+						if (addCounters)
+							currentData.i0++;
+						stateInfo.nextState=NAME_S;
+					}
+					break;
+				case CORE_NAME:
+				case LEAF_NAME:
+					currentData.last=currentData.tree->findTreeNode(name.getString(),stateInfo.descentDirection==SON || stateInfo.descentDirection==FATHER);
+					stateInfo.nextState=SONS_S;
+					stateInfo.sonsFoundName=false;
+					break;
+				case PARA_PUNC:
+					ret_val=doParaCheck(); //choses also nextState
+					break;
+				default:
 					stateInfo.nextState=NAME_S;
 				}
 				break;
-			case CORE_NAME:
-			case LEAF_NAME:
-				currentData.last=currentData.tree->findTreeNode(name.getString());
-				stateInfo.nextState=SONS_S;
-				stateInfo.sonsFoundName=false;
-				break;
-			case PARA_PUNC:
-				ret_val=doParaCheck(); //choses also nextState
-				break;
-			default:
-				stateInfo.nextState=NAME_S;
-			}
-			break;
+			} //in this way, code applies to both NAME_S and SONS_S bc we dont reach break
 		case SONS_S:
-			switch (stateInfo.currentType) {
-			case NEW_NAME:
-				addToTree(name);
-				if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
-					currentData.i0=0;
-					stateInfo.sonsFoundName=true;
+			if (!stateInfo.preceededByLi) {
+				switch (stateInfo.currentType) {
+				case NEW_NAME:
+					addToTree(name);
+					if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
+						currentData.i0=0;
+						stateInfo.sonsFoundName=true;
+					}
+					stateInfo.nextState=SONS_S;
+					break;
+				case ENDING_PUNC:
+					//currentData.i0=0;
+					stateInfo.nextState=NAME_S;
+					if (stateInfo.descentDirection==SON /*&& stateInfo.precededBygaveBirth*/ && !stateInfo.sonsFoundName) //maybe name in next sentence
+						stateInfo.descentDirection=SON;
+					else {
+						stateInfo.descentDirection=UNDEFINED_DIRECTION;
+						currentData.last=NULL;
+					}
+					break;
+				case PARA_PUNC:
+					ret_val=doParaCheck(); //choses also nextState
+					break;
+				case CORE_NAME:
+				case LEAF_NAME:
+					currentData.last=currentData.tree->findTreeNode(name.getString(),stateInfo.descentDirection==SON || stateInfo.descentDirection==FATHER);
+					stateInfo.nextState=SONS_S;
+					break;
+				default:
+					if (addCounters)
+						currentData.i0++;
+					stateInfo.nextState=SONS_S;
 				}
-				stateInfo.nextState=SONS_S;
 				break;
-			case ENDING_PUNC:
-				//currentData.i0=0;
-				stateInfo.nextState=NAME_S;
-				if (stateInfo.descentDirection==SON /*&& stateInfo.precededBygaveBirth*/ && !stateInfo.sonsFoundName) //maybe name in next sentence
-					stateInfo.descentDirection=SON;
-				else {
+			} else {
+				if (stateInfo.preceededBygaveBirth) {
+					if (currentData.last!=NULL) {
+						stateInfo.descentDirection=SON;
+						if (!currentData.tree->findTreeNode(name.getString(),true))
+							currentData.last->addSpouse(name);//make sure no duplication occurs
+						stateInfo.nextState=SONS_S;
+					} else {
+						stateInfo.descentDirection=UNDEFINED_DIRECTION;
+						stateInfo.nextState=NAME_S;
+					}
+				} else {
 					stateInfo.descentDirection=UNDEFINED_DIRECTION;
-					currentData.last=NULL;
+					stateInfo.nextState=stateInfo.currentState;
 				}
 				break;
-			case PARA_PUNC:
-				ret_val=doParaCheck(); //choses also nextState
-				break;
-			case CORE_NAME:
-			case LEAF_NAME:
-				currentData.last=currentData.tree->findTreeNode(name.getString());
-				stateInfo.nextState=SONS_S;
-				break;
-			default:
-				if (addCounters)
-					currentData.i0++;
-				stateInfo.nextState=SONS_S;
 			}
-			break;
 		default:
 			assert(false);
 		}
@@ -1148,12 +1225,20 @@ private:
 		stateInfo.endPos=finish;
 		stateInfo.nextPos=next_positon(stateInfo.text,finish,stateInfo.currentPunctuationInfo);
 		display(stateInfo.text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-		if (s.name){
+		if (s.land) {
+			stateInfo.land=true;
+			if (!result(OTHER,false))
+				return false;
+		} else if (s.name){
 			long nextpos=stateInfo.nextPos;
 		#ifdef GET_WAW
 			PunctuationInfo copyPunc=stateInfo.currentPunctuationInfo;
-			if (s.has_waw && (stateInfo.currentState==NAME_S ||stateInfo.currentState==SONS_S) ) {
-				display("waw ");
+			if ((s.has_waw || s.has_li) && (stateInfo.currentState==NAME_S ||stateInfo.currentState==SONS_S) ) {
+				if (s.has_waw) {
+					display("waw ");
+				} else {
+					display("li ");
+				}
 				stateInfo.startPos=s.wawStart;
 				stateInfo.endPos=s.wawEnd;
 				stateInfo.nextPos=s.wawEnd+1;
@@ -1162,7 +1247,11 @@ private:
 					return false;
 				stateInfo.currentState=stateInfo.nextState;
 				stateInfo.lastEndPos=stateInfo.endPos;
-				stateInfo.precededByWaw=true;
+				if (s.has_waw)
+					stateInfo.preceededByWaw=true;
+				else
+					stateInfo.preceededByLi=true;
+				stateInfo.land=false;
 			}
 			stateInfo.currentPunctuationInfo=copyPunc;
 		#endif
@@ -1171,7 +1260,8 @@ private:
 			stateInfo.nextPos=nextpos;
 			WordType type;
 			QString word=stateInfo.getWord();
-			GeneNode * node=currentData.tree->findTreeNode(word);
+			bool searchSpouseCondition=stateInfo.descentDirection==SPOUSE || stateInfo.descentDirection==UNDEFINED_DIRECTION || stateInfo.preceededBygaveBirth;
+			GeneNode * node=currentData.tree->findTreeNode(word,searchSpouseCondition);
 			if (node==NULL)
 				type=NEW_NAME;
 			else if (node->isLeaf())
@@ -1180,28 +1270,38 @@ private:
 				type=CORE_NAME;
 			if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
 				stateInfo.descentDirection=SON;
+			if (stateInfo.land) {
+				stateInfo.land=false;
+				type=OTHER;
+			}
 			if (!(result(type)))
 				return false;
 			currentData.lastName=word;
 		} else if (s.descentDir!=UNDEFINED_DIRECTION) {
+			stateInfo.land=false;
 			stateInfo.descentDirection=s.descentDir;
-			if (s.descentDir==FATHER && stateInfo.precededBygaveBirth)
+			if (s.descentDir==FATHER && stateInfo.preceededBygaveBirth)
 				stateInfo.descentDirection=SON;
 			if (!result(DC))
 				return false;
-			stateInfo.precededBygaveBirth=s.gaveBirth;
+			if (!stateInfo.preceededBygaveBirth)
+				stateInfo.preceededBygaveBirth=s.gaveBirth;
 		} else {
-			stateInfo.precededByWaw=false;
+			stateInfo.land=false;
+			stateInfo.preceededByWaw=false;
+			stateInfo.preceededByLi=false;
 			if (!result(OTHER))
 				return false;
 		}
-		stateInfo.precededByWaw=false;
+		stateInfo.preceededByWaw=false;
+		stateInfo.preceededByLi=false;
 		if (stateInfo.currentPunctuationInfo.hasEndingPunctuation() || stateInfo.currentPunctuationInfo.hasParagraphPunctuation()) {
+			stateInfo.land=false;
 			stateInfo.currentState=stateInfo.nextState;
 			stateInfo.startPos=stateInfo.endPos+1;
 			stateInfo.endPos=stateInfo.nextPos-1;
 			WordType type=(stateInfo.currentPunctuationInfo.hasParagraphPunctuation()?PARA_PUNC:ENDING_PUNC);
-			stateInfo.precededBygaveBirth=false;
+			stateInfo.preceededBygaveBirth=false;
 			return result(type,false);
 		} else
 			return true;

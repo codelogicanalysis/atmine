@@ -5,7 +5,7 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-//#define AUGMENT_DICTIONARY
+#define AUGMENT_DICTIONARY
 //#define JUST_BUCKWALTER
 //#define INSERT_ONLY_TIME
 #define INSERT_ONLY_NAMES
@@ -18,5 +18,8 @@ int verify(QString input_str,ATMProgressIFC * prg);
 int breakAffix(QString input_str, ATMProgressIFC * prg);
 int timeRecognize(QString input_str, ATMProgressIFC * prg);
 int biographyHelper(QString input_str,ATMProgressIFC *prg);
+int genealogy(QString input_str,ATMProgressIFC *prg);
+int biography(QString input_str,ATMProgressIFC *prg);
+int time_anotation(QString input_str,ATMProgressIFC *prg);
 
 #endif // TEST_H

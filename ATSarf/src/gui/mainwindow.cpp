@@ -127,6 +127,32 @@ void MainWindow::changeEvent(QEvent *e){
     }
 }
 
+void MainWindow::on_chk_hadith_toggled(bool checked){
+	if (checked) {
+		m_ui->NARRATOR->setText(QString("%1").arg(hadithParameters.narr_min));
+		m_ui->NMC->setText(QString("%1").arg(hadithParameters.nmc_max));
+		m_ui->NRC->setText(QString("%1").arg(hadithParameters.nrc_max));
+		m_ui->EQ_radius->setText(QString("%1").arg(hadithParameters.equality_radius));
+		m_ui->NARRATOR->setAlignment(Qt::AlignCenter);
+		m_ui->NMC->setAlignment(Qt::AlignCenter);
+		m_ui->NRC->setAlignment(Qt::AlignCenter);
+		m_ui->EQ_radius->setAlignment(Qt::AlignCenter);
+	}
+}
+
+void MainWindow::on_chk_bible_toggled(bool checked){
+	if (checked) {
+		m_ui->NARRATOR->setText(QString("%1").arg(geneologyParameters.N_min));
+		m_ui->NMC->setText(QString("%1").arg(geneologyParameters.theta_0));
+		m_ui->NRC->setText(QString("%1").arg(geneologyParameters.C_max));
+		m_ui->EQ_radius->setText(QString("%1").arg(geneologyParameters.radius));
+		m_ui->NARRATOR->setAlignment(Qt::AlignCenter);
+		m_ui->NMC->setAlignment(Qt::AlignCenter);
+		m_ui->NRC->setAlignment(Qt::AlignCenter);
+		m_ui->EQ_radius->setAlignment(Qt::AlignCenter);
+	}
+}
+
 void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
@@ -139,13 +165,15 @@ void MainWindow::on_pushButton_clicked(){
 	int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
 	hadithParameters.nrc_max=nrc_max;
 	geneologyParameters.C_max=nrc_max;
+	int equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
+	hadithParameters.equality_radius=equality_radius;
+	geneologyParameters.radius=equality_radius;
 	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
-	hadithParameters.equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
 	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
 	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();
 	sarfParameters.enableRunonwords=m_ui->chk_runon->isChecked();
-	if (m_ui->chk_hadith->isChecked() && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6)){
+	if ((m_ui->chk_hadith->isChecked() || m_ui->chk_bible->isChecked()) && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6)){
 		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
@@ -171,8 +199,13 @@ void MainWindow::on_pushButton_clicked(){
 		breakAffix(input,this);
 	else if (m_ui->chk_time->isChecked())
 		timeRecognize(input,this);
-
-	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_testing->isChecked())
+	else if (m_ui->chk_bible->isChecked())
+		genealogy(input,this);
+	else if (m_ui->chk_biography->isChecked())
+		biography(input,this);
+	else if (m_ui->chk_time_anotation->isChecked())
+		time_anotation(input,this);
+	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
 	m_ui->output->setText(output_str);
