@@ -21,6 +21,7 @@ extern void listAllAffixes(item_types type);
 extern int timeTagger(QString input_str);
 extern int deserializeGraph(QString fileName,ATMProgressIFC * prg);
 extern int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
+extern int bibleTagger(QString input_str);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -86,7 +87,11 @@ int biography(QString inputString,ATMProgressIFC *prg) {
 	return 0;
 }
 int time_anotation(QString inputString,ATMProgressIFC *) {
+#if 1
+	if (bibleTagger(inputString))
+#else
 	if (timeTagger(inputString))
+#endif
 		return -1;
 	return 0;
 }

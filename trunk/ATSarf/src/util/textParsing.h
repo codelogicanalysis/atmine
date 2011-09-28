@@ -10,12 +10,14 @@ public:
 	bool semicolon:1;
 	bool fullstop:1;
 	bool newLine:1;
+	bool colon:1;
 	PunctuationInfo() {
 		reset();
 	}
 	void reset() {
 		has_punctuation=false;
 		comma=false;
+		colon=false;
 		semicolon=false;
 		fullstop=false;
 		newLine=false;
@@ -35,6 +37,8 @@ public:
 				semicolon=true;
 			else if (letter==full_stop1 || letter==full_stop2 || letter==full_stop3 || letter==question_mark || letter=='.' || letter=='?')
 				fullstop=true;
+			else if (letter==':' || letter==colon_raised || letter==colon_modifier)
+				colon=true;
 			return true;
 		} else
 			return false;

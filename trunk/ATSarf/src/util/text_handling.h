@@ -17,17 +17,17 @@ inline QString get_Possessive_form(QString word)
 		QChar last=_getLastLetter(word,last_index);
 		QChar before=getLastLetter(word.left(last_index));
 		if (last==alef && isConsonant(before))
-			return removeLastDiacritic(word).append(waw).append(ya2);
+			return removeLastDiacritics(word).append(waw).append(ya2);
 		else if (last==alef && before==waw )
-			return removeLastDiacritic(removeLastLetter(word)).append(ya2);
+			return removeLastDiacritics(removeLastLetter(word)).append(ya2);
 		else if (last==alef && before==ya2 )
-			return removeLastDiacritic(removeLastLetter(word)).append(shadde);
+			return removeLastDiacritics(removeLastLetter(word)).append(shadde);
 		else if (last==ta2_marbouta && isConsonant(before))
-			return removeLastDiacritic(removeLastLetter(word)).append(ya2);
+			return removeLastDiacritics(removeLastLetter(word)).append(ya2);
 		else if (last==ya2)
-			return removeLastDiacritic(word).append(shadde);
+			return removeLastDiacritics(word).append(shadde);
 		else if (isConsonant(last) || last==waw)
-			return removeLastDiacritic(word).append(ya2);
+			return removeLastDiacritics(word).append(ya2);
 		else
 		{
 			out << "Unknown Rule for Possessive form\n";
@@ -110,17 +110,16 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2) // is diacrit
 		return false;
 	return true;
 }
-inline bool equal(const QString &word1,const QString &word2)// is diacritics tolerant
-{
+inline bool equal(const QString &word1,const QString &word2) {// is diacritics tolerant
 	return equal(word1.rightRef(-1),word2.rightRef(-1));//rightRef of <0 returns whole string
 }
-inline bool equal(const QStringRef &word1,const QString &word2) // is diacritics tolerant
-{
+inline bool equal(const QStringRef &word1,const QString &word2) { // is diacritics tolerant
 	return equal(word1,word2.rightRef(-1));//rightRef of <0 returns whole string
 }
-
-inline bool startsWith(const QStringRef &text,const QString &substring, int & finish_pos) // is diacritics tolerant checks if a word ends with a delimeter terminated 'subset'
-{
+inline bool equal_withoutLastDiacritics(const QString &word1,const QString &word2) { // is diacritics tolerant
+	return equal(removeLastDiacritics(word1),removeLastDiacritics(word2));
+}
+inline bool startsWith(const QStringRef &text,const QString &substring, int & finish_pos){ // is diacritics tolerant checks if a word ends with a delimeter terminated 'subset'
 	int text_length=text.length(), substring_length=substring.length();
 	if(text_length<substring_length)
 		return false;
