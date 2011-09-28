@@ -214,19 +214,7 @@ void MainWindow::on_pushButton_clicked(){
 	if (m_ui->chk_hadith->isChecked()){
 		if (rc==0)	{
 			setWindowTitle(QString("Sarf (")+m_ui->input->toPlainText()+")");
-			try{
-				system("dot -Tsvg graph.dot -o graph.svg");
-				QMainWindow * mw =new QMainWindow(NULL);
-				mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
-				QScrollArea * sa=new QScrollArea(mw);
-				mw->setCentralWidget(sa);
-				QLabel *pic=new QLabel(sa);
-				pic->setPixmap(QPixmap("./graph.svg"));
-				sa->setWidget(pic);
-				mw->show();
-			}
-			catch(...)
-			{}
+			displayGraph();
 		}
 	}
 #endif

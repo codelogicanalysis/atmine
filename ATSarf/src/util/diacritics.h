@@ -45,7 +45,7 @@ inline QChar getLastLetter(const QString & word) {//last non-Diacritical letter
 inline QString removeLastLetter(const QString & word) {//last non-Diacritical letter
 	return word.left(getLastLetter_index(word,word.length()-1));
 }
-inline QString removeLastDiacritic(const QString &word) { //removes last consecutive diactrics until a normal letter is reached
+inline QString removeLastDiacritics(const QString &word) { //removes last consecutive diactrics until a normal letter is reached
 	return word.left(getLastLetter_index(word,word.length()-1)+1);
 }
 QString getDiacriticword(int position,int startPos,QString diacritic_word);

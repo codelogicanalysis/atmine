@@ -49,6 +49,8 @@ static const QChar alef_maksoura= QChar(0x0649);
 
 static const QChar question_mark=QChar(0x061F);
 static const QChar semicolon_ar=QChar(0x061B);
+static const QChar colon_raised=QChar(0x02F8);
+static const QChar colon_modifier=QChar(0xA789);
 static const QChar fasila=QChar(0x060C);
 static const QChar full_stop1=QChar(0x06D4);
 static const QChar full_stop2=QChar(0x200F);
@@ -79,7 +81,10 @@ static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef
 extern QString non_punctuation_delimiters;
 
 inline bool isDelimiter(const QChar & letter) {
-	if (letter.unicode()<0x0020)
+	int uni=letter.unicode();
+	if (uni==0)
+		return false;
+	if (uni<0x0020)
 		return true;
 	return delimiters.contains(letter);
 }

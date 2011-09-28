@@ -64,16 +64,15 @@ public:
 	#endif
 };
 
-inline QDataStream &operator>>(QDataStream &in, long &l)
-{
+
+inline QDataStream &operator>>(QDataStream &in, long & l) {
 	qint64 s;
 	in>>s;
 	l=s;
 	return in;
 }
 
-inline QDataStream &operator<<(QDataStream &out, const long &l)
-{
+inline QDataStream &operator<<(QDataStream &out, const long & l) {
 	out<<(qint64)l;
 	return out;
 }
