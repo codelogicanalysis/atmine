@@ -309,7 +309,7 @@ public:
 			return NULL;
 		return root->getNodeInSubTree(word,checkSpouses);
 	}
-	void compareToStandardTree(GeneTree * standard);
+	void compareToStandardTree(GeneTree * standard,double & found,double & similarContext);
 	void mergeTrees(GeneTree * tree);
 	void mergeLeftovers();
 	void displayTree( ATMProgressIFC * prg);
@@ -344,6 +344,23 @@ public:
 		finish();
 	}
 };
+class FillTextVisitor:public GeneVisitor {
+private:
+	QString * text;
+public:
+	FillTextVisitor(QString * text) {
+		this->text=text;
+	}
+	void visit(const GeneNode * node,int ) {
+		 ((GeneNode *)node)->name.text=text;
+	}
+	void visit(const GeneNode *, const Name & name,bool isSpouse) {
+		if (isSpouse)
+			((Name &)name).text=text;
+	}
+	void finish() {}
+};
+
 
 inline QDataStream &operator<<(QDataStream &out, const Name &t) {
 	out<<(qint32)t.start<<(qint32)t.end;
@@ -400,7 +417,10 @@ inline QDataStream &operator>>(QDataStream &in, GeneNode &t) {
 	return in;
 }
 inline QDataStream &operator<<(QDataStream &out, const GeneTree &t) {
-	out<<*t.root;
+	if (&t==NULL) //assume null tree equivalent to a tree with a null node
+		out<<*(GeneNode *)NULL;
+	else
+		out<<*t.root;
 	return out;
 }
 inline QDataStream &operator>>(QDataStream &in, GeneTree &t) {

@@ -31,8 +31,8 @@ public:
 	inline static bool isConsistentWithSelectionCondidtion(int start, int end, int tagStart,int tagEnd,SelectionMode selectionMode=SELECTION_OUTSIDE) {
 		bool con1= selectionMode==SELECTION_OUTSIDE && start<=tagStart && end>=tagEnd,
 			 con2= selectionMode==SELECTION_INSIDE && start>=tagStart && end<=tagEnd,
-			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>=tagStart) ||
-														(start<=tagEnd && end>=tagEnd));
+			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>tagStart) ||
+														(start<tagEnd && end>=tagEnd));
 		return con1 || con2 || con3;
 	}
 	class Selection {
@@ -110,9 +110,11 @@ public:
 				if (n->spouses.size()>0) {
 					n->name=n->spouses[0];
 					n->spouses.removeAt(0);
-				} else if (n->children.size()==1) {
+				} else if (n->children.size()>0) {
 					tree->setRoot(n->children[0]);
 					n->children[0]->parent=NULL;
+					for (int i=1;i<n->children.size();i++)
+						n->children[0]->addChild(n->children[i]);
 					delete n;
 				} else {
 					tree->deleteTree();
@@ -120,7 +122,7 @@ public:
 					updateGraph();
 				}
 			} else {
-				n->children.removeOne(n);
+				n->parent->children.removeOne(n);
 				for (int i=0;i<n->spouses.size();i++) {
 					n->parent->addChild(new GeneNode(n->spouses[i],NULL));
 				}
@@ -204,7 +206,7 @@ public:
 				lastIndentation=indentation;
 				lastNode=child;
 			}
-			if (this->tree->getTreeNodesCount(true)==tree->getTreeNodesCount(true)) {
+			if (/*this->tree->getTreeNodesCount(true)==*/tree->getTreeNodesCount(true)==names.size()) {
 				this->tree->deleteTree();
 				this->tree=tree;
 				return true;
@@ -228,9 +230,30 @@ public:
 		void setTree(GeneTree * tree) { //must not be used by tagger just by possibly the parser
 			this->tree=tree;
 		}
+		void setText(QString *text) { //must not be used by tagger just by possibly the parser
+			this->text=text;
+		}
 		void clear() {
 			names.clear();
 			tree=NULL;
+		}
+		static int mergeNames(QString * text,const MainSelectionList & list1, const MainSelectionList & list2,MainSelectionList & mergedNames){
+			mergedNames.clear();
+			mergedNames.append(list1);
+			for (int i=0;i<list2.size();i++) {
+				bool found=false;
+				for (int j=0;j<mergedNames.size();j++) {
+					QString s1=Name(text,mergedNames[j].first,mergedNames[j].second).getString(),
+							s2=Name(text,list2[i].first,list2[i].second).getString();
+					if (equal_withoutLastDiacritics(s1,s2)) {
+						found=true;
+						break;
+					}
+				}
+				if (!found)
+					mergedNames.append(list2[i]);
+			}
+			return mergedNames.size();
 		}
 	};
 	typedef QList<Selection> SelectionList;
@@ -354,15 +377,15 @@ private:
 		int start=c.selectionStart();
 		int end=c.selectionEnd();
 		QChar chr=(c.selectedText().length()>0?c.selectedText().at(0):'\0');
-		if (isDelimiter(chr)) {
-			while (isDelimiter(chr)) {
+		if (isDelimiterOrNumber(chr)) {
+			while (isDelimiterOrNumber(chr)) {
 				c.setPosition(++start,QTextCursor::MoveAnchor);
 				c.setPosition(end,QTextCursor::KeepAnchor);
 				chr=c.selectedText().at(0);
 			}
 		} else {
 			if (start>0) {
-				while (!isDelimiter(chr)) {
+				while (!isDelimiterOrNumber(chr)) {
 					c.setPosition(--start,QTextCursor::MoveAnchor);
 					c.setPosition(end,QTextCursor::KeepAnchor);
 					if (start==0) {
@@ -375,8 +398,8 @@ private:
 			}
 		}
 		chr=(c.selectedText()>0?c.selectedText().at(c.selectedText().length()-1):'\0');
-		if (isDelimiter(chr)) {
-			while (isDelimiter(chr)) {
+		if (isDelimiterOrNumber(chr)) {
+			while (isDelimiterOrNumber(chr)) {
 				c.setPosition(start,QTextCursor::MoveAnchor);
 				c.setPosition(--end,QTextCursor::KeepAnchor);
 				if (c.selectedText().length()==0)
@@ -385,7 +408,7 @@ private:
 			}
 		} else {
 			if (text->toPlainText().length()>end) {
-				while (!isDelimiter(chr)) {
+				while (!isDelimiterOrNumber(chr)) {
 					c.setPosition(start,QTextCursor::MoveAnchor);
 					c.setPosition(++end,QTextCursor::KeepAnchor);
 					if (text->toPlainText().length()==end) {
@@ -416,12 +439,9 @@ private:
 				c.setPosition(++end,QTextCursor::KeepAnchor);
 				chr=c.selectedText().at(c.selectedText().length()-1);
 				if (text->toPlainText().length()==end) {
-					chr='\0';
 					break;
 				}
 			}
-		} else {
-			chr='\0';
 		}
 		chr=c.selectedText().at(0);
 		assert (!isPunctuationMark(chr));
@@ -431,14 +451,11 @@ private:
 				c.setPosition(end,QTextCursor::KeepAnchor);
 				chr=c.selectedText().at(0);
 				if (start==0) {
-					chr=' ';
 					break;
 				}
 			}
-		} else {
-			chr=' ';
 		}
-		while (!isDelimiter(chr)) {
+		while (isDelimiter(chr)) {
 			c.setPosition(++start,QTextCursor::MoveAnchor);
 			c.setPosition(end,QTextCursor::KeepAnchor);
 			chr=c.selectedText().at(0);

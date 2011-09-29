@@ -16,16 +16,35 @@ void BibleTaggerDialog::tagGenealogy_action() {
 	while (i>=0) {
 		if (sel==NULL) {
 			sel=&tags[i];
-			sel->setMainInterval(min(sel->getMainStart(),start),max(sel->getMainEnd(),end));
 		} else {
-			listForRemoval.append(i);
-			sel->names.append(tags[i].names);
-			sel->tree->mergeTrees(tags[i].tree);
-			sel->setMainInterval(min(sel->getMainStart(),tags[i].getMainStart()),max(sel->getMainEnd(),tags[i].getMainEnd()));
-			tags.removeAt(i);
-			i--;
+			GeneTree * duplicate=sel->tree->duplicateTree();
+			duplicate->mergeTrees(tags[i].tree);
+			Selection::MainSelectionList mergedNames;
+			Selection::mergeNames(string,sel->names,tags[i].names,mergedNames);
+			int count=duplicate->getTreeNodesCount(true);
+			if (count==mergedNames.size()) {
+				listForRemoval.append(i);
+				sel->names=mergedNames;
+				sel->tree->deleteTree();
+				tags[i].tree->deleteTree();
+				sel->tree=duplicate;
+				sel->setMainInterval(min(sel->getMainStart(),tags[i].getMainStart()),max(sel->getMainEnd(),tags[i].getMainEnd()));
+				tags.removeAt(i);
+				i--;
+			} else {
+				duplicate->deleteTree(); //stopped before completion i>=0
+				break;
+			}
 		}
 		i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
+	}
+	if (sel==NULL) {
+		tags.append(Selection(string,start,end));
+	} else if (i>=0) { //stopped before completion
+		start=sel->getMainStart();
+		end=sel->getMainEnd();
+	} else {
+		sel->setMainInterval(min(sel->getMainStart(),start),max(sel->getMainEnd(),end));
 	}
 	c.setPosition(start,QTextCursor::MoveAnchor);
 	c.setPosition(end,QTextCursor::KeepAnchor);
@@ -33,8 +52,6 @@ void BibleTaggerDialog::tagGenealogy_action() {
 	text->setTextBackgroundColor(Qt::darkYellow);
 	c.clearSelection();
 	text->setTextCursor(c);
-	if (sel==NULL)
-		tags.append(Selection(string,start,end));
 	updateGraphDisplay();
 }
 
@@ -62,9 +79,13 @@ void BibleTaggerDialog::unTagGenealogy_action() {
 			if (tags[i].getMainStart()>=start) {
 				tags[i].setMainInterval(end,tags[i].getMainEnd());
 			} else {
-				tags[i].setMainInterval(tags[i].getMainStart(),end);
+				tags[i].setMainInterval(tags[i].getMainStart(),start);
 			}
-			tags[i].removeExtraNames();
+			if (tags[i].getMainStart()==tags[i].getMainEnd()) {
+				tags.removeAt(i);
+				i--;
+			} else
+				tags[i].removeExtraNames();
 			i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
 		}
 	}
@@ -89,26 +110,11 @@ void BibleTaggerDialog::save_action() {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
 		file.close();
+		QFile::remove(file.fileName()+".copy");
+		file.copy(file.fileName()+".copy");
 	} else
 		error << "Unexpected Error: Unable to open file\n";
 }
-
-class FillTextVisitor:public GeneVisitor {
-private:
-	QString * text;
-public:
-	FillTextVisitor(QString * text) {
-		this->text=text;
-	}
-	void visit(const GeneNode * node,int ) {
-		 ((GeneNode *)node)->name.text=text;
-	}
-	void visit(const GeneNode *, const Name & name,bool isSpouse) {
-		if (isSpouse)
-			((Name &)name).text=text;
-	}
-	void finish() {}
-};
 
 void BibleTaggerDialog::open_action() {
 	QFile fileOriginal(QString(filename).toStdString().data());
