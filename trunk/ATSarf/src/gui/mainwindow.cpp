@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef EQUAL_NEW
 	m_ui->EQ_threshold->setText("0.1");
 #endif
+#ifdef BIBLE
+	m_ui->chk_time_anotation->setText("Bible Annotation");
+#endif
 }
 
 MainWindow::~MainWindow() {
@@ -204,7 +207,7 @@ void MainWindow::on_pushButton_clicked(){
 	else if (m_ui->chk_biography->isChecked())
 		biography(input,this);
 	else if (m_ui->chk_time_anotation->isChecked())
-		time_anotation(input,this);
+		annotation(input,this);
 	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);

@@ -86,8 +86,8 @@ int biography(QString inputString,ATMProgressIFC *prg) {
 		return -1;
 	return 0;
 }
-int time_anotation(QString inputString,ATMProgressIFC *) {
-#if 1
+int annotation(QString inputString,ATMProgressIFC *) {
+#ifdef BIBLE
 	if (bibleTagger(inputString))
 #else
 	if (timeTagger(inputString))

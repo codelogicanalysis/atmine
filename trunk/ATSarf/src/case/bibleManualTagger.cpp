@@ -10,10 +10,30 @@ void BibleTaggerDialog::tagGenealogy_action() {
 	int end=c.selectionEnd();
 	if (start==end)
 		return;
+	int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
+	QList<int> listForRemoval;
+	Selection * sel=NULL;
+	while (i>=0) {
+		if (sel==NULL) {
+			sel=&tags[i];
+			sel->setMainInterval(min(sel->getMainStart(),start),max(sel->getMainEnd(),end));
+		} else {
+			listForRemoval.append(i);
+			sel->names.append(tags[i].names);
+			sel->tree->mergeTrees(tags[i].tree);
+			sel->setMainInterval(min(sel->getMainStart(),tags[i].getMainStart()),max(sel->getMainEnd(),tags[i].getMainEnd()));
+			tags.removeAt(i);
+			i--;
+		}
+		i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
+	}
+	c.setPosition(start,QTextCursor::MoveAnchor);
+	c.setPosition(end,QTextCursor::KeepAnchor);
+	text->setTextCursor(c);
 	text->setTextBackgroundColor(Qt::darkYellow);
 	c.clearSelection();
 	text->setTextCursor(c);
-	if (end>start)
+	if (sel==NULL)
 		tags.append(Selection(string,start,end));
 	updateGraphDisplay();
 }
@@ -21,20 +41,44 @@ void BibleTaggerDialog::tagGenealogy_action() {
 void BibleTaggerDialog::unTagGenealogy_action() {
 	if (this==NULL)
 		return;
-	int i=findSelection(0);
-	while (i>=0) {
+	Selection::MainSelectionList listForRemoval;
+	int i=findSelection(0,SELECTION_OUTSIDE);
+	if (i>=0) {
+		while (i>=0) {
+			listForRemoval.append(Selection::MainSelection(tags[i].getMainStart(),tags[i].getMainEnd()));
+			tags.removeAt(i);
+			i--;
+			i=findSelection(i+1,SELECTION_OUTSIDE);
+		}
+	} else {
 		QTextCursor c=text->textCursor();
-		c.setPosition(tags[i].getMainStart(),QTextCursor::MoveAnchor);
-		c.setPosition(tags[i].getMainEnd(),QTextCursor::KeepAnchor);
+		int start=c.selectionStart();
+		int end=c.selectionEnd();
+		int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
+		if (i>=0) {
+			listForRemoval.append(Selection::MainSelection(start,end));
+		}
+		while (i>=0) {
+			if (tags[i].getMainStart()>=start) {
+				tags[i].setMainInterval(end,tags[i].getMainEnd());
+			} else {
+				tags[i].setMainInterval(tags[i].getMainStart(),end);
+			}
+			tags[i].removeExtraNames();
+			i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
+		}
+	}
+	QTextCursor c=text->textCursor();
+	for (int i=0;i<listForRemoval.size();i++) {
+		c.setPosition(listForRemoval[i].first,QTextCursor::MoveAnchor);
+		c.setPosition(listForRemoval[i].second,QTextCursor::KeepAnchor);
 		text->setTextCursor(c);
 		text->setTextBackgroundColor(Qt::white);
 		text->setTextColor(Qt::black);
-		c.clearSelection();
 		text->setTextCursor(c);
-		tags.removeAt(i);
-		i--;
-		i=findSelection(i+1);
 	}
+	c.clearSelection();
+	text->setTextCursor(c);
 	updateGraphDisplay();
 }
 
@@ -124,7 +168,7 @@ void BibleTaggerDialog::unTagName_action() {
 	if (this==NULL)
 		return;
 	QTextCursor c=text->textCursor();
-	int i=findSelection(0,true);
+	int i=findSelection(0,SELECTION_INSIDE);
 	Selection::MainSelectionList listForRemoval;
 	while (i>=0) { //while not useful
 		const Selection::MainSelectionList & names=tags[i].getNamesList();
@@ -135,7 +179,7 @@ void BibleTaggerDialog::unTagName_action() {
 			j--;
 			j=findSubSelection(i,j+1);
 		}
-		i=findSelection(i+1,true);
+		i=findSelection(i+1,SELECTION_INSIDE);
 	}
 	for (int i=0;i<listForRemoval.size();i++) {
 		c.setPosition(listForRemoval[i].first,QTextCursor::MoveAnchor);
@@ -159,7 +203,7 @@ void BibleTaggerDialog::tagName_action() {
 	int end=c.selectionEnd();
 	if (start==end)
 		return;
-	int i=findSelection(0,true);
+	int i=findSelection(0,SELECTION_INSIDE);
 	if (i>=0) {
 		int j=findSubSelection(0);
 		if (j<0) {
@@ -173,14 +217,14 @@ void BibleTaggerDialog::tagName_action() {
 }
 
 void BibleTaggerDialog::text_selectionChangedAction() {
-	int i=findSelection(0,true);
+	int i=findSelection(0,SELECTION_INSIDE);
 	if (selectedTagIndex==i)
 		return;
 	updateGraphDisplay();
 }
 
 void BibleTaggerDialog::updateGraphDisplay() {
-	int i=findSelection(0,true);
+	int i=findSelection(0,SELECTION_INSIDE);
 	if (i>=0) {
 		treeText->setText(tags[i].getText());
 		treeText->setReadOnly(false);
@@ -197,7 +241,7 @@ void BibleTaggerDialog::updateGraphDisplay() {
 }
 
 void BibleTaggerDialog::modifyGraph_action() {
-	int i=findSelection(0,true);
+	int i=findSelection(0,SELECTION_INSIDE);
 	assert(i>=0);
 	if (tags[i].updateGraph(treeText->toPlainText()))
 		tags[i].getTree()->displayTree(this);

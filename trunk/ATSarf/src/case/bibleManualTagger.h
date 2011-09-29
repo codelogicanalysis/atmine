@@ -27,6 +27,14 @@ using namespace std;
 class BibleTaggerDialog:public QMainWindow, public ATMProgressIFC{
 	Q_OBJECT
 public:
+	enum SelectionMode {SELECTION_OUTSIDE,SELECTION_INSIDE,SELECTION_OUTSIDEOVERLAP};
+	inline static bool isConsistentWithSelectionCondidtion(int start, int end, int tagStart,int tagEnd,SelectionMode selectionMode=SELECTION_OUTSIDE) {
+		bool con1= selectionMode==SELECTION_OUTSIDE && start<=tagStart && end>=tagEnd,
+			 con2= selectionMode==SELECTION_INSIDE && start>=tagStart && end<=tagEnd,
+			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>=tagStart) ||
+														(start<=tagEnd && end>=tagEnd));
+		return con1 || con2 || con3;
+	}
 	class Selection {
 		friend QDataStream &operator<<(QDataStream &out, const BibleTaggerDialog::Selection &t);
 		friend QDataStream &operator>>(QDataStream &in, BibleTaggerDialog::Selection &t);
@@ -57,6 +65,14 @@ public:
 			}
 			return -1;
 		}
+		void removeExtraNames() {
+			for (int i=0;i<names.size();i++) {
+				if (!isConsistentWithSelectionCondidtion(main.first,main.second,names[i].first,names[i].second,SELECTION_OUTSIDE)) {
+					removeNameAt(i);
+					i--;
+				}
+			}
+		}
 
 	public:
 		Selection():main(-1,-1) {
@@ -73,6 +89,9 @@ public:
 			if (names.size()>1) {
 				tree->getRoot()->addChild(new GeneNode(Name(text,start,end-1),NULL));
 			}
+		}
+		void addName( const Name & name) {
+			addName(name.getStart(),name.getEnd());
 		}
 		int getMainStart() { return main.first;}
 		int getMainEnd() {return main.second;}
@@ -93,6 +112,7 @@ public:
 					n->spouses.removeAt(0);
 				} else if (n->children.size()==1) {
 					tree->setRoot(n->children[0]);
+					n->children[0]->parent=NULL;
 					delete n;
 				} else {
 					tree->deleteTree();
@@ -128,7 +148,7 @@ public:
 					tree->deleteTree();
 					return false;
 				} else {
-					int diff=indentation-lastIndentation+1;
+					int diff=lastIndentation-indentation+1;
 					for (int i=0;i<diff;i++) {
 						if (lastNode==NULL) {
 							tree->deleteTree();
@@ -200,6 +220,17 @@ public:
 			tree->outputTree();
 			out.setString(out_text);
 			return s;
+		}
+		void setMainInterval(int start,int end) {
+			main.first=start;
+			main.second=end;
+		}
+		void setTree(GeneTree * tree) { //must not be used by tagger just by possibly the parser
+			this->tree=tree;
+		}
+		void clear() {
+			names.clear();
+			tree=NULL;
 		}
 	};
 	typedef QList<Selection> SelectionList;
@@ -291,22 +322,20 @@ private:
 	void open_action();
 	void text_selectionChangedAction();
 	void modifyGraph_action();
-	int findSelection(int startIndex=0, bool allInside=false) { //based on user text selection
+	int findSelection(int startIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
 		if (this==NULL)
 			return -1;
 		QTextCursor c=text->textCursor();
 		int start=c.selectionStart();
 		int end=c.selectionEnd();
 		for (int i=startIndex;i<tags.size();i++) {
-			bool con1= !allInside && start<=tags[i].getMainStart() && end>=tags[i].getMainEnd(),
-				 con2=  allInside && start>=tags[i].getMainStart() && end<=tags[i].getMainEnd();
-			if (con1 || con2) {
+			if (isConsistentWithSelectionCondidtion(start,end,tags[i].getMainStart(),tags[i].getMainEnd(),selectionMode)) {
 				return i;
 			}
 		}
 		return -1;
 	}
-	int findSubSelection(int tagIndex,int startSubIndex=0, bool allInside=false) { //based on user text selection
+	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
 		if (this==NULL)
 			return -1;
 		QTextCursor c=text->textCursor();
@@ -314,9 +343,7 @@ private:
 		int end=c.selectionEnd();
 		Selection::MainSelectionList names=tags[tagIndex].getNamesList();
 		for (int i=startSubIndex;i<names.size();i++) {
-			bool con1= !allInside && start<=names[i].first && end>=names[i].second,
-				 con2=  allInside && start>=names[i].first && end<=names[i].second;
-			if (con1 || con2) {
+			if (isConsistentWithSelectionCondidtion(start,end,names[i].first,names[i].second,selectionMode)) {
 				return i;
 			}
 		}
@@ -326,7 +353,7 @@ private:
 		QTextCursor c=text->textCursor();
 		int start=c.selectionStart();
 		int end=c.selectionEnd();
-		QChar chr=(c.selectedText()>0?c.selectedText().at(0):'\0');
+		QChar chr=(c.selectedText().length()>0?c.selectedText().at(0):'\0');
 		if (isDelimiter(chr)) {
 			while (isDelimiter(chr)) {
 				c.setPosition(++start,QTextCursor::MoveAnchor);
@@ -334,12 +361,18 @@ private:
 				chr=c.selectedText().at(0);
 			}
 		} else {
-			while (!isDelimiter(chr)) {
-				c.setPosition(--start,QTextCursor::MoveAnchor);
-				c.setPosition(end,QTextCursor::KeepAnchor);
-				chr=c.selectedText().at(0);
+			if (start>0) {
+				while (!isDelimiter(chr)) {
+					c.setPosition(--start,QTextCursor::MoveAnchor);
+					c.setPosition(end,QTextCursor::KeepAnchor);
+					if (start==0) {
+						start--;
+						break;
+					}
+					chr=c.selectedText().at(0);
+				}
+				start++;
 			}
-			start++;
 		}
 		chr=(c.selectedText()>0?c.selectedText().at(c.selectedText().length()-1):'\0');
 		if (isDelimiter(chr)) {
@@ -351,12 +384,18 @@ private:
 				chr=c.selectedText().at(c.selectedText().length()-1);
 			}
 		} else {
-			while (!isDelimiter(chr)) {
-				c.setPosition(start,QTextCursor::MoveAnchor);
-				c.setPosition(++end,QTextCursor::KeepAnchor);
-				chr=c.selectedText().at(c.selectedText().length()-1);
+			if (text->toPlainText().length()>end) {
+				while (!isDelimiter(chr)) {
+					c.setPosition(start,QTextCursor::MoveAnchor);
+					c.setPosition(++end,QTextCursor::KeepAnchor);
+					if (text->toPlainText().length()==end) {
+						end++;
+						break;
+					}
+					chr=c.selectedText().at(c.selectedText().length()-1);
+				}
+				end--;
 			}
-			end--;
 		}
 		c.setPosition(start,QTextCursor::MoveAnchor);
 		c.setPosition(end,QTextCursor::KeepAnchor);
@@ -371,17 +410,33 @@ private:
 			return;
 		QChar chr=c.selectedText().at(c.selectedText().length()-1);
 		assert (!isPunctuationMark(chr));
-		while (!isPunctuationMark(chr)) {
-			c.setPosition(start,QTextCursor::MoveAnchor);
-			c.setPosition(++end,QTextCursor::KeepAnchor);
-			chr=c.selectedText().at(c.selectedText().length()-1);
+		if (text->toPlainText().length()>end) {
+			while (!isPunctuationMark(chr)) {
+				c.setPosition(start,QTextCursor::MoveAnchor);
+				c.setPosition(++end,QTextCursor::KeepAnchor);
+				chr=c.selectedText().at(c.selectedText().length()-1);
+				if (text->toPlainText().length()==end) {
+					chr='\0';
+					break;
+				}
+			}
+		} else {
+			chr='\0';
 		}
 		chr=c.selectedText().at(0);
 		assert (!isPunctuationMark(chr));
-		while (!isPunctuationMark(chr)) {
-			c.setPosition(--start,QTextCursor::MoveAnchor);
-			c.setPosition(end,QTextCursor::KeepAnchor);
-			chr=c.selectedText().at(0);
+		if (start>0) {
+			while (!isPunctuationMark(chr)) {
+				c.setPosition(--start,QTextCursor::MoveAnchor);
+				c.setPosition(end,QTextCursor::KeepAnchor);
+				chr=c.selectedText().at(0);
+				if (start==0) {
+					chr=' ';
+					break;
+				}
+			}
+		} else {
+			chr=' ';
 		}
 		while (!isDelimiter(chr)) {
 			c.setPosition(++start,QTextCursor::MoveAnchor);
