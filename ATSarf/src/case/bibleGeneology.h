@@ -64,6 +64,7 @@ public:
 	}
 	long getStart() const{return start;}
 	long getLength() const{return end-start+1;}
+	long getEnd() const { return end;}
 	bool operator<(const Name & n) const {
 		return getString()<n.getString();
 	}
@@ -228,6 +229,11 @@ public:
 		} else
 			return n;
 	}
+	GeneNode * getParent() {
+		if (this==NULL)
+			return NULL;
+		return parent;
+	}
 	bool isLeaf() {
 		return children.size()==0;
 	}
@@ -307,6 +313,7 @@ public:
 	void mergeTrees(GeneTree * tree);
 	void mergeLeftovers();
 	void displayTree( ATMProgressIFC * prg);
+	GeneTree * duplicateTree();
 	~GeneTree();
 };
 class GeneVisitor {
@@ -335,105 +342,6 @@ public:
 		GeneNode * root=tree->getRoot();
 		visit(root);
 		finish();
-	}
-};
-class GeneDisplayVisitor: public GeneVisitor {
-protected:
-	QFile * file;
-	QTextStream * dot_out;
-	#define d_out (*dot_out)
-	QList<QStringList> ranksList;
-	QSet<long> set;
-
-	long getUniqueNodeID(const Name & n,bool isSpouse) {//if not there returns -1
-		long id=(long)&n;
-		if (!set.contains(id)) {
-			d_out<<QString("n%1 [label=\"%2\" %3]\n").arg(id).arg(n.getString()).arg((isSpouse?",style=filled, fillcolor=grey":""));
-		}
-		return id;
-	}
-	void setGraphRank(int rank, QString s)	{
-		while(rank>=ranksList.size())
-			ranksList.append(QStringList());
-		ranksList[rank].append(s);
-	}
-	QString getAndInitializeDotNode(const Name & n,bool isSpouse) {
-		long curr_id=getUniqueNodeID(n,isSpouse);
-		return QString("n%1").arg(curr_id);
-	}
-	virtual void initialize() {
-		ranksList.clear();
-		file=new QFile("graph.dot");
-		file->remove();
-		if (!file->open(QIODevice::ReadWrite)) {
-			out<<"Error openning file\n";
-			return;
-		}
-
-		dot_out=new QTextStream(file);
-		d_out.setCodec("utf-8");
-		d_out<<"digraph gene_graph {\n";
-	}
-	virtual void visit(const GeneNode * n1,const Name & n2, bool isSpouse)	{
-		QString s1=getAndInitializeDotNode(n1->name,false), s2=getAndInitializeDotNode(n2,isSpouse);
-		d_out<<s1<<"->"<<s2<<" ;\n";
-	}
-	virtual void visit(const GeneNode * n, int) {
-		getAndInitializeDotNode(n->name,false);
-	}
-	virtual void finish() {
-	#ifdef FORCE_RANKS
-		QString s;
-		int startingRank=(parameters.display_chain_num?0:1);
-		int currRank=startingRank,lastRank=startingRank;
-		if (ranksList.size()>0)
-		{
-			while (ranksList[currRank].size()==0)
-				currRank++;
-			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-			d_out<<"{ rank = source;";
-			foreach(s,ranksList[currRank])
-				d_out<<s<<";";
-			d_out<<QString("r%1;").arg(lastRank);
-			d_out<<"}\n";
-			lastRank++;
-		}
-
-		for (int rank=currRank+1;rank<ranksList.size()-1;rank++)
-		{
-			if (ranksList[rank].size()>0)
-			{
-				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-				d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
-				d_out<<"{ rank = same;";
-				foreach(s,ranksList[rank])
-					d_out<<s<<";";
-				d_out<<QString("r%1;").arg(lastRank);
-				d_out<<"}\n";
-				lastRank++;
-			}
-		}
-
-		int rank=ranksList.size()-1;
-		if (rank>startingRank)
-		{
-			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-			d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
-			d_out<<"{ rank = sink;";
-			foreach(s,ranksList[rank])
-				d_out<<s<<";";
-			d_out<<QString("r%1;").arg(lastRank);
-			d_out<<"}\n";
-		}
-	#endif
-		d_out<<"}\n";
-		delete dot_out;
-		file->close();
-		delete file;
-	}
-public:
-	GeneDisplayVisitor(){
-		initialize();
 	}
 };
 
@@ -501,6 +409,7 @@ inline QDataStream &operator>>(QDataStream &in, GeneTree &t) {
 	if (!isNull) {
 		t.root=new GeneNode();
 		in >>*t.root;
+		t.root->parent=NULL;
 	} else {
 		t.root=NULL;
 	}

@@ -20,6 +20,6 @@ int timeRecognize(QString input_str, ATMProgressIFC * prg);
 int biographyHelper(QString input_str,ATMProgressIFC *prg);
 int genealogy(QString input_str,ATMProgressIFC *prg);
 int biography(QString input_str,ATMProgressIFC *prg);
-int time_anotation(QString input_str,ATMProgressIFC *prg);
+int annotation(QString input_str,ATMProgressIFC *prg);
 
 #endif // TEST_H

@@ -21,6 +21,7 @@
 #include "textParsing.h"
 #include "common.h"
 #include "Retrieve_Template.h"
+#include "bibleManualTagger.h"
 
 
 enum WordType { NEW_NAME,CORE_NAME, LEAF_NAME, DC,ENDING_PUNC,PARA_PUNC,COLON_PUNC, OTHER};
@@ -640,6 +641,168 @@ public:
 		return (double)similarContextCount/totalCount;
 	}
 };
+class GeneDisplayVisitor: public GeneVisitor {
+protected:
+	QFile * file;
+	QTextStream * dot_out;
+	#define d_out (*dot_out)
+	QList<QStringList> ranksList;
+	QSet<long> set;
+
+	long getUniqueNodeID(const Name & n,bool isSpouse) {//if not there returns -1
+		long id=(long)&n;
+		if (!set.contains(id)) {
+			d_out<<QString("n%1 [label=\"%2\" %3]\n").arg(id).arg(n.getString()).arg((isSpouse?",style=filled, fillcolor=grey":""));
+		}
+		return id;
+	}
+	void setGraphRank(int rank, QString s)	{
+		while(rank>=ranksList.size())
+			ranksList.append(QStringList());
+		ranksList[rank].append(s);
+	}
+	QString getAndInitializeDotNode(const Name & n,bool isSpouse) {
+		long curr_id=getUniqueNodeID(n,isSpouse);
+		return QString("n%1").arg(curr_id);
+	}
+	virtual void initialize() {
+		ranksList.clear();
+		file=new QFile("graph.dot");
+		file->remove();
+		if (!file->open(QIODevice::ReadWrite)) {
+			out<<"Error openning file\n";
+			return;
+		}
+
+		dot_out=new QTextStream(file);
+		d_out.setCodec("utf-8");
+		d_out<<"digraph gene_graph {\n";
+	}
+	virtual void visit(const GeneNode * n1,const Name & n2, bool isSpouse)	{
+		QString s1=getAndInitializeDotNode(n1->name,false), s2=getAndInitializeDotNode(n2,isSpouse);
+		d_out<<s1<<"->"<<s2<<" ;\n";
+	}
+	virtual void visit(const GeneNode * n, int) {
+		getAndInitializeDotNode(n->name,false);
+	}
+	virtual void finish() {
+	#ifdef FORCE_RANKS
+		QString s;
+		int startingRank=(parameters.display_chain_num?0:1);
+		int currRank=startingRank,lastRank=startingRank;
+		if (ranksList.size()>0)
+		{
+			while (ranksList[currRank].size()==0)
+				currRank++;
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+			d_out<<"{ rank = source;";
+			foreach(s,ranksList[currRank])
+				d_out<<s<<";";
+			d_out<<QString("r%1;").arg(lastRank);
+			d_out<<"}\n";
+			lastRank++;
+		}
+
+		for (int rank=currRank+1;rank<ranksList.size()-1;rank++)
+		{
+			if (ranksList[rank].size()>0)
+			{
+				d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+				d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+				d_out<<"{ rank = same;";
+				foreach(s,ranksList[rank])
+					d_out<<s<<";";
+				d_out<<QString("r%1;").arg(lastRank);
+				d_out<<"}\n";
+				lastRank++;
+			}
+		}
+
+		int rank=ranksList.size()-1;
+		if (rank>startingRank)
+		{
+			d_out<<QString("r%1 [label=\"%1\"];\n").arg(lastRank);
+			d_out<<QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank-1);
+			d_out<<"{ rank = sink;";
+			foreach(s,ranksList[rank])
+				d_out<<s<<";";
+			d_out<<QString("r%1;").arg(lastRank);
+			d_out<<"}\n";
+		}
+	#endif
+		d_out<<"}\n";
+		delete dot_out;
+		file->close();
+		delete file;
+	}
+public:
+	GeneDisplayVisitor(){
+		initialize();
+	}
+};
+class DuplicateVisitor:public GeneVisitor {
+private:
+	GeneTree * tree;
+	GeneNode * lastNode;
+public:
+	DuplicateVisitor() {
+		tree=new GeneTree();
+		lastNode=NULL;
+	}
+	virtual void visit(const GeneNode * node,int) {
+		if (tree->getRoot()==NULL) {
+			assert(lastNode==NULL);
+			GeneNode * n=new GeneNode(node->name,NULL);
+			tree->setRoot(n);
+			lastNode=n;
+		} else {
+			lastNode=tree->findTreeNode(node->toString(),false);
+		}
+	}
+	virtual void visit(const GeneNode *, const Name & name2, bool isSpouse) {
+		if (isSpouse) {
+			lastNode->addSpouse(name2);
+		} else {
+			assert(lastNode!=NULL);
+			new GeneNode(name2,lastNode);
+		}
+	}
+	virtual void finish() {}
+	GeneTree * getDuplicateTree() { return tree;}
+};
+GeneTree* GeneTree::duplicateTree() {
+	DuplicateVisitor v;
+	v(this);
+	return v.getDuplicateTree();
+}
+void GeneTree::compareToStandardTree(GeneTree * standard) {
+	CompareVisitor v(standard);
+	v(this);
+	displayed_error	<<  "Found Nodes:\t\t"<< v.getFoundPercentage()*100<<"%\n"
+					<<"Similar Context:\t"<<v.getSimilarContextPercentage()*100<<"%\n";
+}
+void GeneTree::mergeTrees(GeneTree *tree) {
+	if (mergeVisitor==NULL)
+		mergeVisitor=new GeneTree::MergeVisitor(this);
+	(*mergeVisitor)(tree);
+}
+void GeneTree::mergeLeftovers() {
+	if (mergeVisitor!=NULL)
+		mergeVisitor->tryPerformingUnperformedNodes();
+}
+void GeneTree::displayTree( ATMProgressIFC * prg) {
+	if (this!=NULL) {
+		GeneDisplayVisitor * d=new GeneDisplayVisitor();
+		(*d)(this);
+		delete d;
+		prg->displayGraph();
+	}
+}
+GeneTree::~GeneTree() {
+	if (mergeVisitor!=NULL) {
+		delete mergeVisitor;
+	}
+}
 
 class GenealogySegmentor {
 private:
@@ -689,6 +852,9 @@ private:
 			initialize(NULL);
 		}
 	};
+	typedef BibleTaggerDialog::Selection OutputData;
+	typedef BibleTaggerDialog::SelectionList OutputDataList;
+	OutputDataList outputList;
 	class StateData {
 	public:
 		int i0;
@@ -697,11 +863,19 @@ private:
 		GeneNode * last;
 		QString lastName;
 		long startGene;
+		OutputData * outputData;
+	public:
 		StateData() {
+			outputData=NULL;
 			initialize();
 			globalTree=NULL;
 		}
 		void initialize() {
+			if (outputData==NULL) {
+				outputData=new OutputData;
+			} else {
+				outputData->clear();
+			}
 			i0=0;
 			last=NULL;
 			tree=NULL;
@@ -727,6 +901,7 @@ private:
 				ret_val= false;
 			} else {
 				currentData.tree->deleteTree();
+				currentData.outputData->clear();
 			}
 			currentData.last=NULL;
 			currentData.tree=NULL;
@@ -739,9 +914,10 @@ private:
 		display(QString("{keep? count %1}").arg(count));
 		bool keep=count<=geneologyParameters.C_max && count>1;
 		bool ret_val=checkIfDisplay(keep);
-		if (!keep)
+		if (!keep) {
+			currentData.outputData->clear();
 			stateInfo.nextState=TEXT_S;
-		else {
+		} else {
 			if (conditionToOutput()) {
 				outputAndTag();
 				currentData.last=NULL;
@@ -762,7 +938,12 @@ private:
 		if (currentData.tree->getTreeNodesCount()==0) {
 	#endif
 			DescentDirection dir=stateInfo.descentDirection;
-			ret_value=doParaCheck();
+			ret_value=doParaCheck(); //nameList is cleared here, if needed
+			if (currentData.outputData->getNamesList().size()>0) {
+				currentData.tree->deleteTree();
+				currentData.outputData->clear();
+			}
+			currentData.outputData->addName(name);
 			currentData.startGene=stateInfo.startPos;
 			currentData.last=new GeneNode(name,NULL);
 			currentData.tree=new GeneTree(currentData.last);
@@ -799,8 +980,12 @@ private:
 			break;
 		case SIBLING:
 			currentData.last->addSibling(new GeneNode(name,NULL));
-			break;
+			if (currentData.last->getParent()!=NULL)
+				currentData.outputData->addName(name);
+			return;
 		}
+		if (stateInfo.descentDirection!=UNDEFINED_DIRECTION && currentData.last!=NULL)
+			currentData.outputData->addName(name);
 	}
 	bool getNextState(bool addCounters=true) {
 		display(stateInfo.currentState);
@@ -826,6 +1011,7 @@ private:
 			case NEW_NAME:
 				currentData.initialize();
 				currentData.last=new GeneNode(name,NULL);
+				currentData.outputData->addName(name);
 				currentData.tree=new GeneTree(currentData.last);
 				currentData.startGene=stateInfo.startPos;
 				stateInfo.descentDirection=UNDEFINED_DIRECTION;
@@ -857,6 +1043,7 @@ private:
 					if (stateInfo.preceededByWaw) {
 						if (currentData.last!=NULL && currentData.last->parent==NULL) {
 							currentData.tree->deleteTree();
+							currentData.outputData->clear();
 							currentData.last=NULL;
 							currentData.tree=NULL;
 							stateInfo.nextState=TEXT_S;
@@ -877,6 +1064,7 @@ private:
 						} else {
 							if (currentData.tree==NULL)
 								currentData.tree=new GeneTree(currentData.last);
+
 							if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
 								addToTree(name);
 								currentData.last=currentData.tree->findTreeNode(name.getString(),true);
@@ -1138,12 +1326,117 @@ private:
 		if (currentData.globalTree==NULL) {
 			currentData.globalTree=currentData.tree;
 			currentData.tree->outputTree();
+			GeneTree * duplicate=currentData.tree->duplicateTree();
+			currentData.outputData->setTree(duplicate);
 		}else {
 			currentData.globalTree->mergeTrees(currentData.tree);
 
 			currentData.tree->outputTree();
-			currentData.tree->deleteTree();
+			currentData.outputData->setTree(currentData.tree);
 		}
+		currentData.outputData->setMainInterval(currentData.startGene,stateInfo.endPos);
+		outputList.append(*currentData.outputData);
+		currentData.outputData->clear();
+	}
+	int calculateStatisticsOrAnotate() {
+		OutputDataList tags;
+		QList<int> common_i,common_j;
+		QVector<double> boundaryRecallList, boundaryPrecisionList;
+		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
+		if (file.open(QIODevice::ReadOnly))	{
+			QDataStream out(&file);   // we will serialize the data into the file
+			out	>> tags;
+			file.close();
+		} else {
+			error << "Annotation File does not exist\n";
+			if (file.open(QIODevice::WriteOnly)) {
+				/*for (int i=0;i<timeVector->size();i++) {
+					tags.append(TimeTaggerDialog::Selection(timeVector->));
+				}*/
+				QDataStream out(&file);   // we will serialize the data into the file
+				out << outputList;
+				file.close();
+				error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
+			}
+			return -1;
+		}
+		/*qSort(tags.begin(),tags.end());
+		int i=0,j=0;
+
+		while (i<tags.size() && j<timeVector->size()) {
+			int start1=tags[i].first,end1=tags[i].second-1,
+				start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+			if (overLaps(start1,end1,start2,end2)) {
+				TimeTaggerDialog::Selection overlap=overLappingPart(start1,end1,start2,end2);
+				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
+					common_i.append(i);
+					common_j.append(j);
+				}
+				int countCommon=countWords(time_text,overlap.first,overlap.second);
+				int countCorrect=countWords(time_text,start1,end1);
+				int countDetected=countWords(time_text,start2,end2);
+				boundaryRecallList.append((double)countCommon/countCorrect);
+				boundaryPrecisionList.append((double)countCommon/countDetected);
+			#ifdef DETAILED_DISPLAY
+				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+								<<time_text->mid(start2,end2-start2+1)<<"\t"
+								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
+			#endif
+				if (end1<=end2)
+					i++;
+				if (end2<=end1)
+					j++;
+			} else if (before(start1,end1,start2,end2)) {
+			#ifdef DETAILED_DISPLAY
+				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+								<<"-----\n";
+			#endif
+				i++;
+			} else if (after(start1,end1,start2,end2)) {
+			#ifdef DETAILED_DISPLAY
+				displayed_error	<<"-----\t"
+								<<time_text->mid(start2,end2-start2+1)<<"\n";
+			#endif
+				j++;
+			}
+		}
+	#ifdef DETAILED_DISPLAY
+		while (i<tags.size()) {
+			int start1=tags[i].first,end1=tags[i].second-1;
+			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+							<<"-----\n";
+			i++;
+		}
+		while (j<timeVector->size()) {
+			int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+			displayed_error	<<"-----\t"
+							<<time_text->mid(start2,end2-start2+1)<<"\n";
+			j++;
+		}
+	#endif
+		assert(common_i.size()==common_j.size());
+		int commonCount=common_i.size();
+		double detectionRecall=(double)commonCount/tags.size(),
+			   detectionPrecision=(double)commonCount/timeVector->size(),
+			   boundaryRecall=average(boundaryRecallList),
+			   boundaryPrecision=average(boundaryPrecisionList);
+	#ifdef DETAILED_DISPLAY
+		displayed_error << "-------------------------\n"
+						<< "Detection:\n"
+						<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
+						<< "\tprecision=\t"<<commonCount<<"/"<<timeVector->size()<<"=\t"<<detectionPrecision<<"\n"
+						<< "Boundary:\n"
+						<< "\trecall=\t\t"<<boundaryRecall<<"\n"
+						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n";
+	#else
+		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision<<"\t"<<boundaryRecall<<"\t"<<boundaryPrecision<<"\n";
+	#endif
+	#if 0
+		for (int i=0;i<tags.size();i++) {
+			displayed_error<<time_text->mid(tags[i].first,tags[i].second-tags[i].first)<<"\n";
+		}
+	#endif*/
+		return 0;
 	}
 	int segmentHelper(QString * text,ATMProgressIFC *prg) {
 		this->prg=prg;
@@ -1172,6 +1465,9 @@ private:
 			if (!checkIfDisplay())
 				geneCounter++;
 		}
+		if (currentData.outputData!=NULL)
+			delete currentData.outputData;
+		calculateStatisticsOrAnotate();
 		prg->report(100);
 		prg->finishTaggingText();
 		currentData.globalTree->displayTree(prg);
@@ -1206,35 +1502,6 @@ public:
 		return segmentHelper(text,prg);
 	}
 };
-
-void GeneTree::compareToStandardTree(GeneTree * standard) {
-	CompareVisitor v(standard);
-	v(this);
-	displayed_error	<<  "Found Nodes:\t\t"<< v.getFoundPercentage()*100<<"%\n"
-					<<"Similar Context:\t"<<v.getSimilarContextPercentage()*100<<"%\n";
-}
-void GeneTree::mergeTrees(GeneTree *tree) {
-	if (mergeVisitor==NULL)
-		mergeVisitor=new GeneTree::MergeVisitor(this);
-	(*mergeVisitor)(tree);
-}
-void GeneTree::mergeLeftovers() {
-	if (mergeVisitor!=NULL)
-		mergeVisitor->tryPerformingUnperformedNodes();
-}
-void GeneTree::displayTree( ATMProgressIFC * prg) {
-	if (this!=NULL) {
-		GeneDisplayVisitor * d=new GeneDisplayVisitor();
-		(*d)(this);
-		delete d;
-		prg->displayGraph();
-	}
-}
-GeneTree::~GeneTree() {
-	if (mergeVisitor!=NULL) {
-		delete mergeVisitor;
-	}
-}
 
 int genealogyHelper(QString input_str,ATMProgressIFC *prgs){
 	input_str=input_str.split("\n")[0];
