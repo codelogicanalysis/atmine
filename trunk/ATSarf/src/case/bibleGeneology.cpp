@@ -10,10 +10,6 @@
 #include "Math_functions.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include <assert.h>
-
-
 #include "stemmer.h"
 #include "letters.h"
 #include "diacritics.h"
@@ -23,6 +19,7 @@
 #include "Retrieve_Template.h"
 #include "bibleManualTagger.h"
 
+#define DETAILED_DISPLAY
 
 enum WordType { NEW_NAME,CORE_NAME, LEAF_NAME, DC,ENDING_PUNC,PARA_PUNC,COLON_PUNC, OTHER};
 enum DescentDirection {SPOUSE, SON, FATHER, SIBLING,UNDEFINED_DIRECTION};
@@ -634,11 +631,11 @@ public:
 	}
 	virtual void visit(const GeneNode *, const Name & , bool ){	}
 	virtual void finish() {	}
-	double getFoundPercentage() {
-		return (double)foundCount/totalCount;
+	double getFoundPercentage() { //TODO: make sure we are dividing by the correct number
+		return (double)foundCount/ /*totalCount*/standard->getTreeNodesCount();
 	}
 	double getSimilarContextPercentage() {
-		return (double)similarContextCount/totalCount;
+		return (double)similarContextCount/ /*totalCount*/standard->getTreeNodesCount();
 	}
 };
 class GeneDisplayVisitor: public GeneVisitor {
@@ -743,23 +740,18 @@ public:
 class DuplicateVisitor:public GeneVisitor {
 private:
 	GeneTree * tree;
-	GeneNode * lastNode;
 public:
 	DuplicateVisitor() {
 		tree=new GeneTree();
-		lastNode=NULL;
 	}
 	virtual void visit(const GeneNode * node,int) {
 		if (tree->getRoot()==NULL) {
-			assert(lastNode==NULL);
 			GeneNode * n=new GeneNode(node->name,NULL);
 			tree->setRoot(n);
-			lastNode=n;
-		} else {
-			lastNode=tree->findTreeNode(node->toString(),false);
 		}
 	}
-	virtual void visit(const GeneNode *, const Name & name2, bool isSpouse) {
+	virtual void visit(const GeneNode * node, const Name & name2, bool isSpouse) {
+		GeneNode * lastNode = tree->findTreeNode(node->toString(),false);
 		if (isSpouse) {
 			lastNode->addSpouse(name2);
 		} else {
@@ -775,11 +767,11 @@ GeneTree* GeneTree::duplicateTree() {
 	v(this);
 	return v.getDuplicateTree();
 }
-void GeneTree::compareToStandardTree(GeneTree * standard) {
+void GeneTree::compareToStandardTree(GeneTree * standard,double & found,double & similarContext) {
 	CompareVisitor v(standard);
 	v(this);
-	displayed_error	<<  "Found Nodes:\t\t"<< v.getFoundPercentage()*100<<"%\n"
-					<<"Similar Context:\t"<<v.getSimilarContextPercentage()*100<<"%\n";
+	found=v.getFoundPercentage();
+	similarContext=v.getSimilarContextPercentage();
 }
 void GeneTree::mergeTrees(GeneTree *tree) {
 	if (mergeVisitor==NULL)
@@ -854,6 +846,8 @@ private:
 	};
 	typedef BibleTaggerDialog::Selection OutputData;
 	typedef BibleTaggerDialog::SelectionList OutputDataList;
+	typedef BibleTaggerDialog::Selection::MainSelection Selection;
+	typedef BibleTaggerDialog::Selection::MainSelectionList SelectionList;
 	OutputDataList outputList;
 	class StateData {
 	public:
@@ -1338,7 +1332,35 @@ private:
 		outputList.append(*currentData.outputData);
 		currentData.outputData->clear();
 	}
+	inline bool overLaps(int start1,int end1,int start2,int end2) {
+		assert(start1<=end1 && start2<=end2);
+		if (start1>=start2 && start1<=end2)
+			return true;
+		if (start2>=start1 && start2<=end1)
+			return true;
+		return false;
+	}
+	inline bool after(int start1,int end1,int start2,int end2) {
+		assert(start1<=end1 && start2<=end2);
+		if (start1>=end2)
+			return true;
+		return false;
+	}
+	inline bool before(int start1,int end1,int start2,int end2) {
+		return after(start2,end2,start1,end1);
+	}
+	inline int commonNames(const SelectionList & list1, const SelectionList & list2) {
+		SelectionList l;
+		int uniqueNames= BibleTaggerDialog::Selection::mergeNames(text,list1,list2,l);
+		return list1.size()+list2.size()-uniqueNames;
+	}
 	int calculateStatisticsOrAnotate() {
+	#define MERGE_GLOBAL_TREE	if (globalTree==NULL) { \
+									globalTree=tags[i].getTree()->duplicateTree(); \
+								} else { \
+									globalTree->mergeTrees(tags[i].getTree()); \
+								}
+
 		OutputDataList tags;
 		QList<int> common_i,common_j;
 		QVector<double> boundaryRecallList, boundaryPrecisionList;
@@ -1360,83 +1382,109 @@ private:
 			}
 			return -1;
 		}
-		/*qSort(tags.begin(),tags.end());
+		qSort(tags.begin(),tags.end());
+		for (int i=0;i<tags.size();i++) {
+			tags[i].setText(text);
+			FillTextVisitor v(text);
+			v(tags[i].getTree());
+		}
 		int i=0,j=0;
-
-		while (i<tags.size() && j<timeVector->size()) {
-			int start1=tags[i].first,end1=tags[i].second-1,
-				start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+		GeneTree * globalTree=NULL;
+		while (i<tags.size() && j<outputList.size()) {
+			int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd(),
+				start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
 			if (overLaps(start1,end1,start2,end2)) {
-				TimeTaggerDialog::Selection overlap=overLappingPart(start1,end1,start2,end2);
 				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
 					common_i.append(i);
 					common_j.append(j);
 				}
-				int countCommon=countWords(time_text,overlap.first,overlap.second);
-				int countCorrect=countWords(time_text,start1,end1);
-				int countDetected=countWords(time_text,start2,end2);
+				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList());
+				int countCorrect=tags[i].getNamesList().size();
+				int countDetected=outputList[j].getNamesList().size();
 				boundaryRecallList.append((double)countCommon/countCorrect);
 				boundaryPrecisionList.append((double)countCommon/countDetected);
+				double graphFound, graphSimilarContext;
+				outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),graphFound, graphSimilarContext);
 			#ifdef DETAILED_DISPLAY
-				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
-								<<time_text->mid(start2,end2-start2+1)<<"\t"
+				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
 								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
+				displayed_error	<<"\tGraph:\t"<<graphFound<<"\t"<<graphSimilarContext<<"\n";
 			#endif
-				if (end1<=end2)
+				if (end1<=end2) {
+					MERGE_GLOBAL_TREE
 					i++;
+				}
 				if (end2<=end1)
 					j++;
 			} else if (before(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
-				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+				displayed_error	<<text->mid(start1,end1-start1+1)<<"\t"
 								<<"-----\n";
 			#endif
+				MERGE_GLOBAL_TREE
 				i++;
 			} else if (after(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<<"-----\t"
-								<<time_text->mid(start2,end2-start2+1)<<"\n";
+								<<text->mid(start2,end2-start2+1)<<"\n";
 			#endif
 				j++;
 			}
 		}
 	#ifdef DETAILED_DISPLAY
 		while (i<tags.size()) {
-			int start1=tags[i].first,end1=tags[i].second-1;
-			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
+			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<<"-----\n";
+			MERGE_GLOBAL_TREE
 			i++;
 		}
-		while (j<timeVector->size()) {
-			int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+		while (j<outputList.size()) {
+			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
 			displayed_error	<<"-----\t"
-							<<time_text->mid(start2,end2-start2+1)<<"\n";
+							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			j++;
 		}
 	#endif
 		assert(common_i.size()==common_j.size());
 		int commonCount=common_i.size();
 		double detectionRecall=(double)commonCount/tags.size(),
-			   detectionPrecision=(double)commonCount/timeVector->size(),
+			   detectionPrecision=(double)commonCount/outputList.size(),
 			   boundaryRecall=average(boundaryRecallList),
 			   boundaryPrecision=average(boundaryPrecisionList);
+		double graphFound, graphSimilarContext;
+		currentData.globalTree->compareToStandardTree(globalTree,graphFound, graphSimilarContext);
+		globalTree->displayTree(prg);
+		currentData.globalTree->deleteTree();
+		globalTree->deleteTree();
 	#ifdef DETAILED_DISPLAY
 		displayed_error << "-------------------------\n"
 						<< "Detection:\n"
 						<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
-						<< "\tprecision=\t"<<commonCount<<"/"<<timeVector->size()<<"=\t"<<detectionPrecision<<"\n"
+						<< "\tprecision=\t"<<commonCount<<"/"<<outputList.size()<<"=\t"<<detectionPrecision<<"\n"
 						<< "Boundary:\n"
 						<< "\trecall=\t\t"<<boundaryRecall<<"\n"
-						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n";
+						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n"
+						<< "Global Graph:\n"
+						<< "\tfound=\t\t"<<graphFound<<"\n"
+						<< "\tsimilar-context=\t"<<graphSimilarContext<<"\n";
 	#else
-		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision<<"\t"<<boundaryRecall<<"\t"<<boundaryPrecision<<"\n";
+		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
+									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
+									<<"\t"<<graphFound     <<"\t"<<graphSimilarContext<<"\n";
 	#endif
 	#if 0
 		for (int i=0;i<tags.size();i++) {
-			displayed_error<<time_text->mid(tags[i].first,tags[i].second-tags[i].first)<<"\n";
+			displayed_error<<text->mid(tags[i].getMainStart(),tags[i].getMainEnd()-tags[i].getMainStart())<<"\n";
 		}
-	#endif*/
+	#endif
+		for (int i=0;i<tags.size();i++)
+			tags[i].getTree()->deleteTree();
+		for (int i=0;i<outputList.size();i++)
+			outputList[i].getTree()->deleteTree();
 		return 0;
+	#undef MERGE_GLOBAL_TREE
 	}
 	int segmentHelper(QString * text,ATMProgressIFC *prg) {
 		this->prg=prg;
@@ -1467,12 +1515,10 @@ private:
 		}
 		if (currentData.outputData!=NULL)
 			delete currentData.outputData;
-		calculateStatisticsOrAnotate();
 		prg->report(100);
 		prg->finishTaggingText();
 		currentData.globalTree->displayTree(prg);
-		currentData.globalTree->compareToStandardTree(currentData.globalTree);
-		currentData.globalTree->deleteTree();
+		calculateStatisticsOrAnotate();
 		return 0;
 	}
 

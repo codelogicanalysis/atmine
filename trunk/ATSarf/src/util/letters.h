@@ -95,5 +95,6 @@ inline bool isNonConnectingLetter(const QChar & letter) { return nonconnectingLe
 
 inline bool isNumber(const QChar & letter) { return letter<='9' && letter >='0';}
 
+inline bool isDelimiterOrNumber(const QChar & letter) { return isNumber(letter) || isDelimiter(letter);}
 #endif	/* _LETTERS_H */
 
