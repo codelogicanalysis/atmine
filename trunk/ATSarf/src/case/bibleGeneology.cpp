@@ -391,7 +391,7 @@ private:
 	typedef QPair<Name,Name> Edge;
 	typedef QMap<Edge,bool> EdgeMap;
 private:
-	GeneTree * mainTree;
+	GeneTree * mainTree, * mergedTree;
 	GeneNode * topMostNode;
 	EdgeMap unPerformedEdges;
 	void addUnPerformedEdge(const Name & n1,const Name & n2, bool isSpouse=false) {
@@ -498,8 +498,10 @@ private:
 				}
 			} else {
 				if (n1==NULL) {
-					if (notFoundWithinRadius(n2,name1))
+					if (notFoundWithinRadius(n2,name1)) {
 						n2->addParent(new GeneNode((Name & )name1,NULL));
+						mergedTree->updateRoot();
+					}
 				} else if (n2==NULL) {
 					if (notFoundWithinRadius(n1,name2))
 						n1->addChild(new GeneNode((Name & )name2,NULL));
@@ -518,9 +520,11 @@ public:
 	MergeVisitor(GeneTree * tree2){
 		this->mainTree=tree2;
 		topMostNode=NULL;
+		mergedTree=NULL;
 	}
 	void operator ()(GeneTree * tree) {
 		topMostNode=find(tree->root->name);
+		mergedTree=tree;
 		GeneVisitor::operator ()(tree);
 	}
 
@@ -611,15 +615,18 @@ class CompareVisitor: public GeneVisitor {
 private:
 	QSet<GeneNode*> visitedNodes;
 	GeneTree * standard;
-	int foundCount, similarContextCount,totalCount;
+	int foundCount, similarContextCount,totalCount, countOfThisTree;
 public:
 	CompareVisitor(GeneTree * standard) {
 		foundCount=0;
 		similarContextCount=0;
 		totalCount=0;
 		this->standard=standard;
+		standard->updateRoot();
 	}
 	virtual void visit(const GeneNode * node, int ) {
+		if (node->parent==NULL)
+			countOfThisTree=node->getSubTreeCount();
 		FindAllVisitor v(node,visitedNodes);
 		v(standard);
 		if (v.isFound()) {
@@ -635,6 +642,7 @@ public:
 		return (double)foundCount/ /*totalCount*/standard->getTreeNodesCount();
 	}
 	double getSimilarContextPercentage() {
+		assert(totalCount==countOfThisTree);
 		return (double)similarContextCount/ /*totalCount*/standard->getTreeNodesCount();
 	}
 };
