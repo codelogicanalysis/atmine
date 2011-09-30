@@ -341,7 +341,7 @@ public:
 	virtual void finish()=0;
 	void operator ()(GeneTree * tree) {
 		GeneNode * root=tree->getRoot();
-		tree->updateRoot();
+		//tree->updateRoot();
 		visit(root);
 		finish();
 	}

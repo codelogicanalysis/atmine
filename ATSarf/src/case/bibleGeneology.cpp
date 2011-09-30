@@ -391,7 +391,7 @@ private:
 	typedef QPair<Name,Name> Edge;
 	typedef QMap<Edge,bool> EdgeMap;
 private:
-	GeneTree * mainTree, * mergedTree;
+	GeneTree * mainTree;
 	GeneNode * topMostNode;
 	EdgeMap unPerformedEdges;
 	void addUnPerformedEdge(const Name & n1,const Name & n2, bool isSpouse=false) {
@@ -500,7 +500,7 @@ private:
 				if (n1==NULL) {
 					if (notFoundWithinRadius(n2,name1)) {
 						n2->addParent(new GeneNode((Name & )name1,NULL));
-						mergedTree->updateRoot();
+						mainTree->updateRoot();
 					}
 				} else if (n2==NULL) {
 					if (notFoundWithinRadius(n1,name2))
@@ -513,18 +513,15 @@ private:
 				}
 			}
 		}
-
 	}
 
 public:
 	MergeVisitor(GeneTree * tree2){
 		this->mainTree=tree2;
 		topMostNode=NULL;
-		mergedTree=NULL;
 	}
 	void operator ()(GeneTree * tree) {
 		topMostNode=find(tree->root->name);
-		mergedTree=tree;
 		GeneVisitor::operator ()(tree);
 	}
 
@@ -622,7 +619,7 @@ public:
 		similarContextCount=0;
 		totalCount=0;
 		this->standard=standard;
-		standard->updateRoot();
+		//standard->updateRoot();
 	}
 	virtual void visit(const GeneNode * node, int ) {
 		if (node->parent==NULL)
