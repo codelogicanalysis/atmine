@@ -5,9 +5,17 @@
 #include <QtAlgorithms>
 #include <math.h>
 
+
 template<class T>
-double average(QVector<T> & list)
-{
+double sum(QVector<T> & list) {
+	double sum=0;
+	for (int i=0;i<list.size();i++)
+		sum+=list[i];
+	return sum;
+}
+
+template<class T>
+double average(QVector<T> & list) {
 	double avg=0;
 	for (int i=0;i<list.size();i++)
 		avg+=list[i];
@@ -16,15 +24,13 @@ double average(QVector<T> & list)
 }
 
 template<class T>
-int median(QVector<T> & list)
-{
+int median(QVector<T> & list) {
 	qSort(list.begin(),list.end());
 	return list[list.size()/2];
 }
 
 template<class T>
-double standard_deviation(QVector<T> & list, double average)//must be optimized
-{
+double standard_deviation(QVector<T> & list, double average) {//must be optimized
 	double dev=0;
 	for (int i=0;i<list.size();i++)
 		dev+=pow(list[i]-average,2);
