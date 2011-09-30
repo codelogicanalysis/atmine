@@ -115,6 +115,7 @@ public:
 					n->children[0]->parent=NULL;
 					for (int i=1;i<n->children.size();i++)
 						n->children[0]->addChild(n->children[i]);
+					n->children[0]->parent=NULL;
 					delete n;
 				} else {
 					tree->deleteTree();

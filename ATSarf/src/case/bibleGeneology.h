@@ -91,18 +91,6 @@ private:
 		}
 		delete this;
 	}
-	int getSubTreeCount(bool countSpouses=false) {
-		if (this==NULL)
-			return 0;
-		int count=1;
-		for (int i=0;i<children.size();i++) {
-			count+=children[i]->getSubTreeCount(countSpouses);
-		}
-		if (countSpouses) {
-			count+=spouses.size();
-		}
-		return count;
-	}
 	GeneNode * getNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
 		if (this==NULL)
 			return NULL;
@@ -237,6 +225,19 @@ public:
 	bool isLeaf() {
 		return children.size()==0;
 	}
+	int getSubTreeCount(bool countSpouses=false) const {
+		if (this==NULL)
+			return 0;
+		int count=1;
+		for (int i=0;i<children.size();i++) {
+			count+=children[i]->getSubTreeCount(countSpouses);
+		}
+		if (countSpouses) {
+			count+=spouses.size();
+		}
+		return count;
+	}
+
 	QString toString() const {
 		if (this==NULL)
 			return "NULL";
@@ -340,6 +341,7 @@ public:
 	virtual void finish()=0;
 	void operator ()(GeneTree * tree) {
 		GeneNode * root=tree->getRoot();
+		tree->updateRoot();
 		visit(root);
 		finish();
 	}
