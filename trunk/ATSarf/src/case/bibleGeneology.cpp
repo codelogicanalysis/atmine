@@ -1368,7 +1368,8 @@ private:
 
 		OutputDataList tags;
 		QList<int> common_i,common_j;
-		QVector<double> boundaryRecallList, boundaryPrecisionList;
+		QVector<double> boundaryRecallList, boundaryPrecisionList, graphFoundList,graphSimilarList;
+		int tagOverlapCount=0;
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream out(&file);   // we will serialize the data into the file
@@ -1402,6 +1403,8 @@ private:
 				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
 					common_i.append(i);
 					common_j.append(j);
+				} else {
+					tagOverlapCount++;
 				}
 				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList());
 				int countCorrect=tags[i].getNamesList().size();
@@ -1410,6 +1413,8 @@ private:
 				boundaryPrecisionList.append((double)countCommon/countDetected);
 				double graphFound, graphSimilarContext;
 				outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),graphFound, graphSimilarContext);
+				graphFoundList.append(graphFound);
+				graphSimilarList.append(graphSimilarContext);
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
@@ -1456,10 +1461,12 @@ private:
 		int commonCount=common_i.size();
 		double detectionRecall=(double)commonCount/tags.size(),
 			   detectionPrecision=(double)commonCount/outputList.size(),
-			   boundaryRecall=average(boundaryRecallList),
-			   boundaryPrecision=average(boundaryPrecisionList);
-		double graphFound, graphSimilarContext;
-		currentData.globalTree->compareToStandardTree(globalTree,graphFound, graphSimilarContext);
+			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount, //solve issue of possible double counting of names that appear in more than 2 sections representing one tag by adding visited bit
+			   boundaryPrecision=average(boundaryPrecisionList),
+			   graphFound=sum(graphFoundList)/tagOverlapCount,
+			   graphSimilar=sum(graphSimilarList)/tagOverlapCount; //solve issue of possible double counting of names that appear in more than 2 sections representing one tag by adding visited bit
+		double globalGraphFound, globalGraphSimilarContext;
+		currentData.globalTree->compareToStandardTree(globalTree,globalGraphFound, globalGraphSimilarContext);
 		globalTree->displayTree(prg);
 		currentData.globalTree->deleteTree();
 		globalTree->deleteTree();
@@ -1471,9 +1478,12 @@ private:
 						<< "Boundary:\n"
 						<< "\trecall=\t\t"<<boundaryRecall<<"\n"
 						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n"
-						<< "Global Graph:\n"
+						<< "Local Graphs:\n"
 						<< "\tfound=\t\t"<<graphFound<<"\n"
-						<< "\tsimilar-context=\t"<<graphSimilarContext<<"\n";
+						<< "\tsimilar-context=\t"<<graphSimilar<<"\n"
+						<< "Global Graph:\n"
+						<< "\tfound=\t\t"<<globalGraphFound<<"\n"
+						<< "\tsimilar-context=\t"<<globalGraphSimilarContext<<"\n";
 	#else
 		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
 									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
