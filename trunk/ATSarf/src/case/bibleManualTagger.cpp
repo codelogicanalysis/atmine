@@ -44,7 +44,7 @@ void BibleTaggerDialog::tagGenealogy_action() {
 		start=sel->getMainStart();
 		end=sel->getMainEnd();
 	} else {
-		sel->setMainInterval(min(sel->getMainStart(),start),max(sel->getMainEnd(),end));
+		sel->setMainInterval(min(sel->getMainStart(),start),max(sel->getMainEnd(),end-1));
 	}
 	c.setPosition(start,QTextCursor::MoveAnchor);
 	c.setPosition(end,QTextCursor::KeepAnchor);
@@ -73,13 +73,13 @@ void BibleTaggerDialog::unTagGenealogy_action() {
 		int end=c.selectionEnd();
 		int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
 		if (i>=0) {
-			listForRemoval.append(Selection::MainSelection(start,end));
+			listForRemoval.append(Selection::MainSelection(start,end-1));
 		}
 		while (i>=0) {
 			if (tags[i].getMainStart()>=start) {
 				tags[i].setMainInterval(end,tags[i].getMainEnd());
 			} else {
-				tags[i].setMainInterval(tags[i].getMainStart(),start);
+				tags[i].setMainInterval(tags[i].getMainStart(),start-1);
 			}
 			if (tags[i].getMainStart()==tags[i].getMainEnd()) {
 				tags.removeAt(i);
@@ -92,7 +92,7 @@ void BibleTaggerDialog::unTagGenealogy_action() {
 	QTextCursor c=text->textCursor();
 	for (int i=0;i<listForRemoval.size();i++) {
 		c.setPosition(listForRemoval[i].first,QTextCursor::MoveAnchor);
-		c.setPosition(listForRemoval[i].second,QTextCursor::KeepAnchor);
+		c.setPosition(listForRemoval[i].second+1,QTextCursor::KeepAnchor);
 		text->setTextCursor(c);
 		text->setTextBackgroundColor(Qt::white);
 		text->setTextColor(Qt::black);
@@ -145,7 +145,7 @@ void BibleTaggerDialog::open_action() {
 				int start=tags[i].getMainStart();
 				int end=tags[i].getMainEnd();
 				c.setPosition(start,QTextCursor::MoveAnchor);
-				c.setPosition(end,QTextCursor::KeepAnchor);
+				c.setPosition(end+1,QTextCursor::KeepAnchor);
 				text->setTextCursor(c);
 				text->setTextBackgroundColor(Qt::darkYellow);
 				const Selection::MainSelectionList & names=tags[i].getNamesList();
@@ -153,7 +153,7 @@ void BibleTaggerDialog::open_action() {
 					int start=names[i].first;
 					int end=names[i].second;
 					c.setPosition(start,QTextCursor::MoveAnchor);
-					c.setPosition(end,QTextCursor::KeepAnchor);
+					c.setPosition(end+1,QTextCursor::KeepAnchor);
 					text->setTextCursor(c);
 					text->setTextColor(Qt::white);
 				}
@@ -189,7 +189,7 @@ void BibleTaggerDialog::unTagName_action() {
 	}
 	for (int i=0;i<listForRemoval.size();i++) {
 		c.setPosition(listForRemoval[i].first,QTextCursor::MoveAnchor);
-		c.setPosition(listForRemoval[i].second,QTextCursor::KeepAnchor);
+		c.setPosition(listForRemoval[i].second+1,QTextCursor::KeepAnchor);
 		text->setTextCursor(c);
 		text->setTextColor(Qt::black);
 		text->setTextCursor(c);
@@ -213,7 +213,7 @@ void BibleTaggerDialog::tagName_action() {
 	if (i>=0) {
 		int j=findSubSelection(0);
 		if (j<0) {
-			tags[i].addName(start,end);
+			tags[i].addName(start,end-1);
 			text->setTextColor(Qt::white);
 			c.clearSelection();
 			text->setTextCursor(c);

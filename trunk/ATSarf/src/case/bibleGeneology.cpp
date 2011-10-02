@@ -521,8 +521,10 @@ public:
 		topMostNode=NULL;
 	}
 	void operator ()(GeneTree * tree) {
-		topMostNode=find(tree->root->name);
-		GeneVisitor::operator ()(tree);
+		if (tree->getRoot()!=NULL) {
+			topMostNode=find(tree->getRoot()->name);
+			GeneVisitor::operator ()(tree);
+		}
 	}
 
 	virtual void visit(const GeneNode * , int ){	}
@@ -595,8 +597,10 @@ public:
 	}
 	virtual void finish() {
 		finalizeMatch();
-		assert(!visited.contains(bestMatch));
-		visited.insert(bestMatch);
+		if (bestMatch!=NULL) {
+			assert(!visited.contains(bestMatch));
+			visited.insert(bestMatch);
+		}
 	}
 	bool isFound() {
 		return bestMatch!=NULL;
@@ -890,7 +894,7 @@ private:
 
 	inline bool conditionToOutput() {
 		return currentData.tree->getTreeLevels()>=geneologyParameters.N_min ||
-				currentData.tree->getTreeNodesCount()>=geneologyParameters.C_max;
+				currentData.tree->getTreeNodesCount(true)>=geneologyParameters.C_max;
 	}
 	inline bool checkIfDisplay(bool keep=false) {
 		bool ret_val=true;
@@ -909,7 +913,7 @@ private:
 		return ret_val;
 	}
 	inline bool doParaCheck() {
-		int count=currentData.tree->getTreeNodesCount();
+		int count=currentData.tree->getTreeNodesCount(true);
 		display(QString("{keep? count %1}").arg(count));
 		bool keep=count<=geneologyParameters.C_max && count>1;
 		bool ret_val=checkIfDisplay(keep);

@@ -31,8 +31,8 @@ public:
 	inline static bool isConsistentWithSelectionCondidtion(int start, int end, int tagStart,int tagEnd,SelectionMode selectionMode=SELECTION_OUTSIDE) {
 		bool con1= selectionMode==SELECTION_OUTSIDE && start<=tagStart && end>=tagEnd,
 			 con2= selectionMode==SELECTION_INSIDE && start>=tagStart && end<=tagEnd,
-			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>tagStart) ||
-														(start<tagEnd && end>=tagEnd));
+			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>=tagStart) ||
+														(start<=tagEnd && end>=tagEnd));
 		return con1 || con2 || con3;
 	}
 	class Selection {
@@ -51,16 +51,16 @@ public:
 	private:
 		void updateGraph() {
 			if (tree==NULL && names.size()>0) {
-				GeneNode * root=new GeneNode(Name(text,names.at(0).first,names.at(0).second-1),NULL);
+				GeneNode * root=new GeneNode(Name(text,names.at(0).first,names.at(0).second),NULL);
 				tree=new GeneTree(root);
 				for (int i=1;i<names.size();i++) {
-					root->addChild(new GeneNode(Name(text,names.at(i).first,names.at(i).second-1),NULL));
+					root->addChild(new GeneNode(Name(text,names.at(i).first,names.at(i).second),NULL));
 				}
 			}
 		}
 		int getNameIndex(QString s) {
 			for (int i=0;i<names.size();i++) {
-				if (equal_withoutLastDiacritics(Name(text,names[i].first,names[i].second-1).getString(),s))
+				if (equal_withoutLastDiacritics(Name(text,names[i].first,names[i].second).getString(),s))
 					return i;
 			}
 			return -1;
@@ -87,7 +87,7 @@ public:
 			names.append(MainSelection(start,end));
 			updateGraph();
 			if (names.size()>1) {
-				tree->getRoot()->addChild(new GeneNode(Name(text,start,end-1),NULL));
+				tree->getRoot()->addChild(new GeneNode(Name(text,start,end),NULL));
 			}
 		}
 		void addName( const Name & name) {
@@ -103,13 +103,17 @@ public:
 		void removeNameAt(int i) {
 			MainSelection s=names[i];
 			names.removeAt(i);
-			GeneNode * n=tree->findTreeNode(Name(text,s.first,s.second-1).getString(),true);
+			GeneNode * n=tree->findTreeNode(Name(text,s.first,s.second/*-1*/).getString(),true);
 			assert(n!=NULL);
 			if (n->parent==NULL) { //is root
 				assert(tree->getRoot()==n);
 				if (n->spouses.size()>0) {
-					n->name=n->spouses[0];
-					n->spouses.removeAt(0);
+					if (equal_withoutLastDiacritics(n->spouses[0].getString(),n->toString())){
+						//TODO: maybe should delete spouse,bc spouse gives same node
+					} else {
+						n->name=n->spouses[0];
+						n->spouses.removeAt(0);
+					}
 				} else if (n->children.size()>0) {
 					tree->setRoot(n->children[0]);
 					n->children[0]->parent=NULL;
@@ -174,7 +178,7 @@ public:
 					tree->deleteTree();
 					return false;
 				} else {
-					child=new GeneNode(Name(this->text,names[i].first,names[i].second-1),lastNode);
+					child=new GeneNode(Name(this->text,names[i].first,names[i].second/*-1*/),lastNode);
 					if (lastNode ==NULL) {
 						tree->setRoot(child);
 						lastNode=child;
@@ -182,9 +186,10 @@ public:
 				}
 				bool finish=false;
 				if (!noSpouses) {
+					l++;
 					do {
-						int st=l+2;
-						l=s.indexOf('\t',l+2)-1;
+						int st=l+1;
+						l=s.indexOf('\t',l+1);
 						if (l<0) {
 							l=s.indexOf(']');
 							finish=true;
@@ -199,7 +204,7 @@ public:
 							tree->deleteTree();
 							return false;
 						} else {
-							Name name=Name(this->text,names[i].first, names[i].second-1);
+							Name name=Name(this->text,names[i].first, names[i].second/*-1*/);
 							child->addSpouse(name);
 						}
 					} while (!finish);
@@ -382,6 +387,8 @@ private:
 			while (isDelimiterOrNumber(chr)) {
 				c.setPosition(++start,QTextCursor::MoveAnchor);
 				c.setPosition(end,QTextCursor::KeepAnchor);
+				if (start==end)
+					return;
 				chr=c.selectedText().at(0);
 			}
 		} else {
