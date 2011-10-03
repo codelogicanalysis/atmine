@@ -491,8 +491,10 @@ private:
 		} else {
 			if (n1==n2) {
 				if (n1!=NULL) {
+				#ifdef SHOW_MERGING_ERRORS
 					error<< "Conflict ("<<n1->toString()<<","<<n2->toString()<<") old relationship is spouse, new is child.\n";
 					//conflict but trust old (this means the nodes correspond to spouses)
+				#endif
 				} else {
 					addUnPerformedEdge(name1,name2,isSpouse);
 				}
@@ -507,8 +509,10 @@ private:
 						n1->addChild(new GeneNode((Name & )name2,NULL));
 				} else {
 					if (n2->parent!=n1) {
+					#ifdef SHOW_MERGING_ERRORS
 						//conflict but trust old
 						error<< "Conflict ("<<n1->toString()<<","<<n2->toString()<<") newly must be child relationship but previously is not.\n";
+					#endif
 					}
 				}
 			}
@@ -1463,6 +1467,8 @@ private:
 				displayed_error	<<"\tGraph:\t"<<graphFound<<"\t"<<graphSimilarContext<<"\n";
 			#endif
 				if (end1<=end2) {
+					visitedNodes.clear();
+					visitedTags.clear();
 					MERGE_GLOBAL_TREE
 					i++;
 				}
@@ -1504,10 +1510,10 @@ private:
 		int commonCount=common_i.size();
 		double detectionRecall=(double)commonCount/tags.size(),
 			   detectionPrecision=(double)commonCount/outputList.size(),
-			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount, //solve issue of possible double counting of names that appear in more than 2 sections representing one tag by adding visited bit
+			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount,
 			   boundaryPrecision=average(boundaryPrecisionList),
 			   graphFound=sum(graphFoundList)/tagOverlapCount,
-			   graphSimilar=sum(graphSimilarList)/tagOverlapCount; //solve issue of possible double counting of names that appear in more than 2 sections representing one tag by adding visited bit
+			   graphSimilar=sum(graphSimilarList)/tagOverlapCount;
 		double globalGraphFound, globalGraphSimilarContext;
 		currentData.globalTree->compareToStandardTree(globalTree,globalGraphFound, globalGraphSimilarContext);
 		globalTree->displayTree(prg);
