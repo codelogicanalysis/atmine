@@ -52,6 +52,8 @@ void BibleTaggerDialog::tagGenealogy_action() {
 	text->setTextBackgroundColor(Qt::darkYellow);
 	c.clearSelection();
 	text->setTextCursor(c);
+	if (isGlobalGraph->isChecked())
+		return;
 	updateGraphDisplay();
 }
 
@@ -100,6 +102,8 @@ void BibleTaggerDialog::unTagGenealogy_action() {
 	}
 	c.clearSelection();
 	text->setTextCursor(c);
+	if (isGlobalGraph->isChecked())
+		return;
 	updateGraphDisplay();
 }
 
@@ -108,7 +112,8 @@ void BibleTaggerDialog::save_action() {
 	QFile file(QString("%1.tags").arg(filename).toStdString().data());
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
-		out	<< tags;
+		out	<< tags
+			<<*globalGraph;
 		file.close();
 		QFile::remove(file.fileName()+".copy");
 		file.copy(file.fileName()+".copy");
@@ -136,6 +141,8 @@ void BibleTaggerDialog::open_action() {
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream out(&file);   // we will serialize the data into the file
 			out	>> tags;
+			if (!out.atEnd())
+				out	>>*globalGraph;
 			file.close();
 			for (int i=0;i<tags.size();i++) {
 				tags[i].text=string;
@@ -196,6 +203,8 @@ void BibleTaggerDialog::unTagName_action() {
 	}
 	c.clearSelection();
 	text->setTextCursor(c);
+	if (isGlobalGraph->isChecked())
+		return;
 	updateGraphDisplay();
 }
 
@@ -219,6 +228,8 @@ void BibleTaggerDialog::tagName_action() {
 			text->setTextCursor(c);
 		}
 	}
+	if (isGlobalGraph->isChecked())
+		return;
 	updateGraphDisplay();
 }
 
@@ -226,31 +237,50 @@ void BibleTaggerDialog::text_selectionChangedAction() {
 	int i=findSelection(0,SELECTION_INSIDE);
 	if (selectedTagIndex==i)
 		return;
+	if (isGlobalGraph->isChecked())
+		return;
 	updateGraphDisplay();
 }
 
 void BibleTaggerDialog::updateGraphDisplay() {
-	int i=findSelection(0,SELECTION_INSIDE);
-	if (i>=0) {
-		treeText->setText(tags[i].getText());
+	if (!isGlobalGraph->isChecked()) {
+		int i=findSelection(0,SELECTION_INSIDE);
+		if (i>=0) {
+			treeText->setText(tags[i].getText());
+			treeText->setReadOnly(false);
+			modifyGraph->setEnabled(true);
+			tags[i].getTree()->displayTree(this);
+			selectedTagIndex=i;
+		} else {
+			treeText->setText("");
+			treeText->setReadOnly(true);
+			modifyGraph->setEnabled(false);
+			graph->clear();
+			selectedTagIndex=-1;
+		}
+	} else {
+		treeText->setText(Selection::getTreeText(globalGraph));
 		treeText->setReadOnly(false);
 		modifyGraph->setEnabled(true);
-		tags[i].getTree()->displayTree(this);
-		selectedTagIndex=i;
-	} else {
-		treeText->setText("");
-		treeText->setReadOnly(true);
-		modifyGraph->setEnabled(false);
-		graph->clear();
+		globalGraph->displayTree(this);
 		selectedTagIndex=-1;
 	}
 }
 
 void BibleTaggerDialog::modifyGraph_action() {
-	int i=findSelection(0,SELECTION_INSIDE);
-	assert(i>=0);
-	if (tags[i].updateGraph(treeText->toPlainText()))
-		tags[i].getTree()->displayTree(this);
+	if (!isGlobalGraph->isChecked()) {
+		int i=findSelection(0,SELECTION_INSIDE);
+		assert(i>=0);
+		if (tags[i].updateGraph(treeText->toPlainText()))
+			tags[i].getTree()->displayTree(this);
+	} else {
+		if (Selection::updateGraph(treeText->toPlainText(),NULL,&globalGraph,string))
+			globalGraph->displayTree(this);
+	}
+}
+
+void BibleTaggerDialog::isGlobalGraph_action(){
+	updateGraphDisplay();
 }
 
 int bibleTagger(QString input_str){

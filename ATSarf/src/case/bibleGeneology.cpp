@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <assert.h>
 
+#include "bibleManualTagger.h"
 #include "bibleGeneology.h"
 #include "ATMProgressIFC.h"
 #include "Math_functions.h"
@@ -17,7 +18,7 @@
 #include "textParsing.h"
 #include "common.h"
 #include "Retrieve_Template.h"
-#include "bibleManualTagger.h"
+
 
 #define DETAILED_DISPLAY
 
@@ -151,17 +152,17 @@ public:
 GeneologyParameters geneologyParameters;
 QList<int> bits_gene_NAME;
 QStringList relativeSuffixes;
-int bit_VERB_PERFECT;
-int bit_LAND;
+int bit_VERB_PERFECT, bit_LAND, bit_FEMALE,bit_MALE;
 DescentConnectors descentConnectors;
 DescentConnectorGroup landDesc;
 
-class GeneStemmer: public Stemmer { //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
+class GeneStemmer: public Stemmer {
 private:
 	bool place;
 public:
 	long finish_pos;
 	bool name:1;
+	bool male:1;
 	bool gaveBirth:1;
 	bool land:1;
 	DescentDirection descentDir:3;
@@ -190,6 +191,7 @@ public:
 		startStem=start;
 		finishStem=start;
 		relativeSuffix=false;
+		male=true;
 	#ifdef GET_WAW
 		wawStart=start;
 		wawEnd=start;
@@ -273,7 +275,7 @@ public:
 					QString suffix=info.text->mid(Suffix->info.start,suffSize);
 					for (int i=0;i<relativeSuffixes.size();i++) {
 						relativeSuffix=true;
-						if (equal_withoutLastDiacritics(suffix,relativeSuffixes[i])) {
+						if (equalNames(suffix,relativeSuffixes[i])) {
 							if (descentDir==SON) {
 								descentDir=FATHER;
 								pluralDescent=true;
@@ -297,6 +299,10 @@ public:
 						finish_pos=info.finish;
 						finishStem=Stem->info.finish;
 						startStem=Stem->info.start;
+						if (stem_info->abstract_categories.getBit(bit_FEMALE))
+							male=false;
+						else if (stem_info->abstract_categories.getBit(bit_MALE))
+							male=true;
 					}
 				#ifdef GET_WAW
 					if (info.finish==finish_pos && !has_waw && !has_li)
@@ -368,6 +374,10 @@ void geneology_initialize() {
 
 	long abstract_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryID("VERB_PERFECT");
 	bit_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_VERB_PERFECT);
+	long abstract_FEMALE=database_info.comp_rules->getAbstractCategoryID("Female Names");
+	bit_FEMALE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_FEMALE);
+	long abstract_MALE=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	bit_MALE=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_MALE);
 
 	relativeSuffixes<<QString("")+ha2<<QString("")+ha2+alef<<QString("")+ha2+meem+alef<<QString("")+ta2+ha2<<QString("")+ta2+ha2+alef<<QString("")+ta2+ha2+meem+alef;
 }
@@ -394,6 +404,7 @@ private:
 	GeneTree * mainTree;
 	GeneNode * topMostNode;
 	EdgeMap unPerformedEdges;
+	bool newTree;
 	void addUnPerformedEdge(const Name & n1,const Name & n2, bool isSpouse=false) {
 		unPerformedEdges[Edge(n1,n2)]=isSpouse;
 	}
@@ -413,7 +424,7 @@ private:
 			return node;
 		}
 	}
-	bool notFoundWithinRadius(GeneNode * node, const Name & searchedName) {
+	bool notFoundWithinRadius(GeneNode * node, const Name & searchedName, bool searchSpouses=false) {
 		int radius=geneologyParameters.radius;
 		GeneNode * temp=node->parent;
 		int tempRadius=radius;
@@ -421,22 +432,22 @@ private:
 			if (temp!=NULL) {
 				tempRadius++;
 				node->ignoreInSearch=true;
-				GeneNode *temp2=temp->getNodeInSubTree(searchedName.getString(),false,tempRadius);
+				GeneNode *temp2=temp->getNodeInSubTree(searchedName.getString(),searchSpouses,tempRadius);
 				node->ignoreInSearch=false;
 				if (temp2!=NULL)
 					return false;
 
-				if (equal_withoutLastDiacritics(temp->toString(),searchedName.getString()))
+				if (equalNames(temp->toString(),searchedName.getString()))
 					return false;
 				for (int j=0;j<temp->spouses.size();j++) {
-					if (equal_withoutLastDiacritics(temp->spouses[j].getString(),searchedName.getString()))
+					if (equalNames(temp->spouses[j].getString(),searchedName.getString()))
 						return false;
 				}
 				temp=temp->parent;
 			}
 		}
 		node->ignoreInSearch=true;
-		temp=node->getNodeInSubTree(searchedName.getString(),false,radius);
+		temp=node->getNodeInSubTree(searchedName.getString(),searchSpouses,radius);
 		node->ignoreInSearch=false;
 		if (temp!=NULL)
 			return false;
@@ -445,6 +456,10 @@ private:
 	void performAction(const Name & name1, const Name & name2, bool isSpouse) {
 		GeneNode * n1=find(name1,true);
 		GeneNode * n2=find(name2,true);
+		if (newTree && n1!=NULL && n2 !=NULL && notFoundWithinRadius(n1,name2)) {
+			topMostNode=n1;
+			n2=NULL;
+		}
 		if (isSpouse) {
 			if (n1==n2) {
 				if (n1!=NULL) {
@@ -454,10 +469,10 @@ private:
 				}
 			} else {
 				if (n1==NULL) {
-					if (notFoundWithinRadius(n2,name1))
+					if (notFoundWithinRadius(n2,name1,true))
 						n2->addSpouse(name1);
 				} else if (n2==NULL) {
-					if (notFoundWithinRadius(n1,name2))
+					if (notFoundWithinRadius(n1,name2,true))
 						n1->addSpouse(name2);
 				} else {
 				#if 0
@@ -500,7 +515,7 @@ private:
 				}
 			} else {
 				if (n1==NULL) {
-					if (notFoundWithinRadius(n2,name1)) {
+					if (notFoundWithinRadius(n2,name1,true)) {
 						n2->addParent(new GeneNode((Name & )name1,NULL));
 						mainTree->updateRoot();
 					}
@@ -527,7 +542,9 @@ public:
 	void operator ()(GeneTree * tree) {
 		if (tree->getRoot()!=NULL) {
 			topMostNode=find(tree->getRoot()->name);
+			newTree=true;
 			GeneVisitor::operator ()(tree);
+			newTree=false;
 		}
 	}
 
@@ -561,7 +578,7 @@ private:
 				if (currMatch->parent==NULL )
 					currScore++;
 			} else {
-				if (equal_withoutLastDiacritics(nodeToMatch->parent->toString(),currMatch->parent->toString()))
+				if (equalNames(nodeToMatch->parent->toString(),currMatch->parent->toString()))
 					currScore++;
 			}
 
@@ -581,7 +598,7 @@ public:
 	}
 	virtual void visit(const GeneNode * node, int ) {
 		finalizeMatch();
-		if (equal_withoutLastDiacritics(node->toString(),nodeToMatch->toString())){
+		if (equalNames(node->toString(),nodeToMatch->toString())){
 			currMatch= (GeneNode *)node;
 		} else {
 			currMatch= NULL;
@@ -833,6 +850,7 @@ private:
 		bool preceededBygaveBirth:1;
 		bool sonsFoundName:1;
 		bool land:1;
+		bool male:1;
 		DescentDirection descentDirection:3;
 		DescentDirection lastDescentDirection:3;
 		bool singularDescent:1;
@@ -990,7 +1008,15 @@ private:
 			currentData.tree->updateRoot();
 			break;
 		case SPOUSE:
-			currentData.last->addSpouse(name);
+			if (currentData.last->name.isMarriageCompatible(name))
+				currentData.last->addSpouse(name);
+			else {
+				DescentDirection temp=stateInfo.descentDirection;
+				stateInfo.descentDirection=stateInfo.lastDescentDirection;
+				addToTree(name); //TODO: check if useful, or needs more complex intervention
+				stateInfo.descentDirection=temp;
+				return;
+			}
 			break;
 		case SIBLING:
 			currentData.last->addSibling(new GeneNode(name,NULL));
@@ -1012,7 +1038,7 @@ private:
 		display("\n");
 	#endif
 		bool ret_val=true;
-		Name name(stateInfo.text,stateInfo.startPos,stateInfo.endPos);
+		Name name(stateInfo.text,stateInfo.startPos,stateInfo.endPos,stateInfo.male);
 		switch(stateInfo.currentState) {
 		case TEXT_S:
 			switch (stateInfo.currentType) {
@@ -1262,6 +1288,7 @@ private:
 				type=LEAF_NAME;
 			else
 				type=CORE_NAME;
+			stateInfo.male=s.male;
 			if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
 				stateInfo.descentDirection=SON;
 			if (stateInfo.land) {
@@ -1379,7 +1406,7 @@ private:
 				for (int j=0;j<list2.size();j++) {
 					if (!visitedTags2.contains(j)) {
 						QString s2=Name(text,list2[j].first,list2[j].second).getString();
-						if (equal_withoutLastDiacritics(s1,s2) ) {
+						if (equalNames(s1,s2) ) {
 							found=true;
 							visitedTags.insert(i);
 							visitedTags2.insert(j);
@@ -1399,7 +1426,8 @@ private:
 									globalTree=tags[i].getTree()->duplicateTree(); \
 								} else { \
 									globalTree->mergeTrees(tags[i].getTree()); \
-								}
+								} /*\
+								globalTree->displayTree(prg);*/
 
 		OutputDataList tags;
 		QList<int> common_i,common_j;

@@ -31,6 +31,29 @@ public:
 	}
 };
 
+inline bool equalNames(const QString & n1,const QString & n2) {
+	static QString abram	=QString("")+alef_hamza_above+ba2+ra2+alef+meem,
+				   ibrahim	=QString("")+alef_hamza_below+ba2+ra2+alef+ha2+ya2+meem,
+				   sarah	=QString("")+seen+alef+ra2+ta2_marbouta,
+				   saray	=QString("")+seen+alef+ra2+alef+ya2,
+				   ya3coub	=QString("")+ya2+_3yn+qaf+waw+ba2,
+				   israel	=QString("")+alef_hamza_below+seen+ra2+alef+ya2_hamza_above+ya2+lam;
+	if (equal_withoutLastDiacritics(n1,abram) && equal_withoutLastDiacritics(n2,ibrahim))
+		return true;
+	if (equal_withoutLastDiacritics(n2,abram) && equal_withoutLastDiacritics(n1,ibrahim))
+		return true;
+	if (equal_withoutLastDiacritics(n1,sarah) && equal_withoutLastDiacritics(n2,saray))
+		return true;
+	if (equal_withoutLastDiacritics(n2,saray) && equal_withoutLastDiacritics(n1,sarah))
+		return true;
+	if (equal_withoutLastDiacritics(n1,ya3coub) && equal_withoutLastDiacritics(n2,israel))
+		return true;
+	if (equal_withoutLastDiacritics(n2,israel) && equal_withoutLastDiacritics(n1,ya3coub))
+		return true;
+	return equal_withoutLastDiacritics(n1,n2);
+}
+
+
 extern GeneologyParameters geneologyParameters;
 
 int genealogyHelper(QString input_str,ATMProgressIFC *prgs);
@@ -45,14 +68,16 @@ private:
 	friend QDataStream &operator<<(QDataStream &out, const Name &t);
 	long start,end;
 	QString * text;
+	bool male:1;
 private:
 	friend QDataStream &operator>>(QDataStream &in, GeneNode &t);
 	Name() {}
 public:
-	Name(QString * text,long start, long end) {
+	Name(QString * text,long start, long end,bool male=true) {
 		this->start=start;
 		this->end=end;
 		this->text=text;
+		this->male=male;
 	}
 	Name operator=(const Name & n2) {
 		text=n2.text;
@@ -60,6 +85,10 @@ public:
 		end=n2.end;
 		return *this;
 	}
+	bool isMarriageCompatible(const Name & n) {
+		return (n.male!=male);
+	}
+
 	QString getString() const {
 		return text->mid(start,end-start+1);
 	}
@@ -95,11 +124,11 @@ private:
 	GeneNode * getNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
 		if (this==NULL)
 			return NULL;
-		if (!ignoreInSearch && equal_withoutLastDiacritics(word,name.getString()))
+		if (!ignoreInSearch && equalNames(word,name.getString()))
 			return this;
 		if (checkSpouses) {
 			for (int i=0;i<spouses.size();i++) {
-				if (equal_withoutLastDiacritics(word,spouses[i].getString()))
+				if (equalNames(word,spouses[i].getString()))
 					return this;
 			}
 		}
@@ -185,7 +214,7 @@ public:
 		if (this==NULL)
 			return false;
 		for (int i=0;i<spouses.size();i++) {
-			if (equal_withoutLastDiacritics(n.getString(),spouses[i].getString()))
+			if (equalNames(n.getString(),spouses[i].getString()))
 				return true;
 		}
 		return false;
@@ -194,7 +223,7 @@ public:
 		if (this==NULL)
 			return false;
 		for (int i=0;i<children.size();i++) {
-			if (equal_withoutLastDiacritics(n.getString(),children[i]->toString()))
+			if (equalNames(n.getString(),children[i]->toString()))
 				return true;
 		}
 		return false;
@@ -439,6 +468,5 @@ inline QDataStream &operator>>(QDataStream &in, GeneTree &t) {
 	}
 	return in;
 }
-
 
 #endif // BIBLEGENEOLOGY_H
