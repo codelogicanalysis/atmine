@@ -614,11 +614,11 @@ public:
 };
 class CompareVisitor: public GeneVisitor {
 private:
-	QSet<GeneNode*> visitedNodes;
+	QSet<GeneNode*> & visitedNodes;
 	GeneTree * standard;
 	int foundCount, similarContextCount,totalCount, countOfThisTree;
 public:
-	CompareVisitor(GeneTree * standard) {
+	CompareVisitor(GeneTree * standard,QSet<GeneNode*> & visited):visitedNodes(visited) {
 		foundCount=0;
 		similarContextCount=0;
 		totalCount=0;
@@ -776,8 +776,15 @@ GeneTree* GeneTree::duplicateTree() {
 	v(this);
 	return v.getDuplicateTree();
 }
+void GeneTree::compareToStandardTree(GeneTree * standard,QSet<GeneNode*> & visitedNodes,double & found,double & similarContext) {
+	CompareVisitor v(standard,visitedNodes);
+	v(this);
+	found=v.getFoundPercentage();
+	similarContext=v.getSimilarContextPercentage();
+}
 void GeneTree::compareToStandardTree(GeneTree * standard,double & found,double & similarContext) {
-	CompareVisitor v(standard);
+	QSet<GeneNode*> visitedNodes;
+	CompareVisitor v(standard,visitedNodes);
 	v(this);
 	found=v.getFoundPercentage();
 	similarContext=v.getSimilarContextPercentage();
@@ -1358,10 +1365,30 @@ private:
 	inline bool before(int start1,int end1,int start2,int end2) {
 		return after(start2,end2,start1,end1);
 	}
-	inline int commonNames(const SelectionList & list1, const SelectionList & list2) {
-		SelectionList l;
-		int uniqueNames= BibleTaggerDialog::Selection::mergeNames(text,list1,list2,l);
-		return list1.size()+list2.size()-uniqueNames;
+	inline int commonNames(const SelectionList & list1, const SelectionList & list2, QSet<int> & visitedTags) {
+		QSet<int> visitedTags2;
+		int common=0;
+		for (int i=0;i<list1.size();i++) {
+			if (!visitedTags.contains(i)) {
+				bool found=false;
+				QString s1=Name(text,list1[i].first,list1[i].second).getString();
+				for (int j=0;j<list2.size();j++) {
+					if (!visitedTags2.contains(j)) {
+						QString s2=Name(text,list2[j].first,list2[j].second).getString();
+						if (equal_withoutLastDiacritics(s1,s2) ) {
+							found=true;
+							visitedTags.insert(i);
+							visitedTags2.insert(j);
+							break;
+						}
+					}
+				}
+				if (found) {
+					common++;
+				}
+			}
+		}
+		return common;
 	}
 	int calculateStatisticsOrAnotate() {
 	#define MERGE_GLOBAL_TREE	if (globalTree==NULL) { \
@@ -1400,25 +1427,35 @@ private:
 		}
 		int i=0,j=0;
 		GeneTree * globalTree=NULL;
+		QSet<GeneNode*> visitedNodes;
+		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
 			int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd(),
 				start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-			if (overLaps(start1,end1,start2,end2)) {
+			if (overLaps(start1,end1,start2,end2) && start1!=end2) {
+				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags);
+				int countCorrect=tags[i].getNamesList().size();
+				int countDetected=outputList[j].getNamesList().size();
+				if (countCommon>countDetected) {
+					qDebug()<<text->mid(start1,end1-start1+1)<<"\t"<<text->mid(start2,end2-start2+1)<<"\t";
+					visitedTags.clear();
+					countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags);
+				}
 				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
 					common_i.append(i);
 					common_j.append(j);
-				} else {
-					tagOverlapCount++;
+					if (countCorrect>0)
+						tagOverlapCount++;
 				}
-				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList());
-				int countCorrect=tags[i].getNamesList().size();
-				int countDetected=outputList[j].getNamesList().size();
-				boundaryRecallList.append((double)countCommon/countCorrect);
-				boundaryPrecisionList.append((double)countCommon/countDetected);
-				double graphFound, graphSimilarContext;
-				outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),graphFound, graphSimilarContext);
-				graphFoundList.append(graphFound);
-				graphSimilarList.append(graphSimilarContext);
+				double graphFound=0, graphSimilarContext=0;
+				if (countCorrect>0) {
+					boundaryRecallList.append((double)countCommon/countCorrect);
+					boundaryPrecisionList.append((double)countCommon/countDetected);
+
+					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,graphFound, graphSimilarContext);
+					graphFoundList.append(graphFound);
+					graphSimilarList.append(graphSimilarContext);
+				}
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
@@ -1433,15 +1470,17 @@ private:
 					j++;
 			} else if (before(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
-				displayed_error	<<text->mid(start1,end1-start1+1)<<"\t"
+				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<<"-----\n";
 			#endif
+				visitedNodes.clear();
+				visitedTags.clear();
 				MERGE_GLOBAL_TREE
 				i++;
 			} else if (after(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<<"-----\t"
-								<<text->mid(start2,end2-start2+1)<<"\n";
+								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			#endif
 				j++;
 			}

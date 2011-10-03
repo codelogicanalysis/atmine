@@ -245,19 +245,20 @@ public:
 		}
 		static int mergeNames(QString * text,const MainSelectionList & list1, const MainSelectionList & list2,MainSelectionList & mergedNames){
 			mergedNames.clear();
-			mergedNames.append(list1);
-			for (int i=0;i<list2.size();i++) {
+			mergedNames.append(list2);
+			for (int i=0;i<list1.size();i++) {
 				bool found=false;
 				for (int j=0;j<mergedNames.size();j++) {
 					QString s1=Name(text,mergedNames[j].first,mergedNames[j].second).getString(),
-							s2=Name(text,list2[i].first,list2[i].second).getString();
-					if (equal_withoutLastDiacritics(s1,s2)) {
+							s2=Name(text,list1[i].first,list1[i].second).getString();
+					if (equal_withoutLastDiacritics(s1,s2) ) {
 						found=true;
 						break;
 					}
 				}
-				if (!found)
-					mergedNames.append(list2[i]);
+				if (!found) {
+					mergedNames.append(list1[i]);
+				}
 			}
 			return mergedNames.size();
 		}
