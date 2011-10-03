@@ -311,6 +311,7 @@ public:
 		return root->getNodeInSubTree(word,checkSpouses);
 	}
 	void compareToStandardTree(GeneTree * standard,double & found,double & similarContext);
+	void compareToStandardTree(GeneTree * standard,QSet<GeneNode*> & visitedNodes,double & found,double & similarContext);
 	void mergeTrees(GeneTree * tree);
 	void mergeLeftovers();
 	void displayTree( ATMProgressIFC * prg);
