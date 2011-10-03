@@ -273,6 +273,8 @@ int insert_propernames()
 	}
 	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,dbitvec(max_sources),true); //returns id if already present
 	long abstract_people_names=insert_category("Name of Person",STEM,dbitvec(max_sources),true); //returns id if already present
+	long abstract_male_names=insert_category("Male Names",STEM,dbitvec(max_sources),true); //returns id if already present
+	long abstract_female_names=insert_category("Female Names",STEM,dbitvec(max_sources),true); //returns id if already present
 	QString file_name;
 	long abstract_category_id;
 	foreach (file_name,folder.entryList())
@@ -338,8 +340,15 @@ int insert_propernames()
 		#endif
 			abstract_categories->append(abstract_category_id);
 			abstract_categories->append(abstract_people_names);
-			if (insert_NProp(line, abstract_categories,source_id,"Name of Person")<0)
-			{
+			QStringList entries=line.split("\t");
+			QString name=entries[0];
+			if (ab.contains("Hebrew")) {
+				if (entries[1]=="M")
+					abstract_categories->append(abstract_male_names);
+				else
+					abstract_categories->append(abstract_female_names);
+			}
+			if (insert_NProp(name, abstract_categories,source_id,"Name of Person")<0) {
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}

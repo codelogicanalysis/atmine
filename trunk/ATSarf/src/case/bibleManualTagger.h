@@ -9,7 +9,6 @@
 #include <QGridLayout>
 #include <QTextBrowser>
 #include <QScrollArea>
-#include "logger.h"
 #include <iostream>
 #include <QList>
 #include <QPair>
@@ -17,7 +16,9 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QPixmap>
+#include <QMessageBox>
 
+#include "logger.h"
 #include "ATMProgressIFC.h"
 #include "letters.h"
 #include "bibleGeneology.h"
@@ -60,7 +61,7 @@ public:
 		}
 		int getNameIndex(QString s) {
 			for (int i=0;i<names.size();i++) {
-				if (equal_withoutLastDiacritics(Name(text,names[i].first,names[i].second).getString(),s))
+				if (equalNames(Name(text,names[i].first,names[i].second).getString(),s))
 					return i;
 			}
 			return -1;
@@ -103,16 +104,22 @@ public:
 		void removeNameAt(int i) {
 			MainSelection s=names[i];
 			names.removeAt(i);
-			GeneNode * n=tree->findTreeNode(Name(text,s.first,s.second/*-1*/).getString(),true);
+			QString name=Name(text,s.first,s.second/*-1*/).getString();
+			GeneNode * n=tree->findTreeNode(name,true);
 			assert(n!=NULL);
 			if (n->parent==NULL) { //is root
 				assert(tree->getRoot()==n);
 				if (n->spouses.size()>0) {
-					if (equal_withoutLastDiacritics(n->spouses[0].getString(),n->toString())){
-						//TODO: maybe should delete spouse,bc spouse gives same node
-					} else {
+					if (equalNames(n->toString(),name)) {
 						n->name=n->spouses[0];
 						n->spouses.removeAt(0);
+					} else {
+						for (int i=0;i<n->spouses.size();i++) {
+							if (equalNames(n->spouses[i].getString(),n->toString())){
+								n->spouses.removeAt(i);
+								break;
+							}
+						}
 					}
 				} else if (n->children.size()>0) {
 					tree->setRoot(n->children[0]);
@@ -137,10 +144,13 @@ public:
 				delete n;
 			}
 		}
-		bool updateGraph(QString text) {
+		static bool updateGraph(QString text, Selection * sel,GeneTree ** tree=NULL, QString *fileText=NULL) {
 			QStringList lines=text.split("\n",QString::SkipEmptyParts);
 			QString s;
-			GeneTree * tree=new GeneTree();
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Information);
+			msgBox.setWindowTitle("Error Processing Tree");
+			GeneTree * newtree=new GeneTree();
 			GeneNode * lastNode=NULL;
 			int lastIndentation=-1;
 			foreach(s,lines) {
@@ -152,13 +162,17 @@ public:
 				if (indentation==lastIndentation+1) {
 					//just keep old values for lastIndentation and lastNode
 				} else if (indentation>lastIndentation+1) {
-					tree->deleteTree();
+					msgBox.setText(QString("Syntax error with indentation at line: \"%1\"").arg(s));
+					msgBox.exec();
+					newtree->deleteTree();
 					return false;
 				} else {
 					int diff=lastIndentation-indentation+1;
 					for (int i=0;i<diff;i++) {
 						if (lastNode==NULL) {
-							tree->deleteTree();
+							msgBox.setText(QString("Syntax error with indentation at line: \"%1\", parent to which to attach node not found").arg(s));
+							msgBox.exec();
+							newtree->deleteTree();
 							return false;
 						}
 						lastNode=lastNode->parent;
@@ -172,16 +186,35 @@ public:
 					l=s.length()-1;
 					noSpouses=true;
 				}
-				QString name=Name(&s,indentation,l).getString();
-				int i=getNameIndex(name);
-				if (i<0) {
-					tree->deleteTree();
-					return false;
+				QString nameString=Name(&s,indentation,l).getString();
+				if (sel==NULL) {
+					int pos=fileText->indexOf(nameString);
+					if (pos>=0) {
+						Name name=Name(fileText,pos, pos+nameString.length()-1);
+						child=new GeneNode(name,lastNode);
+						if (lastNode ==NULL) {
+							newtree->setRoot(child);
+							lastNode=child;
+						}
+					} else {
+						msgBox.setText(QString("Name \"%1\" does not exist in the file.").arg(nameString));
+						msgBox.exec();
+						newtree->deleteTree();
+						return false;
+					}
 				} else {
-					child=new GeneNode(Name(this->text,names[i].first,names[i].second/*-1*/),lastNode);
-					if (lastNode ==NULL) {
-						tree->setRoot(child);
-						lastNode=child;
+					int i=sel->getNameIndex(nameString);
+					if (i<0) {
+						msgBox.setText(QString("Name \"%1\" does not exist among the genealogical names tagged.").arg(nameString));
+						msgBox.exec();
+						newtree->deleteTree();
+						return false;
+					} else {
+						child=new GeneNode(Name(sel->text,sel->names[i].first,sel->names[i].second/*-1*/),lastNode);
+						if (lastNode ==NULL) {
+							newtree->setRoot(child);
+							lastNode=child;
+						}
 					}
 				}
 				bool finish=false;
@@ -194,40 +227,70 @@ public:
 							l=s.indexOf(']');
 							finish=true;
 							if (l<0) {
-								tree->deleteTree();
+								msgBox.setText(QString("Syntax error at line \"%1\" was expecting ']'").arg(s));
+								msgBox.exec();
+								newtree->deleteTree();
 								return false;
 							}
 						}
-						QString name=Name(&s,st,l-1).getString();
-						int i=getNameIndex(name);
-						if (i<0) {
-							tree->deleteTree();
-							return false;
+						QString nameString=Name(&s,st,l-1).getString();
+						if (sel==NULL) {
+							int pos=fileText->indexOf(nameString);
+							if (pos>=0) {
+								Name name=Name(fileText,pos, pos+nameString.length()-1);
+								child->addSpouse(name);
+							} else {
+								msgBox.setText(QString("Spouse Name \"%1\" does not exist in the file.").arg(nameString));
+								msgBox.exec();
+								newtree->deleteTree();
+								return false;
+							}
 						} else {
-							Name name=Name(this->text,names[i].first, names[i].second/*-1*/);
-							child->addSpouse(name);
+							int i=sel->getNameIndex(nameString);
+							if (i<0) {
+								msgBox.setText(QString("Spouse Name \"%1\" does not exist among the genealogical names tagged.").arg(nameString));
+								msgBox.exec();
+								newtree->deleteTree();
+								return false;
+							} else {
+								Name name=Name(sel->text,sel->names[i].first, sel->names[i].second/*-1*/);
+								child->addSpouse(name);
+							}
 						}
 					} while (!finish);
 				}
 				lastIndentation=indentation;
 				lastNode=child;
 			}
-			if (/*this->tree->getTreeNodesCount(true)==*/tree->getTreeNodesCount(true)==names.size()) {
-				this->tree->deleteTree();
-				this->tree=tree;
+			if (sel==NULL) {
+				(*tree)->deleteTree();
+				*tree=newtree;
+				return true;
+			}else if (newtree->getTreeNodesCount(true)==sel->names.size()) {
+				sel->tree->deleteTree();
+				sel->tree=newtree;
 				return true;
 			} else {
-				tree->deleteTree();
+				msgBox.setText(QString("Nodes in the tree already constructed does not match those available in the genealogical tags"));
+				msgBox.exec();
+				newtree->deleteTree();
 				return false;
 			}
 		}
-		QString getText() {
+
+		bool updateGraph(QString text) {
+			return updateGraph(text,this);
+		}
+		static QString getTreeText(GeneTree * tree) {
 			QString *out_text=out.string();
 			QString s;
 			out.setString(&s);
 			tree->outputTree();
 			out.setString(out_text);
 			return s;
+		}
+		QString getText() {
+			return getTreeText(tree);
 		}
 		void setMainInterval(int start,int end) {
 			main.first=start;
@@ -251,7 +314,7 @@ public:
 				for (int j=0;j<mergedNames.size();j++) {
 					QString s1=Name(text,mergedNames[j].first,mergedNames[j].second).getString(),
 							s2=Name(text,list1[i].first,list1[i].second).getString();
-					if (equal_withoutLastDiacritics(s1,s2) ) {
+					if (equalNames(s1,s2) ) {
 						found=true;
 						break;
 					}
@@ -276,6 +339,8 @@ public:
 		modifyGraph=new QPushButton("&Modify Graph",this);
 		scrollArea=new QScrollArea(this);
 		forceWordNames=new QCheckBox("Full Word Names");
+		isGlobalGraph=new QPushButton("Global Graph");
+		isGlobalGraph->setCheckable(true);
 		graphArea=new QScrollArea(this);
 		treeText=new QTextBrowser(this);
 		treeText->setReadOnly(false);
@@ -288,7 +353,8 @@ public:
 		grid->addWidget(save,0,5);
 		grid->addWidget(text,1,0,3,4);
 		grid->addWidget(treeText,1,4,1,2);
-		grid->addWidget(modifyGraph,2,4,1,2);
+		grid->addWidget(modifyGraph,2,4);
+		grid->addWidget(isGlobalGraph,2,5);
 		grid->addWidget(graphArea,3,4,1,2);
 		graph=new QLabel(graphArea);
 		graphArea->setWidgetResizable(true);
@@ -312,15 +378,19 @@ public:
 		connect(save,SIGNAL(clicked()),this,SLOT(save_clicked()));
 		connect(text,SIGNAL(selectionChanged()),this, SLOT(text_selectionChanged()));
 		connect(modifyGraph,SIGNAL(clicked()),this, SLOT(modifyGraph_clicked()));
+		connect(isGlobalGraph,SIGNAL(toggled(bool)),this, SLOT(isGlobalGraph_toggled(bool)));
 		string=NULL;
+		globalGraph=NULL;
 		open_action();
+		if (globalGraph==NULL)
+			regenerateGlobalGraph();
 		setWindowTitle(filename);
 		this->resize(700,700);
 		selectedTagIndex=-1;
 		modifyGraph->setEnabled(false);
 	}
 
-public slots:
+private slots:
 	void tagGene_clicked() {
 		tagGenealogy_action();
 	}
@@ -342,6 +412,9 @@ public slots:
 	void modifyGraph_clicked() {
 		modifyGraph_action();
 	}
+	void isGlobalGraph_toggled(bool ) {
+		isGlobalGraph_action();
+	}
 
 private:
 	void tagGenealogy_action();
@@ -352,6 +425,14 @@ private:
 	void open_action();
 	void text_selectionChangedAction();
 	void modifyGraph_action();
+	void isGlobalGraph_action();
+	void regenerateGlobalGraph() {
+		if (tags.size()>0)
+			globalGraph=tags[0].getTree()->duplicateTree();
+		for (int i=1;i<tags.size();i++)
+			globalGraph->mergeTrees(tags[i].getTree());
+		globalGraph->mergeLeftovers();
+	}
 	int findSelection(int startIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
 		if (this==NULL)
 			return -1;
@@ -477,9 +558,10 @@ private:
 
 public:
 	SelectionList tags;
+	GeneTree * globalGraph;
 
 	QString filename, * string;
-	QPushButton * tagGenealogy, *unTagGenealogy, *save, *tagName, *unTagName, *modifyGraph;
+	QPushButton * tagGenealogy, *unTagGenealogy, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph;
 	QTextBrowser * text, * treeText;
 	QCheckBox * forceWordNames;
 	QScrollArea * scrollArea, * graphArea;
@@ -512,8 +594,16 @@ public:
 	}
 
 	~BibleTaggerDialog() {
+		for (int i=0;i<tags.size();i++) {
+			if (tags[i].tree!=NULL)
+				delete tags[i].tree;
+		}
+		if (globalGraph!=NULL)
+			delete globalGraph;
+
 		if (string !=NULL)
 			delete string;
+		delete isGlobalGraph;
 		delete tagGenealogy;
 		delete unTagGenealogy;
 		delete tagName;

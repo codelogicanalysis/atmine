@@ -8,6 +8,7 @@
 //constantletters
 static const QChar hamza=QChar(0x0621);
 static const QChar ya2=QChar(0x064A);
+static const QChar ya2_hamza_above=QChar(0x0626);
 static const QChar alef=QChar(0x0627);
 static const QChar alef_madda_above= QChar(0x0622);
 static const QChar alef_hamza_above= QChar(0x0623);
