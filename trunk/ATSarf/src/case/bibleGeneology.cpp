@@ -1433,10 +1433,12 @@ private:
 		QList<int> common_i,common_j;
 		QVector<double> boundaryRecallList, boundaryPrecisionList, graphFoundList,graphSimilarList;
 		int tagOverlapCount=0;
+		GeneTree * globalTree=new GeneTree();
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream out(&file);   // we will serialize the data into the file
-			out	>> tags;
+			out	>> tags
+				>>*globalTree;
 			file.close();
 		} else {
 			error << "Annotation File does not exist\n";
@@ -1457,8 +1459,10 @@ private:
 			FillTextVisitor v(text);
 			v(tags[i].getTree());
 		}
+		FillTextVisitor v(text);
+		v(globalTree);
+
 		int i=0,j=0;
-		GeneTree * globalTree=NULL;
 		QSet<GeneNode*> visitedNodes;
 		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
@@ -1497,7 +1501,7 @@ private:
 				if (end1<=end2) {
 					visitedNodes.clear();
 					visitedTags.clear();
-					MERGE_GLOBAL_TREE
+					//MERGE_GLOBAL_TREE
 					i++;
 				}
 				if (end2<=end1)
@@ -1509,7 +1513,7 @@ private:
 			#endif
 				visitedNodes.clear();
 				visitedTags.clear();
-				MERGE_GLOBAL_TREE
+				//MERGE_GLOBAL_TREE
 				i++;
 			} else if (after(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
@@ -1524,7 +1528,7 @@ private:
 			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
 			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<<"-----\n";
-			MERGE_GLOBAL_TREE
+			//MERGE_GLOBAL_TREE
 			i++;
 		}
 		while (j<outputList.size()) {

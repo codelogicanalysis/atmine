@@ -141,8 +141,10 @@ void BibleTaggerDialog::open_action() {
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream out(&file);   // we will serialize the data into the file
 			out	>> tags;
-			if (!out.atEnd())
+			if (!out.atEnd()) {
+				globalGraph=new GeneTree();
 				out	>>*globalGraph;
+			}
 			file.close();
 			for (int i=0;i<tags.size();i++) {
 				tags[i].text=string;
@@ -274,13 +276,14 @@ void BibleTaggerDialog::modifyGraph_action() {
 		if (tags[i].updateGraph(treeText->toPlainText()))
 			tags[i].getTree()->displayTree(this);
 	} else {
-		if (Selection::updateGraph(treeText->toPlainText(),NULL,&globalGraph,string))
+		if (Selection::updateGraph(treeText->toPlainText(),NULL,&globalGraph,string,this))
 			globalGraph->displayTree(this);
 	}
 }
 
 void BibleTaggerDialog::isGlobalGraph_action(){
 	updateGraphDisplay();
+	resetGlobalGraph->setEnabled(isGlobalGraph->isChecked());
 }
 
 int bibleTagger(QString input_str){

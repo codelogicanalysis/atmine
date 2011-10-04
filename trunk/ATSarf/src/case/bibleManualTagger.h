@@ -144,7 +144,7 @@ public:
 				delete n;
 			}
 		}
-		static bool updateGraph(QString text, Selection * sel,GeneTree ** tree=NULL, QString *fileText=NULL) {
+		static bool updateGraph(QString text, Selection * sel,GeneTree ** tree=NULL, QString *fileText=NULL,BibleTaggerDialog * tagger=NULL) {
 			QStringList lines=text.split("\n",QString::SkipEmptyParts);
 			QString s;
 			QMessageBox msgBox;
@@ -188,7 +188,7 @@ public:
 				}
 				QString nameString=Name(&s,indentation,l).getString();
 				if (sel==NULL) {
-					int pos=fileText->indexOf(nameString);
+					int pos=tagger->getNameIndexInAll(nameString);
 					if (pos>=0) {
 						Name name=Name(fileText,pos, pos+nameString.length()-1);
 						child=new GeneNode(name,lastNode);
@@ -197,7 +197,7 @@ public:
 							lastNode=child;
 						}
 					} else {
-						msgBox.setText(QString("Name \"%1\" does not exist in the file.").arg(nameString));
+						msgBox.setText(QString("Name \"%1\" does not exist in the file at line \"%2\".").arg(nameString).arg(s));
 						msgBox.exec();
 						newtree->deleteTree();
 						return false;
@@ -235,12 +235,12 @@ public:
 						}
 						QString nameString=Name(&s,st,l-1).getString();
 						if (sel==NULL) {
-							int pos=fileText->indexOf(nameString);
+							int pos=tagger->getNameIndexInAll(nameString);
 							if (pos>=0) {
 								Name name=Name(fileText,pos, pos+nameString.length()-1);
 								child->addSpouse(name);
 							} else {
-								msgBox.setText(QString("Spouse Name \"%1\" does not exist in the file.").arg(nameString));
+								msgBox.setText(QString("Spouse Name \"%1\" does not exist in the file at line \"%2\".").arg(nameString).arg(s));
 								msgBox.exec();
 								newtree->deleteTree();
 								return false;
@@ -339,6 +339,8 @@ public:
 		modifyGraph=new QPushButton("&Modify Graph",this);
 		scrollArea=new QScrollArea(this);
 		forceWordNames=new QCheckBox("Full Word Names");
+		resetGlobalGraph=new QPushButton("Reset Global Graph");
+		resetGlobalGraph->setEnabled(false);
 		isGlobalGraph=new QPushButton("Global Graph");
 		isGlobalGraph->setCheckable(true);
 		graphArea=new QScrollArea(this);
@@ -351,11 +353,18 @@ public:
 		grid->addWidget(tagName,0,3);
 		grid->addWidget(unTagName,0,4);
 		grid->addWidget(save,0,5);
-		grid->addWidget(text,1,0,3,4);
-		grid->addWidget(treeText,1,4,1,2);
-		grid->addWidget(modifyGraph,2,4);
-		grid->addWidget(isGlobalGraph,2,5);
-		grid->addWidget(graphArea,3,4,1,2);
+		grid->addWidget(text,1,0,4,2);
+		grid->addWidget(treeText,1,2,1,1);
+		grid->addWidget(modifyGraph,2,2);
+		grid->addWidget(isGlobalGraph,3,2);
+		grid->addWidget(resetGlobalGraph,4,2);
+		grid->addWidget(graphArea,1,3,4,3);
+		grid->setColumnStretch(0,2);
+		grid->setColumnStretch(1,2);
+		grid->setColumnStretch(2,4);
+		grid->setColumnStretch(3,2);
+		grid->setColumnStretch(4,2);
+		grid->setColumnStretch(5,2);
 		graph=new QLabel(graphArea);
 		graphArea->setWidgetResizable(true);
 		graphArea->setAlignment(Qt::AlignCenter);
@@ -367,7 +376,7 @@ public:
 		errors=new QTextBrowser(this);
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
-		grid->addWidget(errors,3,0,1,6);
+		grid->addWidget(errors,5,0,1,6);
 		displayed_error.setString(errors_text);
 		errors->setText(*errors_text);
 	#endif
@@ -379,6 +388,7 @@ public:
 		connect(text,SIGNAL(selectionChanged()),this, SLOT(text_selectionChanged()));
 		connect(modifyGraph,SIGNAL(clicked()),this, SLOT(modifyGraph_clicked()));
 		connect(isGlobalGraph,SIGNAL(toggled(bool)),this, SLOT(isGlobalGraph_toggled(bool)));
+		connect(resetGlobalGraph,SIGNAL(clicked()),this, SLOT(resetGlobalGraph_clicked()));
 		string=NULL;
 		globalGraph=NULL;
 		open_action();
@@ -415,6 +425,10 @@ private slots:
 	void isGlobalGraph_toggled(bool ) {
 		isGlobalGraph_action();
 	}
+	void resetGlobalGraph_clicked() {
+		regenerateGlobalGraph();
+		globalGraph->displayTree(this);
+	}
 
 private:
 	void tagGenealogy_action();
@@ -426,6 +440,14 @@ private:
 	void text_selectionChangedAction();
 	void modifyGraph_action();
 	void isGlobalGraph_action();
+	int getNameIndexInAll(const QString & name) {
+		for (int i=0;i<tags.size();i++) {
+			int j=tags[i].getNameIndex(name);
+			if (j>=0)
+				return tags[i].getNamesList()[j].first;
+		}
+		return -1;
+	}
 	void regenerateGlobalGraph() {
 		if (tags.size()>0)
 			globalGraph=tags[0].getTree()->duplicateTree();
@@ -561,7 +583,7 @@ public:
 	GeneTree * globalGraph;
 
 	QString filename, * string;
-	QPushButton * tagGenealogy, *unTagGenealogy, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph;
+	QPushButton * tagGenealogy, *unTagGenealogy, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph,*resetGlobalGraph;
 	QTextBrowser * text, * treeText;
 	QCheckBox * forceWordNames;
 	QScrollArea * scrollArea, * graphArea;
@@ -585,9 +607,7 @@ public:
 			system("dot -Tsvg graph.dot -o graph.svg");
 			graph->setPixmap(QPixmap("./graph.svg"));
 			graphArea->setWidget(graph);
-		}
-		catch(...)
-		{}
+		} catch(...) {}
 	}
 	QString getFileName() {
 		return filename;
@@ -600,10 +620,11 @@ public:
 		}
 		if (globalGraph!=NULL)
 			delete globalGraph;
-
 		if (string !=NULL)
 			delete string;
+
 		delete isGlobalGraph;
+		delete resetGlobalGraph;
 		delete tagGenealogy;
 		delete unTagGenealogy;
 		delete tagName;
