@@ -453,7 +453,8 @@ private:
 			globalGraph=tags[0].getTree()->duplicateTree();
 		for (int i=1;i<tags.size();i++)
 			globalGraph->mergeTrees(tags[i].getTree());
-		globalGraph->mergeLeftovers();
+		if (globalGraph!=NULL)
+			globalGraph->mergeLeftovers();
 	}
 	int findSelection(int startIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
 		if (this==NULL)
