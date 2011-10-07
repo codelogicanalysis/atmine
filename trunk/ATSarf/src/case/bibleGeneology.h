@@ -12,32 +12,37 @@
 #define GET_WAW
 //#define TRUST_OLD
 #define SINGULAR_DESCENT
-//#define GENEOLOGYDEBUG
+#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
 #define REDUCE_AFFIX_SEARCH
 //#define SHOW_MERGING_ERRORS
 
 class GeneologyParameters {
 public:
-	unsigned int theta_0:10;
-	unsigned int N_min:8;
-	unsigned int C_max:8;
-	unsigned int radius:8;
+	unsigned int theta_0:14;
+	unsigned int L_min:10;
+	unsigned int N_min:10;
+	unsigned int C_max:10;
+	unsigned int radius:10;
+	unsigned int step:10;
 	GeneologyParameters() {
 		theta_0=35;
-		N_min=3;
+		L_min=3;
+		N_min=4;
 		C_max=3;
 		radius=3;
+		step=10;
 	}
 };
 
+const static QString	abram	=QString("")+alef_hamza_above+ba2+ra2+alef+meem,
+						ibrahim	=QString("")+alef_hamza_below+ba2+ra2+alef+ha2+ya2+meem,
+						sarah	=QString("")+seen+alef+ra2+ta2_marbouta,
+						saray	=QString("")+seen+alef+ra2+alef+ya2,
+						ya3coub	=QString("")+ya2+_3yn+qaf+waw+ba2,
+						israel	=QString("")+alef_hamza_below+seen+ra2+alef+ya2_hamza_above+ya2+lam;
+
 inline bool equalNames(const QString & n1,const QString & n2) {
-	static QString abram	=QString("")+alef_hamza_above+ba2+ra2+alef+meem,
-				   ibrahim	=QString("")+alef_hamza_below+ba2+ra2+alef+ha2+ya2+meem,
-				   sarah	=QString("")+seen+alef+ra2+ta2_marbouta,
-				   saray	=QString("")+seen+alef+ra2+alef+ya2,
-				   ya3coub	=QString("")+ya2+_3yn+qaf+waw+ba2,
-				   israel	=QString("")+alef_hamza_below+seen+ra2+alef+ya2_hamza_above+ya2+lam;
 	if (equal_withoutLastDiacritics(n1,abram) && equal_withoutLastDiacritics(n2,ibrahim))
 		return true;
 	if (equal_withoutLastDiacritics(n2,abram) && equal_withoutLastDiacritics(n1,ibrahim))
@@ -86,7 +91,12 @@ public:
 		return *this;
 	}
 	bool isMarriageCompatible(const Name & n) {
-		return (n.male!=male);
+		if (this==NULL)
+			return false;
+		return true;//(n.male!=male);
+	}
+	bool operator ==(const Name & n) const {
+		return equalNames(getString(),n.getString());
 	}
 
 	QString getString() const {
@@ -99,6 +109,10 @@ public:
 		return getString()<n.getString();
 	}
 };
+inline int qHash(const Name & n) {
+	return qHash(n.getString());
+}
+
 class GeneTree;
 class GeneNode {
 private:
@@ -210,9 +224,11 @@ public:
 		} else
 			return n;
 	}
-	bool hasSpouse(const Name & n) const {
+	bool hasSpouse(const Name & n, bool checkWithMain=false) const {
 		if (this==NULL)
 			return false;
+		if (checkWithMain && equalNames(n.getString(),name.getString()))
+			return true;
 		for (int i=0;i<spouses.size();i++) {
 			if (equalNames(n.getString(),spouses[i].getString()))
 				return true;
@@ -340,8 +356,8 @@ public:
 			return NULL;
 		return root->getNodeInSubTree(word,checkSpouses);
 	}
-	void compareToStandardTree(GeneTree * standard,double & found,double & similarContext);
-	void compareToStandardTree(GeneTree * standard,QSet<GeneNode*> & visitedNodes,double & found,double & similarContext);
+	void compareToStandardTree(GeneTree * standard,double & found,double & similarNeighborhood,double & similarContext);
+	void compareToStandardTree(GeneTree * standard,QSet<QPair<GeneNode *, Name> > & visitedNodes,double & found,double & similarNeighborhood,double & similarContext);
 	void mergeTrees(GeneTree * tree);
 	void mergeLeftovers();
 	void displayTree( ATMProgressIFC * prg);

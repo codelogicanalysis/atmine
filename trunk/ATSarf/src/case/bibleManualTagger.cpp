@@ -134,8 +134,12 @@ void BibleTaggerDialog::open_action() {
 		text->setTextCursor(c);
 		text->setTextBackgroundColor(Qt::white);
 		text->setTextColor(Qt::black);
-		string=new QString(s.readAll());
+		QString sss=s.readAll();
+		qDebug()<<sss.size();
+		string=new QString(sss);
+		qDebug()<<string->size();
 		text->setText(*string);
+		qDebug()<<text->toPlainText().size();
 
 		QFile file(QString("%1.tags").arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
@@ -144,6 +148,8 @@ void BibleTaggerDialog::open_action() {
 			if (!out.atEnd()) {
 				globalGraph=new GeneTree();
 				out	>>*globalGraph;
+				FillTextVisitor v(string);
+				v(globalGraph);
 			}
 			file.close();
 			for (int i=0;i<tags.size();i++) {
