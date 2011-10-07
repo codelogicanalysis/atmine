@@ -132,27 +132,37 @@ void MainWindow::changeEvent(QEvent *e){
 
 void MainWindow::on_chk_hadith_toggled(bool checked){
 	if (checked) {
+		m_ui->label_narr->setText("NARR Min:");
+		m_ui->label_nrc->setText("NRC Max:");
+		m_ui->label_eq_delta->setText("EQ delta:");
 		m_ui->NARRATOR->setText(QString("%1").arg(hadithParameters.narr_min));
 		m_ui->NMC->setText(QString("%1").arg(hadithParameters.nmc_max));
 		m_ui->NRC->setText(QString("%1").arg(hadithParameters.nrc_max));
 		m_ui->EQ_radius->setText(QString("%1").arg(hadithParameters.equality_radius));
+		m_ui->EQ_delta->setText(QString("%1").arg(hadithParameters.equality_delta));
 		m_ui->NARRATOR->setAlignment(Qt::AlignCenter);
 		m_ui->NMC->setAlignment(Qt::AlignCenter);
 		m_ui->NRC->setAlignment(Qt::AlignCenter);
 		m_ui->EQ_radius->setAlignment(Qt::AlignCenter);
+		m_ui->EQ_delta->setAlignment(Qt::AlignCenter);
 	}
 }
 
 void MainWindow::on_chk_bible_toggled(bool checked){
 	if (checked) {
-		m_ui->NARRATOR->setText(QString("%1").arg(geneologyParameters.N_min));
+		m_ui->label_narr->setText("Level Min:");
+		m_ui->label_nrc->setText("Keep Max:");
+		m_ui->label_eq_delta->setText("Count Min");
+		m_ui->NARRATOR->setText(QString("%1").arg(geneologyParameters.L_min));
 		m_ui->NMC->setText(QString("%1").arg(geneologyParameters.theta_0));
 		m_ui->NRC->setText(QString("%1").arg(geneologyParameters.C_max));
 		m_ui->EQ_radius->setText(QString("%1").arg(geneologyParameters.radius));
+		m_ui->EQ_delta->setText(QString("%1").arg(geneologyParameters.N_min));
 		m_ui->NARRATOR->setAlignment(Qt::AlignCenter);
 		m_ui->NMC->setAlignment(Qt::AlignCenter);
 		m_ui->NRC->setAlignment(Qt::AlignCenter);
 		m_ui->EQ_radius->setAlignment(Qt::AlignCenter);
+		m_ui->EQ_delta->setAlignment(Qt::AlignCenter);
 	}
 }
 
@@ -161,7 +171,7 @@ void MainWindow::on_pushButton_clicked(){
 	bool v1,v2,v3,v4,v5,v6;
 	int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
 	hadithParameters.narr_min=narr_min;
-	geneologyParameters.N_min=narr_min;
+	geneologyParameters.L_min=narr_min;
 	int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
 	hadithParameters.nmc_max=nmc_max;
 	geneologyParameters.theta_0=nmc_max;
@@ -171,7 +181,10 @@ void MainWindow::on_pushButton_clicked(){
 	int equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	hadithParameters.equality_radius=equality_radius;
 	geneologyParameters.radius=equality_radius;
-	hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
+	if (m_ui->chk_hadith->isChecked())
+		hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
+	else
+		geneologyParameters.N_min=m_ui->EQ_delta->toPlainText().toInt(&v4);
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
 	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
 	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();

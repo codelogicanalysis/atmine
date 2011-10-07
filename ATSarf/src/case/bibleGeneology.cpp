@@ -261,6 +261,8 @@ public:
 
 	bool analyze()	{
 		if (info.finish>info.start) { //more than one letter to be tested for being a name
+			if (equal_withoutLastDiacritics(israel,stem_info->raw_data))
+				return true;
 			if (landDesc.isDescription(stem_info->description_id)) {
 				land=true;
 				return false;
@@ -274,8 +276,8 @@ public:
 				if (suffSize>0 && !gaveBirth ) {
 					QString suffix=info.text->mid(Suffix->info.start,suffSize);
 					for (int i=0;i<relativeSuffixes.size();i++) {
-						relativeSuffix=true;
 						if (equalNames(suffix,relativeSuffixes[i])) {
+							relativeSuffix=true;
 							if (descentDir==SON) {
 								descentDir=FATHER;
 								pluralDescent=true;
@@ -347,7 +349,7 @@ void geneology_initialize() {
 	while (d_siblings.retrieve())
 		siblings.addDescription(d_siblings.get(0).toULongLong());
 	DescentConnectorGroup father(FATHER);
-	Retrieve_Template d_father("description","id","name='son' OR name='daughter/girl'");
+	Retrieve_Template d_father("description","id","name='son' OR name='daughter/girl' OR name='eldest/first-born'");
 	while (d_father.retrieve())
 		father.addDescription(d_father.get(0).toULongLong());
 	DescentConnectorGroup son(SON);
@@ -393,7 +395,11 @@ public:
 		const Name & name=node->name;
 		prg->tag(name.getStart(),name.getLength(),Qt::white,true);
 	}
-	void visit(const GeneNode * ,const Name &,bool) {}
+	void visit(const GeneNode * ,const Name & name,bool isSpouse) {
+		if (isSpouse) {
+			prg->tag(name.getStart(),name.getLength(),Qt::white,true);
+		}
+	}
 	void finish() {}
 };
 class GeneTree::MergeVisitor:public GeneVisitor{
@@ -562,65 +568,109 @@ public:
 	}
 };
 class FindAllVisitor:public GeneVisitor {
+public:
+	typedef QPair<GeneNode*,Name> NodeNamePair;
 private:
-	QSet<GeneNode*> & visited;
+	QSet<NodeNamePair> & visited;
 
 	const GeneNode * nodeToMatch;
+	const Name & nameToMatch;
 	GeneNode * bestMatch;
-	int bestScore;
+	int bestScore, bestNeighbor;
 
 	GeneNode * currMatch; //temporary
-	int currScore; //temporary
+	int currScore, currNeighbor; //temporary
 private:
+	void getNeighborNames(const GeneNode * node, QList<const Name *> & list) {
+		if (node->parent!=NULL) {
+			for (int i=0;i<node->parent->spouses.size();i++)
+				list<<&node->parent->spouses[i];
+			for (int i=0;i<node->parent->children.size();i++)
+				list<<&node->parent->children[i]->name;
+			list<<&node->parent->name;
+		}
+		for (int i=0;i<node->children.size();i++)
+			list<<&node->children[i]->name;
+		for (int i=0;i<node->spouses.size();i++)
+			list<<&node->spouses[i];
+	}
+
 	void finalizeMatch() {
-		if (currMatch!=NULL && !visited.contains(currMatch)) {
+		if (currMatch!=NULL && !visited.contains(NodeNamePair(currMatch,nameToMatch))) {
 			if (nodeToMatch->parent==NULL) {
 				if (currMatch->parent==NULL )
 					currScore++;
 			} else {
 				if (equalNames(nodeToMatch->parent->toString(),currMatch->parent->toString()))
 					currScore++;
+				if (nodeToMatch->parent!=NULL && currMatch->parent!=NULL) {
+					for (int i=0;i<nodeToMatch->parent->spouses.size();i++) {
+						if (equalNames(nodeToMatch->parent->spouses[i].getString(),currMatch->parent->toString()))
+							currScore++;
+						for (int j=0;j<currMatch->parent->spouses.size();j++) {
+							if (j==0 && equalNames(nodeToMatch->parent->toString(),currMatch->parent->spouses[j].getString()))
+								currScore++;
+							if (equalNames(nodeToMatch->parent->spouses[i].getString(),currMatch->parent->spouses[j].getString()))
+								currScore++;
+						}
+					}
+				}
+			}
+			QList<const Name *> nodeNames, matchNames;
+			getNeighborNames(nodeToMatch,nodeNames);
+			getNeighborNames(currMatch,matchNames);
+			for (int i=0;i<nodeNames.size();i++) {
+				for (int j=0;j<matchNames.size();j++) {
+					if (equalNames(nodeNames[i]->getString(),matchNames[j]->getString()))
+						currNeighbor++;
+				}
 			}
 
-			if (bestMatch==NULL || bestScore<currScore) {
+			if (bestMatch==NULL || bestScore<currScore || bestNeighbor<currNeighbor) {
 				bestMatch=currMatch;
 				bestScore=currScore;
+				bestNeighbor=currNeighbor;
 			}
 		}
 	}
 
 public:
-	FindAllVisitor(const GeneNode * nodeToMatch, QSet<GeneNode*> & visitedNodes):visited(visitedNodes) {
+	FindAllVisitor(const GeneNode * nodeToMatch, const Name & name, QSet<NodeNamePair> & visitedNodes)
+			:visited(visitedNodes), nameToMatch(name) {
 		this->nodeToMatch=nodeToMatch;
 		bestMatch=NULL;
 		currMatch=NULL;
 		bestScore=0;
+		bestNeighbor=0;
+		currScore=0;
+		currNeighbor=0;
 	}
 	virtual void visit(const GeneNode * node, int ) {
 		finalizeMatch();
-		if (equalNames(node->toString(),nodeToMatch->toString())){
+		if (equalNames(node->toString(),nameToMatch.getString()) ||node->hasSpouse(nameToMatch,false)){
 			currMatch= (GeneNode *)node;
 		} else {
 			currMatch= NULL;
 		}
 		currScore=0;
+		currNeighbor=0;
 	}
 	virtual void visit(const GeneNode * node1, const Name & name2, bool isSpouse){
 		if (node1==currMatch) {
 			if (isSpouse) {
-				if (nodeToMatch->hasSpouse(name2))
-					bestScore++;
+				if (nodeToMatch->hasSpouse(name2,true))
+					currScore++;
 			} else {
 				if (nodeToMatch->hasChild(name2))
-					bestScore++;
+					currScore++;
 			}
 		}
 	}
 	virtual void finish() {
 		finalizeMatch();
 		if (bestMatch!=NULL) {
-			assert(!visited.contains(bestMatch));
-			visited.insert(bestMatch);
+			assert(!visited.contains(NodeNamePair(bestMatch,nameToMatch)));
+			visited.insert(NodeNamePair(bestMatch,nameToMatch));
 		}
 	}
 	bool isFound() {
@@ -632,40 +682,55 @@ public:
 	int getFoundScore() {
 		return bestScore;
 	}
+	int getNeighborScore() {
+		return bestNeighbor;
+	}
 };
 class CompareVisitor: public GeneVisitor {
 private:
-	QSet<GeneNode*> & visitedNodes;
+	QSet<FindAllVisitor::NodeNamePair> & visitedNodes;
 	GeneTree * standard;
-	int foundCount, similarContextCount,totalCount, countOfThisTree;
+	int foundCount, similarContextCount,neigborhoodCount,totalCount;
 public:
-	CompareVisitor(GeneTree * standard,QSet<GeneNode*> & visited):visitedNodes(visited) {
+	CompareVisitor(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visited):visitedNodes(visited) {
 		foundCount=0;
 		similarContextCount=0;
+		neigborhoodCount=0;
 		totalCount=0;
 		this->standard=standard;
 		//standard->updateRoot();
 	}
-	virtual void visit(const GeneNode * node, int ) {
-		if (node->parent==NULL)
-			countOfThisTree=node->getSubTreeCount();
-		FindAllVisitor v(node,visitedNodes);
+	void searchFor(const GeneNode * node, const Name & n){
+		FindAllVisitor v(node,n,visitedNodes);
 		v(standard);
 		if (v.isFound()) {
 			foundCount++;
 			if (v.getFoundScore()>0)
 				similarContextCount++;
+			if (v.getNeighborScore()>0)
+				neigborhoodCount++;
 		}
 		totalCount++;
 	}
-	virtual void visit(const GeneNode *, const Name & , bool ){	}
+
+	virtual void visit(const GeneNode * node, int ) {
+		searchFor(node,node->name);
+	}
+	virtual void visit(const GeneNode * node, const Name & n, bool isSpouse){
+		if (isSpouse) {
+			searchFor(node,n);
+		}
+
+	}
 	virtual void finish() {	}
 	double getFoundPercentage() { //TODO: make sure we are dividing by the correct number
-		return (double)foundCount/ /*totalCount*/standard->getTreeNodesCount();
+		return (double)foundCount/ /*totalCount*/standard->getTreeNodesCount(true);
 	}
 	double getSimilarContextPercentage() {
-		assert(totalCount==countOfThisTree);
-		return (double)similarContextCount/ /*totalCount*/standard->getTreeNodesCount();
+		return (double)similarContextCount/ /*totalCount*/standard->getTreeNodesCount(true);
+	}
+	double getSimilarNeighborhoodPercentage() {
+		return (double)neigborhoodCount/ /*totalCount*/standard->getTreeNodesCount(true);
 	}
 };
 class GeneDisplayVisitor: public GeneVisitor {
@@ -797,18 +862,16 @@ GeneTree* GeneTree::duplicateTree() {
 	v(this);
 	return v.getDuplicateTree();
 }
-void GeneTree::compareToStandardTree(GeneTree * standard,QSet<GeneNode*> & visitedNodes,double & found,double & similarContext) {
+void GeneTree::compareToStandardTree(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visitedNodes,double & found,double & similarNeighborhood,double & similarContext) {
 	CompareVisitor v(standard,visitedNodes);
 	v(this);
 	found=v.getFoundPercentage();
 	similarContext=v.getSimilarContextPercentage();
+	similarNeighborhood=v.getSimilarNeighborhoodPercentage();
 }
-void GeneTree::compareToStandardTree(GeneTree * standard,double & found,double & similarContext) {
-	QSet<GeneNode*> visitedNodes;
-	CompareVisitor v(standard,visitedNodes);
-	v(this);
-	found=v.getFoundPercentage();
-	similarContext=v.getSimilarContextPercentage();
+void GeneTree::compareToStandardTree(GeneTree * standard,double & found,double & similarNeighborhood,double & similarContext) {
+	QSet<FindAllVisitor::NodeNamePair> visitedNodes;
+	compareToStandardTree(standard,visitedNodes,found,similarNeighborhood,similarContext);
 }
 void GeneTree::mergeTrees(GeneTree *tree) {
 	if (mergeVisitor==NULL)
@@ -842,6 +905,7 @@ private:
 		long startPos;
 		long endPos;
 		long nextPos;
+		WordType lastType:3;
 		WordType currentType:3;
 		StateType currentState:2;
 		StateType nextState:2;
@@ -851,10 +915,12 @@ private:
 		bool sonsFoundName:1;
 		bool land:1;
 		bool male:1;
+		bool newNameNotProcessed:1;
 		DescentDirection descentDirection:3;
 		DescentDirection lastDescentDirection:3;
 		bool singularDescent:1;
 		//int unused:19;
+		Name unProcessedName;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
 		void resetCurrentWordInfo()	{
 			currentPunctuationInfo.reset();
@@ -876,9 +942,11 @@ private:
 			preceededBygaveBirth=false;
 			singularDescent=true;
 			lastDescentDirection=UNDEFINED_DIRECTION;
+			newNameNotProcessed=false;
 			land=false;
+			lastType=OTHER;
 		}
-		StateInfo() {
+		StateInfo(): unProcessedName(text,-1,-1) {
 			initialize(NULL);
 		}
 	};
@@ -922,8 +990,8 @@ private:
 	ATMProgressIFC *prg;
 
 	inline bool conditionToOutput() {
-		return currentData.tree->getTreeLevels()>=geneologyParameters.N_min ||
-				currentData.tree->getTreeNodesCount(true)>=geneologyParameters.C_max;
+		return currentData.tree->getTreeLevels()>=geneologyParameters.L_min ||
+				currentData.tree->getTreeNodesCount(true)>=geneologyParameters.N_min;
 	}
 	inline bool checkIfDisplay(bool keep=false) {
 		bool ret_val=true;
@@ -950,6 +1018,10 @@ private:
 			currentData.outputData->clear();
 			stateInfo.nextState=TEXT_S;
 		} else {
+		#if 0
+			currentData.last=NULL;
+			stateInfo.nextState=NAME_S;
+		#else
 			if (conditionToOutput()) {
 				outputAndTag();
 				currentData.last=NULL;
@@ -957,9 +1029,11 @@ private:
 				stateInfo.nextState=TEXT_S; //redundant
 				ret_val= false;
 			} else {
+				currentData.i0+=geneologyParameters.step;
 				currentData.last=NULL;
 				stateInfo.nextState=NAME_S;
 			}
+		#endif
 		}
 		stateInfo.descentDirection=UNDEFINED_DIRECTION;
 		return ret_val;
@@ -989,8 +1063,14 @@ private:
 				stateInfo.descentDirection=dir;
 			} else
 				stateInfo.nextState=NAME_S;
+
 	#ifdef TRUST_OLD
 		} else {
+			currentData.last=currentData.tree->findTreeNode(currentData.lastName);
+			if (currentData.last!=NULL) {
+				addToTree(name);
+			}
+			currentData.i0=0;
 			stateInfo.nextState=NAME_S;
 		}
 	#endif
@@ -1065,14 +1145,26 @@ private:
 			if (!stateInfo.preceededByLi) {
 				switch (stateInfo.currentType) {
 				case DC:
-					//currentData.i0=0;
-					if (currentData.last==NULL)
-						currentData.last=currentData.tree->findTreeNode(currentData.lastName,stateInfo.descentDirection==SON ||stateInfo.descentDirection==FATHER);
-					if (stateInfo.descentDirection==SON)
-						stateInfo.nextState=SONS_S;//NAME_S;
-					else
+					if (stateInfo.newNameNotProcessed && currentData.last!=NULL) {
+						currentData.startGene=min(currentData.startGene,stateInfo.unProcessedName.getStart());
+						addToTree(stateInfo.unProcessedName);
+						stateInfo.newNameNotProcessed=false;
+						if (stateInfo.singularDescent) {
+							stateInfo.descentDirection=stateInfo.lastDescentDirection;
+							stateInfo.singularDescent=false;
+						}
 						stateInfo.nextState=NAME_S;
-					stateInfo.sonsFoundName=false;
+					} else {
+						if (stateInfo.newNameNotProcessed)
+							stateInfo.newNameNotProcessed=false;
+						if (currentData.last==NULL)
+							currentData.last=currentData.tree->findTreeNode(currentData.lastName,stateInfo.descentDirection==SON ||stateInfo.descentDirection==FATHER);
+						if (stateInfo.descentDirection==SON)
+							stateInfo.nextState=SONS_S;//NAME_S;
+						else
+							stateInfo.nextState=NAME_S;
+						stateInfo.sonsFoundName=false;
+					}
 					break;
 				case ENDING_PUNC:
 					currentData.last=NULL;
@@ -1099,24 +1191,59 @@ private:
 							}
 						}
 					} else {
-						if (currentData.last==NULL) {
-							ret_val=doActionNewNameAndNullLast(name); //choses also nextState
-						} else {
-							if (currentData.tree==NULL)
-								currentData.tree=new GeneTree(currentData.last);
-
-							if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
-								addToTree(name);
-								currentData.last=currentData.tree->findTreeNode(name.getString(),true);
-								currentData.i0=0;
-								stateInfo.nextState=NAME_S;
+						if (stateInfo.descentDirection==UNDEFINED_DIRECTION) {
+							if (!stateInfo.newNameNotProcessed) {
+								if (currentData.tree->getTreeNodesCount()>0) {
+									stateInfo.newNameNotProcessed=true;
+									stateInfo.unProcessedName=name;
+									stateInfo.nextState=NAME_S;
+								} else {
+									currentData.last=new GeneNode(name,NULL);
+									if (currentData.tree==NULL)
+										currentData.tree=new GeneTree(currentData.last);
+									else
+										currentData.tree->setRoot(currentData.last);
+									currentData.lastName=name.getString();
+									currentData.outputData->addName(name);
+									stateInfo.nextState=NAME_S;
+								}
 							} else {
-							#ifndef TRUST_OLD
-								doActionNewNameAndNullLast(name); //choses also nextState
-							#else
-								assert(stateInfo.descentDirection==UNDEFINED_DIRECTION);
-								stateInfo.nextState=NAME_S;
-							#endif
+								if (stateInfo.lastType==NEW_NAME) {//in cases similar to the start of 1 chronicles
+									stateInfo.descentDirection=SON;
+									if (currentData.tree->getTreeNodesCount()==0) {
+										currentData.last=new GeneNode(stateInfo.unProcessedName,NULL);
+										currentData.tree->setRoot(currentData.last);
+										currentData.outputData->addName(stateInfo.unProcessedName);
+									} else
+										addToTree(stateInfo.unProcessedName);
+									addToTree(name);
+									currentData.lastName=name.getString();
+									currentData.last=currentData.tree->findTreeNode(currentData.lastName);
+									stateInfo.nextState=NAME_S;
+								} else  {
+									doActionNewNameAndNullLast(name); //choses also nextState
+								}
+							}
+						} else {
+							if (currentData.last==NULL) {
+								ret_val=doActionNewNameAndNullLast(name); //choses also nextState
+							} else {
+								if (currentData.tree==NULL)
+									currentData.tree=new GeneTree(currentData.last);
+
+								if (stateInfo.descentDirection!=UNDEFINED_DIRECTION) {
+									addToTree(name);
+									currentData.last=currentData.tree->findTreeNode(name.getString(),true);
+									currentData.i0=0;
+									stateInfo.nextState=NAME_S;
+								} else {
+								#ifndef TRUST_OLD_L
+									doActionNewNameAndNullLast(name); //choses also nextState
+								#else
+									assert(stateInfo.descentDirection==UNDEFINED_DIRECTION);
+									stateInfo.nextState=NAME_S;
+								#endif
+								}
 							}
 						}
 					}
@@ -1289,8 +1416,8 @@ private:
 			else
 				type=CORE_NAME;
 			stateInfo.male=s.male;
-			if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
-				stateInfo.descentDirection=SON;
+			/*if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
+				stateInfo.descentDirection=SON;*/
 			if (stateInfo.land) {
 				stateInfo.land=false;
 				type=OTHER;
@@ -1298,7 +1425,7 @@ private:
 			if (!(result(type)))
 				return false;
 		#ifdef SINGULAR_DESCENT
-			if (stateInfo.singularDescent) {
+			if (type==NEW_NAME && stateInfo.singularDescent) {
 				stateInfo.singularDescent=false;
 				stateInfo.descentDirection=stateInfo.lastDescentDirection;
 			}
@@ -1316,12 +1443,16 @@ private:
 			stateInfo.descentDirection=s.descentDir;
 			if (s.descentDir==FATHER /*&& s.pluralDescent*/ && stateInfo.preceededBygaveBirth)
 				stateInfo.descentDirection=SON;
-			if (!result(DC))
-				return false;
-			if ((stateInfo.currentState==NEW_NAME || stateInfo.currentState==CORE_NAME || stateInfo.currentState==LEAF_NAME) && s.relativeSuffix) {
+			/*if (stateInfo.newNameNotProcessed && s.relativeSuffix && stateInfo.currentState!=TEXT_S) {
+				addToTree(stateInfo.unProcessedName);
 				stateInfo.descentDirection=stateInfo.lastDescentDirection;
 				stateInfo.singularDescent=false;
-			}
+				stateInfo.newNameNotProcessed=false;
+				stateInfo.nextState=stateInfo.currentState;
+			} else {*/
+				if (!result(DC))
+					return false;
+			//}
 			if (!stateInfo.preceededBygaveBirth)
 				stateInfo.preceededBygaveBirth=s.gaveBirth;
 		} else {
@@ -1338,6 +1469,7 @@ private:
 				stateInfo.land=false;
 				stateInfo.lastDescentDirection=UNDEFINED_DIRECTION;
 				stateInfo.singularDescent=false;
+				stateInfo.newNameNotProcessed=false;
 			}
 			stateInfo.currentState=stateInfo.nextState;
 			stateInfo.startPos=stateInfo.endPos+1;
@@ -1431,7 +1563,7 @@ private:
 
 		OutputDataList tags;
 		QList<int> common_i,common_j;
-		QVector<double> boundaryRecallList, boundaryPrecisionList, graphFoundList,graphSimilarList;
+		QVector<double> boundaryRecallList, boundaryPrecisionList, graphFoundList,graphSimilarList,graphNeigborhoodList;
 		int tagOverlapCount=0;
 		GeneTree * globalTree=new GeneTree();
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
@@ -1463,7 +1595,7 @@ private:
 		v(globalTree);
 
 		int i=0,j=0;
-		QSet<GeneNode*> visitedNodes;
+		QSet<FindAllVisitor::NodeNamePair> visitedNodes;
 		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
 			int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd(),
@@ -1483,14 +1615,15 @@ private:
 					if (countCorrect>0)
 						tagOverlapCount++;
 				}
-				double graphFound=0, graphSimilarContext=0;
+				double graphFound=0, graphSimilarContext=0,graphSimilarNeighborhood=0;
 				if (countCorrect>0) {
 					boundaryRecallList.append((double)countCommon/countCorrect);
 					boundaryPrecisionList.append((double)countCommon/countDetected);
 
-					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,graphFound, graphSimilarContext);
+					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,graphFound,graphSimilarNeighborhood, graphSimilarContext);
 					graphFoundList.append(graphFound);
 					graphSimilarList.append(graphSimilarContext);
+					graphNeigborhoodList.append(graphSimilarNeighborhood);
 				}
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
@@ -1538,6 +1671,9 @@ private:
 			j++;
 		}
 	#endif
+		/*int tagNamesCount=0;
+		for (int i=0;i<tags.size();i++)
+			tagNamesCount+=tags[i].getNamesList().size();*/
 		assert(common_i.size()==common_j.size());
 		int commonCount=common_i.size();
 		double detectionRecall=(double)commonCount/tags.size(),
@@ -1545,9 +1681,11 @@ private:
 			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount,
 			   boundaryPrecision=average(boundaryPrecisionList),
 			   graphFound=sum(graphFoundList)/tagOverlapCount,
+			   graphNeighborhood=sum(graphNeigborhoodList)/tagOverlapCount,
 			   graphSimilar=sum(graphSimilarList)/tagOverlapCount;
-		double globalGraphFound, globalGraphSimilarContext;
-		currentData.globalTree->compareToStandardTree(globalTree,globalGraphFound, globalGraphSimilarContext);
+
+		double globalGraphFound,globalGraphSimilarNeighborhood, globalGraphSimilarContext;
+		currentData.globalTree->compareToStandardTree(globalTree,globalGraphFound,globalGraphSimilarNeighborhood, globalGraphSimilarContext);
 		globalTree->displayTree(prg);
 		currentData.globalTree->deleteTree();
 		globalTree->deleteTree();
@@ -1561,9 +1699,11 @@ private:
 						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n"
 						<< "Local Graphs:\n"
 						<< "\tfound=\t\t"<<graphFound<<"\n"
+						<< "\tsimilar-neighbors\t"<<graphNeighborhood<<"\n"
 						<< "\tsimilar-context=\t"<<graphSimilar<<"\n"
 						<< "Global Graph:\n"
 						<< "\tfound=\t\t"<<globalGraphFound<<"\n"
+						<< "\tsimilar-neighbors\t"<<globalGraphSimilarNeighborhood<<"\n"
 						<< "\tsimilar-context=\t"<<globalGraphSimilarContext<<"\n";
 	#else
 		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
@@ -1601,6 +1741,7 @@ private:
 			stateInfo.startPos=stateInfo.nextPos;
 			stateInfo.lastEndPos=stateInfo.endPos;
 			stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
+			stateInfo.lastType=stateInfo.currentType;
 			prg->report((double)stateInfo.startPos/text_size*100+0.5);
 			if (stateInfo.startPos==text_size-1)
 				break;
