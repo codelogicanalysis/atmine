@@ -26,10 +26,10 @@ public:
 	unsigned int radius:10;
 	unsigned int step:10;
 	GeneologyParameters() {
-		theta_0=35;
+		theta_0=45;
 		L_min=3;
-		N_min=4;
-		C_max=3;
+		N_min=3;
+		C_max=2;
 		radius=3;
 		step=10;
 	}
@@ -110,7 +110,7 @@ public:
 	}
 };
 inline int qHash(const Name & n) {
-	return qHash(n.getString());
+	return qHash(removeDiacritics(n.getString()));
 }
 
 class GeneTree;
@@ -272,11 +272,20 @@ public:
 		return children.size()==0;
 	}
 	int getSubTreeCount(bool countSpouses=false) const {
+		return getSubTreeCount(NULL,countSpouses);
+	}
+	int getSubTreeCount(QSet<Name> * visited,bool countSpouses=false) const  {
 		if (this==NULL)
 			return 0;
-		int count=1;
+		int count=0;
+		if (visited==NULL) {
+			count=1;
+		} else if (!visited->contains(name)) {
+			visited->insert(name);
+			count=1;
+		}
 		for (int i=0;i<children.size();i++) {
-			count+=children[i]->getSubTreeCount(countSpouses);
+			count+=children[i]->getSubTreeCount(visited,countSpouses);
 		}
 		if (countSpouses) {
 			count+=spouses.size();
@@ -292,6 +301,27 @@ public:
 	}
 };
 class GeneTree {
+public:
+	class GraphStatistics {
+	public:
+		double	foundRecall, foundPrecision,
+				contextRecall,contextPrecision,
+				neigborhoodRecall,neigborhoodPrecision,
+				spousesRecall,spousesPrecision,
+				childrenRecall,childrenPrecision;
+		GraphStatistics() {
+			foundRecall=0;
+			foundPrecision=0;
+			contextRecall=0;
+			contextPrecision=0;
+			neigborhoodRecall=0;
+			neigborhoodPrecision=0;
+			spousesRecall=0;
+			spousesPrecision=0;
+			childrenRecall=0;
+			childrenPrecision=0;
+		}
+	};
 private:
 	friend QDataStream &operator<<(QDataStream &out, const GeneTree &t);
 	friend QDataStream &operator>>(QDataStream &in, GeneTree &t);
@@ -351,13 +381,19 @@ public:
 			return 0;
 		return root->getSubTreeCount(countSpouses);
 	}
+	int getTreeDistinctNodesCount(bool countSpouses=false) {
+		if (this==NULL)
+			return 0;
+		QSet<Name> visited;
+		return root->getSubTreeCount(&visited,countSpouses);
+	}
 	GeneNode * findTreeNode(QString word, bool checkSpouses=false) {
 		if (this==NULL)
 			return NULL;
 		return root->getNodeInSubTree(word,checkSpouses);
 	}
-	void compareToStandardTree(GeneTree * standard,double & found,double & similarNeighborhood,double & similarContext);
-	void compareToStandardTree(GeneTree * standard,QSet<QPair<GeneNode *, Name> > & visitedNodes,double & found,double & similarNeighborhood,double & similarContext);
+	void compareToStandardTree(GeneTree * standard,GraphStatistics & stats);
+	void compareToStandardTree(GeneTree * standard,QSet<QPair<GeneNode *, Name> > & visitedNodes,GraphStatistics & stats);
 	void mergeTrees(GeneTree * tree);
 	void mergeLeftovers();
 	void displayTree( ATMProgressIFC * prg);

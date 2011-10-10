@@ -576,12 +576,14 @@ private:
 	const GeneNode * nodeToMatch;
 	const Name & nameToMatch;
 	GeneNode * bestMatch;
-	int bestScore, bestNeighbor;
+	int bestContext, bestNeighbor, bestSpouses, bestChildren;
 
 	GeneNode * currMatch; //temporary
-	int currScore, currNeighbor; //temporary
+	int currContext, currNeighbor,currSpouses,currChildren; //temporary
 private:
 	void getNeighborNames(const GeneNode * node, QList<const Name *> & list) {
+		if (node==NULL)
+			return;
 		if (node->parent!=NULL) {
 			for (int i=0;i<node->parent->spouses.size();i++)
 				list<<&node->parent->spouses[i];
@@ -599,19 +601,19 @@ private:
 		if (currMatch!=NULL && !visited.contains(NodeNamePair(currMatch,nameToMatch))) {
 			if (nodeToMatch->parent==NULL) {
 				if (currMatch->parent==NULL )
-					currScore++;
+					currContext++;
 			} else {
 				if (equalNames(nodeToMatch->parent->toString(),currMatch->parent->toString()))
-					currScore++;
+					currContext++;
 				if (nodeToMatch->parent!=NULL && currMatch->parent!=NULL) {
 					for (int i=0;i<nodeToMatch->parent->spouses.size();i++) {
 						if (equalNames(nodeToMatch->parent->spouses[i].getString(),currMatch->parent->toString()))
-							currScore++;
+							currContext++;
 						for (int j=0;j<currMatch->parent->spouses.size();j++) {
 							if (j==0 && equalNames(nodeToMatch->parent->toString(),currMatch->parent->spouses[j].getString()))
-								currScore++;
+								currContext++;
 							if (equalNames(nodeToMatch->parent->spouses[i].getString(),currMatch->parent->spouses[j].getString()))
-								currScore++;
+								currContext++;
 						}
 					}
 				}
@@ -626,10 +628,12 @@ private:
 				}
 			}
 
-			if (bestMatch==NULL || bestScore<currScore || bestNeighbor<currNeighbor) {
+			if (bestMatch==NULL || bestContext<currContext || bestNeighbor<currNeighbor) {
 				bestMatch=currMatch;
-				bestScore=currScore;
+				bestContext=currContext;
 				bestNeighbor=currNeighbor;
+				bestSpouses=currSpouses;
+				bestChildren=currChildren;
 			}
 		}
 	}
@@ -640,10 +644,14 @@ public:
 		this->nodeToMatch=nodeToMatch;
 		bestMatch=NULL;
 		currMatch=NULL;
-		bestScore=0;
+		bestContext=0;
 		bestNeighbor=0;
-		currScore=0;
+		bestSpouses=0;
+		bestChildren=0;
+		currContext=0;
 		currNeighbor=0;
+		currSpouses=0;
+		currChildren=0;
 	}
 	virtual void visit(const GeneNode * node, int ) {
 		finalizeMatch();
@@ -652,17 +660,23 @@ public:
 		} else {
 			currMatch= NULL;
 		}
-		currScore=0;
+		currContext=0;
 		currNeighbor=0;
+		currSpouses=0;
+		currChildren=0;
 	}
 	virtual void visit(const GeneNode * node1, const Name & name2, bool isSpouse){
 		if (node1==currMatch) {
 			if (isSpouse) {
-				if (nodeToMatch->hasSpouse(name2,true))
-					currScore++;
+				if (nodeToMatch->hasSpouse(name2,true)) {
+					currContext++;
+					currSpouses++;
+				}
 			} else {
-				if (nodeToMatch->hasChild(name2))
-					currScore++;
+				if (nodeToMatch->hasChild(name2)) {
+					currContext++;
+					currChildren++;
+				}
 			}
 		}
 	}
@@ -679,24 +693,91 @@ public:
 	GeneNode * getFoundNode() {
 		return bestMatch;
 	}
-	int getFoundScore() {
-		return bestScore;
+	double getContextRecall() {
+		int contextCount=bestMatch->spouses.size()+bestMatch->children.size()+1;//1 is for parent even if NULL
+		if (contextCount>0) {
+			double score=(double)bestContext/contextCount;
+			return score;
+		} else
+			return 1;
 	}
-	int getNeighborScore() {
-		return bestNeighbor;
+	double getContextPrecision() {
+		int contextCount=nodeToMatch->spouses.size()+nodeToMatch->children.size()+1;//1 is for parent even if NULL
+		if (contextCount>0) {
+			double score=(double)bestContext/contextCount;
+			return score;
+		} else
+			return 1;
+	}
+	double getNeighborRecall() {
+		QList<const Name *> matchNames;
+		getNeighborNames(bestMatch,matchNames); //TODO: inefficient for getting number of neighbors
+		if (matchNames.size()>0) {
+			double recall=(double)bestNeighbor/matchNames.size();
+			return recall;
+		} else
+			return 1;
+	}
+	double getNeighborPrecision() {
+		QList<const Name *> matchNames;
+		getNeighborNames(nodeToMatch,matchNames); //TODO: inefficient for getting number of neighbors
+		if (matchNames.size()>0) {
+			double precision=(double)bestNeighbor/matchNames.size();
+			return precision;
+		} else
+			return 1;
+	}
+	double getSpousesRecall() {
+		int size=bestMatch->spouses.size();
+		if (size>0) {
+			double recall=(double)bestSpouses/size;
+			return recall;
+		} else
+			return 1;
+	}
+	double getSpousesPrecision() {
+		int size=nodeToMatch->spouses.size();
+		if (size>0) {
+			double precision=(double)bestSpouses/size;
+			return precision;
+		} else
+			return 1;
+	}
+	double getChildrenRecall() {
+		int size=bestMatch->children.size();
+		if (size>0) {
+			double recall=(double)bestChildren/size;
+			return recall;
+		} else
+			return 1;
+	}
+	double getChildrenPrecision() {
+		int size=nodeToMatch->children.size();
+		if (size>0) {
+			double precision=(double)bestChildren/size;
+			return precision;
+		} else
+			return 1;
 	}
 };
 class CompareVisitor: public GeneVisitor {
+public:
+	typedef GeneTree::GraphStatistics GraphStatistics;
 private:
 	QSet<FindAllVisitor::NodeNamePair> & visitedNodes;
 	GeneTree * standard;
-	int foundCount, similarContextCount,neigborhoodCount,totalCount;
+	int foundCount, totalCount,totalDetected;
+	GraphStatistics & statistics;
+	QVector<double> contextRecall,contextPrecision,
+					neigborhoodRecall,neigborhoodPrecision,
+					spousesRecall,spousesPrecision,
+					childrenRecall,childrenPrecision;
 public:
-	CompareVisitor(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visited):visitedNodes(visited) {
+	CompareVisitor(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visited, GraphStatistics & stats)
+			:visitedNodes(visited),statistics(stats) {
 		foundCount=0;
-		similarContextCount=0;
-		neigborhoodCount=0;
-		totalCount=0;
+		totalCount=standard->getTreeNodesCount(true);
+		totalDetected=0;
 		this->standard=standard;
 		//standard->updateRoot();
 	}
@@ -704,33 +785,41 @@ public:
 		FindAllVisitor v(node,n,visitedNodes);
 		v(standard);
 		if (v.isFound()) {
+			//qDebug()<<n.getString();
 			foundCount++;
-			if (v.getFoundScore()>0)
-				similarContextCount++;
-			if (v.getNeighborScore()>0)
-				neigborhoodCount++;
+			contextRecall.append(v.getContextRecall());
+			contextPrecision.append(v.getContextPrecision());
+			neigborhoodRecall.append(v.getNeighborRecall());
+			neigborhoodPrecision.append(v.getNeighborPrecision());
+			spousesRecall.append(v.getSpousesRecall());
+			spousesPrecision.append(v.getSpousesPrecision());
+			childrenRecall.append(v.getChildrenRecall());
+			childrenPrecision.append(v.getChildrenPrecision());
 		}
-		totalCount++;
 	}
 
 	virtual void visit(const GeneNode * node, int ) {
+		if (node->parent==NULL) {
+			totalDetected=node->getSubTreeCount(true);
+		}
 		searchFor(node,node->name);
 	}
 	virtual void visit(const GeneNode * node, const Name & n, bool isSpouse){
 		if (isSpouse) {
 			searchFor(node,n);
 		}
-
 	}
-	virtual void finish() {	}
-	double getFoundPercentage() { //TODO: make sure we are dividing by the correct number
-		return (double)foundCount/ /*totalCount*/standard->getTreeNodesCount(true);
-	}
-	double getSimilarContextPercentage() {
-		return (double)similarContextCount/ /*totalCount*/standard->getTreeNodesCount(true);
-	}
-	double getSimilarNeighborhoodPercentage() {
-		return (double)neigborhoodCount/ /*totalCount*/standard->getTreeNodesCount(true);
+	virtual void finish() {
+		statistics.foundRecall=(double)foundCount/ totalCount;
+		statistics.foundPrecision=(double)foundCount/ totalDetected;
+		statistics.contextRecall=sum(contextRecall)/foundCount;
+		statistics.contextPrecision=average(contextPrecision);
+		statistics.neigborhoodRecall=sum(neigborhoodRecall)/foundCount;
+		statistics.neigborhoodPrecision=average(neigborhoodPrecision);
+		statistics.spousesRecall=sum(spousesRecall)/foundCount;
+		statistics.spousesPrecision=average(spousesPrecision);
+		statistics.childrenRecall=sum(childrenRecall)/foundCount;
+		statistics.childrenPrecision=average(childrenPrecision);
 	}
 };
 class GeneDisplayVisitor: public GeneVisitor {
@@ -862,16 +951,13 @@ GeneTree* GeneTree::duplicateTree() {
 	v(this);
 	return v.getDuplicateTree();
 }
-void GeneTree::compareToStandardTree(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visitedNodes,double & found,double & similarNeighborhood,double & similarContext) {
-	CompareVisitor v(standard,visitedNodes);
+void GeneTree::compareToStandardTree(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visitedNodes,GraphStatistics & stats) {
+	CompareVisitor v(standard,visitedNodes,stats);
 	v(this);
-	found=v.getFoundPercentage();
-	similarContext=v.getSimilarContextPercentage();
-	similarNeighborhood=v.getSimilarNeighborhoodPercentage();
 }
-void GeneTree::compareToStandardTree(GeneTree * standard,double & found,double & similarNeighborhood,double & similarContext) {
+void GeneTree::compareToStandardTree(GeneTree * standard,GraphStatistics & stats) {
 	QSet<FindAllVisitor::NodeNamePair> visitedNodes;
-	compareToStandardTree(standard,visitedNodes,found,similarNeighborhood,similarContext);
+	compareToStandardTree(standard,visitedNodes,stats);
 }
 void GeneTree::mergeTrees(GeneTree *tree) {
 	if (mergeVisitor==NULL)
@@ -988,6 +1074,7 @@ private:
 	StateInfo stateInfo;
 	QString * text;
 	ATMProgressIFC *prg;
+	long text_size;
 
 	inline bool conditionToOutput() {
 		return currentData.tree->getTreeLevels()>=geneologyParameters.L_min ||
@@ -1005,6 +1092,7 @@ private:
 			}
 			currentData.last=NULL;
 			currentData.tree=NULL;
+			stateInfo.newNameNotProcessed=false;
 			stateInfo.nextState=TEXT_S; //redundant
 		}
 		return ret_val;
@@ -1015,6 +1103,10 @@ private:
 		bool keep=count<=geneologyParameters.C_max && count>1;
 		bool ret_val=checkIfDisplay(keep);
 		if (!keep) {
+			currentData.tree->deleteTree();
+			currentData.tree=NULL;
+			currentData.last=NULL;
+			stateInfo.newNameNotProcessed=false;
 			currentData.outputData->clear();
 			stateInfo.nextState=TEXT_S;
 		} else {
@@ -1026,6 +1118,7 @@ private:
 				outputAndTag();
 				currentData.last=NULL;
 				currentData.tree=NULL;
+				stateInfo.newNameNotProcessed=false;
 				stateInfo.nextState=TEXT_S; //redundant
 				ret_val= false;
 			} else {
@@ -1047,6 +1140,7 @@ private:
 			ret_value=doParaCheck(); //nameList is cleared here, if needed
 			if (currentData.outputData->getNamesList().size()>0) {
 				currentData.tree->deleteTree();
+				stateInfo.newNameNotProcessed=false;
 				currentData.outputData->clear();
 			}
 			currentData.outputData->addName(name);
@@ -1124,12 +1218,14 @@ private:
 			switch (stateInfo.currentType) {
 			case DC:
 				currentData.initialize();
+				stateInfo.newNameNotProcessed=false;
 				currentData.startGene=stateInfo.startPos;
 				currentData.tree=new GeneTree();
 				stateInfo.nextState=NAME_S;
 				break;
 			case NEW_NAME:
 				currentData.initialize();
+				stateInfo.newNameNotProcessed=false;
 				currentData.last=new GeneNode(name,NULL);
 				currentData.outputData->addName(name);
 				currentData.tree=new GeneTree(currentData.last);
@@ -1176,11 +1272,19 @@ private:
 						if (currentData.last!=NULL && currentData.last->parent==NULL) {
 							currentData.tree->deleteTree();
 							currentData.outputData->clear();
-							currentData.last=NULL;
-							currentData.tree=NULL;
-							stateInfo.nextState=TEXT_S;
 							display("{Waw resulted in deletion}\n");
-							stateInfo.nextState=NAME_S;
+							if (!stateInfo.previousPunctuationInfo.hasEndingPunctuation()) {
+								currentData.last=NULL;
+								currentData.tree=NULL;
+								stateInfo.newNameNotProcessed=false;
+								stateInfo.nextState=TEXT_S;
+								//stateInfo.nextState=NAME_S;
+							} else {
+								currentData.last=new GeneNode(name,NULL);
+								currentData.tree=new GeneTree(currentData.last);
+								stateInfo.newNameNotProcessed=false;
+								stateInfo.nextState=NAME_S;
+							}
 						} else {
 							if (currentData.last!=NULL) {
 								//new GeneNode(name,currentData.last->parent);
@@ -1354,16 +1458,19 @@ private:
 		return getNextState(addCounters);
 	}
 	bool proceedInStateMachine() {//does not fill stateInfo.currType
-		GeneStemmer s(stateInfo.text,stateInfo.startPos);
-		stateInfo.resetCurrentWordInfo();
 		long  finish;
 		if (isNumber(stateInfo.text,stateInfo.startPos,finish)) {
 			display("Number ");
 			stateInfo.endPos=finish;
 			stateInfo.nextPos=next_positon(stateInfo.text,finish,stateInfo.currentPunctuationInfo);
 			display(stateInfo.text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
-			return result(OTHER,false);
+			if (! result(OTHER,false))
+				return false;
+			if (!updateAndMoveToNewWord(false))
+				return true;
 		}
+		GeneStemmer s(stateInfo.text,stateInfo.startPos);
+		stateInfo.resetCurrentWordInfo();
 		s();
 		finish=max(s.info.finish,s.finish_pos);
 		if (finish==stateInfo.startPos) {
@@ -1563,7 +1670,12 @@ private:
 
 		OutputDataList tags;
 		QList<int> common_i,common_j;
-		QVector<double> boundaryRecallList, boundaryPrecisionList, graphFoundList,graphSimilarList,graphNeigborhoodList;
+		QVector<double> boundaryRecallList, boundaryPrecisionList,
+						graphFoundRecallList,graphFoundPrecisionList,
+						graphContextRecallList,graphContextPrecisionList,
+						graphNeigborhoodRecallList,graphNeighborhoodPrecisionList,
+						graphSpousesRecallList,graphSpousesPrecisionList,
+						graphChildrenRecallList,graphChildrenPrecisionList;
 		int tagOverlapCount=0;
 		GeneTree * globalTree=new GeneTree();
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
@@ -1608,6 +1720,7 @@ private:
 					qDebug()<<text->mid(start1,end1-start1+1)<<"\t"<<text->mid(start2,end2-start2+1)<<"\t";
 					visitedTags.clear();
 					countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags);
+					assert(false);
 				}
 				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
 					common_i.append(i);
@@ -1615,21 +1728,41 @@ private:
 					if (countCorrect>0)
 						tagOverlapCount++;
 				}
-				double graphFound=0, graphSimilarContext=0,graphSimilarNeighborhood=0;
+				GeneTree::GraphStatistics stats;
 				if (countCorrect>0) {
 					boundaryRecallList.append((double)countCommon/countCorrect);
 					boundaryPrecisionList.append((double)countCommon/countDetected);
 
-					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,graphFound,graphSimilarNeighborhood, graphSimilarContext);
-					graphFoundList.append(graphFound);
-					graphSimilarList.append(graphSimilarContext);
-					graphNeigborhoodList.append(graphSimilarNeighborhood);
+					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,stats);
+					graphFoundRecallList.append(stats.foundRecall);
+					graphFoundPrecisionList.append(stats.foundPrecision);
+					graphContextRecallList.append(stats.contextRecall);
+					graphContextPrecisionList.append(stats.contextPrecision);
+					graphNeigborhoodRecallList.append(stats.neigborhoodRecall);
+					graphNeighborhoodPrecisionList.append(stats.neigborhoodPrecision);
+					graphSpousesRecallList.append(stats.spousesRecall);
+					graphSpousesPrecisionList.append(stats.spousesPrecision);
+					graphChildrenRecallList.append(stats.childrenRecall);
+					graphChildrenPrecisionList.append(stats.childrenPrecision);
+				} else {
+					boundaryRecallList.append(0);
+					boundaryPrecisionList.append(0);
+					graphFoundRecallList.append(0);
+					graphFoundPrecisionList.append(0);
+					graphContextRecallList.append(0);
+					graphContextPrecisionList.append(0);
+					graphNeigborhoodRecallList.append(0);
+					graphNeighborhoodPrecisionList.append(0);
+					graphSpousesRecallList.append(0);
+					graphSpousesPrecisionList.append(0);
+					graphChildrenRecallList.append(0);
+					graphChildrenPrecisionList.append(0);
 				}
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
 								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
-				displayed_error	<<"\tGraph:\t"<<graphFound<<"\t"<<graphSimilarContext<<"\n";
+				displayed_error	<<"\tGraph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\n";
 			#endif
 				if (end1<=end2) {
 					visitedNodes.clear();
@@ -1680,12 +1813,19 @@ private:
 			   detectionPrecision=(double)commonCount/outputList.size(),
 			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount,
 			   boundaryPrecision=average(boundaryPrecisionList),
-			   graphFound=sum(graphFoundList)/tagOverlapCount,
-			   graphNeighborhood=sum(graphNeigborhoodList)/tagOverlapCount,
-			   graphSimilar=sum(graphSimilarList)/tagOverlapCount;
+			   graphFoundRecall=sum(graphFoundRecallList)/tagOverlapCount,
+			   graphFoundPrecision=average(graphFoundPrecisionList),
+			   graphNeighborhoodRecall=sum(graphNeigborhoodRecallList)/tagOverlapCount,
+			   graphNeighborhoodPrecision=average(graphNeighborhoodPrecisionList),
+			   graphContextRecall=sum(graphContextRecallList)/tagOverlapCount,
+			   graphContextPrecision=average(graphContextPrecisionList),
+			   graphSpousesRecall=sum(graphSpousesRecallList)/tagOverlapCount,
+			   graphSpousesPrecision=average(graphSpousesPrecisionList),
+			   graphChildrenRecall=sum(graphChildrenRecallList)/tagOverlapCount,
+			   graphChildrenPrecision=average(graphChildrenPrecisionList);
 
-		double globalGraphFound,globalGraphSimilarNeighborhood, globalGraphSimilarContext;
-		currentData.globalTree->compareToStandardTree(globalTree,globalGraphFound,globalGraphSimilarNeighborhood, globalGraphSimilarContext);
+		GeneTree::GraphStatistics globalStats;
+		currentData.globalTree->compareToStandardTree(globalTree,globalStats);
 		globalTree->displayTree(prg);
 		currentData.globalTree->deleteTree();
 		globalTree->deleteTree();
@@ -1698,13 +1838,37 @@ private:
 						<< "\trecall=\t\t"<<boundaryRecall<<"\n"
 						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n"
 						<< "Local Graphs:\n"
-						<< "\tfound=\t\t"<<graphFound<<"\n"
-						<< "\tsimilar-neighbors\t"<<graphNeighborhood<<"\n"
-						<< "\tsimilar-context=\t"<<graphSimilar<<"\n"
+						<< "\tfound:\n"
+						<< "\t\trecall=\t"<<graphFoundRecall<<"\n"
+						<< "\t\tprecision=\t"<<graphFoundPrecision<<"\n"
+						<< "\tneighbors:\n"
+						<< "\t\trecall=\t"<<graphNeighborhoodRecall<<"\n"
+						<< "\t\tprecision=\t"<<graphNeighborhoodPrecision<<"\n"
+						<< "\tcontext:\n"
+						<< "\t\trecall=\t"<<graphContextRecall<<"\n"
+						<< "\t\tprecision=\t"<<graphContextPrecision<<"\n"
+						<< "\tspouses:\n"
+						<< "\t\trecall=\t"<<graphSpousesRecall<<"\n"
+						<< "\t\tprecision=\t"<<graphSpousesPrecision<<"\n"
+						<< "\tchildren:\n"
+						<< "\t\trecall=\t"<<graphChildrenRecall<<"\n"
+						<< "\t\tprecision=\t"<<graphChildrenPrecision<<"\n"
 						<< "Global Graph:\n"
-						<< "\tfound=\t\t"<<globalGraphFound<<"\n"
-						<< "\tsimilar-neighbors\t"<<globalGraphSimilarNeighborhood<<"\n"
-						<< "\tsimilar-context=\t"<<globalGraphSimilarContext<<"\n";
+						<< "\tfound:\n"
+						<< "\t\trecall=\t"<<globalStats.foundRecall<<"\n"
+						<< "\t\tprecision=\t"<<globalStats.foundPrecision<<"\n"
+						<< "\tneighbors:\n"
+						<< "\t\trecall=\t"<<globalStats.neigborhoodRecall<<"\n"
+						<< "\t\tprecision=\t"<<globalStats.neigborhoodPrecision<<"\n"
+						<< "\tcontext:\n"
+						<< "\t\trecall=\t"<<globalStats.contextRecall<<"\n"
+						<< "\t\tprecision=\t"<<globalStats.contextPrecision<<"\n"
+						<< "\tspouses:\n"
+						<< "\t\trecall=\t"<<globalStats.spousesRecall<<"\n"
+						<< "\t\tprecision=\t"<<globalStats.spousesPrecision<<"\n"
+						<< "\tchildren:\n"
+						<< "\t\trecall=\t"<<globalStats.childrenRecall<<"\n"
+						<< "\t\tprecision=\t"<<globalStats.childrenPrecision<<"\n";
 	#else
 		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
 									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
@@ -1722,11 +1886,23 @@ private:
 		return 0;
 	#undef MERGE_GLOBAL_TREE
 	}
+	inline bool updateAndMoveToNewWord(bool updatePunctuation=true) {
+		stateInfo.currentState=stateInfo.nextState;
+		stateInfo.startPos=stateInfo.nextPos;
+		stateInfo.lastEndPos=stateInfo.endPos;
+		if (updatePunctuation)
+			stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
+		stateInfo.lastType=stateInfo.currentType;
+		prg->report((double)stateInfo.startPos/text_size*100+0.5);
+		if (stateInfo.startPos>=text_size-1)
+			return false;
+		return true;
+	}
 	int segmentHelper(QString * text,ATMProgressIFC *prg) {
 		this->prg=prg;
 		if (text==NULL)
 			return -1;
-		long text_size=text->size();
+		text_size=text->size();
 		currentData.initialize();
 		prg->startTaggingText(*text);
 		int geneCounter=1;
@@ -1737,13 +1913,7 @@ private:
 		for (;stateInfo.startPos<text_size;) {
 			if(!(proceedInStateMachine()))
 				geneCounter++;
-			stateInfo.currentState=stateInfo.nextState;
-			stateInfo.startPos=stateInfo.nextPos;
-			stateInfo.lastEndPos=stateInfo.endPos;
-			stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
-			stateInfo.lastType=stateInfo.currentType;
-			prg->report((double)stateInfo.startPos/text_size*100+0.5);
-			if (stateInfo.startPos==text_size-1)
+			if (!updateAndMoveToNewWord())
 				break;
 		}
 		if (stateInfo.currentState!=TEXT_S) {
