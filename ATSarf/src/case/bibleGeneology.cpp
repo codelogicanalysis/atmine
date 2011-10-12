@@ -588,7 +588,8 @@ private:
 			for (int i=0;i<node->parent->spouses.size();i++)
 				list<<&node->parent->spouses[i];
 			for (int i=0;i<node->parent->children.size();i++)
-				list<<&node->parent->children[i]->name;
+				if (node->parent->children[i]!=node)
+					list<<&node->parent->children[i]->name;
 			list<<&node->parent->name;
 		}
 		for (int i=0;i<node->children.size();i++)
@@ -667,6 +668,7 @@ public:
 	}
 	virtual void visit(const GeneNode * node1, const Name & name2, bool isSpouse){
 		if (node1==currMatch) {
+			//qDebug()<<"\t"<<name2.getString();
 			if (isSpouse) {
 				if (nodeToMatch->hasSpouse(name2,true)) {
 					currContext++;
@@ -695,6 +697,8 @@ public:
 	}
 	double getContextRecall() {
 		int contextCount=bestMatch->spouses.size()+bestMatch->children.size()+1;//1 is for parent even if NULL
+		if (bestMatch->parent!=NULL)
+			contextCount+=bestMatch->parent->spouses.size(); //mothers possibly
 		if (contextCount>0) {
 			double score=(double)bestContext/contextCount;
 			return score;
@@ -703,6 +707,8 @@ public:
 	}
 	double getContextPrecision() {
 		int contextCount=nodeToMatch->spouses.size()+nodeToMatch->children.size()+1;//1 is for parent even if NULL
+		if (nodeToMatch->parent!=NULL)
+			contextCount+=nodeToMatch->parent->spouses.size(); //mothers possibly
 		if (contextCount>0) {
 			double score=(double)bestContext/contextCount;
 			return score;
@@ -718,6 +724,12 @@ public:
 		} else
 			return 1;
 	}
+	int getNumberNeighbors() {
+		QList<const Name *> matchNames;
+		getNeighborNames(nodeToMatch,matchNames); //TODO: inefficient for getting number of neighbors
+		return matchNames.size();
+	}
+
 	double getNeighborPrecision() {
 		QList<const Name *> matchNames;
 		getNeighborNames(nodeToMatch,matchNames); //TODO: inefficient for getting number of neighbors
@@ -728,7 +740,7 @@ public:
 			return 1;
 	}
 	double getSpousesRecall() {
-		int size=bestMatch->spouses.size();
+		int size=bestMatch->spouses.size()/*+1*/;
 		if (size>0) {
 			double recall=(double)bestSpouses/size;
 			return recall;
@@ -736,7 +748,7 @@ public:
 			return 1;
 	}
 	double getSpousesPrecision() {
-		int size=nodeToMatch->spouses.size();
+		int size=nodeToMatch->spouses.size()/*+1*/;
 		if (size>0) {
 			double precision=(double)bestSpouses/size;
 			return precision;
@@ -766,7 +778,7 @@ public:
 private:
 	QSet<FindAllVisitor::NodeNamePair> & visitedNodes;
 	GeneTree * standard;
-	int foundCount, totalCount,totalDetected;
+	int foundCount, totalCount,totalDetected,totalNeighbors;
 	GraphStatistics & statistics;
 	QVector<double> contextRecall,contextPrecision,
 					neigborhoodRecall,neigborhoodPrecision,
@@ -779,22 +791,25 @@ public:
 		totalCount=standard->getTreeNodesCount(true);
 		totalDetected=0;
 		this->standard=standard;
+		totalNeighbors=0;
 		//standard->updateRoot();
 	}
 	void searchFor(const GeneNode * node, const Name & n){
 		FindAllVisitor v(node,n,visitedNodes);
 		v(standard);
 		if (v.isFound()) {
-			//qDebug()<<n.getString();
+			//qDebug()<<n.getString()<<"\t"<<v.getContextRecall()<<"\t"<<v.getNeighborRecall();
 			foundCount++;
-			contextRecall.append(v.getContextRecall());
-			contextPrecision.append(v.getContextPrecision());
-			neigborhoodRecall.append(v.getNeighborRecall());
-			neigborhoodPrecision.append(v.getNeighborPrecision());
-			spousesRecall.append(v.getSpousesRecall());
-			spousesPrecision.append(v.getSpousesPrecision());
-			childrenRecall.append(v.getChildrenRecall());
-			childrenPrecision.append(v.getChildrenPrecision());
+			int numNeighbors=v.getNumberNeighbors();
+			totalNeighbors+=numNeighbors;
+			contextRecall.append(v.getContextRecall()*numNeighbors);
+			contextPrecision.append(v.getContextPrecision()*numNeighbors);
+			neigborhoodRecall.append(v.getNeighborRecall()*numNeighbors);
+			neigborhoodPrecision.append(v.getNeighborPrecision()*numNeighbors);
+			spousesRecall.append(v.getSpousesRecall()*numNeighbors);
+			spousesPrecision.append(v.getSpousesPrecision()*numNeighbors);
+			childrenRecall.append(v.getChildrenRecall()*numNeighbors);
+			childrenPrecision.append(v.getChildrenPrecision()*numNeighbors);
 		}
 	}
 
@@ -812,14 +827,25 @@ public:
 	virtual void finish() {
 		statistics.foundRecall=(double)foundCount/ totalCount;
 		statistics.foundPrecision=(double)foundCount/ totalDetected;
-		statistics.contextRecall=sum(contextRecall)/foundCount;
-		statistics.contextPrecision=average(contextPrecision);
-		statistics.neigborhoodRecall=sum(neigborhoodRecall)/foundCount;
-		statistics.neigborhoodPrecision=average(neigborhoodPrecision);
-		statistics.spousesRecall=sum(spousesRecall)/foundCount;
-		statistics.spousesPrecision=average(spousesPrecision);
-		statistics.childrenRecall=sum(childrenRecall)/foundCount;
-		statistics.childrenPrecision=average(childrenPrecision);
+		if (foundCount>0) {
+			statistics.contextRecall=sum(contextRecall)/totalNeighbors;
+			statistics.contextPrecision=sum(contextPrecision)/totalNeighbors;
+			statistics.neigborhoodRecall=sum(neigborhoodRecall)/totalNeighbors;
+			statistics.neigborhoodPrecision=sum(neigborhoodPrecision)/totalNeighbors;
+			statistics.spousesRecall=sum(spousesRecall)/totalNeighbors;
+			statistics.spousesPrecision=sum(spousesPrecision)/totalNeighbors;
+			statistics.childrenRecall=sum(childrenRecall)/totalNeighbors;
+			statistics.childrenPrecision=sum(childrenPrecision)/totalNeighbors;
+		} else {
+			statistics.contextRecall=0;
+			statistics.contextPrecision=1;
+			statistics.neigborhoodRecall=0;
+			statistics.neigborhoodPrecision=1;
+			statistics.spousesRecall=0;
+			statistics.spousesPrecision=1;
+			statistics.childrenRecall=0;
+			statistics.childrenPrecision=1;
+		}
 	}
 };
 class GeneDisplayVisitor: public GeneVisitor {
@@ -1635,28 +1661,30 @@ private:
 	inline bool before(int start1,int end1,int start2,int end2) {
 		return after(start2,end2,start1,end1);
 	}
-	inline int commonNames(const SelectionList & list1, const SelectionList & list2, QSet<int> & visitedTags) {
+	inline int commonNames(const SelectionList & list1, const SelectionList & list2, QSet<int> & visitedTags, int & allCommon) {
 		QSet<int> visitedTags2;
 		int common=0;
+		allCommon=0;
 		for (int i=0;i<list1.size();i++) {
-			if (!visitedTags.contains(i)) {
-				bool found=false;
-				QString s1=Name(text,list1[i].first,list1[i].second).getString();
-				for (int j=0;j<list2.size();j++) {
-					if (!visitedTags2.contains(j)) {
-						QString s2=Name(text,list2[j].first,list2[j].second).getString();
-						if (equalNames(s1,s2) ) {
-							found=true;
-							visitedTags.insert(i);
-							visitedTags2.insert(j);
-							break;
-						}
+			bool found=false, allCommonFound=false;
+			QString s1=Name(text,list1[i].first,list1[i].second).getString();
+			for (int j=0;j<list2.size();j++) {
+				QString s2=Name(text,list2[j].first,list2[j].second).getString();
+				if (equalNames(s1,s2) ) {
+					if (!allCommonFound) {
+						allCommonFound=true;
+						allCommon++;
+					}
+					if (!visitedTags2.contains(j) && !visitedTags.contains(i)) {
+						found=true;
+						visitedTags.insert(i);
+						visitedTags2.insert(j);
+						break;
 					}
 				}
-				if (found) {
-					common++;
-				}
 			}
+			if (found)
+				common++;
 		}
 		return common;
 	}
@@ -1668,6 +1696,36 @@ private:
 								} /*\
 								globalTree->displayTree(prg);*/
 
+	#define MERGE_LOCAL_TREES				if (localMergedGraph==NULL) { \
+												localMergedGraph=outputList[j].getTree()->duplicateTree();\
+											} else {\
+												localMergedGraph->mergeTrees(outputList[j].getTree());\
+											}
+	#define COMPARE_TO_LOCAL_MERGED_TREE	GeneTree::GraphStatistics stats; \
+											if (localMergedGraph!=NULL) { \
+												if (i>=tags.count()) \
+													i=tags.count()-1; \
+												int countCorrect=tags[i].getNamesList().size(); \
+												numNames+=countCorrect; \
+												localMergedGraph->compareToStandardTree(tags[i].getTree(),stats);\
+												graphFoundRecallList.append(stats.foundRecall*countCorrect);\
+												graphFoundPrecisionList.append(stats.foundPrecision*countCorrect);\
+												graphContextRecallList.append(stats.contextRecall*countCorrect);\
+												graphContextPrecisionList.append(stats.contextPrecision*countCorrect);\
+												graphNeigborhoodRecallList.append(stats.neigborhoodRecall*countCorrect);\
+												graphNeighborhoodPrecisionList.append(stats.neigborhoodPrecision*countCorrect);\
+												graphSpousesRecallList.append(stats.spousesRecall*countCorrect);\
+												graphSpousesPrecisionList.append(stats.spousesPrecision*countCorrect);\
+												graphChildrenRecallList.append(stats.childrenRecall*countCorrect);\
+												graphChildrenPrecisionList.append(stats.childrenPrecision*countCorrect);\
+												localMergedGraph->deleteTree(); \
+												localMergedGraph=NULL;\
+											 /*#ifdef DETAILED_DISPLAY */ \
+												 displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
+											 /*#endif*/ \
+											}
+
+
 		OutputDataList tags;
 		QList<int> common_i,common_j;
 		QVector<double> boundaryRecallList, boundaryPrecisionList,
@@ -1675,9 +1733,13 @@ private:
 						graphContextRecallList,graphContextPrecisionList,
 						graphNeigborhoodRecallList,graphNeighborhoodPrecisionList,
 						graphSpousesRecallList,graphSpousesPrecisionList,
-						graphChildrenRecallList,graphChildrenPrecisionList;
-		int tagOverlapCount=0;
-		GeneTree * globalTree=new GeneTree();
+						graphChildrenRecallList,graphChildrenPrecisionList,
+						underGraphFoundRecallList,underGraphFoundPrecisionList,
+						underGraphContextRecallList,underGraphContextPrecisionList,
+						underGraphNeigborhoodRecallList,underGraphNeighborhoodPrecisionList,
+						underGraphSpousesRecallList,underGraphSpousesPrecisionList,
+						underGraphChildrenRecallList,underGraphChildrenPrecisionList;
+		GeneTree * globalTree=new GeneTree(), * localMergedGraph=NULL;
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream out(&file);   // we will serialize the data into the file
@@ -1706,68 +1768,62 @@ private:
 		FillTextVisitor v(text);
 		v(globalTree);
 
-		int i=0,j=0;
+		int i=0,j=0, numNames=0,underNumNames=0;
 		QSet<FindAllVisitor::NodeNamePair> visitedNodes;
 		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
 			int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd(),
 				start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
 			if (overLaps(start1,end1,start2,end2) && start1!=end2) {
-				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags);
+				int allCommonCount;
+				int countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags,allCommonCount);
 				int countCorrect=tags[i].getNamesList().size();
 				int countDetected=outputList[j].getNamesList().size();
 				if (countCommon>countDetected) {
 					qDebug()<<text->mid(start1,end1-start1+1)<<"\t"<<text->mid(start2,end2-start2+1)<<"\t";
 					visitedTags.clear();
-					countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags);
+					countCommon=commonNames(tags[i].getNamesList(),outputList[j].getNamesList(),visitedTags,allCommonCount);
 					assert(false);
 				}
-				if (!common_j.contains(j) && !common_i.contains(i)) {//so that merged parts will not be double counted
+				bool foundI=common_i.contains(i), foundJ=common_j.contains(j);
+				if (!foundI /*&& !foundJ*/) //so that merged parts will not be double counted
 					common_i.append(i);
+				if (!foundJ) //common_i and common_j now are not same size, bc recall and precision need different treatment for overlap
 					common_j.append(j);
-					if (countCorrect>0)
-						tagOverlapCount++;
-				}
-				GeneTree::GraphStatistics stats;
 				if (countCorrect>0) {
-					boundaryRecallList.append((double)countCommon/countCorrect);
-					boundaryPrecisionList.append((double)countCommon/countDetected);
+					underNumNames+=countCorrect;
+					boundaryRecallList.append((double)countCommon/countCorrect * countCorrect);
+					boundaryPrecisionList.append((double)allCommonCount/countDetected *countCorrect);
 
-					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),visitedNodes,stats);
-					graphFoundRecallList.append(stats.foundRecall);
-					graphFoundPrecisionList.append(stats.foundPrecision);
-					graphContextRecallList.append(stats.contextRecall);
-					graphContextPrecisionList.append(stats.contextPrecision);
-					graphNeigborhoodRecallList.append(stats.neigborhoodRecall);
-					graphNeighborhoodPrecisionList.append(stats.neigborhoodPrecision);
-					graphSpousesRecallList.append(stats.spousesRecall);
-					graphSpousesPrecisionList.append(stats.spousesPrecision);
-					graphChildrenRecallList.append(stats.childrenRecall);
-					graphChildrenPrecisionList.append(stats.childrenPrecision);
+					GeneTree::GraphStatistics stats;
+					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),stats);
+					underGraphFoundRecallList.append(stats.foundRecall* countCorrect);
+					underGraphFoundPrecisionList.append(stats.foundPrecision* countCorrect);
+					underGraphContextRecallList.append(stats.contextRecall* countCorrect);
+					underGraphContextPrecisionList.append(stats.contextPrecision* countCorrect);
+					underGraphNeigborhoodRecallList.append(stats.neigborhoodRecall* countCorrect);
+					underGraphNeighborhoodPrecisionList.append(stats.neigborhoodPrecision* countCorrect);
+					underGraphSpousesRecallList.append(stats.spousesRecall* countCorrect);
+					underGraphSpousesPrecisionList.append(stats.spousesPrecision* countCorrect);
+					underGraphChildrenRecallList.append(stats.childrenRecall* countCorrect);
+					underGraphChildrenPrecisionList.append(stats.childrenPrecision* countCorrect);
+
+					MERGE_LOCAL_TREES
 				} else {
 					boundaryRecallList.append(0);
 					boundaryPrecisionList.append(0);
-					graphFoundRecallList.append(0);
-					graphFoundPrecisionList.append(0);
-					graphContextRecallList.append(0);
-					graphContextPrecisionList.append(0);
-					graphNeigborhoodRecallList.append(0);
-					graphNeighborhoodPrecisionList.append(0);
-					graphSpousesRecallList.append(0);
-					graphSpousesPrecisionList.append(0);
-					graphChildrenRecallList.append(0);
-					graphChildrenPrecisionList.append(0);
 				}
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
-								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
-				displayed_error	<<"\tGraph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\n";
+								<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
 			#endif
-				if (end1<=end2) {
+				if (end1<=end2 ) {
 					visitedNodes.clear();
 					visitedTags.clear();
 					//MERGE_GLOBAL_TREE
+					COMPARE_TO_LOCAL_MERGED_TREE
+
 					i++;
 				}
 				if (end2<=end1)
@@ -1780,8 +1836,10 @@ private:
 				visitedNodes.clear();
 				visitedTags.clear();
 				//MERGE_GLOBAL_TREE
+				COMPARE_TO_LOCAL_MERGED_TREE
+
 				i++;
-			} else if (after(start1,end1,start2,end2)) {
+			} else if (after(start1,end1,start2,end2) ) {
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<<"-----\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
@@ -1789,40 +1847,57 @@ private:
 				j++;
 			}
 		}
+		COMPARE_TO_LOCAL_MERGED_TREE
 	#ifdef DETAILED_DISPLAY
 		while (i<tags.size()) {
 			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
-			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+			displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<<"-----\n";
 			//MERGE_GLOBAL_TREE
 			i++;
 		}
 		while (j<outputList.size()) {
 			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-			displayed_error	<<"-----\t"
+			displayed_error <<"-----\t"
 							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			j++;
 		}
 	#endif
+
 		/*int tagNamesCount=0;
 		for (int i=0;i<tags.size();i++)
 			tagNamesCount+=tags[i].getNamesList().size();*/
-		assert(common_i.size()==common_j.size());
+		//assert(common_i.size()==common_j.size());
 		int commonCount=common_i.size();
-		double detectionRecall=(double)commonCount/tags.size(),
-			   detectionPrecision=(double)commonCount/outputList.size(),
-			   boundaryRecall=sum(boundaryRecallList)/tagOverlapCount,
-			   boundaryPrecision=average(boundaryPrecisionList),
-			   graphFoundRecall=sum(graphFoundRecallList)/tagOverlapCount,
-			   graphFoundPrecision=average(graphFoundPrecisionList),
-			   graphNeighborhoodRecall=sum(graphNeigborhoodRecallList)/tagOverlapCount,
-			   graphNeighborhoodPrecision=average(graphNeighborhoodPrecisionList),
-			   graphContextRecall=sum(graphContextRecallList)/tagOverlapCount,
-			   graphContextPrecision=average(graphContextPrecisionList),
-			   graphSpousesRecall=sum(graphSpousesRecallList)/tagOverlapCount,
-			   graphSpousesPrecision=average(graphSpousesPrecisionList),
-			   graphChildrenRecall=sum(graphChildrenRecallList)/tagOverlapCount,
-			   graphChildrenPrecision=average(graphChildrenPrecisionList);
+		int allCommonCount=common_j.size();
+		double segmentationRecall=(double)commonCount/tags.size(),
+			   segmentationPrecision=(double)allCommonCount/outputList.size(),
+			   underSegmentationRatio=(double)commonCount/allCommonCount,
+			   boundaryRecall=sum(boundaryRecallList)/numNames,
+			   boundaryPrecision=sum(boundaryPrecisionList)/underNumNames,
+			   graphFoundRecall=sum(graphFoundRecallList)/numNames,
+			   graphFoundPrecision=sum(graphFoundPrecisionList)/numNames,
+			   graphNeighborhoodRecall=sum(graphNeigborhoodRecallList)/numNames,
+			   graphNeighborhoodPrecision=sum(graphNeighborhoodPrecisionList)/numNames,
+			   graphContextRecall=sum(graphContextRecallList)/numNames,
+			   graphContextPrecision=sum(graphContextPrecisionList)/numNames,
+			   graphSpousesRecall=sum(graphSpousesRecallList)/numNames,
+			   graphSpousesPrecision=sum(graphSpousesPrecisionList)/numNames,
+			   graphChildrenRecall=sum(graphChildrenRecallList)/numNames,
+			   graphChildrenPrecision=sum(graphChildrenPrecisionList)/numNames,
+
+			   underBoundaryRecall=sum(boundaryRecallList)/underNumNames,
+			   underBoundaryPrecision=sum(boundaryPrecisionList)/underNumNames,
+			   underGraphFoundRecall=sum(underGraphFoundRecallList)/underNumNames,
+			   underGraphFoundPrecision=sum(underGraphFoundPrecisionList)/underNumNames,
+			   underGraphNeighborhoodRecall=sum(underGraphNeigborhoodRecallList)/underNumNames,
+			   underGraphNeighborhoodPrecision=sum(underGraphNeighborhoodPrecisionList)/underNumNames,
+			   underGraphContextRecall=sum(underGraphContextRecallList)/underNumNames,
+			   underGraphContextPrecision=sum(underGraphContextPrecisionList)/underNumNames,
+			   underGraphSpousesRecall=sum(underGraphSpousesRecallList)/underNumNames,
+			   underGraphSpousesPrecision=sum(underGraphSpousesPrecisionList)/underNumNames,
+			   underGraphChildrenRecall=sum(underGraphChildrenRecallList)/underNumNames,
+			   underGraphChildrenPrecision=sum(underGraphChildrenPrecisionList)/underNumNames;
 
 		GeneTree::GraphStatistics globalStats;
 		currentData.globalTree->compareToStandardTree(globalTree,globalStats);
@@ -1831,13 +1906,33 @@ private:
 		globalTree->deleteTree();
 	#ifdef DETAILED_DISPLAY
 		displayed_error << "-------------------------\n"
-						<< "Detection:\n"
-						<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
-						<< "\tprecision=\t"<<commonCount<<"/"<<outputList.size()<<"=\t"<<detectionPrecision<<"\n"
-						<< "Boundary:\n"
+						<< "Segmentation:\n"
+						<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<segmentationRecall<<"\n"
+						<< "\tprecision=\t"<<allCommonCount<<"/"<<outputList.size()<<"=\t"<<segmentationPrecision<<"\n"
+						<< "\tunder-segmentation=\t"<<commonCount<<"/"<<allCommonCount<<"=\t"<<underSegmentationRatio<<"\n"
+						<< "Boundary (Min-Boundaries):\n"
+						<< "\trecall=\t\t"<<underBoundaryRecall<<"\n"
+						<< "\tprecision=\t\t"<<underBoundaryPrecision<<"\n"
+						<< "Boundary (Max-Boundaries):\n"
 						<< "\trecall=\t\t"<<boundaryRecall<<"\n"
 						<< "\tprecision=\t\t"<<boundaryPrecision<<"\n"
-						<< "Local Graphs:\n"
+						<< "Local Graphs (Min-boundaries):\n"
+						<< "\tfound:\n"
+						<< "\t\trecall=\t"<<underGraphFoundRecall<<"\n"
+						<< "\t\tprecision=\t"<<underGraphFoundPrecision<<"\n"
+						<< "\tneighbors:\n"
+						<< "\t\trecall=\t"<<underGraphNeighborhoodRecall<<"\n"
+						<< "\t\tprecision=\t"<<underGraphNeighborhoodPrecision<<"\n"
+						<< "\tcontext:\n"
+						<< "\t\trecall=\t"<<underGraphContextRecall<<"\n"
+						<< "\t\tprecision=\t"<<underGraphContextPrecision<<"\n"
+						<< "\tspouses:\n"
+						<< "\t\trecall=\t"<<underGraphSpousesRecall<<"\n"
+						<< "\t\tprecision=\t"<<underGraphSpousesPrecision<<"\n"
+						<< "\tchildren:\n"
+						<< "\t\trecall=\t"<<underGraphChildrenRecall<<"\n"
+						<< "\t\tprecision=\t"<<underGraphChildrenPrecision<<"\n"
+						<< "Local Graphs (Max-boundaries):\n"
 						<< "\tfound:\n"
 						<< "\t\trecall=\t"<<graphFoundRecall<<"\n"
 						<< "\t\tprecision=\t"<<graphFoundPrecision<<"\n"
