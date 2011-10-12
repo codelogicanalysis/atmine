@@ -413,8 +413,9 @@ private:
 		for (int i=0;i<node->children.size();i++) {
 			if (node->children[i]!=NULL)
 				visit(node,node->children[i]->name,false);
+		}
+		for (int i=0;i<node->children.size();i++) {
 			visit(node->children[i]);
-
 		}
 
 	}
