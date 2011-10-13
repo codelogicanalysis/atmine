@@ -93,7 +93,7 @@ public:
 	bool isMarriageCompatible(const Name & n) {
 		if (this==NULL)
 			return false;
-		return true;//(n.male!=male);
+		return (n.male!=male);
 	}
 	bool operator ==(const Name & n) const {
 		return equalNames(getString(),n.getString());
@@ -186,6 +186,7 @@ public:
 	QList<GeneNode *> children;
 	int height;
 	bool ignoreInSearch;
+	QString edgeText;
 
 	GeneNode(Name n, GeneNode * parent ):name(n) {
 		assert(parent!=this);
