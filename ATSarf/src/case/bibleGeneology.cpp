@@ -1688,13 +1688,22 @@ private:
 		}
 		return common;
 	}
+	inline void modifySizeStatistics(int newEntry, int & max, int & min, int & sum, int & count) {
+		if (newEntry>max)
+			max=newEntry;
+		if (newEntry<min || min==0)
+			min=newEntry;
+		sum+=newEntry;
+		count++;
+	}
+
 	int calculateStatisticsOrAnotate() {
-	#define MERGE_GLOBAL_TREE	if (globalTree==NULL) { \
-									globalTree=tags[i].getTree()->duplicateTree(); \
-								} else { \
-									globalTree->mergeTrees(tags[i].getTree()); \
-								} /*\
-								globalTree->displayTree(prg);*/
+	#define MERGE_GLOBAL_TREE				if (globalTree==NULL) { \
+												globalTree=tags[i].getTree()->duplicateTree(); \
+											} else { \
+												globalTree->mergeTrees(tags[i].getTree()); \
+											} /*\
+											globalTree->displayTree(prg);*/
 
 	#define MERGE_LOCAL_TREES				if (localMergedGraph==NULL) { \
 												localMergedGraph=outputList[j].getTree()->duplicateTree();\
@@ -1768,7 +1777,7 @@ private:
 		FillTextVisitor v(text);
 		v(globalTree);
 
-		int i=0,j=0, numNames=0,underNumNames=0;
+		int i=0,j=0, numNames=0,underNumNames=0,maxTag=0,minTag=0,sumTag=0,maxOutput=0,minOutput=0,sumOutput=0,countTag=0,countOutput=0;
 		QSet<FindAllVisitor::NodeNamePair> visitedNodes;
 		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
@@ -1823,11 +1832,14 @@ private:
 					visitedTags.clear();
 					//MERGE_GLOBAL_TREE
 					COMPARE_TO_LOCAL_MERGED_TREE
-
+					modifySizeStatistics(countCorrect,maxTag,minTag,sumTag,countTag);
 					i++;
 				}
-				if (end2<=end1)
+				if (end2<=end1) {
+					modifySizeStatistics(countDetected,maxOutput,minOutput,sumOutput,countOutput);
 					j++;
+
+				}
 			} else if (before(start1,end1,start2,end2)) {
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
@@ -1837,13 +1849,14 @@ private:
 				visitedTags.clear();
 				//MERGE_GLOBAL_TREE
 				COMPARE_TO_LOCAL_MERGED_TREE
-
+				modifySizeStatistics(tags[i].getNamesList().size(),maxTag,minTag,sumTag,countTag);
 				i++;
 			} else if (after(start1,end1,start2,end2) ) {
 			#ifdef DETAILED_DISPLAY
 				displayed_error	<<"-----\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			#endif
+				modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
 				j++;
 			}
 		}
@@ -1854,12 +1867,14 @@ private:
 			displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<<"-----\n";
 			//MERGE_GLOBAL_TREE
+			modifySizeStatistics(tags[i].getNamesList().size(),maxTag,minTag,sumTag,countTag);
 			i++;
 		}
 		while (j<outputList.size()) {
 			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
 			displayed_error <<"-----\t"
 							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+			modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
 			j++;
 		}
 	#endif
@@ -1898,7 +1913,8 @@ private:
 			   underGraphSpousesPrecision=sum(underGraphSpousesPrecisionList)/underNumNames,
 			   underGraphChildrenRecall=sum(underGraphChildrenRecallList)/underNumNames,
 			   underGraphChildrenPrecision=sum(underGraphChildrenPrecisionList)/underNumNames;
-
+		int graphMergedSize=currentData.globalTree->getTreeNodesCount(true),
+			graphTagsSize=globalTree->getTreeNodesCount(true);
 		GeneTree::GraphStatistics globalStats;
 		currentData.globalTree->compareToStandardTree(globalTree,globalStats);
 		globalTree->displayTree(prg);
@@ -1907,8 +1923,8 @@ private:
 	#ifdef DETAILED_DISPLAY
 		displayed_error << "-------------------------\n"
 						<< "Segmentation:\n"
-						<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<segmentationRecall<<"\n"
-						<< "\tprecision=\t"<<allCommonCount<<"/"<<outputList.size()<<"=\t"<<segmentationPrecision<<"\n"
+						<< "\trecall=\t\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<segmentationRecall<<"\n"
+						<< "\tprecision=\t\t"<<allCommonCount<<"/"<<outputList.size()<<"=\t"<<segmentationPrecision<<"\n"
 						<< "\tunder-segmentation=\t"<<commonCount<<"/"<<allCommonCount<<"=\t"<<underSegmentationRatio<<"\n"
 						<< "Boundary (Min-Boundaries):\n"
 						<< "\trecall=\t\t"<<underBoundaryRecall<<"\n"
@@ -1963,7 +1979,15 @@ private:
 						<< "\t\tprecision=\t"<<globalStats.spousesPrecision<<"\n"
 						<< "\tchildren:\n"
 						<< "\t\trecall=\t"<<globalStats.childrenRecall<<"\n"
-						<< "\t\tprecision=\t"<<globalStats.childrenPrecision<<"\n";
+						<< "\t\tprecision=\t"<<globalStats.childrenPrecision<<"\n"
+						<< " Local Genealogies Size (Annotation - Output):\n"
+						<< "\tminimum=\t\t"<<minTag<<"\t"<<minOutput<<"\n"
+						<< "\taverage=\t\t"<<(double)sumTag/countTag<<"\t"<<(double)sumOutput/countOutput<<"\n"
+						<< "\tmaximum=\t\t"<<maxTag<<"\t"<<maxOutput<<"\n"
+						<< "\ttotal=\t\t"  <<sumTag<<"\t"<<sumOutput<<"\n"
+						<< " Global Graph Size (Annotation - Output):\n"
+						<< "\tAnnotation=\t"<<graphTagsSize<<"\n"
+						<< "\tOutput=\t\t"<<graphMergedSize<<"\n";
 	#else
 		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
 									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
