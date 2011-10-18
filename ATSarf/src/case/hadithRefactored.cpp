@@ -67,6 +67,7 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
+
 class HadithSegmentor {
 private:
 
@@ -121,7 +122,7 @@ private:
 		currentData.initialize();
 
 	#ifdef CHAIN_BUILDING
-		HadithData *currentChain=new HadithData(text,true,NULL);
+		HadithData *currentChain=new HadithData(text,true,NULL,fileName);
 		currentChain->initialize(text);
 		display(QString("\ninit0\n"));
 	#else
@@ -136,6 +137,7 @@ private:
 		stateInfo.nextState=TEXT_S;
 		stateInfo.lastEndPos=0;
 		stateInfo.startPos=0;
+		stateInfo.nrcPreviousType=false;
 		stateInfo.processedStructure=INITIALIZE;
 	#ifdef PUNCTUATION
 		stateInfo.previousPunctuationInfo.fullstop=true;
@@ -264,6 +266,10 @@ private:
 				break;
 	#endif
 		}
+	#ifdef NONCONTEXT_LEARNING
+		currentChain->learningEvaluator.displayNameLearningStatistics();
+		currentChain->learningEvaluator.resetLearnedNames();
+	#endif
 		prg->report(100);
 	#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
 		if (newHadithStart<0)

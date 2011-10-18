@@ -22,20 +22,13 @@
 #include "ATMProgressIFC.h"
 #include "letters.h"
 #include "bibleGeneology.h"
+#include "abstractAnnotator.h"
 
 using namespace std;
 
-class BibleTaggerDialog:public QMainWindow, public ATMProgressIFC{
+class BibleTaggerDialog:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
 public:
-	enum SelectionMode {SELECTION_OUTSIDE,SELECTION_INSIDE,SELECTION_OUTSIDEOVERLAP};
-	inline static bool isConsistentWithSelectionCondidtion(int start, int end, int tagStart,int tagEnd,SelectionMode selectionMode=SELECTION_OUTSIDE) {
-		bool con1= selectionMode==SELECTION_OUTSIDE && start<=tagStart && end>=tagEnd,
-			 con2= selectionMode==SELECTION_INSIDE && start>=tagStart && end<=tagEnd,
-			 con3= selectionMode==SELECTION_OUTSIDEOVERLAP && ((start<=tagStart && end>=tagStart) ||
-														(start<=tagEnd && end>=tagEnd));
-		return con1 || con2 || con3;
-	}
 	class Selection {
 		friend QDataStream &operator<<(QDataStream &out, const BibleTaggerDialog::Selection &t);
 		friend QDataStream &operator>>(QDataStream &in, BibleTaggerDialog::Selection &t);
@@ -94,8 +87,8 @@ public:
 		void addName( const Name & name) {
 			addName(name.getStart(),name.getEnd());
 		}
-		int getMainStart() { return main.first;}
-		int getMainEnd() {return main.second;}
+		int getMainStart() const { return main.first;}
+		int getMainEnd() const {return main.second;}
 		bool operator <(const Selection & second) const {
 			return main<second.main;
 		}
@@ -328,77 +321,7 @@ public:
 	};
 	typedef QList<Selection> SelectionList;
 public:
-	BibleTaggerDialog(QString filename):QMainWindow() {
-		this->filename=filename;
-		text=new QTextBrowser(this);
-		tagGenealogy=new QPushButton("Tag &Genealogy",this);
-		unTagGenealogy=new QPushButton("&Un-Tag Genealogy",this);
-		tagName=new QPushButton("Tag &Name",this);
-		unTagName=new QPushButton("Un-Ta&g Name",this);
-		save=new QPushButton("&Save",this);
-		modifyGraph=new QPushButton("&Modify Graph",this);
-		scrollArea=new QScrollArea(this);
-		forceWordNames=new QCheckBox("Full Word Names");
-		resetGlobalGraph=new QPushButton("Reset Global Graph");
-		resetGlobalGraph->setEnabled(false);
-		isGlobalGraph=new QPushButton("Global Graph");
-		isGlobalGraph->setCheckable(true);
-		graphArea=new QScrollArea(this);
-		treeText=new QTextBrowser(this);
-		treeText->setReadOnly(false);
-		grid=new QGridLayout(scrollArea);
-		grid->addWidget(tagGenealogy,0,0);
-		grid->addWidget(unTagGenealogy,0,1);
-		grid->addWidget(forceWordNames,0,2);
-		grid->addWidget(tagName,0,3);
-		grid->addWidget(unTagName,0,4);
-		grid->addWidget(save,0,5);
-		grid->addWidget(text,1,0,4,2);
-		grid->addWidget(treeText,1,2,1,1);
-		grid->addWidget(modifyGraph,2,2);
-		grid->addWidget(isGlobalGraph,3,2);
-		grid->addWidget(resetGlobalGraph,4,2);
-		grid->addWidget(graphArea,1,3,4,3);
-		grid->setColumnStretch(0,2);
-		grid->setColumnStretch(1,2);
-		grid->setColumnStretch(2,4);
-		grid->setColumnStretch(3,2);
-		grid->setColumnStretch(4,2);
-		grid->setColumnStretch(5,2);
-		graph=new QLabel(graphArea);
-		graphArea->setWidgetResizable(true);
-		graphArea->setAlignment(Qt::AlignCenter);
-		graphArea->setWidget(graph);
-		forceWordNames->setChecked(true);
-		setCentralWidget(scrollArea);
-		treeText->setLayoutDirection(Qt::RightToLeft);
-	#ifdef ERRORS_BIBLE
-		errors=new QTextBrowser(this);
-		errors->resize(errors->width(),50);
-		errors_text=new QString();
-		grid->addWidget(errors,5,0,1,6);
-		displayed_error.setString(errors_text);
-		errors->setText(*errors_text);
-	#endif
-		connect(tagGenealogy,SIGNAL(clicked()),this,SLOT(tagGene_clicked()));
-		connect(unTagGenealogy,SIGNAL(clicked()),this,SLOT(unTagGene_clicked()));
-		connect(tagName,SIGNAL(clicked()),this,SLOT(tagName_clicked()));
-		connect(unTagName,SIGNAL(clicked()),this,SLOT(unTagName_clicked()));
-		connect(save,SIGNAL(clicked()),this,SLOT(save_clicked()));
-		connect(text,SIGNAL(selectionChanged()),this, SLOT(text_selectionChanged()));
-		connect(modifyGraph,SIGNAL(clicked()),this, SLOT(modifyGraph_clicked()));
-		connect(isGlobalGraph,SIGNAL(toggled(bool)),this, SLOT(isGlobalGraph_toggled(bool)));
-		connect(resetGlobalGraph,SIGNAL(clicked()),this, SLOT(resetGlobalGraph_clicked()));
-		string=NULL;
-		globalGraph=NULL;
-		open_action();
-		if (globalGraph==NULL)
-			regenerateGlobalGraph();
-		setWindowTitle(filename);
-		this->resize(700,700);
-		selectedTagIndex=-1;
-		modifyGraph->setEnabled(false);
-	}
+	BibleTaggerDialog(QString filename);
 
 private slots:
 	void tagGene_clicked() {
@@ -440,143 +363,9 @@ private:
 	void text_selectionChangedAction();
 	void modifyGraph_action();
 	void isGlobalGraph_action();
-	int getNameIndexInAll(const QString & name) {
-		for (int i=0;i<tags.size();i++) {
-			int j=tags[i].getNameIndex(name);
-			if (j>=0)
-				return tags[i].getNamesList()[j].first;
-		}
-		return -1;
-	}
-	void regenerateGlobalGraph() {
-		if (tags.size()>0)
-			globalGraph=tags[0].getTree()->duplicateTree();
-		for (int i=1;i<tags.size();i++)
-			globalGraph->mergeTrees(tags[i].getTree());
-		if (globalGraph!=NULL)
-			globalGraph->mergeLeftovers();
-	}
-	int findSelection(int startIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
-		if (this==NULL)
-			return -1;
-		QTextCursor c=text->textCursor();
-		int start=c.selectionStart();
-		int end=c.selectionEnd();
-		for (int i=startIndex;i<tags.size();i++) {
-			if (isConsistentWithSelectionCondidtion(start,end,tags[i].getMainStart(),tags[i].getMainEnd(),selectionMode)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) { //based on user text selection
-		if (this==NULL)
-			return -1;
-		QTextCursor c=text->textCursor();
-		int start=c.selectionStart();
-		int end=c.selectionEnd();
-		Selection::MainSelectionList names=tags[tagIndex].getNamesList();
-		for (int i=startSubIndex;i<names.size();i++) {
-			if (isConsistentWithSelectionCondidtion(start,end,names[i].first,names[i].second,selectionMode)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	void moveSelectionToWordBoundaries() {
-		QTextCursor c=text->textCursor();
-		int start=c.selectionStart();
-		int end=c.selectionEnd();
-		QChar chr=(c.selectedText().length()>0?c.selectedText().at(0):'\0');
-		if (isDelimiterOrNumber(chr)) {
-			while (isDelimiterOrNumber(chr)) {
-				c.setPosition(++start,QTextCursor::MoveAnchor);
-				c.setPosition(end,QTextCursor::KeepAnchor);
-				if (start==end)
-					return;
-				chr=c.selectedText().at(0);
-			}
-		} else {
-			if (start>0) {
-				while (!isDelimiterOrNumber(chr)) {
-					c.setPosition(--start,QTextCursor::MoveAnchor);
-					c.setPosition(end,QTextCursor::KeepAnchor);
-					if (start==0) {
-						start--;
-						break;
-					}
-					chr=c.selectedText().at(0);
-				}
-				start++;
-			}
-		}
-		chr=(c.selectedText()>0?c.selectedText().at(c.selectedText().length()-1):'\0');
-		if (isDelimiterOrNumber(chr)) {
-			while (isDelimiterOrNumber(chr)) {
-				c.setPosition(start,QTextCursor::MoveAnchor);
-				c.setPosition(--end,QTextCursor::KeepAnchor);
-				if (c.selectedText().length()==0)
-					return;
-				chr=c.selectedText().at(c.selectedText().length()-1);
-			}
-		} else {
-			if (text->toPlainText().length()>end) {
-				while (!isDelimiterOrNumber(chr)) {
-					c.setPosition(start,QTextCursor::MoveAnchor);
-					c.setPosition(++end,QTextCursor::KeepAnchor);
-					if (text->toPlainText().length()==end) {
-						end++;
-						break;
-					}
-					chr=c.selectedText().at(c.selectedText().length()-1);
-				}
-				end--;
-			}
-		}
-		c.setPosition(start,QTextCursor::MoveAnchor);
-		c.setPosition(end,QTextCursor::KeepAnchor);
-		text->setTextCursor(c);
-	}
-	void moveSelectionToSentenceBoundaries() {
-		moveSelectionToWordBoundaries();
-		QTextCursor c=text->textCursor();
-		int start=c.selectionStart();
-		int end=c.selectionEnd();
-		if (start==end)
-			return;
-		QChar chr=c.selectedText().at(c.selectedText().length()-1);
-		assert (!isPunctuationMark(chr));
-		if (text->toPlainText().length()>end) {
-			while (!isPunctuationMark(chr)) {
-				c.setPosition(start,QTextCursor::MoveAnchor);
-				c.setPosition(++end,QTextCursor::KeepAnchor);
-				chr=c.selectedText().at(c.selectedText().length()-1);
-				if (text->toPlainText().length()==end) {
-					break;
-				}
-			}
-		}
-		chr=c.selectedText().at(0);
-		assert (!isPunctuationMark(chr));
-		if (start>0) {
-			while (!isPunctuationMark(chr)) {
-				c.setPosition(--start,QTextCursor::MoveAnchor);
-				c.setPosition(end,QTextCursor::KeepAnchor);
-				chr=c.selectedText().at(0);
-				if (start==0) {
-					break;
-				}
-			}
-		}
-		while (isDelimiter(chr)) {
-			c.setPosition(++start,QTextCursor::MoveAnchor);
-			c.setPosition(end,QTextCursor::KeepAnchor);
-			chr=c.selectedText().at(0);
-		}
-		c.setPosition(start,QTextCursor::MoveAnchor);
-		c.setPosition(end,QTextCursor::KeepAnchor);
-		text->setTextCursor(c);
-	}
+	int getNameIndexInAll(const QString & name);
+	void regenerateGlobalGraph();
+	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) ;
 	void updateGraphDisplay();
 
 public:
@@ -603,47 +392,14 @@ public:
 	void finishTaggingText(){}
 	void setCurrentAction(const QString &) {}
 	void resetActionDisplay() {}
-	void displayGraph(){
-		try{
-			system("dot -Tsvg graph.dot -o graph.svg");
-			graph->setPixmap(QPixmap("./graph.svg"));
-			graphArea->setWidget(graph);
-		} catch(...) {}
-	}
-	QString getFileName() {
-		return filename;
-	}
+	void displayGraph();
+	QString getFileName() {	return filename; }
+	~BibleTaggerDialog();
 
-	~BibleTaggerDialog() {
-		for (int i=0;i<tags.size();i++) {
-			if (tags[i].tree!=NULL)
-				delete tags[i].tree;
-		}
-		if (globalGraph!=NULL)
-			delete globalGraph;
-		if (string !=NULL)
-			delete string;
-
-		delete isGlobalGraph;
-		delete resetGlobalGraph;
-		delete tagGenealogy;
-		delete unTagGenealogy;
-		delete tagName;
-		delete unTagName;
-		delete modifyGraph;
-		delete save;
-		delete text;
-		delete treeText;
-		delete forceWordNames;
-		delete scrollArea;
-		delete graphArea;
-		delete graph;
-	#ifdef ERRORS_BIBLE
-		delete errors;
-		delete errors_text;
-	#endif
-		delete grid;
-	}
+	QTextBrowser * getTextBrowser() {return text;}
+	int getTagCount() const { return tags.size();}
+	int getTagStart(int tagNum) const {return tags.at(tagNum).getMainStart();}
+	int getTagEnd(int tagNum) const {return tags.at(tagNum).getMainEnd();}
 };
 
 inline QDataStream &operator<<(QDataStream &out, const BibleTaggerDialog::Selection &t) {

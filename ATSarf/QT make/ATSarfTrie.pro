@@ -70,7 +70,9 @@ HEADERS += util/text_handling.h \
     ../src/case/localizeddisplay.h \
     ../src/util/mergeLists.h \
     ../src/case/bibleGeneology.h \
-    ../src/case/bibleManualTagger.h
+    ../src/case/bibleManualTagger.h \
+    ../src/case/genealogyItem.h \
+    ../src/case/abstractAnnotator.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -116,7 +118,9 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/hadithRefactored.cpp \
     ../src/case/localizeddisplay.cpp \
     ../src/case/bibleGeneology.cpp \
-    ../src/case/bibleManualTagger.cpp
+    ../src/case/bibleManualTagger.cpp \
+    ../src/case/genealogyItem.cpp \
+    ../src/case/abstractAnnotator.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

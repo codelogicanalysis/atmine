@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QDebug>
 #include "logger.h"
+#include "text_handling.h"
 
 #define SHOW_AS_TEXT
 
@@ -48,11 +49,11 @@ public:
 
 class NarratorPrim: public ChainNarratorPrim {
 public:
-    long long m_start;
-    long long m_end;
+	int m_start;
+	int m_end;
 
 	NarratorPrim(QString * hadith_text);
-	NarratorPrim(QString * hadith_text,long long m_start);
+	NarratorPrim(QString * hadith_text,int m_start);
 
  //   virtual CNPIterator first () const=0;
  //   virtual CNPIterator end () const=0;
@@ -85,7 +86,7 @@ class NamePrim :public NarratorPrim {
 public:
 	bool learnedName;
 	NamePrim(QString * hadith_text);
-	NamePrim(QString * hadith_text,long long m_start);
+	NamePrim(QString * hadith_text,int m_start);
 
    // virtual CNPIterator first () const{
    // return QList<ChainNarratorPrim*> ().begin();
@@ -98,7 +99,14 @@ public:
 	virtual void serialize(QDataStream &chainOut) const;
 	virtual void deserialize(QDataStream &chainOut);
 	virtual void serialize(QTextStream &chainOut) const;
+	bool operator ==(const NamePrim & name) const {
+		return equal_withoutLastDiacritics(getString(),name.getString());
+	}
 };
+inline uint qHash(const NamePrim & name) {
+	return qHash(removeDiacritics(name.getString()));
+}
+
 class NameConnectorPrim :public NarratorPrim {
 private:
 	enum Type {POS,IBN,AB,OM,FAMILY_OTHER, OTHER};
@@ -117,7 +125,7 @@ public:
 	void setOther(){type=OTHER;}
 	bool isOther(){return type==OTHER;}
 	NameConnectorPrim(QString * hadith_text);
-	NameConnectorPrim(QString * hadith_text,long long m_start);
+	NameConnectorPrim(QString * hadith_text,int m_start);
 
 //    virtual CNPIterator first () const{
 //    return QList<ChainNarratorPrim*> ().begin();
@@ -133,10 +141,10 @@ public:
 };
 class NarratorConnectorPrim :public ChainPrim {
 public:
-    long long m_start;
-    long long m_end;
+	int m_start;
+	int m_end;
 	NarratorConnectorPrim(QString * hadith_text);
-	NarratorConnectorPrim(QString * hadith_text,long long m_start);
+	NarratorConnectorPrim(QString * hadith_text,int m_start);
 
 //    virtual CNPIterator first () const{
 //    return QList<ChainNarratorPrim*> ().begin();

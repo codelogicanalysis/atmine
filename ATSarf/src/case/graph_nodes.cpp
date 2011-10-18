@@ -111,7 +111,7 @@ NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
 	if (graphNode!=NULL)
 		return *graphNode;
 	else { //in case we have a group that has just one node
-		assert (size()==1);
+		//assert (size()==1);
 		return operator [](0);
 	}
 }

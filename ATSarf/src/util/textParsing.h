@@ -2,6 +2,7 @@
 #define TEXTPARSING_H
 #include "hadith.h"
 #include "letters.h"
+#include "diacritics.h"
 
 class PunctuationInfo {
 public:
@@ -110,5 +111,7 @@ inline bool isNumber(QString * text,long & currentPos,long & finish) {
 	finish=i; //means (still number and text finished) or did not enter the loop at all
 	return ret_val;
 }
+
+
 
 #endif // TEXTPARSING_H

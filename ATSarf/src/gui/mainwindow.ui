@@ -491,48 +491,6 @@ p, li { white-space: pre-wrap; }
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QRadioButton" name="chk_hadith">
-    <property name="geometry">
-     <rect>
-      <x>240</x>
-      <y>40</y>
-      <width>71</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Hadith</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_morphology">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>40</y>
-      <width>111</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Morphology</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_testing">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>80</y>
-      <width>71</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Testing</string>
-    </property>
-   </widget>
    <widget class="QCheckBox" name="chk_chainNum">
     <property name="geometry">
      <rect>
@@ -578,24 +536,196 @@ p, li { white-space: pre-wrap; }
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QRadioButton" name="chk_verification">
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>40</y>
+      <width>16</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>40</y>
+      <width>16</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
       <x>380</x>
+      <y>40</y>
+      <width>16</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_4">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>491</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_5">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>90</y>
+      <width>281</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_6">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>40</y>
+      <width>21</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_7">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>40</y>
+      <width>20</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_8">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>30</y>
+      <width>491</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_hadith">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>40</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hadith</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_biography">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>60</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Biography</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_morphology">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>40</y>
+      <width>111</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Morphology</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_testing">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Testing</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_bible">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>40</y>
+      <width>131</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Bible Genealogy</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_bible_anotation">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
       <y>60</y>
       <width>131</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Affix Verification</string>
+     <string>Bible Anotation</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="chk_AffixBreaker">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>60</y>
+      <x>250</x>
+      <y>80</y>
       <width>121</width>
       <height>22</height>
      </rect>
@@ -607,56 +737,43 @@ p, li { white-space: pre-wrap; }
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QRadioButton" name="chk_time">
+   <widget class="QRadioButton" name="chk_verification">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>390</x>
+      <y>80</y>
+      <width>131</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Affix Verification</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_time_anotation">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
       <y>60</y>
       <width>141</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Time Recognition</string>
+     <string>Simple Anotation</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="chk_time_anotation">
+   <widget class="QRadioButton" name="chk_time">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>80</y>
-      <width>131</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Time Anotation</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_biography">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>80</y>
+      <x>390</x>
+      <y>40</y>
       <width>141</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Biography</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_bible">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>40</y>
-      <width>131</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Bible Genealogy</string>
+     <string>Time Recognition</string>
     </property>
    </widget>
   </widget>

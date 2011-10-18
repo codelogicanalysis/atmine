@@ -47,7 +47,7 @@ NarratorPrim::NarratorPrim(QString * hadith_text){
 	this->hadith_text=hadith_text;
 }
 
-NarratorPrim::NarratorPrim(QString * hadith_text,long long m_start){
+NarratorPrim::NarratorPrim(QString * hadith_text,int m_start){
 	this->m_start=m_start;
 	this->hadith_text=hadith_text;
 }
@@ -114,7 +114,7 @@ void Narrator::deserialize(QDataStream &chainIn) {
 }
 
 NamePrim::NamePrim(QString * hadith_text):NarratorPrim(hadith_text){learnedName=false;}
-NamePrim::NamePrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start){learnedName=false;}
+NamePrim::NamePrim(QString * hadith_text,int m_start):NarratorPrim(hadith_text,m_start){learnedName=false;}
 
 bool NamePrim::isNamePrim() const {
 	return true;
@@ -134,7 +134,7 @@ void NamePrim::deserialize(QDataStream & chainIn) {
 }
 
 NameConnectorPrim::NameConnectorPrim(QString * hadith_text):NarratorPrim(hadith_text),type(OTHER){}
-NameConnectorPrim::NameConnectorPrim(QString * hadith_text,long long m_start):NarratorPrim(hadith_text,m_start),type(OTHER){}
+NameConnectorPrim::NameConnectorPrim(QString * hadith_text,int m_start):NarratorPrim(hadith_text,m_start),type(OTHER){}
 
 bool NameConnectorPrim::isNamePrim() const {
 	return false;
@@ -165,7 +165,7 @@ NarratorConnectorPrim::NarratorConnectorPrim(QString * hadith_text):ChainPrim(ha
 	this->hadith_text=hadith_text;
 }
 
-NarratorConnectorPrim::NarratorConnectorPrim(QString * hadith_text,long long m_start):ChainPrim(hadith_text){
+NarratorConnectorPrim::NarratorConnectorPrim(QString * hadith_text,int m_start):ChainPrim(hadith_text){
 	this->m_start=m_start;
 }
 
@@ -263,7 +263,7 @@ QDataStream &operator<<(QDataStream &out, const ChainNarratorPrim &p)
 	return out;
 }
 
-typedef QPair<long long, long> ItemIDCategory;
+typedef QPair<int, long> ItemIDCategory;
 typedef QVector<ItemIDCategory> StemList;
 class StemsDetector: public Stemmer
 {
