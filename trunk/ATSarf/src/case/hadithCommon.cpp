@@ -25,7 +25,7 @@ HadithParameters hadithParameters;
 #endif
 
 	QString hadath,abid,alrasoul,abyi,_3an,_2ama,_3ama;
-	int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP;
+	int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP,bit_ENARRATOR_NAMES;
 	QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
@@ -117,9 +117,10 @@ void hadith_initialize() {
 	bits_NAME.append(bit_COMPOUND_NAMES);
 	long abstract_NOUN_PROP=database_info.comp_rules->getAbstractCategoryID("Female Names");//"NOUN_PROP"
 	bit_NOUN_PROP=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
-#ifdef ADD_ENARRATOR_NAMES
+
 	long abstract_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
-	int bit_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
+	bit_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
+#ifdef ADD_ENARRATOR_NAMES
 	bits_NAME.append(bit_ENARRATOR_NAMES);
 #endif
 #elif defined(JUST_BUCKWALTER)
@@ -536,7 +537,6 @@ inline void assertStructure(StateInfo & stateInfo,const Structure s) {
 	assert(stateInfo.processedStructure==s);
 #endif
 }
-
 
 bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & currentData) {
 	display(QString(" nmcsize: %1 ").arg(currentData.nmcCount));
@@ -1328,15 +1328,48 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 	}
 	return return_value;
 }
-inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, StateData & currentData){display(t); stateInfo.currentType=t; return getNextState(stateInfo,currentChain,currentData);}
+inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, StateData & currentData){
+	display(t);
+	stateInfo.currentType=t;
+	bool val= getNextState(stateInfo,currentChain,currentData);
 
+#ifdef NONCONTEXT_LEARNING
+	if (!val) {
+		if ((currentChain->hadith && currentData.narratorCount>=hadithParameters.narr_min) || (!currentChain->hadith && currentData.narratorCount>=hadithParameters.bio_narr_min)) {
+			for (int i=0;i<currentChain->chain->m_chain.size();i++) {
+				ChainPrim * c=currentChain->chain->m_chain[i];
+				if (c->isNarrator()) {
+					Narrator * n=(Narrator *)c;
+					for (int j=0;j<n->m_narrator.size();j++) {
+						NarratorPrim * np=n->m_narrator[j];
+						if (np->isNamePrim()) {
+							NamePrim * name=(NamePrim *)np;
+							if (name->learnedName) {
+								Name p(currentChain->text,name->getStart(),name->getEnd());
+								currentChain->learningEvaluator.addContextLearnedName(p);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+#endif
+	return val;
+}
 #ifndef BUCKWALTER_INTERFACE
 	bool proceedInStateMachine(StateInfo &  stateInfo,HadithData *structures, StateData & currentData ) //does not fill stateInfo.currType
 	{
 		hadith_stemmer s(structures->text,stateInfo.startPos);
+	#ifdef NONCONTEXT_LEARNING
+		hadith_stemmer nameLearner(structures->text,stateInfo.startPos);
+	#endif
 		bool family=false;
 		if (stateInfo.familyNMC) {
 			s.tryToLearnNames=true;
+		#ifdef NONCONTEXT_LEARNING
+			nameLearner.tryToLearnNames=true;
+		#endif
 			family=true;
 		}
 		stateInfo.resetCurrentWordInfo();
@@ -1353,13 +1386,21 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 
 	#ifdef REFINEMENTS
 	#ifdef TRYTOLEARN
+		bool nrcLearning=false;
 		if (stateInfo.currentState==NRC_S && currentData.nrcCount<=1
 			#ifdef PUNCTUATION
 				&& !stateInfo.nrcIsPunctuation
 			#endif
-			)
+				) {
+			nrcLearning=true;
 			s.tryToLearnNames=true;
+		}
 	#endif
+	#ifdef NONCONTEXT_LEARNING
+		if (stateInfo.nrcPreviousType)
+			nameLearner.tryToLearnNames=true;
+	#endif
+		//assert(!s.tryToLearnNames || nameLearner.tryToLearnNames);
 	#ifdef PUNCTUATION
 		if (isNumber(structures->text,stateInfo.startPos,finish)) {
 			display("Number ");
@@ -1470,8 +1511,21 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 		{
 	#endif
 			s();
+		#ifdef TRYTOLEARN
+			QString n=s.getString().toString();
+			if (!s.tryToLearnNames && (stateInfo.currentType==NRC || stateInfo.currentType==NAME) && startsWithAL(n) && getLastLetter(n)==ya2) {
+				nameLearner.tryToLearnNames=true;
+				s.init(stateInfo.startPos);
+				s.tryToLearnNames=true;
+				s();
+			}
+		#endif
+		#ifdef NONCONTEXT_LEARNING
+			if (nameLearner.tryToLearnNames)
+				nameLearner();
+		#endif
 			finish=max(s.info.finish,s.finish_pos);
-			if (finish==stateInfo.startPos) {
+			if (s.numSolutions==0/*finish==stateInfo.startPos*/) {
 				finish=getLastLetter_IN_currentWord(structures->text,stateInfo.startPos);
 			#ifdef REFINEMENTS
 				if (s.tryToLearnNames && removeDiacritics(structures->text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
@@ -1479,7 +1533,22 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 					s.name=true;
 					s.finishStem=finish;
 					s.startStem=stateInfo.startPos;
+					if (structures->text->at(stateInfo.startPos)==waw) {
+						long newPos=stateInfo.startPos;
+						skipOneLetter(structures->text,newPos);
+						if (skipAL(structures->text,newPos)) {
+							stateInfo.startPos=newPos;
+							s.startStem=newPos;
+						}
+					}
 					s.learnedName=true;
+				}
+			#endif
+			#ifdef NONCONTEXT_LEARNING
+				if (nameLearner.tryToLearnNames && removeDiacritics(structures->text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
+					nameLearner.name=true;
+					Name p(structures->text,stateInfo.startPos,finish);
+					structures->learningEvaluator.addNonContextLearnedName(p);
 				}
 			#endif
 			}
@@ -1509,20 +1578,57 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 		}
 		stateInfo._3abid=s._3abid;
 	#endif
+		stateInfo.possessivePlace=s.possessive;
 	#ifdef TRYTOLEARN
 		if (!s.name && !s.nmc && !s.nrc &&!s.stopword) {
 			QString word=s.getString().toString();
-			if ((stateInfo.currentPunctuationInfo.has_punctuation || family) && s.tryToLearnNames && removeDiacritics(word).count()>=3) {
-				display("{learned}");
-				s.name=true;
-				s.nmc=false;
-				s.learnedName=true;
-				s.startStem=s.info.start;
-				s.finishStem=s.info.finish;
+			if (s.tryToLearnNames && removeDiacritics(word).count()>=3) {
+				bool cond=/*stateInfo.currentPunctuationInfo.has_punctuation ||*/ family;
+				if (!cond) {
+					hadith_stemmer n(structures->text,stateInfo.nextPos);
+					n();
+					if (n.is3an)
+						cond=true;
+				}
+				if (cond) {
+					display("{learned}");
+					s.name=true;
+					s.nmc=false;
+					s.learnedName=true;
+					s.startStem=s.info.start;
+					s.finishStem=s.info.finish;
+					if (structures->text->at(stateInfo.startPos)==waw) {
+						long newPos=stateInfo.startPos;
+						skipOneLetter(structures->text,newPos);
+						if (skipAL(structures->text,newPos)) {
+							stateInfo.startPos=newPos;
+							s.startStem=newPos;
+						}
+					}
+				}
 			}
 		}
 	#endif
-		stateInfo.possessivePlace=s.possessive;
+	#ifdef NONCONTEXT_LEARNING
+		if (!nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&!nameLearner.stopword) {
+			QString word=nameLearner.getString().toString();
+			if ((stateInfo.currentPunctuationInfo.has_punctuation || family) && nameLearner.tryToLearnNames && removeDiacritics(word).count()>=3) {
+				nameLearner.name=true;
+				nameLearner.nmc=false;
+				Name p(structures->text,nameLearner.info.start,nameLearner.info.finish);
+				structures->learningEvaluator.addNonContextLearnedName(p);
+			}
+		}
+		Name p(structures->text,nameLearner.startStem,nameLearner.finishStem);
+		if (nameLearner.learnedName && (!nrcLearning || !nameLearner.has_waw || !stateInfo.nrcPreviousType)) //to avoid case of qal w...
+			structures->learningEvaluator.addNonContextLearnedName(p);
+		if (nrcLearning && stateInfo.nrcPreviousType && s.has_waw) //to avoid case of qal w...
+			s.name=false;
+		if (s.possessive)
+			structures->learningEvaluator.addKnownName(p,false);
+	#endif
+		stateInfo.nrcPreviousType=false;
+		//displayed_error<<"-";
 		if (s.nrc ) {
 		#ifdef REFINEMENTS
 			if (s.is3an) {
@@ -1556,10 +1662,10 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			#endif
 			}
 		#endif
+			stateInfo.nrcPreviousType=true;
+			//displayed_error<<"p"<<s.getString().toString();
 			return result(NRC,stateInfo,structures,currentData);
-		}
-		else if (s.nmc)
-		{
+		} else if (s.nmc) {
 			if (s.familyNMC) {
 			#if defined(GET_WAW) || defined(REFINEMENTS)
 				PunctuationInfo copyPunc=stateInfo.currentPunctuationInfo;
@@ -1623,8 +1729,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 				return result(NMC,stateInfo,structures,currentData);
 			}
 			return result(NMC,stateInfo,structures,currentData);
-		}
-		else if (s.name){
+		} else if (s.name){
 		#ifdef GET_WAW
 			long nextpos=stateInfo.nextPos;
 			PunctuationInfo copyPunc=stateInfo.currentPunctuationInfo;
@@ -1649,10 +1754,78 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			stateInfo.endPos=s.finishStem;
 			stateInfo.nextPos=nextpos;
 		#endif
+		#ifdef NONCONTEXT_LEARNING
+			Name p(structures->text,s.startStem,s.finishStem);
+			structures->learningEvaluator.addKnownName(p,s.learnedName);
+		#endif
 			return result(NAME,stateInfo,structures,currentData);
 		}
 		else
 			return result(NMC,stateInfo,structures,currentData);
 	}
+
 #endif
 
+#ifdef NONCONTEXT_LEARNING
+	void NameLearningEvaluator::displayNameLearningStatistics() {
+		QSet<Name>	commonContextNames =annotatedNames,
+					commonNonContextNames=annotatedNames,
+					nonDetectedNonContextNames=annotatedNames,
+					nonDetectedContextNames=annotatedNames,
+					incorrectlyDetectedNames=contextNames;
+		commonContextNames.intersect(contextNames);
+		commonNonContextNames.intersect(nonContextNames);
+		nonDetectedNonContextNames.subtract(commonNonContextNames);
+		nonDetectedContextNames.subtract(commonContextNames);
+		incorrectlyDetectedNames.subtract(annotatedNames);
+		QSet<Name> detectedOnlyInNonContext=commonNonContextNames;
+		detectedOnlyInNonContext.subtract(commonContextNames);
+
+		QSet<Name>::iterator itr=commonContextNames.begin();
+		displayed_error<<"Contextually-Detected Correct Names:\n";
+		for (;itr!=commonContextNames.end();itr++)
+			displayed_error<<itr->getString()<<"\n";
+		itr=detectedOnlyInNonContext.begin();
+		displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
+		for (;itr!=detectedOnlyInNonContext.end();itr++)
+			displayed_error<<itr->getString()<<"\n";
+		itr=nonDetectedNonContextNames.begin();
+		displayed_error<<"Names not detected without Context:\n";
+		for (;itr!=nonDetectedNonContextNames.end();itr++)
+			displayed_error<<itr->getString()<<"\n";
+		itr=nonDetectedContextNames.begin();
+		displayed_error<<"Names not detected with Context:\n";
+		for (;itr!=nonDetectedContextNames.end();itr++)
+			displayed_error<<itr->getString()<<"\n";
+		itr=incorrectlyDetectedNames.begin();
+		displayed_error<<"Names Incorrectly detected:\n";
+		for (;itr!=incorrectlyDetectedNames.end();itr++)
+			displayed_error<<itr->getString()<<"\n";
+
+		if (annotatedNames.size()==0) {
+			error << "Annotation File does not exist\n";
+			QFile file(QString("%1.tags").arg(fileName).toStdString().data());
+			if (file.open(QIODevice::WriteOnly)) {
+				QDataStream out(&file);   // we will serialize the data into the file
+				out << knownNames;
+				file.close();
+				error << "Annotation File has been written from current known names, Correct it before use.\n";
+			}
+			return;
+		}
+
+
+		double contextRecall=(double)commonContextNames.size()/annotatedNames.size(),
+			   contextPrecision=(double)commonContextNames.size()/contextNames.size(),
+			   nonContextRecall=(double)commonNonContextNames.size()/annotatedNames.size(),
+			   nonContextPrecision=(double)commonNonContextNames.size()/nonContextNames.size();
+		displayed_error << "-------------------------\n"
+						<< "Context Names:\n"
+						<< "\trecall=\t"<<commonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<contextRecall<<"\n"
+						<< "\tprecision=\t"<<commonContextNames.size()<<"/"<<contextNames.size()<<"=\t"<<contextPrecision<<"\n"
+						<< "Non-Context Names:\n"
+						<< "\trecall=\t"<<commonNonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<nonContextRecall<<"\n"
+						<< "\tprecision=\t"<<commonNonContextNames.size()<<"/"<<nonContextNames.size()<<"=\t"<<nonContextPrecision<<"\n";
+	}
+
+#endif

@@ -2,6 +2,7 @@
 #include <bitset>
 #include <QSqlDatabase>
 #include <QTextStream>
+#include <QTextCodec>
 #include <QDateTime>
 #include "hadith.h" //just to propagate Directives such as SUBMISSION
 #include "database_info_block.h"
@@ -37,6 +38,10 @@ QString non_punctuation_delimiters;
 
 void initialize_variables()
 {
+	QTextCodec *codec = QTextCodec::codecForName("utf-8");
+	QTextCodec::setCodecForCStrings(codec);
+	QTextCodec::setCodecForTr(codec);
+	QTextCodec::setCodecForLocale(codec);
 #ifdef LOAD_FROM_FILE
 	cacheFileList<<trie_path<<trie_list_path<<compatibility_rules_path<<prefix_tree_path
 				 <<suffix_tree_path<<description_path<<prefix_info_path<<suffix_info_path<<stem_info_path;

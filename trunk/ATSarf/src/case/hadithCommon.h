@@ -99,7 +99,8 @@
 		bool _3an:1;
 		bool learnedName:1;
 		bool nrcIsPunctuation:1; //if state is NRC and that is caused soley by punctuation
-		int unused:12;
+		bool nrcPreviousType:1;
+		int unused:11;
 		PunctuationInfo previousPunctuationInfo,currentPunctuationInfo;
 		void resetCurrentWordInfo()	{familyNMC=false;ibn=false;_2ab=false;_2om=false;_3abid=false;possessivePlace=false;number=false;isWaw=false;_3an=false;learnedName=false;currentPunctuationInfo.reset();}
 		bool familyConnectorOr3abid() { return familyNMC || _3abid;}
@@ -111,7 +112,7 @@
 	extern QString alrasoul,abyi;
 #endif
 	extern QString hadath,abid,alrasoul,abyi,_3an,_2ama,_3ama;
-	extern int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP;
+	extern int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP, bit_ENARRATOR_NAMES;
 	extern QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
@@ -164,6 +165,7 @@
 	#endif
 	public:
 		long finish_pos;
+		int numSolutions;
 		bool name:1, nrc:1, nmc,possessive:1, familyNMC:1,ibn:1,_2ab:1,_2om:1,_3abid:1,stopword:1;
 	#ifdef GET_WAW
 		bool has_waw:1,is3an:1;
@@ -202,6 +204,7 @@
 			_3abid=false;
 			stopword=false;
 			finish_pos=start;
+			numSolutions=0;
 		#ifdef REFINEMENTS
 			tryToLearnNames=false;
 			learnedName=false;
@@ -300,6 +303,7 @@
 
 		bool analyze()
 		{
+			numSolutions++;
 		#ifdef STATS
 			QString temp_stem=removeDiacritics(info.text->mid(Stem->starting_pos, Suffix->info.start-Stem->starting_pos));//removeDiacritics(stem_info->raw_data);
 		#endif
@@ -428,6 +432,8 @@
 				if (tryToLearnNames)
 					bits_NAME.removeLast();
 			#endif
+				if (stem_info->abstract_categories.getBit(bit_ENARRATOR_NAMES))
+					numSolutions--;
 			}
 	#ifndef JUST_BUCKWALTER
 	#if 1
@@ -547,6 +553,55 @@
 		return false;
 	}
 
+#ifdef NONCONTEXT_LEARNING
+	#include "timeManualTagger.h"
+	#include "bibleGeneology.h"
+	class NameLearningEvaluator {
+	private:
+		QSet<Name> nonContextNames, contextNames, annotatedNames;
+		QList<Name> knownNames;
+		QString fileName, * text;
+	public:
+		NameLearningEvaluator(QString fileName, QString * text) {
+			this->fileName=fileName;
+			this->text=text;
+			readTags();
+		}
+		void readTags() {
+			TimeTaggerDialog::SelectionList tags;
+			QFile file(QString("%1.tags").arg(fileName).toStdString().data());
+			if (file.open(QIODevice::ReadOnly))	{
+				QDataStream out(&file);   // we will serialize the data into the file
+				out	>> tags;
+				file.close();
+			}
+			qSort(tags.begin(),tags.end());
+			for (int i=0;i<tags.size();i++) {
+				Name n(text,tags[i].first,tags[i].second);
+				annotatedNames.insert(n);
+			}
+		}
+		void resetLearnedNames() {
+			nonContextNames.clear();
+			contextNames.clear();
+		}
+		void addNonContextLearnedName(const Name & name) {
+			nonContextNames.insert(name);
+		}
+		void addContextLearnedName(const Name & name) {
+			contextNames.insert(name);
+		}
+		void addKnownName(const Name & name, bool learned) {
+			if (!learned && annotatedNames.contains(name))
+				annotatedNames.remove(name);
+			if (annotatedNames.size()==0) //else no need to modify the list, since will not be written
+				knownNames.append(name);
+		}
+		void displayNameLearningStatistics();
+	};
+#endif
+
+
 #if 1
 	typedef struct StateData_ {
 		long  mainStructureStartIndex;
@@ -583,6 +638,9 @@
 		QString * text;
 		NarratorGraph *graph;
 		bool hadith;
+	#ifdef NONCONTEXT_LEARNING
+		NameLearningEvaluator learningEvaluator;
+	#endif
 
 		NamePrim *namePrim;
 		NameConnectorPrim *nameConnectorPrim;
@@ -625,7 +683,11 @@
 				biography=new Biography(graph,text,s);
 			}
 		}
-		HadithData(QString * text, bool hadith, NarratorGraph * graph){
+		HadithData(QString * text, bool hadith, NarratorGraph * graph,QString fileName)
+			#ifdef NONCONTEXT_LEARNING
+				:learningEvaluator(fileName,text)
+			#endif
+		{
 			this->text=text;
 			this->hadith=hadith;
 			this->graph=graph;

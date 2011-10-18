@@ -1,6 +1,148 @@
 #include "bibleManualTagger.h"
 #include <QtAlgorithms>
 
+
+BibleTaggerDialog::BibleTaggerDialog(QString filename):QMainWindow() {
+	this->filename=filename;
+	text=new QTextBrowser(this);
+	tagGenealogy=new QPushButton("Tag &Genealogy",this);
+	unTagGenealogy=new QPushButton("&Un-Tag Genealogy",this);
+	tagName=new QPushButton("Tag &Name",this);
+	unTagName=new QPushButton("Un-Ta&g Name",this);
+	save=new QPushButton("&Save",this);
+	modifyGraph=new QPushButton("&Modify Graph",this);
+	scrollArea=new QScrollArea(this);
+	forceWordNames=new QCheckBox("Full Word Names");
+	resetGlobalGraph=new QPushButton("Reset Global Graph");
+	resetGlobalGraph->setEnabled(false);
+	isGlobalGraph=new QPushButton("Global Graph");
+	isGlobalGraph->setCheckable(true);
+	graphArea=new QScrollArea(this);
+	treeText=new QTextBrowser(this);
+	treeText->setReadOnly(false);
+	grid=new QGridLayout(scrollArea);
+	grid->addWidget(tagGenealogy,0,0);
+	grid->addWidget(unTagGenealogy,0,1);
+	grid->addWidget(forceWordNames,0,2);
+	grid->addWidget(tagName,0,3);
+	grid->addWidget(unTagName,0,4);
+	grid->addWidget(save,0,5);
+	grid->addWidget(text,1,0,4,2);
+	grid->addWidget(treeText,1,2,1,1);
+	grid->addWidget(modifyGraph,2,2);
+	grid->addWidget(isGlobalGraph,3,2);
+	grid->addWidget(resetGlobalGraph,4,2);
+	grid->addWidget(graphArea,1,3,4,3);
+	grid->setColumnStretch(0,2);
+	grid->setColumnStretch(1,2);
+	grid->setColumnStretch(2,4);
+	grid->setColumnStretch(3,2);
+	grid->setColumnStretch(4,2);
+	grid->setColumnStretch(5,2);
+	graph=new QLabel(graphArea);
+	graphArea->setWidgetResizable(true);
+	graphArea->setAlignment(Qt::AlignCenter);
+	graphArea->setWidget(graph);
+	forceWordNames->setChecked(true);
+	setCentralWidget(scrollArea);
+	treeText->setLayoutDirection(Qt::RightToLeft);
+#ifdef ERRORS_BIBLE
+	errors=new QTextBrowser(this);
+	errors->resize(errors->width(),50);
+	errors_text=new QString();
+	grid->addWidget(errors,5,0,1,6);
+	displayed_error.setString(errors_text);
+	errors->setText(*errors_text);
+#endif
+	connect(tagGenealogy,SIGNAL(clicked()),this,SLOT(tagGene_clicked()));
+	connect(unTagGenealogy,SIGNAL(clicked()),this,SLOT(unTagGene_clicked()));
+	connect(tagName,SIGNAL(clicked()),this,SLOT(tagName_clicked()));
+	connect(unTagName,SIGNAL(clicked()),this,SLOT(unTagName_clicked()));
+	connect(save,SIGNAL(clicked()),this,SLOT(save_clicked()));
+	connect(text,SIGNAL(selectionChanged()),this, SLOT(text_selectionChanged()));
+	connect(modifyGraph,SIGNAL(clicked()),this, SLOT(modifyGraph_clicked()));
+	connect(isGlobalGraph,SIGNAL(toggled(bool)),this, SLOT(isGlobalGraph_toggled(bool)));
+	connect(resetGlobalGraph,SIGNAL(clicked()),this, SLOT(resetGlobalGraph_clicked()));
+	string=NULL;
+	globalGraph=NULL;
+	open_action();
+	if (globalGraph==NULL)
+		regenerateGlobalGraph();
+	setWindowTitle(filename);
+	this->resize(700,700);
+	selectedTagIndex=-1;
+	modifyGraph->setEnabled(false);
+}
+
+
+int BibleTaggerDialog::getNameIndexInAll(const QString & name) {
+	for (int i=0;i<tags.size();i++) {
+		int j=tags[i].getNameIndex(name);
+		if (j>=0)
+			return tags[i].getNamesList()[j].first;
+	}
+	return -1;
+}
+void BibleTaggerDialog::regenerateGlobalGraph() {
+	if (tags.size()>0)
+		globalGraph=tags[0].getTree()->duplicateTree();
+	for (int i=1;i<tags.size();i++)
+		globalGraph->mergeTrees(tags[i].getTree());
+	if (globalGraph!=NULL)
+		globalGraph->mergeLeftovers();
+}
+int BibleTaggerDialog::findSubSelection(int tagIndex,int startSubIndex, SelectionMode selectionMode) { //based on user text selection
+	if (this==NULL)
+		return -1;
+	QTextCursor c=text->textCursor();
+	int start=c.selectionStart();
+	int end=c.selectionEnd();
+	Selection::MainSelectionList names=tags[tagIndex].getNamesList();
+	for (int i=startSubIndex;i<names.size();i++) {
+		if (isConsistentWithSelectionCondidtion(start,end,names[i].first,names[i].second,selectionMode)) {
+			return i;
+		}
+	}
+	return -1;
+}
+void BibleTaggerDialog::displayGraph(){
+	try{
+		system("dot -Tsvg graph.dot -o graph.svg");
+		graph->setPixmap(QPixmap("./graph.svg"));
+		graphArea->setWidget(graph);
+	} catch(...) {}
+}
+BibleTaggerDialog::~BibleTaggerDialog() {
+	for (int i=0;i<tags.size();i++) {
+		if (tags[i].tree!=NULL)
+			delete tags[i].tree;
+	}
+	if (globalGraph!=NULL)
+		delete globalGraph;
+	if (string !=NULL)
+		delete string;
+
+	delete isGlobalGraph;
+	delete resetGlobalGraph;
+	delete tagGenealogy;
+	delete unTagGenealogy;
+	delete tagName;
+	delete unTagName;
+	delete modifyGraph;
+	delete save;
+	delete text;
+	delete treeText;
+	delete forceWordNames;
+	delete scrollArea;
+	delete graphArea;
+	delete graph;
+#ifdef ERRORS_BIBLE
+	delete errors;
+	delete errors_text;
+#endif
+	delete grid;
+}
+
 void BibleTaggerDialog::tagGenealogy_action() {
 	if (this==NULL)
 		return;
@@ -39,7 +181,7 @@ void BibleTaggerDialog::tagGenealogy_action() {
 		i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
 	}
 	if (sel==NULL) {
-		tags.append(Selection(string,start,end));
+		tags.append(Selection(string,start,end-1));
 	} else if (i>=0) { //stopped before completion
 		start=sel->getMainStart();
 		end=sel->getMainEnd();
@@ -135,11 +277,11 @@ void BibleTaggerDialog::open_action() {
 		text->setTextBackgroundColor(Qt::white);
 		text->setTextColor(Qt::black);
 		QString sss=s.readAll();
-		qDebug()<<sss.size();
+		//qDebug()<<sss.size();
 		string=new QString(sss);
-		qDebug()<<string->size();
+		//qDebug()<<string->size();
 		text->setText(*string);
-		qDebug()<<text->toPlainText().size();
+		//qDebug()<<text->toPlainText().size();
 
 		QFile file(QString("%1.tags").arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{

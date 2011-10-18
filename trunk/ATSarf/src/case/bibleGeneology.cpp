@@ -403,6 +403,18 @@ public:
 	void finish() {}
 };
 class GeneTree::MergeVisitor:public GeneVisitor{
+public:
+	static void appendEdgeName(const Name & n, Name & n2) {
+	#define MAX_SIZE 20
+		int start=min(n.getStart(),n2.getStart()),
+			end  =max(n.getEnd(),n2.getEnd());
+		Name temp(n2.getTextPointer(),start,end);
+		QString s=temp.getString();
+		n2.edgeText+="**"+s.remove("\n").left(MAX_SIZE);
+		if (s.size()>MAX_SIZE)
+			n2.edgeText+"...";
+	#undef MAX_SIZE
+	}
 private:
 	typedef QPair<Name,Name> Edge;
 	typedef QMap<Edge,bool> EdgeMap;
@@ -470,16 +482,25 @@ private:
 			if (n1==n2) {
 				if (n1!=NULL) {
 					//correctly placed
+					for (int i=0;i<n1->spouses.size();i++) {
+						if (n1->spouses[i]==name2) {
+							appendEdgeName(n1->name,n1->spouses[i]);
+						}
+					}
 				} else {
 					addUnPerformedEdge(name1,name2,isSpouse);
 				}
 			} else {
 				if (n1==NULL) {
-					if (notFoundWithinRadius(n2,name1,true))
+					if (notFoundWithinRadius(n2,name1,true)) {
 						n2->addSpouse(name1);
+						appendEdgeName(n2->name,n2->spouses.last());
+					}
 				} else if (n2==NULL) {
-					if (notFoundWithinRadius(n1,name2,true))
+					if (notFoundWithinRadius(n1,name2,true)) {
 						n1->addSpouse(name2);
+						appendEdgeName(name1,n1->spouses.last());
+					}
 				} else {
 				#if 0
 					//try merging spouses 2 nodes if possible
@@ -524,10 +545,14 @@ private:
 					if (notFoundWithinRadius(n2,name1,true)) {
 						n2->addParent(new GeneNode((Name & )name1,NULL));
 						mainTree->updateRoot();
+						appendEdgeName(name1,n2->name);
 					}
 				} else if (n2==NULL) {
-					if (notFoundWithinRadius(n1,name2))
-						n1->addChild(new GeneNode((Name & )name2,NULL));
+					if (notFoundWithinRadius(n1,name2)) {
+						GeneNode * child=new GeneNode((Name & )name2,NULL);
+						n1->addChild(child);
+						appendEdgeName(name1,child->name);
+					}
 				} else {
 					if (n2->parent!=n1) {
 					#ifdef SHOW_MERGING_ERRORS
@@ -887,7 +912,7 @@ protected:
 	}
 	virtual void visit(const GeneNode * n1,const Name & n2, bool isSpouse)	{
 		QString s1=getAndInitializeDotNode(n1->name,false), s2=getAndInitializeDotNode(n2,isSpouse);
-		d_out<<s1<<"->"<<s2<<" ;\n";
+		d_out<<s1<<"->"<<s2<<"[label=\""<<n2.edgeText<<"\"] ;\n";
 	}
 	virtual void visit(const GeneNode * n, int) {
 		getAndInitializeDotNode(n->name,false);
@@ -964,9 +989,11 @@ public:
 		GeneNode * lastNode = tree->findTreeNode(node->toString(),false);
 		if (isSpouse) {
 			lastNode->addSpouse(name2);
+			GeneTree::MergeVisitor::appendEdgeName(lastNode->name,lastNode->spouses.last());
 		} else {
 			assert(lastNode!=NULL);
-			new GeneNode(name2,lastNode);
+			GeneNode * child=new GeneNode(name2,lastNode);
+			GeneTree::MergeVisitor::appendEdgeName(lastNode->name,child->name);
 		}
 	}
 	virtual void finish() {}

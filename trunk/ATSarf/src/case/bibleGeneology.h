@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QFile>
 #include "common.h"
+#include "textParsing.h"
 #include "text_handling.h"
 #include "ATMProgressIFC.h"
 
@@ -55,7 +56,9 @@ inline bool equalNames(const QString & n1,const QString & n2) {
 		return true;
 	if (equal_withoutLastDiacritics(n2,israel) && equal_withoutLastDiacritics(n1,ya3coub))
 		return true;
-	return equal_withoutLastDiacritics(n1,n2);
+	QString s1=withoutAL(n1),s2=withoutAL(n2);
+	assert(!equal_withoutLastDiacritics(n1,n2) || equal_withoutLastDiacritics(s1,s2));
+	return equal_withoutLastDiacritics(s1,s2);
 }
 
 
@@ -74,6 +77,8 @@ private:
 	long start,end;
 	QString * text;
 	bool male:1;
+public:
+	QString edgeText;
 private:
 	friend QDataStream &operator>>(QDataStream &in, GeneNode &t);
 	Name() {}
@@ -102,6 +107,7 @@ public:
 	QString getString() const {
 		return text->mid(start,end-start+1);
 	}
+	QString * getTextPointer() { return text;}
 	long getStart() const{return start;}
 	long getLength() const{return end-start+1;}
 	long getEnd() const { return end;}
@@ -110,7 +116,13 @@ public:
 	}
 };
 inline int qHash(const Name & n) {
-	return qHash(removeDiacritics(n.getString()));
+	if (equal_withoutLastDiacritics(n.getString(),abram))
+		return qHash(ibrahim);
+	if (equal_withoutLastDiacritics(n.getString(),saray))
+		return qHash(sarah);
+	if (equal_withoutLastDiacritics(n.getString(),israel))
+		return qHash(ya3coub);
+	return qHash(withoutAL(removeDiacritics(n.getString())));
 }
 
 class GeneTree;
@@ -186,7 +198,6 @@ public:
 	QList<GeneNode *> children;
 	int height;
 	bool ignoreInSearch;
-	QString edgeText;
 
 	GeneNode(Name n, GeneNode * parent ):name(n) {
 		assert(parent!=this);
@@ -303,6 +314,7 @@ public:
 };
 class GeneTree {
 public:
+	class MergeVisitor;
 	class GraphStatistics {
 	public:
 		double	foundRecall, foundPrecision,
@@ -326,7 +338,6 @@ public:
 private:
 	friend QDataStream &operator<<(QDataStream &out, const GeneTree &t);
 	friend QDataStream &operator>>(QDataStream &in, GeneTree &t);
-	class MergeVisitor;
 	MergeVisitor * mergeVisitor;
 	GeneNode * root;
 public:

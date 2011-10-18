@@ -631,7 +631,7 @@ public:
 		currentData.initialize();
 
 	#ifdef CHAIN_BUILDING
-		HadithData *currentBiography=new HadithData(text,false,graph);
+		HadithData *currentBiography=new HadithData(text,false,graph,input_str);
 		currentBiography->initialize(text);
 		//display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
 	#else

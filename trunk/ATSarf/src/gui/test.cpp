@@ -86,17 +86,37 @@ int biography(QString inputString,ATMProgressIFC *prg) {
 		return -1;
 	return 0;
 }
-int annotation(QString inputString,ATMProgressIFC *) {
-#ifdef BIBLE
-	if (bibleTagger(inputString))
-#else
+int simple_annotation(QString inputString,ATMProgressIFC *) {
 	if (timeTagger(inputString))
-#endif
+		return -1;
+	return 0;
+}
+
+int bible_annotation(QString inputString,ATMProgressIFC *) {
+	if (bibleTagger(inputString))
 		return -1;
 	return 0;
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
+	long i=0;
+	skipAL(&inputString,i);
+	out<<i<<"\n";
+	out<<startsWithAL(inputString)<<"\n";
+	out<<withoutAL(inputString)<<"\n";
+	out<<removeAL(inputString)<<"\n";
+	i=0;
+	skipAL(&inputString,i);
+	out<<i<<"\n";
+	skipOneLetter(&inputString,i);
+	out<<i<<"\n";
+	skipOneLetter(&inputString,i);
+	out<<i<<"\n";
+	skipOneLetter(&inputString,i);
+	out<<i<<"\n";
+	skipOneLetter(&inputString,i);
+	out<<i<<"\n";
+	return 0;
 #ifdef AUGMENT_DICTIONARY
 	if (augment()<0)
 		return -1;

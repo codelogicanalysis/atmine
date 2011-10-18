@@ -57,12 +57,14 @@
 #define SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
 //#define DISPLAY_BIOGRAPHY_GRAPH
-//#define TAG_HADITH
+#define TAG_HADITH
 
 #define SAVE_MERGED_GRAPH_ONLY
 #define DESERIALIZE_POR
 //#define DEBUG_BIOGRAPHY_CLUSTERING
 #define BIBLE
+
+#define NONCONTEXT_LEARNING
 
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);

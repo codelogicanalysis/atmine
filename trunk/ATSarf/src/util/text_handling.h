@@ -145,20 +145,51 @@ inline bool startsWith(const QString &text,const QString &substring) // is diacr
 	return startsWith(text.rightRef(-1),substring,dummy_int);
 }
 
-inline bool startsWithAL(const QString & word)//does not take in account cases were Diacritics may be present on the alef and lam of "al"
-{
-	if (word.length()<=2)
-		return false;
-	if (word[0]==alef && word[1]==lam)//TODO: whenever it is changed to include diactrics in-between it must notice that only some combinations of diactrics imply AL (definite article) else is part of the word
-		return true;
+
+inline void skipOneLetter(const QString * text,long & currentPos) {
+	if (currentPos<text->size()) {
+		currentPos++;
+		while (currentPos<text->size() && isDiacritic(text->at(currentPos)))
+			currentPos++;
+	}
+}
+
+inline bool skipAL(const QString * text, long & currPos) { //just moves currPos
+	if (currPos<text->size()) {
+		QChar l=text->at(currPos);
+		if (l==alef) {
+			long newPos=currPos;
+			skipOneLetter(text,newPos);
+			if (newPos<text->size()) {
+				l=text->at(newPos);
+				if (l==lam) {
+					skipOneLetter(text,newPos);
+					currPos=newPos;
+					return true;
+				}
+			}
+		}
+	}
 	return false;
 }
-inline bool removeAL( QString &word)//does not take in account cases were Diacritics may be present on the alef and lam of "al"
+
+inline bool startsWithAL(const QString & word)//does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
-	if (!startsWithAL(word))
+	long i=0;
+	return (skipAL(&word,i)); //will not affect word
+}
+inline bool removeAL( QString &word)
+{
+	long i=0;
+	if (!skipAL(&word,i))
 		return false;
-	word=word.right(word.length()-2);
+	word=word.mid(i,word.length()); //word.length() is more than needed but no problem will be ignored supposedly
 	return true;
+}
+inline QString withoutAL( QString word)
+{
+	removeAL(word);
+	return word;
 }
 
 #endif // _TEXT_HANDLING_H

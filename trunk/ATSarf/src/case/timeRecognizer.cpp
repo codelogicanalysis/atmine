@@ -84,7 +84,7 @@ public:
 };
 
 QDataStream &operator<<(QDataStream &out, const TimeEntity &entity) {
-	out<<(int)entity.getStart()<<(int)entity.getEnd()+1;
+	out<<(int)entity.getStart()<<(int)entity.getEnd();
 	return out;
 }
 
@@ -552,7 +552,7 @@ int calculateStatistics(QString filename){
 	int i=0,j=0;
 
 	while (i<tags.size() && j<timeVector->size()) {
-		int start1=tags[i].first,end1=tags[i].second-1,
+		int start1=tags[i].first,end1=tags[i].second,
 			start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
 		if (overLaps(start1,end1,start2,end2)) {
 			TimeTaggerDialog::Selection overlap=overLappingPart(start1,end1,start2,end2);
@@ -590,7 +590,7 @@ int calculateStatistics(QString filename){
 	}
 #ifdef DETAILED_DISPLAY
 	while (i<tags.size()) {
-		int start1=tags[i].first,end1=tags[i].second-1;
+		int start1=tags[i].first,end1=tags[i].second;
 		displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 						<<"-----\n";
 		i++;
