@@ -67,27 +67,42 @@ extern GeneologyParameters geneologyParameters;
 int genealogyHelper(QString input_str,ATMProgressIFC *prgs);
 void geneology_initialize();
 
+class AbstractGeneNode {
+public:
+	virtual AbstractGeneNode * getParent()=0;
+	virtual QString getString() const =0;
+	virtual QString getEdgeText() const=0;
+	virtual bool isName() const{ return false;}
+	virtual int getDirectGraphChildrenCount() const {return 0;}
+	virtual int getDescendentCount() const {return 0;}
+	virtual QString getSex() const=0;
+	virtual int getGraphHeight() const=0;
+};
+
 class GeneNode;
 class FillTextVisitor;
-class Name {
+class Name: public AbstractGeneNode {
 private:
 	friend class FillTextVisitor;
 	friend QDataStream &operator>>(QDataStream &in, Name &t);
 	friend QDataStream &operator<<(QDataStream &out, const Name &t);
+	friend class FixSpousesVisitor;
 	long start,end;
 	QString * text;
 	bool male:1;
+	mutable GeneNode * parent;
 public:
 	QString edgeText;
 private:
 	friend QDataStream &operator>>(QDataStream &in, GeneNode &t);
 	Name() {}
 public:
-	Name(QString * text,long start, long end,bool male=true) {
+	Name(QString * text,long start, long end,GeneNode* parent=NULL,bool male=true) {
 		this->start=start;
 		this->end=end;
 		this->text=text;
 		this->male=male;
+		this->parent=parent;
 	}
 	Name operator=(const Name & n2) {
 		text=n2.text;
@@ -95,6 +110,8 @@ public:
 		end=n2.end;
 		return *this;
 	}
+	virtual bool isName() const {return true;}
+	virtual AbstractGeneNode * getParent();
 	bool isMarriageCompatible(const Name & n) {
 		if (this==NULL)
 			return false;
@@ -103,11 +120,15 @@ public:
 	bool operator ==(const Name & n) const {
 		return equalNames(getString(),n.getString());
 	}
-
-	QString getString() const {
+	virtual QString getString() const {
 		return text->mid(start,end-start+1);
 	}
-	QString * getTextPointer() { return text;}
+	virtual QString getEdgeText() const {
+		return edgeText;
+	}
+	virtual QString * getTextPointer() { return text;}
+	virtual QString getSex() const { return (male?"M":"F");}
+	virtual int getGraphHeight() const;
 	long getStart() const{return start;}
 	long getLength() const{return end-start+1;}
 	long getEnd() const { return end;}
@@ -126,7 +147,7 @@ inline int qHash(const Name & n) {
 }
 
 class GeneTree;
-class GeneNode {
+class GeneNode: public AbstractGeneNode {
 private:
 	friend class GeneTree;
 	void setParentHeight(int height) {
@@ -189,7 +210,7 @@ private:
 
 	friend QDataStream &operator>>(QDataStream &in, GeneNode &t);
 	friend QDataStream &operator>>(QDataStream &in, GeneTree &t);
-	GeneNode(): name(NULL,-1,-1) {}
+	GeneNode(): name(NULL,-1,-1,NULL) {}
 
 public:
 	Name name;
@@ -224,11 +245,17 @@ public:
 			if (n!=NULL) {
 				if (parent!=NULL) {
 					parent->addSpouse(n->name);
-					for (int i=0;i<n->spouses.size();i++)
-						parent->addSpouse(spouses[i]);
+					//n->name.parent=parent;
+					for (int i=0;i<n->spouses.size();i++) {
+						parent->addSpouse(n->spouses[i]);
+					}
+					/*for (int i=0;i<parent->spouses.size();i++) {
+						parent->spouses[i].parent=parent;
+					}*/
 					return parent;
 				} else {
 					n->addChild(this);
+					//name.parent=n;
 					return n;
 				}
 			}
@@ -275,11 +302,6 @@ public:
 		} else
 			return n;
 	}
-	GeneNode * getParent() {
-		if (this==NULL)
-			return NULL;
-		return parent;
-	}
 	bool isLeaf() {
 		return children.size()==0;
 	}
@@ -304,7 +326,31 @@ public:
 		}
 		return count;
 	}
-
+	virtual QString getEdgeText() const {
+		if (this==NULL)
+			return "";
+		return name.getEdgeText();
+	}
+	virtual QString getString() const {
+		return toString();
+	}
+	virtual QString getSex() const{
+		return name.getSex();
+	}
+	virtual int getGraphHeight() const{
+		return height;
+	}
+	virtual GeneNode * getParent() {
+		if (this==NULL)
+			return NULL;
+		return parent;
+	}
+	virtual int getDirectGraphChildrenCount() const {
+		return children.size()+spouses.size();
+	}
+	virtual int getDescendentCount()  const {
+		return getSubTreeCount(true)-1;
+	}
 	QString toString() const {
 		if (this==NULL)
 			return "NULL";
@@ -373,6 +419,7 @@ public:
 		while (root->parent!=NULL)
 			root=root->parent;
 	}
+	void fixSpouseGraphParent();
 	void outputTree() {
 		//out<<"{Output}\n";
 		if (this==NULL)

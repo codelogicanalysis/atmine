@@ -1,4 +1,5 @@
 #include "bibleManualTagger.h"
+#include "geneMainwindow.h"
 #include <QtAlgorithms>
 
 
@@ -65,6 +66,8 @@ BibleTaggerDialog::BibleTaggerDialog(QString filename):QMainWindow() {
 	connect(resetGlobalGraph,SIGNAL(clicked()),this, SLOT(resetGlobalGraph_clicked()));
 	string=NULL;
 	globalGraph=NULL;
+	displayWindow=new GeneMainWindow();
+	displayWindow->showMinimized();
 	open_action();
 	if (globalGraph==NULL)
 		regenerateGlobalGraph();
@@ -105,11 +108,14 @@ int BibleTaggerDialog::findSubSelection(int tagIndex,int startSubIndex, Selectio
 	}
 	return -1;
 }
-void BibleTaggerDialog::displayGraph(){
+void BibleTaggerDialog::displayGraph(void * tree){
 	try{
 		system("dot -Tsvg graph.dot -o graph.svg");
 		graph->setPixmap(QPixmap("./graph.svg"));
 		graphArea->setWidget(graph);
+		GeneTree * t=(GeneTree *)tree;
+		t->fixSpouseGraphParent();
+		displayWindow->display(t,"./graph.svg");
 	} catch(...) {}
 }
 BibleTaggerDialog::~BibleTaggerDialog() {
@@ -141,6 +147,7 @@ BibleTaggerDialog::~BibleTaggerDialog() {
 	delete errors_text;
 #endif
 	delete grid;
+	delete displayWindow;
 }
 
 void BibleTaggerDialog::tagGenealogy_action() {

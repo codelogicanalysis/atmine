@@ -384,6 +384,11 @@ void geneology_initialize() {
 	relativeSuffixes<<QString("")+ha2<<QString("")+ha2+alef<<QString("")+ha2+meem+alef<<QString("")+ta2+ha2<<QString("")+ta2+ha2+alef<<QString("")+ta2+ha2+meem+alef;
 }
 
+AbstractGeneNode * Name::getParent(){
+   if (this==NULL)
+	   return NULL;
+   return parent;
+}
 class GeneTagVisitor: public GeneVisitor {
 private:
 	ATMProgressIFC *prg;
@@ -972,37 +977,35 @@ public:
 		initialize();
 	}
 };
-class DuplicateVisitor:public GeneVisitor {
+class TreeDuplicator{
 private:
-	GeneTree * tree;
+	void duplicateChildren(GeneNode * node, GeneNode * duplicatedNode) {
+		for (int i=0;i<node->children.size();i++) {
+			Name & childName=node->children[i]->name;
+			GeneNode * duplicatedChild=new GeneNode(childName,duplicatedNode);
+			duplicatedChild->name.edgeText=childName.edgeText;
+			duplicateChildren(node->children[i],duplicatedChild);
+		}
+		for (int i=0;i<node->spouses.size();i++) {
+			Name & spouseName=node->spouses[i];
+			duplicatedNode->addSpouse(spouseName);
+			node->spouses.last().edgeText=spouseName.edgeText;
+		}
+	}
 public:
-	DuplicateVisitor() {
-		tree=new GeneTree();
+	GeneTree * operator() (GeneTree * tree) {
+		if (tree->getRoot()!=NULL) {
+			GeneNode * duplicatedRoot=new GeneNode(tree->getRoot()->name,NULL);
+			GeneTree * duplicatedTree=new GeneTree(duplicatedRoot);
+			duplicateChildren(tree->getRoot(),duplicatedRoot);
+			return duplicatedTree;
+		} else
+			return new GeneTree();
 	}
-	virtual void visit(const GeneNode * node,int) {
-		if (tree->getRoot()==NULL) {
-			GeneNode * n=new GeneNode(node->name,NULL);
-			tree->setRoot(n);
-		}
-	}
-	virtual void visit(const GeneNode * node, const Name & name2, bool isSpouse) {
-		GeneNode * lastNode = tree->findTreeNode(node->toString(),false);
-		if (isSpouse) {
-			lastNode->addSpouse(name2);
-			GeneTree::MergeVisitor::appendEdgeName(lastNode->name,lastNode->spouses.last());
-		} else {
-			assert(lastNode!=NULL);
-			GeneNode * child=new GeneNode(name2,lastNode);
-			GeneTree::MergeVisitor::appendEdgeName(lastNode->name,child->name);
-		}
-	}
-	virtual void finish() {}
-	GeneTree * getDuplicateTree() { return tree;}
 };
 GeneTree* GeneTree::duplicateTree() {
-	DuplicateVisitor v;
-	v(this);
-	return v.getDuplicateTree();
+	TreeDuplicator v;
+	return v(this);
 }
 void GeneTree::compareToStandardTree(GeneTree * standard,QSet<FindAllVisitor::NodeNamePair> & visitedNodes,GraphStatistics & stats) {
 	CompareVisitor v(standard,visitedNodes,stats);
@@ -1026,13 +1029,31 @@ void GeneTree::displayTree( ATMProgressIFC * prg) {
 		GeneDisplayVisitor * d=new GeneDisplayVisitor();
 		(*d)(this);
 		delete d;
-		prg->displayGraph();
+		prg->displayGraph(this);
 	}
 }
 GeneTree::~GeneTree() {
 	if (mergeVisitor!=NULL) {
 		delete mergeVisitor;
 	}
+}
+class FixSpousesVisitor :public GeneVisitor {
+	virtual void visit(const GeneNode * node, int ){
+		for (int i=0;i<node->spouses.size();i++) {
+			node->spouses[i].parent=(GeneNode *)node;
+		}
+	}
+	virtual void visit(const GeneNode * , const Name & , bool ) {	}
+	virtual void finish(){}
+};
+int Name::getGraphHeight() const{
+	if (parent==NULL)
+		return -1;
+	return parent->height;
+}
+void GeneTree::fixSpouseGraphParent() {
+	FixSpousesVisitor v;
+	v(this);
 }
 
 class GenealogySegmentor {
@@ -1235,7 +1256,7 @@ private:
 			currentData.tree->updateRoot();
 			break;
 		case SPOUSE:
-			if (currentData.last->name.isMarriageCompatible(name))
+			if (currentData.last!=NULL && currentData.last->name.isMarriageCompatible(name))
 				currentData.last->addSpouse(name);
 			else {
 				DescentDirection temp=stateInfo.descentDirection;
@@ -1265,7 +1286,7 @@ private:
 		display("\n");
 	#endif
 		bool ret_val=true;
-		Name name(stateInfo.text,stateInfo.startPos,stateInfo.endPos,stateInfo.male);
+		Name name(stateInfo.text,stateInfo.startPos,stateInfo.endPos,NULL,stateInfo.male);
 		switch(stateInfo.currentState) {
 		case TEXT_S:
 			switch (stateInfo.currentType) {
@@ -1945,8 +1966,10 @@ private:
 		GeneTree::GraphStatistics globalStats;
 		currentData.globalTree->compareToStandardTree(globalTree,globalStats);
 		globalTree->displayTree(prg);
+	#if 1 //will be deleted after they are finished display
 		currentData.globalTree->deleteTree();
 		globalTree->deleteTree();
+	#endif
 	#ifdef DETAILED_DISPLAY
 		displayed_error << "-------------------------\n"
 						<< "Segmentation:\n"
