@@ -10,6 +10,7 @@
 #include "timeRecognizer.h"
 #include <QFileDialog>
 #include "bibleGeneology.h"
+#include "geneMainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
 		QMainWindow(parent), browseFileDlg(NULL), m_ui(new Ui::MainWindow) {
@@ -235,17 +236,25 @@ void MainWindow::on_pushButton_clicked(){
 #endif
 #endif
 }
-void MainWindow::displayGraph() {
+void MainWindow::displayGraph(void * tree) {
 	try{
 		system("dot -Tsvg graph.dot -o graph.svg");
-		QMainWindow * mw =new QMainWindow(NULL);
-		mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
-		QScrollArea * sa=new QScrollArea(mw);
-		mw->setCentralWidget(sa);
-		QLabel *pic=new QLabel(sa);
-		pic->setPixmap(QPixmap("./graph.svg"));
-		sa->setWidget(pic);
-		mw->show();
+		if (tree==NULL) {
+			QMainWindow * mw =new QMainWindow(NULL);
+			mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
+			QScrollArea * sa=new QScrollArea(mw);
+			mw->setCentralWidget(sa);
+			QLabel *pic=new QLabel(sa);
+			pic->setPixmap(QPixmap("./graph.svg"));
+			sa->setWidget(pic);
+			mw->show();
+		} else {
+			GeneMainWindow *m=new GeneMainWindow;
+			m->show();
+			GeneTree * t=((GeneTree *)tree)->duplicateTree();
+			t->fixSpouseGraphParent();
+			m->display(t,"./graph.svg",true);
+		}
 	}
 	catch(...)
 	{}

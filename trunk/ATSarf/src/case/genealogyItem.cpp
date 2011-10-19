@@ -1,48 +1,62 @@
 #include "genealogyItem.h"
 
+const int	GeneItemModel::COL_NAME=0,
+			GeneItemModel::COL_RELATION=2,
+			GeneItemModel::COL_EDGE=5,
+			GeneItemModel::COL_CHILD_COUNT=3,
+			GeneItemModel::COL_SEX=1,
+			GeneItemModel::COL_HEIGHT=4,
+			GeneItemModel::COLUMNS=6;
+
+
 QVariant GeneItemModel::headerData(int section, Qt::Orientation orientation, int role ) const{
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
 	{
-		if (section == 0)
+		switch(section) {
+		case COL_NAME:
 			return QVariant("Name");
-		if (section == 1)
+		case COL_RELATION:
 			return QVariant("Inferred");
-		if (section == 2)
+		case COL_EDGE:
 			return QVariant("Edge Label");
-		if (section == 3)
-			return QVariant("Children Count");
+		case COL_CHILD_COUNT:
+			return QVariant("Children");
+		case COL_SEX:
+			return QVariant("Sex");
+		case COL_HEIGHT:
+			return QVariant("Height");
+		};
 	}
 	return QVariant();
 }
 
-int GeneItemModel::columnCount(const QModelIndex &parent ) const{
-	return 4;
+int GeneItemModel::columnCount(const QModelIndex &/*parent*/ ) const{
+	return COLUMNS;
 }
 
 int
 GeneItemModel::rowCount(const QModelIndex &parent ) const {
 	if (!parent.isValid())
 		return 1;
-	GeneNode * node = (GeneNode *)parent.internalId();
+	AbstractGeneNode * node = (AbstractGeneNode *)parent.internalId();
 	if (node == NULL) {
-		// this means that it is a pre/post or behavior that does not exist!
 		return 0;
 	}
-	return node->children.size()+node->spouses.size();
+	return node->getDirectGraphChildrenCount();
 }
 
 QModelIndex GeneItemModel::parent(const QModelIndex &index) const
 {
 	if (!index.isValid())
 		return QModelIndex();
-	GeneNode * node = (GeneNode*)index.internalId();
+	AbstractGeneNode * node = (AbstractGeneNode*)index.internalId();
 	if (node == NULL){
 		return QModelIndex();
 	}
-	GeneNode * parent = node->parent;
+	AbstractGeneNode * parent = node->getParent();
 	int i=0;
 	if (parent != NULL) {
-		GeneNode * ancestor = parent->parent;
+		GeneNode * ancestor = dynamic_cast<GeneNode*>(parent->getParent());
 		if (ancestor != NULL) {
 			int j = 0;
 			//for (;j < ancestor->spouses.size(); j++) // can never happen
@@ -56,6 +70,8 @@ QModelIndex GeneItemModel::parent(const QModelIndex &index) const
 		}
 	}
 	void * p=(void *)parent;
+	if (p==NULL)
+		return QModelIndex();
 	return createIndex(i, 0, p);
 }
 
@@ -75,27 +91,35 @@ QVariant GeneItemModel::data(const QModelIndex &index, int role) const
 
 	if (role != Qt::DisplayRole)
 		return QVariant();
-	if (index.column() > 3)
+	if (index.column() > COLUMNS)
 		return QVariant();
 
-	GeneNode * node = (GeneNode*)index.internalId();
+	AbstractGeneNode * node = (AbstractGeneNode*)index.internalId();
 	if (node == NULL)
 		return QVariant();
 	switch(index.column()) {
-	case 0:
-		return QVariant(node->name.getString());
+	case COL_NAME:
+		return QVariant(node->getString());
 		break;
-	case 1:
-		if (true/*node->isSpouse()*/)//TODO
+	case COL_RELATION:
+		if (node->isName())//TODO
 			return QVariant("Spouse");
-		else
+		else if (node->getParent()!=NULL)
 			return QVariant("Child");
+		else
+			return QVariant();
 		break;
-	case 2:
-		return QVariant(node->name.edgeText);
+	case COL_EDGE:
+		return QVariant(node->getEdgeText());
 		break;
-	case 3:
-		return node->children.size()+node->spouses.size();
+	case COL_CHILD_COUNT:
+		return node->getDescendentCount();
+		break;
+	case COL_SEX:
+		return QVariant(node->getSex());
+		break;
+	case COL_HEIGHT:
+		return node->getGraphHeight();
 		break;
 	}
 	return QVariant();
@@ -107,7 +131,7 @@ QModelIndex GeneItemModel::index(int row, int column,
 	if (!hasIndex(row, column, parent))
 		return QModelIndex();
 
-	if (column >= 3)
+	if (column > COLUMNS)
 		return QModelIndex();
 
 	if (!parent.isValid()) {
@@ -118,18 +142,9 @@ QModelIndex GeneItemModel::index(int row, int column,
 			return QModelIndex();
 	}
 
-	GeneNode * parentNode = (GeneNode*)parent.internalId();
-#if 0
-	if (node == NULL) {
-		if (row < cSpecMW.stMap.size()) {
-			void * p = (void*) getSpecTriple(row);
-			return createIndex(row, column, p);
-		}
-		return QModelIndex();
-	}
-#endif
+	GeneNode * parentNode = dynamic_cast<GeneNode*>((AbstractGeneNode*)parent.internalId());
 	if (row<parentNode->spouses.size()) {
-		void * p=(void *)NULL/*parentNode->spouses[row]*/; //TODO
+		void * p=(void *)&parentNode->spouses[row];
 		return createIndex(row, column, p);
 	} else if (row<parentNode->spouses.size()+parentNode->children.size()) {
 		void * p=(void *)parentNode->children[row-parentNode->spouses.size()];

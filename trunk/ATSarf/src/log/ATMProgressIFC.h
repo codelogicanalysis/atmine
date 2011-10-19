@@ -12,7 +12,7 @@ public:
 	virtual void setCurrentAction(const QString & s)=0;
 	virtual void resetActionDisplay()=0;
 	virtual QString getFileName()=0;
-	virtual void displayGraph() {}
+	virtual void displayGraph(void * /*tree*/) {}
 };
 
 #endif // ATMPROGRESSIFC_H

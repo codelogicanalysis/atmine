@@ -24,7 +24,8 @@
 #include "bibleGeneology.h"
 #include "abstractAnnotator.h"
 
-using namespace std;
+
+class GeneMainWindow;
 
 class BibleTaggerDialog:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
@@ -384,6 +385,7 @@ public:
 #endif
 	QGridLayout * grid;
 	int selectedTagIndex;
+	GeneMainWindow * displayWindow;
 
 public:
 	void report(int) {}
@@ -392,7 +394,7 @@ public:
 	void finishTaggingText(){}
 	void setCurrentAction(const QString &) {}
 	void resetActionDisplay() {}
-	void displayGraph();
+	void displayGraph(void * tree);
 	QString getFileName() {	return filename; }
 	~BibleTaggerDialog();
 
