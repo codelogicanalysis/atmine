@@ -1,46 +1,31 @@
-#ifndef BIBLEMANUALTAGGER_H
-#define BIBLEMANUALTAGGER_H
+#ifndef ABSTRACTTWOLEVELANNOTATOR_H
+#define ABSTRACTTWOLEVELANNOTATOR_H
 
 #include <QMainWindow>
-#include <QFile>
-#include <QTextStream>
-#include <QStringList>
-#include <QPushButton>
-#include <QGridLayout>
-#include <QTextBrowser>
-#include <QScrollArea>
-#include <iostream>
-#include <QList>
-#include <QPair>
-#include <QDataStream>
-#include <QCheckBox>
-#include <QLabel>
-#include <QPixmap>
-#include <QMessageBox>
-
-#include "logger.h"
-#include "ATMProgressIFC.h"
-#include "letters.h"
-#include "bibleGeneology.h"
 #include "abstractAnnotator.h"
+#include "ATMProgressIFC.h"
 
+class Name;
+class QPushButton;
+class QCheckBox;
+class QScrollArea;
+class QLabel;
+class QGridLayout;
 
-class GeneMainWindow;
-
-class BibleTaggerDialog:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
+class AbstractTwoLevelAnnotator:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
 public:
 	class Selection {
-		friend QDataStream &operator<<(QDataStream &out, const BibleTaggerDialog::Selection &t);
-		friend QDataStream &operator>>(QDataStream &in, BibleTaggerDialog::Selection &t);
-		friend class BibleTaggerDialog;
+		friend QDataStream &operator<<(QDataStream &out, const AbstractTwoLevelAnnotator::Selection &t);
+		friend QDataStream &operator>>(QDataStream &in, AbstractTwoLevelAnnotator::Selection &t);
+		friend class AbstractTwoLevelAnnotator;
 	public:
 		typedef QPair<int,int> MainSelection;
 		typedef QList<MainSelection> MainSelectionList;
 	private:
 		MainSelection main;
 		MainSelectionList names;
-		GeneTree * tree;
+		void * tree;
 		QString * text;
 
 	private:
@@ -51,34 +36,32 @@ public:
 	public:
 		Selection();
 		Selection(QString * text,int start,int end);
-		void addName(int start,int end);
-		void addName( const Name & name);
+		virtual void addName(int start,int end);
+		virtual void addName( const Name & name);
 		int getMainStart() const { return main.first;}
 		int getMainEnd() const {return main.second;}
 		bool operator <(const Selection & second) const {return main<second.main;}
-		GeneTree * getTree() { return tree;}
+		virtual void * getTree() { return tree;}
 		const MainSelectionList & getNamesList() { return names;}
-		void removeNameAt(int i);
-		static bool updateGraph(QString text, Selection * sel,GeneTree ** tree=NULL, QString *fileText=NULL,BibleTaggerDialog * tagger=NULL);
-		bool updateGraph(QString text);
-		static QString getTreeText(GeneTree * tree);
-		QString getText() {	return getTreeText(tree);	}
+		virtual void removeNameAt(int i);
+		bool virtual updateGraph(QString text)=0;
+		virtual QString getText()=0;
 		void setMainInterval(int start,int end);
-		void setTree(GeneTree * tree);
-		void setText(QString *text);
-		void clear();
-		static int mergeNames(QString * text,const MainSelectionList & list1, const MainSelectionList & list2,MainSelectionList & mergedNames);
+		virtual void setTree(void * tree);
+		virtual void setText(QString *text);
+		virtual void clear();
+		//static virtual int mergeNames(QString * text,const MainSelectionList & list1, const MainSelectionList & list2,MainSelectionList & mergedNames);
 	};
 	typedef QList<Selection> SelectionList;
 public:
-	BibleTaggerDialog(QString filename);
+	AbstractTwoLevelAnnotator(QString filename);
 
 private slots:
-	void tagGene_clicked() {
-		tagGenealogy_action();
+	void tagMain_clicked() {
+		tagMain_action();
 	}
-	void unTagGene_clicked() {
-		unTagGenealogy_action();
+	void unTagMain_clicked() {
+		unTagMain_action();
 	}
 	void tagName_clicked() {
 		tagName_action();
@@ -100,12 +83,12 @@ private slots:
 	}
 	void resetGlobalGraph_clicked() {
 		regenerateGlobalGraph();
-		globalGraph->displayTree(this);
+		displayGraph(globalGraph);
 	}
 
 private:
-	void tagGenealogy_action();
-	void unTagGenealogy_action();
+	void tagMain_action();
+	void unTagMain_action();
 	void tagName_action();
 	void unTagName_action();
 	void save_action();
@@ -120,21 +103,20 @@ private:
 
 public:
 	SelectionList tags;
-	GeneTree * globalGraph;
+	void * globalGraph;
 
 	QString filename, * string;
-	QPushButton * tagGenealogy, *unTagGenealogy, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph,*resetGlobalGraph;
+	QPushButton * tagMain, *unTagMain, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph,*resetGlobalGraph;
 	QTextBrowser * text, * treeText;
 	QCheckBox * forceWordNames;
 	QScrollArea * scrollArea, * graphArea;
 	QLabel * graph;
-#ifdef ERRORS_BIBLE
+#ifdef ERRORS_ANNOTATOR
 	QTextBrowser * errors;
 	QString * errors_text;
 #endif
 	QGridLayout * grid;
 	int selectedTagIndex;
-	GeneMainWindow * displayWindow;
 
 public:
 	void report(int) {}
@@ -145,7 +127,7 @@ public:
 	void resetActionDisplay() {}
 	void displayGraph(void * tree);
 	QString getFileName() {	return filename; }
-	~BibleTaggerDialog();
+	~AbstractTwoLevelAnnotator();
 
 	QTextBrowser * getTextBrowser() {return text;}
 	int getTagCount() const { return tags.size();}
@@ -153,17 +135,5 @@ public:
 	int getTagEnd(int tagNum) const {return tags.at(tagNum).getMainEnd();}
 };
 
-inline QDataStream &operator<<(QDataStream &out, const BibleTaggerDialog::Selection &t) {
-	out<<t.main<<t.names<<*t.tree;
-	return out;
-}
 
-inline QDataStream &operator>>(QDataStream &in, BibleTaggerDialog::Selection &t) {
-	t.tree=new GeneTree();
-	in>>t.main >> t.names>>*t.tree;
-	return in;
-}
-
-
-
-#endif // BIBLEMANUALTAGGER_H
+#endif // ABSTRACTTWOLEVELANNOTATOR_H
