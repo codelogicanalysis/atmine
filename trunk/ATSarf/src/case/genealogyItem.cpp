@@ -4,7 +4,7 @@ const int	GeneItemModel::COL_NAME=0,
 			GeneItemModel::COL_RELATION=2,
 			GeneItemModel::COL_EDGE=5,
 			GeneItemModel::COL_CHILD_COUNT=3,
-			GeneItemModel::COL_SEX=1,
+			GeneItemModel::COL_GENDER=1,
 			GeneItemModel::COL_HEIGHT=4,
 			GeneItemModel::COLUMNS=6;
 
@@ -21,8 +21,8 @@ QVariant GeneItemModel::headerData(int section, Qt::Orientation orientation, int
 			return QVariant("Edge Label");
 		case COL_CHILD_COUNT:
 			return QVariant("Children");
-		case COL_SEX:
-			return QVariant("Sex");
+		case COL_GENDER:
+			return QVariant("Gender");
 		case COL_HEIGHT:
 			return QVariant("Height");
 		};
@@ -34,8 +34,7 @@ int GeneItemModel::columnCount(const QModelIndex &/*parent*/ ) const{
 	return COLUMNS;
 }
 
-int
-GeneItemModel::rowCount(const QModelIndex &parent ) const {
+int GeneItemModel::rowCount(const QModelIndex &parent ) const {
 	if (!parent.isValid())
 		return 1;
 	AbstractGeneNode * node = (AbstractGeneNode *)parent.internalId();
@@ -102,7 +101,7 @@ QVariant GeneItemModel::data(const QModelIndex &index, int role) const
 		return QVariant(node->getString());
 		break;
 	case COL_RELATION:
-		if (node->isName())//TODO
+		if (node->isSpouse())//TODO
 			return QVariant("Spouse");
 		else if (node->getParent()!=NULL)
 			return QVariant("Child");
@@ -110,13 +109,13 @@ QVariant GeneItemModel::data(const QModelIndex &index, int role) const
 			return QVariant();
 		break;
 	case COL_EDGE:
-		return QVariant(node->getEdgeText());
+		return QVariant(node->getFullEdgeText());
 		break;
 	case COL_CHILD_COUNT:
 		return node->getDescendentCount();
 		break;
-	case COL_SEX:
-		return QVariant(node->getSex());
+	case COL_GENDER:
+		return QVariant(node->getGender());
 		break;
 	case COL_HEIGHT:
 		return node->getGraphHeight();
@@ -125,8 +124,7 @@ QVariant GeneItemModel::data(const QModelIndex &index, int role) const
 	return QVariant();
 }
 
-QModelIndex GeneItemModel::index(int row, int column,
-		const QModelIndex &parent ) const
+QModelIndex GeneItemModel::index(int row, int column, const QModelIndex &parent ) const
 {
 	if (!hasIndex(row, column, parent))
 		return QModelIndex();
@@ -144,7 +142,7 @@ QModelIndex GeneItemModel::index(int row, int column,
 
 	GeneNode * parentNode = dynamic_cast<GeneNode*>((AbstractGeneNode*)parent.internalId());
 	if (row<parentNode->spouses.size()) {
-		void * p=(void *)&parentNode->spouses[row];
+		void * p=(void *)parentNode->spouses[row];
 		return createIndex(row, column, p);
 	} else if (row<parentNode->spouses.size()+parentNode->children.size()) {
 		void * p=(void *)parentNode->children[row-parentNode->spouses.size()];

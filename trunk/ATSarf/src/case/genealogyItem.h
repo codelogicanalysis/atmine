@@ -16,7 +16,7 @@ class GeneItemModel : public QAbstractItemModel
 {
 	Q_OBJECT
 public:
-	static const int COL_NAME, COL_RELATION, COL_EDGE, COL_CHILD_COUNT, COL_SEX, COL_HEIGHT, COLUMNS;
+	static const int COL_NAME, COL_RELATION, COL_EDGE, COL_CHILD_COUNT, COL_GENDER, COL_HEIGHT, COLUMNS;
 public:
 	GeneTree * tree;
 public:
