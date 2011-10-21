@@ -4,7 +4,7 @@
 
 
 
-void BibleTaggerDialog::Selection::updateGraph() {
+void BibleTaggerDialog::Selection::FillNullTree() {
 	if (tree==NULL && names.size()>0) {
 		GeneNode * root=new GeneNode(Name(text,names.at(0).first,names.at(0).second),NULL);
 		tree=new GeneTree(root);
@@ -41,7 +41,7 @@ BibleTaggerDialog::Selection::Selection(QString * text,int start,int end):main(s
 }
 void BibleTaggerDialog::Selection::addName(int start,int end) {
 	names.append(MainSelection(start,end));
-	updateGraph();
+	FillNullTree();
 	if (names.size()>1) {
 		tree->getRoot()->addChild(new GeneNode(Name(text,start,end),NULL));
 	}
@@ -80,7 +80,7 @@ void BibleTaggerDialog::Selection::removeNameAt(int i) {
 		} else {
 			tree->deleteTree();
 			tree=NULL;
-			updateGraph();
+			FillNullTree();
 		}
 	} else {
 		n->parent->children.removeOne(n);
@@ -347,7 +347,6 @@ BibleTaggerDialog::BibleTaggerDialog(QString filename):QMainWindow() {
 	modifyGraph->setEnabled(false);
 }
 
-
 int BibleTaggerDialog::getNameIndexInAll(const QString & name) {
 	for (int i=0;i<tags.size();i++) {
 		int j=tags[i].getNameIndex(name);
@@ -356,6 +355,7 @@ int BibleTaggerDialog::getNameIndexInAll(const QString & name) {
 	}
 	return -1;
 }
+
 void BibleTaggerDialog::regenerateGlobalGraph() {
 	if (tags.size()>0)
 		globalGraph=tags[0].getTree()->duplicateTree();
@@ -364,6 +364,7 @@ void BibleTaggerDialog::regenerateGlobalGraph() {
 	if (globalGraph!=NULL)
 		globalGraph->mergeLeftovers();
 }
+
 int BibleTaggerDialog::findSubSelection(int tagIndex,int startSubIndex, SelectionMode selectionMode) { //based on user text selection
 	if (this==NULL)
 		return -1;
@@ -378,6 +379,7 @@ int BibleTaggerDialog::findSubSelection(int tagIndex,int startSubIndex, Selectio
 	}
 	return -1;
 }
+
 void BibleTaggerDialog::displayGraph(void * tree){
 	try{
 		system("dot -Tsvg graph.dot -o graph.svg");
@@ -388,6 +390,7 @@ void BibleTaggerDialog::displayGraph(void * tree){
 		displayWindow->display(t,"./graph.svg");
 	} catch(...) {}
 }
+
 BibleTaggerDialog::~BibleTaggerDialog() {
 	for (int i=0;i<tags.size();i++) {
 		if (tags[i].tree!=NULL)

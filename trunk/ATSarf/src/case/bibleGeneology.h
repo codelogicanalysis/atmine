@@ -137,6 +137,7 @@ class GeneNode;
 class GeneTree;
 class AbstractGeneNode {
 	friend class FillTextVisitor;
+	friend class GeneTree;
 	friend class BibleTaggerDialog;
 	friend QDataStream &operator<<(QDataStream &out, const GeneNode &t);
 protected:
