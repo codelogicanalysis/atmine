@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "abstractAnnotator.h"
 #include "ATMProgressIFC.h"
+#include "twoLevelTaggerSelection.h"
 
 class Name;
 class QPushButton;
@@ -15,46 +16,9 @@ class QGridLayout;
 class AbstractTwoLevelAnnotator:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
 public:
-	class Selection {
-		friend QDataStream &operator<<(QDataStream &out, const AbstractTwoLevelAnnotator::Selection &t);
-		friend QDataStream &operator>>(QDataStream &in, AbstractTwoLevelAnnotator::Selection &t);
-		friend class AbstractTwoLevelAnnotator;
-	public:
-		typedef QPair<int,int> MainSelection;
-		typedef QList<MainSelection> MainSelectionList;
-	private:
-		MainSelection main;
-		MainSelectionList names;
-		void * tree;
-		QString * text;
-
-	private:
-		void updateGraph();
-		int getNameIndex(QString s);
-		void removeExtraNames();
-
-	public:
-		Selection();
-		Selection(QString * text,int start,int end);
-		virtual void addName(int start,int end);
-		virtual void addName( const Name & name);
-		int getMainStart() const { return main.first;}
-		int getMainEnd() const {return main.second;}
-		bool operator <(const Selection & second) const {return main<second.main;}
-		virtual void * getTree() { return tree;}
-		const MainSelectionList & getNamesList() { return names;}
-		virtual void removeNameAt(int i);
-		bool virtual updateGraph(QString text)=0;
-		virtual QString getText()=0;
-		void setMainInterval(int start,int end);
-		virtual void setTree(void * tree);
-		virtual void setText(QString *text);
-		virtual void clear();
-		//static virtual int mergeNames(QString * text,const MainSelectionList & list1, const MainSelectionList & list2,MainSelectionList & mergedNames);
-	};
 	typedef QList<Selection> SelectionList;
 public:
-	AbstractTwoLevelAnnotator(QString filename);
+	AbstractTwoLevelAnnotator(QString filename, QString mainStructure);
 
 private slots:
 	void tagMain_clicked() {
@@ -97,13 +61,13 @@ private:
 	void modifyGraph_action();
 	void isGlobalGraph_action();
 	int getNameIndexInAll(const QString & name);
-	void regenerateGlobalGraph();
+	virtual void regenerateGlobalGraph()=0;
 	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) ;
 	void updateGraphDisplay();
 
 public:
 	SelectionList tags;
-	void * globalGraph;
+	AbstractGraph * globalGraph;
 
 	QString filename, * string;
 	QPushButton * tagMain, *unTagMain, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph,*resetGlobalGraph;
@@ -125,7 +89,7 @@ public:
 	void finishTaggingText(){}
 	void setCurrentAction(const QString &) {}
 	void resetActionDisplay() {}
-	void displayGraph(void * tree);
+	void displayGraph(void * tree)=0;
 	QString getFileName() {	return filename; }
 	~AbstractTwoLevelAnnotator();
 

@@ -74,7 +74,9 @@ HEADERS += util/text_handling.h \
     ../src/case/genealogyItem.h \
     ../src/case/abstractAnnotator.h \
     ../src/case/geneMainwindow.h \
-    ../src/case/abstractTwoLevelAnnotator.h
+    ../src/case/abstractTwoLevelAnnotator.h \
+    ../src/case/abstractGraph.h \
+    ../src/case/twoLevelTaggerSelection.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -124,7 +126,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/genealogyItem.cpp \
     ../src/case/abstractAnnotator.cpp \
     ../src/case/geneMainwindow.cpp \
-    ../src/case/abstractTwoLevelAnnotator.cpp
+    ../src/case/abstractTwoLevelAnnotator.cpp \
+    ../src/case/twoLevelTaggerSelection.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

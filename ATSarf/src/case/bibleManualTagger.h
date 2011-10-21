@@ -44,7 +44,7 @@ public:
 		QString * text;
 
 	private:
-		void updateGraph();
+		void FillNullTree();
 		int getNameIndex(QString s);
 		void removeExtraNames();
 

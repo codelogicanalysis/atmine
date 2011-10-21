@@ -491,8 +491,10 @@ private:
 			if (n1==n2) {
 				if (n1!=NULL) {
 					//correctly placed
+					n1->name=name1; //so that we add a new edge when calling appendEdgeName(..)
 					for (int i=0;i<n1->spouses.size();i++) {
 						if (n1->spouses[i]->getName()==name2) {
+							n1->spouses[i]->name=name2; //so that we add a new edge when calling appendEdgeName(..)
 							appendEdgeName(n1,n1->spouses[i],delimitersStart,delimitersEnd);
 						}
 					}
@@ -568,6 +570,10 @@ private:
 						//conflict but trust old
 						error<< "Conflict ("<<n1->toString()<<","<<n2->toString()<<") newly must be child relationship but previously is not.\n";
 					#endif
+					} else {
+						n1->name=name1; //so that we add a new edge when calling appendEdgeName(..)
+						n2->name=name2; //so that we add a new edge when calling appendEdgeName(..)
+						appendEdgeName(n1,n2,delimitersStart,delimitersEnd);
 					}
 				}
 			}
