@@ -21,7 +21,7 @@ public:
 	virtual void setCurrentAction(const QString & s);
 	virtual void resetActionDisplay();
 	virtual QString getFileName();
-	virtual void displayGraph(void * tree);
+	virtual void displayGraph(AbstractGraph * graph);
 
 protected:
     void changeEvent(QEvent *e);

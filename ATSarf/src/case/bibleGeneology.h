@@ -8,6 +8,7 @@
 #include "textParsing.h"
 #include "text_handling.h"
 #include "ATMProgressIFC.h"
+#include "abstractGraph.h"
 
 
 #define GET_WAW
@@ -425,7 +426,7 @@ public:
 		return getString();
 	}
 };
-class GeneTree {
+class GeneTree: public AbstractGraph {
 public:
 	class MergeVisitor;
 	class GraphStatistics {
@@ -453,6 +454,9 @@ private:
 	friend QDataStream &operator>>(QDataStream &in, GeneTree &t);
 	MergeVisitor * mergeVisitor;
 	GeneNode * root;
+private:
+	void init(GeneNode * root);
+	virtual AbstractGraph * readFromStreamHelper(QDataStream &in);
 public:
 	GeneTree() {
 		root=NULL;
@@ -470,7 +474,7 @@ public:
 			return NULL;
 		return root;
 	}
-	void deleteTree() {
+	void deleteGraph() {
 		if (this==NULL)
 			return;
 		//out<<"\n{deleting}\n";
@@ -486,7 +490,6 @@ public:
 		while (root->parent!=NULL)
 			root=root->parent;
 	}
-	void fixSpouseGraphParent();
 	void outputTree() {
 		//out<<"{Output}\n";
 		if (this==NULL)
@@ -520,12 +523,22 @@ public:
 	}
 	void compareToStandardTree(GeneTree * standard,GraphStatistics & stats);
 	void compareToStandardTree(GeneTree * standard,QSet<QPair<GeneNode *, Name> > & visitedNodes,GraphStatistics & stats);
-	void mergeTrees(GeneTree * tree);
-	void mergeTrees(GeneTree * tree,QList<int> & delimetersStart,QList<int> & delimetersEnd);
+	AbstractGraph * merge(AbstractGraph * tree);
+	void merge(AbstractGraph * tree,QList<int> & delimetersStart,QList<int> & delimetersEnd);
 	void mergeLeftovers();
-	void displayTree( ATMProgressIFC * prg);
-	GeneTree * duplicateTree();
-	GeneTree * duplicateTree(QList<int> & delimitersStart,QList<int> & delimitersEnd);
+	void displayGraph( ATMProgressIFC * prg);
+	virtual void fillNullGraph(MainSelectionList & names, QString * text);
+	void fillNullGraph(Name & name);
+	virtual QString getText();
+	virtual bool isRepresentativeOf(const MainSelectionList &list);
+	virtual void fillTextPointers(QString *text);
+	virtual QAbstractItemModel * getTreeModel();
+	virtual bool buildFromText(QString text, TwoLevelSelection * sel,QString *fileText,AbstractTwoLevelAnnotator * tagger);
+	virtual void removeNameFromGraph(Name & name);
+	virtual void addNameToGraph(Name & name);
+	virtual void writeToStream(QDataStream &out);
+	virtual GeneTree * duplicate();
+	virtual GeneTree * duplicate(QList<int> & delimitersStart,QList<int> & delimitersEnd);
 	~GeneTree();
 };
 class GeneVisitor {
@@ -600,7 +613,7 @@ inline QDataStream &operator<<(QDataStream &out, const GeneNode &t) {
 		}
 		out<<t.spouses.size();
 		for (int i=0;i<t.spouses.size();i++) {
-			out<<t.spouses[i];
+			out<<t.spouses[i]->getName();
 		}
 	} else {
 		out<<true;

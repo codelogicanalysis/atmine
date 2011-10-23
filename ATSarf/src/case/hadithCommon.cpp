@@ -1335,7 +1335,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 
 #ifdef NONCONTEXT_LEARNING
 	if (!val) {
-		if ((currentChain->hadith && currentData.narratorCount>=hadithParameters.narr_min) || (!currentChain->hadith && currentData.narratorCount>=hadithParameters.bio_narr_min)) {
+		if (currentChain->hadith && (( currentData.narratorCount>=hadithParameters.narr_min) || (!currentChain->hadith && currentData.narratorCount>=hadithParameters.bio_narr_min))) {
 			for (int i=0;i<currentChain->chain->m_chain.size();i++) {
 				ChainPrim * c=currentChain->chain->m_chain[i];
 				if (c->isNarrator()) {

@@ -1,6 +1,9 @@
 #ifndef ATMPROGRESSIFC_H
 #define ATMPROGRESSIFC_H
-#include <QColor>
+
+class QColor;
+class QString;
+class AbstractGraph;
 
 class ATMProgressIFC
 {
@@ -12,7 +15,7 @@ public:
 	virtual void setCurrentAction(const QString & s)=0;
 	virtual void resetActionDisplay()=0;
 	virtual QString getFileName()=0;
-	virtual void displayGraph(void * /*tree*/) {}
+	virtual void displayGraph(AbstractGraph * /*graph*/) {}
 };
 
 #endif // ATMPROGRESSIFC_H

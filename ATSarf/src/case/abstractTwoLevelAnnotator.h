@@ -12,13 +12,18 @@ class QCheckBox;
 class QScrollArea;
 class QLabel;
 class QGridLayout;
+class QTreeView;
 
 class AbstractTwoLevelAnnotator:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
 public:
-	typedef QList<Selection> SelectionList;
+	typedef QList<TwoLevelSelection> SelectionList;
 public:
 	AbstractTwoLevelAnnotator(QString filename, QString mainStructure);
+	void show();
+
+	int getNameIndexInAll(const QString & name);
+	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) ;
 
 private slots:
 	void tagMain_clicked() {
@@ -50,6 +55,7 @@ private slots:
 		displayGraph(globalGraph);
 	}
 
+
 private:
 	void tagMain_action();
 	void unTagMain_action();
@@ -60,27 +66,27 @@ private:
 	void text_selectionChangedAction();
 	void modifyGraph_action();
 	void isGlobalGraph_action();
-	int getNameIndexInAll(const QString & name);
-	virtual void regenerateGlobalGraph()=0;
-	int findSubSelection(int tagIndex,int startSubIndex=0, SelectionMode selectionMode=SELECTION_OUTSIDE) ;
 	void updateGraphDisplay();
+	virtual void regenerateGlobalGraph()=0;
+	void createToolbar();
+	void createDocWindows();
+	void createActions(QString mainStructure);
+	void createMenus();
 
 public:
+	QTextBrowser * text, * treeText;
+	QLabel * graph;
+	QToolBar * annotationToolbar, * graphToolbar;
+	QAction * tagMainAct, * unTagMainAct, *forceWordNames, * tagNameAct, * unTagNameAct, * saveAct,
+			* modifyGraphAct, * globalGraphAct, * resetGlobalGraphAct;
+	QMenu *viewMenu;
+	QScrollArea * graphArea;
+	int selectedTagIndex;
 	SelectionList tags;
 	AbstractGraph * globalGraph;
-
 	QString filename, * string;
-	QPushButton * tagMain, *unTagMain, *save, *tagName, *unTagName, *modifyGraph,* isGlobalGraph,*resetGlobalGraph;
-	QTextBrowser * text, * treeText;
-	QCheckBox * forceWordNames;
-	QScrollArea * scrollArea, * graphArea;
-	QLabel * graph;
-#ifdef ERRORS_ANNOTATOR
-	QTextBrowser * errors;
-	QString * errors_text;
-#endif
-	QGridLayout * grid;
-	int selectedTagIndex;
+	QAbstractItemModel * treeModel;
+	QTreeView *resultTree;
 
 public:
 	void report(int) {}
@@ -89,9 +95,9 @@ public:
 	void finishTaggingText(){}
 	void setCurrentAction(const QString &) {}
 	void resetActionDisplay() {}
-	void displayGraph(void * tree)=0;
 	QString getFileName() {	return filename; }
-	~AbstractTwoLevelAnnotator();
+	virtual void displayGraph(AbstractGraph * graph)=0;
+	virtual ~AbstractTwoLevelAnnotator();
 
 	QTextBrowser * getTextBrowser() {return text;}
 	int getTagCount() const { return tags.size();}
