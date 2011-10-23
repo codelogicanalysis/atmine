@@ -236,10 +236,10 @@ void MainWindow::on_pushButton_clicked(){
 #endif
 #endif
 }
-void MainWindow::displayGraph(void * tree) {
+void MainWindow::displayGraph(AbstractGraph * graph) {
 	try{
 		system("dot -Tsvg graph.dot -o graph.svg");
-		if (tree==NULL) {
+		if (graph==NULL) {
 			QMainWindow * mw =new QMainWindow(NULL);
 			mw->setWindowTitle(QString("Sarf Graph (")+m_ui->input->toPlainText()+")");
 			QScrollArea * sa=new QScrollArea(mw);
@@ -251,8 +251,7 @@ void MainWindow::displayGraph(void * tree) {
 		} else {
 			GeneMainWindow *m=new GeneMainWindow;
 			m->show();
-			GeneTree * t=((GeneTree *)tree)->duplicateTree();
-			t->fixSpouseGraphParent();
+			GeneTree * t=(dynamic_cast<GeneTree *>(graph))->duplicate();
 			m->display(t,"./graph.svg",true);
 		}
 	}

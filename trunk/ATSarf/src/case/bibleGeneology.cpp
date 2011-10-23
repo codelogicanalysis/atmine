@@ -3,6 +3,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
+#include <QMessageBox>
 #include <assert.h>
 
 #include "bibleManualTagger.h"
@@ -18,6 +19,7 @@
 #include "textParsing.h"
 #include "common.h"
 #include "Retrieve_Template.h"
+#include "genealogyItem.h"
 
 
 #define DETAILED_DISPLAY
@@ -1043,11 +1045,18 @@ public:
 			return new GeneTree();
 	}
 };
-GeneTree* GeneTree::duplicateTree() {
+void GeneTree::init(GeneNode * root){
+	this->root=root;
+	if (mergeVisitor!=NULL) {
+		delete mergeVisitor;
+		mergeVisitor=NULL;
+	}
+}
+GeneTree* GeneTree::duplicate() {
 	TreeDuplicator v;
 	return v(this);
 }
-GeneTree * GeneTree::duplicateTree(QList<int> & Start,QList<int> & End) {
+GeneTree * GeneTree::duplicate(QList<int> & Start,QList<int> & End) {
 	TreeDuplicator v(Start,End);
 	return v(this);
 }
@@ -1059,12 +1068,15 @@ void GeneTree::compareToStandardTree(GeneTree * standard,GraphStatistics & stats
 	QSet<FindAllVisitor::NodeNamePair> visitedNodes;
 	compareToStandardTree(standard,visitedNodes,stats);
 }
-void GeneTree::mergeTrees(GeneTree *tree) {
+AbstractGraph * GeneTree::merge(AbstractGraph *t) {
+	GeneTree * tree=dynamic_cast<GeneTree *>(t);
 	if (mergeVisitor==NULL)
 		mergeVisitor=new GeneTree::MergeVisitor(this);
 	(*mergeVisitor)(tree);
+	return this;
 }
-void GeneTree::mergeTrees(GeneTree *tree,QList<int> & delimitersStart,QList<int> & delimitersEnd) {
+void GeneTree::merge(AbstractGraph *t,QList<int> & delimitersStart,QList<int> & delimitersEnd) {
+	GeneTree * tree=dynamic_cast<GeneTree *>(t);
 	if (mergeVisitor==NULL)
 		mergeVisitor=new GeneTree::MergeVisitor(this,delimitersStart,delimitersEnd);
 	(*mergeVisitor)(tree);
@@ -1073,7 +1085,7 @@ void GeneTree::mergeLeftovers() {
 	if (mergeVisitor!=NULL)
 		mergeVisitor->tryPerformingUnperformedNodes();
 }
-void GeneTree::displayTree( ATMProgressIFC * prg) {
+void GeneTree::displayGraph( ATMProgressIFC * prg) {
 	if (this!=NULL) {
 		GeneDisplayVisitor * d=new GeneDisplayVisitor();
 		(*d)(this);
@@ -1081,28 +1093,245 @@ void GeneTree::displayTree( ATMProgressIFC * prg) {
 		prg->displayGraph(this);
 	}
 }
+bool GeneTree::buildFromText(QString text, TwoLevelSelection * sel,QString *fileText,AbstractTwoLevelAnnotator * tagger) {
+	QStringList lines=text.split("\n",QString::SkipEmptyParts);
+	QString s;
+	QMessageBox msgBox;
+	msgBox.setIcon(QMessageBox::Information);
+	msgBox.setWindowTitle("Error Processing Tree");
+	GeneTree * newtree=new GeneTree();
+	GeneNode * lastNode=NULL;
+	int lastIndentation=-1;
+	foreach(s,lines) {
+		int indentation=0;
+		GeneNode * child=NULL;
+		while (indentation<s.size() && s.at(indentation)=='>') {
+			indentation++;
+		}
+		if (indentation==lastIndentation+1) {
+			//just keep old values for lastIndentation and lastNode
+		} else if (indentation>lastIndentation+1) {
+			msgBox.setText(QString("Syntax error with indentation at line: \"%1\"").arg(s));
+			msgBox.exec();
+			newtree->deleteGraph();
+			return false;
+		} else {
+			int diff=lastIndentation-indentation+1;
+			for (int i=0;i<diff;i++) {
+				if (lastNode==NULL) {
+					msgBox.setText(QString("Syntax error with indentation at line: \"%1\", parent to which to attach node not found").arg(s));
+					msgBox.exec();
+					newtree->deleteGraph();
+					return false;
+				}
+				lastNode=lastNode->parent;
+			}
+			lastIndentation=indentation-1;
+		}
+
+		bool noSpouses=false;
+		int l=s.indexOf('[')-1;
+		if (l<0) {
+			l=s.length()-1;
+			noSpouses=true;
+		}
+		QString nameString=Name(&s,indentation,l).getString();
+		if (sel==NULL) {
+			int pos=tagger->getNameIndexInAll(nameString);
+			if (pos>=0) {
+				Name name=Name(fileText,pos, pos+nameString.length()-1);
+				child=new GeneNode(name,lastNode);
+				if (lastNode ==NULL) {
+					newtree->setRoot(child);
+					lastNode=child;
+				}
+			} else {
+				msgBox.setText(QString("Name \"%1\" does not exist in the file at line \"%2\".").arg(nameString).arg(s));
+				msgBox.exec();
+				newtree->deleteGraph();
+				return false;
+			}
+		} else {
+			int i=sel->getNameIndex(nameString);
+			if (i<0) {
+				msgBox.setText(QString("Name \"%1\" does not exist among the genealogical names tagged.").arg(nameString));
+				msgBox.exec();
+				newtree->deleteGraph();
+				return false;
+			} else {
+				const MainSelectionList & names=sel->getNamesList();
+				child=new GeneNode(Name(sel->getTextPointer(),names[i].first,names[i].second/*-1*/),lastNode);
+				if (lastNode ==NULL) {
+					newtree->setRoot(child);
+					lastNode=child;
+				}
+			}
+		}
+		bool finish=false;
+		if (!noSpouses) {
+			l++;
+			do {
+				int st=l+1;
+				l=s.indexOf('\t',l+1);
+				if (l<0) {
+					l=s.indexOf(']');
+					finish=true;
+					if (l<0) {
+						msgBox.setText(QString("Syntax error at line \"%1\" was expecting ']'").arg(s));
+						msgBox.exec();
+						newtree->deleteGraph();
+						return false;
+					}
+				}
+				QString nameString=Name(&s,st,l-1).getString();
+				if (sel==NULL) {
+					int pos=tagger->getNameIndexInAll(nameString);
+					if (pos>=0) {
+						Name name=Name(fileText,pos, pos+nameString.length()-1);
+						child->addSpouse(name);
+					} else {
+						msgBox.setText(QString("Spouse Name \"%1\" does not exist in the file at line \"%2\".").arg(nameString).arg(s));
+						msgBox.exec();
+						newtree->deleteGraph();
+						return false;
+					}
+				} else {
+					int i=sel->getNameIndex(nameString);
+					if (i<0) {
+						msgBox.setText(QString("Spouse Name \"%1\" does not exist among the genealogical names tagged.").arg(nameString));
+						msgBox.exec();
+						newtree->deleteGraph();
+						return false;
+					} else {
+						const MainSelectionList & names=sel->getNamesList();
+						Name name=Name(sel->getTextPointer(),names[i].first, names[i].second/*-1*/);
+						child->addSpouse(name);
+					}
+				}
+			} while (!finish);
+		}
+		lastIndentation=indentation;
+		lastNode=child;
+	}
+	if (sel==NULL) {
+		init(NULL);
+		return true;
+	}else if (newtree->getTreeNodesCount(true)==sel->getNamesList().size()) {
+		sel->getGraph()->deleteGraph();
+		sel->graph=newtree;
+		return true;
+	} else {
+		msgBox.setText(QString("Nodes in the tree already constructed does not match those available in the genealogical tags"));
+		msgBox.exec();
+		newtree->deleteGraph();
+		return false;
+	}
+}
+QString GeneTree::getText() {
+	QString *out_text=out.string();
+	QString s;
+	out.setString(&s);
+	outputTree();
+	out.setString(out_text);
+	return s;
+}
+void GeneTree::fillNullGraph(MainSelectionList & names, QString * text) {
+	//if (this==NULL && names.size()>0) {
+		GeneNode * root=new GeneNode(Name(text,names.at(0).first,names.at(0).second),NULL);
+		init(root);
+		for (int i=1;i<names.size();i++) {
+			root->addChild(new GeneNode(Name(text,names.at(i).first,names.at(i).second),NULL));
+		}
+	//}
+}
+void GeneTree::fillNullGraph(Name & name) {
+	if (this==NULL) {
+		GeneNode *root=new GeneNode(name,NULL);
+		init(root);
+	}
+}
+bool GeneTree::isRepresentativeOf(const MainSelectionList &list) { //very basic assumption for now
+	int count=getTreeNodesCount(true);
+	return count==list.size();
+}
+void GeneTree::fillTextPointers(QString *text){
+	FillTextVisitor v(text);
+	v(this);
+}
+QAbstractItemModel * GeneTree::getTreeModel() {
+	return new GeneItemModel(this);
+}
+void GeneTree::removeNameFromGraph(Name & name) {
+	QString nameString=name.getString();
+	GeneNode * n=findTreeNode(nameString,true);
+	assert(n!=NULL);
+	if (n->getParent()==NULL) { //is root
+		assert(getRoot()==n);
+		if (n->spouses.size()>0) {
+			if (equalNames(n->toString(),nameString)) {
+				n->name=n->spouses[0]->getName();
+				n->spouses.removeAt(0);
+			} else {
+				for (int i=0;i<n->spouses.size();i++) {
+					if (equalNames(n->spouses[i]->getString(),n->toString())){
+						n->spouses.removeAt(i);
+						break;
+					}
+				}
+			}
+		} else if (n->children.size()>0) {
+			setRoot(n->children[0]);
+			n->children[0]->parent=NULL;
+			for (int i=1;i<n->children.size();i++)
+				n->children[0]->addChild(n->children[i]);
+			n->children[0]->parent=NULL;
+			delete n;
+		} else {
+			deleteGraph();
+			init(NULL);
+			fillNullGraph(name);
+		}
+	} else {
+		n->parent->children.removeOne(n);
+		for (int i=0;i<n->spouses.size();i++) {
+			n->parent->addChild(new GeneNode(n->spouses[i]->getName(),NULL));
+		}
+		for (int i=0;i<n->children.size();i++) {
+			n->parent->addChild(n->children[i]);
+		}
+		delete n;
+	}
+
+}
+void GeneTree::addNameToGraph(Name & name) {
+	bool null=(this==NULL);
+	if (null) {
+		fillNullGraph(name);
+	} else {
+		root->addChild(new GeneNode(name,NULL));
+	}
+}
+void GeneTree::writeToStream(QDataStream &out) {
+	GeneTree * t=this;
+	out<<*t;
+}
+AbstractGraph * AbstractGraph::newGraph() {
+	return new GeneTree();
+}
+AbstractGraph * GeneTree::readFromStreamHelper(QDataStream &in){
+	GeneTree * t=this;
+	in>>*t;
+	return t;
+}
 GeneTree::~GeneTree() {
 	if (mergeVisitor!=NULL) {
 		delete mergeVisitor;
 	}
 }
-/*class FixSpousesVisitor :public GeneVisitor {
-	virtual void visit(const GeneNode * node, int ){
-		for (int i=0;i<node->spouses.size();i++) {
-			node->spouses[i]->parent=(GeneNode *)node;
-		}
-	}
-	virtual void visit(const GeneNode * , const Name & , bool ) {	}
-	virtual void finish(){}
-};*/
 int SpouseGeneNode::getGraphHeight() const{
 	if (parent==NULL)
 		return -1;
 	return parent->getGraphHeight();
-}
-void GeneTree::fixSpouseGraphParent() {
-	/*FixSpousesVisitor v;
-	v(this);*/
 }
 
 class GenealogySegmentor {
@@ -1159,10 +1388,10 @@ private:
 			initialize(NULL);
 		}
 	};
-	typedef BibleTaggerDialog::Selection OutputData;
+	typedef TwoLevelSelection OutputData;
 	typedef BibleTaggerDialog::SelectionList OutputDataList;
-	typedef BibleTaggerDialog::Selection::MainSelection Selection;
-	typedef BibleTaggerDialog::Selection::MainSelectionList SelectionList;
+	typedef TwoLevelSelection::MainSelection Selection;
+	typedef TwoLevelSelection::MainSelectionList SelectionList;
 	QList<int> delimitersStart,delimitersEnd;
 	OutputDataList outputList;
 	class StateData {
@@ -1211,7 +1440,7 @@ private:
 				outputAndTag();
 				ret_val= false;
 			} else {
-				currentData.tree->deleteTree();
+				currentData.tree->deleteGraph();
 				currentData.outputData->clear();
 			}
 			currentData.last=NULL;
@@ -1227,7 +1456,8 @@ private:
 		bool keep=count<=geneologyParameters.C_max && count>1;
 		bool ret_val=checkIfDisplay(keep);
 		if (!keep) {
-			currentData.tree->deleteTree();
+			if (currentData.tree!=NULL)
+				currentData.tree->deleteGraph();
 			currentData.tree=NULL;
 			currentData.last=NULL;
 			stateInfo.newNameNotProcessed=false;
@@ -1263,7 +1493,7 @@ private:
 			DescentDirection dir=stateInfo.descentDirection;
 			ret_value=doParaCheck(); //nameList is cleared here, if needed
 			if (currentData.outputData->getNamesList().size()>0) {
-				currentData.tree->deleteTree();
+				currentData.tree->deleteGraph();
 				stateInfo.newNameNotProcessed=false;
 				currentData.outputData->clear();
 			}
@@ -1394,7 +1624,7 @@ private:
 				case NEW_NAME: /*|| ((stateInfo.currentType==CORE_NAME || stateInfo.currentType==LEAF_NAME) && currentData.last==NULL)*/
 					if (stateInfo.preceededByWaw) {
 						if (currentData.last!=NULL && currentData.last->getParent()==NULL) {
-							currentData.tree->deleteTree();
+							currentData.tree->deleteGraph();
 							currentData.outputData->clear();
 							display("{Waw resulted in deletion}\n");
 							if (!stateInfo.previousPunctuationInfo.hasEndingPunctuation()) {
@@ -1737,14 +1967,14 @@ private:
 	#endif
 		if (currentData.globalTree==NULL) {
 			currentData.tree->outputTree();
-			GeneTree * duplicate=currentData.tree->duplicateTree(delimitersStart,delimitersEnd);
+			GeneTree * duplicate=currentData.tree->duplicate(delimitersStart,delimitersEnd);
 			currentData.globalTree=duplicate;
-			currentData.outputData->setTree(currentData.tree);
+			currentData.outputData->setGraph(currentData.tree);
 		}else {
-			currentData.globalTree->mergeTrees(currentData.tree,delimitersStart,delimitersEnd);
+			currentData.globalTree->merge(currentData.tree,delimitersStart,delimitersEnd);
 
 			currentData.tree->outputTree();
-			currentData.outputData->setTree(currentData.tree);
+			currentData.outputData->setGraph(currentData.tree);
 		}
 		currentData.outputData->setMainInterval(currentData.startGene,stateInfo.endPos);
 		outputList.append(*currentData.outputData);
@@ -1805,16 +2035,16 @@ private:
 
 	int calculateStatisticsOrAnotate() {
 	#define MERGE_GLOBAL_TREE				if (globalTree==NULL) { \
-												globalTree=tags[i].getTree()->duplicateTree(); \
+												globalTree=tags[i].getGraph()->duplicateTree(); \
 											} else { \
 												globalTree->mergeTrees(tags[i].getTree()); \
 											} /*\
 											globalTree->displayTree(prg);*/
 
 	#define MERGE_LOCAL_TREES				if (localMergedGraph==NULL) { \
-												localMergedGraph=outputList[j].getTree()->duplicateTree();\
+												localMergedGraph=dynamic_cast<GeneTree*>(outputList[j].getGraph()->duplicate());\
 											} else {\
-												localMergedGraph->mergeTrees(outputList[j].getTree());\
+												localMergedGraph->merge(outputList[j].getGraph());\
 											}
 	#define COMPARE_TO_LOCAL_MERGED_TREE	GeneTree::GraphStatistics stats; \
 											if (localMergedGraph!=NULL) { \
@@ -1822,7 +2052,8 @@ private:
 													i=tags.count()-1; \
 												int countCorrect=tags[i].getNamesList().size(); \
 												numNames+=countCorrect; \
-												localMergedGraph->compareToStandardTree(tags[i].getTree(),stats);\
+												GeneTree * tagTree=dynamic_cast<GeneTree *>(tags[i].getGraph());\
+												localMergedGraph->compareToStandardTree(tagTree,stats);\
 												graphFoundRecallList.append(stats.foundRecall*countCorrect);\
 												graphFoundPrecisionList.append(stats.foundPrecision*countCorrect);\
 												graphContextRecallList.append(stats.contextRecall*countCorrect);\
@@ -1833,7 +2064,7 @@ private:
 												graphSpousesPrecisionList.append(stats.spousesPrecision*countCorrect);\
 												graphChildrenRecallList.append(stats.childrenRecall*countCorrect);\
 												graphChildrenPrecisionList.append(stats.childrenPrecision*countCorrect);\
-												localMergedGraph->deleteTree(); \
+												localMergedGraph->deleteGraph(); \
 												localMergedGraph=NULL;\
 											 /*#ifdef DETAILED_DISPLAY */ \
 												 displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
@@ -1878,7 +2109,8 @@ private:
 		for (int i=0;i<tags.size();i++) {
 			tags[i].setText(text);
 			FillTextVisitor v(text);
-			v(tags[i].getTree());
+			GeneTree * tree=dynamic_cast<GeneTree*>(tags[i].getGraph());
+			v(tree);
 		}
 		FillTextVisitor v(text);
 		v(globalTree);
@@ -1911,7 +2143,9 @@ private:
 					boundaryPrecisionList.append((double)allCommonCount/countDetected *countCorrect);
 
 					GeneTree::GraphStatistics stats;
-					outputList[j].getTree()->compareToStandardTree(tags[i].getTree(),stats);
+					GeneTree * outputTree=dynamic_cast<GeneTree*>(outputList[j].getGraph());
+					GeneTree * tagTree=dynamic_cast<GeneTree*>(tags[i].getGraph());
+					outputTree->compareToStandardTree(tagTree,stats);
 					underGraphFoundRecallList.append(stats.foundRecall* countCorrect);
 					underGraphFoundPrecisionList.append(stats.foundPrecision* countCorrect);
 					underGraphContextRecallList.append(stats.contextRecall* countCorrect);
@@ -2023,10 +2257,10 @@ private:
 			graphTagsSize=globalTree->getTreeNodesCount(true);
 		GeneTree::GraphStatistics globalStats;
 		currentData.globalTree->compareToStandardTree(globalTree,globalStats);
-		globalTree->displayTree(prg);
+		globalTree->displayGraph(prg);
 	#if 1 //will be deleted after they are finished display
-		currentData.globalTree->deleteTree();
-		globalTree->deleteTree();
+		currentData.globalTree->deleteGraph();
+		globalTree->deleteGraph();
 	#endif
 	#ifdef DETAILED_DISPLAY
 		displayed_error << "-------------------------\n"
@@ -2107,9 +2341,9 @@ private:
 		}
 	#endif
 		for (int i=0;i<tags.size();i++)
-			tags[i].getTree()->deleteTree();
+			tags[i].getGraph()->deleteGraph();
 		for (int i=0;i<outputList.size();i++)
-			outputList[i].getTree()->deleteTree();
+			outputList[i].getGraph()->deleteGraph();
 		return 0;
 	#undef MERGE_GLOBAL_TREE
 	}
@@ -2153,7 +2387,7 @@ private:
 			delete currentData.outputData;
 		prg->report(100);
 		prg->finishTaggingText();
-		currentData.globalTree->displayTree(prg);
+		currentData.globalTree->displayGraph(prg);
 		calculateStatisticsOrAnotate();
 		return 0;
 	}

@@ -10,74 +10,138 @@
 
 AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString mainStructure):QMainWindow() {
 	this->filename=filename;
-	text=new QTextBrowser(this);
-	tagMain=new QPushButton("&Tag "+mainStructure,this);
-	unTagMain=new QPushButton("&Un-Tag "+mainStructure,this);
-	tagName=new QPushButton("Tag &Name",this);
-	unTagName=new QPushButton("Un-Ta&g Name",this);
-	save=new QPushButton("&Save",this);
-	modifyGraph=new QPushButton("&Modify Graph",this);
-	scrollArea=new QScrollArea(this);
-	forceWordNames=new QCheckBox("Full Word Names");
-	resetGlobalGraph=new QPushButton("Reset Global Graph");
-	resetGlobalGraph->setEnabled(false);
-	isGlobalGraph=new QPushButton("Global Graph");
-	isGlobalGraph->setCheckable(true);
-	graphArea=new QScrollArea(this);
-	treeText=new QTextBrowser(this);
-	treeText->setReadOnly(false);
-	grid=new QGridLayout(scrollArea);
-	grid->addWidget(tagMain,0,0);
-	grid->addWidget(unTagMain,0,1);
-	grid->addWidget(forceWordNames,0,2);
-	grid->addWidget(tagName,0,3);
-	grid->addWidget(unTagName,0,4);
-	grid->addWidget(save,0,5);
-	grid->addWidget(text,1,0,4,2);
-	grid->addWidget(treeText,1,2,1,1);
-	grid->addWidget(modifyGraph,2,2);
-	grid->addWidget(isGlobalGraph,3,2);
-	grid->addWidget(resetGlobalGraph,4,2);
-	grid->addWidget(graphArea,1,3,4,3);
-	grid->setColumnStretch(0,2);
-	grid->setColumnStretch(1,2);
-	grid->setColumnStretch(2,4);
-	grid->setColumnStretch(3,2);
-	grid->setColumnStretch(4,2);
-	grid->setColumnStretch(5,2);
-	graph=new QLabel(graphArea);
-	graphArea->setWidgetResizable(true);
-	graphArea->setAlignment(Qt::AlignCenter);
-	graphArea->setWidget(graph);
-	forceWordNames->setChecked(true);
-	setCentralWidget(scrollArea);
-	treeText->setLayoutDirection(Qt::RightToLeft);
-#ifdef ERRORS_BIBLE
-	errors=new QTextBrowser(this);
-	errors->resize(errors->width(),50);
-	errors_text=new QString();
-	grid->addWidget(errors,5,0,1,6);
-	displayed_error.setString(errors_text);
-	errors->setText(*errors_text);
-#endif
-	connect(tagMain,SIGNAL(clicked()),this,SLOT(tagMain_clicked()));
-	connect(unTagMain,SIGNAL(clicked()),this,SLOT(unTagMain_clicked()));
-	connect(tagName,SIGNAL(clicked()),this,SLOT(tagName_clicked()));
-	connect(unTagName,SIGNAL(clicked()),this,SLOT(unTagName_clicked()));
-	connect(save,SIGNAL(clicked()),this,SLOT(save_clicked()));
-	connect(text,SIGNAL(selectionChanged()),this, SLOT(text_selectionChanged()));
-	connect(modifyGraph,SIGNAL(clicked()),this, SLOT(modifyGraph_clicked()));
-	connect(isGlobalGraph,SIGNAL(toggled(bool)),this, SLOT(isGlobalGraph_toggled(bool)));
-	connect(resetGlobalGraph,SIGNAL(clicked()),this, SLOT(resetGlobalGraph_clicked()));
 	string=NULL;
 	globalGraph=NULL;
+
+	createActions(mainStructure);
+	createToolbar();
+	createMenus();
+	createDocWindows();
+
+	connect(text,SIGNAL(selectionChanged()),this,SLOT(text_selectionChanged()));
+
 	open_action();
-	/*if (globalGraph==NULL)
-		regenerateGlobalGraph();*/
 	setWindowTitle(filename);
 	this->resize(700,700);
 	selectedTagIndex=-1;
-	modifyGraph->setEnabled(false);
+}
+
+void AbstractTwoLevelAnnotator::createActions(QString mainStructure)
+{
+	tagMainAct = new QAction(QString("&Tag "+mainStructure), this);
+	tagMainAct->setStatusTip(QString("Tag the main structure in the heirarchy"));
+	connect(tagMainAct, SIGNAL(triggered()), this, SLOT(tagMain_clicked()));
+
+	unTagMainAct = new QAction(QString("&Un-Tag "+mainStructure), this);
+	unTagMainAct->setStatusTip(QString("Untag a previously taggged main structure in the heirarchy"));
+	connect(unTagMainAct, SIGNAL(triggered()), this, SLOT(unTagMain_clicked()));
+
+	unTagNameAct = new QAction(QString("Un-Ta&g Name"), this);
+	unTagNameAct->setStatusTip(QString("Untag a previously tagged name inside the main structure"));
+	connect(unTagNameAct, SIGNAL(triggered()), this, SLOT(unTagName_clicked()));
+
+	tagNameAct = new QAction(QString("Tag &Name"), this);
+	tagNameAct->setStatusTip(QString("Tag a name inside the main structure"));
+	connect(tagNameAct, SIGNAL(triggered()), this, SLOT(tagName_clicked()));
+
+	forceWordNames = new QAction(QString("&Full Word Names"), this);
+	forceWordNames->setStatusTip(QString("When selected forces selected names to be full words delimited by spaces and punctuation "));
+	forceWordNames->setCheckable(true);
+	forceWordNames->setChecked(true);
+
+	saveAct = new QAction(QString("&Save"), this);
+	saveAct->setShortcuts(QKeySequence::Save);
+	saveAct->setStatusTip(QString("Save the annotation file"));
+	connect(saveAct, SIGNAL(triggered()), this, SLOT(save_clicked()));
+
+	modifyGraphAct = new QAction(QString("&Modify Graph"), this);
+	modifyGraphAct->setStatusTip(QString("Reset Graph of current selection using written text"));
+	connect(modifyGraphAct, SIGNAL(triggered()), this, SLOT(modifyGraph_clicked()));
+
+	globalGraphAct = new QAction(QString("&Global Graph"), this);
+	globalGraphAct->setCheckable(true);
+	globalGraphAct->setStatusTip(QString("When selected, displays global graph"));
+	connect(globalGraphAct, SIGNAL(toggled(bool)), this, SLOT(isGlobalGraph_toggled(bool)));
+
+
+	resetGlobalGraphAct = new QAction(QString("&Reset Global Graph"), this);
+	resetGlobalGraphAct->setStatusTip(QString("Recompute global graph using automatic default algorithm"));
+	resetGlobalGraphAct->setEnabled(false);
+	connect(resetGlobalGraphAct, SIGNAL(triggered()), this, SLOT(resetGlobalGraph_clicked()));
+
+}
+
+void AbstractTwoLevelAnnotator::createToolbar() {
+	annotationToolbar = addToolBar(tr("Annotation"));
+	annotationToolbar->addAction(tagMainAct);
+	annotationToolbar->addAction(unTagMainAct);
+	annotationToolbar->addSeparator();
+	annotationToolbar->addAction(forceWordNames);
+	annotationToolbar->addAction(tagNameAct);
+	annotationToolbar->addAction(unTagNameAct);
+	annotationToolbar->addAction(saveAct);
+
+	addToolBarBreak();
+
+	graphToolbar = addToolBar(tr("Graph"));
+	graphToolbar->addAction(modifyGraphAct);
+	graphToolbar->addAction(globalGraphAct);
+	graphToolbar->addAction(resetGlobalGraphAct);
+}
+
+void AbstractTwoLevelAnnotator::createMenus() {
+	viewMenu = menuBar()->addMenu(tr("&View"));
+	menuBar()->addSeparator();
+}
+
+void AbstractTwoLevelAnnotator::createDocWindows() {
+	QDockWidget *dock = new QDockWidget(tr("File Text"), this);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	text=new QTextBrowser(dock);
+	dock->setWidget(text);
+	addDockWidget(Qt::LeftDockWidgetArea, dock);
+	viewMenu->addAction(dock->toggleViewAction());
+	setCentralWidget(dock);
+
+	dock = new QDockWidget(tr("Graph Text"), this);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	treeText=new QTextBrowser(dock);
+	treeText->setReadOnly(false);
+	treeText->setLayoutDirection(Qt::RightToLeft);
+	dock->setWidget(treeText);
+	addDockWidget(Qt::RightDockWidgetArea, dock);
+	viewMenu->addAction(dock->toggleViewAction());
+
+	dock = new QDockWidget(tr("Graph View"), this);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	graphArea=new QScrollArea(dock);
+	dock->setWidget(graphArea);
+	graph=new QLabel(graphArea);
+	graphArea->setWidget(graph);
+	graphArea->setWidgetResizable(true);
+	graphArea->setAlignment(Qt::AlignCenter);
+	dock->setWidget(graphArea);
+	addDockWidget(Qt::RightDockWidgetArea, dock);
+	viewMenu->addAction(dock->toggleViewAction());
+
+	dock = new QDockWidget(tr("Tree View"), this);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	resultTree = new QTreeView (dock);
+	resultTree->setSelectionBehavior (QAbstractItemView::SelectRows);
+	resultTree->setSelectionMode (QAbstractItemView::SingleSelection);
+	resultTree->setAlternatingRowColors (true);
+	dock->setWidget(resultTree);
+	addDockWidget(Qt::BottomDockWidgetArea, dock);
+	viewMenu->addAction(dock->toggleViewAction());
+	treeModel=NULL;
+	resultTree->setModel(treeModel);
+
+}
+
+void AbstractTwoLevelAnnotator::show(){
+	if (globalGraph==NULL)
+		regenerateGlobalGraph();
+	QMainWindow::show();
 }
 
 int AbstractTwoLevelAnnotator::getNameIndexInAll(const QString & name) {
@@ -96,7 +160,7 @@ int AbstractTwoLevelAnnotator::findSubSelection(int tagIndex,int startSubIndex, 
 	QTextCursor c=text->textCursor();
 	int start=c.selectionStart();
 	int end=c.selectionEnd();
-	Selection::MainSelectionList names=tags[tagIndex].getNamesList();
+	TwoLevelSelection::MainSelectionList names=tags[tagIndex].getNamesList();
 	for (int i=startSubIndex;i<names.size();i++) {
 		if (isConsistentWithSelectionCondidtion(start,end,names[i].first,names[i].second,selectionMode)) {
 			return i;
@@ -115,26 +179,9 @@ AbstractTwoLevelAnnotator::~AbstractTwoLevelAnnotator() {
 		delete globalGraph;
 	if (string !=NULL)
 		delete string;
-
-	delete isGlobalGraph;
-	delete resetGlobalGraph;
-	delete tagMain;
-	delete unTagMain;
-	delete tagName;
-	delete unTagName;
-	delete modifyGraph;
-	delete save;
 	delete text;
 	delete treeText;
-	delete forceWordNames;
-	delete scrollArea;
-	delete graphArea;
 	delete graph;
-#ifdef ERRORS_BIBLE
-	delete errors;
-	delete errors_text;
-#endif
-	delete grid;
 }
 
 void AbstractTwoLevelAnnotator::tagMain_action() {
@@ -148,13 +195,13 @@ void AbstractTwoLevelAnnotator::tagMain_action() {
 		return;
 	int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
 	QList<int> listForRemoval;
-	Selection * sel=NULL;
+	TwoLevelSelection * sel=NULL;
 	while (i>=0) {
 		if (sel==NULL) {
 			sel=&tags[i];
 		} else {
-			Selection::MainSelectionList mergedNames;
-			Selection::mergeNames(string,sel->names,tags[i].names,mergedNames);
+			TwoLevelSelection::MainSelectionList mergedNames;
+			TwoLevelSelection::mergeNames(string,sel->names,tags[i].names,mergedNames);
 			AbstractGraph * duplicate=sel->graph->duplicate();
 			duplicate->merge(tags[i].graph);
 			if (duplicate->isRepresentativeOf(mergedNames)) {
@@ -174,7 +221,7 @@ void AbstractTwoLevelAnnotator::tagMain_action() {
 		i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
 	}
 	if (sel==NULL) {
-		tags.append(Selection(string,start,end-1));
+		tags.append(TwoLevelSelection(string,start,end-1));
 	} else if (i>=0) { //stopped before completion
 		start=sel->getMainStart();
 		end=sel->getMainEnd();
@@ -187,7 +234,7 @@ void AbstractTwoLevelAnnotator::tagMain_action() {
 	text->setTextBackgroundColor(Qt::darkYellow);
 	c.clearSelection();
 	text->setTextCursor(c);
-	if (isGlobalGraph->isChecked())
+	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
 }
@@ -195,11 +242,11 @@ void AbstractTwoLevelAnnotator::tagMain_action() {
 void AbstractTwoLevelAnnotator::unTagMain_action() {
 	if (this==NULL)
 		return;
-	Selection::MainSelectionList listForRemoval;
+	TwoLevelSelection::MainSelectionList listForRemoval;
 	int i=findSelection(0,SELECTION_OUTSIDE);
 	if (i>=0) {
 		while (i>=0) {
-			listForRemoval.append(Selection::MainSelection(tags[i].getMainStart(),tags[i].getMainEnd()));
+			listForRemoval.append(TwoLevelSelection::MainSelection(tags[i].getMainStart(),tags[i].getMainEnd()));
 			tags.removeAt(i);
 			i--;
 			i=findSelection(i+1,SELECTION_OUTSIDE);
@@ -210,7 +257,7 @@ void AbstractTwoLevelAnnotator::unTagMain_action() {
 		int end=c.selectionEnd();
 		int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
 		if (i>=0) {
-			listForRemoval.append(Selection::MainSelection(start,end-1));
+			listForRemoval.append(TwoLevelSelection::MainSelection(start,end-1));
 		}
 		while (i>=0) {
 			if (tags[i].getMainStart()>=start) {
@@ -237,7 +284,7 @@ void AbstractTwoLevelAnnotator::unTagMain_action() {
 	}
 	c.clearSelection();
 	text->setTextCursor(c);
-	if (isGlobalGraph->isChecked())
+	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
 }
@@ -248,6 +295,8 @@ void AbstractTwoLevelAnnotator::save_action() {
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
+		if (globalGraph==NULL)
+			globalGraph=globalGraph->newGraph();
 		globalGraph->writeToStream(out);
 		file.close();
 		QFile::remove(file.fileName()+".copy");
@@ -280,7 +329,7 @@ void AbstractTwoLevelAnnotator::open_action() {
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream in(&file);   // we will serialize the data into the file
 			in>>tags;
-			globalGraph->readFromStream(in);
+			globalGraph=globalGraph->readFromStream(in);
 			globalGraph->fillTextPointers(string);
 			file.close();
 			for (int i=0;i<tags.size();i++) {
@@ -293,7 +342,7 @@ void AbstractTwoLevelAnnotator::open_action() {
 				c.setPosition(end+1,QTextCursor::KeepAnchor);
 				text->setTextCursor(c);
 				text->setTextBackgroundColor(Qt::darkYellow);
-				const Selection::MainSelectionList & names=tags[i].getNamesList();
+				const TwoLevelSelection::MainSelectionList & names=tags[i].getNamesList();
 				for (int i=0;i<names.size();i++) {
 					int start=names[i].first;
 					int end=names[i].second;
@@ -320,12 +369,12 @@ void AbstractTwoLevelAnnotator::unTagName_action() {
 		return;
 	QTextCursor c=text->textCursor();
 	int i=findSelection(0,SELECTION_INSIDE);
-	Selection::MainSelectionList listForRemoval;
+	TwoLevelSelection::MainSelectionList listForRemoval;
 	while (i>=0) { //while not useful
-		const Selection::MainSelectionList & names=tags[i].getNamesList();
+		const TwoLevelSelection::MainSelectionList & names=tags[i].getNamesList();
 		int j=findSubSelection(i,0);
 		while (j>=0) {
-			listForRemoval.append(Selection::MainSelection(names[j].first,names[j].second));
+			listForRemoval.append(TwoLevelSelection::MainSelection(names[j].first,names[j].second));
 			tags[i].removeNameAt(j);
 			j--;
 			j=findSubSelection(i,j+1);
@@ -341,7 +390,7 @@ void AbstractTwoLevelAnnotator::unTagName_action() {
 	}
 	c.clearSelection();
 	text->setTextCursor(c);
-	if (isGlobalGraph->isChecked())
+	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
 }
@@ -366,7 +415,7 @@ void AbstractTwoLevelAnnotator::tagName_action() {
 			text->setTextCursor(c);
 		}
 	}
-	if (isGlobalGraph->isChecked())
+	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
 }
@@ -375,38 +424,42 @@ void AbstractTwoLevelAnnotator::text_selectionChangedAction() {
 	int i=findSelection(0,SELECTION_INSIDE);
 	if (selectedTagIndex==i)
 		return;
-	if (isGlobalGraph->isChecked())
+	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
 }
 
 void AbstractTwoLevelAnnotator::updateGraphDisplay() {
-	if (!isGlobalGraph->isChecked()) {
+	if (!globalGraphAct->isChecked()) {
 		int i=findSelection(0,SELECTION_INSIDE);
 		if (i>=0) {
 			treeText->setText(tags[i].getText());
 			treeText->setReadOnly(false);
-			modifyGraph->setEnabled(true);
-			tags[i].getGraph()->displayGraph(this);
+			modifyGraphAct->setEnabled(true);
+			AbstractGraph * graph=tags[i].getGraph();
+			if (graph==NULL)
+				displayGraph(NULL);
+			else
+				graph->displayGraph(this);
 			selectedTagIndex=i;
 		} else {
 			treeText->setText("");
 			treeText->setReadOnly(true);
-			modifyGraph->setEnabled(false);
+			modifyGraphAct->setEnabled(false);
 			graph->clear();
 			selectedTagIndex=-1;
 		}
 	} else {
 		treeText->setText(globalGraph->getText());
 		treeText->setReadOnly(false);
-		modifyGraph->setEnabled(true);
+		modifyGraphAct->setEnabled(true);
 		globalGraph->displayGraph(this);
 		selectedTagIndex=-1;
 	}
 }
 
 void AbstractTwoLevelAnnotator::modifyGraph_action() {
-	if (!isGlobalGraph->isChecked()) {
+	if (!globalGraphAct->isChecked()) {
 		int i=findSelection(0,SELECTION_INSIDE);
 		assert(i>=0);
 		if (tags[i].getGraph()->buildFromText(treeText->toPlainText(),&tags[i]))
@@ -419,5 +472,5 @@ void AbstractTwoLevelAnnotator::modifyGraph_action() {
 
 void AbstractTwoLevelAnnotator::isGlobalGraph_action(){
 	updateGraphDisplay();
-	resetGlobalGraph->setEnabled(isGlobalGraph->isChecked());
+	resetGlobalGraphAct->setEnabled(globalGraphAct->isChecked());
 }
