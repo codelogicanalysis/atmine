@@ -16,7 +16,7 @@ using namespace std;
 class TimeTaggerDialog:public QMainWindow,public AbstractAnnotator{
 	Q_OBJECT
 public:
-	TimeTaggerDialog(QString filename);
+	TimeTaggerDialog(QString filename, QString ext=".tags");
 public slots:
 	void tag_clicked() {
 		tag_action();
@@ -42,7 +42,7 @@ public:
 	typedef QList<Selection> SelectionList;
 	SelectionList tags;
 
-	QString filename;
+	QString filename,ext;
 	QPushButton * tag, *unTag, *save;
 	QTextBrowser * text;
 	QScrollArea *scrollArea;

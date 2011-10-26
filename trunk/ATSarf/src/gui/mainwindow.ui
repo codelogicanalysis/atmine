@@ -552,7 +552,7 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>310</x>
       <y>40</y>
       <width>16</width>
       <height>61</height>
@@ -565,7 +565,7 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
-      <x>380</x>
+      <x>420</x>
       <y>40</y>
       <width>16</width>
       <height>41</height>
@@ -578,9 +578,9 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>320</x>
       <y>70</y>
-      <width>281</width>
+      <width>211</width>
       <height>21</height>
      </rect>
     </property>
@@ -656,8 +656,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_biography">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>60</y>
+      <x>220</x>
+      <y>40</y>
       <width>91</width>
       <height>22</height>
      </rect>
@@ -685,35 +685,35 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_bible">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>320</x>
       <y>40</y>
-      <width>131</width>
+      <width>101</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Bible Genealogy</string>
+     <string>Genealogy</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="chk_bible_anotation">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>320</x>
       <y>60</y>
-      <width>131</width>
+      <width>91</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>Bible Anotation</string>
+     <string>Anotation</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="chk_AffixBreaker">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>320</x>
       <y>80</y>
-      <width>121</width>
+      <width>111</width>
       <height>22</height>
      </rect>
     </property>
@@ -727,53 +727,53 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_verification">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>80</y>
-      <width>131</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Affix Verification</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_time_anotation">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>60</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Simple Anotation</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_time">
-    <property name="geometry">
-     <rect>
-      <x>390</x>
-      <y>40</y>
-      <width>141</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Time Recognition</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="chk_hadith_anotation">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
+      <x>430</x>
       <y>80</y>
       <width>101</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
+     <string>Verification</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_time_anotation">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>60</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
      <string>Anotation</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_time">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>40</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Time</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_hadith_anotation">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>60</y>
+      <width>141</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Hadith Annotation</string>
     </property>
    </widget>
    <widget class="Line" name="line_9">
@@ -800,6 +800,19 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Testing</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_hadith_name_anotation">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>80</y>
+      <width>151</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Names Annotation</string>
     </property>
    </widget>
   </widget>

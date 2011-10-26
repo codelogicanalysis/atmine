@@ -17,8 +17,9 @@ void AbstractTwoLevelAnnotator::SelectionList::readFromStream(QDataStream & in,A
 	}
 }
 
-AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString mainStructure):QMainWindow() {
+AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString mainStructure, QString ext):QMainWindow() {
 	this->filename=filename;
+	this->ext=ext;
 	string=NULL;
 	globalGraph=NULL;
 
@@ -308,7 +309,7 @@ void AbstractTwoLevelAnnotator::unTagMain_action() {
 
 void AbstractTwoLevelAnnotator::save_action() {
 	qSort(tags.begin(),tags.end());
-	QFile file(QString("%1.tags").arg(filename).toStdString().data());
+	QFile file(QString("%1"+ext).arg(filename).toStdString().data());
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
@@ -341,7 +342,7 @@ void AbstractTwoLevelAnnotator::open_action() {
 		text->setText(*string);
 		//qDebug()<<text->toPlainText().size();
 
-		QFile file(QString("%1.tags").arg(filename).toStdString().data());
+		QFile file(QString("%1"+ext).arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream in(&file);   // we will serialize the data into the file
 			globalGraph=newGraph();

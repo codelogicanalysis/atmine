@@ -8,9 +8,10 @@
 #include "logger.h"
 #include "letters.h"
 
-TimeTaggerDialog::TimeTaggerDialog(QString filename):QMainWindow() {
+TimeTaggerDialog::TimeTaggerDialog(QString filename, QString ext):QMainWindow() {
 
 	this->filename=filename;
+	this->ext=ext;
 	text=new QTextBrowser(this);
 	tag=new QPushButton("&Tag",this);
 	unTag=new QPushButton("&Un-Tag",this);
@@ -138,7 +139,7 @@ void TimeTaggerDialog::unTag_action() {
 
 void TimeTaggerDialog::save_action() {
 	qSort(tags.begin(),tags.end());
-	QFile file(QString("%1.tags").arg(filename).toStdString().data());
+	QFile file(QString("%1"+ext).arg(filename).toStdString().data());
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
@@ -163,7 +164,7 @@ void TimeTaggerDialog::open_action() {
 		text->setTextColor(Qt::black);
 		text->setText(s.readAll());
 
-		QFile file(QString("%1.tags").arg(filename).toStdString().data());
+		QFile file(QString("%1"+ext).arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))
 		{
 			QDataStream out(&file);   // we will serialize the data into the file
@@ -199,6 +200,11 @@ void TimeTaggerDialog::open_action() {
 
 int timeTagger(QString input_str/*, QString extension=".tag"*/){
 	TimeTaggerDialog * d=new TimeTaggerDialog(input_str);
+	d->show();
+	return 0;
+}
+int hadith_name_annotation(QString input_str,ATMProgressIFC *prg) {
+	TimeTaggerDialog * d=new TimeTaggerDialog(input_str,".names");
 	d->show();
 	return 0;
 }

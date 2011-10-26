@@ -224,6 +224,8 @@ void MainWindow::on_pushButton_clicked(){
 		bible_annotation(input,this);
 	else if (m_ui->chk_hadith_anotation->isChecked())
 		hadith_annotation(input,this);
+	else if (m_ui->chk_hadith_name_anotation->isChecked())
+		hadith_name_annotation(input,this);
 	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);

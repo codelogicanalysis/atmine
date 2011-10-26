@@ -2,9 +2,11 @@
 #define HADITHMANUALTAGGER_H
 
 #include <QModelIndex>
+#include <QPoint>
 #include "abstractTwoLevelAnnotator.h"
 
 class NarratorNodeIfc;
+
 
 class HadithTaggerDialog : public AbstractTwoLevelAnnotator
 {
@@ -18,6 +20,7 @@ private:
 
 private slots:
 	void resultTree_clicked ( const QModelIndex & index );
+	void resultTree_contextMenu(const QPoint & point);
 	void mergeIndividual();
 	void mergeAll();
 	void unMerge();
