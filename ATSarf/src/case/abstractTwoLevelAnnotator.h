@@ -24,7 +24,7 @@ public:
 		void readFromStream(QDataStream & in,AbstractGraph * graph);
 	};
 public:
-	AbstractTwoLevelAnnotator(QString filename, QString mainStructure);
+	AbstractTwoLevelAnnotator(QString filename, QString mainStructure,QString ext=".tags");
 	void show();
 
 	int getNameIndexInAll(const QString & name);
@@ -90,7 +90,7 @@ public:
 	int selectedTagIndex;
 	SelectionList tags;
 	AbstractGraph * globalGraph;
-	QString filename, * string;
+	QString filename,ext, * string;
 	QAbstractItemModel * treeModel;
 	QTreeView *resultTree;
 

@@ -569,7 +569,7 @@
 		}
 		void readTags() {
 			TimeTaggerDialog::SelectionList tags;
-			QFile file(QString("%1.tags").arg(fileName).toStdString().data());
+			QFile file(QString("%1.names").arg(fileName).toStdString().data());
 			if (file.open(QIODevice::ReadOnly))	{
 				QDataStream out(&file);   // we will serialize the data into the file
 				out	>> tags;

@@ -1,8 +1,8 @@
+#include <QtGui>
 #include "hadithManualTagger.h"
 #include "hadithChainGraph.h"
 #include "hadithDagGraph.h"
-#include <QMenu>
-#include <QTreeView>
+
 
 HadithTaggerDialog::HadithTaggerDialog(QString filename)
 		:AbstractTwoLevelAnnotator(filename,"Hadith") {
@@ -17,9 +17,11 @@ HadithTaggerDialog::HadithTaggerDialog(QString filename)
 	resultTreeOperationMenu->addAction("Apply Merge",this,SLOT(applyMerge()));
 	resultTreeOperationMenu->addSeparator();
 	resultTreeOperationMenu->addAction("Cancel Operation",this,SLOT(cancelMerge()));
+	resultTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
 
 	connect(resultTree,SIGNAL(clicked(QModelIndex )),this,SLOT(resultTree_clicked(QModelIndex)));
+	connect(resultTree,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(resultTree_contextMenu(QPoint)));
 
 	resultTreeMenuMIdxMain=resultTreeMenuMIdxApplied=NULL;
 	chosenAction=false;
@@ -50,9 +52,10 @@ AbstractGraph * HadithTaggerDialog::newGraph(bool global) {
 		return new HadithChainGraph();
 }
 
-
-void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
+void HadithTaggerDialog::resultTree_contextMenu(const QPoint & p) {
 	if (globalGraphAct->isChecked()) {
+		QModelIndex index  =resultTree->indexAt(p);
+		resultTree_clicked(index);
 		if (!chosenAction) {
 			if (resultTreeMenuMIdxMain!=NULL)
 				delete resultTreeMenuMIdxMain;
@@ -74,6 +77,30 @@ void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
 			resultTreeOperationMenu->actions()[0]->setEnabled(!same);
 			resultTreeOperationMenu->exec(QCursor::pos());
 		}
+	}
+}
+
+void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
+	if (globalGraphAct->isChecked()) {
+		QIODevice * d=out.device();
+		QString s;
+		out.setString(&s);
+		DisplayLocalNodesVisitor::DetectedNodesMap map;
+		NarratorNodeIfc * node=(NarratorNodeIfc *)index.internalPointer();
+		HadithDagGraph * g=dynamic_cast<HadithDagGraph*>(globalGraph);
+		map[&node->getCorrespondingNarratorNode()]=1;
+		DisplayLocalNodesVisitor v(map);
+		GraphVisitorController c(&v,g->graph,true,true);
+		g->graph->DFS_traverse(c);
+		if (globalGraph!=NULL) {
+			try{
+				system("dot -Tsvg graph.dot -o graph.svg");
+				graph->setPixmap(QPixmap("./graph.svg"));
+			} catch(...) {}
+		} else
+			graph->setPixmap(QPixmap());
+		graph->repaint();
+		out.setDevice(d);
 	}
 }
 

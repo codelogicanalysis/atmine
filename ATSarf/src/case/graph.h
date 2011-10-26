@@ -488,18 +488,21 @@ protected:
 public:
 	DisplayNodeVisitorColoredNarrator(DetectedNodesMap & m):map(m) {	}
 };
-class DsiplayLocalNodesVisitor: public DisplayNodeVisitorColoredNarrator {
+class DisplayLocalNodesVisitor: public DisplayNodeVisitorColoredNarrator {
 public:
-	DsiplayLocalNodesVisitor(DetectedNodesMap & m):DisplayNodeVisitorColoredNarrator(m) {	}
+	DisplayLocalNodesVisitor(DetectedNodesMap & m):DisplayNodeVisitorColoredNarrator(m) {	}
 	virtual void initialize() {
 		if (controller->isTop2Bottom()) {
 			DisplayNodeVisitorColoredNarrator::initialize();
-		}
+		} else
+			DisplayNodeVisitor::initialize();
 	}
 	virtual void finish() {
 		if (!controller->isTop2Bottom()) {
 			DisplayNodeVisitorColoredNarrator::finish();
-		}
+		} else
+			DisplayNodeVisitor::finish();
+
 	}
 };
 
