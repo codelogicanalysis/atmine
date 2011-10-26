@@ -14,6 +14,7 @@ class TwoLevelSelection {
 	friend QDataStream &operator<<(QDataStream &out, const TwoLevelSelection &t);
 	friend QDataStream &operator>>(QDataStream &in, TwoLevelSelection &t);
 	friend class GeneTree;
+	friend class HadithChainGraph;
 public:
 	typedef AbstractGraph::MainSelection MainSelection;
 	typedef AbstractGraph::MainSelectionList MainSelectionList;
@@ -25,8 +26,7 @@ private:
 
 private:
 	virtual void fillNullGraph(MainSelectionList & names) {
-		if (graph==NULL && names.size()>0) {
-			graph=graph->newGraph();
+		if (graph->isEmpty() && names.size()>0) {
 			graph->fillNullGraph(names,text);
 		}
 	}
@@ -39,8 +39,8 @@ private:
 	void removeExtraNames();
 
 public:
-	TwoLevelSelection();
-	TwoLevelSelection(QString * text,int start,int end);
+	TwoLevelSelection(AbstractGraph * graph);
+	TwoLevelSelection(AbstractGraph * graph,QString * text,int start,int end);
 	virtual void addName(int start,int end);
 	virtual void addName( const Name & name);
 	int getMainStart() const { return main.first;}

@@ -3,6 +3,7 @@
 
 #include <QPair>
 #include <QList>
+#include <assert.h>
 #include "ATMProgressIFC.h"
 
 class QString;
@@ -18,7 +19,8 @@ public:
 private:
 	virtual AbstractGraph * readFromStreamHelper(QDataStream & in)=0;
 public:
-	AbstractGraph * newGraph();
+	//AbstractGraph * newGraph();
+	virtual bool isEmpty() const=0;
 	virtual AbstractGraph * duplicate()=0;
 	virtual AbstractGraph * merge(AbstractGraph * graph2)=0;
 	virtual bool isRepresentativeOf(const MainSelectionList & list)=0;
@@ -29,12 +31,8 @@ public:
 	virtual void deleteGraph()=0;
 	virtual void fillTextPointers(QString * text)=0;
 	AbstractGraph * readFromStream(QDataStream & in){
-		if (this==NULL) {
-			AbstractGraph * g=newGraph();
-			return g->readFromStreamHelper(in);
-		} else {
-			return readFromStreamHelper(in);
-		}
+		assert (this!=NULL);
+		return readFromStreamHelper(in);
 	}
 	virtual void writeToStream(QDataStream & out)=0; //if this==NULL, allocate a new object
 	virtual void fillNullGraph(MainSelectionList & names, QString * text)=0;

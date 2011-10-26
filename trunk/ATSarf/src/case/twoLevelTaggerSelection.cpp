@@ -19,12 +19,13 @@ void TwoLevelSelection::removeExtraNames() {
 	}
 }
 
-TwoLevelSelection::TwoLevelSelection():main(-1,-1) {
-	graph=NULL;
+TwoLevelSelection::TwoLevelSelection(AbstractGraph * graph){
+	this->graph=graph;
 	text=NULL;
 }
-TwoLevelSelection::TwoLevelSelection(QString * text,int start,int end):main(start,end) {
-	graph=NULL;
+
+TwoLevelSelection::TwoLevelSelection(AbstractGraph * graph,QString * text,int start,int end):main(start,end) {
+	this->graph=graph;
 	this->text=text;
 }
 void TwoLevelSelection::addName(int start,int end) {

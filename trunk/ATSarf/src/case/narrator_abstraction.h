@@ -18,6 +18,8 @@ class Chain;
 typedef QList<Chain *> ChainsContainer;
 
 extern int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg);
+extern int segmentNarrators(QString * text,int start, int end, int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg);
+
 
 //typedef QList <ChainNarratorPrim *>::iterator CNPIterator;
 

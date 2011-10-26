@@ -539,6 +539,7 @@ public:
 	virtual void writeToStream(QDataStream &out);
 	virtual GeneTree * duplicate();
 	virtual GeneTree * duplicate(QList<int> & delimitersStart,QList<int> & delimitersEnd);
+	virtual bool isEmpty() const{return root==NULL;}
 	~GeneTree();
 };
 class GeneVisitor {

@@ -22,6 +22,7 @@ extern int timeTagger(QString input_str);
 extern int deserializeGraph(QString fileName,ATMProgressIFC * prg);
 extern int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
 extern int bibleTagger(QString input_str);
+extern int hadithTagger(QString input_str);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -94,6 +95,12 @@ int simple_annotation(QString inputString,ATMProgressIFC *) {
 
 int bible_annotation(QString inputString,ATMProgressIFC *) {
 	if (bibleTagger(inputString))
+		return -1;
+	return 0;
+}
+
+int hadith_annotation(QString inputString,ATMProgressIFC *) {
+	if (hadithTagger(inputString))
 		return -1;
 	return 0;
 }

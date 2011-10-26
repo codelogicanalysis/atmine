@@ -6,7 +6,16 @@
 #define min(a,b) (a<b?a:b)
 #define max(a,b) (a>b?a:b)
 
-
+void AbstractTwoLevelAnnotator::SelectionList::readFromStream(QDataStream & in,AbstractGraph * graph){
+	int count;
+	in>>count;
+	for (int i=0;i<count;i++) {
+		AbstractGraph *g=graph->duplicate();
+		TwoLevelSelection s(g);
+		in >>s;
+		append(s);
+	}
+}
 
 AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString mainStructure):QMainWindow() {
 	this->filename=filename;
@@ -20,7 +29,6 @@ AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString m
 
 	connect(text,SIGNAL(selectionChanged()),this,SLOT(text_selectionChanged()));
 
-	open_action();
 	setWindowTitle(filename);
 	this->resize(700,700);
 	selectedTagIndex=-1;
@@ -135,13 +143,21 @@ void AbstractTwoLevelAnnotator::createDocWindows() {
 	viewMenu->addAction(dock->toggleViewAction());
 	treeModel=NULL;
 	resultTree->setModel(treeModel);
-
 }
 
 void AbstractTwoLevelAnnotator::show(){
+	globalGraph=newGraph();
+	open_action();
 	if (globalGraph==NULL)
 		regenerateGlobalGraph();
 	QMainWindow::show();
+}
+
+void AbstractTwoLevelAnnotator::refreshTreeModel(QAbstractItemModel * newModel) {
+	resultTree->setModel(newModel);
+	if (treeModel!=NULL)
+		delete treeModel;
+	treeModel=newModel;
 }
 
 int AbstractTwoLevelAnnotator::getNameIndexInAll(const QString & name) {
@@ -152,7 +168,6 @@ int AbstractTwoLevelAnnotator::getNameIndexInAll(const QString & name) {
 	}
 	return -1;
 }
-
 
 int AbstractTwoLevelAnnotator::findSubSelection(int tagIndex,int startSubIndex, SelectionMode selectionMode) { //based on user text selection
 	if (this==NULL)
@@ -179,6 +194,8 @@ AbstractTwoLevelAnnotator::~AbstractTwoLevelAnnotator() {
 		delete globalGraph;
 	if (string !=NULL)
 		delete string;
+	if (treeModel!=NULL)
+		delete treeModel;
 	delete text;
 	delete treeText;
 	delete graph;
@@ -221,7 +238,7 @@ void AbstractTwoLevelAnnotator::tagMain_action() {
 		i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
 	}
 	if (sel==NULL) {
-		tags.append(TwoLevelSelection(string,start,end-1));
+		tags.append(TwoLevelSelection(newGraph(),string,start,end-1));
 	} else if (i>=0) { //stopped before completion
 		start=sel->getMainStart();
 		end=sel->getMainEnd();
@@ -295,8 +312,7 @@ void AbstractTwoLevelAnnotator::save_action() {
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
-		if (globalGraph==NULL)
-			globalGraph=globalGraph->newGraph();
+		assert (globalGraph!=NULL);
 		globalGraph->writeToStream(out);
 		file.close();
 		QFile::remove(file.fileName()+".copy");
@@ -328,8 +344,11 @@ void AbstractTwoLevelAnnotator::open_action() {
 		QFile file(QString("%1.tags").arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
 			QDataStream in(&file);   // we will serialize the data into the file
-			in>>tags;
-			globalGraph=globalGraph->readFromStream(in);
+			globalGraph=newGraph();
+			tags.readFromStream(in,globalGraph);
+			globalGraph->deleteGraph();
+			globalGraph=newGraph(true);
+			globalGraph->readFromStream(in);
 			globalGraph->fillTextPointers(string);
 			file.close();
 			for (int i=0;i<tags.size();i++) {
@@ -446,16 +465,37 @@ void AbstractTwoLevelAnnotator::updateGraphDisplay() {
 			treeText->setText("");
 			treeText->setReadOnly(true);
 			modifyGraphAct->setEnabled(false);
-			graph->clear();
+			displayGraph(NULL);
 			selectedTagIndex=-1;
 		}
 	} else {
 		treeText->setText(globalGraph->getText());
 		treeText->setReadOnly(false);
 		modifyGraphAct->setEnabled(true);
-		globalGraph->displayGraph(this);
+		if (globalGraph==NULL)
+			displayGraph(NULL);
+		else
+			globalGraph->displayGraph(this);
 		selectedTagIndex=-1;
 	}
+}
+
+void AbstractTwoLevelAnnotator::displayGraph(AbstractGraph *aGraph) {
+	QAbstractItemModel * model;
+	if (aGraph!=NULL) {
+		model=aGraph->getTreeModel();
+	} else {
+		model=NULL;
+	}
+	refreshTreeModel(model);
+	if (aGraph!=NULL) {
+		try{
+			system("dot -Tsvg graph.dot -o graph.svg");
+			graph->setPixmap(QPixmap("./graph.svg"));
+		} catch(...) {}
+	} else
+		graph->setPixmap(QPixmap());
+	graph->repaint();
 }
 
 void AbstractTwoLevelAnnotator::modifyGraph_action() {

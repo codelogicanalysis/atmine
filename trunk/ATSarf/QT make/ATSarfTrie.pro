@@ -76,7 +76,12 @@ HEADERS += util/text_handling.h \
     ../src/case/geneMainwindow.h \
     ../src/case/abstractTwoLevelAnnotator.h \
     ../src/case/abstractGraph.h \
-    ../src/case/twoLevelTaggerSelection.h
+    ../src/case/twoLevelTaggerSelection.h \
+    ../src/case/hadithChainGraph.h \
+    ../src/case/hadithChainItemModel.h \
+    ../src/case/hadithManualTagger.h \
+    ../src/case/hadithDagGraph.h \
+    ../src/case/hadithDagItemModel.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -127,7 +132,12 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/abstractAnnotator.cpp \
     ../src/case/geneMainwindow.cpp \
     ../src/case/abstractTwoLevelAnnotator.cpp \
-    ../src/case/twoLevelTaggerSelection.cpp
+    ../src/case/twoLevelTaggerSelection.cpp \
+    ../src/case/hadithChainGraph.cpp \
+    ../src/case/hadithChainItemModel.cpp \
+    ../src/case/hadithManualTagger.cpp \
+    ../src/case/hadithDagGraph.cpp \
+    ../src/case/hadithDagItemModel.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

@@ -1,25 +1,21 @@
-#ifndef GENEALOGYITEM_H
-#define GENEALOGYITEM_H
+#ifndef HADITHDAGITEMMODEL_H
+#define HADITHDAGITEMMODEL_H
 
 #include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
-#include "bibleGeneology.h"
+#include <QList>
 
-using namespace std;
+class HadithDagGraph;
+class NarratorNodeIfc;
 
-class QTreeView;
-
-
-class GeneItemModel : public QAbstractItemModel
+class HadithDagItemModel : public QAbstractItemModel
 {
 	Q_OBJECT
 public:
-	static const int COL_NAME, COL_RELATION, COL_EDGE, COL_CHILD_COUNT, COL_GENDER, COL_HEIGHT, COLUMNS;
+	static const int COL_NARRATOR, COL_CHILDREN, COLUMNS;
 public:
-	GeneTree * tree;
+	QList<NarratorNodeIfc *> nodes;
 public:
-	GeneItemModel (GeneTree * aTree) :tree(aTree) {    }
+	HadithDagItemModel (HadithDagGraph * graph);
 	QVariant headerData(int section, Qt::Orientation orientation,
 	int role = Qt::DisplayRole) const;
 	int rowCount(const QModelIndex &parent = QModelIndex()) const; //number of children
@@ -30,6 +26,8 @@ public:
 	QModelIndex index(int row, int column,
 	const QModelIndex &parent = QModelIndex()) const;
 
+public:
+	HadithDagItemModel();
 };
 
-#endif // GENEALOGYITEM_H
+#endif // HADITHDAGITEMMODEL_H

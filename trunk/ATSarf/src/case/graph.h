@@ -600,7 +600,7 @@ public:
 class NarratorDetector;
 
 
-class NarratorGraph {
+class NarratorGraph{
 public:
 	class HadithFileDetails {
 	public:
@@ -628,6 +628,8 @@ private:
 
 	friend class ColorIndices;
 	friend class NarratorDetector;
+	friend class HadithDagGraph;
+	friend class HadithDagItemModel;
 
 	friend class BiographiesWindow;
 	ATMProgressIFC *prg;
@@ -696,6 +698,7 @@ private:
 
 	friend class LoopBreakingVisitor;
 	friend class GraphVisitorController;
+	friend class HadithTaggerDialog;
 	GraphNarratorNode * mergeNodes(GroupNode & g1,GroupNode & g2,QList<NarratorNodeIfc *> * toDelete=NULL) {
 	//if toDelete=NULL, delete what is needed directly, else append to list and postpone deletion
 		NarratorNodeIfc * narr1=&g1.getCorrespondingNarratorNode(),
@@ -778,6 +781,60 @@ private:
 			}
 		}
 	}
+	GraphNarratorNode * mergeNodes(NarratorNodeIfc & n1,NarratorNodeIfc & n2,QList<NarratorNodeIfc *> * toDelete=NULL) {
+	//if toDelete=NULL, delete what is needed directly, else append to list and postpone deletion
+		NarratorNodeIfc * narr1=&n1.getCorrespondingNarratorNode(),
+						* narr2=&n2.getCorrespondingNarratorNode();
+		GroupNode	* group1=NULL,
+					* group2=NULL;
+		if (narr1->isChainNode()) {
+			ChainNarratorNode * c1=dynamic_cast<ChainNarratorNode*>(narr1);
+			group1=&c1->getGroupNode();
+		} else {
+			assert(narr1->isGraphNode());
+			GraphNarratorNode * graph1=dynamic_cast<GraphNarratorNode*>(narr1);
+			assert(graph1->size()>0);
+			group1=&(*graph1)[0];
+		}
+		if (narr2->isChainNode()) {
+			ChainNarratorNode * c2=dynamic_cast<ChainNarratorNode*>(narr2);
+			group2=&c2->getGroupNode();
+		} else {
+			assert(narr2->isGraphNode());
+			GraphNarratorNode * graph2=dynamic_cast<GraphNarratorNode*>(narr2);
+			assert(graph2->size()>0);
+			group2=&(*graph2)[0];
+		}
+		return mergeNodes(*group1,*group2,toDelete);
+	}
+	void unMerge(ChainNarratorNode & c_node) {
+		assert(!c_node.isActualNode());
+		GroupNode * group=&c_node.getGroupNode();
+		NarratorNodeIfc * corresponding=&c_node.getCorrespondingNarratorNode();
+		GraphNarratorNode * g=dynamic_cast<GraphNarratorNode*>(corresponding);
+		assert(group->size()>0);
+		if (group->size()==1) {
+			g->groupList.removeOne(group);
+			group->setGraphNode((GraphNarratorNode*)&c_node);
+		} else {
+			assert(group->list.removeOne(&c_node));
+			new GroupNode(*this,(GraphNarratorNode*)&c_node,&c_node);
+			group->list.removeOne(&c_node);
+			if (corresponding->size()==1 && group->size()==1) {
+
+				GroupNode * otherGroup=&(*g)[0];
+				if (otherGroup->size()==1) {
+					otherGroup->setGraphNode((GraphNarratorNode*)(&(*otherGroup)[0]));
+					all_nodes[g->getId()]=NULL;
+					delete g;
+				}
+			}
+
+		}
+		if (top_nodes.contains(corresponding)) {
+			top_nodes.append(&c_node);
+		}
+	}
 	void transform2ChainNodes(ChainsContainer &chains) {
 	//pre-condition: chain contains the valid chains extracted from the hadith
 		prg->setCurrentAction("Creating Nodes");
@@ -800,10 +857,11 @@ private:
 					last=current;
 				}
 			}
-			top_nodes.append(last);
+			if (last!=NULL)
+				top_nodes.append(last);
 			//code below to correct index
 			int index=0;
-			for (ChainNarratorNode * current=last;!current->isNull();current=&current->nextInChain())
+			for (ChainNarratorNode * current=last;current !=NULL && !current->isNull();current=&current->nextInChain())
 			{
 				current->setIndex(index);
 				index++;
@@ -888,7 +946,7 @@ private:
 							new GraphNarratorNode(*graph,*hashedNode);
 						}
 					} else {
-						graph->mergeNodes(*group,*hashedNode,toDelete);
+						graph->mergeNodes(*hashedNode,*group,toDelete); //since both are not null, the one to be deleted is the second which is already not in the hash not the first
 					}
 				}
 			}
@@ -932,7 +990,7 @@ private:
 					#endif
 					}
 					assert(group->getKey()!=hashedNode->getKey());
-					graph->mergeNodes(*group,*hashedNode,toDelete);
+					graph->mergeNodes(*hashedNode,*group,toDelete); //since both are not null, the one to be deleted is the second which is already not in the hash not the first
 				}
 			}
 		}
@@ -975,6 +1033,7 @@ private:
 			all_nodes[n->getId()]=NULL;
 			delete n;
 		}
+
 		colorGuard.unUse(bit);
 		prg->report(100);
 	}
@@ -1381,8 +1440,7 @@ private:
 			NarratorNodeIfc * n=all_nodes[i];
 			if (n!=NULL && n->isGraphNode()) {
 				GraphNarratorNode * g=dynamic_cast<GraphNarratorNode *>(n);
-				g->children.clear();
-				g->parents.clear();
+				g->clearCache();
 			}
 		}
 	}
@@ -1589,6 +1647,8 @@ protected:
 		all_nodes.push_back(node);
 		assert(node==NULL || node->getId()==nodesCount);
 		nodesCount++;
+		/*if (node!=NULL && node->isGroupNode()) //check if we should add this and next line
+			hash.addNode(dynamic_cast<GroupNode*>(node));*/
 	}
 	void removeNode(NarratorNodeIfc * node) {
 		int id=node->getId();
@@ -1903,7 +1963,6 @@ public:
 		return all_nodes[i];
 	}
 	bool isBuilt() { return built; }
-
 	~NarratorGraph() {
 		Int2StringMap::iterator i=int2HadithMap.begin();
 		for (;i!=int2HadithMap.end();i++)

@@ -204,7 +204,7 @@ void ChainNarratorNode::deserializeHelper(QDataStream &streamIn,NarratorGraph & 
 	int hadithString;
 	streamIn>>hadithString;
 	QString *text=graph.getHadithStringDeserializationIntEquivalent(hadithString);
-	assert(text!=NULL);
+	//assert(text!=NULL);
 	narrator=new Narrator(text); //TODO: check for not resulting in memory leaks
 	qint8 c;
 	streamIn>>c;

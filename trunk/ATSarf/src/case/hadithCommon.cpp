@@ -489,6 +489,15 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 				structures->nameConnectorPrim->m_end=stateInfo.endPos;
 				break;
 			}
+			case INITIALIZE: {
+				if (structures->narrator==NULL)
+					structures->narrator=new Narrator(structures->text);
+				structures->narrator->isRasoul=true;
+				if (structures->nameConnectorPrim==NULL)
+					structures->nameConnectorPrim=new NameConnectorPrim(structures->text,stateInfo.startPos);
+				structures->nameConnectorPrim->m_end=stateInfo.endPos;
+				break;
+			}
 			default:
 				assert(false);
 			}
@@ -576,6 +585,19 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 	{
 	case TEXT_S:
 		assertStructure(stateInfo,INITIALIZE);
+		if(reachedRasoul && structures->segmentNarrators)
+		{
+			display("<STOP0>");
+			stateInfo.nextState=STOP_WORD_S;
+			currentData.narratorCount++;
+
+			fillStructure(stateInfo,RASOUL_WORD,structures,currentData);
+
+			currentData.narratorEndIndex=stateInfo.endPos;
+
+			//return_value= false;
+			break;
+		}
 		if(stateInfo.currentType==NAME) {
 		#ifdef PUNCTUATION
 			if (structures->hadith && !stateInfo.previousPunctuationInfo.fullstop) {
@@ -1335,7 +1357,9 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 
 #ifdef NONCONTEXT_LEARNING
 	if (!val) {
-		if (currentChain->hadith && (( currentData.narratorCount>=hadithParameters.narr_min) || (!currentChain->hadith && currentData.narratorCount>=hadithParameters.bio_narr_min))) {
+		if (currentChain->hadith && !currentChain->segmentNarrators &&
+				(( currentData.narratorCount>=hadithParameters.narr_min)
+					|| (!currentChain->hadith && currentData.narratorCount>=hadithParameters.bio_narr_min))	) {
 			for (int i=0;i<currentChain->chain->m_chain.size();i++) {
 				ChainPrim * c=currentChain->chain->m_chain[i];
 				if (c->isNarrator()) {
@@ -1545,7 +1569,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 				}
 			#endif
 			#ifdef NONCONTEXT_LEARNING
-				if (nameLearner.tryToLearnNames && removeDiacritics(structures->text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
+				if (!structures->segmentNarrators && nameLearner.tryToLearnNames && removeDiacritics(structures->text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)).count()>=3) {
 					nameLearner.name=true;
 					Name p(structures->text,stateInfo.startPos,finish);
 					structures->learningEvaluator.addNonContextLearnedName(p);
@@ -1610,7 +1634,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 		}
 	#endif
 	#ifdef NONCONTEXT_LEARNING
-		if (!nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&!nameLearner.stopword) {
+		if (!structures->segmentNarrators && !nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&!nameLearner.stopword) {
 			QString word=nameLearner.getString().toString();
 			if ((stateInfo.currentPunctuationInfo.has_punctuation || family) && nameLearner.tryToLearnNames && removeDiacritics(word).count()>=3) {
 				nameLearner.name=true;
@@ -1755,8 +1779,10 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			stateInfo.nextPos=nextpos;
 		#endif
 		#ifdef NONCONTEXT_LEARNING
-			Name p(structures->text,s.startStem,s.finishStem);
-			structures->learningEvaluator.addKnownName(p,s.learnedName);
+			if (!structures->segmentNarrators) {
+				Name p(structures->text,s.startStem,s.finishStem);
+				structures->learningEvaluator.addKnownName(p,s.learnedName);
+			}
 		#endif
 			return result(NAME,stateInfo,structures,currentData);
 		}
