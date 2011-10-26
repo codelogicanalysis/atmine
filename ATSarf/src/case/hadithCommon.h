@@ -637,7 +637,7 @@
 	public:
 		QString * text;
 		NarratorGraph *graph;
-		bool hadith;
+		bool hadith:1, segmentNarrators:1;
 	#ifdef NONCONTEXT_LEARNING
 		NameLearningEvaluator learningEvaluator;
 	#endif

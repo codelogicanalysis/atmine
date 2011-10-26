@@ -18,18 +18,9 @@ void BibleTaggerDialog::regenerateGlobalGraph() {
 	if (global!=NULL)
 		global->mergeLeftovers();
 }
-void BibleTaggerDialog::displayGraph(AbstractGraph * tree){
-	try{
-		if (tree!=NULL) {
-			system("dot -Tsvg graph.dot -o graph.svg");
-			graph->setPixmap(QPixmap("./graph.svg"));
-		} else
-			graph->setPixmap(QPixmap());
-		graph->repaint();
-		GeneTree * t=dynamic_cast<GeneTree *>(tree);
-		treeModel=new GeneItemModel(t);
-		resultTree->setModel(treeModel);
-	} catch(...) {}
+
+AbstractGraph * BibleTaggerDialog::newGraph(bool) {
+	return new GeneTree();
 }
 
 BibleTaggerDialog::~BibleTaggerDialog() { }

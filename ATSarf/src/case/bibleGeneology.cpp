@@ -1304,7 +1304,7 @@ void GeneTree::removeNameFromGraph(Name & name) {
 
 }
 void GeneTree::addNameToGraph(Name & name) {
-	bool null=(this==NULL);
+	bool null=(this==NULL ||isEmpty());
 	if (null) {
 		fillNullGraph(name);
 	} else {
@@ -1314,9 +1314,6 @@ void GeneTree::addNameToGraph(Name & name) {
 void GeneTree::writeToStream(QDataStream &out) {
 	GeneTree * t=this;
 	out<<*t;
-}
-AbstractGraph * AbstractGraph::newGraph() {
-	return new GeneTree();
 }
 AbstractGraph * GeneTree::readFromStreamHelper(QDataStream &in){
 	GeneTree * t=this;
@@ -1389,7 +1386,7 @@ private:
 		}
 	};
 	typedef TwoLevelSelection OutputData;
-	typedef BibleTaggerDialog::SelectionList OutputDataList;
+	typedef AbstractTwoLevelAnnotator::SelectionList OutputDataList;
 	typedef TwoLevelSelection::MainSelection Selection;
 	typedef TwoLevelSelection::MainSelectionList SelectionList;
 	QList<int> delimitersStart,delimitersEnd;
@@ -1411,9 +1408,10 @@ private:
 		}
 		void initialize() {
 			if (outputData==NULL) {
-				outputData=new OutputData;
+				outputData=new OutputData(new GeneTree());
 			} else {
 				outputData->clear();
+				outputData->setGraph(new GeneTree());
 			}
 			i0=0;
 			last=NULL;
@@ -1442,6 +1440,7 @@ private:
 			} else {
 				currentData.tree->deleteGraph();
 				currentData.outputData->clear();
+				currentData.outputData->setGraph(new GeneTree());
 			}
 			currentData.last=NULL;
 			currentData.tree=NULL;
@@ -1462,6 +1461,7 @@ private:
 			currentData.last=NULL;
 			stateInfo.newNameNotProcessed=false;
 			currentData.outputData->clear();
+			currentData.outputData->setGraph(new GeneTree());
 			stateInfo.nextState=TEXT_S;
 		} else {
 		#if 0
@@ -1495,7 +1495,8 @@ private:
 			if (currentData.outputData->getNamesList().size()>0) {
 				currentData.tree->deleteGraph();
 				stateInfo.newNameNotProcessed=false;
-				currentData.outputData->clear();
+				;
+				currentData.outputData->setGraph(new GeneTree());
 			}
 			currentData.outputData->addName(name);
 			currentData.startGene=stateInfo.startPos;
@@ -1626,6 +1627,7 @@ private:
 						if (currentData.last!=NULL && currentData.last->getParent()==NULL) {
 							currentData.tree->deleteGraph();
 							currentData.outputData->clear();
+							currentData.outputData->setGraph(new GeneTree());
 							display("{Waw resulted in deletion}\n");
 							if (!stateInfo.previousPunctuationInfo.hasEndingPunctuation()) {
 								currentData.last=NULL;
@@ -1969,16 +1971,14 @@ private:
 			currentData.tree->outputTree();
 			GeneTree * duplicate=currentData.tree->duplicate(delimitersStart,delimitersEnd);
 			currentData.globalTree=duplicate;
-			currentData.outputData->setGraph(currentData.tree);
 		}else {
 			currentData.globalTree->merge(currentData.tree,delimitersStart,delimitersEnd);
-
 			currentData.tree->outputTree();
-			currentData.outputData->setGraph(currentData.tree);
 		}
+		currentData.outputData->setGraph(currentData.tree);
 		currentData.outputData->setMainInterval(currentData.startGene,stateInfo.endPos);
 		outputList.append(*currentData.outputData);
-		currentData.outputData->clear();
+		currentData.outputData->setGraph(new GeneTree());
 	}
 	inline bool overLaps(int start1,int end1,int start2,int end2) {
 		assert(start1<=end1 && start2<=end2);
@@ -2088,9 +2088,9 @@ private:
 		GeneTree * globalTree=new GeneTree(), * localMergedGraph=NULL;
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
 		if (file.open(QIODevice::ReadOnly))	{
-			QDataStream out(&file);   // we will serialize the data into the file
-			out	>> tags
-				>>*globalTree;
+			QDataStream in(&file);   // we will serialize the data into the file
+			tags.readFromStream(in,globalTree); //globalTree provided but will not be in use after call just duplicated
+			in >>*globalTree;
 			file.close();
 		} else {
 			error << "Annotation File does not exist\n";

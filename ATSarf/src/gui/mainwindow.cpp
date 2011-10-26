@@ -168,21 +168,22 @@ void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
 	bool v1,v2,v3,v4,v5,v6;
 	int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
-	hadithParameters.narr_min=narr_min;
-	geneologyParameters.L_min=narr_min;
 	int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
-	hadithParameters.nmc_max=nmc_max;
-	geneologyParameters.theta_0=nmc_max;
 	int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
-	hadithParameters.nrc_max=nrc_max;
-	geneologyParameters.C_max=nrc_max;
 	int equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
-	hadithParameters.equality_radius=equality_radius;
-	geneologyParameters.radius=equality_radius;
-	if (m_ui->chk_hadith->isChecked())
+	if (m_ui->chk_hadith->isChecked()) {
 		hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
-	else
+		hadithParameters.narr_min=narr_min;
+		hadithParameters.nmc_max=nmc_max;
+		hadithParameters.nrc_max=nrc_max;
+		hadithParameters.equality_radius=equality_radius;
+	}else {
 		geneologyParameters.N_min=m_ui->EQ_delta->toPlainText().toInt(&v4);
+		geneologyParameters.L_min=narr_min;
+		geneologyParameters.theta_0=nmc_max;
+		geneologyParameters.C_max=nrc_max;
+		geneologyParameters.radius=equality_radius;
+	}
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
 	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
 	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();
@@ -221,6 +222,8 @@ void MainWindow::on_pushButton_clicked(){
 		simple_annotation(input,this);
 	else if (m_ui->chk_bible_anotation->isChecked())
 		bible_annotation(input,this);
+	else if (m_ui->chk_hadith_anotation->isChecked())
+		hadith_annotation(input,this);
 	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);

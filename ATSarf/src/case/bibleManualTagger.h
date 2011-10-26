@@ -11,9 +11,9 @@ public:
 	BibleTaggerDialog(QString filename);
 private:
 	virtual void regenerateGlobalGraph();
+	virtual AbstractGraph * newGraph(bool global);
 
 public:
-	virtual void displayGraph(AbstractGraph * graph);
 	virtual ~BibleTaggerDialog();
 
 };

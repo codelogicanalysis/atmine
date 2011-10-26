@@ -197,7 +197,7 @@ void TimeTaggerDialog::open_action() {
 
 
 
-int timeTagger(QString input_str){
+int timeTagger(QString input_str/*, QString extension=".tag"*/){
 	TimeTaggerDialog * d=new TimeTaggerDialog(input_str);
 	d->show();
 	return 0;

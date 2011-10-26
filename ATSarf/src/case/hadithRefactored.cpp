@@ -83,7 +83,7 @@ private:
 	int temp_names_per_narrator;
 	QString current_exact,current_stem;
 #endif
-	int segmentHelper(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg) {
+	int segmentHelper(QString * text,int start,int end,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg,bool segmentNarrators) {
 	#ifdef COMPARE_TO_BUCKWALTER
 		QFile myfile("output");
 
@@ -107,7 +107,7 @@ private:
 	#endif
 		if (text==NULL)
 			return -1;
-		long text_size=text->size();
+		long text_size=min(text->size(),end+1);
 	#ifdef BUCKWALTER_INTERFACE
 		gettimeofday(&tim,NULL);
 		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -124,6 +124,7 @@ private:
 	#ifdef CHAIN_BUILDING
 		HadithData *currentChain=new HadithData(text,true,NULL,fileName);
 		currentChain->initialize(text);
+		currentChain->segmentNarrators=segmentNarrators;
 		display(QString("\ninit0\n"));
 	#else
 		chainData *currentChain=NULL;
@@ -135,15 +136,15 @@ private:
 		stateInfo.resetCurrentWordInfo();
 		stateInfo.currentState=TEXT_S;
 		stateInfo.nextState=TEXT_S;
-		stateInfo.lastEndPos=0;
-		stateInfo.startPos=0;
+		stateInfo.lastEndPos=start;
+		stateInfo.startPos=start;
 		stateInfo.nrcPreviousType=false;
 		stateInfo.processedStructure=INITIALIZE;
 	#ifdef PUNCTUATION
 		stateInfo.previousPunctuationInfo.fullstop=true;
 	#endif
 	#ifndef BUCKWALTER_INTERFACE
-		while(stateInfo.startPos<text->length() && isDelimiter(text->at(stateInfo.startPos)))
+		while(stateInfo.startPos<text_size && isDelimiter(text->at(stateInfo.startPos)))
 			stateInfo.startPos++;
 	#else
 		QString line =getnext();//just for first line
@@ -157,18 +158,21 @@ private:
 			if((proceedInStateMachine(stateInfo,currentChain,currentData)==false)) {
 				assert (currentChain->narrator==NULL);
 				if (currentData.narratorCount>=hadithParameters.narr_min) {
-					sanadEnd=currentData.narratorEndIndex;
-				#ifdef DISPLAY_HADITH_OVERVIEW
-					newHadithStart=currentData.mainStructureStartIndex;
-					//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
-					//long end=stateInfo.endPos;
-					out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
-					out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
-				#ifdef CHAIN_BUILDING
-					currentChain->chain->serialize(chainOut);
-					//currentChain->chain->serialize(displayed_error);
-				#endif
-				#endif
+					if (!segmentNarrators) {
+						sanadEnd=currentData.narratorEndIndex;
+					#ifdef DISPLAY_HADITH_OVERVIEW
+						newHadithStart=currentData.mainStructureStartIndex;
+						//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
+						//long end=stateInfo.endPos;
+						out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
+						out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
+					}
+					#ifdef CHAIN_BUILDING
+						currentChain->chain->serialize(chainOut);
+						//currentChain->chain->serialize(displayed_error);
+					#endif
+					#endif
+
 					hadith_Counter++;
 				#ifdef STATS
 					int additional_names=temp_names_per_narrator;
@@ -267,12 +271,14 @@ private:
 	#endif
 		}
 	#ifdef NONCONTEXT_LEARNING
-		currentChain->learningEvaluator.displayNameLearningStatistics();
-		currentChain->learningEvaluator.resetLearnedNames();
+		if (!currentChain->segmentNarrators) {
+			currentChain->learningEvaluator.displayNameLearningStatistics();
+			currentChain->learningEvaluator.resetLearnedNames();
+		}
 	#endif
 		prg->report(100);
 	#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
-		if (newHadithStart<0)
+		if (!segmentNarrators && newHadithStart<0)
 		{
 			out<<"no hadith found\n";
 			chainOutput.close();
@@ -430,11 +436,15 @@ public:
 			out<<"empty file\n";
 			return 0;
 		}
-		return segmentHelper(text,functionUsingChains,prg);
+		return segmentHelper(text,0,text->size()-1,functionUsingChains,prg,true);
 	}
-	int segment(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg)  {
+	int segment(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg, bool segmentNarrators=false)  {
 		fileName="";
-		return segmentHelper(text,functionUsingChains,prg);
+		return segmentHelper(text,0,text->size()-1,functionUsingChains,prg,segmentNarrators);
+	}
+	int segment(QString * text,int start,int end,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg, bool segmentNarrators=false)  {
+		fileName="";
+		return segmentHelper(text,start,end,functionUsingChains,prg,segmentNarrators);
 	}
 };
 
@@ -623,16 +633,26 @@ int hadithHelper(QString input_str,ATMProgressIFC *prg) {
 	return 0;
 }
 
-int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg) {
+int segmentNarrators(QString * text,int start, int end, int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg) {
 	int narr_min=hadithParameters.narr_min;
 	hadithParameters.narr_min=0;
-	int size=text->size();
-	text->append(QString(" stop").repeated(hadithParameters.nmc_max+2));
+	//int size=text->size();
+	QString addedText=QString(" stop ").repeated(hadithParameters.nmc_max+/*2*/7);
+	text->insert(end+1,addedText);
+	//qDebug()<<*text;
 	HadithSegmentor s;
-	s.segment(text,functionUsingChains,prg);
+	s.segment(text,start,end+addedText.size()+1,functionUsingChains,prg,true);
 	hadithParameters.narr_min=narr_min;
-	text->remove(size,10);
+	text->remove(end+1,addedText.size());
+	//qDebug()<<*text;
 	return 0;
 }
+
+
+int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg) {
+	return segmentNarrators(text,0,text->size()-1,functionUsingChains,prg);
+}
+
+
 
 #endif

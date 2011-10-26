@@ -569,9 +569,13 @@ private:
 	void deserializeCache(QDataStream &chainIn,NarratorGraph & graph,NodeList & list);
 
 	friend class GraphVisitorController;
+	friend class HadithTaggerDialog;
 	bool fillChildren();
 	bool fillParents();
-
+	void clearCache() {
+		children.clear();
+		parents.clear();
+	}
 protected:
 	friend class NodeIterator;
 	NodeList parents,children;

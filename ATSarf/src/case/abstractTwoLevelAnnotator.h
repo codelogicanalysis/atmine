@@ -6,6 +6,7 @@
 #include "ATMProgressIFC.h"
 #include "twoLevelTaggerSelection.h"
 
+
 class Name;
 class QPushButton;
 class QCheckBox;
@@ -13,11 +14,15 @@ class QScrollArea;
 class QLabel;
 class QGridLayout;
 class QTreeView;
+class QModelIndex;
 
 class AbstractTwoLevelAnnotator:public QMainWindow, public ATMProgressIFC,public AbstractAnnotator{
 	Q_OBJECT
 public:
-	typedef QList<TwoLevelSelection> SelectionList;
+	class SelectionList:public QList<TwoLevelSelection> {
+	public:
+		void readFromStream(QDataStream & in,AbstractGraph * graph);
+	};
 public:
 	AbstractTwoLevelAnnotator(QString filename, QString mainStructure);
 	void show();
@@ -52,11 +57,10 @@ private slots:
 	}
 	void resetGlobalGraph_clicked() {
 		regenerateGlobalGraph();
-		displayGraph(globalGraph);
+		updateGraphDisplay();
 	}
 
-
-private:
+protected:
 	void tagMain_action();
 	void unTagMain_action();
 	void tagName_action();
@@ -67,12 +71,14 @@ private:
 	void modifyGraph_action();
 	void isGlobalGraph_action();
 	void updateGraphDisplay();
-	virtual void regenerateGlobalGraph()=0;
 	void createToolbar();
 	void createDocWindows();
 	void createActions(QString mainStructure);
 	void createMenus();
+	void refreshTreeModel(QAbstractItemModel * model);
 
+	virtual void regenerateGlobalGraph()=0;
+	virtual AbstractGraph * newGraph(bool global=false)=0;
 public:
 	QTextBrowser * text, * treeText;
 	QLabel * graph;
@@ -96,7 +102,7 @@ public:
 	void setCurrentAction(const QString &) {}
 	void resetActionDisplay() {}
 	QString getFileName() {	return filename; }
-	virtual void displayGraph(AbstractGraph * graph)=0;
+	virtual void displayGraph(AbstractGraph * graph);
 	virtual ~AbstractTwoLevelAnnotator();
 
 	QTextBrowser * getTextBrowser() {return text;}
