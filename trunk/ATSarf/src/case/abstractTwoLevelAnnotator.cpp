@@ -349,7 +349,8 @@ void AbstractTwoLevelAnnotator::open_action() {
 			tags.readFromStream(in,globalGraph);
 			globalGraph->deleteGraph();
 			globalGraph=newGraph(true);
-			globalGraph->readFromStream(in);
+			if (!in.atEnd())
+				globalGraph->readFromStream(in);
 			globalGraph->fillTextPointers(string);
 			file.close();
 			for (int i=0;i<tags.size();i++) {

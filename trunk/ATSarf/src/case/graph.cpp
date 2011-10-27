@@ -1,5 +1,12 @@
 #include <QQueue>
 #include "graph.h"
+#include "abstractTwoLevelAnnotator.h"
+#include "hadithDagGraph.h"
+#include "hadithChainGraph.h"
+#include "hadithInterAnnotatorAgreement.h"
+#include "Math_functions.h"
+
+#define DETAILED_DISPLAY
 
 void ColorIndices::unUse(unsigned int bit)//unuse and clear color bit for all nodes in graph
 {
@@ -245,4 +252,50 @@ int mergeGraphs(QString fileName1,QString fileName2,ATMProgressIFC * prg) {
 	biographies(graph1);
 #endif
 	return 0;
+}
+
+typedef TwoLevelSelection OutputData;
+typedef AbstractTwoLevelAnnotator::SelectionList OutputDataList;
+typedef TwoLevelSelection::MainSelection Selection;
+typedef TwoLevelSelection::MainSelectionList SelectionList;
+
+int calculateStatisticsOrAnotate(ChainsContainer &generatedChains, NarratorGraph * generatedPor, QString * text, QString fileName) {
+	HadithChainGraph * dummyChainGraph=new HadithChainGraph();
+	OutputDataList outputList;
+	HadithDagGraph * generatedGraph=new HadithDagGraph(generatedPor);
+	for (int i=0;i<generatedChains.size();i++) {
+		Chain * chain=generatedChains[i];
+		int start=chain->getStart();
+		int end=chain->getEnd();
+		OutputData sel(dummyChainGraph->duplicate(),text,start,end);
+		Chain c_narrators(text);
+		for (int j=0;j<chain->m_chain.size();j++) {
+			ChainPrim * c=chain->m_chain[j];
+			if (c->isNarrator()) {
+				Narrator * narr=dynamic_cast<Narrator*>(c);
+				start=narr->getStart();
+				end=narr->getEnd();
+				Name name(text,start,end);
+				sel.addName(name);
+				c_narrators.m_chain.append(narr);
+			}
+		}
+		HadithChainGraph * localGraph=new HadithChainGraph(c_narrators); //we should not call deleteGraph() else we corrupt 'chain'
+		delete sel.getGraph();
+		sel.setGraph(localGraph);
+		outputList.append(sel);
+	}
+	HadithInterAnnotatorAgreement h(text,fileName,generatedGraph,outputList);
+	if (h.calculateStatisticsOrAnotate()==0)
+		h.displayStatistics();
+#if 0
+	for (int i=0;i<tags.size();i++) {
+		displayed_error<<text->mid(tags[i].getMainStart(),tags[i].getMainEnd()-tags[i].getMainStart())<<"\n";
+	}
+#endif
+	for (int i=0;i<outputList.size();i++)
+		outputList[i].getGraph()->deleteGraph();
+	return 0;
+#undef NULL_CORRECT
+#undef NULL_DETECTED
 }

@@ -16,6 +16,10 @@ HadithDagGraph::HadithDagGraph(ChainsContainer & c) {
 	graph=new NarratorGraph(c,&dummyATMProgressIFC);
 }
 
+HadithDagGraph::HadithDagGraph(NarratorGraph * graph) {
+	this->graph=graph;
+}
+
 AbstractGraph * HadithDagGraph::readFromStreamHelper(QDataStream &in) {
 	graph=new NarratorGraph(in,&dummyATMProgressIFC);
 	return this;

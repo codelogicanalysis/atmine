@@ -34,6 +34,7 @@ private:
 
 public:
     HadithChainGraph();
+	HadithChainGraph(Chain & c); //careful pointers are not duplicated
 	virtual AbstractGraph * readFromStreamHelper(QDataStream &in);
 	virtual AbstractGraph * duplicate();
 	virtual AbstractGraph * merge(AbstractGraph *graph2);

@@ -7,6 +7,8 @@
 
 HadithChainGraph::HadithChainGraph():chain(NULL) { }
 
+HadithChainGraph::HadithChainGraph(Chain & c):chain(c) {}
+
 AbstractGraph * HadithChainGraph::readFromStreamHelper(QDataStream &in) {
 	in>>chain;
 	return this;

@@ -25,6 +25,7 @@ private:
 	NarratorGraph * graph;
 public:
 	HadithDagGraph();
+	HadithDagGraph(NarratorGraph * graph); //careful from deleting or corrupting graph, after call of this, otherwise, the AbstractGraph will be affected
 	virtual AbstractGraph * readFromStreamHelper(QDataStream &in);
 	virtual AbstractGraph * duplicate();
 	virtual AbstractGraph * merge(AbstractGraph *graph2);
@@ -40,6 +41,7 @@ public:
 	virtual void addNameToGraph(Name &name);
 	virtual void removeNameFromGraph(Name &name);
 	virtual bool isEmpty() const {return graph->all_nodes.size()==0;}
+	NarratorGraph * getGraph() {return graph;}
 };
 
 #endif // HADITHDAGGRAPH_H

@@ -89,7 +89,7 @@ void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
 		NarratorNodeIfc * node=(NarratorNodeIfc *)index.internalPointer();
 		HadithDagGraph * g=dynamic_cast<HadithDagGraph*>(globalGraph);
 		map[&node->getCorrespondingNarratorNode()]=1;
-		DisplayLocalNodesVisitor v(map);
+		DisplayNodeVisitorColoredNarrator v(map);
 		GraphVisitorController c(&v,g->graph,true,true);
 		g->graph->DFS_traverse(c);
 		if (globalGraph!=NULL) {
