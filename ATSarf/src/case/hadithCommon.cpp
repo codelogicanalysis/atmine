@@ -490,13 +490,15 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 				break;
 			}
 			case INITIALIZE: {
-				if (structures->narrator==NULL)
-					structures->narrator=new Narrator(structures->text);
-				structures->narrator->isRasoul=true;
-				if (structures->nameConnectorPrim==NULL)
-					structures->nameConnectorPrim=new NameConnectorPrim(structures->text,stateInfo.startPos);
-				structures->nameConnectorPrim->m_end=stateInfo.endPos;
-				break;
+				if (structures->segmentNarrators) {
+					if (structures->narrator==NULL)
+						structures->narrator=new Narrator(structures->text);
+					structures->narrator->isRasoul=true;
+					if (structures->nameConnectorPrim==NULL)
+						structures->nameConnectorPrim=new NameConnectorPrim(structures->text,stateInfo.startPos);
+					structures->nameConnectorPrim->m_end=stateInfo.endPos;
+					break;
+				}
 			}
 			default:
 				assert(false);
@@ -589,7 +591,7 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 		{
 			display("<STOP0>");
 			stateInfo.nextState=STOP_WORD_S;
-			currentData.narratorCount++;
+			currentData.narratorCount=1;
 
 			fillStructure(stateInfo,RASOUL_WORD,structures,currentData);
 

@@ -4,10 +4,12 @@
 #include <QString>
 #include <QChar>
 #include <QVector>
+#include <QPair>
 #include "letters.h"
 #include "diacritics.h"
 #include "common.h"
 #include "logger.h"
+#include "textParsing.h"
 
 inline QString get_Possessive_form(QString word)
 {
@@ -191,5 +193,72 @@ inline QString withoutAL( QString word)
 	removeAL(word);
 	return word;
 }
+
+inline bool overLaps(int start1,int end1,int start2,int end2) {
+	assert(start1<=end1 && start2<=end2);
+	if (start1>=start2 && start1<=end2)
+		return true;
+	if (start2>=start1 && start2<=end1)
+		return true;
+	return false;
+}
+inline bool after(int start1,int end1,int start2,int end2) {
+	assert(start1<=end1 && start2<=end2);
+	if (start1>=end2)
+		return true;
+	return false;
+}
+inline bool before(int start1,int end1,int start2,int end2) {
+	return after(start2,end2,start1,end1);
+}
+
+inline int countWords(QString * text, int start,int end) {
+	if (start>=end)
+		return 0;
+	int count=1;
+	PunctuationInfo punc;
+	while ((start=next_positon(text,getLastLetter_IN_currentWord(text,start),punc))<end)
+		count++;
+	return count;
+}
+
+inline int countWords(QString * text, const QPair<int,int> & st) {
+	int start=st.first,
+		end=st.second;
+	return countWords(text,start,end);
+}
+
+inline int commonWords(QString * text, const QPair<int,int> & st1,const QPair<int,int> & st2) {
+	int start=max(st1.first,st2.first),
+		end=min(st1.second,st2.second);
+	return countWords(text,start,end);
+}
+
+inline int countWords(QString * text, const QList<QPair<int,int> > & st) {
+	int count=0;
+	for (int i=0;i<st.size();i++) {
+		count+=countWords(text,st[i]);
+	}
+	return count;
+}
+
+inline int commonWords(QString * text, const QList< QPair<int,int> > & st1,const QList<QPair<int,int> > & st2) {
+	//assumes sanity of lists (i.e. no such case does not exist:
+	/*
+	  -------- --------- --------
+	  [          ]   [          ]
+	*/
+	//otherwise would return 4 words instead of 3
+	int count=0;
+	for (int i=0;i<st1.size();i++) {
+		for (int j=0;j<st2.size();j++) {
+			count=commonWords(text,st1[i],st2[j]); //if has no common characters will return zero, so although not efficient is expected to return sane results
+		}
+	}
+	return count;
+}
+
+
+
 
 #endif // _TEXT_HANDLING_H

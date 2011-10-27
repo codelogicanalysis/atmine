@@ -493,37 +493,11 @@ wordType getWordType(TimeStateInfo &  stateInfo)
 		return result(OTHER);
 }
 
-inline bool overLaps(int start1,int end1,int start2,int end2) {
-	assert(start1<=end1 && start2<=end2);
-	if (start1>=start2 && start1<=end2)
-		return true;
-	if (start2>=start1 && start2<=end1)
-		return true;
-	return false;
-}
-
-inline bool after(int start1,int end1,int start2,int end2) {
-	assert(start1<=end1 && start2<=end2);
-	if (start1>=end2)
-		return true;
-	return false;
-}
-inline bool before(int start1,int end1,int start2,int end2) {
-	return after(start2,end2,start1,end1);
-}
-
 inline TimeTaggerDialog::Selection overLappingPart(int start1,int end1,int start2,int end2) {
 	return TimeTaggerDialog::Selection(max(start1,start2),min(end1,end2));
 }
 
-inline int countWords(QString * text, int start,int end) {
-	int count=1;
-	PunctuationInfo p;
-	while ((start=next_positon(text,getLastLetter_IN_currentWord(text,start),p))<end)
-		count++;
-	return count;
 
-}
 
 int calculateStatistics(QString filename){
 	TimeTaggerDialog::SelectionList tags;

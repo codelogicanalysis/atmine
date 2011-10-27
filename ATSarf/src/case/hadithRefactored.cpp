@@ -70,7 +70,6 @@ inline void display(QString t) {
 
 class HadithSegmentor {
 private:
-
 	QString fileName;
 	StateData currentData;
 	QString * text;

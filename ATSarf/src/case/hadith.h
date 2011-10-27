@@ -65,6 +65,7 @@
 #define BIBLE
 
 #define NONCONTEXT_LEARNING
+#define INTER_ANNOTATION_AGREEMENT
 
 
 int hadithHelper(QString input_str,ATMProgressIFC *prgs);

@@ -81,7 +81,10 @@ HEADERS += util/text_handling.h \
     ../src/case/hadithChainItemModel.h \
     ../src/case/hadithManualTagger.h \
     ../src/case/hadithDagGraph.h \
-    ../src/case/hadithDagItemModel.h
+    ../src/case/hadithDagItemModel.h \
+    ../src/case/AbstractTwoLevelAgreement.h \
+    ../src/case/hadithInterAnnotatorAgreement.h \
+    ../src/case/genealogyInterAnnotatorAgreement.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -137,7 +140,10 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/hadithChainItemModel.cpp \
     ../src/case/hadithManualTagger.cpp \
     ../src/case/hadithDagGraph.cpp \
-    ../src/case/hadithDagItemModel.cpp
+    ../src/case/hadithDagItemModel.cpp \
+    ../src/case/AbstractTwoLevelAgreement.cpp \
+    ../src/case/hadithInterAnnotatorAgreement.cpp \
+    ../src/case/genealogyInterAnnotatorAgreement.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

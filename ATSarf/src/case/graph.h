@@ -8,12 +8,16 @@
 #include "graph_nodes.h"
 #include "narratordetector.h"
 
-extern void biographies(NarratorGraph * graph);
-extern void localizedDisplay(NarratorGraph * graph);
-
+class NarratorGraph;
+class GraphVisitorController;
+class LoopBreakingVisitor;
 typedef QList<NarratorNodeIfc *> NarratorNodesList;
 
-class GraphVisitorController;
+extern void biographies(NarratorGraph * graph);
+extern void localizedDisplay(NarratorGraph * graph);
+extern int calculateStatisticsOrAnotate(ChainsContainer &chains, NarratorGraph * graph, QString * text, QString fileName);
+
+
 
 class NodeVisitor
 {
@@ -29,9 +33,6 @@ public:
 	virtual void detectedCycle(NarratorNodeIfc & n)=0;
 	virtual void finishVisit(NarratorNodeIfc & n)=0;
 };
-
-class NarratorGraph;
-class LoopBreakingVisitor;
 
 class ColorIndices
 {
@@ -494,14 +495,12 @@ public:
 	virtual void initialize() {
 		if (controller->isTop2Bottom()) {
 			DisplayNodeVisitorColoredNarrator::initialize();
-		} else
-			DisplayNodeVisitor::initialize();
+		}
 	}
 	virtual void finish() {
 		if (!controller->isTop2Bottom()) {
 			DisplayNodeVisitorColoredNarrator::finish();
-		} else
-			DisplayNodeVisitor::finish();
+		}
 
 	}
 };
@@ -626,6 +625,7 @@ public:
 	typedef QMap<int,QString *> Int2StringMap;
 	typedef QList<HadithFileDetails> HadithFilesList;
 private:
+	QList<ChainNarratorNode*> topChainNodes;
 	ColorIndices colorGuard;
 	NarratorNodesList	top_nodes, all_nodes;
 
@@ -1941,6 +1941,37 @@ public:
 		//qDebug()<<"\n";
 	#undef SERIALIZE_STOP
 	}
+	void fillChainContainer() {
+		for (int i=0;i<top_nodes.size();i++) {
+			NodeIterator itr=top_nodes[i]->begin();
+			for (;!itr.isFinished();++itr) {
+				ChainNarratorNode * chain=dynamic_cast<ChainNarratorNode*>(itr.getNode());
+				while (!chain->isFirst())
+					chain=&chain->prevInChain();
+				int chainNumber=chain->getChainNum();
+				int oldSize=topChainNodes.size();
+				for (int i=oldSize-1;i<chainNumber;i++) {
+					topChainNodes.append(NULL);
+				}
+				topChainNodes[chainNumber]=chain;
+			}
+		}
+	}
+
+	ChainNarratorNode * getChainNode(int chain_num, int narrator_num) {
+		assert(chain_num<topChainNodes.size());
+		ChainNarratorNode * chain=topChainNodes[chain_num];
+		int narrCount=0;
+		do {
+			if (narrCount==narrator_num)
+				return chain;
+			if (chain->isLast())
+				return NULL;
+			chain=&chain->nextInChain();
+			narrCount++;
+		}while(true);
+		return NULL;
+	}
 
 	bool equalGraphs(NarratorGraph * other) {
 		for (int i=0;i<top_nodes.size();i++) {
@@ -2013,8 +2044,12 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	prg->report(100);
 #else
 	NarratorGraph *graph=new NarratorGraph(chains,prg);
-	if (chains.size()>0)
-		graph->setFileName(chains[0]->hadith_text,fileName);
+	QString * text=NULL;
+	if (chains.size()>0) {
+		text=chains[0]->hadith_text;
+		graph->setFileName(text,fileName);
+	}
+	QString allName=fileName;
 	QFile file(fileName.remove(".txt")+".por");
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
@@ -2024,6 +2059,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	file.close();
 	prg->setCurrentAction("Completed");
 	prg->report(100);
+	calculateStatisticsOrAnotate(chains,graph,text,allName);
 #if 0
 	if (!file.open(QIODevice::ReadOnly))
 		return -1;

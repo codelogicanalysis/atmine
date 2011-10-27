@@ -17,7 +17,7 @@
    <widget class="QTextEdit" name="input">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>100</x>
       <y>10</y>
       <width>401</width>
       <height>31</height>
@@ -33,7 +33,7 @@
    <widget class="QTextBrowser" name="output">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>120</y>
       <width>501</width>
       <height>331</height>
@@ -71,7 +71,7 @@
    <widget class="QTextBrowser" name="errors">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>470</y>
       <width>501</width>
       <height>151</height>
@@ -87,7 +87,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>10</y>
       <width>51</width>
       <height>18</height>
@@ -108,7 +108,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>450</y>
       <width>59</width>
       <height>18</height>
@@ -129,7 +129,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>100</y>
       <width>59</width>
       <height>18</height>
@@ -539,10 +539,10 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>130</x>
       <y>40</y>
       <width>16</width>
-      <height>61</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="orientation">
@@ -552,7 +552,7 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_2">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>300</x>
       <y>40</y>
       <width>16</width>
       <height>61</height>
@@ -565,10 +565,10 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_3">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>410</x>
       <y>40</y>
       <width>16</width>
-      <height>41</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="orientation">
@@ -578,9 +578,9 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_4">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>420</x>
       <y>70</y>
-      <width>211</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -591,9 +591,9 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_5">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>30</x>
       <y>90</y>
-      <width>381</width>
+      <width>391</width>
       <height>21</height>
      </rect>
     </property>
@@ -607,7 +607,7 @@ p, li { white-space: pre-wrap; }
       <x>520</x>
       <y>40</y>
       <width>21</width>
-      <height>61</height>
+      <height>81</height>
      </rect>
     </property>
     <property name="orientation">
@@ -617,10 +617,10 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_7">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>40</y>
       <width>20</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="orientation">
@@ -630,9 +630,9 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_8">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>30</y>
-      <width>491</width>
+      <width>501</width>
       <height>21</height>
      </rect>
     </property>
@@ -643,7 +643,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_hadith">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>140</x>
       <y>40</y>
       <width>71</width>
       <height>22</height>
@@ -656,7 +656,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_biography">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>210</x>
       <y>40</y>
       <width>91</width>
       <height>22</height>
@@ -669,7 +669,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_morphology">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>40</y>
       <width>111</width>
       <height>22</height>
@@ -685,7 +685,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_bible">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>310</x>
       <y>40</y>
       <width>101</width>
       <height>22</height>
@@ -698,9 +698,9 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_bible_anotation">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>310</x>
       <y>60</y>
-      <width>91</width>
+      <width>101</width>
       <height>22</height>
      </rect>
     </property>
@@ -709,9 +709,12 @@ p, li { white-space: pre-wrap; }
     </property>
    </widget>
    <widget class="QRadioButton" name="chk_AffixBreaker">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>420</x>
       <y>80</y>
       <width>111</width>
       <height>22</height>
@@ -725,10 +728,13 @@ p, li { white-space: pre-wrap; }
     </property>
    </widget>
    <widget class="QRadioButton" name="chk_verification">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>80</y>
+      <x>420</x>
+      <y>100</y>
       <width>101</width>
       <height>22</height>
      </rect>
@@ -740,7 +746,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_time_anotation">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>420</x>
       <y>60</y>
       <width>91</width>
       <height>22</height>
@@ -753,7 +759,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_time">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>420</x>
       <y>40</y>
       <width>91</width>
       <height>22</height>
@@ -766,7 +772,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_hadith_anotation">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>140</x>
       <y>60</y>
       <width>141</width>
       <height>22</height>
@@ -779,7 +785,7 @@ p, li { white-space: pre-wrap; }
    <widget class="Line" name="line_9">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>70</y>
       <width>111</width>
       <height>21</height>
@@ -792,7 +798,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_testing">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>60</y>
       <width>71</width>
       <height>22</height>
@@ -805,7 +811,7 @@ p, li { white-space: pre-wrap; }
    <widget class="QRadioButton" name="chk_hadith_name_anotation">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>140</x>
       <y>80</y>
       <width>151</width>
       <height>22</height>
@@ -813,6 +819,32 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>Names Annotation</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_bible_agreement">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>80</y>
+      <width>101</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Agreement</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="chk_hadith_agreement">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>80</y>
+      <width>101</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Agreement</string>
     </property>
    </widget>
   </widget>
