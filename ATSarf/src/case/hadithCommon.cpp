@@ -1,4 +1,5 @@
 #include "hadithCommon.h"
+#include "AbstractTwoLevelAgreement.h"
 #include <QStringList>
 
 HadithParameters hadithParameters;
@@ -241,8 +242,14 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 	if (structures->hadith) \
 		structures->chain->m_chain.append(narrator); \
 	else {\
-		if (structures->biography->addNarrator(narrator)) \
+		if (structures->biography->addNarrator(narrator)) {\
 			currentData.bio_nrcCount=0; \
+			Name n(structures->text,narrator->getStart(),narrator->getEnd()); /*just to check the benefit of using POR*/ \
+			structures->learningEvaluator.addContextLearnedName(n); \
+		} else { \
+			Name n(structures->text,narrator->getStart(),narrator->getEnd());\
+			structures->learningEvaluator.addNonContextLearnedName(n); \
+		}\
 	}
 
 
@@ -1795,65 +1802,96 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 #endif
 
 #ifdef NONCONTEXT_LEARNING
+	bool NameLearningEvaluator::equalNames(QString * ,int start1,int end1,int start2,int end2) {
+		return overLaps(start1,end1,start2,end2);
+	}
+
 	void NameLearningEvaluator::displayNameLearningStatistics() {
-		QSet<Name>	commonContextNames =annotatedNames,
-					commonNonContextNames=annotatedNames,
-					nonDetectedNonContextNames=annotatedNames,
-					nonDetectedContextNames=annotatedNames,
-					incorrectlyDetectedNames=contextNames;
-		commonContextNames.intersect(contextNames);
-		commonNonContextNames.intersect(nonContextNames);
-		nonDetectedNonContextNames.subtract(commonNonContextNames);
-		nonDetectedContextNames.subtract(commonContextNames);
-		incorrectlyDetectedNames.subtract(annotatedNames);
-		QSet<Name> detectedOnlyInNonContext=commonNonContextNames;
-		detectedOnlyInNonContext.subtract(commonContextNames);
+		double contextRecall, contextPrecision, allRecall, allPrecision;
+		if (names) {
+			QSet<Name>	commonContextNames =annotatedNames,
+						commonNonContextNames=annotatedNames,
+						nonDetectedNonContextNames=annotatedNames,
+						nonDetectedContextNames=annotatedNames,
+						incorrectlyDetectedNames=contextNames;
+			commonContextNames.intersect(contextNames);
+			commonNonContextNames.intersect(nonContextNames);
+			nonDetectedNonContextNames.subtract(commonNonContextNames);
+			nonDetectedContextNames.subtract(commonContextNames);
+			incorrectlyDetectedNames.subtract(annotatedNames);
+			QSet<Name> detectedOnlyInNonContext=commonNonContextNames;
+			detectedOnlyInNonContext.subtract(commonContextNames);
 
-		QSet<Name>::iterator itr=commonContextNames.begin();
-		displayed_error<<"Contextually-Detected Correct Names:\n";
-		for (;itr!=commonContextNames.end();itr++)
-			displayed_error<<itr->getString()<<"\n";
-		itr=detectedOnlyInNonContext.begin();
-		displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
-		for (;itr!=detectedOnlyInNonContext.end();itr++)
-			displayed_error<<itr->getString()<<"\n";
-		itr=nonDetectedNonContextNames.begin();
-		displayed_error<<"Names not detected without Context:\n";
-		for (;itr!=nonDetectedNonContextNames.end();itr++)
-			displayed_error<<itr->getString()<<"\n";
-		itr=nonDetectedContextNames.begin();
-		displayed_error<<"Names not detected with Context:\n";
-		for (;itr!=nonDetectedContextNames.end();itr++)
-			displayed_error<<itr->getString()<<"\n";
-		itr=incorrectlyDetectedNames.begin();
-		displayed_error<<"Names Incorrectly detected:\n";
-		for (;itr!=incorrectlyDetectedNames.end();itr++)
-			displayed_error<<itr->getString()<<"\n";
+			QSet<Name>::iterator itr=commonContextNames.begin();
+			displayed_error<<"Contextually-Detected Correct Names:\n";
+			for (;itr!=commonContextNames.end();itr++)
+				displayed_error<<itr->getString()<<"\n";
+			itr=detectedOnlyInNonContext.begin();
+			displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
+			for (;itr!=detectedOnlyInNonContext.end();itr++)
+				displayed_error<<itr->getString()<<"\n";
+			itr=nonDetectedNonContextNames.begin();
+			displayed_error<<"Names not detected without Context:\n";
+			for (;itr!=nonDetectedNonContextNames.end();itr++)
+				displayed_error<<itr->getString()<<"\n";
+			itr=nonDetectedContextNames.begin();
+			displayed_error<<"Names not detected with Context:\n";
+			for (;itr!=nonDetectedContextNames.end();itr++)
+				displayed_error<<itr->getString()<<"\n";
+			itr=incorrectlyDetectedNames.begin();
+			displayed_error<<"Names Incorrectly detected:\n";
+			for (;itr!=incorrectlyDetectedNames.end();itr++)
+				displayed_error<<itr->getString()<<"\n";
+			if (annotatedNames.size()>0) {
+				contextRecall=(double)commonContextNames.size()/annotatedNames.size();
+				contextPrecision=(double)commonContextNames.size()/contextNames.size();
+				allRecall=(double)commonNonContextNames.size()/annotatedNames.size();
+				allPrecision=(double)commonNonContextNames.size()/nonContextNames.size();
+				displayed_error << "-------------------------\n"
+								<< "Context Names:\n"
+								<< "\trecall=\t"<<commonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<contextRecall<<"\n"
+								<< "\tprecision=\t"<<commonContextNames.size()<<"/"<<contextNames.size()<<"=\t"<<contextPrecision<<"\n"
+								<< "Non-Context Names:\n"
+								<< "\trecall=\t"<<commonNonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<allRecall<<"\n"
+								<< "\tprecision=\t"<<commonNonContextNames.size()<<"/"<<nonContextNames.size()<<"=\t"<<allPrecision<<"\n";
+			}
 
-		if (annotatedNames.size()==0) {
+		}
+		if (annotatedNarrators.size()==0 && annotatedNames.size()==0) {
 			error << "Annotation File does not exist\n";
-			QFile file(QString("%1.tags").arg(fileName).toStdString().data());
+			QFile file(QString("%1"+QString(names?".names":".narr")).arg(fileName).toStdString().data());
 			if (file.open(QIODevice::WriteOnly)) {
 				QDataStream out(&file);   // we will serialize the data into the file
-				out << knownNames;
+				if (names) {
+					out << knownNames;
+				} else {
+					nonContextNarrators.append(contextNarrators);
+					out<<nonContextNarrators;
+				}
+
 				file.close();
 				error << "Annotation File has been written from current known names, Correct it before use.\n";
 			}
 			return;
 		}
-
-
-		double contextRecall=(double)commonContextNames.size()/annotatedNames.size(),
-			   contextPrecision=(double)commonContextNames.size()/contextNames.size(),
-			   nonContextRecall=(double)commonNonContextNames.size()/annotatedNames.size(),
-			   nonContextPrecision=(double)commonNonContextNames.size()/nonContextNames.size();
-		displayed_error << "-------------------------\n"
-						<< "Context Names:\n"
-						<< "\trecall=\t"<<commonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<contextRecall<<"\n"
-						<< "\tprecision=\t"<<commonContextNames.size()<<"/"<<contextNames.size()<<"=\t"<<contextPrecision<<"\n"
-						<< "Non-Context Names:\n"
-						<< "\trecall=\t"<<commonNonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<nonContextRecall<<"\n"
-						<< "\tprecision=\t"<<commonNonContextNames.size()<<"/"<<nonContextNames.size()<<"=\t"<<nonContextPrecision<<"\n";
+		if (!names) {
+			QSet<int> visitedTags;
+			int allCommon;
+			int commonContext=commonNames<NameLearningEvaluator>(text,annotatedNarrators,contextNarrators,visitedTags,allCommon,*this);
+			visitedTags.clear();
+			int commonNonContext=commonNames<NameLearningEvaluator>(text,annotatedNarrators,nonContextNarrators,visitedTags,allCommon,*this);
+			contextRecall=(double)commonContext/annotatedNarrators.size();
+			contextPrecision=(double)commonContext/contextNarrators.size();
+			allRecall=(double)(commonNonContext+commonContext)/annotatedNarrators.size();
+			allPrecision=(double)(commonNonContext+commonContext)/nonContextNarrators.size();
+			displayed_error	<< "-------------------------\n"
+							<< "POR Narrators:\n"
+							<< "\trecall=\t"<<commonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<contextRecall<<"\n"
+							<< "\tprecision=\t"<<commonContext<<"/"<<contextNarrators.size()<<"=\t"<<contextPrecision<<"\n"
+							<< "All Narrators:\n"
+							<< "\trecall=\t"<<commonNonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
+							<< "\tprecision=\t"<<commonNonContext<<"/"<<nonContextNarrators.size()<<"=\t"<<allPrecision<<"\n";
+		}
 	}
 
 #endif

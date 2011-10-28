@@ -633,6 +633,7 @@ public:
 	#ifdef CHAIN_BUILDING
 		HadithData *currentBiography=new HadithData(text,false,graph,input_str);
 		currentBiography->initialize(text);
+		currentBiography->learningEvaluator.resetLearnedNames();
 		//display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
 	#else
 		chainData *currentBiography=NULL;
@@ -717,6 +718,7 @@ public:
 	#endif
 		}
 		prg->report(100);
+		currentBiography->learningEvaluator.displayNameLearningStatistics();
 	#if defined(DISPLAY_HADITH_OVERVIEW) && !defined(SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY)
 		if (biographyStart<0)
 		{

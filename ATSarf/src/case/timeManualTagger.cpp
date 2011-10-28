@@ -203,8 +203,15 @@ int timeTagger(QString input_str/*, QString extension=".tag"*/){
 	d->show();
 	return 0;
 }
-int hadith_name_annotation(QString input_str,ATMProgressIFC *prg) {
+int hadith_name_annotation(QString input_str,ATMProgressIFC *) {
 	TimeTaggerDialog * d=new TimeTaggerDialog(input_str,".names");
 	d->show();
 	return 0;
 }
+
+int narrator_annotation(QString input_str,ATMProgressIFC *) {
+	TimeTaggerDialog * d=new TimeTaggerDialog(input_str,".narr");
+	d->show();
+	return 0;
+}
+
