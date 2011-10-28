@@ -435,7 +435,7 @@ public:
 			out<<"empty file\n";
 			return 0;
 		}
-		return segmentHelper(text,0,text->size()-1,functionUsingChains,prg,true);
+		return segmentHelper(text,0,text->size()-1,functionUsingChains,prg,false);
 	}
 	int segment(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg, bool segmentNarrators=false)  {
 		fileName="";

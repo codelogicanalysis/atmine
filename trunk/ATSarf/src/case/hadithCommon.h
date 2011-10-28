@@ -589,6 +589,12 @@
 					annotatedNames.insert(n);
 				}
 				tags.clear();
+				QFile file(QString("%1.narr").arg(fileName).toStdString().data());
+				if (file.open(QIODevice::ReadOnly))	{
+					QDataStream out(&file);   // we will serialize the data into the file
+					out	>> tags;
+					file.close();
+				}
 			}
 		}
 		void resetLearnedNames() {
@@ -599,17 +605,23 @@
 			if (names) {
 				nonContextNames.insert(name);
 			} else {
-				Selection s(name.getStart(),name.getEnd());
-				nonContextNarrators.append(s);
+				addNonContextNarrator(name);
 			}
+		}
+		void addNonContextNarrator(const Name & name) {
+			Selection s(name.getStart(),name.getEnd());
+			nonContextNarrators.append(s);
 		}
 		void addContextLearnedName(const Name & name) {
 			if (names) {
 				contextNames.insert(name);
 			} else {
-				Selection s(name.getStart(),name.getEnd());
-				contextNarrators.append(s);
+				addContextNarrator(name);
 			}
+		}
+		void addContextNarrator(const Name & name) {
+			Selection s(name.getStart(),name.getEnd());
+			contextNarrators.append(s);
 		}
 		void addKnownName(const Name & name, bool learned) {
 			if (names) {

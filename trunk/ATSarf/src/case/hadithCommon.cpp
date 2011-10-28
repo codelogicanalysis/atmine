@@ -239,16 +239,18 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 #ifdef CHAIN_BUILDING
 
 #define addNarrator(narrator) \
-	if (structures->hadith) \
+	if (structures->hadith) { \
 		structures->chain->m_chain.append(narrator); \
-	else {\
+		Name n(structures->text,narrator->getStart(),narrator->getEnd());\
+		structures->learningEvaluator.addNonContextNarrator(n); \
+	} else {\
 		if (structures->biography->addNarrator(narrator)) {\
 			currentData.bio_nrcCount=0; \
 			Name n(structures->text,narrator->getStart(),narrator->getEnd()); /*just to check the benefit of using POR*/ \
-			structures->learningEvaluator.addContextLearnedName(n); \
+			structures->learningEvaluator.addContextNarrator(n); \
 		} else { \
 			Name n(structures->text,narrator->getStart(),narrator->getEnd());\
-			structures->learningEvaluator.addNonContextLearnedName(n); \
+			structures->learningEvaluator.addNonContextNarrator(n); \
 		}\
 	}
 
@@ -1383,6 +1385,8 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 							}
 						}
 					}
+					Name p(currentChain->text,n->getStart(),n->getEnd());
+					currentChain->learningEvaluator.addContextNarrator(p);
 				}
 			}
 		}
@@ -1857,24 +1861,8 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			}
 
 		}
-		if (annotatedNarrators.size()==0 && annotatedNames.size()==0) {
-			error << "Annotation File does not exist\n";
-			QFile file(QString("%1"+QString(names?".names":".narr")).arg(fileName).toStdString().data());
-			if (file.open(QIODevice::WriteOnly)) {
-				QDataStream out(&file);   // we will serialize the data into the file
-				if (names) {
-					out << knownNames;
-				} else {
-					nonContextNarrators.append(contextNarrators);
-					out<<nonContextNarrators;
-				}
-
-				file.close();
-				error << "Annotation File has been written from current known names, Correct it before use.\n";
-			}
-			return;
-		}
-		if (!names) {
+		//in both cases we report Narrators
+		if(annotatedNarrators.size()>0) {
 			QSet<int> visitedTags;
 			int allCommon;
 			int commonContext=commonNames<NameLearningEvaluator>(text,annotatedNarrators,contextNarrators,visitedTags,allCommon,*this);
@@ -1882,15 +1870,39 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			int commonNonContext=commonNames<NameLearningEvaluator>(text,annotatedNarrators,nonContextNarrators,visitedTags,allCommon,*this);
 			contextRecall=(double)commonContext/annotatedNarrators.size();
 			contextPrecision=(double)commonContext/contextNarrators.size();
-			allRecall=(double)(commonNonContext+commonContext)/annotatedNarrators.size();
-			allPrecision=(double)(commonNonContext+commonContext)/nonContextNarrators.size();
+			int commonAll=(names?commonNonContext:commonNonContext+commonContext);
+			int allDetectedCount=(names?nonContextNarrators.size():nonContextNarrators.size()+contextNarrators.size());
+			allRecall=(double)commonAll/annotatedNarrators.size();
+			allPrecision=(double)commonAll/allDetectedCount;
 			displayed_error	<< "-------------------------\n"
-							<< "POR Narrators:\n"
+							<< (names?"Hadith":"POR ")<<"Narrators:\n"
 							<< "\trecall=\t"<<commonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<contextRecall<<"\n"
 							<< "\tprecision=\t"<<commonContext<<"/"<<contextNarrators.size()<<"=\t"<<contextPrecision<<"\n"
 							<< "All Narrators:\n"
-							<< "\trecall=\t"<<commonNonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
-							<< "\tprecision=\t"<<commonNonContext<<"/"<<nonContextNarrators.size()<<"=\t"<<allPrecision<<"\n";
+							<< "\trecall=\t"<<commonAll<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
+							<< "\tprecision=\t"<<commonAll<<"/"<<allDetectedCount<<"=\t"<<allPrecision<<"\n";
+		}
+		if ( names && annotatedNames.size()==0) {
+			error << "Annotation Names File does not exist\n";
+			QFile file(QString("%1.names").arg(fileName).toStdString().data());
+			if (file.open(QIODevice::WriteOnly)) {
+				QDataStream out(&file);   // we will serialize the data into the file
+				out << knownNames;
+				file.close();
+				error << "Annotation File has been written from current known names, Correct it before use.\n";
+			}
+		}
+		if (annotatedNarrators.size()==0){
+			error << "Annotation Narrator File does not exist\n";
+			QFile file(QString("%1.narr").arg(fileName).toStdString().data());
+			if (file.open(QIODevice::WriteOnly)) {
+				QDataStream out(&file);   // we will serialize the data into the file
+				if (!names)
+					nonContextNarrators.append(contextNarrators);
+				out<<nonContextNarrators;
+				file.close();
+				error << "Annotation File has been written from current known narrators, Correct it before use.\n";
+			}
 		}
 	}
 
