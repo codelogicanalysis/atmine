@@ -19,6 +19,11 @@ HadithTaggerDialog::HadithTaggerDialog(QString filename)
 	resultTreeOperationMenu->addAction("Cancel Operation",this,SLOT(cancelMerge()));
 	resultTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
+	colorSelectedNodeInGraphAct = new QAction(QString("&Color Selected Node in Graph"), this);
+	colorSelectedNodeInGraphAct->setStatusTip(QString("When selected, selected node in Tree View is colored in the image of the graph"));
+	colorSelectedNodeInGraphAct->setCheckable(true);
+	colorSelectedNodeInGraphAct->setChecked(true);
+	graphToolbar->addAction(colorSelectedNodeInGraphAct);
 
 	connect(resultTree,SIGNAL(clicked(QModelIndex )),this,SLOT(resultTree_clicked(QModelIndex)));
 	connect(resultTree,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(resultTree_contextMenu(QPoint)));
@@ -35,12 +40,15 @@ void HadithTaggerDialog::regenerateGlobalGraph() {
 	if (globalGraph!=NULL)
 		globalGraph->deleteGraph();
 	if (tags.size()>0) {
-		globalGraph=new HadithDagGraph();
+		ChainsContainer container;
 		for (int i=0;i<tags.size();i++) {
 			AbstractGraph * g=tags[i].getGraph();
 			AbstractGraph * d=g->duplicate();
-			globalGraph=globalGraph->merge(d);
+			HadithChainGraph * duplicate=dynamic_cast<HadithChainGraph *>(d);
+			container.append(new Chain(duplicate->chain));
+			duplicate->chain.m_chain.clear();
 		}
+		globalGraph=new HadithDagGraph(container);
 	} else
 		globalGraph=NULL;
 }
@@ -81,7 +89,7 @@ void HadithTaggerDialog::resultTree_contextMenu(const QPoint & p) {
 }
 
 void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
-	if (globalGraphAct->isChecked()) {
+	if (colorSelectedNodeInGraphAct->isChecked() && globalGraphAct->isChecked()) {
 		QIODevice * d=out.device();
 		QString s;
 		out.setString(&s);

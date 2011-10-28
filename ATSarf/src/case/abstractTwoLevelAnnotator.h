@@ -77,13 +77,14 @@ protected:
 	void createMenus();
 	void refreshTreeModel(QAbstractItemModel * model);
 
+	virtual bool mergeMainStructures(TwoLevelSelection * oldSelection, int newTagIndex);
 	virtual void regenerateGlobalGraph()=0;
 	virtual AbstractGraph * newGraph(bool global=false)=0;
 public:
 	QTextBrowser * text, * treeText;
 	QLabel * graph;
 	QToolBar * annotationToolbar, * graphToolbar;
-	QAction * tagMainAct, * unTagMainAct, *forceWordNames, * tagNameAct, * unTagNameAct, * saveAct,
+	QAction * forcePunctuationMainBoundaryAct,* tagMainAct, * unTagMainAct, *forceWordNamesAct, * tagNameAct, * unTagNameAct, * saveAct,
 			* modifyGraphAct, * globalGraphAct, * resetGlobalGraphAct;
 	QMenu *viewMenu;
 	QScrollArea * graphArea;

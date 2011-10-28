@@ -22,11 +22,15 @@ int AbstractTwoLevelAgreement::commonNames(const SelectionList & list1, const Se
 	return ::commonNames<AbstractTwoLevelAgreement>(text,list1,list2,visitedTags,allCommon,*this);
 }
 
-void AbstractTwoLevelAgreement::overLapNamesFinished(const SelectionList & tagNames, const SelectionList & outputNames,int &numWords) {
+void AbstractTwoLevelAgreement::overLapNamesFinished(const SelectionList & tagWords, const SelectionList & outputWords,int &numWords) {
+	if (tagWords.size()==0 && outputWords.size()==0 )
+		return;
 	bool underComputation=(&numWords==&underNumWords);
-	int countCommon=commonWords(text,tagNames,outputNames);
-	int countCorrect=countWords(text,tagNames);
-	int countDetected=countWords(text,outputNames);
+	int countCommon=commonWords(text,tagWords,outputWords);
+	int countCorrect=countWords(text,tagWords);
+	int countDetected=countWords(text,outputWords);
+	assert (countCorrect!=0);
+	assert (countDetected!=0);
 	numWords+=countCorrect;
 	double	recall=(double)countCommon/countCorrect * countCorrect,
 			precision=(double)countCommon/countDetected *countCorrect;

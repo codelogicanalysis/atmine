@@ -7,7 +7,7 @@ int AbstractAnnotator::findSelection(int startIndex, SelectionMode selectionMode
 	QTextBrowser * text=getTextBrowser();
 	QTextCursor c=text->textCursor();
 	int start=c.selectionStart();
-	int end=c.selectionEnd();
+	int end=c.selectionEnd()-1;
 	for (int i=startIndex;i<getTagCount();i++) {
 		if (isConsistentWithSelectionCondidtion(start,end,getTagStart(i),getTagEnd(i),selectionMode)) {
 			return i;

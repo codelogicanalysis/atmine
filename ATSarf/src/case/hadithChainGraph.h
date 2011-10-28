@@ -26,6 +26,7 @@ private:
 private:
 	friend class HadithChainItemModel;
 	friend class HadithDagGraph;
+	friend class HadithTaggerDialog;
 	Chain chain;
 private:
 	Narrator * getNarrator(QString text);

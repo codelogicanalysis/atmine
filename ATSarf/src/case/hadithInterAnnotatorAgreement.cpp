@@ -76,9 +76,21 @@ void HadithInterAnnotatorAgreement::startNamesOverLap(int i, int j, int k,int h,
 	nodeCorrect=graphCorrect->getGraph()->getChainNode(i,k);
 	HadithDagGraph * graphGenerated=dynamic_cast<HadithDagGraph *>(generatedGraph);
 	nodeDetected=graphGenerated->getGraph()->getChainNode(j,h);
-	if (nodeCorrect==NULL || nodeDetected==NULL) {
+	if (nodeCorrect==NULL) {
 		nodeCorrect=graphCorrect->getGraph()->getChainNode(i,k);
+		qDebug()<<tags[i].getText();
+		for (int f=0;f<k;f++) {
+			nodeCorrect=graphCorrect->getGraph()->getChainNode(i,f);
+			qDebug()<<nodeCorrect->CanonicalName();
+		}
+	}
+	if (nodeDetected==NULL) {
 		nodeDetected=graphGenerated->getGraph()->getChainNode(j,h);
+		qDebug()<<outputList[j].getText();
+		for (int f=0;f<h;f++) {
+			nodeDetected=graphGenerated->getGraph()->getChainNode(j,f);
+			qDebug()<<nodeDetected->CanonicalName();
+		}
 	}
 	assert(nodeCorrect!=NULL && nodeDetected!=NULL);
 	this->countCommon=commonCount;

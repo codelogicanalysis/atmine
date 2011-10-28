@@ -16,6 +16,7 @@ private:
 	QModelIndex * resultTreeMenuMIdxApplied;
 	QMenu * resultTreeMainMenu;
 	QMenu * resultTreeOperationMenu;
+	QAction * colorSelectedNodeInGraphAct;
 	bool isMergeAll:1,chosenAction:1;
 
 private slots:
@@ -29,6 +30,8 @@ private slots:
 private:
 	virtual void regenerateGlobalGraph();
 	virtual AbstractGraph * newGraph(bool global);
+	virtual bool mergeMainStructures(TwoLevelSelection * , int ) {return false; } //not supported yet
+
 	void clearCacheFroUpdatedNode(NarratorNodeIfc * node);
 public:
 	HadithTaggerDialog(QString fileName);

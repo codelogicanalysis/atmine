@@ -189,6 +189,12 @@ void HadithChainGraph::fillNullGraph(MainSelectionList &names, QString *text) {
 void HadithChainGraph::addNameToGraph(Name &name) {
 	QString s=name.getString();
 	Narrator * n=getNarrator(name);
+	for (int i=0;i<chain.m_chain.size();i++) {
+		if (chain.m_chain[i]->getStart()>=name.getEnd()) {
+			chain.m_chain.insert(i,n);
+			return;
+		}
+	}
 	chain.m_chain.append(n);
 }
 

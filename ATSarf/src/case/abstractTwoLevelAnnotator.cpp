@@ -53,10 +53,15 @@ void AbstractTwoLevelAnnotator::createActions(QString mainStructure)
 	tagNameAct->setStatusTip(QString("Tag a name inside the main structure"));
 	connect(tagNameAct, SIGNAL(triggered()), this, SLOT(tagName_clicked()));
 
-	forceWordNames = new QAction(QString("&Full Word Names"), this);
-	forceWordNames->setStatusTip(QString("When selected forces selected names to be full words delimited by spaces and punctuation "));
-	forceWordNames->setCheckable(true);
-	forceWordNames->setChecked(true);
+	forceWordNamesAct = new QAction(QString("&Full Word Names"), this);
+	forceWordNamesAct->setStatusTip(QString("When selected forces selected names to be full words delimited by spaces and punctuation "));
+	forceWordNamesAct->setCheckable(true);
+	forceWordNamesAct->setChecked(true);
+
+	forcePunctuationMainBoundaryAct= new QAction(QString("&Punctuation-Delimeted "+mainStructure), this);
+	forcePunctuationMainBoundaryAct->setStatusTip(QString("When selected forces selected "+ mainStructure+ " to start and end at punctuation marks only"));
+	forcePunctuationMainBoundaryAct->setCheckable(true);
+	forcePunctuationMainBoundaryAct->setChecked(true);
 
 	saveAct = new QAction(QString("&Save"), this);
 	saveAct->setShortcuts(QKeySequence::Save);
@@ -85,9 +90,10 @@ void AbstractTwoLevelAnnotator::createToolbar() {
 	annotationToolbar->addAction(tagMainAct);
 	annotationToolbar->addAction(unTagMainAct);
 	annotationToolbar->addSeparator();
-	annotationToolbar->addAction(forceWordNames);
 	annotationToolbar->addAction(tagNameAct);
 	annotationToolbar->addAction(unTagNameAct);
+	annotationToolbar->addAction(forcePunctuationMainBoundaryAct);
+	annotationToolbar->addAction(forceWordNamesAct);
 	annotationToolbar->addAction(saveAct);
 
 	addToolBarBreak();
@@ -175,7 +181,7 @@ int AbstractTwoLevelAnnotator::findSubSelection(int tagIndex,int startSubIndex, 
 		return -1;
 	QTextCursor c=text->textCursor();
 	int start=c.selectionStart();
-	int end=c.selectionEnd();
+	int end=c.selectionEnd()-1;
 	TwoLevelSelection::MainSelectionList names=tags[tagIndex].getNamesList();
 	for (int i=startSubIndex;i<names.size();i++) {
 		if (isConsistentWithSelectionCondidtion(start,end,names[i].first,names[i].second,selectionMode)) {
@@ -202,37 +208,46 @@ AbstractTwoLevelAnnotator::~AbstractTwoLevelAnnotator() {
 	delete graph;
 }
 
+bool AbstractTwoLevelAnnotator::mergeMainStructures(TwoLevelSelection * oldSelection, int newTagIndex) {
+	TwoLevelSelection::MainSelectionList mergedNames;
+	TwoLevelSelection::mergeNames(string,oldSelection->names,tags[newTagIndex].names,mergedNames);
+	AbstractGraph * duplicate=oldSelection->graph->duplicate();
+	duplicate->merge(tags[newTagIndex].graph);
+	if (duplicate->isRepresentativeOf(mergedNames)) {
+		oldSelection->names=mergedNames;
+		oldSelection->graph->deleteGraph();
+		tags[newTagIndex].graph->deleteGraph();
+		oldSelection->graph=duplicate;
+		oldSelection->setMainInterval(min(oldSelection->getMainStart(),tags[newTagIndex].getMainStart()),max(oldSelection->getMainEnd(),tags[newTagIndex].getMainEnd()));
+		return true;
+	} else {
+		duplicate->deleteGraph(); //stopped before completion i>=0
+		return false;
+	}
+}
+
 void AbstractTwoLevelAnnotator::tagMain_action() {
 	if (this==NULL)
 		return;
-	moveSelectionToSentenceBoundaries();
+	if (forcePunctuationMainBoundaryAct->isChecked())
+		moveSelectionToSentenceBoundaries();
+	else
+		moveSelectionToWordBoundaries();
 	QTextCursor c=text->textCursor();
 	int start=c.selectionStart();
 	int end=c.selectionEnd();
 	if (start==end)
 		return;
 	int i=findSelection(0,SELECTION_OUTSIDEOVERLAP);
-	QList<int> listForRemoval;
 	TwoLevelSelection * sel=NULL;
 	while (i>=0) {
 		if (sel==NULL) {
 			sel=&tags[i];
 		} else {
-			TwoLevelSelection::MainSelectionList mergedNames;
-			TwoLevelSelection::mergeNames(string,sel->names,tags[i].names,mergedNames);
-			AbstractGraph * duplicate=sel->graph->duplicate();
-			duplicate->merge(tags[i].graph);
-			if (duplicate->isRepresentativeOf(mergedNames)) {
-				listForRemoval.append(i);
-				sel->names=mergedNames;
-				sel->graph->deleteGraph();
-				tags[i].graph->deleteGraph();
-				sel->graph=duplicate;
-				sel->setMainInterval(min(sel->getMainStart(),tags[i].getMainStart()),max(sel->getMainEnd(),tags[i].getMainEnd()));
+			if (mergeMainStructures(sel,i)) {
 				tags.removeAt(i);
 				i--;
 			} else {
-				duplicate->deleteGraph(); //stopped before completion i>=0
 				break;
 			}
 		}
@@ -419,7 +434,7 @@ void AbstractTwoLevelAnnotator::unTagName_action() {
 void AbstractTwoLevelAnnotator::tagName_action() {
 	if (this==NULL)
 		return;
-	if (forceWordNames->isChecked())
+	if (forceWordNamesAct->isChecked())
 		moveSelectionToWordBoundaries();
 	QTextCursor c=text->textCursor();
 	int start=c.selectionStart();
