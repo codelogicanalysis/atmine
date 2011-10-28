@@ -554,31 +554,41 @@
 	}
 
 #ifdef NONCONTEXT_LEARNING
-	#include "timeManualTagger.h"
 	#include "bibleGeneology.h"
+	#include "timeManualTagger.h"
 	class NameLearningEvaluator {
 	private:
+		typedef TimeTaggerDialog::Selection Selection;
+		typedef TimeTaggerDialog::SelectionList SelectionList;
+	private:
 		QSet<Name> nonContextNames, contextNames, annotatedNames;
+		SelectionList nonContextNarrators, contextNarrators, annotatedNarrators;
 		QList<Name> knownNames;
 		QString fileName, * text;
+		bool names:1;
 	public:
-		NameLearningEvaluator(QString fileName, QString * text) {
+		NameLearningEvaluator(QString fileName, QString * text,bool hadith) {
 			this->fileName=fileName;
 			this->text=text;
+			names=hadith;
 			readTags();
 		}
+		bool equalNames(QString* , int, int, int, int); //do not use, just for use of the internal functions
 		void readTags() {
-			TimeTaggerDialog::SelectionList tags;
-			QFile file(QString("%1.names").arg(fileName).toStdString().data());
+			SelectionList &tags=annotatedNarrators;
+			QFile file(QString("%1"+QString(names?".names":".narr")).arg(fileName).toStdString().data());
 			if (file.open(QIODevice::ReadOnly))	{
 				QDataStream out(&file);   // we will serialize the data into the file
 				out	>> tags;
 				file.close();
 			}
 			qSort(tags.begin(),tags.end());
-			for (int i=0;i<tags.size();i++) {
-				Name n(text,tags[i].first,tags[i].second);
-				annotatedNames.insert(n);
+			if (names) {
+				for (int i=0;i<tags.size();i++) {
+					Name n(text,tags[i].first,tags[i].second);
+					annotatedNames.insert(n);
+				}
+				tags.clear();
 			}
 		}
 		void resetLearnedNames() {
@@ -586,16 +596,28 @@
 			contextNames.clear();
 		}
 		void addNonContextLearnedName(const Name & name) {
-			nonContextNames.insert(name);
+			if (names) {
+				nonContextNames.insert(name);
+			} else {
+				Selection s(name.getStart(),name.getEnd());
+				nonContextNarrators.append(s);
+			}
 		}
 		void addContextLearnedName(const Name & name) {
-			contextNames.insert(name);
+			if (names) {
+				contextNames.insert(name);
+			} else {
+				Selection s(name.getStart(),name.getEnd());
+				contextNarrators.append(s);
+			}
 		}
 		void addKnownName(const Name & name, bool learned) {
-			if (!learned && annotatedNames.contains(name))
-				annotatedNames.remove(name);
-			if (annotatedNames.size()==0) //else no need to modify the list, since will not be written
-				knownNames.append(name);
+			if (names) {
+				if (!learned && annotatedNames.contains(name))
+					annotatedNames.remove(name);
+				if (annotatedNames.size()==0) //else no need to modify the list, since will not be written
+					knownNames.append(name);
+			}
 		}
 		void displayNameLearningStatistics();
 	};
@@ -685,7 +707,7 @@
 		}
 		HadithData(QString * text, bool hadith, NarratorGraph * graph,QString fileName)
 			#ifdef NONCONTEXT_LEARNING
-				:learningEvaluator(fileName,text)
+				:learningEvaluator(fileName,text,hadith)
 			#endif
 		{
 			this->text=text;

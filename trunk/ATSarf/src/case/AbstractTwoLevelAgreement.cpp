@@ -17,34 +17,9 @@ AbstractTwoLevelAgreement::AbstractTwoLevelAgreement(QString * text,QString file
 			underNameRecall=underNamePrecision=underBoundaryRecall=underBoundaryPrecision=0;
 }
 
+
 int AbstractTwoLevelAgreement::commonNames(const SelectionList & list1, const SelectionList & list2, QSet<int> & visitedTags, int & allCommon) {
-	QSet<int> visitedTags2;
-	int common=0;
-	allCommon=0;
-	for (int i=0;i<list1.size();i++) {
-		bool found=false, allCommonFound=false;
-		int start1=list1[i].first,
-			end1=list1[i].second;
-		for (int j=0;j<list2.size();j++) {
-			int start2=list2[j].first,
-				end2=list2[j].second;
-			if (equalNames(text,start1,end1,start2,end2) ) {
-				if (!allCommonFound) {
-					allCommonFound=true;
-					allCommon++;
-				}
-				if (!visitedTags2.contains(j) && !visitedTags.contains(i)) {
-					found=true;
-					visitedTags.insert(i);
-					visitedTags2.insert(j);
-					break;
-				}
-			}
-		}
-		if (found)
-			common++;
-	}
-	return common;
+	return ::commonNames<AbstractTwoLevelAgreement>(text,list1,list2,visitedTags,allCommon,*this);
 }
 
 void AbstractTwoLevelAgreement::overLapNamesFinished(const SelectionList & tagNames, const SelectionList & outputNames,int &numWords) {

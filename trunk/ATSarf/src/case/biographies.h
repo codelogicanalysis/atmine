@@ -190,6 +190,10 @@ public slots:
 			biographyNum->addItem(QString("%1").arg(i));
 		}
 		displayUncoloredGraph();
+	#ifdef ERRORS_BIO
+		errors->setText(*errors_text);
+		errors_text->clear();
+	#endif
 	#endif
 	}
 	void colorBiography_clicked() {
@@ -207,6 +211,10 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+	#ifdef ERRORS_BIO
+		errors->setText(*errors_text);
+		errors_text->clear();
+	#endif
 	#endif
 	}
 	void colorNarrators_clicked() {
@@ -233,6 +241,10 @@ public slots:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+	#ifdef ERRORS_BIO
+		errors->setText(*errors_text);
+		errors_text->clear();
+	#endif
 	#endif
 	}
 	void browse_clicked() {
@@ -260,6 +272,10 @@ private:
 			pic->setPixmap(QPixmap("./graph.svg"));
 			subScrollArea->setWidget(pic);
 		}catch(...) {}
+	#ifdef ERRORS_BIO
+		errors->setText(*errors_text);
+		errors_text->clear();
+	#endif
 	#endif
 	}
 

@@ -230,6 +230,8 @@ void MainWindow::on_pushButton_clicked(){
 		hadith_agreement(input,this);
 	else if (m_ui->chk_bible_agreement->isChecked())
 		genealogy_agreement(input,this);
+	else if (m_ui->chk_narrator_annotation->isChecked())
+		narrator_annotation(input,this);
 	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);
