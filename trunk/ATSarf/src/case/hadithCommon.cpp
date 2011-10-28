@@ -1,6 +1,8 @@
 #include "hadithCommon.h"
 #include "AbstractTwoLevelAgreement.h"
+#include "Math_functions.h"
 #include <QStringList>
+
 
 HadithParameters hadithParameters;
 
@@ -1874,13 +1876,44 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			int allDetectedCount=(names?nonContextNarrators.size():nonContextNarrators.size()+contextNarrators.size());
 			allRecall=(double)commonAll/annotatedNarrators.size();
 			allPrecision=(double)commonAll/allDetectedCount;
+
+			int totalWords=countWords(text,0,text->size()-1);
+			int numNarrators=annotatedNarrators.size();
+			int count=0;
+			QVector<int> aggregationCountList;
+			for (int i=1;i<annotatedNarrators.size();i++) {
+				int start=annotatedNarrators[i-1].first;
+				int end=annotatedNarrators[i-1].second;
+				PunctuationInfo punc;
+				start=next_positon(text,getLastLetter_IN_currentWord(text,start),punc);
+				end=getLastLetter_IN_previousWord(text,end);
+				int numWords=countWords(text,start,end);
+				if (numWords<hadithParameters.nrc_max) {
+					count++;
+				} else {
+					aggregationCountList.append(count);
+					count=0;
+				}
+			}
+			if (count>0) {
+				aggregationCountList.append(count);
+			}
+			double narratorConcentration=(double)numNarrators/totalWords;
+			double aggregationAverage=average(aggregationCountList);
+
 			displayed_error	<< "-------------------------\n"
-							<< (names?"Hadith":"POR ")<<"Narrators:\n"
+							<< (names?"Hadith ":"POR ")<<"Narrators:\n"
 							<< "\trecall=\t"<<commonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<contextRecall<<"\n"
 							<< "\tprecision=\t"<<commonContext<<"/"<<contextNarrators.size()<<"=\t"<<contextPrecision<<"\n"
 							<< "All Narrators:\n"
 							<< "\trecall=\t"<<commonAll<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
-							<< "\tprecision=\t"<<commonAll<<"/"<<allDetectedCount<<"=\t"<<allPrecision<<"\n";
+							<< "\tprecision=\t"<<commonAll<<"/"<<allDetectedCount<<"=\t"<<allPrecision<<"\n"
+							<< "Narrator Concentration:\n"
+							<< "\t\t"<<numNarrators<<"/"<<totalWords<<"=\t"<<narratorConcentration<<"\n"
+							<< "Agregation Count Average:\n"
+							<< "\t\t"<<"=\t"<<aggregationAverage<<"\n"
+							<<"------------------------------------\n";
+
 		}
 		if ( names && annotatedNames.size()==0) {
 			error << "Annotation Names File does not exist\n";
