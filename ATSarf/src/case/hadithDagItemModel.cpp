@@ -5,6 +5,10 @@ const int	HadithDagItemModel::COL_NARRATOR=0,
 			HadithDagItemModel::COL_CHILDREN=1,
 			HadithDagItemModel::COLUMNS=2;
 
+bool compareNodes( const NarratorNodeIfc * node1, const NarratorNodeIfc * node2) {
+	return node1->CanonicalName()<node2->CanonicalName();
+}
+
 HadithDagItemModel::HadithDagItemModel(HadithDagGraph *graph) {
 	for (int i=0;i<graph->graph->all_nodes.size();i++) {
 		NarratorNodeIfc * node=graph->graph->all_nodes[i];
@@ -12,6 +16,7 @@ HadithDagItemModel::HadithDagItemModel(HadithDagGraph *graph) {
 			nodes.append(node);
 		}
 	}
+	qSort(nodes.begin(),nodes.end(),compareNodes);
 }
 
 QVariant HadithDagItemModel::headerData(int section, Qt::Orientation orientation, int role ) const{

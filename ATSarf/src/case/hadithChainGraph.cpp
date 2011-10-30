@@ -4,6 +4,7 @@
 #include "hadithChainItemModel.h"
 #include "bibleGeneology.h"
 
+#define DELETE_NARRATORS
 
 HadithChainGraph::HadithChainGraph():chain(NULL) { }
 
@@ -30,7 +31,7 @@ bool HadithChainGraph::isRepresentativeOf(const MainSelectionList &list) {
 QString HadithChainGraph::getText() {
 	QString text;
 	for (int i=chain.m_chain.size()-1;i>=0;i--)
-		text+=chain.m_chain[i]->getString()+"\n";
+		text+="<"+chain.m_chain[i]->getString()+">"+"\n";
 	return text;
 }
 
@@ -88,7 +89,13 @@ Narrator * HadithChainGraph::getNarrator(const Name & name) {
 }
 
 bool HadithChainGraph::buildFromText(QString text, TwoLevelSelection *sel, QString */*string*/, AbstractTwoLevelAnnotator */*annotator*/) {
-	QStringList lines=text.split("\n",QString::SkipEmptyParts);
+	QStringList lines=text.split(QRegExp("[<>]"),QString::SkipEmptyParts);
+	for (int i=0;i<lines.size();i++) {
+		if (lines[i]=="\n") {
+			lines.removeAt(i);
+			i--;
+		}
+	}
 	QString s;
 	QMessageBox msgBox;
 	msgBox.setIcon(QMessageBox::Information);
@@ -96,7 +103,7 @@ bool HadithChainGraph::buildFromText(QString text, TwoLevelSelection *sel, QStri
 	HadithChainGraph * newGraph=new HadithChainGraph();
 	foreach(s,lines) {
 		Name name(sel->getTextPointer(),-1,-1);
-		for (int i=0;i<sel->getNamesList().size();i++) {
+		for (int i=sel->getNamesList().size()-1;i>=0;i--) {
 			Name n=Name(sel->getTextPointer(),sel->getNamesList().at(i).first,sel->getNamesList().at(i).second);
 			if (equal_ignore_diacritics(n.getString(),s)) {
 				name=n;
@@ -147,7 +154,7 @@ void HadithChainGraph::displayGraph(ATMProgressIFC *prg) {
 			d_out<<"n"<<i<<"->n"<<i-1<<"\n";
 		}
 		Narrator * narr=dynamic_cast<Narrator *>(chain.m_chain[i]);
-		QString s=narr->getString();
+		QString s=narr->getString().replace("\n"," ");
 		d_out<<"n"<<i<<"[label=\""<<s<<"\"]\n";
 	}
 	d_out<<"}\n";
@@ -156,6 +163,7 @@ void HadithChainGraph::displayGraph(ATMProgressIFC *prg) {
 }
 
 void HadithChainGraph::deleteGraph() {
+#ifdef DELETE_NARRATORS
 	for (int i=0;i<chain.m_chain.size();i++) {
 		Narrator * narr=dynamic_cast<Narrator *>(chain.m_chain[i]);
 		for (int j=0;j<narr->m_narrator.size();j++) {
@@ -163,6 +171,7 @@ void HadithChainGraph::deleteGraph() {
 		}
 		delete narr;
 	}
+#endif
 	chain.m_chain.clear();
 }
 
@@ -202,10 +211,12 @@ void HadithChainGraph::removeNameFromGraph(Name &name) {
 	for (int i=0;i<chain.m_chain.size();i++) {
 		Narrator * narr=dynamic_cast<Narrator *>(chain.m_chain[i]);
 		if (equal_ignore_diacritics(narr->getString(),name.getString())) {
+		#ifdef DELETE_NARRATORS
 			for (int j=0;j<narr->m_narrator.size();j++) {
 				delete narr->m_narrator[j];
 			}
 			delete narr;
+		#endif
 			chain.m_chain.removeAt(i);
 		}
 	}

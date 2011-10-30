@@ -36,7 +36,7 @@ private:
 	virtual void beforeMovingToNextOutput(int tagCnt, int outputCount) ;
 	virtual void beforeMovingToNextTag(int tagCnt, int outputCount);
 	virtual void compareGlobalGraphs(AbstractGraph * correctGraph,AbstractGraph * generaredGraph);
-	int getNumChainNodes(NarratorNodeIfc * node);
+	int getNumChainNodes(NarratorNodeIfc * node, ChainNodeCorrespondanceMap *correspondance=NULL);
 	int getCommonNodes(NarratorNodeIfc * correctNode,NarratorNodeIfc * detectedNode);
 };
 

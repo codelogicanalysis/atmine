@@ -43,6 +43,8 @@ void HadithTaggerDialog::regenerateGlobalGraph() {
 		ChainsContainer container;
 		for (int i=0;i<tags.size();i++) {
 			AbstractGraph * g=tags[i].getGraph();
+			/*Name n(string,tags[i].getMainStart(),tags[i].getMainEnd());
+			qDebug()<<n.getString();*/
 			AbstractGraph * d=g->duplicate();
 			HadithChainGraph * duplicate=dynamic_cast<HadithChainGraph *>(d);
 			container.append(new Chain(duplicate->chain));
@@ -97,6 +99,31 @@ void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
 		NarratorNodeIfc * node=(NarratorNodeIfc *)index.internalPointer();
 		HadithDagGraph * g=dynamic_cast<HadithDagGraph*>(globalGraph);
 		map[&node->getCorrespondingNarratorNode()]=1;
+		if (node->isChainNode()) {
+			ChainNarratorNode * chainNode=dynamic_cast<ChainNarratorNode *>(node);
+			ChainNarratorNode * tempNode=chainNode;
+			if (!tempNode->isLast()) {
+				tempNode=&tempNode->nextInChain();
+				do {
+					map[&tempNode->getCorrespondingNarratorNode()]=0.5;
+					if (tempNode->isLast())
+						break;
+					tempNode=&tempNode->nextInChain();
+
+				}while(true);
+			}
+			tempNode=chainNode;
+			if (!tempNode->isFirst()) {
+				tempNode=&tempNode->prevInChain();
+				do {
+					map[&tempNode->getCorrespondingNarratorNode()]=0.5;
+					if (tempNode->isFirst())
+						break;
+					tempNode=&tempNode->prevInChain();
+
+				}while(true);
+			}
+		}
 		DisplayNodeVisitorColoredNarrator v(map);
 		GraphVisitorController c(&v,g->graph,true,true);
 		g->graph->DFS_traverse(c);
@@ -173,11 +200,30 @@ void HadithTaggerDialog::applyMerge() {
 	}
 	clearCacheFroUpdatedNode(node1);
 	clearCacheFroUpdatedNode(node2);
-	graph->mergeNodes(*node1,*node2);
-	graph->correctTopNodesList();
+	NarratorNodeIfc * newNode=graph->mergeNodes(*node1,*node2);
+	bool inTop=false;
+	if (graph->top_nodes.contains(node1)) {
+		inTop=true;
+		graph->top_nodes.removeOne(node1);
+
+	}
+	if (graph->top_nodes.contains(node2)) {
+		inTop=true;
+		graph->top_nodes.removeOne(node2);
+	}
+	if (inTop)
+		graph->top_nodes.append(newNode);
+	//graph->correctTopNodesList();
 
 	updateGraphDisplay();
 	chosenAction=false; //finished from current one
+}
+
+void HadithTaggerDialog::modifiedLocalGraph() {
+	if (globalGraph!=NULL) {
+		globalGraph->deleteGraph();
+		globalGraph=NULL;
+	}
 }
 
 void HadithTaggerDialog::cancelMerge() {

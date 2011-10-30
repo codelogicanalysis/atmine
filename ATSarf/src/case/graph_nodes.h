@@ -354,7 +354,7 @@ public:
 		else
 			return nullNodeAddress;
 	}
-	virtual QString CanonicalName() const{return narrator->getString();}
+	virtual QString CanonicalName() const{return narrator->getString().replace("\n"," ");}
 	virtual bool isFirst() const {return previous==NULL;}
 	virtual bool isLast() const {return next==NULL;}
 	virtual int getIndex() const {return chainContext.getIndex();}
@@ -437,22 +437,9 @@ protected:
 		lowestIndex=-1;
 		highestIndex=-1;
 	}
-	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key)
-		:GraphNodeItem(g),graphNode(gNode) {
-		list.append(cNode);
-		this->key=key;
-		cNode->setCorrespondingNarratorNodeGroup(this);
-		lowestIndex=cNode->getIndex();
-		highestIndex=lowestIndex;
-	}
-	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode)
-		:GraphNodeItem(g),graphNode(gNode) {
-		list.append(cNode);
-		this->key=cNode->getKey();//cNode->getNarrator().getKey();
-		cNode->setCorrespondingNarratorNodeGroup(this);
-		lowestIndex=cNode->getIndex();
-		highestIndex=lowestIndex;
-	}
+	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key);
+
+	GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode);
 
 	virtual NarratorNodeIfc & getChild(int index1,int ) {
 		assert(false);

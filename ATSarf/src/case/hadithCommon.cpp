@@ -243,14 +243,16 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 #define addNarrator(narrator) \
 	if (structures->hadith) { \
 		structures->chain->m_chain.append(narrator); \
-		Name n(structures->text,narrator->getStart(),narrator->getEnd());\
-		structures->learningEvaluator.addNonContextNarrator(n); \
+		if (!narrator->isRasoul) {\
+			Name n(structures->text,narrator->getStart(),narrator->getEnd());\
+			structures->learningEvaluator.addNonContextNarrator(n); \
+		} \
 	} else {\
 		if (structures->biography->addNarrator(narrator)) {\
 			currentData.bio_nrcCount=0; \
 			Name n(structures->text,narrator->getStart(),narrator->getEnd()); /*just to check the benefit of using POR*/ \
 			structures->learningEvaluator.addContextNarrator(n); \
-		} else { \
+		} else if (!narrator->isRasoul) { \
 			Name n(structures->text,narrator->getStart(),narrator->getEnd());\
 			structures->learningEvaluator.addNonContextNarrator(n); \
 		}\
@@ -1387,8 +1389,10 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 							}
 						}
 					}
-					Name p(currentChain->text,n->getStart(),n->getEnd());
-					currentChain->learningEvaluator.addContextNarrator(p);
+					if (!n->isRasoul) {
+						Name p(currentChain->text,n->getStart(),n->getEnd());
+						currentChain->learningEvaluator.addContextNarrator(p);
+					}
 				}
 			}
 		}
@@ -1878,17 +1882,19 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			allPrecision=(double)commonAll/allDetectedCount;
 
 			int totalWords=countWords(text,0,text->size()-1);
-			int numNarrators=annotatedNarrators.size();
-			int count=0;
+			int totalNarratorWords=countWords(text,annotatedNarrators);
+			int count=1;
 			QVector<int> aggregationCountList;
 			for (int i=1;i<annotatedNarrators.size();i++) {
-				int start=annotatedNarrators[i-1].first;
-				int end=annotatedNarrators[i-1].second;
+				int start=annotatedNarrators[i-1].second;
+				int end=annotatedNarrators[i].first;
 				PunctuationInfo punc;
 				start=next_positon(text,getLastLetter_IN_currentWord(text,start),punc);
 				end=getLastLetter_IN_previousWord(text,end);
-				int numWords=countWords(text,start,end);
-				if (numWords<hadithParameters.nrc_max) {
+				bool paraPunc;
+				//qDebug()<<Name(text,start,end).getString();
+				int numWords=countWords(text,start,end,&paraPunc);
+				if (numWords<hadithParameters.nrc_max /*&& !paraPunc*/) {
 					count++;
 				} else {
 					aggregationCountList.append(count);
@@ -1898,7 +1904,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			if (count>0) {
 				aggregationCountList.append(count);
 			}
-			double narratorConcentration=(double)numNarrators/totalWords;
+			double narratorConcentration=(double)totalNarratorWords/totalWords;
 			double aggregationAverage=average(aggregationCountList);
 
 			displayed_error	<< "-------------------------\n"
@@ -1909,7 +1915,8 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 							<< "\trecall=\t"<<commonAll<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
 							<< "\tprecision=\t"<<commonAll<<"/"<<allDetectedCount<<"=\t"<<allPrecision<<"\n"
 							<< "Narrator Concentration:\n"
-							<< "\t\t"<<numNarrators<<"/"<<totalWords<<"=\t"<<narratorConcentration<<"\n"
+							<< "\tword concentration=\t"<<totalNarratorWords<<"/"<<totalWords<<"=\t"<<narratorConcentration<<"\n"
+							<< "\tnarrator count=\t"<<annotatedNarrators.size()<<"\n"
 							<< "Agregation Count Average:\n"
 							<< "\t\t"<<"=\t"<<aggregationAverage<<"\n"
 							<<"------------------------------------\n";

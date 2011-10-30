@@ -99,6 +99,7 @@ void HadithInterAnnotatorAgreement::startNamesOverLap(int i, int j, int k,int h,
 
 void HadithInterAnnotatorAgreement::anotherTagOverLapPreviousOutputName(int i, int j, int k,int h){
 #ifdef GRAPH_COMPARE
+	assert(nodeDetected!=NULL && nodeCorrect!=NULL);
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapOC.find(nodeDetected);
 	assert(itr!=chainNodesMapOC.end());
 	ChainNarratorNode * oldCorrect=itr->first;
@@ -113,6 +114,7 @@ void HadithInterAnnotatorAgreement::anotherTagOverLapPreviousOutputName(int i, i
 
 void HadithInterAnnotatorAgreement::anotherOutputOverLapPreviousTagName(int i, int j, int k,int h) {
 #ifdef GRAPH_COMPARE
+	assert(nodeDetected!=NULL && nodeCorrect!=NULL);
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapCO.find(nodeCorrect);
 	assert(itr!=chainNodesMapCO.end());
 	ChainNarratorNode * oldDetected=itr->first;
@@ -127,6 +129,7 @@ void HadithInterAnnotatorAgreement::anotherOutputOverLapPreviousTagName(int i, i
 
 void HadithInterAnnotatorAgreement::firstNameOverLap(int i, int j, int k,int h) {
 #ifdef GRAPH_COMPARE
+	assert(nodeCorrect!=NULL && nodeDetected!=NULL);
 	chainNodesMapOC[nodeDetected]=ChainNodeIntPair(nodeCorrect,countCommon);
 	chainNodesMapCO[nodeCorrect]=ChainNodeIntPair(nodeDetected,countCommon);
 #endif
@@ -137,6 +140,10 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextTagName(int i, int j, int 
 	HadithDagGraph * graphCorrect=dynamic_cast<HadithDagGraph *>(annotatedGraph);
 	ChainNarratorNode * nodeCorrect=graphCorrect->getGraph()->getChainNode(i,k);
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapCO.find(nodeCorrect);
+	if (nodeCorrect==NULL) {
+		qDebug()<<tags[i].getText();
+	}
+	assert(nodeCorrect!=NULL);
 	if(itr==chainNodesMapCO.end()){
 		chainNodesMapCO[nodeCorrect]=ChainNodeIntPair(NULL,0);
 	}
@@ -148,18 +155,20 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextOutputName(int i, int j, i
 	HadithDagGraph * graphGenerated=dynamic_cast<HadithDagGraph *>(generatedGraph);
 	ChainNarratorNode * nodeDetected=graphGenerated->getGraph()->getChainNode(j,h);
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapOC.find(nodeDetected);
+	assert(nodeDetected!=NULL);
 	if(itr==chainNodesMapOC.end()){
 		chainNodesMapOC[nodeDetected]=ChainNodeIntPair(NULL,0);
 	}
 #endif
 }
 
-void HadithInterAnnotatorAgreement::beforeMovingToNextOutput(int i, int j) {
+void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int j) {
 #ifdef GRAPH_COMPARE
+	HadithDagGraph * graphCorrect=dynamic_cast<HadithDagGraph *>(annotatedGraph);
 	for (int k=0;true;k++) {
-		HadithDagGraph * graphCorrect=dynamic_cast<HadithDagGraph *>(annotatedGraph);
 		ChainNarratorNode * nodeCorrect=graphCorrect->getGraph()->getChainNode(i,k);
 		ChainNodeCorrespondanceMap::iterator itr=chainNodesMapCO.find(nodeCorrect);
+		assert(nodeCorrect!=NULL);
 		if(itr==chainNodesMapCO.end()){
 			chainNodesMapCO[nodeCorrect]=ChainNodeIntPair(NULL,0);
 		}
@@ -169,12 +178,13 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextOutput(int i, int j) {
 #endif
 }
 
-void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int j) {
+void HadithInterAnnotatorAgreement::beforeMovingToNextOutput(int i, int j) {
 #ifdef GRAPH_COMPARE
+	HadithDagGraph * graphGenerated=dynamic_cast<HadithDagGraph *>(generatedGraph);
 	for (int h=0;true;h++) {
-		HadithDagGraph * graphGenerated=dynamic_cast<HadithDagGraph *>(generatedGraph);
 		ChainNarratorNode * nodeDetected=graphGenerated->getGraph()->getChainNode(j,h);
 		ChainNodeCorrespondanceMap::iterator itr=chainNodesMapOC.find(nodeDetected);
+		assert(nodeDetected!=NULL);
 		if(itr==chainNodesMapOC.end()){
 			chainNodesMapOC[nodeDetected]=ChainNodeIntPair(NULL,0);
 		}
@@ -185,34 +195,58 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int j) {
 }
 
 void HadithInterAnnotatorAgreement::compareGlobalGraphs(AbstractGraph * correctGraph,AbstractGraph * generaredGraph) {
-	QVector<double> recallList,precisionList;
+	QVector<double> recallList,precisionList,recallAllList,precisionAllList;
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapCO.begin();
 	int includeOldErrorsTotal=0,newErrorsTotal=0;
 	for (;itr!=chainNodesMapCO.end();++itr) {
 		ChainNarratorNode * correctChainNode=itr.key();
 		NarratorNodeIfc * correctNode=&correctChainNode->getCorrespondingNarratorNode();
-		int correctMergesCount=getNumChainNodes(correctNode)-1;
+		int correctMergesCount=getNumChainNodes(correctNode,&chainNodesMapCO)-1,
+			correctAllMergesCount=getNumChainNodes(correctNode)-1;
+		assert(correctMergesCount<=correctAllMergesCount);
 		ChainNarratorNode * detectedChainNode=itr->first;
 		if (detectedChainNode!=NULL) {
 			NarratorNodeIfc * detectedNode=&detectedChainNode->getCorrespondingNarratorNode();
-			int detectedMergesCount=getNumChainNodes(detectedNode)-1;
+			int detectedMergesCount=getNumChainNodes(detectedNode,&chainNodesMapOC)-1,
+				detectedAllMergesCount=getNumChainNodes(detectedNode)-1;
+			assert(detectedMergesCount<=detectedAllMergesCount);
 			int commonMergesCount=getCommonNodes(correctNode,detectedNode)-1;
-			if (commonMergesCount>0) {
-				double recall=(double)commonMergesCount/correctMergesCount;
-				double precision=(double)commonMergesCount/detectedMergesCount;
-				recallList.append(recall);
-				precisionList.append(precision);
+			//if (detectedAllMergesCount>0 || correctAllMergesCount>0) {
+				if (detectedAllMergesCount>0) {
+					double precision=(double)commonMergesCount/detectedAllMergesCount;
+					precisionAllList.append(precision);
+				} else {
+					precisionAllList.append(1);
+				}
+				if(correctAllMergesCount>0) {
+					double recall=(double)commonMergesCount/correctAllMergesCount;
+					recallAllList.append(recall);
+				} else {
+					recallAllList.append(1);
+				}
+				if (detectedMergesCount>0) {
+					double precision=(double)commonMergesCount/detectedMergesCount;
+					precisionList.append(precision);
+				} else {
+					precisionList.append(1);
+				}
+				if(correctMergesCount>0) {
+					double recall=(double)commonMergesCount/correctMergesCount;
+					recallList.append(recall);
+				} else {
+					recallList.append(1);
+				}
 				newErrorsTotal++;
-			} else
-				continue;
+			/*} else
+				continue;*/
 		} else { //if we remove this statement we dont support for errors due to unincluded nodes
-			recallList.append(0);
-			precisionList.append(0);
+			recallAllList.append(0);
+			precisionAllList.append(0);
 		}
 		includeOldErrorsTotal++;
 	}
-	mergesRecallALL=sum(recallList)/includeOldErrorsTotal,
-	mergesPrecisionALL=sum(precisionList)/includeOldErrorsTotal,
+	mergesRecallALL=sum(recallAllList)/includeOldErrorsTotal,
+	mergesPrecisionALL=sum(precisionAllList)/includeOldErrorsTotal,
 	mergesRecallNew=sum(recallList)/newErrorsTotal,
 	mergesPrecisionNew=sum(precisionList)/newErrorsTotal;
 }
@@ -232,11 +266,19 @@ int HadithInterAnnotatorAgreement::getCommonNodes(NarratorNodeIfc * correctNode,
 	return count;
 }
 
-int HadithInterAnnotatorAgreement::getNumChainNodes(NarratorNodeIfc * node) {
+int HadithInterAnnotatorAgreement::getNumChainNodes(NarratorNodeIfc * node, ChainNodeCorrespondanceMap *correspondance) {
 	int count=0;
 	NodeIterator itr=node->begin();
 	for (;!itr.isFinished();++itr) {
-		count++;
+		if (correspondance==NULL)
+			count++;
+		else {
+			ChainNarratorNode * n=dynamic_cast<ChainNarratorNode *>(itr.getNode());
+			ChainNodeCorrespondanceMap::iterator i=correspondance->find(n);
+			ChainNarratorNode * corr=i->first;
+			if (corr!=NULL)
+				count++;
+		}
 	}
 	return count;
 }

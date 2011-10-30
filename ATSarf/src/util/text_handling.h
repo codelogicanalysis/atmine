@@ -212,20 +212,28 @@ inline bool before(int start1,int end1,int start2,int end2) {
 	return after(start2,end2,start1,end1);
 }
 
-inline int countWords(QString * text, int start,int end) {
+inline int countWords(QString * text, int start,int end, bool * hasParagraphPunc=NULL) {
+	if (hasParagraphPunc!=NULL)
+		*hasParagraphPunc=false;
 	if (start>=end)
 		return 0;
 	int count=1;
 	PunctuationInfo punc;
-	while ((start=next_positon(text,getLastLetter_IN_currentWord(text,start),punc))<end)
+	while ((start=next_positon(text,getLastLetter_IN_currentWord(text,start),punc))<end) {
 		count++;
+		if (hasParagraphPunc!=NULL) {
+			if (punc.hasParagraphPunctuation()) {
+				*hasParagraphPunc=true;
+			}
+		}
+	}
 	return count;
 }
 
-inline int countWords(QString * text, const QPair<int,int> & st) {
+inline int countWords(QString * text, const QPair<int,int> & st, bool * hasParagraphPunc=NULL) {
 	int start=st.first,
 		end=st.second;
-	return countWords(text,start,end);
+	return countWords(text,start,end,hasParagraphPunc);
 }
 
 inline int commonWords(QString * text, const QPair<int,int> & st1,const QPair<int,int> & st2) {
@@ -234,10 +242,10 @@ inline int commonWords(QString * text, const QPair<int,int> & st1,const QPair<in
 	return countWords(text,start,end);
 }
 
-inline int countWords(QString * text, const QList<QPair<int,int> > & st) {
+inline int countWords(QString * text, const QList<QPair<int,int> > & st, bool * hasParagraphPunc=NULL) {
 	int count=0;
 	for (int i=0;i<st.size();i++) {
-		count+=countWords(text,st[i]);
+		count+=countWords(text,st[i],hasParagraphPunc);
 	}
 	return count;
 }

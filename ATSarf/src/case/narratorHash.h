@@ -141,9 +141,11 @@ private:
 		NarratorHash * hash;
 	public:
 		DeleteVisitor(NarratorHash * hash) {this->hash=hash;}
-		void initialize(GraphNodeItem * node) {
+		void initialize(GraphNodeItem * /*node*/) {
+		#if 0
 			GroupNode * n=dynamic_cast<GroupNode *>(node);
-			assert(!n->allKeys.isEmpty());
+			assert(!n->allKeys.isEmpty()); //removed because causing problem when merging 2 nodes and removing this node from hash
+		#endif
 		}
 		void visit(const QString & s, GraphNodeItem * c, int value, int total){
 			GroupNode * node=dynamic_cast<GroupNode *>(c);

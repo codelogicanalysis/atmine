@@ -28,6 +28,7 @@ private slots:
 	void applyMerge();
 	void cancelMerge();
 private:
+	virtual void modifiedLocalGraph();
 	virtual void regenerateGlobalGraph();
 	virtual AbstractGraph * newGraph(bool global);
 	virtual bool mergeMainStructures(TwoLevelSelection * , int ) {return false; } //not supported yet

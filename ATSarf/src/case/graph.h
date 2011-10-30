@@ -717,7 +717,7 @@ private:
 			for (int i=0;i<dlt_g_node.size();i++) {
 				g_node.addChainNode(this,dlt_g_node[i]);
 			}
-			dlt_g_node.list.clear();
+
 
 			if (!null1 && !null2) {
 				GraphNarratorNode & graph_node=dynamic_cast<GraphNarratorNode &>(g_node.getCorrespondingNarratorNode());
@@ -742,9 +742,12 @@ private:
 
 			if (toDelete!=NULL) {
 				assert(!toDelete->contains(&dlt_g_node));
+				dlt_g_node.list.clear();
 				toDelete->append(&dlt_g_node);
 			} else {
 				all_nodes[dlt_g_node.getId()]=NULL;
+				hash.remove(&dlt_g_node);
+				dlt_g_node.list.clear();
 				delete &dlt_g_node;
 			}
 			if (null1 && null2) {
@@ -793,6 +796,9 @@ private:
 		if (narr1->isChainNode()) {
 			ChainNarratorNode * c1=dynamic_cast<ChainNarratorNode*>(narr1);
 			group1=&c1->getGroupNode();
+			if (group1==NULL) { //in principle must not happen
+				group1=new GroupNode(*this,(GraphNarratorNode*)c1,c1);
+			}
 		} else {
 			assert(narr1->isGraphNode());
 			GraphNarratorNode * graph1=dynamic_cast<GraphNarratorNode*>(narr1);
@@ -802,12 +808,16 @@ private:
 		if (narr2->isChainNode()) {
 			ChainNarratorNode * c2=dynamic_cast<ChainNarratorNode*>(narr2);
 			group2=&c2->getGroupNode();
+			if (group2==NULL) { //in principle must not happen
+				group2=new GroupNode(*this,(GraphNarratorNode*)c2,c2);
+			}
 		} else {
 			assert(narr2->isGraphNode());
 			GraphNarratorNode * graph2=dynamic_cast<GraphNarratorNode*>(narr2);
 			assert(graph2->size()>0);
 			group2=&(*graph2)[0];
 		}
+		assert(group1!=NULL && group2!=NULL);
 		return mergeNodes(*group1,*group2,toDelete);
 	}
 	void unMerge(ChainNarratorNode & c_node) {
@@ -823,19 +833,18 @@ private:
 			assert(group->list.removeOne(&c_node));
 			new GroupNode(*this,(GraphNarratorNode*)&c_node,&c_node);
 			group->list.removeOne(&c_node);
-			if (corresponding->size()==1 && group->size()==1) {
-
-				GroupNode * otherGroup=&(*g)[0];
-				if (otherGroup->size()==1) {
-					otherGroup->setGraphNode((GraphNarratorNode*)(&(*otherGroup)[0]));
-					all_nodes[g->getId()]=NULL;
-					delete g;
-				}
+		}
+		if (corresponding->size()==1 && group->size()==1) {
+			GroupNode * otherGroup=&(*g)[0];
+			if (otherGroup->size()==1) {
+				otherGroup->setGraphNode((GraphNarratorNode*)(&(*otherGroup)[0]));
+				all_nodes[g->getId()]=NULL;
+				delete g;
 			}
-
 		}
 		if (top_nodes.contains(corresponding)) {
-			top_nodes.append(&c_node);
+			if (c_node.isFirst())
+				top_nodes.append(&c_node);
 		}
 	}
 	void transform2ChainNodes(ChainsContainer &chains) {
@@ -1127,7 +1136,7 @@ private:
 					} else {
 						g_node=new GroupNode(*this,(GraphNarratorNode*)n1,n1);
 					}
-					hash.addNode(g_node);
+					//hash.addNode(g_node);
 				}
 			}
 			prg->report(100.0*(total-(num_chains-i))/total+0.5);
@@ -1650,8 +1659,6 @@ protected:
 		all_nodes.push_back(node);
 		assert(node==NULL || node->getId()==nodesCount);
 		nodesCount++;
-		/*if (node!=NULL && node->isGroupNode()) //check if we should add this and next line
-			hash.addNode(dynamic_cast<GroupNode*>(node));*/
 	}
 	void removeNode(NarratorNodeIfc * node) {
 		int id=node->getId();
@@ -1956,6 +1963,35 @@ public:
 				topChainNodes[chainNumber]=chain;
 			}
 		}
+		QList<int> nullChains;
+		for (int i=0;i<topChainNodes.size();i++) {
+			if (topChainNodes[i]==NULL)
+				nullChains.append(i);
+		}
+	#if 0
+		for (int i=0;i<all_nodes.size();i++) {
+			NarratorNodeIfc * node=all_nodes[i];
+			if (node!=NULL && node->isChainNode()) {
+				ChainNarratorNode * cNode=dynamic_cast<ChainNarratorNode*>(node);
+				int chainNum=cNode->getChainNum();
+				if (nullChains.contains(chainNum) ) {
+					if(cNode->isFirst()) {
+						topChainNodes[chainNum]=cNode;
+						nullChains.removeOne(chainNum);
+					}
+				}
+				if (chainNum>=topChainNodes.size() && cNode->isFirst()) {
+					int oldSize=topChainNodes.size();
+					for (int i=oldSize-1;i<chainNum;i++) {
+						topChainNodes.append(NULL);
+						nullChains.append(i);
+					}
+					topChainNodes[chainNum]=cNode;
+					nullChains.removeOne(chainNum);
+				}
+			}
+		}
+	#endif
 	}
 
 	ChainNarratorNode * getChainNode(int chain_num, int narrator_num) {

@@ -301,8 +301,14 @@ void AbstractTwoLevelAnnotator::unTagMain_action() {
 			if (tags[i].getMainStart()==tags[i].getMainEnd()) {
 				tags.removeAt(i);
 				i--;
-			} else
+			} else {
+				int initialCount=tags[i].getNamesList().size();
 				tags[i].removeExtraNames();
+				int finalCount=tags[i].getNamesList().size();
+				if (finalCount<initialCount) { //also add check if boundary of names at boundary changed
+					modifiedLocalGraph();
+				}
+			}
 			i=findSelection(i+1,SELECTION_OUTSIDEOVERLAP);
 		}
 	}
@@ -328,7 +334,9 @@ void AbstractTwoLevelAnnotator::save_action() {
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);   // we will serialize the data into the file
 		out	<< tags;
-		assert (globalGraph!=NULL);
+		if (globalGraph==NULL) {
+			regenerateGlobalGraph();
+		}
 		globalGraph->writeToStream(out);
 		file.close();
 		QFile::remove(file.fileName()+".copy");
@@ -424,6 +432,8 @@ void AbstractTwoLevelAnnotator::unTagName_action() {
 		text->setTextColor(Qt::black);
 		text->setTextCursor(c);
 	}
+	if (listForRemoval.size()>0)
+		modifiedLocalGraph();
 	c.clearSelection();
 	text->setTextCursor(c);
 	if (globalGraphAct->isChecked())
@@ -442,15 +452,19 @@ void AbstractTwoLevelAnnotator::tagName_action() {
 	if (start==end)
 		return;
 	int i=findSelection(0,SELECTION_INSIDE);
+	bool changes=false;
 	if (i>=0) {
 		int j=findSubSelection(0);
 		if (j<0) {
+			changes=true;
 			tags[i].addName(start,end-1);
 			text->setTextColor(Qt::white);
 			c.clearSelection();
 			text->setTextCursor(c);
 		}
 	}
+	if (changes)
+		modifiedLocalGraph();
 	if (globalGraphAct->isChecked())
 		return;
 	updateGraphDisplay();
@@ -486,7 +500,10 @@ void AbstractTwoLevelAnnotator::updateGraphDisplay() {
 			selectedTagIndex=-1;
 		}
 	} else {
-		treeText->setText(globalGraph->getText());
+		if (globalGraph!=NULL)
+			treeText->setText(globalGraph->getText());
+		else
+			treeText->setText("NULL");
 		treeText->setReadOnly(false);
 		modifyGraphAct->setEnabled(true);
 		if (globalGraph==NULL)
