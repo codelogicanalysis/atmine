@@ -51,10 +51,15 @@ inline long next_positon(QString * text,long finish,PunctuationInfo & punctuatio
 	int size=text->length();
 	if (finish>=size)
 		return finish+1;//check this
-	QChar letter=text->at(finish);
-#ifdef PUNCTUATION
-	punctuationInfo.update(letter);
-#endif
+	QChar letter;
+	if (finish>=0) {
+		letter=text->at(finish);
+	#ifdef PUNCTUATION
+		punctuationInfo.update(letter);
+	#endif
+	} else {
+		letter='\0';
+	}
 	finish++;
 	while(finish<size) {
 		letter=text->at(finish);

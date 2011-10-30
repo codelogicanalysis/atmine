@@ -220,6 +220,25 @@ void ChainNarratorNode::deserializeHelper(QDataStream &streamIn,NarratorGraph & 
 	chainContext.set(index,chainNum);
 }
 
+GroupNode::GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode,QString key)
+	:GraphNodeItem(g),graphNode(gNode) {
+	list.append(cNode);
+	this->key=key;
+	cNode->setCorrespondingNarratorNodeGroup(this);
+	lowestIndex=cNode->getIndex();
+	highestIndex=lowestIndex;
+	g.hash.addNode(this);
+}
+GroupNode::GroupNode(NarratorGraph&g,GraphNarratorNode * gNode, ChainNarratorNode * cNode)
+	:GraphNodeItem(g),graphNode(gNode) {
+	list.append(cNode);
+	this->key=cNode->getKey();//cNode->getNarrator().getKey();
+	cNode->setCorrespondingNarratorNodeGroup(this);
+	lowestIndex=cNode->getIndex();
+	highestIndex=lowestIndex;
+	g.hash.addNode(this);
+}
+
 void GraphNarratorNode::serializeCache(QDataStream &chainOut, NarratorGraph & graph,const NodeList & list) const {
 	int size=list.size();
 	chainOut<<size;

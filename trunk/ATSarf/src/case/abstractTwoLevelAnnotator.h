@@ -77,6 +77,7 @@ protected:
 	void createMenus();
 	void refreshTreeModel(QAbstractItemModel * model);
 
+	virtual void modifiedLocalGraph(){}
 	virtual bool mergeMainStructures(TwoLevelSelection * oldSelection, int newTagIndex);
 	virtual void regenerateGlobalGraph()=0;
 	virtual AbstractGraph * newGraph(bool global=false)=0;
