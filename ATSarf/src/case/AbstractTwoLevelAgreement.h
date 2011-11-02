@@ -68,7 +68,9 @@ public:
 	bool readAnnotation(QString tagFileName,OutputDataList & tags,AbstractGraph * globalGraph);
 	virtual void displayStatistics()=0;
 	virtual int equalNames(QString * text, int start1, int end1, int start2, int end2)=0;
-private:
+protected:
+	bool readAnnotations();
+	int calculateStatisticsHelper();
 	virtual AbstractGraph * newGraph(bool global=false)=0;
 	virtual void initializeAuxiliaryCountersLists();
 	virtual void startNamesOverLap(int tagCnt, int outputCount, int tagNameCount,int outputTagCount, int commonCount);

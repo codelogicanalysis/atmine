@@ -177,7 +177,7 @@ void MainWindow::on_pushButton_clicked(){
 		hadithParameters.nmc_max=nmc_max;
 		hadithParameters.nrc_max=nrc_max;
 		hadithParameters.equality_radius=equality_radius;
-	}else {
+	}else if (m_ui->chk_bible->isChecked()) {
 		geneologyParameters.N_min=m_ui->EQ_delta->toPlainText().toInt(&v4);
 		geneologyParameters.L_min=narr_min;
 		geneologyParameters.theta_0=nmc_max;
@@ -232,6 +232,8 @@ void MainWindow::on_pushButton_clicked(){
 		genealogy_agreement(input,this);
 	else if (m_ui->chk_narrator_annotation->isChecked())
 		narrator_annotation(input,this);
+	else if (m_ui->chk_narrator_equality->isChecked())
+		narrator_equality_comparision(input,this);
 	if (!m_ui->chk_hadith->isChecked() && !m_ui->chk_time->isChecked() && !m_ui->chk_bible->isChecked() && !m_ui->chk_testing->isChecked())
 		m_ui->hadith_display->setText(hadith_str);
 	m_ui->errors->setText(error_str);

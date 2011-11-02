@@ -28,9 +28,9 @@ private:
 	friend class HadithDagGraph;
 	friend class HadithTaggerDialog;
 	Chain chain;
-private:
-	Narrator * getNarrator(QString text);
-	Narrator * getNarrator(const Name & name);
+public:
+	static Narrator * getNarrator(QString & text);
+	static Narrator * getNarrator(const Name & name);
 	static int read(ChainsContainer & chains, ATMProgressIFC * prg, QString);
 
 public:

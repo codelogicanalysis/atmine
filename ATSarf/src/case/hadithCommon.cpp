@@ -1,6 +1,7 @@
 #include "hadithCommon.h"
 #include "AbstractTwoLevelAgreement.h"
 #include "Math_functions.h"
+#include "OneLevelAgreement.h"
 #include <QStringList>
 
 
@@ -1869,7 +1870,12 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 		}
 		//in both cases we report Narrators
 		if(annotatedNarrators.size()>0) {
-			QSet<int> visitedTags;
+			if (!names)
+				nonContextNarrators.append(contextNarrators);
+			OneLevelAgreement nonContextStatistics(text,annotatedNarrators,nonContextNarrators);
+			OneLevelAgreement contextStatistics(text,annotatedNarrators,contextNarrators);
+
+			/*QSet<int> visitedTags;
 			int allCommon;
 			int commonContext=commonNames<NameLearningEvaluator>(text,annotatedNarrators,contextNarrators,visitedTags,allCommon,*this);
 			visitedTags.clear();
@@ -1879,7 +1885,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			int commonAll=(names?commonNonContext:commonNonContext+commonContext);
 			int allDetectedCount=(names?nonContextNarrators.size():nonContextNarrators.size()+contextNarrators.size());
 			allRecall=(double)commonAll/annotatedNarrators.size();
-			allPrecision=(double)commonAll/allDetectedCount;
+			allPrecision=(double)commonAll/allDetectedCount;*/
 
 			int totalWords=countWords(text,0,text->size()-1);
 			int totalNarratorWords=countWords(text,annotatedNarrators);
@@ -1908,13 +1914,13 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			double aggregationAverage=average(aggregationCountList);
 
 			displayed_error	<< "-------------------------\n"
-							<< (names?"Hadith ":"POR ")<<"Narrators:\n"
-							<< "\trecall=\t"<<commonContext<<"/"<<annotatedNarrators.size()<<"=\t"<<contextRecall<<"\n"
-							<< "\tprecision=\t"<<commonContext<<"/"<<contextNarrators.size()<<"=\t"<<contextPrecision<<"\n"
-							<< "All Narrators:\n"
-							<< "\trecall=\t"<<commonAll<<"/"<<annotatedNarrators.size()<<"=\t"<<allRecall<<"\n"
-							<< "\tprecision=\t"<<commonAll<<"/"<<allDetectedCount<<"=\t"<<allPrecision<<"\n"
-							<< "Narrator Concentration:\n"
+							<< (names?"Hadith ":"POR ")<<"Narrators:\n";
+							contextStatistics.calculateStatistics();
+							contextStatistics.displayStatistics();
+			displayed_error << "All Narrators:\n";
+							nonContextStatistics.calculateStatistics();
+							nonContextStatistics.displayStatistics();
+			displayed_error << "Narrator Concentration:\n"
 							<< "\tword concentration=\t"<<totalNarratorWords<<"/"<<totalWords<<"=\t"<<narratorConcentration<<"\n"
 							<< "\tnarrator count=\t"<<annotatedNarrators.size()<<"\n"
 							<< "Agregation Count Average:\n"

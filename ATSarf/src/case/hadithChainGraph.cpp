@@ -61,7 +61,7 @@ int HadithChainGraph::read(ChainsContainer & chains, ATMProgressIFC * prg, QStri
 	return 0;
 }
 
-Narrator * HadithChainGraph::getNarrator(QString text) {
+Narrator * HadithChainGraph::getNarrator(QString &text) {
 	Name n(&text,0,text.size()-1);
 	return getNarrator(n);
 }
@@ -73,17 +73,21 @@ Narrator * HadithChainGraph::getNarrator(const Name & name) {
 	if (r.narr==NULL) {
 		addEdges=true;
 		r.narr=new Narrator(name.getTextPointer());
-	}
-	NameConnectorPrim * con;
-	if (addEdges || name.getStart()<r.narr->getStart()) {
-		con=new NameConnectorPrim(name.getTextPointer(),name.getStart());
-		con->m_end=name.getStart();
-		r.narr->m_narrator.prepend(con);
-	}
-	if (addEdges || name.getEnd()>r.narr->getEnd()) {
-		con=new NameConnectorPrim(name.getTextPointer(),name.getEnd());
-		con->m_end=name.getEnd();
-		r.narr->m_narrator.append(con);
+		NamePrim * n=new NamePrim(name.getTextPointer(),name.getStart());
+		n->m_end=name.getEnd();
+		r.narr->m_narrator.append(n);
+	} else {
+		NameConnectorPrim * con;
+		if (addEdges || name.getStart()<r.narr->getStart()) {
+			con=new NameConnectorPrim(name.getTextPointer(),name.getStart());
+			con->m_end=name.getStart();
+			r.narr->m_narrator.prepend(con);
+		}
+		if (addEdges || name.getEnd()>r.narr->getEnd()) {
+			con=new NameConnectorPrim(name.getTextPointer(),name.getEnd());
+			con->m_end=name.getEnd();
+			r.narr->m_narrator.append(con);
+		}
 	}
 	return r.narr;
 }

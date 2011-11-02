@@ -27,5 +27,6 @@ int hadith_name_annotation(QString input_str,ATMProgressIFC *prg);
 int hadith_agreement(QString input_str,ATMProgressIFC *prg);
 int genealogy_agreement(QString input_str,ATMProgressIFC *prg);
 int narrator_annotation(QString input_str,ATMProgressIFC *prg);
+int narrator_equality_comparision(QString input_str, ATMProgressIFC *prg);
 
 #endif // TEST_H
