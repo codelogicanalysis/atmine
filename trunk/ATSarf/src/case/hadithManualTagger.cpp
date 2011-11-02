@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <time.h>
 #include <QtGui>
 #include "hadithManualTagger.h"
 #include "hadithChainGraph.h"
@@ -6,6 +8,63 @@
 
 HadithTaggerDialog::HadithTaggerDialog(QString filename)
 		:AbstractTwoLevelAnnotator(filename,"Hadith") {
+	resultTreeMenuMIdxMain=resultTreeMenuMIdxApplied=NULL;
+	chosenAction=false;
+}
+
+void HadithTaggerDialog::createActions(QString mainStructure)
+{
+	AbstractTwoLevelAnnotator::createActions(mainStructure);
+
+	colorSelectedNodeInGraphAct = new QAction(QString("&Color Selected Node in Graph"), this);
+	colorSelectedNodeInGraphAct->setStatusTip(QString("When selected, selected node in Tree View is colored in the image of the graph"));
+	colorSelectedNodeInGraphAct->setCheckable(true);
+	colorSelectedNodeInGraphAct->setChecked(true);
+
+
+	resetOneEqualityAct = new QAction(QString("&Remove Entry"), this);
+	resetOneEqualityAct->setStatusTip(QString("Removes selected item from the table"));
+	connect(resetOneEqualityAct, SIGNAL(triggered()), this, SLOT(resetOneEquality_clicked()));
+
+	resetAllEqualityAct = new QAction(QString("&Clear All"), this);
+	resetAllEqualityAct->setStatusTip(QString("Clear contents of whole table file"));
+	connect(resetAllEqualityAct, SIGNAL(triggered()), this, SLOT(resetAllEqualities_clicked()));
+
+	addEqualityPairsAct = new QAction(QString("Add Extra Entries"), this);
+	addEqualityPairsAct->setStatusTip(QString("Adds the specified number of entries to table randomly from already tagged sanads of hadith book"));
+	connect(addEqualityPairsAct, SIGNAL(triggered()), this, SLOT(addEqualityEntries_clicked()));
+
+	narratorsEqualAct = new QAction(QString("Equal"), this);
+	narratorsEqualAct->setStatusTip(QString("Indicates the whether the pair of the selected narrators are equal. (Edittable)"));
+	narratorsEqualAct->setCheckable(true);
+	narratorsEqualAct->setEnabled(false);
+	connect(narratorsEqualAct, SIGNAL(triggered()), this, SLOT(equalNarrator_clicked()));
+}
+
+
+
+void HadithTaggerDialog::createToolbar() {
+	AbstractTwoLevelAnnotator::createToolbar();
+
+	graphToolbar->addAction(colorSelectedNodeInGraphAct);
+
+	narratorEqualityToolBar = addToolBar(tr("Narrator Equality"));
+	numberExtraNarratorPairs=new QTextEdit("5",narratorEqualityToolBar);
+	numberExtraNarratorPairs->setMaximumHeight(30);
+	numberExtraNarratorPairs->setMaximumWidth(50);
+	narratorEqualityToolBar->addWidget(numberExtraNarratorPairs);
+	narratorEqualityToolBar->addAction(addEqualityPairsAct);
+	narratorEqualityToolBar->addAction(resetOneEqualityAct);
+	narratorEqualityToolBar->addAction(resetAllEqualityAct);
+	narratorEqualityToolBar->addAction(narratorsEqualAct);
+}
+
+void HadithTaggerDialog::createMenus() {
+	AbstractTwoLevelAnnotator::createMenus();
+}
+
+void HadithTaggerDialog::createDocWindows() {
+	AbstractTwoLevelAnnotator::createDocWindows();
 
 	resultTreeMainMenu=new QMenu("Tree Menu", resultTree);
 	resultTreeMainMenu->addAction("Merge",this,SLOT(mergeIndividual()));
@@ -18,18 +77,173 @@ HadithTaggerDialog::HadithTaggerDialog(QString filename)
 	resultTreeOperationMenu->addSeparator();
 	resultTreeOperationMenu->addAction("Cancel Operation",this,SLOT(cancelMerge()));
 	resultTree->setContextMenuPolicy(Qt::CustomContextMenu);
-
-	colorSelectedNodeInGraphAct = new QAction(QString("&Color Selected Node in Graph"), this);
-	colorSelectedNodeInGraphAct->setStatusTip(QString("When selected, selected node in Tree View is colored in the image of the graph"));
-	colorSelectedNodeInGraphAct->setCheckable(true);
-	colorSelectedNodeInGraphAct->setChecked(true);
-	graphToolbar->addAction(colorSelectedNodeInGraphAct);
-
 	connect(resultTree,SIGNAL(clicked(QModelIndex )),this,SLOT(resultTree_clicked(QModelIndex)));
 	connect(resultTree,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(resultTree_contextMenu(QPoint)));
 
-	resultTreeMenuMIdxMain=resultTreeMenuMIdxApplied=NULL;
-	chosenAction=false;
+	QDockWidget *dock = new QDockWidget(tr("Equality Matrix"), this);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	equalityMatrixTable=new QTableView(dock);
+	equalityMatrixTable->setRowHeight(1,20);
+	equalityMatrixTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+	equalityMatrixTable->setSelectionMode(QAbstractItemView::SingleSelection);
+	dock->setWidget(equalityMatrixTable);
+	addDockWidget(Qt::RightDockWidgetArea , dock);
+	viewMenu->addAction(dock->toggleViewAction());
+
+	//equalityTableModel=new NarratorEqualityModel(map);
+	//equalityMatrixTable->setModel(equalityTableModel);
+	equalityTableModel=NULL;
+}
+
+QModelIndex HadithTaggerDialog::getEqualitySelectedIndex() {
+	QModelIndexList  selection=equalityMatrixTable->selectionModel()->selectedRows(NarratorEqualityModel::COL_EQUALITY);
+	for (int i=0;i<selection.size();i++) {
+		QModelIndex index=selection[i];
+		return index;
+	}
+	return QModelIndex();
+}
+
+void HadithTaggerDialog::refreshEqualityTableModel() {
+	if (equalityTableModel!=NULL)
+		delete equalityTableModel;
+	equalityTableModel=new NarratorEqualityModel(map);
+	equalityMatrixTable->setModel(equalityTableModel);
+	connect(equalityMatrixTable->selectionModel(),SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+			this,SLOT(tableEquality_changedSelection(QModelIndex,QModelIndex)));
+}
+
+void HadithTaggerDialog::equalNarrator_clicked() {
+	const QModelIndex index=getEqualitySelectedIndex();
+	if (!index.isValid() || !narratorsEqualAct->isEnabled())
+		return;
+	QVariant newValue(narratorsEqualAct->isChecked());
+	equalityTableModel->setData(index,newValue);
+	equalityMatrixTable->selectRow(index.row());
+	//refreshEqualityTableModel();
+}
+
+void HadithTaggerDialog::resetOneEquality_clicked() {
+	QModelIndex index=getEqualitySelectedIndex();
+	if (!index.isValid() )
+		return;
+	int selectedRow=index.row();
+	NarratorMap::iterator itr=map.begin()+selectedRow;
+	map.erase(itr);
+	refreshEqualityTableModel();
+}
+
+void HadithTaggerDialog::resetAllEqualities_clicked() {
+	map.clear();
+	refreshEqualityTableModel();
+}
+
+void HadithTaggerDialog::addEqualityEntries_clicked() {
+	typedef NarratorEqualityModel::NarratorPair NarratorPair;
+	HadithDagGraph *g=dynamic_cast<HadithDagGraph *>(globalGraph);
+	NarratorGraph * graph=g->getGraph();
+	srand ( time(NULL) );
+	bool ok;
+	int num=numberExtraNarratorPairs->toPlainText().toInt(&ok);
+	if (!ok) {
+		num=1;
+	}
+	for (int q=0;q<num/2;q++) {
+		int i= rand() % tags.size();
+		int j= rand() % tags.size();
+		const TwoLevelSelection::MainSelectionList	& namesI=tags[i].getNamesList(),
+													& namesJ=tags[j].getNamesList();
+
+		if (namesI.size()==0 || namesJ.size()==0) {
+			q--;
+			continue;
+		}
+		int k= rand() % namesI.size();
+		int h= rand() % namesJ.size();
+		if (h==k) {
+			q--;
+			continue;
+		}
+		Name n1(string,namesI[k].first,namesI[k].second);
+		QString narr1=n1.getString();
+		Name n2(string,namesJ[h].first,namesJ[h].second);
+		QString narr2=n2.getString();
+		if (map.contains(NarratorPair(narr1,narr2)) ||
+			map.contains(NarratorPair(narr2,narr1)) ) {
+			q--;
+			continue;
+		}
+		map[NarratorPair(narr1,narr2)]=false;
+	}
+	for (int q=num/2;q<num;q++) {
+		int f= rand() % graph->size();
+		NarratorNodeIfc * n=graph->getNode(f);
+		if (n==NULL || !n->isGraphNode()) {
+			q--;
+			continue;
+		}
+		GraphNarratorNode * g=dynamic_cast<GraphNarratorNode*>(n);
+		int i=rand()%g->size();
+		int j=rand()%g->size();
+		int k= rand() % (*g)[i].size();
+		int h= rand() % (*g)[j].size();
+		if (h==k) {
+			q--;
+			continue;
+		}
+		QString narr1=(*g)[i][k].CanonicalName();
+		QString narr2=(*g)[j][h].CanonicalName();
+		if (map.contains(NarratorPair(narr1,narr2)) ||
+			map.contains(NarratorPair(narr2,narr1)) ) {
+			q--;
+			continue;
+		}
+		map[NarratorPair(narr1,narr2)]=true;
+	}
+	refreshEqualityTableModel();
+}
+
+void HadithTaggerDialog::tableEquality_changedSelection(const QModelIndex & current,const QModelIndex & previous) {
+	const QModelIndex & index=current;
+	if (!index.isValid()) {
+		narratorsEqualAct->setEnabled(false);
+		return;
+	}
+	narratorsEqualAct->setEnabled(true);
+	NarratorMap::iterator itr=map.begin()+index.row();
+	bool val=*itr;
+	narratorsEqualAct->setChecked(val);
+}
+
+bool HadithTaggerDialog::open_action() {
+	bool ret= (AbstractTwoLevelAnnotator::open_action());
+	QFile file(QString("%1.equal").arg(filename).toStdString().data());
+	if (file.open(QIODevice::ReadOnly))	{
+		QDataStream in(&file);   // we will serialize the data into the file
+		in>>map;
+		file.close();
+		refreshEqualityTableModel();
+	} else {
+		error << "Narrator Equality Annotation File does not exist\n";
+	}
+	return ret;
+}
+
+bool HadithTaggerDialog::save_action() {
+	AbstractTwoLevelAnnotator::save_action();
+	QFile file(QString("%1.equal").arg(filename).toStdString().data());
+	if (file.open(QIODevice::WriteOnly)) {
+		QDataStream out(&file);   // we will serialize the data into the file
+		out	<< map;
+		file.close();
+		QFile::remove(file.fileName()+".copy");
+		file.copy(file.fileName()+".copy");
+		return true;
+	} else {
+		error << "Unexpected Error: Unable to open file '"<<file.fileName()<<"'\n";
+		return false;
+	}
+
 }
 
 HadithTaggerDialog::~HadithTaggerDialog() {

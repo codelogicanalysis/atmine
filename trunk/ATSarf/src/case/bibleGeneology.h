@@ -18,6 +18,7 @@
 //#define DISPLAY_INDIVIDUAL
 #define REDUCE_AFFIX_SEARCH
 //#define SHOW_MERGING_ERRORS
+#define BIRTH_LI
 
 class GeneologyParameters {
 public:
@@ -256,12 +257,25 @@ private:
 	GeneNode * getNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
 		if (this==NULL)
 			return NULL;
+		AbstractGeneNode * node=getAbstractNodeInSubTree(word,checkSpouses,maxDepth);
+		if (node==NULL)
+			return NULL;
+		if (node->isSpouse()) {
+			return node->getParent();
+		} else {
+			return dynamic_cast<GeneNode *>(node);
+		}
+	}
+	AbstractGeneNode * getAbstractNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
+		if (this==NULL)
+			return NULL;
 		if (!ignoreInSearch && equalNames(word,name.getString()))
 			return this;
 		if (checkSpouses) {
 			for (int i=0;i<spouses.size();i++) {
-				if (equalNames(word,spouses[i]->getString()))
-					return this;
+				if (equalNames(word,spouses[i]->getString())) {
+					return spouses[i];
+				}
 			}
 		}
 		if (maxDepth<0 || maxDepth>0) {
@@ -520,6 +534,11 @@ public:
 		if (this==NULL)
 			return NULL;
 		return root->getNodeInSubTree(word,checkSpouses);
+	}
+	AbstractGeneNode * findAbstractTreeNode(QString word, bool checkSpouses=false) {
+		if (this==NULL)
+			return NULL;
+		return root->getAbstractNodeInSubTree(word,checkSpouses);
 	}
 	void compareToStandardTree(GeneTree * standard,GraphStatistics & stats);
 	void compareToStandardTree(GeneTree * standard,QSet<QPair<GeneNode *, Name> > & visitedNodes,GraphStatistics & stats);

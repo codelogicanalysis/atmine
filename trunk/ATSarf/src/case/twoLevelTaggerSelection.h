@@ -15,6 +15,7 @@ class TwoLevelSelection {
 	friend QDataStream &operator>>(QDataStream &in, TwoLevelSelection &t);
 	friend class GeneTree;
 	friend class HadithChainGraph;
+	friend class OneLevelAgreement;
 public:
 	typedef AbstractGraph::MainSelection MainSelection;
 	typedef AbstractGraph::MainSelectionList MainSelectionList;

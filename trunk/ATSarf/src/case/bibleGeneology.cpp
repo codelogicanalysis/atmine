@@ -407,22 +407,34 @@ public:
 };
 class GeneTree::MergeVisitor:public GeneVisitor{
 public:
-	static void appendEdgeName(const GeneNode * n, AbstractGeneNode * n2, QList<int> * delimitersStart,QList<int> * delimitersEnd) {
+	static QString getEdge(const Name & n_parent,const Name & n_child, QList<int> * delimitersStart,QList<int> * delimitersEnd) {
+		int start=min(n_parent.getEnd(),n_child.getEnd()),
+			end  =max(n_parent.getStart(),n_child.getStart());
+		qDebug()<<n_parent.getString()<<"\t"<<n_child.getString();
+		QList<int>::const_iterator lower=qLowerBound(*delimitersStart,end);
+		QList<int>::const_iterator upper=qLowerBound(*delimitersEnd,end);
+		start=*(lower-1);
+		end = *(upper-1);
+		Name temp(n_child.getTextPointer(),start,end);
+		QString s=temp.getString();
+		return s.remove("\n");
+	}
+
+	static void appendEdgeName(AbstractGeneNode * nodeToAppendTo,const Name & n_parent,const Name & n_child, QList<int> * delimitersStart,QList<int> * delimitersEnd) {
+		if (delimitersStart==NULL || delimitersEnd==NULL)
+			return;
+		QString s=getEdge(n_parent,n_child,delimitersStart,delimitersEnd);
+		nodeToAppendTo->addEdgeText(s);
+	}
+	static void appendEdgeName(GeneNode * n, AbstractGeneNode * n2, QList<int> * delimitersStart,QList<int> * delimitersEnd, bool appendToSecond=true) {
 		if (delimitersStart==NULL || delimitersEnd==NULL)
 			return;
 		const Name & n_parent=n->getName(),
 				   & n_child=n2->getName();
-		int start=min(n_parent.getStart(),n_child.getStart()),
-			end  =max(n_parent.getEnd(),n_child.getEnd());
-		QList<int>::const_iterator lower=qLowerBound(*delimitersStart,end);
-		QList<int>::const_iterator upper=qLowerBound(*delimitersEnd,end);
-		start=*(lower-2);
-		end = *(upper-1);
-		Name temp(n_child.getTextPointer(),start,end);
-		QString s=temp.getString();
-		s=s.remove("\n");
-		n2->addEdgeText(s);
+		AbstractGeneNode * node=(appendToSecond?n2:n);
+		appendEdgeName(node,n_parent,n_child,delimitersStart,delimitersEnd);
 	}
+
 private:
 	typedef QPair< GeneNode *,AbstractGeneNode *> Edge;
 	typedef QMap<Edge,bool> EdgeMap;
@@ -1021,7 +1033,7 @@ private:
 		for (int i=0;i<node->spouses.size();i++) {
 			const Name & spouseName=node->spouses[i]->getName();
 			duplicatedNode->addSpouse(spouseName);
-			SpouseGeneNode * duplicatedSpouse=node->spouses.last();
+			SpouseGeneNode * duplicatedSpouse=duplicatedNode->spouses.last();
 			duplicatedSpouse->copyEdgeText(node->spouses[i]);
 			if (duplicatedSpouse->getEdgeText().isEmpty())
 				GeneTree::MergeVisitor::appendEdgeName(duplicatedNode,duplicatedSpouse,delimitersStart,delimitersEnd);
@@ -1398,6 +1410,7 @@ private:
 		GeneTree * tree;
 		GeneNode * last;
 		QString lastName;
+		QString currEdge;
 		long startGene;
 		OutputData * outputData;
 	public:
@@ -1593,7 +1606,9 @@ private:
 			}
 			break;
 		case NAME_S:
+		#ifdef BIRTH_LI
 			if (!stateInfo.preceededByLi) {
+		#endif
 				switch (stateInfo.currentType) {
 				case DC:
 					if (stateInfo.newNameNotProcessed && currentData.last!=NULL) {
@@ -1740,9 +1755,13 @@ private:
 					stateInfo.nextState=NAME_S;
 				}
 				break;
+		#ifdef BIRTH_LI
 			} //in this way, code applies to both NAME_S and SONS_S bc we dont reach break
+		#endif
 		case SONS_S:
+		#ifdef BIRTH_LI
 			if (!stateInfo.preceededByLi) {
+		#endif
 				switch (stateInfo.currentType) {
 				/*case DC:
 					if (stateInfo.preceededBygaveBirth)
@@ -1786,12 +1805,15 @@ private:
 					stateInfo.nextState=SONS_S;
 				}
 				break;
+		#ifdef BIRTH_LI
 			} else {
 				if (stateInfo.preceededBygaveBirth) {
 					if (currentData.last!=NULL) {
 						stateInfo.descentDirection=SON;
-						if (!currentData.tree->findTreeNode(name.getString(),true))
+						if (!currentData.tree->findTreeNode(name.getString(),true)) {
 							currentData.last->addSpouse(name);//make sure no duplication occurs
+							currentData.outputData->addName(name);
+						}
 						stateInfo.nextState=SONS_S;
 					} else {
 						stateInfo.descentDirection=UNDEFINED_DIRECTION;
@@ -1803,6 +1825,7 @@ private:
 				}
 				break;
 			}
+		#endif
 		default:
 			assert(false);
 		}
@@ -1811,7 +1834,16 @@ private:
 	inline bool result(WordType t,bool addCounters=true) {
 		display(t);
 		stateInfo.currentType=t;
-		return getNextState(addCounters);
+		bool result=getNextState(addCounters);
+		if (!currentData.currEdge.isEmpty()) {
+			QString currWord=stateInfo.getWord();
+			AbstractGeneNode * node=currentData.tree->findAbstractTreeNode(currWord,true);
+			if(node!=NULL) {
+				node->addEdgeText(currentData.currEdge);
+			}
+			currentData.currEdge="";
+		}
+		return result;
 	}
 	bool proceedInStateMachine() {//does not fill stateInfo.currType
 		long  finish;
@@ -1819,7 +1851,7 @@ private:
 			display("Number ");
 			stateInfo.endPos=finish;
 			stateInfo.nextPos=next_positon(stateInfo.text,finish,stateInfo.currentPunctuationInfo);
-			//delimitersStart.append(stateInfo.nextPos);
+			delimitersStart.append(stateInfo.nextPos);
 			//delimitersEnd.append(stateInfo.lastEndPos);
 			display(stateInfo.text->mid(stateInfo.startPos,finish-stateInfo.startPos+1)+":");
 			if (! result(OTHER,false))
@@ -1881,10 +1913,10 @@ private:
 			if (node==NULL)
 				type=NEW_NAME;
 			else if (node->isLeaf())
-					type=LEAF_NAME;
+				type=LEAF_NAME;
 			else
 				type=CORE_NAME;
-			delimitersStart.append(stateInfo.startPos);
+			delimitersStart.append(stateInfo.nextPos);
 			delimitersEnd.append(stateInfo.lastEndPos);
 			stateInfo.male=s.male;
 			/*if (stateInfo.currentType==NEW_NAME && type==NEW_NAME && stateInfo.descentDirection==UNDEFINED_DIRECTION)//in cases similar to the start of 1 chronicles
@@ -1892,6 +1924,22 @@ private:
 			if (stateInfo.land) {
 				stateInfo.land=false;
 				type=OTHER;
+			}
+			Name currName(text,stateInfo.startPos,stateInfo.endPos);
+			if (type==LEAF_NAME || type==CORE_NAME) {
+				AbstractGeneNode * node=currentData.tree->findAbstractTreeNode(word,true);
+				assert(node!=NULL);
+				if (equalNames(currentData.lastName,node->getParent()->getString())) {
+					GeneTree::MergeVisitor::appendEdgeName(node,node->getName(),currName,&delimitersStart,&delimitersEnd);
+				}
+			} else {
+				if (!currentData.lastName.isEmpty()){
+					AbstractGeneNode *lastNode=currentData.tree->findAbstractTreeNode(currentData.lastName,true);
+					if (lastNode!=NULL) {
+						currentData.currEdge=GeneTree::MergeVisitor::getEdge(lastNode->getName(),currName,&delimitersStart,&delimitersEnd);
+					}
+				}
+
 			}
 			if (!(result(type)))
 				return false;
@@ -2180,6 +2228,12 @@ private:
 								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			#endif
 				modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
+				if (outputList[j].getNamesList().size()==2) {
+					Name n1(text,outputList[j].getNamesList()[0].first,outputList[j].getNamesList()[0].second);
+					qDebug()<<n1.getString();
+					Name n2(text,outputList[j].getNamesList()[1].first,outputList[j].getNamesList()[1].second);
+					qDebug()<<n2.getString();
+				}
 				j++;
 			}
 		}

@@ -2032,6 +2032,9 @@ public:
 		assert(i>=0 && i<all_nodes.size());
 		return all_nodes[i];
 	}
+	int size() const {
+		return all_nodes.size();
+	}
 	bool isBuilt() { return built; }
 	~NarratorGraph() {
 		Int2StringMap::iterator i=int2HadithMap.begin();

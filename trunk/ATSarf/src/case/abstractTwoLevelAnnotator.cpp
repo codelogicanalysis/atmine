@@ -20,18 +20,12 @@ void AbstractTwoLevelAnnotator::SelectionList::readFromStream(QDataStream & in,A
 AbstractTwoLevelAnnotator::AbstractTwoLevelAnnotator(QString filename, QString mainStructure, QString ext):QMainWindow() {
 	this->filename=filename;
 	this->ext=ext;
+	this->mainStructure=mainStructure;
 	string=NULL;
 	globalGraph=NULL;
 
-	createActions(mainStructure);
-	createToolbar();
-	createMenus();
-	createDocWindows();
-
-	connect(text,SIGNAL(selectionChanged()),this,SLOT(text_selectionChanged()));
-
 	setWindowTitle(filename);
-	this->resize(700,700);
+	this->resize(1000,700);
 	selectedTagIndex=-1;
 }
 
@@ -153,6 +147,13 @@ void AbstractTwoLevelAnnotator::createDocWindows() {
 }
 
 void AbstractTwoLevelAnnotator::show(){
+	createActions(mainStructure);
+	createToolbar();
+	createMenus();
+	createDocWindows();
+
+	connect(text,SIGNAL(selectionChanged()),this,SLOT(text_selectionChanged()));
+
 	globalGraph=newGraph();
 	open_action();
 	if (globalGraph==NULL)
@@ -328,7 +329,7 @@ void AbstractTwoLevelAnnotator::unTagMain_action() {
 	updateGraphDisplay();
 }
 
-void AbstractTwoLevelAnnotator::save_action() {
+bool AbstractTwoLevelAnnotator::save_action() {
 	qSort(tags.begin(),tags.end());
 	QFile file(QString("%1"+ext).arg(filename).toStdString().data());
 	if (file.open(QIODevice::WriteOnly)) {
@@ -341,11 +342,14 @@ void AbstractTwoLevelAnnotator::save_action() {
 		file.close();
 		QFile::remove(file.fileName()+".copy");
 		file.copy(file.fileName()+".copy");
-	} else
+		return true;
+	} else {
 		error << "Unexpected Error: Unable to open file\n";
+		return false;
+	}
 }
 
-void AbstractTwoLevelAnnotator::open_action() {
+bool AbstractTwoLevelAnnotator::open_action() {
 	QFile fileOriginal(QString(filename).toStdString().data());
 	if (fileOriginal.open(QIODevice::ReadOnly))	{
 		text->clear();
@@ -403,8 +407,10 @@ void AbstractTwoLevelAnnotator::open_action() {
 		} else {
 			error << "Annotation File does not exist\n";
 		}
+		return true;
 	} else {
 		error << "File does not exist\n";
+		return false;
 	}
 }
 

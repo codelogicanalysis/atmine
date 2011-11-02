@@ -65,17 +65,17 @@ protected:
 	void unTagMain_action();
 	void tagName_action();
 	void unTagName_action();
-	void save_action();
-	void open_action();
 	void text_selectionChangedAction();
 	void modifyGraph_action();
 	void isGlobalGraph_action();
 	void updateGraphDisplay();
-	void createToolbar();
-	void createDocWindows();
-	void createActions(QString mainStructure);
-	void createMenus();
 	void refreshTreeModel(QAbstractItemModel * model);
+	virtual bool save_action();
+	virtual bool open_action();
+	virtual void createToolbar();
+	virtual void createDocWindows();
+	virtual void createMenus();
+	virtual void createActions(QString mainStructure);
 
 	virtual void modifiedLocalGraph(){}
 	virtual bool mergeMainStructures(TwoLevelSelection * oldSelection, int newTagIndex);
@@ -92,7 +92,7 @@ public:
 	int selectedTagIndex;
 	SelectionList tags;
 	AbstractGraph * globalGraph;
-	QString filename,ext, * string;
+	QString filename,ext,mainStructure, * string;
 	QAbstractItemModel * treeModel;
 	QTreeView *resultTree;
 

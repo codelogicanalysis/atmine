@@ -34,6 +34,8 @@ void AbstractTwoLevelAgreement::overLapNamesFinished(const SelectionList & tagWo
 	numWords+=countCorrect;
 	double	recall=(double)countCommon/countCorrect * countCorrect,
 			precision=(double)countCommon/countDetected *countCorrect;
+	if (countDetected==0)
+		precision=0;
 	if (underComputation) {
 		underBoundaryRecallList.append(recall);
 		underBoundaryPrecisionList.append(precision);
@@ -56,6 +58,8 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 		numNames+=countCorrect;
 		double	recall=(double)countCommon/countCorrect * countCorrect,
 				precision=(double)countCommon/countDetected *countCorrect;
+		if (countDetected==0)
+			precision=0;
 		if (underComputation) {
 			underNameRecallList.append(recall);
 			underNamePrecisionList.append(precision);
@@ -148,6 +152,7 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 	}
 }
 
+
 bool AbstractTwoLevelAgreement::readAnnotation(QString tagFileName,OutputDataList & tags,AbstractGraph * globalGraph) {
 	AbstractGraph * dummyLocalGraph=newGraph(false);
 	QFile file(tagFileName.toStdString().data());
@@ -162,7 +167,7 @@ bool AbstractTwoLevelAgreement::readAnnotation(QString tagFileName,OutputDataLis
 	return false;
 }
 
-int AbstractTwoLevelAgreement::calculateStatisticsOrAnotate() {
+bool AbstractTwoLevelAgreement::readAnnotations() {
 	annotatedGraph=newGraph(true);
 	if (!readAnnotation(fileName+".tags",tags,annotatedGraph)){
 		error << "Annotation File does not exist\n";
@@ -174,9 +179,12 @@ int AbstractTwoLevelAgreement::calculateStatisticsOrAnotate() {
 			file.close();
 			error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
 		}
-		return -1;
+		return false;
 	}
+	return true;
+}
 
+int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 
 	common_i.clear();
 	common_j.clear();
@@ -192,18 +200,22 @@ int AbstractTwoLevelAgreement::calculateStatisticsOrAnotate() {
 	qSort(tags.begin(),tags.end());
 	for (int i=0;i<tags.size();i++) {
 		tags[i].setText(text);
-		tags[i].getGraph()->fillTextPointers(text);
+		AbstractGraph * g=tags[i].getGraph();
+		if (g!=NULL)
+			g->fillTextPointers(text);
 	}
-	annotatedGraph->fillTextPointers(text);
+	if (annotatedGraph!=NULL)
+		annotatedGraph->fillTextPointers(text);
 
 	initializeAuxiliaryCountersLists();
 	currentTagLists.clear();
 	currentOutputLists.clear();
-	int i=0,j=0;
 	numNames=0;
 	underNumNames=0;
 	numWords=0;
 	underNumWords=0;
+
+	int i=0,j=0;
 	SelectionList tagNamesOverLap, outputNamesOverLap;
 	while (i<tags.size() && j<outputList.size()) {
 		int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd(),
@@ -311,10 +323,19 @@ int AbstractTwoLevelAgreement::calculateStatisticsOrAnotate() {
 	underNamePrecision=sum(underNamePrecisionList)/underNumNames;
 	underBoundaryRecall=sum(underBoundaryRecallList)/underNumWords;
 	underBoundaryPrecision=sum(underBoundaryPrecisionList)/underNumWords;
+
+	return 0;
+}
+
+int AbstractTwoLevelAgreement::calculateStatisticsOrAnotate() {
+	if (!readAnnotations()) {
+		return -1;
+	}
+	int ret=calculateStatisticsHelper();
 	compareGlobalGraphs(annotatedGraph,generatedGraph);
 	for (int i=0;i<tags.size();i++)
 		tags[i].getGraph()->deleteGraph();
-	return 0;
+	return ret;
 }
 
 void AbstractTwoLevelAgreement::initializeAuxiliaryCountersLists() { }
