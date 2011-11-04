@@ -19,9 +19,10 @@ private:
 						* nodeDetected;
 	int countCommon;
 	double mergesRecallALL,mergesPrecisionALL,mergesRecallNew,mergesPrecisionNew;
+	bool displayPORstatistics;
 #endif
 public:
-	HadithInterAnnotatorAgreement(QString * text,QString fileName,AbstractGraph * generatedGraph, OutputDataList & generatedTags);
+	HadithInterAnnotatorAgreement(QString * text,QString fileName,AbstractGraph * generatedGraph, OutputDataList & generatedTags, bool displayPORstatistics=false);
 	void displayStatistics();
 private:
 	virtual int equalNames(QString * text, int start1, int end1, int start2, int end2);

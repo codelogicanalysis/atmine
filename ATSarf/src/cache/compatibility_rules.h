@@ -102,6 +102,11 @@ class compatibility_rules
 			else
 				return (*i);
 		}
+		int getAbstractCategoryID(int bitIndex) {
+			if (bitIndex<0 || bitIndex>absCatIDForBits.size())
+				return -1;
+			return absCatIDForBits[bitIndex];
+		}
 		int getAbstractCategoryID(const QString & name) //-1 is invalid, -2 not abstract
 		{
 		#if 1

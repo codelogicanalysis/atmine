@@ -14,7 +14,7 @@
 #define GET_WAW
 //#define TRUST_OLD
 #define SINGULAR_DESCENT
-#define GENEOLOGYDEBUG
+//#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
 #define REDUCE_AFFIX_SEARCH
 //#define SHOW_MERGING_ERRORS
@@ -23,11 +23,13 @@
 class GeneologyParameters {
 public:
 	unsigned int theta_0:14;
-	unsigned int L_min:10;
-	unsigned int N_min:10;
+	unsigned int L_min:9;
+	unsigned int N_min:9;
 	unsigned int C_max:10;
 	unsigned int radius:10;
 	unsigned int step:10;
+	bool detailed_statistics:1;
+	bool refined:1;
 	GeneologyParameters() {
 		theta_0=45;
 		L_min=3;
@@ -35,6 +37,7 @@ public:
 		C_max=2;
 		radius=3;
 		step=10;
+		detailed_statistics=true;
 	}
 };
 

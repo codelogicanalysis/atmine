@@ -49,7 +49,7 @@ HadithParameters hadithParameters;
 
 
 #ifdef PREPROCESS_DESCRIPTIONS
-void readFromDatabasePreProcessedDescriptions() {
+void readFromDatabasePreProcessedHadithDescriptions() {
 	Retrieve_Template nrc_s("description","id","name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%/inform' OR name LIKE 'inform/%' OR name LIKE 'inform %' OR name LIKE '% inform' OR name = 'inform' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
 	while (nrc_s.retrieve())
 		NRC_descriptions.insert(nrc_s.get(0).toULongLong(),true);
@@ -81,9 +81,9 @@ void readFromDatabasePreProcessedDescriptions() {
 	else
 		error <<"Unexpected Error: Unable to write PreProcessed Descriptions to file\n";
 }
-void readFromFilePreprocessedDescriptions() {
+void readFromFilePreprocessedHadithDescriptions() {
 #ifndef LOAD_FROM_FILE
-	readFromDatabasePreProcessedDescriptions();
+	readFromDatabasePreProcessedHadithDescriptions();
 #else
 	QFile file(preProcessedDescriptionsFileName.toStdString().data());
 	if (file.open(QIODevice::ReadOnly))
@@ -97,7 +97,7 @@ void readFromFilePreprocessedDescriptions() {
 		file.close();
 	}
 	else
-		readFromDatabasePreProcessedDescriptions();
+		readFromDatabasePreProcessedHadithDescriptions();
 #endif
 }
 #endif
@@ -181,7 +181,7 @@ void hadith_initialize() {
 	stat.narrator_per_chain.clear();
 #endif
 #ifdef PREPROCESS_DESCRIPTIONS
-	readFromFilePreprocessedDescriptions();
+	readFromFilePreprocessedHadithDescriptions();
 #endif
 }
 
@@ -1833,27 +1833,31 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			QSet<Name> detectedOnlyInNonContext=commonNonContextNames;
 			detectedOnlyInNonContext.subtract(commonContextNames);
 
-			QSet<Name>::iterator itr=commonContextNames.begin();
-			displayed_error<<"Contextually-Detected Correct Names:\n";
-			for (;itr!=commonContextNames.end();itr++)
-				displayed_error<<itr->getString()<<"\n";
-			itr=detectedOnlyInNonContext.begin();
-			displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
-			for (;itr!=detectedOnlyInNonContext.end();itr++)
-				displayed_error<<itr->getString()<<"\n";
-			itr=nonDetectedNonContextNames.begin();
-			displayed_error<<"Names not detected without Context:\n";
-			for (;itr!=nonDetectedNonContextNames.end();itr++)
-				displayed_error<<itr->getString()<<"\n";
-			itr=nonDetectedContextNames.begin();
-			displayed_error<<"Names not detected with Context:\n";
-			for (;itr!=nonDetectedContextNames.end();itr++)
-				displayed_error<<itr->getString()<<"\n";
-			itr=incorrectlyDetectedNames.begin();
-			displayed_error<<"Names Incorrectly detected:\n";
-			for (;itr!=incorrectlyDetectedNames.end();itr++)
-				displayed_error<<itr->getString()<<"\n";
+			QSet<Name>::iterator itr;
 			if (annotatedNames.size()>0) {
+			#ifndef SUBMISSION
+				itr=commonContextNames.begin();
+				displayed_error<<"Contextually-Detected Correct Names:\n";
+				for (;itr!=commonContextNames.end();itr++)
+					displayed_error<<itr->getString()<<"\n";
+				itr=detectedOnlyInNonContext.begin();
+				displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
+				for (;itr!=detectedOnlyInNonContext.end();itr++)
+					displayed_error<<itr->getString()<<"\n";
+				itr=nonDetectedNonContextNames.begin();
+				displayed_error<<"Names not detected without Context:\n";
+				for (;itr!=nonDetectedNonContextNames.end();itr++)
+					displayed_error<<itr->getString()<<"\n";
+				itr=nonDetectedContextNames.begin();
+				displayed_error<<"Names not detected with Context:\n";
+				for (;itr!=nonDetectedContextNames.end();itr++)
+					displayed_error<<itr->getString()<<"\n";
+				itr=incorrectlyDetectedNames.begin();
+				displayed_error<<"Names Incorrectly detected:\n";
+				for (;itr!=incorrectlyDetectedNames.end();itr++)
+					displayed_error<<itr->getString()<<"\n";
+			#endif
+
 				contextRecall=(double)commonContextNames.size()/annotatedNames.size();
 				contextPrecision=(double)commonContextNames.size()/contextNames.size();
 				allRecall=(double)commonNonContextNames.size()/annotatedNames.size();
@@ -1914,7 +1918,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			double aggregationAverage=average(aggregationCountList);
 
 			displayed_error	<< "-------------------------\n"
-							<< (names?"Hadith ":"POR ")<<"Narrators:\n";
+							<< (names?"Sanad ":"POR ")<<"Narrators:\n";
 							contextStatistics.calculateStatistics();
 							contextStatistics.displayStatistics();
 			displayed_error << "All Narrators:\n";
@@ -1930,6 +1934,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 		}
 		if ( names && annotatedNames.size()==0) {
 			error << "Annotation Names File does not exist\n";
+		#ifndef SUBMISSION
 			QFile file(QString("%1.names").arg(fileName).toStdString().data());
 			if (file.open(QIODevice::WriteOnly)) {
 				QDataStream out(&file);   // we will serialize the data into the file
@@ -1937,9 +1942,11 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 				file.close();
 				error << "Annotation File has been written from current known names, Correct it before use.\n";
 			}
+		#endif
 		}
 		if (annotatedNarrators.size()==0){
 			error << "Annotation Narrator File does not exist\n";
+		#ifndef SUBMISSION
 			QFile file(QString("%1.narr").arg(fileName).toStdString().data());
 			if (file.open(QIODevice::WriteOnly)) {
 				QDataStream out(&file);   // we will serialize the data into the file
@@ -1949,6 +1956,7 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 				file.close();
 				error << "Annotation File has been written from current known narrators, Correct it before use.\n";
 			}
+		#endif
 		}
 	}
 

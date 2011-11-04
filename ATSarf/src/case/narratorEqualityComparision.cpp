@@ -42,8 +42,8 @@ int narrator_equality_comparision(QString input_str, ATMProgressIFC *) {
 			countAllEqualeNarrator++;
 		if (eq && eNarratorEqual)
 			countCorrectEqualeNarrator++;
-		Narrator * narr1=HadithChainGraph::getNarrator(n1);
-		Narrator * narr2=HadithChainGraph::getNarrator(n2);
+		Narrator * narr1=HadithChainGraph::getNarrator(n1,false);
+		Narrator * narr2=HadithChainGraph::getNarrator(n2,false);
 		double equalScore=equal(*narr1,*narr2);
 		bool equalOur=equalScore>hadithParameters.equality_threshold;
 		if (equalOur)
@@ -52,10 +52,12 @@ int narrator_equality_comparision(QString input_str, ATMProgressIFC *) {
 			countCorrectEqualOur++;
 		delete narr1;
 		delete narr2;
-	#ifndef DETAILED_DISPLAY
-		if (eq ==!(equalOur || eNarratorEqual))
-	#endif
-			displayed_error<<n1<<"\t"<<n2<<"\t"<<eq<<"\t"<<equalOur<<"\t"<<eNarratorEqual<<"\n";
+		if (hadithParameters.detailed_statistics) {
+		#ifndef DETAILED_DISPLAY
+			if (eq ==!(equalOur || eNarratorEqual))
+		#endif
+				displayed_error<<n1<<"\t"<<n2<<"\t"<<eq<<"\t"<<equalOur<<"\t"<<eNarratorEqual<<"\n";
+		}
 	}
 	displayed_error <<	"eNarrator:\n"
 					<<  "\trecall:\t"<<countCorrectEqualeNarrator<<"/"<<countAnnotationEqual<<"=\t"

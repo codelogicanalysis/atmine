@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QString>
 #include <QDateTime>
+#include <QMessageBox>
 #include "test.h"
 #include "logger.h"
 #include "hadith.h"
@@ -106,25 +107,12 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
-	long i=0;
-	skipAL(&inputString,i);
-	out<<i<<"\n";
-	out<<startsWithAL(inputString)<<"\n";
-	out<<withoutAL(inputString)<<"\n";
-	out<<removeAL(inputString)<<"\n";
-	i=0;
-	skipAL(&inputString,i);
-	out<<i<<"\n";
-	skipOneLetter(&inputString,i);
-	out<<i<<"\n";
-	skipOneLetter(&inputString,i);
-	out<<i<<"\n";
-	skipOneLetter(&inputString,i);
-	out<<i<<"\n";
-	skipOneLetter(&inputString,i);
-	out<<i<<"\n";
-	return 0;
-#ifdef AUGMENT_DICTIONARY
+#ifdef SUBMISSION
+	QMessageBox msg;
+	msg.setWindowTitle("Sarf");
+	msg.setText("Test Options Unavailable for submission version of software.");
+	msg.exec();
+#elif  defined(AUGMENT_DICTIONARY)
 	if (augment()<0)
 		return -1;
 #elif 0

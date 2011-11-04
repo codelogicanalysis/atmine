@@ -285,16 +285,25 @@ int calculateStatisticsOrAnotate(ChainsContainer &generatedChains, NarratorGraph
 		sel.setGraph(localGraph);
 		outputList.append(sel);
 	}
-	HadithInterAnnotatorAgreement h(text,fileName,generatedGraph,outputList);
+	HadithInterAnnotatorAgreement h(text,fileName,generatedGraph,outputList
+			#ifdef SUBMISSION
+				,true
+			#else
+				,false
+			#endif
+									);
 	if (h.calculateStatisticsOrAnotate()==0)
 		h.displayStatistics();
+
 #if 0
 	for (int i=0;i<tags.size();i++) {
 		displayed_error<<text->mid(tags[i].getMainStart(),tags[i].getMainEnd()-tags[i].getMainStart())<<"\n";
 	}
 #endif
+#if 0
 	for (int i=0;i<outputList.size();i++)
 		outputList[i].getGraph()->deleteGraph();
+#endif
 	return 0;
 #undef NULL_CORRECT
 #undef NULL_DETECTED

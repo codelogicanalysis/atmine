@@ -4,6 +4,7 @@
 #include "timeRecognizer.h"
 #include "timeManualTagger.h"
 #include "Math_functions.h"
+#include "hadithCommon.h" //just for hadithParameters.detailed_statistics
 #include <QtAlgorithms>
 #include <QVector>
 #include <QDataStream>
@@ -511,6 +512,7 @@ int calculateStatistics(QString filename){
 		file.close();
 	} else {
 		error << "Annotation File does not exist\n";
+	#ifndef SUBMISSION
 		if (file.open(QIODevice::WriteOnly)) {
 			/*for (int i=0;i<timeVector->size();i++) {
 				tags.append(TimeTaggerDialog::Selection(timeVector->));
@@ -520,6 +522,7 @@ int calculateStatistics(QString filename){
 			file.close();
 			error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
 		}
+	#endif
 		return -1;
 	}
 	qSort(tags.begin(),tags.end());
@@ -539,43 +542,43 @@ int calculateStatistics(QString filename){
 			int countDetected=countWords(time_text,start2,end2);
 			boundaryRecallList.append((double)countCommon/countCorrect);
 			boundaryPrecisionList.append((double)countCommon/countDetected);
-		#ifdef DETAILED_DISPLAY
-			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
-							<<time_text->mid(start2,end2-start2+1)<<"\t"
-							<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
-		#endif
+			if (hadithParameters.detailed_statistics) {
+				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+								<<time_text->mid(start2,end2-start2+1)<<"\t"
+								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
+			}
 			if (end1<=end2)
 				i++;
 			if (end2<=end1)
 				j++;
 		} else if (before(start1,end1,start2,end2)) {
-		#ifdef DETAILED_DISPLAY
-			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
-							<<"-----\n";
-		#endif
+			if (hadithParameters.detailed_statistics) {
+				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+								<<"-----\n";
+			}
 			i++;
 		} else if (after(start1,end1,start2,end2)) {
-		#ifdef DETAILED_DISPLAY
-			displayed_error	<<"-----\t"
-							<<time_text->mid(start2,end2-start2+1)<<"\n";
-		#endif
+			if (hadithParameters.detailed_statistics) {
+				displayed_error	<<"-----\t"
+								<<time_text->mid(start2,end2-start2+1)<<"\n";
+			}
 			j++;
 		}
 	}
-#ifdef DETAILED_DISPLAY
-	while (i<tags.size()) {
-		int start1=tags[i].first,end1=tags[i].second;
-		displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
-						<<"-----\n";
-		i++;
+	if (hadithParameters.detailed_statistics) {
+		while (i<tags.size()) {
+			int start1=tags[i].first,end1=tags[i].second;
+			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+							<<"-----\n";
+			i++;
+		}
+		while (j<timeVector->size()) {
+			int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
+			displayed_error	<<"-----\t"
+							<<time_text->mid(start2,end2-start2+1)<<"\n";
+			j++;
+		}
 	}
-	while (j<timeVector->size()) {
-		int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
-		displayed_error	<<"-----\t"
-						<<time_text->mid(start2,end2-start2+1)<<"\n";
-		j++;
-	}
-#endif
 	assert(common_i.size()==common_j.size());
 	int commonCount=common_i.size();
 	double detectionRecall=(double)commonCount/tags.size(),
