@@ -198,53 +198,57 @@ public slots:
 	}
 	void colorBiography_clicked() {
 	#ifdef DISPLAY_BIOGRAPHY_GRAPH
-		int num=biographyNum->currentText().toInt();
-		setCurrentAction("Display Graph");
-		report(0);
-		DisplayNodeVisitorColoredBiography visitor(num);
-		GraphVisitorController c(&visitor,graph,true,true);
-		graph->DFS_traverse(c);
-		setCurrentAction("Completed");
-		report(100);
-		try{
-			system("dot -Tsvg graph.dot -o graph.svg");
-			pic->setPixmap(QPixmap("./graph.svg"));
-			subScrollArea->setWidget(pic);
-		}catch(...) {}
-	#ifdef ERRORS_BIO
-		errors->setText(*errors_text);
-		errors_text->clear();
-	#endif
+		if (graph->size()<MAX_DISPLAYABLE_SIZE) {
+			int num=biographyNum->currentText().toInt();
+			setCurrentAction("Display Graph");
+			report(0);
+			DisplayNodeVisitorColoredBiography visitor(num);
+			GraphVisitorController c(&visitor,graph,true,true);
+			graph->DFS_traverse(c);
+			setCurrentAction("Completed");
+			report(100);
+			try{
+				system("dot -Tsvg graph.dot -o graph.svg");
+				pic->setPixmap(QPixmap("./graph.svg"));
+				subScrollArea->setWidget(pic);
+			}catch(...) {}
+		#ifdef ERRORS_BIO
+			errors->setText(*errors_text);
+			errors_text->clear();
+		#endif
+		}
 	#endif
 	}
 	void colorNarrators_clicked() {
 	#ifdef DISPLAY_BIOGRAPHY_GRAPH
-		QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
-		ColorNarratorsAction::DetectedNodesMap map;
-		ColorNarratorsAction action(map);
-		for (int i=0;i<selection.size();i++) {
-			int topRow=selection[i].topRow();
-			for (int j=0;j<selection[i].rowCount();j++) {
-				int row=topRow+j;
-				Narrator * n=narratorList[row];
-				graph->performActionToAllCorrespondingNodes(n,action);
+		if (graph->size()<MAX_DISPLAYABLE_SIZE) {
+			QList<QTableWidgetSelectionRange>  selection=narratorListDisplay->selectedRanges();
+			ColorNarratorsAction::DetectedNodesMap map;
+			ColorNarratorsAction action(map);
+			for (int i=0;i<selection.size();i++) {
+				int topRow=selection[i].topRow();
+				for (int j=0;j<selection[i].rowCount();j++) {
+					int row=topRow+j;
+					Narrator * n=narratorList[row];
+					graph->performActionToAllCorrespondingNodes(n,action);
+				}
 			}
+			report(0);
+			DisplayNodeVisitorColoredNarrator visitor(map);
+			GraphVisitorController c(&visitor,graph,true,true);
+			graph->DFS_traverse(c);
+			setCurrentAction("Completed");
+			report(100);
+			try{
+				system("dot -Tsvg graph.dot -o graph.svg");
+				pic->setPixmap(QPixmap("./graph.svg"));
+				subScrollArea->setWidget(pic);
+			}catch(...) {}
+		#ifdef ERRORS_BIO
+			errors->setText(*errors_text);
+			errors_text->clear();
+		#endif
 		}
-		report(0);
-		DisplayNodeVisitorColoredNarrator visitor(map);
-		GraphVisitorController c(&visitor,graph,true,true);
-		graph->DFS_traverse(c);
-		setCurrentAction("Completed");
-		report(100);
-		try{
-			system("dot -Tsvg graph.dot -o graph.svg");
-			pic->setPixmap(QPixmap("./graph.svg"));
-			subScrollArea->setWidget(pic);
-		}catch(...) {}
-	#ifdef ERRORS_BIO
-		errors->setText(*errors_text);
-		errors_text->clear();
-	#endif
 	#endif
 	}
 	void browse_clicked() {
@@ -264,18 +268,20 @@ private:
 
 	void displayUncoloredGraph(){
 	#ifdef DISPLAY_BIOGRAPHY_GRAPH
-		DisplayNodeVisitor visitor;
-		GraphVisitorController c(&visitor,graph,true,true);
-		graph->DFS_traverse(c);
-		try{
-			system("dot -Tsvg graph.dot -o graph.svg");
-			pic->setPixmap(QPixmap("./graph.svg"));
-			subScrollArea->setWidget(pic);
-		}catch(...) {}
-	#ifdef ERRORS_BIO
-		errors->setText(*errors_text);
-		errors_text->clear();
-	#endif
+		if (graph->size()<MAX_DISPLAYABLE_SIZE) {
+			DisplayNodeVisitor visitor;
+			GraphVisitorController c(&visitor,graph,true,true);
+			graph->DFS_traverse(c);
+			try{
+				system("dot -Tsvg graph.dot -o graph.svg");
+				pic->setPixmap(QPixmap("./graph.svg"));
+				subScrollArea->setWidget(pic);
+			}catch(...) {}
+		#ifdef ERRORS_BIO
+			errors->setText(*errors_text);
+			errors_text->clear();
+		#endif
+		}
 	#endif
 	}
 

@@ -11,9 +11,10 @@ class HadithChainGraph : public AbstractGraph
 private:
 	class NarratorReader: public ATMProgressIFC { //used by getNarrator
 	public:
+		bool displayWarnings:1;
 		Narrator * narr;
 	public:
-		NarratorReader() { narr=NULL;}
+		NarratorReader() { narr=NULL;displayWarnings=true;}
 		virtual void report(int ){}
 		virtual void startTaggingText(QString & ){}
 		virtual void tag(int , int ,QColor, bool){}
@@ -29,8 +30,8 @@ private:
 	friend class HadithTaggerDialog;
 	Chain chain;
 public:
-	static Narrator * getNarrator(QString & text);
-	static Narrator * getNarrator(const Name & name);
+	static Narrator * getNarrator(QString & text, bool displayWarnings=true);
+	static Narrator * getNarrator(const Name & name, bool displayWarnings=true);
 	static int read(ChainsContainer & chains, ATMProgressIFC * prg, QString);
 
 public:

@@ -2089,6 +2089,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 		graph->setFileName(text,fileName);
 	}
 	QString allName=fileName;
+#ifndef SUBMISSION
 	QFile file(fileName.remove(".txt")+".por");
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
@@ -2096,6 +2097,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 	QDataStream fileStream(&file);
 	graph->serialize(fileStream);
 	file.close();
+#endif
 	prg->setCurrentAction("Completed");
 	prg->report(100);
 	calculateStatisticsOrAnotate(chains,graph,text,allName);

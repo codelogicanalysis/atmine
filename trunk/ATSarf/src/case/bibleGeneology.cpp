@@ -99,6 +99,10 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
+#ifdef PREPROCESS_DESCRIPTIONS
+	QString preProcessedGenealogyDescriptionsFileName= ".GenealogyPreProcessedDescriptions";
+#endif
+
 class DescentConnectors;
 class DescentConnectorGroup {
 private:
@@ -106,8 +110,24 @@ private:
 	QList<long> descriptions;
 	DescentDirection dir;
 	bool plural;
+private:
 	long operator[](int i) { return descriptions[i]; }
 	int size() { return descriptions.size(); }
+	friend QDataStream & operator << (QDataStream &  out, const DescentConnectorGroup & group) {
+		out<<group.descriptions;
+		out<<(int)group.dir;
+		out<<group.plural;
+		return out;
+	}
+	friend QDataStream & operator >> (QDataStream &  in, DescentConnectorGroup & group) {
+		in>>group.descriptions;
+		int dir;
+		in>>dir;
+		group.dir=(DescentDirection)dir;
+		in>>group.plural;
+		return in;
+	}
+
 public:
 	DescentConnectorGroup(DescentDirection dir, bool plural=false) {
 		this->dir=dir;
@@ -130,6 +150,15 @@ public:
 class DescentConnectors {
 private:
 	QList<DescentConnectorGroup> groups;
+
+	friend QDataStream & operator << (QDataStream &  out, const DescentConnectors & conn) {
+		out<<conn.groups;
+		return out;
+	}
+	friend QDataStream & operator >> (QDataStream &  in, DescentConnectors & conn) {
+		in>>conn.groups;
+		return in;
+	}
 public:
 	void addDescentGroup(DescentConnectorGroup group) {
 		groups<<group;
@@ -320,20 +349,8 @@ public:
 	}
 };
 
-void geneology_initialize() {
-	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Hebrew Bible Names");
-	int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-	bits_gene_NAME.append(bit_NAME);
-#if 0
-	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("christian names");
-	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-	bits_gene_NAME.append(bit_NAME);
-
-	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
-	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-	bits_gene_NAME.append(bit_NAME);
-#endif
-
+#ifdef PREPROCESS_DESCRIPTIONS
+void readFromDatabasePreProcessedGenealogyDescriptions() {
 	DescentConnectorGroup spouse(SPOUSE);
 	Retrieve_Template d_spouse("description","id","name='woman' OR name LIKE '%spouse%' OR name='concubine'");
 	while (d_spouse.retrieve())
@@ -376,6 +393,53 @@ void geneology_initialize() {
 
 	//abou ... bani and kharaja minho/minhoma/minhom => non direct descent
 
+
+	QFile file(preProcessedGenealogyDescriptionsFileName.toStdString().data());
+	if (file.open(QIODevice::WriteOnly))
+	{
+		QDataStream out(&file);   // we will serialize the data into the file
+		out	<< descentConnectors
+			<< landDesc;
+		file.close();
+	}
+	else
+		error <<"Unexpected Error: Unable to write PreProcessed Genealogy Descriptions to file\n";
+}
+void readFromFilePreprocessedGenealogyDescriptions() {
+#ifndef LOAD_FROM_FILE
+	readFromDatabasePreProcessedGenealogyDescriptions();
+#else
+	QFile file(preProcessedGenealogyDescriptionsFileName.toStdString().data());
+	if (file.open(QIODevice::ReadOnly))
+	{
+		QDataStream in(&file);    // read the data serialized from the file
+		in	>> descentConnectors
+			>> landDesc;
+		file.close();
+	}
+	else
+		readFromDatabasePreProcessedGenealogyDescriptions();
+#endif
+}
+#endif
+
+
+void geneology_initialize() {
+	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Hebrew Bible Names");
+	int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_gene_NAME.append(bit_NAME);
+#if 0
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("christian names");
+	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_gene_NAME.append(bit_NAME);
+
+	abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
+	bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
+	bits_gene_NAME.append(bit_NAME);
+#endif
+
+	readFromFilePreprocessedGenealogyDescriptions();
+
 	long abstract_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryID("VERB_PERFECT");
 	bit_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_VERB_PERFECT);
 	long abstract_FEMALE=database_info.comp_rules->getAbstractCategoryID("Female Names");
@@ -410,7 +474,7 @@ public:
 	static QString getEdge(const Name & n_parent,const Name & n_child, QList<int> * delimitersStart,QList<int> * delimitersEnd) {
 		int start=min(n_parent.getEnd(),n_child.getEnd()),
 			end  =max(n_parent.getStart(),n_child.getStart());
-		qDebug()<<n_parent.getString()<<"\t"<<n_child.getString();
+		//qDebug()<<n_parent.getString()<<"\t"<<n_child.getString();
 		QList<int>::const_iterator lower=qLowerBound(*delimitersStart,end);
 		QList<int>::const_iterator upper=qLowerBound(*delimitersEnd,end);
 		start=*(lower-1);
@@ -1607,7 +1671,7 @@ private:
 			break;
 		case NAME_S:
 		#ifdef BIRTH_LI
-			if (!stateInfo.preceededByLi) {
+			if (!geneologyParameters.refined || !stateInfo.preceededByLi) {
 		#endif
 				switch (stateInfo.currentType) {
 				case DC:
@@ -1760,7 +1824,7 @@ private:
 		#endif
 		case SONS_S:
 		#ifdef BIRTH_LI
-			if (!stateInfo.preceededByLi) {
+			if (!geneologyParameters.refined || !stateInfo.preceededByLi) {
 		#endif
 				switch (stateInfo.currentType) {
 				/*case DC:
@@ -2097,9 +2161,9 @@ private:
 												graphChildrenPrecisionList.append(stats.childrenPrecision*countCorrect);\
 												localMergedGraph->deleteGraph(); \
 												localMergedGraph=NULL;\
-											 /*#ifdef DETAILED_DISPLAY */ \
-												 displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
-											 /*#endif*/ \
+												if (geneologyParameters.detailed_statistics) { \
+													displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
+												} \
 											}
 
 
@@ -2125,8 +2189,8 @@ private:
 			file.close();
 		} else {
 			error << "Annotation File does not exist\n";
-			if (file.open(QIODevice::WriteOnly)) {
-				/*for (int i=0;i<timeVector->size();i++) {
+		#ifndef SUBMISSION
+			if (file.open(QIODevice::WriteOnly)) {				/*for (int i=0;i<timeVector->size();i++) {
 					tags.append(TimeTaggerDialog::Selection(timeVector->));
 				}*/
 				QDataStream out(&file);   // we will serialize the data into the file
@@ -2134,6 +2198,7 @@ private:
 				file.close();
 				error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
 			}
+		#endif
 			return -1;
 		}
 		qSort(tags.begin(),tags.end());
@@ -2146,7 +2211,7 @@ private:
 		FillTextVisitor v(text);
 		v(globalTree);
 
-		int i=0,j=0, numNames=0,underNumNames=0,maxTag=0,minTag=0,sumTag=0,maxOutput=0,minOutput=0,sumOutput=0,countTag=0,countOutput=0;
+		int i=0,j=0, numNames=0,underNumNames=0,maxTag=0,minTag=0,sumTag=0,maxOutput=0,minOutput=0,sumOutput=0,countTag=0,countOutput=0,countCorrectOutput=0;
 		QSet<FindAllVisitor::NodeNamePair> visitedNodes;
 		QSet<int> visitedTags;
 		while (i<tags.size() && j<outputList.size()) {
@@ -2187,17 +2252,18 @@ private:
 					underGraphSpousesPrecisionList.append(stats.spousesPrecision* countCorrect);
 					underGraphChildrenRecallList.append(stats.childrenRecall* countCorrect);
 					underGraphChildrenPrecisionList.append(stats.childrenPrecision* countCorrect);
+					countCorrectOutput+=outputTree->getTreeNodesCount(true);
 
 					MERGE_LOCAL_TREES
 				} else {
 					boundaryRecallList.append(0);
 					boundaryPrecisionList.append(0);
 				}
-			#ifdef DETAILED_DISPLAY
-				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
-								<</*text->mid(start2,end2-start2+1)*/j<<"\t"
-								<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
-			#endif
+				if (geneologyParameters.detailed_statistics) {
+					displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+									<</*text->mid(start2,end2-start2+1)*/j<<"\t"
+									<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
+				}
 				if (end1<=end2 ) {
 					visitedNodes.clear();
 					visitedTags.clear();
@@ -2212,10 +2278,10 @@ private:
 
 				}
 			} else if (before(start1,end1,start2,end2)) {
-			#ifdef DETAILED_DISPLAY
-				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
-								<<"-----\n";
-			#endif
+				if (geneologyParameters.detailed_statistics) {
+					displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+									<<"-----\n";
+				}
 				visitedNodes.clear();
 				visitedTags.clear();
 				//MERGE_GLOBAL_TREE
@@ -2223,38 +2289,42 @@ private:
 				modifySizeStatistics(tags[i].getNamesList().size(),maxTag,minTag,sumTag,countTag);
 				i++;
 			} else if (after(start1,end1,start2,end2) ) {
-			#ifdef DETAILED_DISPLAY
-				displayed_error	<<"-----\t"
-								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
-			#endif
+				if (geneologyParameters.detailed_statistics) {
+					displayed_error	<<"-----\t"
+									<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+				}
 				modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
-				if (outputList[j].getNamesList().size()==2) {
+				/*if (outputList[j].getNamesList().size()==2) {
 					Name n1(text,outputList[j].getNamesList()[0].first,outputList[j].getNamesList()[0].second);
 					qDebug()<<n1.getString();
 					Name n2(text,outputList[j].getNamesList()[1].first,outputList[j].getNamesList()[1].second);
 					qDebug()<<n2.getString();
-				}
+				}*/
 				j++;
 			}
 		}
 		COMPARE_TO_LOCAL_MERGED_TREE
-	#ifdef DETAILED_DISPLAY
+
 		while (i<tags.size()) {
-			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
-			displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
-							<<"-----\n";
+			if (geneologyParameters.detailed_statistics) {
+				//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
+				displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
+								<<"-----\n";
+			}
 			//MERGE_GLOBAL_TREE
+
 			modifySizeStatistics(tags[i].getNamesList().size(),maxTag,minTag,sumTag,countTag);
 			i++;
 		}
 		while (j<outputList.size()) {
-			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-			displayed_error <<"-----\t"
-							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+			if (geneologyParameters.detailed_statistics) {
+				//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
+				displayed_error <<"-----\t"
+								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+			}
 			modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
 			j++;
 		}
-	#endif
 
 		/*int tagNamesCount=0;
 		for (int i=0;i<tags.size();i++)
@@ -2363,7 +2433,8 @@ private:
 						<< "\tminimum=\t\t"<<minTag<<"\t"<<minOutput<<"\n"
 						<< "\taverage=\t\t"<<(double)sumTag/countTag<<"\t"<<(double)sumOutput/countOutput<<"\n"
 						<< "\tmaximum=\t\t"<<maxTag<<"\t"<<maxOutput<<"\n"
-						<< "\ttotal=\t\t"  <<sumTag<<"\t"<<sumOutput<<"\n"
+						<< "\ttotal size=\t\t"  <<sumTag<<"\t"<<sumOutput<<"\n"
+						//<< "\ttotal matched size=\t\t"<<countCorrectOutput<<"\n"
 						<< " Global Graph Size (Annotation - Output):\n"
 						<< "\tAnnotation=\t"<<graphTagsSize<<"\n"
 						<< "\tOutput=\t\t"<<graphMergedSize<<"\n";

@@ -23,6 +23,9 @@ void LocalizedDisplay::find_action() {
 		nodeList.append(node);
 		nodeCount++;
 	}
+	if (nodeList.size()==0) {
+		narratorListDisplay->clearContents();
+	}
 	errors->setText(*errors_text);
 }
 void LocalizedDisplay::display_action() {

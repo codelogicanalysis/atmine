@@ -3,13 +3,14 @@
 #include "hadithChainGraph.h"
 #include "Math_functions.h"
 
-HadithInterAnnotatorAgreement::HadithInterAnnotatorAgreement(QString * text,QString fileName,AbstractGraph * generatedGraph, OutputDataList & generatedTags)
+HadithInterAnnotatorAgreement::HadithInterAnnotatorAgreement(QString * text,QString fileName,AbstractGraph * generatedGraph, OutputDataList & generatedTags, bool displayPORstatistics)
 	:AbstractTwoLevelAgreement(text,fileName,generatedGraph,generatedTags) {
 #ifdef GRAPH_COMPARE
 	nodeCorrect=NULL;
 	nodeDetected=NULL;
 	countCommon=0;
 	mergesRecallALL=mergesPrecisionALL=mergesRecallNew=mergesPrecisionNew=0;
+	this->displayPORstatistics=displayPORstatistics;
 #endif
 }
 
@@ -42,14 +43,16 @@ void HadithInterAnnotatorAgreement::displayStatistics() {
 						<< "\tprecision=\t"<<underBoundaryPrecision<<"\n"
 						<< "Narrator Boundary (Max-boundaries):\n"
 						<< "\trecall=\t"<<boundaryRecall<<"\n"
-						<< "\tprecision=\t"<<boundaryPrecision<<"\n"
-						<< "POR (merged nodes):\n"
-						<< "\tall errors:\n"
-						<< "\t\trecall=\t"<<mergesRecallALL<<"\n"
-						<< "\t\tprecision=\t"<<mergesPrecisionALL<<"\n"
-						<< "\tmerging errors:\n"
-						<< "\t\trecall=\t"<<mergesRecallNew<<"\n"
-						<< "\t\tprecision=\t"<<mergesPrecisionNew<<"\n";
+						<< "\tprecision=\t"<<boundaryPrecision<<"\n";
+		if (displayPORstatistics) {
+			displayed_error << "POR (merged nodes):\n"
+							<< "\tall errors:\n"
+							<< "\t\trecall=\t"<<mergesRecallALL<<"\n"
+							<< "\t\tprecision=\t"<<mergesPrecisionALL<<"\n"
+							<< "\tmerging errors:\n"
+							<< "\t\trecall=\t"<<mergesRecallNew<<"\n"
+							<< "\t\tprecision=\t"<<mergesPrecisionNew<<"\n";
+		}
 	#else
 		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
 									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
@@ -155,6 +158,9 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextOutputName(int i, int j, i
 	HadithDagGraph * graphGenerated=dynamic_cast<HadithDagGraph *>(generatedGraph);
 	ChainNarratorNode * nodeDetected=graphGenerated->getGraph()->getChainNode(j,h);
 	ChainNodeCorrespondanceMap::iterator itr=chainNodesMapOC.find(nodeDetected);
+	if (nodeDetected==NULL) {
+		qDebug()<<outputList[i].getText();
+	}
 	assert(nodeDetected!=NULL);
 	if(itr==chainNodesMapOC.end()){
 		chainNodesMapOC[nodeDetected]=ChainNodeIntPair(NULL,0);
@@ -168,6 +174,13 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int j) {
 	for (int k=0;true;k++) {
 		ChainNarratorNode * nodeCorrect=graphCorrect->getGraph()->getChainNode(i,k);
 		ChainNodeCorrespondanceMap::iterator itr=chainNodesMapCO.find(nodeCorrect);
+		if (nodeCorrect==NULL) {
+			Name n0(text,tags[i-1].getMainStart(),tags[i-1].getMainEnd());
+			Name n(text,tags[i].getMainStart(),tags[i].getMainEnd());
+			qDebug()<<n0.getString();
+			qDebug()<<n.getString();
+			qDebug()<<tags[i].getText();
+		}
 		assert(nodeCorrect!=NULL);
 		if(itr==chainNodesMapCO.end()){
 			chainNodesMapCO[nodeCorrect]=ChainNodeIntPair(NULL,0);

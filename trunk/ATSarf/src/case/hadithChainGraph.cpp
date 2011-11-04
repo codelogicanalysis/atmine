@@ -48,11 +48,13 @@ int HadithChainGraph::read(ChainsContainer & chains, ATMProgressIFC * prg, QStri
 				if (this_->narr==NULL) {
 					this_->narr=n;
 				} else {
-					QMessageBox msgBox;
-					msgBox.setIcon(QMessageBox::Information);
-					msgBox.setWindowTitle("Warning Processing Graph");
-					msgBox.setText(QString("More than one narrator was found in supposedly one text. The others will be ignored"));
-					msgBox.exec();
+					if (this_->displayWarnings) {
+						QMessageBox msgBox;
+						msgBox.setIcon(QMessageBox::Information);
+						msgBox.setWindowTitle("Warning Processing Graph");
+						msgBox.setText(QString("More than one narrator was found in supposedly one text. The others will be ignored"));
+						msgBox.exec();
+					}
 					break;
 				}
 			}
@@ -61,13 +63,14 @@ int HadithChainGraph::read(ChainsContainer & chains, ATMProgressIFC * prg, QStri
 	return 0;
 }
 
-Narrator * HadithChainGraph::getNarrator(QString &text) {
+Narrator * HadithChainGraph::getNarrator(QString &text, bool displayWarnings) {
 	Name n(&text,0,text.size()-1);
-	return getNarrator(n);
+	return getNarrator(n,displayWarnings);
 }
 
-Narrator * HadithChainGraph::getNarrator(const Name & name) {
+Narrator * HadithChainGraph::getNarrator(const Name & name,bool displayWarnings) {
 	NarratorReader r;
+	r.displayWarnings=displayWarnings;
 	segmentNarrators(name.getTextPointer(),name.getStart(),name.getEnd(),&read,&r);
 	bool addEdges=false;
 	if (r.narr==NULL) {

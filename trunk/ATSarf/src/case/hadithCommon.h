@@ -33,7 +33,8 @@
 		unsigned int bio_nrc_max:15;
 		unsigned int bio_narr_min:5;
 		unsigned int bio_max_reachability:5;
-		unsigned int unused:12;
+		bool detailed_statistics:1;
+		unsigned int unused:11;
 		double equality_delta;
 		double equality_threshold;
 		double bio_threshold;
@@ -51,6 +52,7 @@
 			bio_threshold=5.0;
 			display_chain_num=true;
 			break_cycles=true;
+			detailed_statistics=true;
 		}
 	};
 
@@ -151,8 +153,8 @@
 
 
 #ifdef PREPROCESS_DESCRIPTIONS
-	void readFromDatabasePreProcessedDescriptions();
-	void readFromFilePreprocessedDescriptions();
+	void readFromDatabasePreProcessedHadithDescriptions();
+	void readFromFilePreprocessedHadithDescriptions();
 #endif
 
 	void hadith_initialize();

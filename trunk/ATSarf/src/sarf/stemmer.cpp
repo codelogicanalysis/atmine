@@ -199,9 +199,11 @@ bool Stemmer::on_match()
 		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description();
 		out<<" [ ";
 		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
-			if (stem_info->abstract_categories[i])
-				if (get_abstractCategory_id(i)>=0)
-					out<<getColumn("category","name",get_abstractCategory_id(i))<< " ";
+			if (stem_info->abstract_categories[i]) {
+				int abstract_id=database_info.comp_rules->getAbstractCategoryID(i);
+				if (abstract_id>=0)
+					out<<database_info.comp_rules->getCategoryName(abstract_id)<< " ";
+			}
 		out<<"]";
 		out <<")-";
 	}

@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "text_handling.h"
 #include "Math_functions.h"
+#include "hadithCommon.h"
 
 AbstractTwoLevelAgreement::AbstractTwoLevelAgreement(QString * text,QString fileName,AbstractGraph * generatedGraph, OutputDataList & generatedTags)
 	:outputList(generatedTags) {
@@ -144,11 +145,11 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 		namePrecisionList.append(0);
 	}
 	if (underComputation) { //under computation only
-	#ifdef DETAILED_DISPLAY
-		displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
-						<</*text->mid(start2,end2-start2+1)*/j<<"\t"
-						<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
-	#endif
+		if (hadithParameters.detailed_statistics) {
+			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+							<</*text->mid(start2,end2-start2+1)*/j<<"\t"
+							<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
+		}
 	}
 }
 
@@ -171,6 +172,7 @@ bool AbstractTwoLevelAgreement::readAnnotations() {
 	annotatedGraph=newGraph(true);
 	if (!readAnnotation(fileName+".tags",tags,annotatedGraph)){
 		error << "Annotation File does not exist\n";
+	#ifndef SUBMISSION
 		QFile file(QString("%1.tags").arg(fileName).toStdString().data());
 		if (file.open(QIODevice::WriteOnly)) {
 			QDataStream out(&file);   // we will serialize the data into the file
@@ -179,6 +181,7 @@ bool AbstractTwoLevelAgreement::readAnnotations() {
 			file.close();
 			error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
 		}
+	#endif
 		return false;
 	}
 	return true;
@@ -257,10 +260,10 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 				outputNamesOverLap.clear();
 			}
 		} else if (before(start1,end1,start2,end2)) {
-		#ifdef DETAILED_DISPLAY
-			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
-							<<"-----\n";
-		#endif
+			if (hadithParameters.detailed_statistics) {
+				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+								<<"-----\n";
+			}
 			//[max-boundary computations
 			overLapMainFinished(-1,-1,tagNamesOverLap,outputNamesOverLap,numNames);
 			//]
@@ -269,10 +272,10 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 			beforeMovingToNextTag(i,j);
 			i++;
 		} else if (after(start1,end1,start2,end2) ) {
-		#ifdef DETAILED_DISPLAY
-			displayed_error	<<"-----\t"
-							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
-		#endif
+			if (hadithParameters.detailed_statistics) {
+				displayed_error	<<"-----\t"
+								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+			}
 			//[max-boundary computations
 			overLapMainFinished(-1,-1,tagNamesOverLap,outputNamesOverLap,numNames);
 			//]
@@ -290,21 +293,21 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 		outputNamesOverLap.clear();
 	}
 	while (i<tags.size()) {
-	#ifdef DETAILED_DISPLAY
-		//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
-		displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
-						<<"-----\n";
-	#endif
+		if (hadithParameters.detailed_statistics) {
+			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
+			displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
+							<<"-----\n";
+		}
 		beforeMovingToNextTag(i,j);
 		i++;
 	}
 	while (j<outputList.size()) {
-	#ifdef DETAILED_DISPLAY
-		//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-		displayed_error <<"-----\t"
-						<</*text->mid(start2,end2-start2+1)*/j<<"\n";
-		beforeMovingToNextOutput(i,j);
-	#endif
+		if (hadithParameters.detailed_statistics) {
+			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
+			displayed_error <<"-----\t"
+							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
+			beforeMovingToNextOutput(i,j);
+		}
 		j++;
 	}
 

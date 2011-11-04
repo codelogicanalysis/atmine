@@ -19,6 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef EQUAL_NEW
 	m_ui->EQ_threshold->setText("0.1");
 #endif
+#ifdef SUBMISSION
+	m_ui->chk_AffixBreaker->setVisible(false);
+	m_ui->chk_verification->setVisible(false);
+#else
+	//m_ui->chk_detailed_Statistics->setVisible(false);
+#endif
 }
 
 MainWindow::~MainWindow() {
@@ -85,7 +91,6 @@ void MainWindow::startTaggingText(QString & text){
 	taggedBox->setTextBackgroundColor(Qt::white);
 	taggedBox->setTextColor(Qt::black);
 	taggedBox->setText(text);
-
 }
 
 void MainWindow::finishTaggingText(){
@@ -166,7 +171,7 @@ void MainWindow::on_chk_bible_toggled(bool checked){
 
 void MainWindow::on_pushButton_clicked(){
 	QString error_str,output_str,hadith_str;
-	bool v1,v2,v3,v4,v5,v6;
+	bool v1,v2,v3,v4,v5,v6=true;
 	int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
 	int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
 	int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
@@ -183,13 +188,15 @@ void MainWindow::on_pushButton_clicked(){
 		geneologyParameters.theta_0=nmc_max;
 		geneologyParameters.C_max=nrc_max;
 		geneologyParameters.radius=equality_radius;
+		geneologyParameters.refined=m_ui->chk_genealogyRefined->isChecked();
 	}
 	hadithParameters.equality_threshold=m_ui->EQ_threshold->toPlainText().toDouble(&v6);
 	hadithParameters.display_chain_num=m_ui->chk_chainNum->isChecked();
 	hadithParameters.break_cycles=m_ui->chk_breakCycles->isChecked();
+	hadithParameters.detailed_statistics=geneologyParameters.detailed_statistics=m_ui->chk_detailed_Statistics->isChecked();
 	sarfParameters.enableRunonwords=m_ui->chk_runon->isChecked();
 	if ((m_ui->chk_hadith->isChecked() || m_ui->chk_bible->isChecked()) && (!v1 || !v2 || !v3 || !v4 || !v5 || !v6)){
-		m_ui->errors->setText("Parameters for Hadith Segmentaion are not valid integers/doubles!\n");
+		m_ui->errors->setText("Parameters for Hadith/Genealogy Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
 	QString input=m_ui->input->toPlainText();

@@ -411,8 +411,8 @@ private:
 						<<stemmings<<"\n";
 	#endif
 		//delete text;
-		if (currentChain!=NULL)
-			delete currentChain;
+		/*if (currentChain!=NULL)
+			delete currentChain;*/
 		return 0;
 	}
 
