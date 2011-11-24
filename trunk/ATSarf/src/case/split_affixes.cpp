@@ -53,6 +53,7 @@ void SplitDialog::split_action() {
 						error<<"Inconsistent Reverse Description.\n";
 						continue;
 					}
+				#if 0 //seems wrong logic
 					if (reverse_description){
 						originalAffixList->setItem(rowIndex2,6,new QTableWidgetItem(QString("1")));
 						QString category2=originalAffixList->item(rowIndex2,2)->text();
@@ -60,6 +61,7 @@ void SplitDialog::split_action() {
 						KEEP_OLD=false;
 						insert_item(t,affix2,raw_data2,category2,source_id,new QList<long>,description2,pos2,"","1");
 					}
+				#endif
 				}
 				QString category2=originalAffixList->item(rowIndex2,2)->text();
 				remove_item(t,affix_id1,raw_data1,database_info.comp_rules->getCategoryID(category1),database_info.descriptions->indexOf(description1),pos1);

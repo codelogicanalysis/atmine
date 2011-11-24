@@ -19,6 +19,7 @@
 #include "narrator_abstraction.h"
 
 
+	class BiographySegmenterAlgorithm;
 
 	class HadithParameters
 	{
@@ -685,6 +686,7 @@
 		Narrator *narrator;
 		Chain *chain;
 		Biography *biography;
+		BiographySegmenterAlgorithm * segment;
 
 		void initialize(QString * text) {
 			if (namePrim!=NULL) {
@@ -714,7 +716,7 @@
 				int s=0;
 				if (biography!=NULL) {
 					s=biography->getStart();
-					delete biography;
+					//delete biography; //TODO: check how this should be kept without resulting in memory corruption
 				}
 				biography=new Biography(graph,text,s);
 			}
@@ -733,6 +735,7 @@
 			narratorConnectorPrim=NULL;
 			biography=NULL;
 			chain=NULL;
+			segment=NULL;
 		}
 	};
 

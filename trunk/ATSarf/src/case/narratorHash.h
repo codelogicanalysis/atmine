@@ -20,7 +20,7 @@ public:
 	class FoundAction: public Action {
 	public:
 		virtual void action(const QString & searchKey, GroupNode * node, double similarity) =0;
-		virtual bool isFoundAction() {return true;}
+		bool isFoundAction() {return true;}
 	};
 	class BiographyAction: public Action {
 	public:

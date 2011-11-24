@@ -9,6 +9,7 @@
 #include "hadith_utilities.h"
 #include "narratorHash.h"
 #include "graph.h"
+#include "biographyGraphUtilities.h"
 
 #ifdef EQUALITYDEBUG
 	inline void display(QString t) {
@@ -714,7 +715,7 @@ inline double equalNew(const Narrator & n1,const Narrator & n2) {
 				name1[0]=alef;
 			if (name2.size()>0 && alefs.contains(name2[0]))
 				name2[0]=alef;
-			if (name1!=name2)
+			if (name1!=name2) //TODO: check if this works when diacritics are available???
 				return 0;
 			else
 				equal=true;
@@ -818,39 +819,6 @@ void Biography::serialize(QTextStream &chainOut) const
 }
 
 #ifdef SEGMENT_BIOGRAPHY_USING_POR
-class RealNarratorAction:public NarratorHash::FoundAction {
-private:
-	Biography::NarratorNodeList & list;
-	bool found;
-public:
-	RealNarratorAction(Biography::NarratorNodeList & nodeList):list(nodeList) {}
-	virtual void action(const QString & , GroupNode * node, double similarity){
-		if (similarity>hadithParameters.equality_threshold) {
-			found =true;
-		#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
-			NarratorNodeIfc *n=&node->getCorrespondingNarratorNode();
-		#if 1
-			if(n==NULL) //is a chain node
-				list.append(Biography::MatchingNode(&(*node)[0],similarity));
-			else 
-		#else
-			assert(n!=NULL);
-		#endif
-		#else
-			NarratorNodeIfc *n=node;
-		#endif
-			int index;
-			if (!Biography::MatchingNode::contains(list,n,similarity,index)) {
-				list.append(Biography::MatchingNode(n,similarity));
-			} else if (index>=0) { //i.e. found but with a smaller similarity
-				list[index]=Biography::MatchingNode(n,similarity);
-			}
-		}
-	}
-	void resetFound() {found=false;}
-	bool isFound() {return found;}
-};
-
 bool Biography::isRealNarrator(Narrator * n) {
 	int i;
 	if (!nodeGroups.isEmpty()) {
@@ -863,13 +831,11 @@ bool Biography::isRealNarrator(Narrator * n) {
 		i=0;
 	}
 
-	RealNarratorAction v(nodeGroups[i]);
 	if (n->isRasoul) {
 		return false;
 	} else {
-		v.resetFound();
-		graph->performActionToAllCorrespondingNodes(n,v);
-		if (!v.isFound()) {
+		bool isReal=::isRealNarrator(graph,n,nodeGroups[i]);
+		if (!isReal) {
 			nodeGroups.removeLast();
 			return false;
 		} else

@@ -1,8 +1,10 @@
+#include "biographyGraphUtilities.h"
 #include "hadithCommon.h"
 #include "AbstractTwoLevelAgreement.h"
 #include "Math_functions.h"
 #include "OneLevelAgreement.h"
 #include <QStringList>
+
 
 
 HadithParameters hadithParameters;
@@ -249,7 +251,8 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 			structures->learningEvaluator.addNonContextNarrator(n); \
 		} \
 	} else {\
-		if (structures->biography->addNarrator(narrator)) {\
+		if ((structures->segment!=NULL && structures->segment->addNarrator(narrator)) || \
+			(structures->segment==NULL && structures->biography->addNarrator(narrator))) {\
 			currentData.bio_nrcCount=0; \
 			Name n(structures->text,narrator->getStart(),narrator->getEnd()); /*just to check the benefit of using POR*/ \
 			structures->learningEvaluator.addContextNarrator(n); \

@@ -84,8 +84,7 @@ public:
 			int row=size;
 			size+=s.size();
 			originalAffixList->setRowCount(size);
-			while (s.retrieve())
-			{
+			while (s.retrieve()){
 				long id=s.get(0).toLongLong();
 				QString affix=getAffix(id);
 				QString category=database_info.comp_rules->getCategoryName(s.get(1).toLongLong());

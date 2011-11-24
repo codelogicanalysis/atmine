@@ -10,8 +10,7 @@
 #include "common.h"
 
 
-class compatibility_rules
-{
+class compatibility_rules {
 	private:
 		typedef struct {
 			int rc:16;		//currently <500 => more than enough
@@ -32,7 +31,10 @@ class compatibility_rules
 				friend QDataStream &operator<<(QDataStream &out, const NameIsAbstract &s);
 				friend QDataStream &operator>>(QDataStream &in, NameIsAbstract &s);
 			public:
-				void set(const QString n, bool abstract){name=n;this->abstract=abstract;valid=true;
+				void set(const QString n, bool abstract){
+					name=n;
+					this->abstract=abstract;
+					valid=true;
 					//qDebug()<<n<<abstract;
 				}
 				QString & getName(){assert(valid);return name;}
@@ -76,8 +78,7 @@ class compatibility_rules
 		{
 			try{
 				comp_rule_t & crule=crlTable[id1][id2];
-				if (crule.rule_t==AA || crule.rule_t==CC)
-				{
+				if (crule.rule_t==AA || crule.rule_t==CC) {
 					//more than one category!!!!!!!!!
 					id_r=crule.rc;
 				}
@@ -86,10 +87,12 @@ class compatibility_rules
 				return false;
 			}
 		}
-		QString getCategoryName(int id)
-		{
+		QString getCategoryName(int id) {
 			try{
-				return cat_names[id].getName();
+				if (id>=0 && id<cat_names.size())
+					return cat_names[id].getName();
+				else
+					return "";
 			}catch(...) {
 				return "";
 			}

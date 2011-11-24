@@ -6,7 +6,7 @@
 #include "ATMProgressIFC.h"
 
 #define AUGMENT_DICTIONARY
-//#define JUST_BUCKWALTER
+#define JUST_BUCKWALTER
 //#define INSERT_ONLY_TIME
 //#define INSERT_ONLY_NAMES
 #define REPETITIONS 1

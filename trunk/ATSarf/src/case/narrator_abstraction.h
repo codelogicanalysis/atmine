@@ -315,9 +315,11 @@ public:
 	public:
 		NarratorNodeIfc * node;
 		double similarity;
-		MatchingNode(NarratorNodeIfc * node,double similarity) {
+		Narrator * bioNarrator;
+		MatchingNode(NarratorNodeIfc * node,double similarity,Narrator * bioNarrator=NULL) {
 			this->node=node;
 			this->similarity=similarity;
+			this->bioNarrator=bioNarrator;
 		}
 		static bool contains(const QList<MatchingNode> & list, NarratorNodeIfc * node, double similarity, int & index) {
 			//if found with a larger similarity will return true and index=-1,
@@ -383,19 +385,37 @@ public:
 			return "";
 		return text->mid(getStart(), length);
 	}
+private:
+	bool addNarratorHelper(Narrator * n) {
+		bool real=false;
+		BiographyNarrator * b =new BiographyNarrator(n);
+	#ifdef SEGMENT_BIOGRAPHY_USING_POR
+		b->isRealNarrator=isRealNarrator(n);
+		real=b->isRealNarrator;
+	#endif
+		narrators.append(b);
+		return real;
+	}
+public:
 	bool addNarrator(Narrator & n) {
 		if (n.getStart()>=this->start) {// && n.getEnd()<=this->end)
-			bool real=false;
-			BiographyNarrator * b =new BiographyNarrator(&n);
-		#ifdef SEGMENT_BIOGRAPHY_USING_POR
-			b->isRealNarrator=isRealNarrator(&n);
-			real=b->isRealNarrator;
-		#endif
-			narrators.append(b);
-			return real;
+			return addNarratorHelper(&n);
 		}
 		return false;
 	}
+	bool addNarratorAndUpdateBoundaries(Narrator * n) {
+		if (n==NULL)
+			return false;
+		bool real=addNarratorHelper(n);
+		int start=n->getStart();
+		int end=n->getEnd();
+		if (start<this->start)
+			this->start=start;
+		if (end>this->end)
+			this->end=end;
+		return real;
+	}
+
 	bool addNarrator(Narrator * n) {
 		if (n!=NULL)
 			return addNarrator(*n);
