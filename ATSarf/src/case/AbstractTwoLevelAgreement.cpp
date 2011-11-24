@@ -206,6 +206,7 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 		AbstractGraph * g=tags[i].getGraph();
 		if (g!=NULL)
 			g->fillTextPointers(text);
+
 	}
 	if (annotatedGraph!=NULL)
 		annotatedGraph->fillTextPointers(text);

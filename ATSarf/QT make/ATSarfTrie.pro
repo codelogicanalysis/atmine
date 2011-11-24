@@ -87,7 +87,8 @@ HEADERS += util/text_handling.h \
     ../src/case/genealogyInterAnnotatorAgreement.h \
     ../src/case/OneLevelAgreement.h \
     ../src/util/editDistance.h \
-    ../src/case/narratorEqualityModel.h
+    ../src/case/narratorEqualityModel.h \
+    ../src/case/biographyGraphUtilities.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -150,7 +151,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/OneLevelAgreement.cpp \
     ../src/util/editDistance.cpp \
     ../src/case/narratorEqualityModel.cpp \
-    ../src/case/narratorEqualityComparision.cpp
+    ../src/case/narratorEqualityComparision.cpp \
+    ../src/case/biographyGraphUtilities.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
@@ -162,9 +164,10 @@ CONFIG += debug_and_release
 # QMAKE_CFLAGS += -pg
 # QMAKE_CXXFLAGS += -pg
 # QMAKE_LFLAGS += -pg
-# QMAKE_CFLAGS += -O3
-# QMAKE_CXXFLAGS += -O3
-# QMAKE_LFLAGS += -O3
+QMAKE_CFLAGS += -O3
+QMAKE_CXXFLAGS += -O3
+QMAKE_LFLAGS += -O3
+
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui

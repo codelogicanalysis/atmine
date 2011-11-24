@@ -41,6 +41,10 @@ inline bool isAcceptState(item_types type,long cat_r_id) {
 			}
 		}
 	} else {
+		QString s=database_info.comp_rules->getCategoryName(cat_r_id);
+		/*qDebug()<<s<<"\t"<<cat_r_id;
+		if (cat_r_id==168)
+			qDebug()<<"\t["<<s<<"]";*/
 		Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
 		if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
 			Retrieve_Template existBCcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)BC));
@@ -461,7 +465,7 @@ int tree::build_affix_tree(item_types type)
 			bool isAccept=isAcceptState(type,inf.category_id);
 			if (isAccept || hasCompatibleAffixes(type,inf.category_id)) {
 				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,isAccept,inf.raw_data,base);
-				if (type!=STEM)
+				//if (type!=STEM)
 					build_helper(type,inf.category_id,6-name.length(),next);
 			}
 		}

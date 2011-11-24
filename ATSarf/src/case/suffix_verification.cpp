@@ -143,8 +143,7 @@ private:
 	QTextStream * dout;
 	#define d_out *(dout)
 
-	void traverse(node * n,QString affix,QString raw_data, QString description, QString POS)
-	{
+	void traverse(node * n,QString affix,QString raw_data, QString description, QString POS) {
 		if (!n->isLetterNode()) {
 			result_node * r=(result_node* )n;
 			for (int i=0; i<r->raw_datas.size();i++) {
@@ -159,6 +158,8 @@ private:
 					if (type==SUFFIX){
 						bool r=isReverseDirection(d);
 						//qDebug()<<raw_data<<" "<<r;
+						if (description[0]=='[' && description.size()>0 && description[description.size()-1]==']' && !added_desc.isEmpty())
+							description="";
 						if (description.contains("%1"))
 							desc=description.arg(added_desc+(added_desc=="" || description=="%1"?"":" "));
 						else {

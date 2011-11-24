@@ -323,7 +323,7 @@ int hadith_agreement(QString input_str,ATMProgressIFC *prg) {
 	HadithInterAnnotatorAgreement::OutputDataList tags2;
 	HadithDagGraph * graph2=new HadithDagGraph();
 	h2.readAnnotation(newFileName,tags2,graph2);
-	HadithInterAnnotatorAgreement h(text,fileName,graph2,tags2);
+	HadithInterAnnotatorAgreement h(text,fileName,graph2,tags2,false);
 	h.calculateStatisticsOrAnotate();
 	h.displayStatistics();
 	return 0;

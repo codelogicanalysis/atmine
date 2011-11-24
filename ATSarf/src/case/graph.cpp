@@ -214,7 +214,7 @@ int deserializeGraph(QString fileName,ATMProgressIFC * prg) {
 	graph->serialize(fileStream2);
 	file2.close();
 	delete graph;
-#elif 0
+#elif !defined(SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY) || defined(BIOGRAPHY_SEGMENT)
 	biographies(graph);
 #else
 	localizedDisplay(graph);
@@ -285,13 +285,7 @@ int calculateStatisticsOrAnotate(ChainsContainer &generatedChains, NarratorGraph
 		sel.setGraph(localGraph);
 		outputList.append(sel);
 	}
-	HadithInterAnnotatorAgreement h(text,fileName,generatedGraph,outputList
-			#ifdef SUBMISSION
-				,true
-			#else
-				,false
-			#endif
-									);
+	HadithInterAnnotatorAgreement h(text,fileName,generatedGraph,outputList, true);
 	if (h.calculateStatisticsOrAnotate()==0)
 		h.displayStatistics();
 

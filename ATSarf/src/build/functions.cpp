@@ -245,12 +245,12 @@ int insert_buckwalter()
 					assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
 				}
 			}
-#ifdef ONLY_SUFFIXES
+//#ifdef ONLY_SUFFIXES
 			else {
 				assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)); //if not AB or AC => BC
 				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false));  ////if not AC or BC => AB
 			}
-#endif
+//#endif
 			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,source_id)<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";

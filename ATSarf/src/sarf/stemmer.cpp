@@ -207,28 +207,32 @@ bool Stemmer::on_match()
 		out<<"]";
 		out <<")-";
 	}
-	if (called_everything || type==SUFFIX)
-	{
+	if (called_everything || type==SUFFIX) {
 		QString later_part="";
 		out<< "-(";
 		count=0;
-		for (int i=0;i<suffix_infos->count();i++)
-		{
+		for (int i=0;i<suffix_infos->size();i++) {
 			//qDebug()<< "{"<<suffix_infos->at(i).POS<<"}";
+			QString desc=suffix_infos->at(i).description();
 			if (count>0)
-					out << " ";//" + ";
+				out << " ";//" + ";
+			else {// (count==0)
+				if (suffix_infos->size()>1 && desc[0]=='[' && desc.size()>0 && desc[desc.size()-1]==']') {
+					desc="";
+				}
+			}
 			count++;
 			if (later_part=="" && suffix_infos->count()>i+1 && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
-				later_part=suffix_infos->at(i).description();
+				later_part=desc;
 				//out<< "{"<<suffix_infos->at(i).POS<<"}";
 				count =0;
 				continue;
 			} else {
 				later_part="";
 			}
-			if (suffix_infos->at(i).description().isEmpty())
+			if (desc.isEmpty())
 				count=0;
-			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ suffix_infos->at(i).description()<<later_part;
+			out<</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ desc<<later_part;
 			//out<< "{"<<suffix_infos->at(i).POS<<"}";
 		}
 		out <<")";
@@ -236,10 +240,10 @@ bool Stemmer::on_match()
 	if (called_everything)
 	{
 		QString word;
-		for (int i=0;i<prefix_infos->count();i++)
+		for (int i=0;i<prefix_infos->size();i++)
 			word.append(prefix_infos->at(i).raw_data);
 		word.append(stem_info->raw_data);
-		for (int i=0;i<suffix_infos->count();i++)
+		for (int i=0;i<suffix_infos->size();i++)
 			word.append(suffix_infos->at(i).raw_data);
 		//QString suff;
 		//for (int i=0;i<suffix_infos->count();i++)

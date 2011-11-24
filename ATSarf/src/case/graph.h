@@ -2089,7 +2089,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
 		graph->setFileName(text,fileName);
 	}
 	QString allName=fileName;
-#ifndef SUBMISSION
+#if !defined(SUBMISSION) || defined(WRITE_POR)
 	QFile file(fileName.remove(".txt")+".por");
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
