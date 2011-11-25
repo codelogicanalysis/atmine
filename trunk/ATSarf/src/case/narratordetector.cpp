@@ -6,6 +6,7 @@
 #include "narratorHash.h"
 #include "mergeLists.h"
 #include "biographyGraphUtilities.h"
+#include "OneLevelAgreement.h"
 
 
 class NarratorDetector
@@ -488,8 +489,13 @@ protected:
 			backwardList.append(sub_backward);
 		}
 		void mergeRemovingLast(Cluster & c, Cluster & result) { //assume result empty, and assume both have common last
+			assert(last()==c.last());
 			int i=0,j=0;
 			while (i<size() && j<c.size()-1) {
+				if (c[j]==operator [](i)) {
+					j++;
+					continue;
+				}
 				int start1=bioNarrators[i]->getStart();
 				int start2=c.bioNarrators[j]->getStart();
 				if (start1<start2) { //assume no need to check end's
@@ -509,21 +515,24 @@ protected:
 		}
 		bool nonOverLaping(const Cluster & c, int & start,int & end,int & countNodes, double & similarity) const { //c is checked as it is, this is checked for nonOverLapping subsets
 			assert(c.nodes.size()>0);
-			const Subset & allCluster2=c.forwardList.first();
-			int start2=allCluster2.start, end2=allCluster2.end;
-			int maxIndex=forwardList.size()-hadithParameters.bio_narr_min+1; //if we have nodes less than threshold no need to check for overLap anyways
-			for (int i=0;i<maxIndex;i++) {
-				const Subset & s=forwardList.at(i);
-				int start1=s.start,end1=s.end;
-				double sim=s.similarity;
-				if (!overLaps(start1,end1,start2,end2) && before(start1,end1,start2,end2)) {
-					int numNodes=s.count;
-					if (numNodes >=hadithParameters.bio_narr_min) {
-						start=i;
-						end=nodes.size()-1;
-						countNodes=numNodes;
-						similarity=sim;
-						return true;
+			int minIndex=hadithParameters.bio_narr_min-1; //if we have nodes less than threshold no need to check for overLap anyways
+			for (int j=c.backwardList.size()-1;j>=minIndex;j--) {
+				const Subset & c2=c.backwardList[j];
+				int start2=c2.start, end2=c2.end;
+				int maxIndex=forwardList.size()-hadithParameters.bio_narr_min+1; //if we have nodes less than threshold no need to check for overLap anyways
+				for (int i=0;i<maxIndex;i++) {
+					const Subset & c1=forwardList.at(i);
+					int start1=c1.start,end1=c1.end;
+					double sim=c1.similarity;
+					if (!overLaps(start1,end1,start2,end2) && before(start1,end1,start2,end2)) {
+						int numNodes=c1.count;
+						if (numNodes >=hadithParameters.bio_narr_min) {
+							start=i;
+							end=nodes.size()-1;
+							countNodes=numNodes;
+							similarity=sim;
+							return true;
+						}
 					}
 				}
 			}
@@ -613,13 +622,13 @@ protected:
 		for (int i=0;i<clusters.size();i++) {
 			if (clusters[i].size()<hadithParameters.bio_narr_min)
 				continue;
-			for (int j=i+1;j<clusters.size();j++) {
+			for (int j=/*i+1*/0;j<clusters.size();j++) {
 				if (clusters[j].size()<hadithParameters.bio_narr_min)
 					continue;
 				int commonCount;
 				int start,end;
 				double similarity;
-				if (clusters.at(i).nonOverLaping(clusters.at(j),start,end,commonCount,similarity)) {
+				if (i!=j && clusters.at(i).nonOverLaping(clusters.at(j),start,end,commonCount,similarity)) {
 					Score currScore(commonCount,similarity);
 					if (bestScore<currScore) {
 						bestScore=currScore;
@@ -1178,13 +1187,22 @@ public:
 			findChosenBiography(node,topSets);
 			if (checkBiography(topSets)) { //checkBiography also updates nodeIds list
 				for (int k=0;k<topSets.size();k++) {
-					Biography * bio=new Biography(graph,text);
+					Biography * bio=new Biography(graph,text, INT_MAX, 0);
 					biographies->append(bio);
 					QSet<int>::iterator itr= topSets[k].setBioNarrIndicies.begin();
 					int j=0;
 					for (;itr!=topSets[k].setBioNarrIndicies.end();itr++) {
 						Narrator * n=narratorList[*itr];
 						bio->addRealNarrator(n);//addNarrator(n);
+					}
+				#ifdef TAG_BIOGRAPHY
+					int start=bio->getStart();
+					int end=bio->getEnd();
+					prg->tag(start,end-start+1,Qt::darkGray,false);
+				#endif
+					itr= topSets[k].setBioNarrIndicies.begin();
+					for (;itr!=topSets[k].setBioNarrIndicies.end();itr++) {
+						Narrator * n=narratorList[*itr];
 						j++;
 						bool isReal=true;
 	#endif
@@ -1241,7 +1259,8 @@ private:
 			this->end=end;
 		}
 		bool operator<(const Region & rhs) const  {//check if suitable
-			return (start<rhs.start);
+			//return (start<rhs.start);
+			return !overLaps(start,end,rhs.start,rhs.end) && before(start,end,rhs.start,rhs.end);
 		}
 		bool operator==(const Region & rhs) const {
 			//return start==rhs.start;
@@ -1313,7 +1332,7 @@ public:
 		Region currRegion(start,end);
 		RegionList::iterator itr=qLowerBound(biographyRegions.begin(),biographyRegions.end(),currRegion);
 		//RegionList::iterator uitr=qUpperBound(biographyRegions.begin(),biographyRegions.end(),currRegion);
-		bool c=(biographyRegions.size()>0 && itr!=biographyRegions.begin() && itr!=biographyRegions.end());
+		bool c=(biographyRegions.size()>0 && /*itr!=biographyRegions.begin() &&*/ itr!=biographyRegions.end());
 		if (c)
 			c=((*itr)==currRegion); //== means overLaps
 		if ( c )
@@ -1322,7 +1341,41 @@ public:
 		return true;
 	}
 	int segment(QString input_str,ATMProgressIFC *prg) {
-		return lookup(input_str,prg);
+		int i=lookup(input_str,prg);
+		if (i>=0)
+			i=calculateStatistics(input_str);
+		return i;
+	}
+	int calculateStatistics(QString filename) {
+		OneLevelAgreement::SelectionList tags, generatedTags;
+		for (int i=0;i<biographies->size();i++) {
+			int start=biographies->at(i)->getStart();
+			int end=biographies->at(i)->getEnd();
+			OneLevelAgreement::Selection s(start,end);
+			generatedTags.append(s);
+		}
+
+		QFile file(QString("%1.tags").arg(filename).toStdString().data());
+		if (file.open(QIODevice::ReadOnly)) {
+			QDataStream out(&file);   // we will serialize the data into the file
+			out	>> tags;
+			file.close();
+		} else {
+			error << "Annotation File does not exist\n";
+		//#ifndef SUBMISSION
+			if (file.open(QIODevice::WriteOnly)) {
+				QDataStream out(&file);   // we will serialize the data into the file
+				out << generatedTags;
+				file.close();
+				error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
+			}
+		//#endif
+			return -1;
+		}
+		OneLevelAgreement o(text,tags,generatedTags);
+		o.calculateStatistics();
+		o.displayStatistics("Biography");
+		return 0;
 	}
 };
 #endif

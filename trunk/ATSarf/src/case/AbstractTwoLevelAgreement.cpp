@@ -27,7 +27,7 @@ void AbstractTwoLevelAgreement::overLapNamesFinished(const SelectionList & tagWo
 	if (tagWords.size()==0 && outputWords.size()==0 )
 		return;
 	bool underComputation=(&numWords==&underNumWords);
-	int countCommon=commonWords(text,tagWords,outputWords);
+	int countCommon=commonWords(text,tagWords,outputWords); //not working correctly on maximal boundaries
 	int countCorrect=countWords(text,tagWords);
 	int countDetected=countWords(text,outputWords);
 	assert (countCorrect!=0);
@@ -80,21 +80,21 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 					startNamesOverLap(i,j,k,h,countCommon);
 				if (!foundK /*&& !foundJ*/) {//so that merged parts will not be double counted
 					common_k.append(k);
-				} else if (foundH) { //new correctnode that matches detected
 					tagWords.append(tagNames[k]);
-					if (underComputation)
-						anotherTagOverLapPreviousOutputName(i,j,k,h);
+					if (foundH) { //new correctnode that matches detected
+						if (underComputation)
+							anotherTagOverLapPreviousOutputName(i,j,k,h);
+					}
 				}
 				if (!foundH) {//common_i and common_j now are not same size, bc recall and precision need different treatment for overlap
 					common_h.append(h);
-				} else if (foundK) { //new detectednode that matches correct
 					outputWords.append(outputNames[h]);
-					if (underComputation)
-						anotherOutputOverLapPreviousTagName(i,j,k,h);
+					if (foundK) { //new detectednode that matches correct
+						if (underComputation)
+							anotherOutputOverLapPreviousTagName(i,j,k,h);
+					}
 				}
 				if (!foundK && !foundH) {
-					tagWords.append(tagNames[k]);
-					outputWords.append(outputNames[h]);
 					if (underComputation)
 						firstNameOverLap(i,j,k,h);
 				}
@@ -139,6 +139,13 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 				outputWords.clear();
 				h++;
 			}
+		}
+		if (tagWords.size()>0 || outputWords.size()>0) {
+			//[max-boundary computations
+			overLapNamesFinished(tagWords,outputWords,numWords);
+			//]
+			tagWords.clear();
+			outputWords.clear();
 		}
 	} else {
 		nameRecallList.append(0);
@@ -230,19 +237,19 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 			bool foundI=common_i.contains(i), foundJ=common_j.contains(j);
 			if (!foundI /*&& !foundJ*/) {//so that merged parts will not be double counted
 				common_i.append(i);
+				tagNamesOverLap.append(tagNames);
 			} else {
 				currentOutputLists.append(j);
 			}
 			if (!foundJ) {//common_i and common_j now are not same size, bc recall and precision need different treatment for overlap
 				common_j.append(j);
+				outputNamesOverLap.append(outputNames);
 			} else {
 				currentTagLists.append(i);
 			}
 			//[underboundary computations
 				overLapMainFinished(i,j,tagNames,outputNames,underNumNames);
 			//]
-				tagNamesOverLap.append(tagNames);
-				outputNamesOverLap.append(outputNames);
 
 			int progress=0;
 			if (end1<=end2 ) {
