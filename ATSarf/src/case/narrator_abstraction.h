@@ -396,6 +396,14 @@ private:
 		narrators.append(b);
 		return real;
 	}
+	void modifyBoundaries(Narrator * n) {
+		int start=n->getStart();
+		int end=n->getEnd();
+		if (start<this->start)
+			this->start=start;
+		if (end>this->end)
+			this->end=end;
+	}
 public:
 	bool addNarrator(Narrator & n) {
 		if (n.getStart()>=this->start) {// && n.getEnd()<=this->end)
@@ -407,12 +415,7 @@ public:
 		if (n==NULL)
 			return false;
 		bool real=addNarratorHelper(n);
-		int start=n->getStart();
-		int end=n->getEnd();
-		if (start<this->start)
-			this->start=start;
-		if (end>this->end)
-			this->end=end;
+		modifyBoundaries(n);
 		return real;
 	}
 
@@ -427,6 +430,7 @@ public:
 	#ifdef SEGMENT_BIOGRAPHY_USING_POR
 		b->isRealNarrator=true;
 	#endif
+		modifyBoundaries(n);
 		narrators.append(b);
 	}
 

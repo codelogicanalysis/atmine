@@ -260,7 +260,7 @@ inline int commonWords(QString * text, const QList< QPair<int,int> > & st1,const
 	int count=0;
 	for (int i=0;i<st1.size();i++) {
 		for (int j=0;j<st2.size();j++) {
-			count=commonWords(text,st1[i],st2[j]); //if has no common characters will return zero, so although not efficient is expected to return sane results
+			count+=commonWords(text,st1[i],st2[j]); //if has no common characters will return zero, so although not efficient is expected to return sane results
 		}
 	}
 	return count;

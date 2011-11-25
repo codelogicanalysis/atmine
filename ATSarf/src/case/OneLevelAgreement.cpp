@@ -4,6 +4,11 @@
 
 OneLevelAgreement::OneLevelAgreement(QString * text,OneLevelAgreement::SelectionList & tagNames, OneLevelAgreement::SelectionList & outputNames)
 	:AbstractTwoLevelAgreement(text,"",NULL,*(new OutputDataList)){
+
+	initialize(text,tagNames,outputNames);
+}
+
+void OneLevelAgreement::initialize(QString * text,SelectionList & tagNames, SelectionList & outputNames) {
 	outputList.clear();
 	OutputData output(NULL);
 	output.setMainInterval(0,text->size()-1);
@@ -14,23 +19,22 @@ OneLevelAgreement::OneLevelAgreement(QString * text,OneLevelAgreement::Selection
 	tagsTemp.setMainInterval(0,text->size()-1);
 	tagsTemp.names.append(tagNames);
 	tags.append(tagsTemp);
-
 }
 
 int OneLevelAgreement::calculateStatistics() {
 	return calculateStatisticsHelper();
 }
 
-void OneLevelAgreement::displayStatistics(){
+void OneLevelAgreement::displayStatistics(QString structure){
 #ifdef DETAILED_DISPLAY
 	displayed_error << "-------------------------\n"
-					<< "Narrator Detection:\n"
+					<< structure<<" Detection:\n"
 					<< "\trecall=\t\t"<<nameRecall<<"\n"
 					<< "\tprecision=\t\t"<<namePrecision<<"\n"
-					<< "Narrator Boundary (Min-boundaries):\n"
+					<< structure<<" Boundary (Min-boundaries):\n"
 					<< "\trecall=\t"<<underBoundaryRecall<<"\n"
 					<< "\tprecision=\t"<<underBoundaryPrecision<<"\n"
-					<< "Narrator Boundary (Max-boundaries):\n"
+					<< structure<<" Boundary (Max-boundaries):\n"
 					<< "\trecall=\t"<<boundaryRecall<<"\n"
 					<< "\tprecision=\t"<<boundaryPrecision<<"\n"
 					<< "-------------------------\n";
