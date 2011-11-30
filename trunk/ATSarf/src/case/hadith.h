@@ -6,12 +6,17 @@
 #include "ATMProgressIFC.h"
 
 
-#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
+//#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
 #define WRITE_POR
+#if 1
 #define BIOGRAPHY_SEGMENT
 //#define SEGMENT_BIO_ALGORITHM
 #define SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
-//#define FAST_NEIGHBOR_CHECK
+#define FAST_NEIGHBOR_CHECK
+//#define BIOGRAPHY_ALL_MATCHING_NODES
+#define SEGMENT_BIOGRAPHY_USING_POR
+//#define BOUNDING_PARAGRAPH
+#endif
 
 //#define DEBUG_BFS_TRAVERSAL
 //#define DEBUG_DFS_TRAVERSAL
@@ -56,7 +61,6 @@
 #define COLOR_ALL
 #define EQUAL_NEW
 #define PROGRESS_SERIALZATION
-#define SEGMENT_BIOGRAPHY_USING_POR
 #define HASH_GRAPH_BUILDING
 #define TAG_BIOGRAPHY
 

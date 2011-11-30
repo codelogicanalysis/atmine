@@ -1907,34 +1907,37 @@ public:
 		prg->report(0);
 		int counter=0;
 	#endif
-		int n;
-		streamIn>>n;
-		while(n!=SERIALIZE_STOP) {
-			int cInt=n;
-			if (cInt>0) {
-				NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
-				setDeserializationIntEquivalent(cInt,node);
+		if (total>0) {
+			int n;
+			streamIn>>n;
+			while(n!=SERIALIZE_STOP) {
+				int cInt=n;
+				if (cInt>0) {
+					NarratorNodeIfc * node=NarratorNodeIfc::deserialize(streamIn,*this);
+					setDeserializationIntEquivalent(cInt,node);
+				}
+			#ifdef PROGRESS_SERIALZATION
+				counter++;
+				prg->report(counter/total*100+0.5);
+			#endif
+
+				streamIn>>n; //get next number
 			}
-		#ifdef PROGRESS_SERIALZATION
-			counter++;
-			prg->report(counter/total*100+0.5);
-		#endif
 
-			streamIn>>n; //get next number
-		}
 
-		streamIn>>size;
-		for (int i=0;i<size;i++) {
-			int cInt;
-			streamIn>>cInt;
-			NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
-			assert(n!=NULL);
-			top_nodes.append(n);
+			streamIn>>size;
+			for (int i=0;i<size;i++) {
+				int cInt;
+				streamIn>>cInt;
+				NarratorNodeIfc *n=getDeserializationIntEquivalent(cInt);
+				assert(n!=NULL);
+				top_nodes.append(n);
 
-		#ifdef PROGRESS_SERIALZATION
-			counter++;
-			prg->report(counter/total*100+0.5);
-		#endif
+			#ifdef PROGRESS_SERIALZATION
+				counter++;
+				prg->report(counter/total*100+0.5);
+			#endif
+			}
 		}
 
 		hash.deserialize(streamIn);

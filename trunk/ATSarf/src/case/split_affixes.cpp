@@ -1,6 +1,34 @@
 #include "split_affixes.h"
 
 
+void SplitDialog::findDuplicates() {
+	int rowCount=originalAffixList->rowCount();
+	for (int i=0;i<rowCount;i++) {
+		//long affix_id1=originalAffixList->item(i,0)->text().toLongLong();
+		QString affix1=originalAffixList->item(i,1)->text();
+		QString category1=originalAffixList->item(i,2)->text();
+		QString raw_data1=originalAffixList->item(i,3)->text();
+		QString pos1=originalAffixList->item(i,4)->text();
+		QString description1=originalAffixList->item(i,5)->text();
+		for (int j=i+1;j<rowCount;j++) {
+			//long affix_id2=originalAffixList->item(j,0)->text().toLongLong();
+			QString affix2=originalAffixList->item(j,1)->text();
+			QString category2=originalAffixList->item(j,2)->text();
+			QString raw_data2=originalAffixList->item(j,3)->text();
+			QString pos2=originalAffixList->item(j,4)->text();
+			QString description2=originalAffixList->item(j,5)->text();
+			if (	affix2==affix1 &&
+					raw_data2==raw_data1 &&
+					pos2==pos1 &&
+					description2==description1
+				) {
+				warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") found with 2 categories: "<<category1<<" & "<<category2<<"\n";
+			}
+		}
+	}
+	errors->setText(*errors_text);
+}
+
 void SplitDialog::split_action() {
 	QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
 	item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
@@ -25,10 +53,12 @@ void SplitDialog::split_action() {
 			QString raw_data1=originalAffixList->item(i,3)->text();
 			QString pos1=originalAffixList->item(i,4)->text();
 			QString description1=originalAffixList->item(i,5)->text();
+			bool canBeEmpty=description.startsWith('[') && description.endsWith(']') && pos.count('+')==1;
 			if (	affix1.startsWith(affix) &&
 					raw_data1.startsWith(raw_data) &&
 					pos1.startsWith(pos) &&
-					(description1.startsWith(description) || description1.endsWith(description) )	) {
+					(description1.startsWith(description) || description1.endsWith(description) ||
+					 canBeEmpty)	) {
 				bool reverse_description=true;
 				if (description1.startsWith(description))
 					reverse_description=false;
@@ -38,7 +68,9 @@ void SplitDialog::split_action() {
 				QString raw_data2=raw_data1.mid(raw_data.size());
 				QString pos2=pos1.mid(pos.size());
 				QString description2;
-				if (!reverse_description)
+				if (canBeEmpty && !description1.startsWith(description))
+					description2=description1;
+				else if (!reverse_description)
 					description2=description1.mid((description.size()==0?-1:description.size())+ (t==PREFIX?3:1)); //' + ' or ' '
 				else
 					description2=description1.mid(0,description1.size()-(description.size()==0?-1:description.size())- (t==PREFIX?3:1)); //' '

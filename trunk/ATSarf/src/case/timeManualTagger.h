@@ -11,6 +11,8 @@
 #include "ATMProgressIFC.h"
 #include "abstractAnnotator.h"
 
+//#define SUBTRACT_FACTOR
+
 using namespace std;
 
 class TimeTaggerDialog:public QMainWindow,public AbstractAnnotator{
