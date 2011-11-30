@@ -56,7 +56,7 @@ public:
 		nrc_max->setAlignment(Qt::AlignCenter);
 		nrc_max->setMaximumHeight(30);
 		nrc_max->setMaximumWidth(60);
-		narr_min=new QTextEdit("5",this);
+		narr_min=new QTextEdit("2",this);
 		narr_min->setAlignment(Qt::AlignCenter);
 		narr_min->setMaximumHeight(30);
 		narr_min->setMaximumWidth(60);

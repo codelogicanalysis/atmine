@@ -27,11 +27,11 @@ void BiographiesWindow::tag(int start, int length,QColor color, bool textcolor)
 		return;
 	QTextBrowser * taggedBox=text;
 	QTextCursor c=taggedBox->textCursor();
-	if (length>10000) {
+	/*if (length>10000) {
 		start=start+length-1;
 		length=5;
 		color=Qt::red;
-	}
+	}*/
 	c.setPosition(start,QTextCursor::MoveAnchor);
 	c.setPosition(start+length,QTextCursor::KeepAnchor);
 	taggedBox->setTextCursor(c);

@@ -10,7 +10,7 @@
 #include "Search_Compatibility.h"
 #include "test.h"
 
-//#define ONLY_SUFFIXES
+
 
 bool pos=false;
 long abstract_possessive;
@@ -87,7 +87,7 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-#ifndef ONLY_SUFFIXES
+#ifndef INSERT_ONLY_SUFFIXES
 	const int num_files_items=3;
 	const QString item_files[num_files_items]= {	"../../src/buckwalter scripts/list_of_prefixes.txt",
 									"../../src/buckwalter scripts/list_of_suffixes.txt",
@@ -245,7 +245,7 @@ int insert_buckwalter()
 					assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
 				}
 			}
-//#ifdef ONLY_SUFFIXES
+//#ifdef INSERT_ONLY_SUFFIXES
 			else {
 				assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)); //if not AB or AC => BC
 				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false));  ////if not AC or BC => AB

@@ -12,6 +12,7 @@ public:
 	bool fullstop:1;
 	bool newLine:1;
 	bool colon:1;
+	bool dash:1;
 	PunctuationInfo() {
 		reset();
 	}
@@ -22,6 +23,7 @@ public:
 		semicolon=false;
 		fullstop=false;
 		newLine=false;
+		dash=false;
 	}
 	bool hasEndingPunctuation() { return fullstop || newLine;}
 	bool hasParagraphPunctuation() { return fullstop && newLine;}
@@ -40,6 +42,8 @@ public:
 				fullstop=true;
 			else if (letter==':' || letter==colon_raised || letter==colon_modifier)
 				colon=true;
+			else if (letter=='-')
+				dash=true;
 			return true;
 		} else
 			return false;
@@ -88,15 +92,18 @@ inline long getLastLetter_IN_currentWord(QString * text,long start_letter_curren
 	if (!isDelimiter(text->at(start_letter_current_word)))
 		start_letter_current_word++;
 #endif
+	bool first=true;
 	while(start_letter_current_word<size)
 	{
 		if(!isDelimiter(text->at(start_letter_current_word)))
 			start_letter_current_word++;
 		else
 		{
-			start_letter_current_word--;
+			if (!first)
+				start_letter_current_word--;
 			break;
 		}
+		first=false;
 	}
 	return start_letter_current_word;
 }
@@ -109,7 +116,7 @@ inline bool isNumber(QString * text,long & currentPos,long & finish) {
 		if (isNumber(text->at(i)))
 			ret_val=true;
 		else {
-			finish=i-1;
+			finish=max(i-1,currentPos);
 			return ret_val;
 		}
 	}

@@ -7,12 +7,18 @@
 #include "mergeLists.h"
 #include "biographyGraphUtilities.h"
 #include "OneLevelAgreement.h"
+#include "textParsing.h"
 
 
-class NarratorDetector
-{
+const static QString biographyTagMax=QString("")+alef_hamza_below+ba2+ra2+ha2+ya2+meem+" "+kha2+lam+ya2+lam;
+
+class NarratorDetector {
 protected:
+#ifdef SEGMENT_BIOGRAPHY_USING_POR
 	typedef Biography::MatchingNode MatchingNode;
+#endif
+	typedef QList<NarratorNodesList> DoubleNarratorNodesList;
+	typedef QPair<int,int> IndexPair;
 
 	StateData currentData;
 	QString * text;
@@ -23,7 +29,8 @@ protected:
 
 public:
 	BiographyList * biographies;
-	QList<int> nodeIds;
+	DoubleNarratorNodesList nodes;
+	QList<int> paragraphDelimiters;
 
 protected:
 
@@ -762,6 +769,12 @@ protected:
 			qSort(*lists[i]);
 		}
 	#endif
+		if (list.size()>0) {
+			IndexList * old= new IndexList;
+			old->append(list);
+			lists.append(old);
+			list.clear();
+		}
 		MergeLists<int> merge(lists,list);
 		merge.mergeLists();
 		for (int i=1;i<list.size();i++) {
@@ -866,21 +879,72 @@ protected:
 		return absVal(diff1)<hadithParameters.bio_nrc_max ||
 			absVal(diff2)<hadithParameters.bio_nrc_max;
 	}
-	void findChosenBiography(NarratorNodeIfc * node,NodeGroups & topSets) {
+	inline IndexPair getBoundingParagraph(int start , int end) {
+		IndexPair p;
+		int & p_start=p.first, & p_end=p.second;
+		IndexList::const_iterator itr=qLowerBound(paragraphDelimiters,start);
+		if (paragraphDelimiters.size()==0) {
+			p_start=0;
+			p_end=text->size()-1;
+		} else if ((*itr)>start) {
+			if (itr==paragraphDelimiters.constBegin())
+				p_start=0;
+			else
+				p_start=*(itr-1);
+			p_end=(*itr);
+		} else {
+			p_start=*itr;
+			if (itr!=paragraphDelimiters.constEnd())
+				itr++;
+			if (itr!=paragraphDelimiters.constEnd()) {
+				p_end=*(itr);
+			} else {
+				p_end=text->size()-1;
+			}
+		}
+		p_end=getLastLetter_IN_previousWord(text,p_end);
+		while (isNumber(text->at(p_end)))
+			p_end--;
+		p_end=getLastLetter_IN_previousWord(text,p_end);
+		if(end>p_end) {
+			qDebug()<<text->mid(start,end-start+1);
+		}
+		return p;
+	}
+	inline IndexPair getBoundingParagraph(int index) {
+		int start=narratorList[index]->getStart();
+		int end=narratorList[index]->getEnd();
+		return getBoundingParagraph(start,end);
+	}
+	inline bool isInsideBound(IndexPair & boundary, int index) {
+		int start=narratorList[index]->getStart();
+		int end=narratorList[index]->getEnd();
+		return (boundary.first<=start && boundary.second>=end);
+	}
+
+	void findChosenBiography(NarratorNodesList & nodesList,NodeGroups & topSets) {
 		topSets.clear();
 		IndexList centerIndicies;
-		getSortedIndexList(node,centerIndicies);
 
 		IndexLists indexLists;
-		GetNeighborIndexListsVisitor visitor(*this,node,indexLists);
-		GraphVisitorController cont(&visitor,NULL);
-		node->BFS_traverse(cont,1,1);
-		node->BFS_traverse(cont,1,-1);
+		for (int i=0;i<nodesList.size();i++) {
+			NarratorNodeIfc * node=&(nodesList[i]->getCorrespondingNarratorNode());
+			if (i==0) {
+				prg->setCurrentAction("Checking Neighborhood for '"+node->CanonicalName()+"'");
+				//prg->report(0);
+			}
+			getSortedIndexList(node,centerIndicies);
+			GetNeighborIndexListsVisitor visitor(*this,node,indexLists);
+			GraphVisitorController cont(&visitor,NULL);
+			node->BFS_traverse(cont,1,1);
+			node->BFS_traverse(cont,1,-1);
+		}
 
-		prg->setCurrentAction("Checking Neighborhood for '"+node->CanonicalName()+"'");
-		//prg->report(0);
 		for (int i=0;i<centerIndicies.size();i++) {
 			int centerIndex=centerIndicies[i];
+		#ifdef BOUNDING_PARAGRAPH
+			IndexPair boundary=getBoundingParagraph(centerIndex);
+		#endif
 			ScoredSet set(0);
 			set.setBioNarrIndicies.insert(centerIndex);
 			for (int j=0;j<indexLists.size();j++) {
@@ -889,7 +953,12 @@ protected:
 				for (int i=0;i<2;i++) {
 					if (itr!=neighboringIndicies.end()) {
 						int neighborIndex=*itr;
-						if (areNear(centerIndex,neighborIndex)) {
+					#ifdef BOUNDING_PARAGRAPH
+						bool condition=isInsideBound(boundary,neighborIndex);
+					#else
+						bool condition=areNear(centerIndex,neighborIndex);
+					#endif
+						if (condition) {
 							if (!set.setBioNarrIndicies.contains(neighborIndex)) {
 								set.score++;
 								set.setBioNarrIndicies.insert(neighborIndex);
@@ -909,6 +978,12 @@ protected:
 		}
 		//prg->report(100);
 	}
+	void findChosenBiography(NarratorNodeIfc * node,NodeGroups & topSets) {
+		NarratorNodesList nodes;
+		nodes.append(node);
+		findChosenBiography(nodes,topSets);
+	}
+
 	int getNextRealNodeId(int id) {
 		assert (id>=0);
 		while (id<graph->all_nodes.size()) {
@@ -919,31 +994,39 @@ protected:
 		}
 		return -1;
 	}
-	virtual void modifyNodesID() {
-		if (nodeIds.size()==0) {
+	virtual void modifyNodes() {
+		if (nodes.size()==0) {
 			graph->printAllNodesList();
 			bool ok;
+			IndexList l;
 			do {
 				int i = QInputDialog::getInt(NULL, QString("Find Biography for:"),
 											QString("Id of Node "),0, 0, graph->all_nodes.size()-1,1, &ok);
 				 if (ok)
-					 nodeIds<<i;
+					 l<<i;
 			} while (ok);
-			for (int i=0;i<nodeIds.size();i++) {
-				int id=getNextRealNodeId(nodeIds[i]);
+			for (int i=0;i<l.size();i++) {
+				int id=getNextRealNodeId(l[i]);
 				if (id>=0) {
-					nodeIds[i]=id;
+					NarratorNodesList nodeList;
+					nodeList.append(graph->getNode(id)); //TODO: add nodes equivalent to it also
+					nodes.append(nodeList);
 					qDebug()<<graph->all_nodes[id]->toString();
-				} else {
-					nodeIds.removeAt(i);
-					i--;
 				}
 			}
 		}
-		assert(nodeIds.size()>0);
+		assert(nodes.size()>0);
 	}
 	virtual bool checkBiography(NodeGroups & list) {
 		return true;
+	}
+	virtual void additionalCheck(StateInfo & s) {
+		bool dash=s.currentPunctuationInfo.dash;
+		long finish;
+		bool isNum=isNumber(text,s.startPos,finish);
+		if (isNum && dash && s.endPos==finish) {
+			paragraphDelimiters.append(s.nextPos);
+		}
 	}
 
 #endif
@@ -1095,6 +1178,9 @@ public:
 				#endif
 			#endif
 			}
+		#ifdef SEGMENT_BIOGRAPHY_USING_POR
+			additionalCheck(stateInfo);
+		#endif
 			stateInfo.currentState=stateInfo.nextState;
 			stateInfo.startPos=stateInfo.nextPos;
 			stateInfo.lastEndPos=stateInfo.endPos;
@@ -1161,7 +1247,7 @@ public:
 			return 1;
 		QDataStream tester(&chainOutput);
 	#else
-		modifyNodesID();
+		modifyNodes();
 	#endif
 	#if defined(TAG_BIOGRAPHY)
 		prg->startTaggingText(*text);
@@ -1177,15 +1263,14 @@ public:
 				const Narrator * n=(*s)[j];
 				bool isReal=s->isReal(j);
 	#else
-		int nodeIdSize=nodeIds.size();
-		for (int i=0;i<nodeIdSize;i++) {
-			int id=nodeIds[i];
-			if (id<0)
+		int nodesSize=nodes.size();
+		for (int i=0;i<nodesSize;i++) {
+			NarratorNodesList &nodeList=nodes[i];
+			if (nodes.size()==0)
 				continue;
-			NarratorNodeIfc * node=graph->getNode(id);
 			NodeGroups topSets;
-			findChosenBiography(node,topSets);
-			if (checkBiography(topSets)) { //checkBiography also updates nodeIds list
+			findChosenBiography(nodeList,topSets);
+			if (checkBiography(topSets)) { //checkBiography also updates nodes list
 				for (int k=0;k<topSets.size();k++) {
 					Biography * bio=new Biography(graph,text, INT_MAX, 0);
 					biographies->append(bio);
@@ -1198,6 +1283,11 @@ public:
 				#ifdef TAG_BIOGRAPHY
 					int start=bio->getStart();
 					int end=bio->getEnd();
+			#ifdef BOUNDING_PARAGRAPH
+					IndexPair p=getBoundingParagraph(start,end);
+					start=p.first;
+					end=p.second;
+			#endif
 					prg->tag(start,end-start+1,Qt::darkGray,false);
 				#endif
 					itr= topSets[k].setBioNarrIndicies.begin();
@@ -1215,7 +1305,7 @@ public:
 			}
 		#ifdef PROGRESSBAR
 			prg->setCurrentAction("Looking up Biographies");
-			prg->report((double)i/nodeIdSize*100+0.5);
+			prg->report((double)i/nodesSize*100+0.5);
 		#endif
 
 		}
@@ -1268,46 +1358,66 @@ private:
 		}
 	};
 	typedef QList<Region> RegionList;
+	typedef QList<int> PositionList;
 private:
 	class LocateInGraphAction: public NarratorHash::FoundAction {
 	private:
 		double similarity;
-		NarratorNodeIfc * node;
+		NarratorNodesList & list;
 	public:
-		LocateInGraphAction() {similarity=0;node=NULL;}
+		LocateInGraphAction(NarratorNodesList & narratorList):list(narratorList) {similarity=0;}
 		virtual void action(const QString & , GroupNode * node, double similarity) {
 			if (similarity>this->similarity) {
 				this->similarity=similarity;
-				this->node=node;
+				list.clear();
+				list.append(node);
+		#ifdef BIOGRAPHY_ALL_MATCHING_NODES
+			} else if (absVal(similarity-this->similarity)<0.01) {
+				list.append(node);
+		#endif
 			}
 		}
-		int getGraphNodeID() {
-			if (node!=NULL) {
-				NarratorNodeIfc * n= &node->getCorrespondingNarratorNode();
-				return n->getId();
+		QString getGroupNodeKey() {
+			if (list.size()>0) {
+				GroupNode * node=dynamic_cast<GroupNode *>(list[0]);
+				return node->getKey();
+			} else {
+				return "<ERROR>";
 			}
-			return -1;
 		}
 	};
 
 private:
 	RegionList biographyRegions;
+	PositionList paragraphDelimiters;
 public:
 	using NarratorDetector::freeMemory;
 	using NarratorDetector::biographies;
 public:
 	BiographySegmenter(NarratorGraph* graph):NarratorDetector(graph) {}
-	virtual void modifyNodesID() {
-		nodeIds.clear();
+	virtual void modifyNodes() {
+		QSet<QString> narratorKeys;
+		nodes.clear();
 		for (int i=0;i<narratorList.size();i++) {
 			Narrator * narr=narratorList[i];
-			LocateInGraphAction action;
+			QString narrKey=narr->getKey();
+			if (NarratorHash::isFirstNameAmbiguous(narrKey))
+				continue;
+			if (narrKey>biographyTagMax)
+				continue;
+			if (narratorKeys.contains(narrKey))
+				continue;
+			NarratorNodesList nodeList;
+			LocateInGraphAction action(nodeList);
 			graph->performActionToAllCorrespondingNodes(narr,action);
-			int id=action.getGraphNodeID();
-			nodeIds.append(id); //even if not found, negative id's will be handled in lookup body, but needed to keep correspondence btw indicies of narratorList and nodeIds
+			nodes.append(nodeList); //even if not found, emptyList will be handled in lookup body, but needed to keep correspondence btw indicies of narratorList and nodes list
+			if (nodeList.size()>=0) {
+				QString key=action.getGroupNodeKey();
+				narratorKeys.insert(key);
+			}
 		}
 	}
-	virtual bool checkBiography(NodeGroups & list) { //TODO: make sure to remove ids of nodes corresponding to bio narrators inside some biography from nodeIds
+	virtual bool checkBiography(NodeGroups & list) {
 		int start=INT_MAX, end=0;
 		if (list.size()==0)
 			return false;
@@ -1329,6 +1439,11 @@ public:
 				end=curr_end;
 		}
 		//2-do necessary checks and add to List of biographyRegions if appropriate
+	#ifdef BOUNDING_PARAGRAPH
+		IndexPair boundary=getBoundingParagraph(start,end);
+		start=boundary.first;
+		end=boundary.second;
+	#endif
 		Region currRegion(start,end);
 		RegionList::iterator itr=qLowerBound(biographyRegions.begin(),biographyRegions.end(),currRegion);
 		//RegionList::iterator uitr=qUpperBound(biographyRegions.begin(),biographyRegions.end(),currRegion);
@@ -1354,7 +1469,7 @@ public:
 			OneLevelAgreement::Selection s(start,end);
 			generatedTags.append(s);
 		}
-
+		qSort(generatedTags);
 		QFile file(QString("%1.tags").arg(filename).toStdString().data());
 		if (file.open(QIODevice::ReadOnly)) {
 			QDataStream out(&file);   // we will serialize the data into the file
@@ -1402,8 +1517,12 @@ BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgres
 #else
 	NarratorDetector s;
 #endif
-	if (nodeID>=0)
-		s.nodeIds.append(nodeID);
+	if (nodeID>=0) {
+		NarratorNodeIfc * n=graph->getNode(nodeID);
+		NarratorNodesList list;
+		list.append(n);
+		s.nodes.append(list);
+	}
 	s.lookup(input_str,prg);
 #endif
 	return s.biographies;

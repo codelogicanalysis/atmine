@@ -102,6 +102,11 @@ public:
 		}
 		return key;
 	}
+	inline static bool isFirstNameAmbiguous(QString key) {
+		if (key.size()==0)
+			return false;
+		return key[0]=='-';
+	}
 
 private:
 	HashTable hashTable;
@@ -387,7 +392,6 @@ public:
 		v.initialize(node);
 		v.visit(node->getKey(),node,1,1);
 	}
-
 	void clear() { hashTable.clear(); }
 	HashTable::iterator begin() { return hashTable.begin();}
 	HashTable::iterator end() { return hashTable.end();}

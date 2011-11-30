@@ -71,11 +71,11 @@ static const QChar single_quotation5=QChar(0x02CB);//MODIFIER LETTER GRAVE ACCEN
 static const QChar paragraph_seperator=QChar(0x2029);//PARAGRAPH SEPARATOR
 static const QChar zero_width_space=QChar(0xFEFF);//ZERO WIDTH NO-BREAK SPACE
 
-static const QString delimiters=QString("[!_ :\\.,()-><{}\\/|'\"\n\t\r")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+
+static const QString delimiters=QString("[!_ :\\.,()-><{}=*+\\/|'\"\n\t\r")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+
 								double_quotation1+double_quotation2+double_quotation3+double_quotation4+double_quotation5+double_quotation6+
 								single_quotation1+single_quotation2+single_quotation3+single_quotation4+single_quotation5+paragraph_seperator+
 								zero_width_space+"\\[\\]]";
-static const QString punctuation=QString(":!_\\.,()-'\n\r\"")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+paragraph_seperator;
+static const QString punctuation=QString(":!_\\.,=-'\n\r\"")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+paragraph_seperator;
 static const QString alefs=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla;
 static const QString nonconnectingLetters=QString("")+alef+alef_hamza_above+alef_hamza_below+alef_madda_above+alef_wasla+aleft_superscript+
 		waw_hamza_above+waw+hamza+zain+ra2+thal+dal+ta2_marbouta+alef_maksoura;

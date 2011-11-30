@@ -301,9 +301,11 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
 		case NAME_CONNECTOR: {
 			int size=structures->temp_nameConnectors.size();
 			if (!ending_punc) {//check if we should add these
-				assert(structures->narrator!=NULL);
-				for (int i=0;i<size;i++)
-					structures->narrator->m_narrator.append(structures->temp_nameConnectors[i]);
+				//assert(structures->narrator!=NULL); //check if correct to have removed this and added the if after
+				if (structures->narrator!=NULL) {
+					for (int i=0;i<size;i++)
+						structures->narrator->m_narrator.append(structures->temp_nameConnectors[i]);
+				}
 			} else {
 				for (int i=0;i<size;i++)
 					delete structures->temp_nameConnectors[i];
@@ -797,7 +799,18 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 		#endif
 		#ifdef PUNCTUATION
 			if (stateInfo.currentPunctuationInfo.has_punctuation) {
-				currentData.nmcCount=nmc_max+1;
+
+				/*added all this now*/
+				//currentData.nmcCount=nmc_max+1;
+				currentData.narratorCount++;
+				stateInfo.nextState=NRC_S;
+				currentData.nrcCount=0; //punctuation not counted
+				currentData.narratorEndIndex=stateInfo.endPos;
+				currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+
+				fillStructure(stateInfo,NARRATOR_CONNECTOR,structures,currentData,true);
+				/*till here*/
+
 				if (ending_punc) {
 					stateInfo.nextState=TEXT_S;
 
@@ -1017,11 +1030,19 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 		}
 	#ifdef PUNCTUATION
 		else if (stateInfo.currentPunctuationInfo.has_punctuation) { //TODO: if punctuation check is all what is required
-			stateInfo.nextState=NMC_S;
-			currentData.nmcCount=nmc_max+1;
-			currentData.nmcValid=false;
 
-			fillStructure(stateInfo,NAME_CONNECTOR,structures,currentData);
+			/*added all this now*/
+			//stateInfo.nextState=NMC_S;
+			//currentData.nmcCount=nmc_max+1;
+			//currentData.nmcValid=false;
+			currentData.narratorCount++;
+			stateInfo.nextState=NRC_S;
+			currentData.nrcCount=0; //punctuation not counted
+			currentData.narratorEndIndex=stateInfo.endPos;
+			currentData.nrcStartIndex=stateInfo.nextPos;//next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
+
+			fillStructure(stateInfo,NARRATOR_CONNECTOR,structures,currentData,true);
+			/*till here*/
 
 			if (ending_punc) {
 				stateInfo.nextState=TEXT_S;

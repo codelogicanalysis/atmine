@@ -47,7 +47,7 @@ void initialize_variables()
 				 <<suffix_tree_path<<description_path<<prefix_info_path<<suffix_info_path<<stem_info_path;
 #endif
 	non_punctuation_delimiters=delimiters;
-	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]"));
+	non_punctuation_delimiters.remove(QRegExp(QString("[")+punctuation+"]")).remove('-').remove('[').remove(']').remove(':');
 
 	INVALID_BITSET.reset();
 	INVALID_BITSET.setBit(max_sources-1,true);

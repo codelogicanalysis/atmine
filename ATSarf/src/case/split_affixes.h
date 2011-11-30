@@ -57,7 +57,7 @@ public:
 		displayed_error.setString(errors_text);
 		loadAffixList();
 		loadCompatibilityList();
-		this->resize(700,700);
+		this->resize(900,700);
 		errors->setText(*errors_text);
 		source_id=-1;
 	}
@@ -109,6 +109,7 @@ public:
 			}
 		}
 		assert (size==0 || cat_empty!=-1);
+		findDuplicates();
 	}
 	void loadCompatibilityList() {
 		QStringList v;
@@ -162,15 +163,16 @@ public slots:
 		f2.close();
 	}
 	void affixType_currentIndexChanged(int) {
+		errors->clear();
 		loadAffixList();
 		loadCompatibilityList();
-		errors->clear();
 	}
 
 private:
 	void split_action();
 	void reverse_action();
 	void specialize_action();
+	void findDuplicates();
 	QString getAffix(long id) {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		QString table=interpret_type(t);
