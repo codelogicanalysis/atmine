@@ -19,6 +19,7 @@ public:
 	Retrieve_Template(QString table,QString column, QString where_condition);
 	Retrieve_Template(QString table,QString column1, QString column2, QString where_condition);
 	Retrieve_Template(QString table,QString column1, QString column2, QString column3, QString where_condition);
+	Retrieve_Template(QString table,QString column1, QString column2, QString column3, QString column4, QString where_condition);
 	int size(); //total size and not what is left
 	bool retrieve(Elements &elements);
 	bool retrieve();
