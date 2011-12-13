@@ -10,39 +10,17 @@
 ل	لَ	NPref-La	indeed/truly	la/EMPHATIC_PARTICLE+	
 ل	لِ	NPref-Li	for/to	li/PREP+	
 ال	ال	NPref-Al	the	Al/DET+	
-ي	يَ	IVPref-hw-ya(object)	him/it to	ya/IV3MS+	
-ي	يُ	IVPref-hw-yu(object)	him/it to	yu/IV3MS+	
-ي	يَ	IVPref-hmA-ya(object)	them (both) to	ya/IV3MD+	
-ي	يُ	IVPref-hmA-yu(object)	them (both) to	yu/IV3MD+	
-ي	يَ	IVPref-hm-ya(object)	them (people) to	ya/IV3MP+	
-ي	يُ	IVPref-hm-yu(object)	them (people) to	yu/IV3MP+	
-ي	يَ	IVPref-hn-ya(object)	them (women) to	ya/IV3FP+	
 ي	يُ	IVPref-hmA-yu	they (both)	yu/IV3MD+	
 ي	يُ	IVPref-hn-yu	they (women)	yu/IV3FP+	
 ي	يَ	IVPref-hn-ya	they (women)	ya/IV3FP+	
-ي	يُ	IVPref-hn-yu(object)	them (women) to	yu/IV3FP+	
 ي	يَ	IVPref-hw-ya	he/it	ya/IV3MS+	
 ي	يُ	IVPref-hw-yu	he/it	yu/IV3MS+	
 ي	يَ	IVPref-hmA-ya	they (both)	ya/IV3MD+	
 ي	يَ	IVPref-hm-ya	they (people)	ya/IV3MP+	
 ي	يُ	IVPref-hm-yu	they (people)	yu/IV3MP+	
 س	سَ	IVPref-sa-	will	sa/FUT+	
-ت	تُ	IVPref-hy-tu(object)	it/them/her (to)	tu/IV3FS+	
-ت	تَ	IVPref-Anta-ta(object)	you [masc.sg.] (to)	ta/IV2MS+	
-ت	تُ	IVPref-Anta-tu(object)	you [masc.sg.] (to)	tu/IV2MS+	
-ت	تَ	IVPref-AntmA-ta(object)	you (both) (to)	ta/IV2D+	
-ت	تُ	IVPref-AntmA-tu(object)	you (both) (to)	tu/IV2D+	
-ت	تَ	IVPref-hy-ta(object)	it/them/her (to)	ta/IV3FS+	
-ت	تَ	IVPref-hmA-ta(object)	them (both) [fem.du.] (to)	ta/IV3FD+	
-ت	تُ	IVPref-Anti-tu(object)	you [fem.sg.] (to)	tu/IV2FS+	
-ت	تَ	IVPref-Antm-ta(object)	you [masc.pl.] (to)	ta/IV2MP+	
-ت	تُ	IVPref-Antm-tu(object)	you [masc.pl.] (to)	tu/IV2MP+	
-ت	تَ	IVPref-Antn-ta(object)	you [fem.pl.] (to)	ta/IV2FP+	
-ت	تُ	IVPref-Antn-tu(object)	you [fem.pl.] (to)	tu/IV2FP+	
-ت	تُ	IVPref-hmA-tu(object)	them (both) [fem.du.] (to)	tu/IV3FD+	
 ت	تُ	IVPref-Antn-tu	you [fem.pl.]	tu/IV2FP+	
 ت	تَ	IVPref-Antn-ta	you [fem.pl.]	ta/IV2FP+	
-ت	تَ	IVPref-Anti-ta(object)	you [fem.sg.] (to)	ta/IV2FS+	
 ت	تَ	IVPref-hy-ta	it/they/she	ta/IV3FS+	
 ت	تُ	IVPref-hy-tu	it/they/she	tu/IV3FS+	
 ت	تَ	IVPref-Anta-ta	you [masc.sg.]	ta/IV2MS+	
@@ -55,19 +33,11 @@
 ت	تُ	IVPref-Anti-tu	you [fem.sg.]	tu/IV2FS+	
 ت	تَ	IVPref-Antm-ta	you [masc.pl.]	ta/IV2MP+	
 ت	تُ	IVPref-Antm-tu	you [masc.pl.]	tu/IV2MP+	
-أ	أُ	IVPref-AnA->u(object)	me (to)	>u/IV1S+	
 أ	أُ	IVPref-AnA->u	I	>u/IV1S+	
 أ	أَ	IVPref-AnA->a	I	>a/IV1S+	
-أ	أَ	IVPref-AnA->a(object)	me (to)	>a/IV1S+	
-ا	آ	IVPref-AnA-|(object)	me (to)	|/IV1S+	
-ا	أُ	IVPref-AnA->u(object)	me (to)	>u/IV1S+	
-ا	أَ	IVPref-AnA->a(object)	me (to)	>a/IV1S+	
 ا	آ	IVPref-AnA-|	I	|/IV1S+	
 ا	أُ	IVPref-AnA->u	I	>u/IV1S+	
 ا	أَ	IVPref-AnA->a	I	>a/IV1S+	
 آ	آ	IVPref-AnA-|	I	|/IV1S+	
-آ	آ	IVPref-AnA-|(object)	me (to)	|/IV1S+	
-ن	نَ	IVPref-nHn-na(object)	us (to)	na/IV1P+	
 ن	نَ	IVPref-nHn-na	we	na/IV1P+	
 ن	نُ	IVPref-nHn-nu	we	nu/IV1P+	
-ن	نُ	IVPref-nHn-nu(object)	us (to)	nu/IV1P+	

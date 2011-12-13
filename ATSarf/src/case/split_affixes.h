@@ -35,6 +35,8 @@ public:
 		exportLists=new QPushButton("&Export",this);
 		reverse=new QPushButton("&Reverse Check",this);
 		specialize=new QPushButton("S&pecialize",this);
+		renameCat=new QPushButton("&Differentiate Catgeories",this);
+		removeStale=new QPushButton("Remove Stale Items and Categories",this);
 		affixType=new QComboBox(this);
 		affixType->addItem("Prefix",PREFIX);
 		affixType->addItem("Suffix",SUFFIX);
@@ -46,14 +48,18 @@ public:
 		grid->addWidget(exportLists,0,2);
 		grid->addWidget(reverse,0,3);
 		grid->addWidget(specialize,0,4);
-		grid->addWidget(originalAffixList,1,0,1,5);
-		grid->addWidget(compatRulesList,2,0,1,5);
-		grid->addWidget(errors,3,0,1,5);
+		grid->addWidget(renameCat,0,5);
+		grid->addWidget(removeStale,0,6);
+		grid->addWidget(originalAffixList,1,0,1,7);
+		grid->addWidget(compatRulesList,2,0,1,7);
+		grid->addWidget(errors,3,0,1,7);
 		connect(split,SIGNAL(clicked()),this,SLOT(split_clicked()));
 		connect(exportLists,SIGNAL(clicked()),this,SLOT(export_clicked()));
 		connect(affixType,SIGNAL(currentIndexChanged(int)),this,SLOT(affixType_currentIndexChanged(int)));
 		connect(reverse,SIGNAL(clicked()),this,SLOT(reverse_clicked()));
 		connect(specialize,SIGNAL(clicked()),this,SLOT(specialize_clicked()));
+		connect(renameCat,SIGNAL(clicked()),this,SLOT(specializeAllDuplicateEntries()));
+		connect(removeStale,SIGNAL(clicked()),this,SLOT(removeStaleCategoriesAndAffixes()));
 		displayed_error.setString(errors_text);
 		loadAffixList();
 		loadCompatibilityList();
@@ -166,13 +172,21 @@ public slots:
 		errors->clear();
 		loadAffixList();
 		loadCompatibilityList();
+		//removeDummyRulesForConsistencyIfNotNeeded();
+		//mergeSimilarCategories();
 	}
+	void specializeAllDuplicateEntries();
+	void removeStaleCategoriesAndAffixes();
 
 private:
 	void split_action();
 	void reverse_action();
+	void renameCategory(int row,QString category_original, QString category_specialized);
+	void specializeHelper(QString category_original, QString category_specialized, QString category_left, bool modifyLeftEntries=true);
 	void specialize_action();
 	void findDuplicates();
+	void mergeSimilarCategories();
+	void removeDummyRulesForConsistencyIfNotNeeded();
 	QString getAffix(long id) {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		QString table=interpret_type(t);
@@ -236,7 +250,7 @@ private:
 	int source_id;
 	long cat_empty;
 	QTextEdit * affix;
-	QPushButton * split, *exportLists, *reverse, *specialize;
+	QPushButton * split, *exportLists, *reverse, *specialize, *renameCat, *removeStale;
 	QComboBox * affixType;
 	QTextBrowser * errors;
 	QString * errors_text;
@@ -254,6 +268,8 @@ private:
 		delete originalAffixList;
 		delete compatRulesList;
 		delete grid;
+		delete renameCat;
+		delete removeStale;
 	}
 };
 

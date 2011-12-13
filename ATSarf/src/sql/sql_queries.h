@@ -64,6 +64,8 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 long display_table(QString table); //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
 int insert_source(QString name, QString normalization_process, QString creator); //returns current number of sources
 int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id);
+int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, QString inflectionRule, int source_id);
+int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QString inflectionRule, int source_id);
 int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id);
 int insert_compatibility_rules(rules rule,QString category1,QString category2, int source_id);
 int insert_compatibility_rules(rules rule, long id1,long id2, int source_id);

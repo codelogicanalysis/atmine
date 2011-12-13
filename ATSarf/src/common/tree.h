@@ -5,6 +5,7 @@
 #include "letter_node.h"
 #include "result_node.h"
 #include "common.h"
+#include "Retrieve_Template.h"
 
 class tree
 {
@@ -31,7 +32,7 @@ class tree
 #ifdef MEMORY_EXHAUSTIVE
 		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,QString description,node * current);
 #elif defined (REDUCE_THRU_DIACRITICS)
-		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,node * current);
+		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data, QString inflected_raw_data,QString descriptionInflectionRule,node * current);
 #else
 		node* addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,node * current);
 #endif
@@ -62,6 +63,32 @@ class tree
 			delete base;
 		}
 };
+
+inline bool isAcceptState(item_types type,long cat_r_id) {
+	bool isAccept=false;
+	if (type==PREFIX) {
+		Retrieve_Template existABcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AB));
+		if (existABcheck.retrieve() && existABcheck.get(0).toInt()>0) {
+			Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
+			if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
+				isAccept=true;
+			}
+		}
+	} else {
+		/*QString s=database_info.comp_rules->getCategoryName(cat_r_id);
+		qDebug()<<s<<"\t"<<cat_r_id;
+		if (cat_r_id==168)
+			qDebug()<<"\t["<<s<<"]";*/
+		Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
+		if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
+			Retrieve_Template existBCcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)BC));
+			if (existBCcheck.retrieve() && existBCcheck.get(0).toInt()>0) {
+				isAccept=true;
+			}
+		}
+	}
+	return isAccept;
+}
 
 
 #endif	/* _TREE_H */

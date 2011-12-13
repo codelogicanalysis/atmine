@@ -118,7 +118,7 @@ NSuff-|-	NSuff-ya	NSuff-|h
 NSuff-atA-	NSuff-hu	NSuff-atAh
 NSuff-atA-	NSuff-ya	NSuff-atAh
 NSuff-ata-	NSuff-y~a	NSuff-tay
-NSuff-atay-	NSuff-hu(i?)	NSuff-tay
+NSuff-atay-	NSuff-hi	NSuff-tay
 Suff-0	NSuff-h[o]	NSuff-h
 NSuff-|-	NSuff-[atayo]hu	NSuff-|h
 NSuff-A-	NSuff-[atayo]hu	NSuff-Ah
@@ -147,7 +147,7 @@ NSuff-iy2-	NSuff-hi	NSuff-iyh
 NSuff-iy2-	NSuff-[atayo]hu	NSuff-iyh
 NSuff-ap-	NSuff-h[o]	NSuff-ath
 NSuff-ap-	NSuff-[atayo]hu	NSuff-ath
-NSuff-ay-	NSuff-hu(i?)	NSuff-ayh
+NSuff-ay-	NSuff-hi	NSuff-ayh
 NSuff-ay-	NSuff-[atayo]hu	NSuff-ayh
 CVSuff-y	CVSuff-~hi	CVSuff-yh
 CVSuff-y	CVSuff-~ni	CVSuff-yh
@@ -192,11 +192,11 @@ PVSuff-uw2-	PVSuff-~kun~a	PVSuff-uwh
 PVSuff-uw2-	PVSuff-~ni	PVSuff-uwh
 IVSuff-aw2-	IVSuff-k	IVSuff-awk
 IVSuff-uw3-	IVSuff-k	IVSuff-wk
-IVSuff-|n	IVSuff-hu(i?)	IVSuff-|nh
+IVSuff-|n	IVSuff-[iy]~hi	IVSuff-|nh
 IVSuff-|n	IVSuff-hA	IVSuff-|nh
 IVSuff-|n	IVSuff-ny-nA	IVSuff-|nh
 IVSuff-|n-	IVSuff-k	IVSuff-|nk
-IVSuff-An	IVSuff-hu(i?)	IVSuff-Anh
+IVSuff-An	IVSuff-[iy]~hi	IVSuff-Anh
 IVSuff-An	IVSuff-hA	IVSuff-Anh
 IVSuff-An	IVSuff-ny-nA	IVSuff-Anh
 IVSuff-An-	IVSuff-k	IVSuff-Ank

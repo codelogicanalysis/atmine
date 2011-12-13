@@ -4,39 +4,76 @@
 #include "node.h"
 #include "sql_queries.h"
 
-class result_node:public node
-{
+class RawData {
+private:
+	QString original;
+	QString inflected;
+public:
+	QString getActual() {
+		if (inflected.isEmpty())
+			return original;
+		else
+			return inflected;
+	}
+	QString getOriginal() {
+		return original;
+	}
+	RawData(QString original, QString inflected="") {
+		this->original=original;
+		if (original==inflected) {
+			inflected="";
+		} else {
+			this->inflected=inflected;
+		}
+	}
+	bool operator ==(const RawData & r) {
+		return original==r.original && inflected==r.inflected;
+	}
+};
+
+
+class result_node:public node {
     private:
         long previous_category_id;
         long affix_id;
 		long resulting_category_id :63;
 		bool isAcceptState:1;
+		QString inflectionRule;
 
 		void initialize(const result_node & n)
 		{
-			#ifdef REDUCE_THRU_DIACRITICS
-					raw_datas=n.raw_datas;
-			#endif
+		#ifdef REDUCE_THRU_DIACRITICS
+			raw_datas=n.raw_datas;
+		#endif
 			set_previous_category_id(n.previous_category_id);
 			set_resulting_category_id(n.resulting_category_id);
 			set_affix_id(n.affix_id);
+			inflectionRule=n.inflectionRule;
 		}
     public:
 
+		void setInflectionRule(QString rule) {
+			inflectionRule=rule;
+		}
+		QString getInflectionRule() {
+			return inflectionRule;
+		}
+
     #ifdef REDUCE_THRU_DIACRITICS
-        QList<QString> raw_datas;
-		void add_raw_data(QString raw_data)
+		QList<RawData> raw_datas;
+		void add_raw_data(QString original, QString inflected)
 		{
-			if (!raw_datas.contains(raw_data))
-				this->raw_datas.append(raw_data);
+			RawData r(original,inflected);
+			if (!raw_datas.contains(r))
+				this->raw_datas.append(r);
 		}
     #endif
 
 	#ifdef REDUCE_THRU_DIACRITICS
-		result_node(long affix_id,long previous_category_id,long resulting_category_id,bool isAccept,QString raw_data):node()
+		result_node(long affix_id,long previous_category_id,long resulting_category_id,bool isAccept,QString raw_data, QString inflected):node()
 		{
 			this->raw_datas.clear();
-			add_raw_data(raw_data);
+			add_raw_data(raw_data, inflected);
 	#else
 		result_node(long affix_id,long previous_category_id,long resulting_category_id,isAccept)
 		{

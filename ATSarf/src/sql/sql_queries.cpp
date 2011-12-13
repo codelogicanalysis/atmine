@@ -1130,7 +1130,7 @@ int insert_source(QString name, QString normalization_process, QString creator) 
 		return -1;
 	return id;
 }
-int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id)
+int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QString inflectionRule, int source_id)
 {
 	QString stmt;
 	item_types t1,t2;
@@ -1156,6 +1156,8 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, in
 	}
 	else
 		result_id=-1; //-1 will translate to NULL later
+	if (!inflectionRule.isEmpty())
+		assert(t1==t2);
 	stmt =QString("SELECT resulting_category FROM compatibility_rules WHERE category_id1=%1 AND category_id2=%2 AND type=%3").arg(id1).arg(id2).arg((int)rule);
 	perform_query(stmt);
 	if (query.next()) //already present
@@ -1201,14 +1203,17 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, in
 			return -4;
 		}
 		sources.setBit(bit_index);
-		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resulting_category)  VALUES(%1,%2,%3,'%4',%5)";
-		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( bitset_to_string(sources)).arg( (result_id==-1?QString("NULL"):QString("%1").arg(result_id)));
+		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resulting_category, inflections)  VALUES(%1,%2,%3,'%4',%5,\"%6\")";
+		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( bitset_to_string(sources)).arg( (result_id==-1?QString("NULL"):QString("%1").arg(result_id))).arg(inflectionRule);
 		perform_query(stmt);
 	}
 	update_dates(source_id);
 	return 0;
 }
-int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id)
+int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, int source_id) {
+	return insert_compatibility_rules(rule,id1,id2,result_id,"",source_id);
+}
+int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, QString inflectionRule, int source_id)
 {
 	//maybe better later to check for category type, else error will appear later for an id which the user did not enter
 	long id1=getID("category",category1), id2=getID("category",category2),id_r=getID("category",category_result);
@@ -1227,7 +1232,10 @@ int insert_compatibility_rules(rules rule,QString category1,QString category2, Q
 		error << QString("Resulting Category Undefined: '%1'\n").arg(category_result);
 		return -1;
 	}
-	return insert_compatibility_rules(rule,id1,id2,id_r,source_id);
+	return insert_compatibility_rules(rule,id1,id2,id_r,inflectionRule,source_id);
+}
+int insert_compatibility_rules(rules rule,QString category1,QString category2, QString category_result, int source_id) {
+	return insert_compatibility_rules(rule,category1,category2,category_result,"",source_id);
 }
 int insert_compatibility_rules(rules rule,QString category1,QString category2, int source_id)
 {

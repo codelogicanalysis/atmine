@@ -231,9 +231,10 @@ bool TreeSearch::on_match_helper() {
 			QStringRef subword=addlastDiacritics(startPos,subpos, info.text, last);
 			//qDebug() <<subword;
 			for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++) {
-				if (possible_raw_datasOFCurrentMatch[k][j].size()>0 && isDiacritic(possible_raw_datasOFCurrentMatch[k][j][0])) {//in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
+				QString rawdata=possible_raw_datasOFCurrentMatch[k][j].getActual();
+				if (rawdata.size()>0 && isDiacritic(rawdata[0])) {//in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
 					QStringRef diacritics_of_word=getDiacriticsBeforePosition(startPos,info.text),
-							   diacritics_of_rawdata=addlastDiacritics(0,0,&possible_raw_datasOFCurrentMatch[k][j]);//to get first couple of diacritics of raw_data without letters
+							   diacritics_of_rawdata=addlastDiacritics(0,0,&rawdata);//to get first couple of diacritics of raw_data without letters
 				#ifdef DEBUG
 					qDebug() <<diacritics_of_word<<"\t"<<diacritics_of_rawdata;
 				#endif
@@ -246,7 +247,7 @@ bool TreeSearch::on_match_helper() {
 			#ifdef DEBUG
 				out<<"p-S:"<<k<<"<"<<sub_positionsOFCurrentMatch[k]<<">"<<"\t"<<subword.toString()<<"\t"<<possible_raw_datasOFCurrentMatch[k][j]<<"\n";
 			#endif
-				if (!equal(subword,possible_raw_datasOFCurrentMatch[k][j])) {
+				if (!equal(subword,rawdata)) {
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;
 				}
@@ -276,16 +277,16 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 	for (int i=start_index;i<count;i++)
 	{
 		inf.type=type;
-		QString raw_data=possible_raw_datasOFCurrentMatch[i][0];
+		RawData & raw_data=possible_raw_datasOFCurrentMatch[i][0];
 		if (multi_p.raw_data)
-			inf.raw_data=raw_data;
+			inf.raw_data=raw_data.getActual();
 		else
 			inf.raw_data="";
 		result_node * r_node=result_nodes->at(i);
 		inf.category_id=r_node->get_previous_category_id();
 		if (!multi_p.raw_dataONLY())
 		{
-			const ItemCatRaw2PosDescAbsMapItr & itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
+			const ItemCatRaw2PosDescAbsMapItr & itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data.getOriginal()));
 			assert(itr!=map->end());
 			const ItemEntryInfo & ITRvalue=itr.value();
 			if (multi_p.abstract_category)
@@ -338,21 +339,23 @@ bool TreeSearch::increment(solution_position * info,int index)
 		itr++;
 		long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
 		int & raw_index=info->indexes[index].first;
-		QString raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+		RawData & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+		QString raw_data_string=raw_data.getActual();
 		const ItemEntryKey & key=itr.key();
-		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data) )
+		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data_string) )
 		{
 			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)//check for next time
 			{
 				raw_index++;
 				inf.type=type;
-				raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+				RawData & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+				raw_data_string=raw_data.getActual();
 				if (multi_p.raw_data)
-					inf.raw_data=raw_data;
+					inf.raw_data=raw_data_string;
 				else
 					inf.raw_data="";
 				inf.category_id=r_node->get_previous_category_id();
-				itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data));
+				itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data.getOriginal()));
 			}
 			else
 			{
@@ -390,7 +393,7 @@ bool TreeSearch::increment(solution_position * info,int index)
 			int & raw_index=info->indexes[index].first;
 			raw_index++;
 			inf.type=type;
-			inf.raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
+			inf.raw_data=possible_raw_datasOFCurrentMatch[index][raw_index].getActual();
 			inf.category_id=r_node->get_previous_category_id();
 			inf.abstract_categories=INVALID_BITSET;
 			inf.description_id=-1;

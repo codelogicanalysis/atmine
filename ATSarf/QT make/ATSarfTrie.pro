@@ -88,7 +88,8 @@ HEADERS += util/text_handling.h \
     ../src/case/OneLevelAgreement.h \
     ../src/util/editDistance.h \
     ../src/case/narratorEqualityModel.h \
-    ../src/case/biographyGraphUtilities.h
+    ../src/case/biographyGraphUtilities.h \
+    ../src/common/inflections.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -167,7 +168,6 @@ CONFIG += debug_and_release
 # QMAKE_CFLAGS += -O3
 # QMAKE_CXXFLAGS += -O3
 # QMAKE_LFLAGS += -O3
-
 # debug
 QT += sql
 FORMS += ../src/gui/mainwindow.ui

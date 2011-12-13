@@ -88,32 +88,32 @@ IVPref-sa-	IVPref-nHn-na	IVPref-nHn-na
 IVPref-sa-	IVPref-nHn-nu	IVPref-nHn-nu
 NPref-Li	NPref-[Li]Al	NPref-LiAl
 NPref-Li	NPref-[Li]l	NPref-Lil
-IVPref-hw-li-	IVPref-hn-yu(object)	IVPref-hn-liyu
-IVPref-hw-li-	IVPref-hn-ya(object)	IVPref-hn-liya
-IVPref-hw-li-	IVPref-hm-yu(object)	IVPref-hm-liyu
-IVPref-hw-li-	IVPref-hm-ya(object)	IVPref-hm-liya
-IVPref-hw-li-	IVPref-hmA-yu(object)	IVPref-hmA-liyu
-IVPref-hw-li-	IVPref-hmA-ya(object)	IVPref-hmA-liya
-IVPref-hw-li-	IVPref-hw-yu(object)	IVPref-hw-liyu
-IVPref-hw-li-	IVPref-hw-ya(object)	IVPref-hw-liya
-IVPref-hw-li-	IVPref-Anti-ta(object)	IVPref-Anti-lita
-IVPref-hw-li-	IVPref-Anti-tu(object)	IVPref-Anti-litu
-IVPref-hw-li-	IVPref-Antm-ta(object)	IVPref-Antm-lita
-IVPref-hw-li-	IVPref-Antm-tu(object)	IVPref-Antm-litu
-IVPref-hw-li-	IVPref-Antn-ta(object)	IVPref-Antn-lita
-IVPref-hw-li-	IVPref-Antn-tu(object)	IVPref-Antn-litu
-IVPref-hw-li-	IVPref-hmA-tu(object)	IVPref-hmA-litu
-IVPref-hw-li-	IVPref-hmA-ta(object)	IVPref-hmA-lita
-IVPref-hw-li-	IVPref-hy-ta(object)	IVPref-hy-lita
-IVPref-hw-li-	IVPref-hy-tu(object)	IVPref-hy-litu
-IVPref-hw-li-	IVPref-Anta-ta(object)	IVPref-Anta-lita
-IVPref-hw-li-	IVPref-Anta-tu(object)	IVPref-Anta-litu
-IVPref-hw-li-	IVPref-AntmA-ta(object)	IVPref-AntmA-lita
-IVPref-hw-li-	IVPref-AntmA-tu(object)	IVPref-AntmA-litu
-IVPref-hw-li-	IVPref-AnA->a(object)	IVPref-AnA-li>a
-IVPref-hw-li-	IVPref-AnA->u(object)	IVPref-AnA-li>u
-IVPref-hw-li-	IVPref-AnA-|(object)	IVPref-AnA-li|
-IVPref-hw-li-	IVPref-nHn-na(object)	IVPref-nHn-lina
-IVPref-hw-li-	IVPref-nHn-nu(object)	IVPref-nHn-linu
+IVPref-hw-li-	IVPref-hn-yu	IVPref-hn-liyu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hn-ya	IVPref-hn-liya	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hm-yu	IVPref-hm-liyu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hm-ya	IVPref-hm-liya	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hmA-yu	IVPref-hmA-liyu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hmA-ya	IVPref-hmA-liya	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hw-yu	IVPref-hw-liyu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-hw-ya	IVPref-hw-liya	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\
+IVPref-hw-li-	IVPref-Anti-ta	IVPref-Anti-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Anti-tu	IVPref-Anti-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Antm-ta	IVPref-Antm-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Antm-tu	IVPref-Antm-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Antn-ta	IVPref-Antn-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Antn-tu	IVPref-Antn-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-hmA-tu	IVPref-hmA-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-hmA-ta	IVPref-hmA-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-hy-ta	IVPref-hy-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-hy-tu	IVPref-hy-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Anta-ta	IVPref-Anta-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-Anta-tu	IVPref-Anta-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-AntmA-ta	IVPref-AntmA-lita	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-AntmA-tu	IVPref-AntmA-litu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-AnA->a	IVPref-AnA-li>a	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-AnA->u	IVPref-AnA-li>u	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-AnA-|	IVPref-AnA-li|	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-nHn-na	IVPref-nHn-lina	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
+IVPref-hw-li-	IVPref-nHn-nu	IVPref-nHn-linu	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\
 Pref-Wa	IVPref-sa-	IVPref-sa-
 Pref-Wa	IVPref-hw-li-	IVPref-hw-li-
