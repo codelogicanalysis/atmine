@@ -38,9 +38,14 @@ void SplitDialog::removeStaleCategoriesAndAffixes() {
 		long category_id1=t.get(0).toLongLong();
 		long category_id2=t.get(1).toLongLong();
 		long resulting_category=t.get(2).toLongLong();
-		Search_Compatibility s(AA,resulting_category);
+		Search_Compatibility s(rule,resulting_category);
 		Search_by_category s2(category_id2);
 		if ((s.size()==0 && !isAcceptState(type,resulting_category)) || s2.size()==0) {
+			QString cat1=database_info.comp_rules->getCategoryName(category_id1);
+			QString cat2=database_info.comp_rules->getCategoryName(category_id2);
+			QString catr=database_info.comp_rules->getCategoryName(resulting_category);
+			warning<<"Removing Rule ("<<cat1<<","<<cat2<<","<<catr<<")\n";
+
 			QString stmt=QString(tr("DELETE  ")+
 									"FROM  compatibility_rules "+
 									"WHERE type=%1 AND (category_id1=%2 AND category_id2=%3)")
@@ -48,6 +53,7 @@ void SplitDialog::removeStaleCategoriesAndAffixes() {
 			QSqlQuery query(db);
 			execute_query(stmt,query);
 			assert(query.numRowsAffected()==1);
+
 		}
 	}
 	int rowCount=originalAffixList->rowCount();
@@ -60,8 +66,8 @@ void SplitDialog::removeStaleCategoriesAndAffixes() {
 		QString description=originalAffixList->item(i,5)->text();
 		long cat_id=database_info.comp_rules->getCategoryID(category);
 		if (!isAcceptState(type,cat_id)) {
-			Search_Compatibility s(AA,cat_id);
-			Search_Compatibility s2(AA,cat_id,false);
+			Search_Compatibility s(rule,cat_id);
+			Search_Compatibility s2(rule,cat_id,false);
 			if (s.size()==0 && s2.size()==0 ) {
 				long description_id=database_info.descriptions->indexOf(description);
 				remove_item(type,affix_id,raw_data,cat_id,description_id,pos);
@@ -306,7 +312,7 @@ void SplitDialog::reverse_action() {
 		long category_id2=t.get(0).toLongLong();
 		long category_id3=t.get(1).toLongLong();
 		long resulting_category1=t.get(2).toLongLong();
-		Search_Compatibility s(AA,resulting_category1,false);
+		Search_Compatibility s(rule,resulting_category1,false);
 		long category_id1,resulting_category2;
 		while (s.retrieve(category_id1,resulting_category2))
 		{
