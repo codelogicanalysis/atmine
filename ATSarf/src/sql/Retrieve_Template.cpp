@@ -49,6 +49,16 @@ Retrieve_Template::Retrieve_Template(QString table,QString column1, QString colu
 	list.append(column3);
 	intitialize(table,list,where);
 }
+Retrieve_Template::Retrieve_Template(QString table,QString column1, QString column2, QString column3, QString column4, QString where){
+	Columns list;
+	list.clear();
+	list.append(column1);
+	list.append(column2);
+	list.append(column3);
+	list.append(column4);
+	intitialize(table,list,where);
+}
+
 bool Retrieve_Template::retrieve(Elements &elements) //returns just a category but can contain redundancy
 {
 	if (!err && this->query->next())

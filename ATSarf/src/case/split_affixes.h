@@ -160,11 +160,15 @@ public slots:
 		assert(f2.open(QIODevice::WriteOnly));
 		QTextStream file2(&f2);
 		file2.setCodec("utf-8");
-		Retrieve_Template r("compatibility_rules","category_id1","category_id2","resulting_category",tr("type=%1").arg(rule));
+		Retrieve_Template r("compatibility_rules","category_id1","category_id2","resulting_category","inflections",tr("type=%1").arg(rule));
 		while (r.retrieve()) {
+			QString inflections=r.get(3).toString();
+			if (!inflections.isEmpty() && !inflections.contains("\\\\"))
+				inflections.replace("\\","\\\\");
 			file2<<database_info.comp_rules->getCategoryName(r.get(0).toLongLong())<<"\t"
 				 <<database_info.comp_rules->getCategoryName(r.get(1).toLongLong())<<"\t"
-				 <<database_info.comp_rules->getCategoryName(r.get(2).toLongLong())<<"\n";
+				 <<database_info.comp_rules->getCategoryName(r.get(2).toLongLong())<<"\t"
+				 <<inflections<<"\n";
 		}
 		f2.close();
 	}
@@ -172,8 +176,8 @@ public slots:
 		errors->clear();
 		loadAffixList();
 		loadCompatibilityList();
-		//removeDummyRulesForConsistencyIfNotNeeded();
-		//mergeSimilarCategories();
+		removeDummyRulesForConsistencyIfNotNeeded();
+		mergeSimilarCategories();
 	}
 	void specializeAllDuplicateEntries();
 	void removeStaleCategoriesAndAffixes();
