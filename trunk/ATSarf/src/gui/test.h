@@ -6,10 +6,12 @@
 #include "ATMProgressIFC.h"
 
 #define AUGMENT_DICTIONARY
-//#define JUST_BUCKWALTER
+#define JUST_BUCKWALTER
 //#define INSERT_ONLY_TIME
 //#define INSERT_ONLY_NAMES
+#define INSERT_ONLY_PREFIXES
 //#define INSERT_ONLY_SUFFIXES
+//#define SAMA
 #define REPETITIONS 1
 
 int morphology(QString input_str,ATMProgressIFC * prg);

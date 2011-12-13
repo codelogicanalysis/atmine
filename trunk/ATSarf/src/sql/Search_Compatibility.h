@@ -17,6 +17,7 @@ public:
 	bool retrieve(long &category2);
 	int retrieve(long category2_ids[],long resulting_categorys[],int size_of_array);
 	int retrieve(long category2_ids[],int size_of_array);
+	QString getInflectionRules();
 };
 
 

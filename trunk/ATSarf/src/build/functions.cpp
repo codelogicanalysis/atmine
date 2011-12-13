@@ -87,16 +87,26 @@ int insert_buckwalter()
 {
 	int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
 	//items
-#ifndef INSERT_ONLY_SUFFIXES
+#ifdef SAMA
+	const QString folder="../../src/sama_3_1/unicode/";
+#else
+	const QString folder="../../src/buckwalter scripts/";
+#endif
+#if !defined(INSERT_ONLY_SUFFIXES) && !defined(INSERT_ONLY_PREFIXES)
 	const int num_files_items=3;
-	const QString item_files[num_files_items]= {	"../../src/buckwalter scripts/list_of_prefixes.txt",
-									"../../src/buckwalter scripts/list_of_suffixes.txt",
-									"../../src/buckwalter scripts/list_of_stems.txt"};
+	const QString item_files[num_files_items]= {	folder+"list_of_prefixes.txt",
+													folder+"list_of_suffixes.txt",
+													folder+"list_of_stems.txt"};
 	const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
 #else
 	const int num_files_items=1;
-	const QString item_files[num_files_items]= {"../../src/buckwalter scripts/list_of_suffixes.txt",};
+#ifdef INSERT_ONLY_SUFFIXES
+	const QString item_files[num_files_items]= {folder+"list_of_suffixes.txt",};
 	const item_types types[num_files_items] ={SUFFIX,};
+#elif defined(INSERT_ONLY_PREFIXES)
+	const QString item_files[num_files_items]= {folder+"list_of_prefixes.txt",};
+	const item_types types[num_files_items] ={PREFIX,};
+#endif
 #endif
 	for (int j=0;j<num_files_items;j++)
 	{
@@ -193,11 +203,11 @@ int insert_buckwalter()
 	}
 	//compatibility rules
 	const int num_files_rules=5;
-	const QString rules_files[num_files_rules]= {"../../src/buckwalter scripts/tableAA", \
-								   "../../src/buckwalter scripts/tableCC", \
-								   "../../src/buckwalter scripts/tableAB", \
-								   "../../src/buckwalter scripts/tableBC", \
-								   "../../src/buckwalter scripts/tableAC"  };
+	const QString rules_files[num_files_rules]= {folder+"tableAA", \
+												 folder+"tableCC", \
+												 folder+"tableAB", \
+												 folder+"tableBC", \
+												 folder+"tableAC"  };
 	const rules rule[num_files_rules] ={ AA, CC,AB, BC, AC};
 
 	for (int j=0;j<num_files_rules;j++)
@@ -234,12 +244,17 @@ int insert_buckwalter()
 			QString cat1=entries[0];
 			QString cat2=entries[1];
 			QString resCat=cat2;
+			QString inflectionRule;
 			if (rule[j]==AA || rule[j]==CC)	{
 				if (entries.size()<3) {
 					out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 					return -1;
 				} else {
 					resCat=entries[2];
+					if (entries.size()>3) {
+						for (int i=3;i<entries.size();i++)
+							inflectionRule+=entries[i]+" ";
+					}
 					assert (insert_category(cat1,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
 					assert (insert_category(cat2,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
 					assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
@@ -251,7 +266,7 @@ int insert_buckwalter()
 				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false));  ////if not AC or BC => AB
 			}
 //#endif
-			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,source_id)<0)
+			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,inflectionRule,source_id)<0)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				continue; //files contain undefined categories, so just ignore these

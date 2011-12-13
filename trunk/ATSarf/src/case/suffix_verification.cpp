@@ -3,7 +3,9 @@
 #include "common.h"
 #include <QQueue>
 #include "tree.h"
+#include "test.h"
 #include "database_info_block.h"
+#include "inflections.h"
 #include <QString>
 #include <QMainWindow>
 #include <QScrollArea>
@@ -67,7 +69,7 @@ void drawAffixGraph(item_types type) {
 		#ifdef SHOW_RAW_DATA
 			int size=r.raw_datas.size();
 			for (int i=0;i<size;i++) {
-				d_out<<"r"<<getGraphID(map,last_id,&n)<<"_"<<i<<" [label=\""<<r.raw_datas[i]<<"\", shape=oval, color=red];\n";
+				d_out<<"r"<<getGraphID(map,last_id,&n)<<"_"<<i<<" [label=\""<<r.raw_datas[i].getActual()<<"\", shape=oval, color=red];\n";
 			#ifdef SHOW_CATEGORY
 				d_out<<"n"<<getGraphID(map,last_id,&n)
 			#else
@@ -146,14 +148,23 @@ private:
 	void traverse(node * n,QString affix,QString raw_data, QString description, QString POS) {
 		if (!n->isLetterNode()) {
 			result_node * r=(result_node* )n;
+			QString inflectionRule=r->getInflectionRule();
 			for (int i=0; i<r->raw_datas.size();i++) {
-				QString raw=raw_data+r->raw_datas[i];
+				QString raw=raw_data+r->raw_datas[i].getActual();
 				QString cat=database_info.comp_rules->getCategoryName(r->get_resulting_category_id());
-				ItemCatRaw2PosDescAbsMapItr itr=map->find(ItemEntryKey(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i]));
-				while (itr!=map->end() && itr.key()==ItemEntryKey(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i])) {
+				ItemEntryKey entry(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i].getOriginal());
+				ItemCatRaw2PosDescAbsMapItr itr=map->find(entry);
+				while (itr!=map->end() && itr.key()==entry) {
 					dbitvec d=itr.value().first;
-					QString pos=POS+itr.value().third;
+					QString pos2=itr.value().third;
+					QString pos=POS;
+				#ifdef SAMA
+					if (!POS.isEmpty() && !pos2.isEmpty() )
+						pos+="+";
+				#endif
+					pos+=pos2;
 					QString added_desc=(*database_info.descriptions)[itr.value().second];
+					applyDescriptionInflections(inflectionRule,added_desc);
 					QString desc;
 					if (type==SUFFIX){
 						bool r=isReverseDirection(d);
@@ -171,7 +182,7 @@ private:
 						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
 						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
 					}else
-						desc=description+(description==""?"":" + ")+added_desc;
+						desc=description+(description=="" || added_desc==""?"":" + ")+added_desc;
 					if (r->is_accept_state()) {
 						QString temp=desc;
 						temp.remove("%1");
@@ -224,7 +235,8 @@ public:
 	}
 	~ListAllAffixes() {
 		file->close();
-		system("sort suffix.list >suffix_sorted.list ");
+		QString t=interpret_type(type);
+		system(QString("sort %1.list >%1_sorted.list ").arg(t).toStdString().data());
 		delete file;
 		delete dout;
 	}

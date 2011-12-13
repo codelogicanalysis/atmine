@@ -9,6 +9,7 @@
 #include <assert.h>
 #include "database_info_block.h"
 #include "Retrieve_Template.h"
+#include "inflections.h"
 
 
 #ifdef LOAD_FROM_FILE
@@ -30,32 +31,6 @@ inline QString cache_version()
 #endif
 #endif
 
-inline bool isAcceptState(item_types type,long cat_r_id) {
-	bool isAccept=false;
-	if (type==PREFIX) {
-		Retrieve_Template existABcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AB));
-		if (existABcheck.retrieve() && existABcheck.get(0).toInt()>0) {
-			Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
-			if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
-				isAccept=true;
-			}
-		}
-	} else {
-		QString s=database_info.comp_rules->getCategoryName(cat_r_id);
-		/*qDebug()<<s<<"\t"<<cat_r_id;
-		if (cat_r_id==168)
-			qDebug()<<"\t["<<s<<"]";*/
-		Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
-		if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
-			Retrieve_Template existBCcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)BC));
-			if (existBCcheck.retrieve() && existBCcheck.get(0).toInt()>0) {
-				isAccept=true;
-			}
-		}
-	}
-	return isAccept;
-}
-
 inline bool hasCompatibleAffixes(item_types type,long cat_r_id) {
 	bool hasComp=false;
 	Retrieve_Template check("compatibility_rules","COUNT(*)",QString("category_id1=%1 AND type=%2").arg(cat_r_id).arg((int)(type==PREFIX?AA:CC)));
@@ -75,29 +50,42 @@ void tree::print_tree_helper(node * current_node, int level)
 	for(int i=0;i<list2->count();i++)
 		print_tree_helper(list2->at(i),level+1);
 }
+
 int tree::build_helper(item_types type, long cat_id1, int size, node * current)
 {
     if (size<=0)
-            return 0;
+		return 0;
     long cat_id2,cat_r_id;
     Search_Compatibility s2((type==PREFIX?AA:CC),cat_id1);
     while (s2.retrieve(cat_id2,cat_r_id))
     {
+		QString inflections=s2.getInflectionRules();
 		bool isAccept=isAcceptState(type,cat_r_id);
 		if (isAccept || hasCompatibleAffixes(type,cat_r_id)) { //dont add to tree branches that have no rules and connect to nothing else that may have rules
 			Search_by_category s3(cat_id2);
-		#ifdef MEMORY_EXHAUSTIVE
+		#if defined(MEMORY_EXHAUSTIVE) || defined(REDUCE_THRU_DIACRITICS)
 			all_item_info inf;
-			while(s3.retrieve(inf))
-			{
+			while(s3.retrieve(inf))	{
 					QString name= getColumn(interpret_type(type),"name",inf.item_id);
+					QString inflectedRawData=inf.raw_data;
+					applyRawDataInflections(inflections,name,inflectedRawData); //name and inflectedRawData are changed
+				#ifdef MEMORY_EXHAUSTIVE
 					node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,inf.description,current);
-		#elif defined(REDUCE_THRU_DIACRITICS)
-			all_item_info inf;
-			while(s3.retrieve(inf))
-			{
-					QString name= getColumn(interpret_type(type),"name",inf.item_id);
-					node * next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,current);
+				#elif defined(REDUCE_THRU_DIACRITICS)
+					node * next;
+				#if 0
+					if (name.isEmpty() && inf.raw_data.isEmpty() && inf.POS.isEmpty() && inf.description().isEmpty()) {
+						result_node * n=dynamic_cast<result_node*>(current);
+						inf.item_id=n->get_affix_id();
+						inf.category_id=n->get_previous_category_id();
+						for (int i=0;i<n->raw_datas.size();i++) {
+							inf.raw_data=n->raw_datas[i];
+							next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,current->parent); //check that
+						}
+					} else
+				#endif
+						next=addElement(name,inf.item_id,cat_id2,cat_r_id,isAccept,inf.raw_data,inflectedRawData,inflections,current);
+				#endif
 		#else
 			long long affix_id;
 			while(s3.retrieve(affix_id))
@@ -115,18 +103,22 @@ int tree::build_helper(item_types type, long cat_id1, int size, node * current)
 #ifdef MEMORY_EXHAUSTIVE
 node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,QString description,node * current)
 #elif defined (REDUCE_THRU_DIACRITICS)
-node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data,node * current)
+node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,QString raw_data, QString inflected_raw_data, QString descriptionInflectionRule,node * current)
 #else
 node* tree::addElement(QString letters, long affix_id,long category_id, long resulting_category_id,bool isAccept,node * current)
 #endif
 {
-	assert (equal(letters,raw_data));
+#if 0
+	if (!equal(letters,raw_data))
+		raw_data.remove(" ");
+#endif
+	assert (current->isLetterNode() || equal(letters,raw_data));
 #ifdef LOAD_FROM_FILE
 	if (file!=NULL)
 	{
 		(*file)<<letters<<affix_id<<category_id<<resulting_category_id<<isAccept
 			#if defined (REDUCE_THRU_DIACRITICS)
-				<<raw_data
+				<<raw_data<<inflected_raw_data<<descriptionInflectionRule
 			#elif defined (MEMORY_EXHAUSTIVE)
 				<<raw_data<<description
 			#endif
@@ -134,17 +126,22 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
 	}
 #endif
 	//pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
+	QChar current_letter;
+	//QList<letter_node *>* current_letter_children;
+	letter_node* matching_letter_node=NULL;
 	if (current->isLetterNode() && current!=base) {
+	#if 1
 		error << "Unexpected Error: provided node was a letter node and not a result one\n";
 	#ifdef LOAD_FROM_FILE
 		if (file!=NULL)
 			(*file)<<generateNodeID(NULL);
 	#endif
 		return NULL;
+	#else
+		current_letter='\0';
+		goto result;
+	#endif
     }
-    QChar current_letter;
-	//QList<letter_node *>* current_letter_children;
-	letter_node* matching_letter_node=NULL;
 	int i;
     if (letters.count()==0)
     {
@@ -193,7 +190,8 @@ result:
 		#ifdef MEMORY_EXHAUSTIVE
 			((result_node*)old_result)->addPair(raw_data,description);
 		#elif defined(REDUCE_THRU_DIACRITICS)
-			old_result->add_raw_data(raw_data);
+			old_result->add_raw_data(raw_data, inflected_raw_data);
+			old_result->setInflectionRule(descriptionInflectionRule);
 		#endif
 		#ifdef LOAD_FROM_FILE
 			if (file!=NULL)
@@ -205,10 +203,11 @@ result:
 #ifdef MEMORY_EXHAUSTIVE
 	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept,raw_data,description);
 #elif defined(REDUCE_THRU_DIACRITICS)
-	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept,raw_data);
+	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept,raw_data,inflected_raw_data);
 #else
 	result_node * result=new result_node(affix_id,category_id,resulting_category_id,isAccept);
 #endif
+	result->setInflectionRule(descriptionInflectionRule);
     current->addChild(result);
     current=result;
     result_nodes++;
@@ -372,7 +371,7 @@ int tree::build_affix_tree_from_file(item_types type)
 			int num1,num2;
 			QString letters; long affix_id;long category_id; long resulting_category_id;bool isAccept;
 		#if defined (REDUCE_THRU_DIACRITICS)
-			QString raw_data;
+			QString raw_data,inflected_raw_data,descriptionInflectionRule;
 		#elif defined (MEMORY_EXHAUSTIVE)
 			QString raw_data;QString description;
 		#endif
@@ -380,14 +379,14 @@ int tree::build_affix_tree_from_file(item_types type)
 			{
 				in>>letters>>affix_id>>category_id>>resulting_category_id>>isAccept
 					#if defined (REDUCE_THRU_DIACRITICS)
-							>>raw_data
+							>>raw_data>>inflected_raw_data>>descriptionInflectionRule
 					#elif defined (MEMORY_EXHAUSTIVE)
 							>>raw_data>>description
 					#endif
 							>>num1>>num2;
 				node * n=addElement(letters,affix_id,category_id,resulting_category_id,isAccept,
 					#if defined (REDUCE_THRU_DIACRITICS)
-							raw_data,
+							raw_data,inflected_raw_data,descriptionInflectionRule,
 					#elif defined (MEMORY_EXHAUSTIVE)
 							raw_data,description,
 					#endif
@@ -464,7 +463,7 @@ int tree::build_affix_tree(item_types type)
 		{
 			bool isAccept=isAcceptState(type,inf.category_id);
 			if (isAccept || hasCompatibleAffixes(type,inf.category_id)) {
-				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,isAccept,inf.raw_data,base);
+				node * next=addElement(name,affix_id1,inf.category_id,inf.category_id,isAccept,inf.raw_data,inf.raw_data,"",base);
 				//if (type!=STEM)
 					build_helper(type,inf.category_id,6-name.length(),next);
 			}

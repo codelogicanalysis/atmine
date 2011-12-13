@@ -1,8 +1,8 @@
--- MySQL dump 10.11
+-- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: atm
 -- ------------------------------------------------------
--- Server version	5.0.67-0ubuntu6
+-- Server version	5.1.41-3ubuntu12.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -20,18 +20,18 @@
 --
 
 DROP TABLE IF EXISTS `category`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `category` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin  NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `type` bit(2) NOT NULL,
   `sources` char(16) NOT NULL,
   `abstract` bit(1) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `category`
@@ -47,19 +47,20 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `compatibility_rules`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compatibility_rules` (
   `category_id1` int(11) NOT NULL,
   `category_id2` int(11) NOT NULL,
   `type` bit(3) NOT NULL,
   `sources` char(16) NOT NULL,
-  `resulting_category` int(11) default NULL,
-  PRIMARY KEY  (`category_id1`,`category_id2`),
+  `resulting_category` int(11) DEFAULT NULL,
+  `inflections` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`category_id1`,`category_id2`),
   KEY `category_id2` (`category_id2`),
   KEY `resulting_category` (`resulting_category`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `compatibility_rules`
@@ -75,16 +76,16 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `description`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `description` (
-  `id` bigint(20) NOT NULL auto_increment,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
   `type` bit(2) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `name` (`name`,`type`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `description`
@@ -100,15 +101,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `prefix`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `prefix` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` char(7)NOT NULL,
-  PRIMARY KEY  (`id`),
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(7) NOT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `prefix`
@@ -124,21 +125,21 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `prefix_category`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `prefix_category` (
   `prefix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `sources` char(16) NOT NULL,
-  `raw_data` varchar(60) NOT NULL default '',
-  `POS` varchar(250) NOT NULL default '',
-  `description_id` bigint(20) default NULL,
-  `reverse_description` bit(1) default 0,
-  PRIMARY KEY  (`prefix_id`,`category_id`,`raw_data`,`POS` ),
+  `raw_data` varchar(60) NOT NULL DEFAULT '',
+  `POS` varchar(250) NOT NULL DEFAULT '',
+  `description_id` bigint(20) DEFAULT NULL,
+  `reverse_description` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`prefix_id`,`category_id`,`raw_data`,`POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `prefix_category`
@@ -154,18 +155,18 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `source`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `source` (
-  `id` int(11) NOT NULL auto_increment,
-  `description` varchar(1000) default NULL,
-  `normalization_process` varchar(1000) default NULL,
-  `creator` varchar(50) default NULL,
-  `date_start` date default NULL,
-  `date_last` date default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `description` varchar(1000) DEFAULT NULL,
+  `normalization_process` varchar(1000) DEFAULT NULL,
+  `creator` varchar(50) DEFAULT NULL,
+  `date_start` date DEFAULT NULL,
+  `date_last` date DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `source`
@@ -181,18 +182,18 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `stem`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stem` (
-  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
-  `grammar_stem_id` bigint(20) default NULL,
+  `grammar_stem_id` bigint(20) DEFAULT NULL,
   `sources` char(16) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `grammar_stem_id` (`grammar_stem_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `stem`
@@ -208,22 +209,22 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `stem_category`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stem_category` (
   `stem_id` bigint(20) NOT NULL,
   `category_id` int(11) NOT NULL,
   `abstract_categories` char(16) NOT NULL,
   `sources` char(16) NOT NULL,
-  `raw_data` varchar(60) NOT NULL default '',
-  `POS` varchar(250) NOT NULL default '',
-  `lemma_ID` char(15) default NULL,
+  `raw_data` varchar(60) NOT NULL DEFAULT '',
+  `POS` varchar(250) NOT NULL DEFAULT '',
+  `lemma_ID` char(15) DEFAULT NULL,
   `description_id` bigint(20) NOT NULL,
-  PRIMARY KEY  (`stem_id`,`category_id`,`raw_data`,`description_id`,`POS`),
+  PRIMARY KEY (`stem_id`,`category_id`,`raw_data`,`description_id`,`POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `stem_category`
@@ -239,15 +240,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `suffix`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `suffix` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` char(7) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `suffix`
@@ -263,21 +264,21 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `suffix_category`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `suffix_category` (
   `suffix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
   `sources` char(16) NOT NULL,
-  `raw_data` varchar(60) NOT NULL default '',
-  `POS` varchar(250) NOT NULL default '',
-  `description_id` bigint(20) default NULL,
-  `reverse_description` bit(1) default 0,
-  PRIMARY KEY  (`suffix_id`,`category_id`,`raw_data`, `POS`),
+  `raw_data` varchar(60) NOT NULL DEFAULT '',
+  `POS` varchar(250) NOT NULL DEFAULT '',
+  `description_id` bigint(20) DEFAULT NULL,
+  `reverse_description` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`suffix_id`,`category_id`,`raw_data`,`POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `suffix_category`
@@ -297,4 +298,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-01-19  0:29:24
+-- Dump completed on 2011-12-08  0:04:14

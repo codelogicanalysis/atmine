@@ -100,14 +100,18 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2) // is diacrit
 	if (!checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2))
 		return false;
 	if (length1-(i1+1)<=0) {
-		for (int i=i2+1;i<length2;i++)
-			if (!isDiacritic(word2.at(i)) && !isPunctuationMark(word2.at(i)))
+		for (int i=i2+1;i<length2;i++) {
+			QChar letter=word2.at(i);
+			if (!isDiacritic(letter) && !isPunctuationMark(letter))
 				return false;
+		}
 	}
 	else if (length2-(i2+1)<=0) {
-		for (int i=i1+1;i<length1;i++)
-			if (!isDiacritic(word1.at(i)) && !isPunctuationMark(word1.at(i)))
+		for (int i=i1+1;i<length1;i++) {
+			QChar letter=word1.at(i);
+			if (!isDiacritic(letter) && !isPunctuationMark(letter))
 				return false;
+		}
 	} else
 		return false;
 	return true;

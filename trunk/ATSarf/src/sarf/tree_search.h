@@ -126,7 +126,7 @@ class TreeSearch
 		}
 #endif
 #ifdef REDUCE_THRU_DIACRITICS
-		QList<QList <QString > > possible_raw_datasOFCurrentMatch;
+		QList<QList <RawData > > possible_raw_datasOFCurrentMatch;
 #endif
         tree* Tree;
 		text_info info;

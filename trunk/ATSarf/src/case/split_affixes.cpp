@@ -1,5 +1,6 @@
 #include "split_affixes.h"
-
+#include "test.h"
+#include "Search_by_category.h"
 
 void SplitDialog::findDuplicates() {
 	int rowCount=originalAffixList->rowCount();
@@ -27,6 +28,179 @@ void SplitDialog::findDuplicates() {
 		}
 	}
 	errors->setText(*errors_text);
+}
+
+void SplitDialog::removeStaleCategoriesAndAffixes() {
+	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(type==PREFIX?AA:CC);
+	Retrieve_Template t("compatibility_rules","category_id1","category_id2","resulting_category", tr("type=%1").arg(rule));
+	while (t.retrieve()) {
+		long category_id1=t.get(0).toLongLong();
+		long category_id2=t.get(1).toLongLong();
+		long resulting_category=t.get(2).toLongLong();
+		Search_Compatibility s(AA,resulting_category);
+		Search_by_category s2(category_id2);
+		if ((s.size()==0 && !isAcceptState(type,resulting_category)) || s2.size()==0) {
+			QString stmt=QString(tr("DELETE  ")+
+									"FROM  compatibility_rules "+
+									"WHERE type=%1 AND (category_id1=%2 AND category_id2=%3)")
+						  .arg((int)rule).arg(category_id1).arg(category_id2);
+			QSqlQuery query(db);
+			execute_query(stmt,query);
+			assert(query.numRowsAffected()==1);
+		}
+	}
+	int rowCount=originalAffixList->rowCount();
+	for (int i=0;i<rowCount;i++) {
+		long affix_id=originalAffixList->item(i,0)->text().toLongLong();
+		//QString affix=originalAffixList->item(i,1)->text();
+		QString category=originalAffixList->item(i,2)->text();
+		QString raw_data=originalAffixList->item(i,3)->text();
+		QString pos=originalAffixList->item(i,4)->text();
+		QString description=originalAffixList->item(i,5)->text();
+		long cat_id=database_info.comp_rules->getCategoryID(category);
+		if (!isAcceptState(type,cat_id)) {
+			Search_Compatibility s(AA,cat_id);
+			Search_Compatibility s2(AA,cat_id,false);
+			if (s.size()==0 && s2.size()==0 ) {
+				long description_id=database_info.descriptions->indexOf(description);
+				remove_item(type,affix_id,raw_data,cat_id,description_id,pos);
+			}
+		}
+	}
+	loadAffixList();
+	errors->setText(*errors_text);
+}
+
+void SplitDialog::mergeSimilarCategories() {
+	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(type==PREFIX?AA:CC);
+	Retrieve_Template t("compatibility_rules","category_id1","category_id2","resulting_category", tr("type=%1").arg(rule));
+	while (t.retrieve()) {
+		long category_id1_1=t.get(0).toLongLong();
+		long category_id2=t.get(1).toLongLong();
+		long resulting_category=t.get(2).toLongLong();
+		Retrieve_Template t2("compatibility_rules","category_id1",
+							tr("type=%1 AND category_id2=%2 AND resulting_category=%3 AND category_id1<>%4").arg(rule).arg(category_id2).arg(resulting_category).arg(category_id1_1));
+		while (t2.retrieve()) {
+			long category_id1_2=t2.get(0).toLongLong();
+			bool stop=false;
+			for (int i=0;i<2;i++) {
+				bool first=(i==0); //so that to do one check for category1 and other for category2
+				Search_Compatibility c1(rule,category_id1_1,first);
+				long cat2_1,cat2_2,result1,result2;
+				while (c1.retrieve(cat2_1,result1)) {
+					Search_Compatibility c2(rule,category_id1_2,first);
+					if (c1.size()!=c2.size()) {
+						stop=true;
+						break;
+					}
+					bool found=false;
+					while (c2.retrieve(cat2_2,result2)) {
+						if (cat2_1==cat2_2 && result1==result2) {
+							found=true;
+							break;
+						}
+					}
+					if (!found) {
+						stop=true;
+						break;
+					}
+				}
+				if (stop)
+					break;
+			}
+			if (stop)
+				continue;
+			QMessageBox msgBox;
+			QString cat1=database_info.comp_rules->getCategoryName(category_id1_1),
+					cat2=database_info.comp_rules->getCategoryName(category_id1_2);
+			msgBox.setText(tr("About to merge ")+cat2+","+cat1+"\n");
+			msgBox.setInformativeText("Do you want to add it?");
+			msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+			msgBox.setDefaultButton(QMessageBox::Yes);
+			int ret = msgBox.exec();
+			if (ret==QMessageBox::Yes) {
+				warning << QString("Merged the 2 categories: %1, %2 into %1\n").arg(cat1).arg(cat2);
+				QSqlQuery query(db);
+				QString stmt=QString(tr("UPDATE %1_category ")+
+										"SET category_id=%2 "+
+										"WHERE category_id=%3")
+							  .arg(interpret_type(type)).arg(category_id1_1).arg(category_id1_2);
+
+				execute_query(stmt,query);
+				//assert(query.numRowsAffected()>0);
+				stmt=QString(tr("DELETE  ")+
+								"FROM  compatibility_rules "+
+								"WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
+							  .arg((int)rule).arg(category_id1_2);
+				execute_query(stmt,query);
+				//assert(query.numRowsAffected()>0);
+				return mergeSimilarCategories();
+			}
+		}
+
+	}
+	loadAffixList();
+	errors->setText(*errors_text);
+}
+
+void SplitDialog::removeDummyRulesForConsistencyIfNotNeeded() {
+	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(type==PREFIX?AA:CC);
+	QSqlQuery query(db);
+	QString stmt=QString(tr("SELECT t1.category_id2, t2.category_id2  ")+
+					"FROM  compatibility_rules t1, compatibility_rules t2 "+
+					"WHERE t1.type=%1 AND t2.type=%1 AND t1.category_id1=%2 AND t2.category_id1=%2 AND t1.resulting_category=t2.resulting_category AND t1.category_id2<t2.category_id2")
+				  .arg((int)rule).arg(cat_empty);
+	execute_query(stmt,query);
+	while(query.next()) {
+		long id1=query.value(0).toULongLong();
+		long id2=query.value(1).toULongLong();
+		if (id1!=13 && id2!=66)
+			continue;
+		long idMain, idOld;
+		if (isAcceptState(type,id1)) {
+			assert(!isAcceptState(type,id2));
+			idMain=id1;
+			idOld=id2;
+		} else if (isAcceptState(type,id2)) {
+			idMain=id2;
+			idOld=id1;
+		}
+		QString catMain=database_info.comp_rules->getCategoryName(idMain),
+				catOld=database_info.comp_rules->getCategoryName(idOld);
+		warning << QString("Revert the 2 categories: %1, %2 into %1\n").arg(catMain).arg(catOld);
+		QSqlQuery query(db);
+		QString stmt=QString(tr("UPDATE %1_category ")+
+								"SET category_id=%2 "+
+								"WHERE category_id=%3")
+					  .arg(interpret_type(type)).arg(idMain).arg(idOld);
+		execute_query(stmt,query);
+		//assert(query.numRowsAffected()>0);
+
+		stmt=QString(tr("DELETE  ")+
+						"FROM  compatibility_rules "+
+						"WHERE type=%1 AND (category_id1=%2 AND category_id2=%3)")
+					  .arg((int)rule).arg(cat_empty).arg(idOld);
+		execute_query(stmt,query);
+
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET category_id1=%2 "+
+						"WHERE type=%1 AND category_id1=%3")
+					  .arg(interpret_type(type)).arg(idMain).arg(idOld);
+		execute_query(stmt,query);
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET category_id2=%2 "+
+						"WHERE type=%1 AND category_id2=%3")
+					  .arg(interpret_type(type)).arg(idMain).arg(idOld);
+		execute_query(stmt,query);
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET resulting_category=%2 "+
+						"WHERE type=%1 AND resulting_category=%3")
+					  .arg(interpret_type(type)).arg(idMain).arg(idOld);
+		execute_query(stmt,query);
+	}
 }
 
 void SplitDialog::split_action() {
@@ -67,6 +241,10 @@ void SplitDialog::split_action() {
 				QString affix2=affix1.mid(affix.size());
 				QString raw_data2=raw_data1.mid(raw_data.size());
 				QString pos2=pos1.mid(pos.size());
+			#ifdef SAMA
+				if (pos1.size()>pos.size() && pos1.at(pos.size())=='+')
+					pos2=pos1.mid(pos.size()+1);
+			#endif
 				QString description2;
 				if (canBeEmpty && !description1.startsWith(description))
 					description2=description1;
@@ -96,7 +274,15 @@ void SplitDialog::split_action() {
 				#endif
 				}
 				QString category2=originalAffixList->item(rowIndex2,2)->text();
-				remove_item(t,affix_id1,raw_data1,database_info.comp_rules->getCategoryID(category1),database_info.descriptions->indexOf(description1),pos1);
+				long category_id1=database_info.comp_rules->getCategoryID(category1);
+				remove_item(t,affix_id1,raw_data1,category_id1,database_info.descriptions->indexOf(description1),pos1);
+
+				//in case this category has been renamed by some number in differentiate categories
+				long cat_result;
+				if ((*database_info.comp_rules)(cat_empty,category_id1,cat_result)) {
+					category_id1=cat_result; //not needed
+					category1=database_info.comp_rules->getCategoryName(cat_result);
+				}
 
 				insert_compatibility_rules((t==PREFIX?AA:CC),category,category2,category1,source_id);
 				int compRowIndex=compatRulesList->rowCount();
@@ -148,16 +334,105 @@ void SplitDialog::reverse_action() {
 	}
 }
 
-void splitRecursiveAffixes(){
+void SplitDialog::specializeAllDuplicateEntries() {
+	item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	typedef QMap<QString,int> NumberMap;
+	NumberMap map;
+	int rowCount=originalAffixList->rowCount();
+	for (int i=0;i<rowCount;i++) {
+		//long affix_id1=originalAffixList->item(i,0)->text().toLongLong();
+		QString category=originalAffixList->item(i,2)->text();
+		long category_id=getID("category",category,QString("type=%1").arg((int)t));
+		if (cat_empty!=category_id && isAcceptState(t,category_id)) {
+			NumberMap::iterator itr=map.find(category);
+			QString category_changed;
+			if (itr!=map.end()) {
+				int i=++(itr.value());
+				category_changed=(category+"_%1").arg(i);
+			} else {
+				map[category]=0;
+				category_changed=category+"_0";
+			}
+			renameCategory(i,category,category_changed);
+		}
+	}
+	system(QString("rm ").append(compatibility_rules_path).toStdString().data());
+	database_info.comp_rules->buildFromFile();
+	loadAffixList();
+	errors->setText(*errors_text);
+}
 
-	SplitDialog * d=new SplitDialog();
-	d->exec();
+void SplitDialog::renameCategory(int row,QString category_original, QString category_specialized) {
+	originalAffixList->selectRow(row);
+	specializeHelper(category_original,category_specialized,"",false);
+}
+
+void SplitDialog::specializeHelper(QString category_original, QString category_specialized, QString category_left, bool modifyLeftEntries) {
+	item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(t==PREFIX?AA:CC);
+	long cat_org_id=getID("category",category_original,QString("type=%1").arg((int)t));
+	long specialized_id=insert_category(category_specialized,t,source_id,false);
+	long left_id=insert_category(category_left,t,source_id,false);
+	Search_Compatibility s(rule,cat_org_id,true);
+	long cat_id2,cat_result;
+	while (s.retrieve(cat_id2,cat_result)) {
+		insert_compatibility_rules(rule,specialized_id,cat_id2,cat_result,source_id);
+		insert_compatibility_rules(rule,left_id,cat_id2,cat_result,source_id);
+	}
+	Search_Compatibility s2(rule,cat_org_id,false);
+	while (s2.retrieve(cat_id2,cat_result)) {
+		insert_compatibility_rules(rule,cat_id2,specialized_id,cat_result,source_id);
+		insert_compatibility_rules(rule,cat_id2,left_id,cat_result,source_id);
+	}
+
+	//second change categories of those selected
+	QSqlQuery query(db);
+	QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
+	for (int i=0;i<selection.size();i++) {
+		int top=selection[i].topRow();
+		for (int j=0;j<selection[i].rowCount();j++) {
+			int rowIndex=top+j;
+			long affix_id=originalAffixList->item(rowIndex,0)->text().toLongLong();
+			QString raw_data=originalAffixList->item(rowIndex,3)->text();
+			QString pos=originalAffixList->item(rowIndex,4)->text();
+			QString description=originalAffixList->item(rowIndex,5)->text();
+			QString stmt=QString(tr("UPDATE %1_category ")+
+								  "SET category_id=%2 "+
+								  "WHERE %1_id=%3 AND category_id=%4 AND raw_data=\"%5\" AND POS=\"%6\" AND "+
+										"description_id IN (SELECT id FROM description WHERE name =\"%7\" AND type=%8)")
+						  .arg(interpret_type(t)).arg(specialized_id).arg(affix_id).arg(cat_org_id).arg(raw_data)
+						  .arg(pos).arg(description).arg((int)t);
+			execute_query(stmt,query);
+			int num=query.numRowsAffected();
+			assert (num==1 || num==-1);
+		}
+	}
+	//third: add 2 dummy rules to keep consistency with AB,AC,BC
+	insert_compatibility_rules(rule,cat_empty,specialized_id,cat_org_id,source_id);
+	if (modifyLeftEntries) {
+		//forth: change category of those not selected
+		execute_query(QString(tr( "UPDATE %1_category ")+
+								  "SET category_id=%2 "+
+								  "WHERE category_id=%3")
+					  .arg(interpret_type(t)).arg(left_id).arg(cat_org_id),query);
+		if (query.numRowsAffected()==0)
+			warning << "Operation performed performed just renaming because there are no left entries of this query\n";
+		if (left_id!=cat_org_id)
+			insert_compatibility_rules(rule,cat_empty,left_id,cat_org_id,source_id);
+		//fifth: remove all rules AA or CC having the old_category if (old not used again)
+		if (category_original!=category_left) {
+			QString stmt=QString(tr("DELETE  ")+
+								  "FROM  compatibility_rules "+
+								  "WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
+						  .arg((int)rule).arg(cat_org_id);
+			execute_query(stmt,query);
+		}
+	}
 }
 
 void SplitDialog::specialize_action(){
 	if (originalAffixList->selectionMode()==QAbstractItemView::MultiSelection) {
 		QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
-		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 		if (selection.size()>=1){
 			QString category_original="";
 			for (int i=0;i<selection.size();i++) {
@@ -185,60 +460,7 @@ void SplitDialog::specialize_action(){
 												  category_original, &ok);
 
 			if (ok && !category_specialized.isEmpty() && !category_left.isEmpty()) {
-				rules rule=(t==PREFIX?AA:CC);
-				long cat_org_id=getID("category",category_original,QString("type=%1").arg((int)t));
-				long specialized_id=insert_category(category_specialized,t,source_id,false);
-				long left_id=insert_category(category_left,t,source_id,false);
-				Search_Compatibility s(rule,cat_org_id,true);
-				long cat_id2,cat_result;
-				while (s.retrieve(cat_id2,cat_result)) {
-					insert_compatibility_rules(rule,specialized_id,cat_id2,cat_result,source_id);
-					insert_compatibility_rules(rule,left_id,cat_id2,cat_result,source_id);
-				}
-				Search_Compatibility s2(rule,cat_org_id,false);
-				while (s2.retrieve(cat_id2,cat_result)) {
-					insert_compatibility_rules(rule,cat_id2,specialized_id,cat_result,source_id);
-					insert_compatibility_rules(rule,cat_id2,left_id,cat_result,source_id);
-				}
-
-				//second change categories of those selected and those non-selected
-				QSqlQuery query(db);
-				for (int i=0;i<selection.size();i++) {
-					int top=selection[i].topRow();
-					for (int j=0;j<selection[i].rowCount();j++) {
-						int rowIndex=top+j;
-						long affix_id=originalAffixList->item(rowIndex,0)->text().toLongLong();
-						QString raw_data=originalAffixList->item(rowIndex,3)->text();
-						QString pos=originalAffixList->item(rowIndex,4)->text();
-						QString description=originalAffixList->item(rowIndex,5)->text();
-						QString stmt=QString(tr("UPDATE %1_category ")+
-											  "SET category_id=%2 "+
-											  "WHERE %1_id=%3 AND category_id=%4 AND raw_data=\"%5\" AND POS=\"%6\" AND "+
-													"description_id IN (SELECT id FROM description WHERE name =\"%7\" AND type=%8)")
-									  .arg(interpret_type(t)).arg(specialized_id).arg(affix_id).arg(cat_org_id).arg(raw_data)
-									  .arg(pos).arg(description).arg((int)t);
-						execute_query(stmt,query);
-						int num=query.numRowsAffected();
-						assert (num==1 || num==-1);
-					}
-				}
-				execute_query(QString(tr("UPDATE %1_category ")+
-									  "SET category_id=%2 "+
-									  "WHERE category_id=%3")
-							  .arg(interpret_type(t)).arg(left_id).arg(cat_org_id),query);
-				if (query.numRowsAffected()==0)
-					warning << "Operation performed performed just renaming because there are no left entries of this query\n";
-				//third: add 2 dummy rules to keep consistency with AB,AC,BC
-				insert_compatibility_rules(rule,cat_empty,specialized_id,cat_org_id,source_id);
-				insert_compatibility_rules(rule,cat_empty,left_id,cat_org_id,source_id);
-				//forth: remove all rules AA or CC having the old_category if (old not used again)
-				if (category_original!=category_left) {
-					QString stmt=QString(tr("DELETE  ")+
-										  "FROM  compatibility_rules "+
-										  "WHERE type=%1 AND (category_id1=%2 OR category_id2=%2)")
-								  .arg((int)rule).arg(cat_org_id);
-					execute_query(stmt,query);
-				}
+				specializeHelper(category_original,category_specialized,category_left);
 				system(QString("rm ").append(compatibility_rules_path).toStdString().data());
 				database_info.comp_rules->buildFromFile();
 				loadAffixList();
@@ -247,4 +469,10 @@ void SplitDialog::specialize_action(){
 	}else {
 		originalAffixList->setSelectionMode(QAbstractItemView::MultiSelection);
 	}
+}
+
+void splitRecursiveAffixes(){
+
+	SplitDialog * d=new SplitDialog();
+	d->exec();
 }
