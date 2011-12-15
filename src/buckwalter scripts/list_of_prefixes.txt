@@ -1,5 +1,6 @@
 		Pref-0			
 		NPref-[Li]Al	the	Al/DET+	
+أ	أَ	FWPref-Aa-	does/do?/did?/is/are?	Aa/INTERROG_PART+	
 و	وَ	Pref-Wa	and	wa/CONJ+	
 ف	فَ	Pref-Wa	and/so	fa/CONJ+	
 ب	بِ	NPref-Bi	with/by	bi/PREP+	
@@ -8,7 +9,7 @@
 ل	لَ	NPref-La	indeed/truly	la/EMPHATIC_PARTICLE+	
 ل	لَ	PVPref-La	would have	la/RESULT_CLAUSE_PARTICLE+	
 ل	ل	NPref-[Li]l	the	Al/DET+	
-ل	لِ	IVPref-hw-li-	for	li/SUBJUNC+	
+ل	لِ	IVPref-li-	for	li/SUBJUNC+	
 ال	ال	NPref-Al	the	Al/DET+	
 ي	يُ	IVPref-hm-yu	they (people)	yu/IV3MP+	
 ي	يَ	IVPref-hm-ya	they (people)	ya/IV3MP+	
