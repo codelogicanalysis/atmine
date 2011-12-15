@@ -7,8 +7,7 @@
 #include "common.h"
 #include "Retrieve_Template.h"
 
-class tree
-{
+class tree {
 #ifdef LOAD_FROM_FILE
 	private:
 		typedef QMap<node *,int>  IDMap;
@@ -75,10 +74,6 @@ inline bool isAcceptState(item_types type,long cat_r_id) {
 			}
 		}
 	} else {
-		/*QString s=database_info.comp_rules->getCategoryName(cat_r_id);
-		qDebug()<<s<<"\t"<<cat_r_id;
-		if (cat_r_id==168)
-			qDebug()<<"\t["<<s<<"]";*/
 		Retrieve_Template existACcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)AC));
 		if (existACcheck.retrieve() && existACcheck.get(0).toInt()>0) {
 			Retrieve_Template existBCcheck("compatibility_rules","COUNT(*)",QString("category_id2=%1 AND type=%2").arg(cat_r_id).arg((int)BC));

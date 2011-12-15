@@ -3,6 +3,8 @@
 #include <QDir>
 #include <QString>
 #include <QRegExp>
+#include "Retrieve_Template.h"
+#include "Search_by_category.h"
 #include "functions.h"
 #include "sql_queries.h"
 #include "text_handling.h"
@@ -78,6 +80,144 @@ int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, 
 	{
 		error<<"while adding Possessive: "<<word<<"'\n";
 		return -1;
+	}
+	return 0;
+}
+
+void findCategoryIds(item_types type,QString expression,QList<long> & category_ids) {
+	if (expression.contains("NOT")){
+		expression.replace(QRegExp("NOT\\s*\"")," name <> \"");
+	}
+	expression.replace(QRegExp("(AND|OR)\\s*\""),"\\1 name LIKE \"");
+	int i1=expression.indexOf("\"");
+	int i2=expression.indexOf("name");
+	if (i1<i2 || (i2<0 && i1>=0))
+		expression.prepend("name LIKE ");
+	expression.replace("*","%");
+	warning<<"expression: {"<<expression<<"} was expanded to: <";
+	QString where_condition=QString("type=%1 AND abstract=0 AND %2").arg((int)type).arg(expression);
+	Retrieve_Template t("category","id","name",where_condition);
+	while (t.retrieve()) {
+		long id=t.get(0).toLongLong();
+		QString cat=t.get(1).toString();
+		Search_by_category c(id);
+		if (c.size()>0) {
+			category_ids.append(id);
+			displayed_error<< cat<<",";
+		}
+	}
+	displayed_error<<">\n";
+#ifdef INSERT_ONLY_SUFFIXES
+	if (type==SUFFIX)
+#elif defined(INSERT_ONLY_PREFIXES)
+	if (type==PREFIX)
+#endif
+		assert(category_ids.size()>0);
+}
+
+int insertRuleAccordingToExpression(item_types type,QString cat1,QString cat2,QString resCat,QString inflections,int source_id) {
+	rules rule=(type==PREFIX?AA:CC);
+	QList<long> catIds1,catIds2;
+	bool exp1=cat1.startsWith("{") && cat1.endsWith("}"),
+		 exp2=cat2.startsWith("{") && cat2.endsWith("}"),
+		 exp3=resCat.startsWith("{") && resCat.endsWith("}");
+
+	if (exp1)
+		findCategoryIds(type,cat1.mid(1,cat1.size()-2),catIds1);
+	else {
+		long cat_id=insert_category(cat1,type,source_id,false);
+		catIds1.append(cat_id);
+	}
+	if (exp2)
+		findCategoryIds(type,cat2.mid(1,cat2.size()-2),catIds2);
+	else {
+		long cat_id=insert_category(cat2,type,source_id,false);
+		catIds2.append(cat_id);
+	}
+
+	for (int i=0;i<catIds1.size();i++) {
+		for (int j=0;j<catIds2.size();j++) {
+			long cat_id1=catIds1[i];
+			long cat_id2=catIds2[j];
+			if (cat_id1==cat_id2)
+				continue;
+			long cat_idr;
+			if (exp3) {
+				if (resCat=="{$1}")
+					cat_idr=cat_id1;
+				else if (resCat=="{$2}")
+					cat_idr=cat_id2;
+				else if (resCat.startsWith("{\"") && resCat.endsWith("\"}")) {
+
+					QStringList l;
+					QString resCatTemp=resCat;
+					resCatTemp=resCatTemp.mid(2,resCatTemp.size()-4);
+					for (int i=0;i<2;i++) {
+
+						long cat_id=(i==0?cat_id1:cat_id2);
+						QString catFound=getColumn("category","name",cat_id);
+						resCatTemp.replace(QString("($%1)").arg(i+1),catFound);
+						QRegExp r(QString("\\(\\$%1\\[(-\\d)+\\]\\)").arg(i+1));
+						do {
+							int i=r.indexIn(resCatTemp);
+							if (i<0)
+								break;
+							int size=r.matchedLength();
+							int deductions=r.cap(1).toInt();
+							resCatTemp.replace(i,size,catFound.mid(0,catFound.size()+deductions));
+						}while (true);
+						bool exp=(i==0?exp1:exp2);
+						QString cat=(i==0?cat1:cat2);
+						if (exp) {
+							cat=cat.mid(2,cat.size()-4);
+							int f=cat.indexOf("\"");
+							if (f>=0)
+								cat=cat.mid(0,f);
+							QRegExp reg(cat.replace("*","(.*)"));
+							//reg.setMinimal(true);
+							cat.append("$");
+							reg.exactMatch(catFound);
+							QStringList r=reg.capturedTexts();
+							r.removeFirst();
+							l.append(r);
+						}
+					}
+					QRegExp at("\\(@([\\d]+)\\).*");
+					int i=-1;
+					int pos=-1;
+					do {
+						pos=resCatTemp.indexOf("@",pos+1);
+						if (pos==-1)
+							break;
+						QString p=resCatTemp.mid(pos-1);
+						if (at.exactMatch(p)) { //assuming number is 1 digit
+							int j=at.cap(1).toInt();
+							int pos=at.pos(1);
+							int size=at.cap(1).size();
+							if (j>=0 && j<l.size()) {
+								j=i;
+								warning<< "More replacement positions (@) than search positions (*) in '"<<resCatTemp<<"'\n";
+							} else
+								i++;
+							resCatTemp.replace(pos,size,l[i]);
+						} else {
+							i++;
+							resCatTemp.replace(pos,1,l[i]);
+						}
+
+					} while(true);
+					cat_idr=insert_category(resCatTemp,type,source_id,false);
+				} else {
+					out<<"Unknown Result Category Expression \""<<resCat<<"\"\n";
+					//assert(false,"Unknown Result Category Expression!");
+					return -1;
+				}
+			} else {
+				cat_idr=insert_category(resCat,type,source_id,false);
+			}
+			if (insert_compatibility_rules(rule,cat_id1,cat_id2,cat_idr,inflections,source_id)<0)
+				return -1;
+		}
 	}
 	return 0;
 }
@@ -235,7 +375,11 @@ int insert_buckwalter()
 			}
 			if (line.isEmpty() || line.startsWith(";")) //ignore empty lines and comments if they exist
 				continue;
-			QStringList entries=line.split(QRegExp(QString("[\t ]")),QString::KeepEmptyParts);
+			QStringList entries;
+			if (rule[j]==AA || rule[j]==CC)
+				entries=line.split("\t",QString::KeepEmptyParts);
+			else
+				entries=line.split(QRegExp(QString("[\t ]")),QString::KeepEmptyParts);
 			if (entries.size()<2)
 			{
 				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
@@ -246,6 +390,7 @@ int insert_buckwalter()
 			QString resCat=cat2;
 			QString inflectionRule;
 			if (rule[j]==AA || rule[j]==CC)	{
+				item_types type=(rule[j]==AA?PREFIX:SUFFIX);
 				if (entries.size()<3) {
 					out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 					return -1;
@@ -255,15 +400,24 @@ int insert_buckwalter()
 						for (int i=3;i<entries.size();i++)
 							inflectionRule+=entries[i]+" ";
 					}
-					assert (insert_category(cat1,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
-					assert (insert_category(cat2,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
-					assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false));
+					bool exp1=cat1.startsWith("{") && cat1.endsWith("}"),
+						 exp2=cat2.startsWith("{") && cat2.endsWith("}"),
+						 exp3=resCat.startsWith("{") && resCat.endsWith("}");
+					if (exp1|| exp2 || exp3) {
+						if (insertRuleAccordingToExpression(type,cat1,cat2,resCat,inflectionRule,source_id)<0)
+							out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+						continue; //it will call insert_compatibility_rules as needed internally (maybe multiple times)
+					} else {
+						assert (insert_category(cat1,(rule[j]==AA?PREFIX:SUFFIX),source_id,false)>=0);
+						assert (insert_category(cat2,(rule[j]==AA?PREFIX:SUFFIX),source_id,false)>=0);
+						assert (insert_category(resCat,(rule[j]==AA?PREFIX:SUFFIX),source_id,false)>=0);
+					}
 				}
 			}
 //#ifdef INSERT_ONLY_SUFFIXES
 			else {
-				assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)); //if not AB or AC => BC
-				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false));  ////if not AC or BC => AB
+				assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)>=0); //if not AB or AC => BC
+				assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false)>=0);  ////if not AC or BC => AB
 			}
 //#endif
 			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,inflectionRule,source_id)<0)

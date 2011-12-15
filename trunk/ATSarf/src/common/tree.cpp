@@ -112,7 +112,7 @@ node* tree::addElement(QString letters, long affix_id,long category_id, long res
 	if (!equal(letters,raw_data))
 		raw_data.remove(" ");
 #endif
-	assert (current->isLetterNode() || equal(letters,raw_data));
+	assert (current->isLetterNode() || equal(letters,inflected_raw_data));
 #ifdef LOAD_FROM_FILE
 	if (file!=NULL)
 	{
