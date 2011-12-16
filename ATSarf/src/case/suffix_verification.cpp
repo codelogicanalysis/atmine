@@ -162,6 +162,7 @@ private:
 					if (!POS.isEmpty() && !pos2.isEmpty() )
 						pos+="+";
 				#endif
+					applyPOSInflections(inflectionRule,pos2);
 					pos+=pos2;
 					QString added_desc=(*database_info.descriptions)[itr.value().second];
 					applyDescriptionInflections(inflectionRule,added_desc);

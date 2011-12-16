@@ -91,6 +91,13 @@ protected:
 	virtual QString & getNonDiacriticField() { return dummy;}
 };
 
+class POSInflections :public DescriptionInflections {
+public:
+	POSInflections() {
+		startLetter='p';
+	}
+};
+
 
 inline void applyRawDataInflections(QString & inflection, QString & affix,QString & raw_data) {
 	RawDataInflections r;
@@ -101,6 +108,11 @@ inline void applyRawDataInflections(QString & inflection, QString & affix,QStrin
 inline void applyDescriptionInflections(QString & inflection, QString & description) {
 	DescriptionInflections d;
 	d(inflection,description);
+}
+
+inline void applyPOSInflections(QString & inflection, QString & pos) {
+	POSInflections d;
+	d(inflection,pos);
 }
 
 

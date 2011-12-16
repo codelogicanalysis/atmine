@@ -94,19 +94,19 @@ void findCategoryIds(item_types type,QString expression,QList<long> & category_i
 	if (i1<i2 || (i2<0 && i1>=0))
 		expression.prepend("name LIKE ");
 	expression.replace("*","%");
-	warning<<"expression: {"<<expression<<"} was expanded to: <";
+	out<<"expression: {"<<expression<<"} was expanded to: <";
 	QString where_condition=QString("type=%1 AND abstract=0 AND %2").arg((int)type).arg(expression);
 	Retrieve_Template t("category","id","name",where_condition);
 	while (t.retrieve()) {
 		long id=t.get(0).toLongLong();
 		QString cat=t.get(1).toString();
-		Search_by_category c(id);
-		if (c.size()>0) {
+		//Search_by_category c(id);
+		//if (c.size()>0) {
 			category_ids.append(id);
-			displayed_error<< cat<<",";
-		}
+			out<< cat<<",";
+		//}
 	}
-	displayed_error<<">\n";
+	out<<">\n";
 #ifdef INSERT_ONLY_SUFFIXES
 	if (type==SUFFIX)
 #elif defined(INSERT_ONLY_PREFIXES)
@@ -232,28 +232,28 @@ int insert_buckwalter()
 #else
 	const QString folder="../../src/buckwalter scripts/";
 #endif
-#if !defined(INSERT_ONLY_SUFFIXES) && !defined(INSERT_ONLY_PREFIXES)
 	const int num_files_items=3;
 	const QString item_files[num_files_items]= {	folder+"list_of_prefixes.txt",
 													folder+"list_of_suffixes.txt",
 													folder+"list_of_stems.txt"};
 	const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
-#else
-	const int num_files_items=1;
-#ifdef INSERT_ONLY_SUFFIXES
-	const QString item_files[num_files_items]= {folder+"list_of_suffixes.txt",};
-	const item_types types[num_files_items] ={SUFFIX,};
-#elif defined(INSERT_ONLY_PREFIXES)
-	const QString item_files[num_files_items]= {folder+"list_of_prefixes.txt",};
-	const item_types types[num_files_items] ={PREFIX,};
-#endif
-#endif
-	for (int j=0;j<num_files_items;j++)
-	{
+
+	for (int j=0;j<num_files_items;j++)	{
+	#if defined(INSERT_ONLY_SUFFIXES) || defined(INSERT_ONLY_PREFIXES) || defined(INSERT_ONLY_AFFIXES)
+		if (types[j]==STEM)
+			continue;
+	#endif
+	#ifdef INSERT_ONLY_SUFFIXES
+		if (types[j]==PREFIX)
+			continue;
+	#endif
+	#ifdef INSERT_ONLY_PREFIXES
+		if (types[j]==SUFFIX)
+			continue;
+	#endif
 		int num_entries=6;
 		QFile input(item_files[j]);
-		if (!input.open(QIODevice::ReadWrite))
-		{
+		if (!input.open(QIODevice::ReadWrite)) {
 			out << "File not found\n";
 			return 1;
 		}

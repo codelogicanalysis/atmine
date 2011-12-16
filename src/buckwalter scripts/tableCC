@@ -1,201 +1,65 @@
-PVSuff-~ti	PVSuff-~hi	PVSuff-~th	 
-PVSuff-~ta	PVSuff-~ni	PVSuff-~th	 
-PVSuff-~ti	PVSuff-~ni	PVSuff-~th	 
-CVSuff-o	CVSuff-~hu	CVSuff-oh	 
-PVSuff-ta	PVSuff-~ni	PVSuff-th	 
-PVSuff-ti	PVSuff-~ni	PVSuff-th	 
-PVSuff-a	PVSuff-[..]kum	PVSuff-ah	 
-PVSuff-ti	PVSuff-~hi	PVSuff-th	 
-PVSuff-0a	PVSuff-[..]kum	PVSuff-0ah	 
-PVSuff-ti	PVSuff-~hA	PVSuff-th	 
-PVSuff-~ti	PVSuff-~hA	PVSuff-~th	 
-PVSuff-tu	PVSuff-[..]kum	PVSuff-th	 
-PVSuff-~tu	PVSuff-~hu(sole)	PVSuff-~th	 
-PVSuff-~ta	PVSuff-~hu(sole)	PVSuff-~th	 
-PVSuff-~tu	PVSuff-~hA	PVSuff-~th	 
-PVSuff-~ta	PVSuff-~hA	PVSuff-~th	 
-PVSuff-tu	PVSuff-~hu(sole)	PVSuff-th	 
-PVSuff-ta	PVSuff-~hu(sole)	PVSuff-th	 
-PVSuff-tu	PVSuff-~hA	PVSuff-th	 
-PVSuff-ta	PVSuff-~hA	PVSuff-th	 
-PVSuff-a	PVSuff-~ni	PVSuff-ah	 
-PVSuff-a	PVSuff-~hu(sole)	PVSuff-ah	 
-PVSuff-a	PVSuff-~hA	PVSuff-ah	 
-PVSuff-0a	PVSuff-~ni	PVSuff-0ah	 
-PVSuff-0a	PVSuff-~hu(sole)	PVSuff-0ah	 
-PVSuff-0a	PVSuff-~hA	PVSuff-0ah	 
-PVSuff-~n(they)	PVSuff-~hA	PVSuff-~nh	 
-PVSuff-~n(we)	PVSuff-~hA	PVSuff-~nh	 
-PVSuff-~n(they)	PVSuff-~hu(sole)	PVSuff-~nh	 
-PVSuff-~n(we)	PVSuff-~hu(sole)	PVSuff-~nh	 
-PVSuff-~n(they)	PVSuff-[..]kum	PVSuff-~nh	 
-PVSuff-~n(they)	PVSuff-~ni	PVSuff-~nh	 
-PVSuff-~n(we)	PVSuff-[..]kum	PVSuff-~nh	 
-Suff-0	PVSuff-~n(they)	PVSuff-~n	 
-Suff-0	PVSuff-~n(we)	PVSuff-~n	 
-PVSuff-~tu	PVSuff-[..]kum	PVSuff-~th	 
-PVSuff-~tu	PVSuff-~k	PVSuff-~th	 
-PVSuff-tu	PVSuff-~k	PVSuff-th	 
-PVSuff-a	PVSuff-~k	PVSuff-ah	 
-PVSuff-0a	PVSuff-~k	PVSuff-0ah	 
-Suff-0	PVSuff-~ti	PVSuff-~t	 
-Suff-0	PVSuff-~tu	PVSuff-~t	 
-Suff-0	PVSuff-~ta	PVSuff-~t	 
-Suff-0	PVSuff-ti	PVSuff-t	 
-Suff-0	PVSuff-ta	PVSuff-t	 
-Suff-0	PVSuff-tu	PVSuff-t	 
-PVSuff-~n(they)	PVSuff-~k	PVSuff-~nh	 
-PVSuff-~n(we)	PVSuff-~k	PVSuff-~nh	 
-PVSuff-~tu	PVSuff-~kun~a	PVSuff-~th	 
-PVSuff-tu	PVSuff-~kun~a	PVSuff-th	 
-PVSuff-a	PVSuff-~kun~a	PVSuff-ah	 
-PVSuff-0a	PVSuff-~kun~a	PVSuff-0ah	 
-PVSuff-~n(they)	PVSuff-~kun~a	PVSuff-~nh	 
-PVSuff-~n(we)	PVSuff-~kun~a	PVSuff-~nh	 
-Suff-0	PVSuff-tum	PVSuff-t	 
-Suff-0	PVSuff-~tum	PVSuff-~t	 
-PVSuff-n(they)	PVSuff-~hA	PVSuff-nh	 
-PVSuff-n(we)	PVSuff-~hA	PVSuff-nh	 
-PVSuff-n(they)	PVSuff-~hu(sole)	PVSuff-nh	 
-PVSuff-n(we)	PVSuff-~hu(sole)	PVSuff-nh	 
-PVSuff-n(they)	PVSuff-~ni	PVSuff-nh	 
-PVSuff-n(they)	PVSuff-[..]kum	PVSuff-nh	 
-PVSuff-n(we)	PVSuff-[..]kum	PVSuff-nh	 
-PVSuff-n(they)	PVSuff-~k	PVSuff-nh	 
-PVSuff-n(we)	PVSuff-~k	PVSuff-nh	 
-PVSuff-n(they)	PVSuff-~kun~a	PVSuff-nh	 
-PVSuff-n(we)	PVSuff-~kun~a	PVSuff-nh	 
-Suff-0	PVSuff-n(they)	PVSuff-n	 
-Suff-0	PVSuff-n(we)	PVSuff-n	 
-IVSuff-~n	IVSuff-h[u]	IVSuff-~nh	 
-IVSuff-~n	IVSuff-ny-nA	IVSuff-~nh	 
-IVSuff-n	IVSuff-h[u]	IVSuff-nh	 
-IVSuff-n	IVSuff-ny-nA	IVSuff-nh	 
-PVSuff-|	PVSuff-~hu(sole)	PVSuff-|h	 
-PVSuff-|	PVSuff-~hA	PVSuff-|h	 
-PVSuff-|	PVSuff-~ni	PVSuff-|h	 
-PVSuff-|	PVSuff-[..]kum	PVSuff-|h	 
-PVSuff-|	PVSuff-~k	PVSuff-|h	 
-PVSuff-|	PVSuff-~kun~a	PVSuff-|h	 
-PVSuff-A	PVSuff-~hu(sole)	PVSuff-Ah	 
-PVSuff-A	PVSuff-~hA	PVSuff-Ah	 
-PVSuff-A	PVSuff-~k	PVSuff-Ah	 
-PVSuff-A	PVSuff-[..]kum	PVSuff-Ah	 
-PVSuff-A	PVSuff-~kun~a	PVSuff-Ah	 
-PVSuff-A	PVSuff-~ni	PVSuff-Ah	 
-IVSuff-|	IVSuff-h[u]	IVSuff-|h	 
-IVSuff-|	IVSuff-ny-nA	IVSuff-|h	 
-IVSuff-A	IVSuff-h[u]	IVSuff-Ah	 
-IVSuff-A	IVSuff-ny-nA	IVSuff-Ah	 
-IVSuff-|-	IVSuff-k	IVSuff-|k	 
-IVSuff-A-	IVSuff-k	IVSuff-Ak	 
-NSuff-|-	NSuff-hu	NSuff-|h	 
-NSuff-A-	NSuff-hu	NSuff-Ah	 
-IVSuff-~n-	IVSuff-k	IVSuff-~nk	 
-IVSuff-n-	IVSuff-k	IVSuff-nk	 
-NSuff-A-	NSuff-ya	NSuff-Ah	 
-NSuff-|-	NSuff-ya	NSuff-|h	 
-NSuff-atA-	NSuff-hu	NSuff-atAh	 
-NSuff-atA-	NSuff-ya	NSuff-atAh	 
-NSuff-ata-	NSuff-y~a	NSuff-tay	 
-NSuff-atay-	NSuff-hi	NSuff-tay	 
-Suff-0	NSuff-h[o]	NSuff-h	 
-NSuff-|-	NSuff-[atayo]hu	NSuff-|h	 
-NSuff-A-	NSuff-[atayo]hu	NSuff-Ah	 
-NSuff-atA-	NSuff-[atayo]hu	NSuff-atAh	 
-Suff-0	NSuff-[atayo]hu	NSuff-h	 
-NSuff-atay-	NSuff-[atayo]hu	NSuff-tay	 
-NSuff-iy-	NSuff-y~a	NSuff-iyh	 
-NSuff-ayo-	NSuff-y~a	NSuff-ayh	 
-NSuff-uw-	NSuff-y~a	NSuff-wh	 
-Suff-0	PVSuff-atA	PVSuff-at	 
-PVSuff-atA	PVSuff-~hu(sole)	PVSuff-ath	 
-PVSuff-atA	PVSuff-~hA	PVSuff-ath	 
-PVSuff-atA	PVSuff-~k	PVSuff-ath	 
-PVSuff-atA	PVSuff-[..]kum	PVSuff-ath	 
-PVSuff-atA	PVSuff-~kun~a	PVSuff-ath	 
-PVSuff-atA	PVSuff-~ni	PVSuff-ath	 
-Suff-0	PVSuff-at-	PVSuff-at	 
-PVSuff-at-	PVSuff-[o]-	PVSuff-at[o]-	 
-PVSuff-at[o]-	PVSuff-~hu(sole)	PVSuff-ath	 
-PVSuff-at[o]-	PVSuff-~hA	PVSuff-ath	 
-PVSuff-at[o]-	PVSuff-~k	PVSuff-ath	 
-PVSuff-at[o]-	PVSuff-[..]kum	PVSuff-ath	 
-PVSuff-at[o]-	PVSuff-~kun~a	PVSuff-ath	 
-PVSuff-at[o]-	PVSuff-~ni	PVSuff-ath	 
-NSuff-iy2-	NSuff-hi	NSuff-iyh	 
-NSuff-iy2-	NSuff-[atayo]hu	NSuff-iyh	 
-NSuff-ap-	NSuff-h[o]	NSuff-ath	 
-NSuff-ap-	NSuff-[atayo]hu	NSuff-ath	 
-NSuff-ay-	NSuff-hi	NSuff-ayh	 
-NSuff-ay-	NSuff-[atayo]hu	NSuff-ayh	 
-CVSuff-y	CVSuff-~hi	CVSuff-yh	 
-CVSuff-y	CVSuff-~ni	CVSuff-yh	 
-CVSuff-o	CVSuff-~ni	CVSuff-oh	 
-IVSuff-y	IVSuff-[iy]~hi	IVSuff-yh	 
-IVSuff-y	IVSuff-ny-nA	IVSuff-yh	 
-IVSuff-~n	IVSuff-hA	IVSuff-~nh	 
-IVSuff-n	IVSuff-hA	IVSuff-nh	 
-IVSuff-|	IVSuff-hA	IVSuff-|h	 
-IVSuff-A	IVSuff-hA	IVSuff-Ah	 
-IVSuff-y	IVSuff-hA	IVSuff-yh	 
-IVSuff-hA	Suff-0	IVSuff-h	 
-NSuff-At	NSuff-h[o]	NSuff-Ath	 
-NSuff-At	NSuff-[atayo]hu	NSuff-Ath	 
-NSuff-At	NSuff-iy	NSuff-Ath	 
-NSuff-|t	NSuff-h[o]	NSuff-|th	 
-NSuff-|t	NSuff-[atayo]hu	NSuff-|th	 
-NSuff-|t	NSuff-iy	NSuff-|th	 
-IVSuff-uw-	IVSuff-h[u]	IVSuff-wh	 
-IVSuff-uw-	IVSuff-hA	IVSuff-wh	 
-IVSuff-uw-	IVSuff-ny-nA	IVSuff-wh	 
-NSuff-uw2-	NSuff-hu	NSuff-wh	 
-NSuff-uw2-	NSuff-[atayo]hu	NSuff-wh	 
-PVSuff-uw-	PVSuff-~hu(sole)	PVSuff-awh	 
-PVSuff-uw-	PVSuff-~hA	PVSuff-awh	 
-PVSuff-uw-	PVSuff-~k	PVSuff-awh	 
-PVSuff-uw-	PVSuff-[..]kum	PVSuff-awh	 
-PVSuff-uw-	PVSuff-~kun~a	PVSuff-awh	 
-PVSuff-uw-	PVSuff-~ni	PVSuff-awh	 
-CVSuff-uw-	CVSuff-~hu	CVSuff-wh	 
-CVSuff-uw-	CVSuff-~ni	CVSuff-wh	 
-IVSuff-aw-	IVSuff-h[u]	IVSuff-awh	 
-IVSuff-aw-	IVSuff-hA	IVSuff-awh	 
-IVSuff-aw-	IVSuff-ny-nA	IVSuff-awh	 
-PVSuff-uw2-	PVSuff-~hu(sole)	PVSuff-uwh	 
-PVSuff-uw2-	PVSuff-~hA	PVSuff-uwh	 
-PVSuff-uw2-	PVSuff-~k	PVSuff-uwh	 
-PVSuff-uw2-	PVSuff-[..]kum	PVSuff-uwh	 
-PVSuff-uw2-	PVSuff-~kun~a	PVSuff-uwh	 
-PVSuff-uw2-	PVSuff-~ni	PVSuff-uwh	 
-IVSuff-aw2-	IVSuff-k	IVSuff-awk	 
-IVSuff-uw3-	IVSuff-k	IVSuff-wk	 
-IVSuff-|n	IVSuff-[iy]~hi	IVSuff-|nh	 
-IVSuff-|n	IVSuff-hA	IVSuff-|nh	 
-IVSuff-|n	IVSuff-ny-nA	IVSuff-|nh	 
-IVSuff-|n-	IVSuff-k	IVSuff-|nk	 
-IVSuff-An	IVSuff-[iy]~hi	IVSuff-Anh	 
-IVSuff-An	IVSuff-hA	IVSuff-Anh	 
-IVSuff-An	IVSuff-ny-nA	IVSuff-Anh	 
-IVSuff-An-	IVSuff-k	IVSuff-Ank	 
-IVSuff-uwn-	IVSuff-h[u]	IVSuff-wnh	 
-IVSuff-uwn-	IVSuff-hA	IVSuff-wnh	 
-IVSuff-uwn-	IVSuff-ny-nA	IVSuff-wnh	 
-IVSuff-awn-	IVSuff-h[u]	IVSuff-awnh	 
-IVSuff-awn-	IVSuff-hA	IVSuff-awnh	 
-IVSuff-awn-	IVSuff-ny-nA	IVSuff-awnh	 
-IVSuff-awn2-	IVSuff-k	IVSuff-awnk	 
-IVSuff-uwn2-	IVSuff-k	IVSuff-wnk	 
-IVSuff-yn	IVSuff-h[u]	IVSuff-ynh	 
-IVSuff-yn	IVSuff-hA	IVSuff-ynh	 
-IVSuff-yn	IVSuff-ny-nA	IVSuff-ynh	 
-PVSuff-tum	PVSuff-[t]w[h]	PVSuff-tum-	 
-PVSuff-~tum	PVSuff-[t]w[h]	PVSuff-~tum-	 
-PVSuff-tum-	PVSuff-~hu(sole)	PVSuff-th	 
-PVSuff-tum-	PVSuff-~hA	PVSuff-th	 
-PVSuff-tum-	PVSuff-~ni	PVSuff-th	 
-PVSuff-~tum-	PVSuff-~hu(sole)	PVSuff-~th	 
-PVSuff-~tum-	PVSuff-~hA	PVSuff-~th	 
-PVSuff-~tum-	PVSuff-~ni	PVSuff-~th	 
-Suff-0	NSuff-atA-	NSuff-atAh	 
-Suff-0	NSuff-atay-	NSuff-tay	 
+; rules of at, atA (PV)
+PVSuff-at-	Suff-0	PVSuff-ato-	r//(+1)||ْ\\
+Suff-0	{"PVSuff-at-" OR "PVSuff-atA"}	PVSuff-at
+{"PVSuff-atA" OR "PVSuff-ato-"}	VSuff-h	PVSuff-ath	r//ه||هُ\\ p//%||u\\ p//@||P\\ 
+{"PVSuff-atA" OR "PVSuff-ato-"}	{"PVSuff-~hA" OR  "PVSuff-k*" OR "PVSuff-~ni"}	PVSuff-ath	
+
+;rules of ta, tu, tm, ti (PV)
+Suff-0	{"PVSuff-~t*"}	PVSuff-~t
+Suff-0	{"PVSuff-t*"}	PVSuff-t
+{"PVSuff-~tu" OR "PVSuff-tu"}	{"PVSuff-k*" OR "PVSuff-~hA"}	{"($1[-1])h"}
+{"PVSuff-~ti" OR "PVSuff-ti" OR "PVSuff-~ta" OR "PVSuff-ta"}	{"PVSuff-~ni" OR "PVSuff-~hA"}	{"($1[-1])h"}
+{"PVSuff-tm" OR "PVSuff-~tm"}	{"PVSuff-~hA" OR "PVSuff-~ni"}	{"($1[-1])h"}	r//(+1)||ُو\\ 
+{"PVSuff-ti" OR "PVSuff-~ti"}	VSuff-h	{"($1[-1])h"}	r//ه||هِ\\ p//%||i\\ p//@||P\\ 
+{"PVSuff-~tu" OR "PVSuff-~ta" OR "PVSuff-tu" OR "PVSuff-ta"}	VSuff-h	{"($1[-1])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
+{"PVSuff-tm" OR "PVSuff-~tm"}	VSuff-h	{"($1[-1])h"}	r//(+1)||ُو\\ r//ه||هُ\\ p//%||u\\ p//@||P\\ 
+
+;rules for aw, uw, w, awn (PV)
+{"PVSuff-aw-" OR "PVSuff-uw-"}	{"PVSuff-k*" OR "PVSuff-~hA" OR "PVSuff-~ni"}	{"($1[-1])h"}
+{"PVSuff-aw-" OR "PVSuff-uw-"}	VSuff-h	{"($1[-1])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
+
+;rules for CV
+{"CVSuff-w" OR "CVSuff-y" OR "CVSuff-o"}	CVSuff-~ni	{"($1)h"}
+{"CVSuff-w" OR "CVSuff-o"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||C\\ 
+CVSuff-y	VSuff-h	CVSuff-yh	r//ه||هِ\\ p//%||i\\ p//@||C\\ 
+
+;rules for a, 0a, |, A (PV)
+{"PVSuff-a" OR "PVSuff-0a" OR "PVSuff-|" OR "PVSuff-A"}	{"PVSuff-k*" OR "PVSuff-~hA" OR "PVSuff-~ni"}	{"($1)h"}
+{"PVSuff-a" OR "PVSuff-0a" OR "PVSuff-|" OR "PVSuff-A"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
+
+;rules for na, nA (PV)
+{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	VSuff-h	{"($1[-2])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\ 
+{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	{"PVSuff-k*" OR "PVSuff-~hA"}	{"($1[-2])h"}
+{"PVSuff-~na-" OR "PVSuff-na-"}	PVSuff-~ni	{"($1[-2])h"}
+Suff-0	{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	{"($2[-2])"}
+
+;rules for IV
+Suff-0	VSuff-h	IVSuff-h	p//%||u\\ p//@||I\\ 
+IVSuff-hA	Suff-0	IVSuff-h
+{"IVSuff-An" OR "IVSuff-y" OR "IVSuff-|n"}	VSuff-h	{"($1)h"}	r//ه||هِ\\ p//%||i\\ p//@||I\\ 
+{"IVSuff-*" AND NOT "IVSuff-*-" AND NOT "IVSuff-An" AND NOT "IVSuff-|n" AND NOT "IVSuff-y"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||I\\
+{"IVSuff-*" AND NOT "IVSuff-*-"}	{"IVSuff-ny-nA" OR "IVSuff-hA"}	{"($1)h"}
+{"IVSuff-*-"}	IVSuff-k	{"($1[-1])k"}
+
+; rules for N meaning possessive
+Suff-0	NSuff-h[o]	NSuff-h	p//%||u\\
+Suff-0	NSuff-hu	NSuff-h
+
+{"NSuff-|-" OR "NSuff-A-" OR "NSuff-atA-" OR "NSuff-w-"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1[-1])h"}	r//ه||هُ\\ r//هُا||ها\\ p//%||u\\ 
+{"NSuff-iy-" OR "NSuff-ay-"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1[-1])h"}	r//ه||هِ\\ r//هِا||ها\\ p//%||i\\
+NSuff-tay-	{"NSuff-h[o]" OR "NSuff-hu"}	NSuff-tay	r//ه||هِ\\ r//هِا||ها\\ p//%||i\\
+{"NSuff-At" OR "NSuff-|t"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1)h"}	p//%||u\\
+NSuff-at	{"NSuff-h[o]" OR "NSuff-hu"}	NSuff-ath	p//%||u\\ 
+
+{"NSuff-A-" OR "NSuff-|-" OR "NSuff-atA-"}	NSuff-ya	{"($1[-1])h"}
+{"NSuff-|t" OR "NSuff-At" OR "NSuff-at"}	NSuff-iy	{"($1)h"}
+
+NSuff-ata-	NSuff-y~a	NSuff-tay
+NSuff-~iy-	NSuff-y~a	NSuff-iyh
+NSuff-ayo-	NSuff-y~a	NSuff-ayh
+NSuff-uw-	NSuff-y~a	NSuff-wh
+
+; others
+Suff-0	FWSuff-hu-he	FWSuff-hu-him	d//he/||him/\\ d//they||them\\ d//she||her\\
+Suff-0	NSuff-atA-	NSuff-atAh
+Suff-0	NSuff-tay-	NSuff-tay
