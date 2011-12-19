@@ -30,6 +30,62 @@ void SplitDialog::findDuplicates() {
 	errors->setText(*errors_text);
 }
 
+void SplitDialog::makeNonAcceptStatesAccept() {
+	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
+	rules rule=(type==PREFIX?AA:CC);
+	Retrieve_Template t("compatibility_rules","category_id2","resulting_category", tr("type=%1 AND category_id1=%2").arg(rule).arg(cat_empty));
+	while (t.retrieve()) {
+		long category_id=t.get(0).toLongLong();
+		long resulting_category=t.get(1).toLongLong();
+		if (!isAcceptState(type,resulting_category))
+			continue;
+		Search_by_category c(resulting_category);
+		if (c.size()> 0)
+			continue;
+		Retrieve_Template t2("compatibility_rules","category_id2",
+							tr("type=%1 AND category_id1=%2 AND resulting_category=%3 AND category_id2<>%4").arg(rule).arg(cat_empty).arg(resulting_category).arg(category_id));
+		if (t2.size()>0)
+			continue;
+		QString cat=database_info.comp_rules->getCategoryName(category_id);
+		QString catres=database_info.comp_rules->getCategoryName(resulting_category);
+		warning << QString("Set category %1 back into %2 \n").arg(cat).arg(catres);
+		QSqlQuery query(db);
+		QString stmt=QString(tr("UPDATE %1_category ")+
+								"SET category_id=%3 "+
+								"WHERE category_id=%2")
+					  .arg(interpret_type(type)).arg(category_id).arg(resulting_category);
+		execute_query(stmt,query);
+		assert(query.numRowsAffected()>0);
+
+		stmt=QString(tr("DELETE  ")+
+						"FROM  compatibility_rules "+
+						"WHERE type=%1 AND category_id1=%2 AND category_id2=%3")
+					  .arg((int)rule).arg(cat_empty).arg(category_id);
+		execute_query(stmt,query);
+		//assert(query.numRowsAffected()>0);
+
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET category_id1=%3 "+
+						"WHERE type=%1 AND category_id1=%2")
+			  .arg((int)rule).arg(category_id).arg(resulting_category);
+		execute_query(stmt,query);
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET category_id2=%3 "+
+						"WHERE type=%1 AND category_id2=%2")
+			  .arg((int)rule).arg(category_id).arg(resulting_category);
+		execute_query(stmt,query);
+		stmt=QString(tr("UPDATE compatibility_rules ")+
+						"SET resulting_category=%3 "+
+						"WHERE type=%1 AND resulting_category=%2")
+			  .arg((int)rule).arg(category_id).arg(resulting_category);
+		execute_query(stmt,query);
+		//assert(query.numRowsAffected()>0);
+
+	}
+	loadAffixList();
+	errors->setText(*errors_text);
+}
+
 void SplitDialog::removeStaleCategoriesAndAffixes() {
 	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 	rules rule=(type==PREFIX?AA:CC);
@@ -163,8 +219,8 @@ void SplitDialog::removeDummyRulesForConsistencyIfNotNeeded() {
 	while(query.next()) {
 		long id1=query.value(0).toULongLong();
 		long id2=query.value(1).toULongLong();
-		if (id1!=13 && id2!=66)
-			continue;
+		/*if (id1!=13 && id2!=66)
+			continue;*/
 		long idMain, idOld;
 		if (isAcceptState(type,id1)) {
 			assert(!isAcceptState(type,id2));

@@ -444,6 +444,7 @@ int tree::build_affix_tree(item_types type)
     while (query.next())
     {
 		name=query.value(1).toString();
+		name=removeDiacritics(name);
 		affix_id1=query.value(0).toULongLong();
 		Search_by_item s1(type,affix_id1);
 #ifdef MEMORY_EXHAUSTIVE

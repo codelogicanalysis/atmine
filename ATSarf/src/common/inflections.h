@@ -14,10 +14,12 @@ namespace InflectionsDelimitors{
 class ApplyInflections {
 protected:
 	QChar startLetter;
+	bool applyPlusRules:1;
 protected:
 	virtual bool applyStripDiacriticChange()=0;
 	virtual QString & getNonDiacriticField()=0;
 public:
+	ApplyInflections(bool applyPlusRules) { this->applyPlusRules=applyPlusRules;}
 	void operator()(QString & inflection,QString & field) {
 		//assume inflections in form (r/d)//{[reg exp]/(+1)/(+2)}||replacement\\ ...
 		if (inflection.isEmpty())
@@ -40,11 +42,11 @@ public:
 				QString replacement_withoutDiacritics=removeDiacritics(replacement);
 				QString & nonDiacriticField=getNonDiacriticField();
 				bool non_diacritic=applyStripDiacriticChange();
-				if (rule=="(+1)") { //after the first (i.e. prepend before second)
+				if (applyPlusRules && rule=="(+1)") { //after the first (i.e. prepend before second)
 					field=replacement+field;
 					if (non_diacritic)
 						nonDiacriticField=replacement_withoutDiacritics+nonDiacriticField;
-				} else if (rule=="(+2)") { //after the second (i.e. append after second)
+				} else if (applyPlusRules && rule=="(+2)") { //after the second (i.e. append after second)
 					field=field+replacement;
 					if (non_diacritic)
 						nonDiacriticField=nonDiacriticField+replacement_withoutDiacritics;
@@ -65,7 +67,7 @@ class RawDataInflections:protected ApplyInflections {
 private:
 	QString affix;
 public:
-	RawDataInflections() {
+	RawDataInflections(): ApplyInflections(true) {
 		startLetter='r';
 	}
 protected:
@@ -83,7 +85,7 @@ class DescriptionInflections:public ApplyInflections {
 private:
 	QString dummy;
 public:
-	DescriptionInflections() {
+	DescriptionInflections(bool applyPlusRules):ApplyInflections(applyPlusRules) {
 		startLetter='d';
 	}
 protected:
@@ -93,7 +95,7 @@ protected:
 
 class POSInflections :public DescriptionInflections {
 public:
-	POSInflections() {
+	POSInflections(bool applyPlusRules):DescriptionInflections(applyPlusRules) {
 		startLetter='p';
 	}
 };
@@ -105,13 +107,13 @@ inline void applyRawDataInflections(QString & inflection, QString & affix,QStrin
 }
 
 
-inline void applyDescriptionInflections(QString & inflection, QString & description) {
-	DescriptionInflections d;
+inline void applyDescriptionInflections(QString & inflection, QString & description, bool first=false) {
+	DescriptionInflections d(!first);
 	d(inflection,description);
 }
 
-inline void applyPOSInflections(QString & inflection, QString & pos) {
-	POSInflections d;
+inline void applyPOSInflections(QString & inflection, QString & pos, bool first=false) {
+	POSInflections d(!first);
 	d(inflection,pos);
 }
 

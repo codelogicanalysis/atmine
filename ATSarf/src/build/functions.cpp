@@ -85,10 +85,7 @@ int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, 
 }
 
 void findCategoryIds(item_types type,QString expression,QList<long> & category_ids) {
-	if (expression.contains("NOT")){
-		expression.replace(QRegExp("NOT\\s*\"")," name <> \"");
-	}
-	expression.replace(QRegExp("(AND|OR)\\s*\""),"\\1 name LIKE \"");
+	expression.replace(QRegExp("(AND|OR|NOT)\\s*\""),"\\1 name LIKE \"");
 	int i1=expression.indexOf("\"");
 	int i2=expression.indexOf("name");
 	if (i1<i2 || (i2<0 && i1>=0))
@@ -190,16 +187,18 @@ int insertRuleAccordingToExpression(item_types type,QString cat1,QString cat2,QS
 						if (pos==-1)
 							break;
 						QString p=resCatTemp.mid(pos-1);
-						if (at.exactMatch(p)) { //assuming number is 1 digit
-							int j=at.cap(1).toInt();
-							int pos=at.pos(1);
-							int size=at.cap(1).size();
-							if (j>=0 && j<l.size()) {
-								j=i;
-								warning<< "More replacement positions (@) than search positions (*) in '"<<resCatTemp<<"'\n";
-							} else
+						if (at.exactMatch(p)) {
+							QString t=at.cap(1);
+							int j=t.toInt();
+							int position=pos-1;
+							int size=t.size();
+							if (j>0 && j<=l.size()) {
+								i=j-1;
+							} else {
 								i++;
-							resCatTemp.replace(pos,size,l[i]);
+								warning<< "More replacement positions (@) than search positions (*) in '"<<resCatTemp<<"'\n";
+							}
+							resCatTemp.replace(position,size+3,l[i]);
 						} else {
 							i++;
 							resCatTemp.replace(pos,1,l[i]);
