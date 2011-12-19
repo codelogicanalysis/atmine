@@ -19,7 +19,7 @@
 ي	يَ	IVPref-hn-ya	they (women)	ya/IV3FP+	
 ي	يُ	IVPref-hn-yu	they (women)	yu/IV3FP+	
 ي	يُ	IVPref-hmA-yu	they (both)	yu/IV3MD+	
-س	سَ	IVPref-sa-	will	sa/FUT+	
+س	سَ	Pref-sa-	will	sa/FUT+	
 ت	تَ	IVPref-hmA-ta	they (both) [fem.du.]	ta/IV3FD+	
 ت	تُ	IVPref-hmA-tu	they (both) [fem.du.]	tu/IV3FD+	
 ت	تَ	IVPref-Anti-ta	you [fem.sg.]	ta/IV2FS+	

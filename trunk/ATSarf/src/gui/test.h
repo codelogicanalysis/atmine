@@ -12,7 +12,7 @@
 //#define INSERT_ONLY_PREFIXES
 //#define INSERT_ONLY_SUFFIXES
 #define INSERT_ONLY_AFFIXES
-//#define SAMA
+#define SAMA
 #define REPETITIONS 1
 
 int morphology(QString input_str,ATMProgressIFC * prg);

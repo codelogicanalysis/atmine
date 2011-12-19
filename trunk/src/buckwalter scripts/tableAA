@@ -1,8 +1,8 @@
+FWPref-Aa-	{NOT "NPref-[Li]l" AND NOT "NPref-Al" AND NOT "NPref-La" AND NOT "Pref-0" AND NOT "NPref-[Li]Al" AND NOT "PVPref-La"}	{$2}
 Pref-Wa	{NOT "NPref-[Li]l" AND NOT "NPref-La" AND NOT "Pref-0" AND NOT "NPref-[Li]Al" AND NOT "PVPref-La" AND NOT "FWPref-Aa-"}	{$2}
 NPref-Bi	NPref-Al	NPref-BiAl	
-IVPref-sa-	{"IVPref*" AND NOT "IVPref-li-"}	{$2}
+Pref-sa-	{"IVPref*" AND NOT "IVPref-li-"}	{$2}
 NPref-Li	NPref-[Li]Al	NPref-LiAl	
 NPref-Li	NPref-[Li]l	NPref-Lil	
-IVPref-li-	{"IVPref-*-y*"}	{"IVPref-@-liy@"}	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\ 
+IVPref-li-	{"IVPref-*-y*"}	{"IVPref-(@1)-liy(@2)"}	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| to\\ 
 IVPref-li-	{"IVPref-*-*" AND NOT "IVPref-*-y*"}	{"IVPref-@-li@"}	d//he/||him/\\ d//they||them\\ d//she||her\\ d//I||me\\ d//we||us\\ d//(+2)|| (to)\\ 
-FWPref-Aa-	{NOT "NPref-[Li]l" AND NOT "NPref-Al" AND NOT "NPref-La" AND NOT "Pref-0" AND NOT "NPref-[Li]Al" AND NOT "PVPref-La"}	{$2}

@@ -176,8 +176,9 @@ public slots:
 		errors->clear();
 		loadAffixList();
 		loadCompatibilityList();
-		removeDummyRulesForConsistencyIfNotNeeded();
+		//removeDummyRulesForConsistencyIfNotNeeded();
 		mergeSimilarCategories();
+		makeNonAcceptStatesAccept();
 	}
 	void specializeAllDuplicateEntries();
 	void removeStaleCategoriesAndAffixes();
@@ -190,6 +191,7 @@ private:
 	void specialize_action();
 	void findDuplicates();
 	void mergeSimilarCategories();
+	void makeNonAcceptStatesAccept();
 	void removeDummyRulesForConsistencyIfNotNeeded();
 	QString getAffix(long id) {
 		item_types t=(item_types)affixType->itemData(affixType->currentIndex()).toInt();

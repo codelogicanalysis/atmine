@@ -163,9 +163,11 @@ private:
 						pos+="+";
 				#endif
 					applyPOSInflections(inflectionRule,pos2);
+					applyPOSInflections(inflectionRule,pos,true);
 					pos+=pos2;
 					QString added_desc=(*database_info.descriptions)[itr.value().second];
 					applyDescriptionInflections(inflectionRule,added_desc);
+					applyDescriptionInflections(inflectionRule,description,true);
 					QString desc;
 					if (type==SUFFIX){
 						bool r=isReverseDirection(d);
