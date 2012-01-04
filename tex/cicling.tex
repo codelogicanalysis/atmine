@@ -53,14 +53,13 @@
 \newcommand{\noArutfRL}[1]{\setcode{utf8} \arabfalse \RL{#1} \arabtrue \setcode{standard}} 
 
 %\title{Instructions for NAACL HLT 2010 Proceedings\Thanks{This...}}
-\title{Detection of Arabic Entity Graphs using Morphology, Finite State Machines, and Graph Transformations}
+\title{Arabic Entity Graph Extraction using Morphology, Finite State Machines, and Graph Transformations}
 
-%\author{ Jad Makhlouta \\\And
-%Hamza Harkous \\
-%  American University of Beirut \\
-%  {\tt \{jem04, hhh20, fz11\}@aub.edu.lb } \\\And 
-%  Fadi Zaraket 
-%}
+\author{ Jad Makhlouta\inst{1} \and
+    Fadi Zaraket\inst{1} \and 
+Hamza Harkous\inst{1} }
+\institute{ American University of Beirut \\
+  \email{ \{jem04, fz11, hhh20\}@aub.edu.lb } }
 \date{}
 
 \begin{document}
@@ -83,15 +82,15 @@ from Arabic text using
 a hierarchy of finite state machines driven by morphological 
 features such as part of speech and gloss tags,
 and graph transformation algorithms. 
-We evaluated our method on three natural language processing 
+We evaluated our method on two natural language processing 
 applications.
 We automated the extraction of narrators and 
 narrator relations from 
-several corpora of Islamic narration books (hadith). 
+several corpora of Islamic narration books. 
 We automated the extraction of genealogical family trees 
 from Biblical texts. 
-Finally, we automated locating and extracting
-individual biographies from historical biography books.
+%Finally, we automated locating and extracting
+%individual biographies from historical biography books.
 In all applications, our method reports high precision and recall
 and learns lemmas about phrases that improve results. 
 \end{abstract}
@@ -113,7 +112,7 @@ local grammars with morphological stemming~\cite{ZAGHOUANI10,Traboulsi:09},
 rule-based systems powered with local grammars~\cite{ShaalanR09} 
 and stop words ~\cite{Abuleil04},
 statistical analysis boosted with Arabic-English parallel corpora~\cite{BenajibaZDR10}, 
-statistical analysis boosted with task specific gazetteers~\cite{ANERSys:07,BenajibaDR08},
+statistical analysis boosted with task specific gazetteers~\cite{Benajiba:07,Benajiba:08},
 and pattern matching powered with morphological stemming~\cite{jumaily2011,TAGARAB98}
 to perform Arabic NER.
 We discuss these techniques and compare to them in 
@@ -124,15 +123,15 @@ in the context of more complex natural language
 processing (NLP) tasks that look for NEs and 
 relations amongst the detected NEs and build entity graphs.
 An {\em entity graph} is a graph where NEs are nodes and relational entities (RE) are edges.
-For example, consider the tasks of extracting a time table
-from a document describing the events of a conference, 
+For example, consider the tasks of 
 extracting genealogical family trees based on person names 
-from biblical text,  and
-extracting routes and maps from travel itineraries.
-Also consider applications with cross-document NER
-such as extracting narrator authentication graphs based on narration 
-documents that include narrator sequences, and biography documents 
-that include credibility information about the narrators. 
+from biblical text, 
+extracting routes and maps from travel itineraries,
+and 
+extracting narrator graphs based on narration 
+documents that include narrator sequences.
+%, and biography documents 
+%that include credibility information about the narrators. 
 We hypothesize that NEs of the same kind happen 
 at proximity of each other, and we base our method on that 
 working hypothesis.
@@ -147,8 +146,8 @@ morphological features such as part of speech (POS) and gloss tags,
 a hierarchy of finite state machines, 
 and graph transformations such as node merge, node split, and replace edge transformations. 
 Morphological analysis helps reduce ambiguities and resolves lexical items with their morphological variations.
-For each application, we augment the lexicon of an inhouse morphological 
-analyzer with lexical elements and tags that describe categories relevant to the application. 
+For each application, we augment the lexicon of Sarf~\cite{ATMine09}, an inhouse morphological analyzer, 
+with lexical elements and tags that describe categories relevant to the application. 
 We also build finite state transducers (FST) that take 
 morphological tags as input and detect the NEs.
 Manually built FSTs can express rules that are not intuitive (and sometimes impossible) 
@@ -170,10 +169,10 @@ and the parent of $n_3$.
 The learned semantics for the expression can be expressed as a graph transformation that leads to a graph with only 
 $l_s$ and $l_p$ as labels. 
 
-We evaluated our method and used it to solve three 
+We evaluated our method and used it to solve two
 NLP applications including extracting genealogical family
-trees from Biblical text, extracting a graph of 
-narrators from hadith books, and extracting biographies from biography books.
+trees from Biblical text, and extracting a graph of 
+narrators from hadith books.%, and extracting biographies from biography books.
 Our results show high precision and recall metrics and report
 learning interesting named entities and relational lemmas.
 In this paper we make the following contributions.
@@ -190,10 +189,10 @@ with detected phrases that are equivalent to predefined features
 modulo one or two graph transformations. 
 The learned semantics improved recall and precision by 
 5 and 6\%, respectively in the genealogy application.
-\item We perform Arabic cross-document named entity and 
+\item We perform Arabic named entity and 
 relational entity extraction using graph algorithms. 
-The use of a graph generated from the hadith application 
-improved precision in the biography application from 40\% to 93\%.
+%The use of a graph generated from the hadith application 
+%improved precision in the biography application from 40\% to 93\%.
 %\item We present a novel equality metric to compare Arabic 
 %names based on name structure and morphological features. 
 \end{itemize}
@@ -206,15 +205,15 @@ between the nodes.
 Our target graph has a predefined set of relations expressed 
 as edge labels such as ``parent'' and ``spouse'' where the nodes
 are person names.
-We use an inhouse morphological analyzer augmented with 
+We use Sarf, an inhouse morphological analyzer, augmented with 
 a list of lexicon elements relevant to the application.
-We also augment the analyzer with
+We also augment Sarf with 
 a set of tags that classify the 
 elements into several categories 
 relevant to the targeted named entities and edge labels. 
 
-The method passes the input text string to the morphological 
-analyzer. The analyzer processes the input text and whenever
+The method passes the input text string to Sarf.
+Sarf processes the input text and whenever
 it identifies a morpheme, it calls the application morpheme
 classifier with the morpheme, the tags of the morpheme, 
 and the current solution context.
@@ -234,7 +233,7 @@ and {\bf (5)} previously unknown edge labels occurring between named entities.
 %transducers to handle an NLP application.
 The detected named entities and edges form an entity graph.
 
-Finally, the method uses a morphological and structural distance
+Finally, the method uses a distance
 function to compute equality between the named entities and
 to consequently merge the nodes of the graph that represent 
 equal named entities.
@@ -277,28 +276,29 @@ of the \noArRL{.hady_t}.
 The second part of the \noArRL{.hady_t} is the 
 \RL{matn} (content) and constitutes its actual content.
 
-Due to religious and political reasons, writing the traditions was forbidden 
-until the days of the Umayad Calif,
-\novocalize
-\RL{`mr bn `bd al`zyz}(717-720 AC), seventy or so years after the prophet. 
-Many inconsistencies were introduced to the literature which necessitates 
-a thorough authentication study before the use of a tradition in jurisprudence.
-\vocalize
-%An Islamic hadith scholar studies the authenticity of 
-%the \noArRL{sanad} of a 
-%set of related traditions before using these traditions 
-%jurisprudence. 
-%While different Islamic schools of thought differ on 
-%how to interpret the content, they almost all agree
-All Islamic schools of thought agree
-that scholars can not use a tradition whose sanad lacks authenticity for jurisprudence.
-
-The authenticity of a \noArRL{.hady_t} depends on 
-the credibility of the narrators as reported in 
-separate biography books. 
-The study of \noArRL{.hady_t} authentication is 
-currently manual and error prone due to the huge number
-of existing traditions and tradition books. 
+%Due to religious and political reasons, 
+%writing the traditions was forbidden 
+%until the days of the Umayad Calif,
+%\novocalize
+%\RL{`mr bn `bd al`zyz}(717-720 AC), seventy or so years after the prophet. 
+%Many inconsistencies were introduced to the literature which necessitates 
+%a thorough authentication study before the use of a tradition in jurisprudence.
+%\vocalize
+%%An Islamic hadith scholar studies the authenticity of 
+%%the \noArRL{sanad} of a 
+%%set of related traditions before using these traditions 
+%%jurisprudence. 
+%%While different Islamic schools of thought differ on 
+%%how to interpret the content, they almost all agree
+%All Islamic schools of thought agree
+%that scholars can not use a tradition whose sanad lacks authenticity for jurisprudence.
+%
+%The authenticity of a \noArRL{.hady_t} depends on 
+%the credibility of the narrators as reported in 
+%separate biography books. 
+%The study of \noArRL{.hady_t} authentication is 
+%currently manual and error prone due to the huge number
+%of existing traditions and tradition books. 
 %Hadithopedia~\cite{Hadithopaedia:08}
 %reports that a non-comprehensive collection of tradition 
 %and biography books amounts to more than 300 thousand lines of 
@@ -387,7 +387,6 @@ as a geographical dictionary of places in hadith.
 \transtrue
 \vocalize
 
-
 Several researchers~\cite{iTree,Hadithopaedia:08} attempted to automate 
 the analysis of the hadith literature. 
 We fully automate the analysis of three books of hadith selected 
@@ -405,13 +404,11 @@ We also detect the full name of each narrator that is
 composed of several proper names with connectors
 in between. 
 
-
 %NRC=19 descriptions= 91 stems
 %family nmc connectors (all)=15 descriptions=33stems
 %       ibn=1 descriptions=3 stems
 %       2ab =2 descriptions=11 stems
 %       2om=4 descriptions =5stems
-                     
 
 To do that, we augmented our lexicon with person names obtained from online and Biblical sources,
 and augmented the tag set of our lexicon with the following categories.
@@ -425,7 +422,6 @@ and augmented the tag set of our lexicon with the following categories.
 \RL{`an} ``on behalf of'', \RL{.hada_t} ``narrated'', \RL{qaal} ``said'', \RL{'a_hbar} ``told'' or one of their morphological equivalents. (91 lexicon items).
 \end{itemize}
 The categories can also be inferred from the concatenation of the tagged morphemes.
-
 
 \subsection{The hadith finite state transducer}
 \label{sec:FST}
@@ -579,9 +575,10 @@ The hadith FST generates sequences of hadith narrators
 such as $\langle n_1,n_2,n_3,n_4,n_5 \rangle$ shown in 
 Figure~\ref{f:exhadith}. 
 Our target is to automate the extraction of 
-narrator graphs from one or more narration books
+narrator graphs,
 similar to the directed acyclic graph (DAG) 
-in Figure~\ref{f:hadith}(b).
+in Figure~\ref{f:hadith}(b),
+from one or more narration books
 %We automatically extracted the POR from the three books of 
 %hadith~\cite{IbnHanbal,AlKulayni,AlTousi}.
 The nodes in boxes are the \RL{matn} of the hadith, 
@@ -698,108 +695,107 @@ may have several different narration sequences.
 %%}
 %\end{table}
 
-\subsection{Narrator distance metric}
+%\subsection{Narrator distance metric}
 %MultiKey Hashing
 %explain what are the keys used for each value and why suitable
 % and say that we use the computed keys also conduct the 
 % biography lookup
-Two narrator names may refer to the same person but may 
-differ in text and in structure. 
-For example, the names \noTrutfRL{عبد الله بن عمر}, 
-\noTrutfRL{ابن عمر}, and \noTrutfRL{ابن عمر رضي الله عنه}
-refer to the same person. 
-Our metric uses the \noTrutfRL{ابن} (son) name connector and 
-its morphological equivalents to order the person names
-that appear within a narrator entity. 
-The metric compares the name hierarchy and if the hierarchy 
-does not match, as in the case of 
-\noTrutfRL{عبيد الله بن عبد الله بن عمر}  and his parent 
-\noTrutfRL{عبد الله بن عمر},
-the metric returns \cci{false}.
-The metric also compares name qualifiers and if two name 
-qualifiers of the same morphological POS tag,  
-such as the place possessive qualifiers 
-\utfRL{العراقي} (the Iraqi) and \utfRL{المصري} (the Egyptian) 
-conflict, the metric returns \cci{false}.
-The metric then compares the morphological stems of the person 
-names that are in order, ignores the ones that are not in order,
-and computes the fraction of the matching names.
+%Two narrator names may refer to the same person but may 
+%differ in text and in structure. 
+%For example, the names \noTrutfRL{عبد الله بن عمر}, 
+%\noTrutfRL{ابن عمر}, and \noTrutfRL{ابن عمر رضي الله عنه}
+%refer to the same person. 
+%Our metric uses the \noTrutfRL{ابن} (son) name connector and 
+%its morphological equivalents to order the person names
+%that appear within a narrator entity. 
+%The metric compares the name hierarchy and if the hierarchy 
+%does not match, as in the case of 
+%\noTrutfRL{عبيد الله بن عبد الله بن عمر}  and his parent 
+%\noTrutfRL{عبد الله بن عمر},
+%the metric returns \cci{false}.
+%The metric also compares name qualifiers and if two name 
+%qualifiers of the same morphological POS tag,  
+%such as the place possessive qualifiers 
+%\utfRL{العراقي} (the Iraqi) and \utfRL{المصري} (the Egyptian) 
+%conflict, the metric returns \cci{false}.
+%The metric then compares the morphological stems of the person 
+%names that are in order, ignores the ones that are not in order,
+%and computes the fraction of the matching names.
+%
+%Both our metric and the Levenshtein distance metric 
+%used in~\cite{Azmi-2010}
+%achieved 100\% precision on an arbitrarily selected set that 
+%included 208 narrator pairs with 102 equal narrators.
+%Our metric achieved 95\% recall versus 72\% recall for the 
+%Levenshtein distance metric. 
+%Which means that both metrics do not announce names equal if they
+%are not, but our metric is better at detecting equal names.
+%We believe that our metric is adequate to compare 
+%complex Arabic names including contemporary ones in general.
 
-Both our metric and the Levenshtein distance metric 
-used in~\cite{Azmi-2010}
-achieved 100\% precision on an arbitrarily selected set that 
-included 208 narrator pairs with 102 equal narrators.
-Our metric achieved 95\% recall versus 72\% recall for the 
-Levenshtein distance metric. 
-Which means that both metrics do not announce names equal if they
-are not, but our metric is better at detecting equal names.
-We believe that our metric is adequate to compare 
-complex Arabic names including contemporary ones in general.
-
-\section{The biography application}
-Biography books include one or more short biography 
-for each hadith narrator. 
-The short biography may contain information 
-about the dates and locations of birth and death, 
-the professors and the students of the narrator,
-and one or more evaluations of the credibility of the narrator. 
-
-We use a similar approach to the hadith application
-to locate narrator names within the biography books. 
-A biography text may contain the name of the narrator described
-in the biography as well as the names of other narrators who happen
-to be the professors, students, or the persons who evaluated the 
-narrator.
-Our method uses the narrator graph 
-extracted from several hadith books 
-as described earlier to segment the biographies
-and detect the owner of each biography. 
-
-Once our method detects a narrator, it colors the node in  the 
-narrator graph corresponding to it. 
-The professors and students of the narrator
-are the neighbors of the 
-node corresponding to the narrator in the graph. 
-Consequently, whenever a detected narrator entity 
-moves away from the 
-colored local cluster in the narrator graph, 
-we change the color and infer that we moved to a separate
-biography.
-The owner of each biography is the narrator at the center of the
-colored graph.
-
-The naive implementation of this approach is computationally
-expensive as it requires searching for each discovered narrator
-in the narrator graph. 
-We implemented a multi-hash narrator technique to 
-improve narrator localization in the graph and in the biography 
-books where we associate
-each narrator with all narrator names that can be generated 
-from its structure and compute a hash key and a relevance score 
-for that association. 
-We omit the discussion for brevity and we will report on that 
-elsewhere. 
-
-Scholars can use the located biographies to annotate
-each narrator with corresponding biographies thus automating
-the task of hadith authentication checks. 
-They can also annotate the narrator graph narrator graph with the locations and 
-the lifetime of the narrators and 
-check for time and location overlap that are necessary conditions
-for the consistency of two 
-neighboring narrators. 
-Scholars can also use the method to check the correspondence
-of different biography and hadith books. 
-
-We believe that this is the first work that applies
-{\em Arabic cross-document NLP}, and we believe
-that this approach can be extended to several applications
-such as the cross analysis of (1) investigation versus 
-interrogation reports, and (2) insurance claims versus 
-accident police reports to find inconsistencies. 
+%\section{The biography application}
+%Biography books include one or more short biography 
+%for each hadith narrator. 
+%The short biography may contain information 
+%about the dates and locations of birth and death, 
+%the professors and the students of the narrator,
+%and one or more evaluations of the credibility of the narrator. 
+%
+%We use a similar approach to the hadith application
+%to locate narrator names within the biography books. 
+%A biography text may contain the name of the narrator described
+%in the biography as well as the names of other narrators who happen
+%to be the professors, students, or the persons who evaluated the 
+%narrator.
+%Our method uses the narrator graph 
+%extracted from several hadith books 
+%as described earlier to segment the biographies
+%and detect the owner of each biography. 
+%
+%Once our method detects a narrator, it colors the node in  the 
+%narrator graph corresponding to it. 
+%The professors and students of the narrator
+%are the neighbors of the 
+%node corresponding to the narrator in the graph. 
+%Consequently, whenever a detected narrator entity 
+%moves away from the 
+%colored local cluster in the narrator graph, 
+%we change the color and infer that we moved to a separate
+%biography.
+%The owner of each biography is the narrator at the center of the
+%colored graph.
+%
+%The naive implementation of this approach is computationally
+%expensive as it requires searching for each discovered narrator
+%in the narrator graph. 
+%We implemented a multi-hash narrator technique to 
+%improve narrator localization in the graph and in the biography 
+%books where we associate
+%each narrator with all narrator names that can be generated 
+%from its structure and compute a hash key and a relevance score 
+%for that association. 
+%We omit the discussion for brevity and we will report on that 
+%elsewhere. 
+%
+%Scholars can use the located biographies to annotate
+%each narrator with corresponding biographies thus automating
+%the task of hadith authentication checks. 
+%They can also annotate the narrator graph narrator graph with the locations and 
+%the lifetime of the narrators and 
+%check for time and location overlap that are necessary conditions
+%for the consistency of two 
+%neighboring narrators. 
+%Scholars can also use the method to check the correspondence
+%of different biography and hadith books. 
+%
+%We believe that this is the first work that applies
+%{\em Arabic cross-document NLP}, and we believe
+%that this approach can be extended to several applications
+%such as the cross analysis of (1) investigation versus 
+%interrogation reports, and (2) insurance claims versus 
+%accident police reports to find inconsistencies. 
 
 \section{Genealogical family tree application}
-
 
 \begin{figure}
 \center{
@@ -886,10 +882,10 @@ Figure~\ref{f:genelists}(b).
 We marked the person names with bars above them, and we 
 filled the spouse nodes with grey. 
 To perform this task, our method first passes the text to
-the morphological analyzer that reports detected morphemes 
+Sarf, the morphological analyzer, that reports detected morphemes 
 with their corresponding tags. 
 
-We augmented the tag set of our morphological analyzer with 
+We augmented the tag set of Sarf with 
 the following categories relevant to the genealogical 
 application. 
 \begin{itemize}
@@ -1077,10 +1073,9 @@ grammar language that has that expressive power.
 
 ANERSys boosts its capabilities to detect named entities by using 
 task specific corpora and gazetteers and ignores 
-POS tags~\cite{ANERSys:07,BenajibaDR08}. 
-We are similar to ANERSys in that we augment the lexicon of our
-morphological analyzer with application relevant lexicon items
-and tags. 
+POS tags~\cite{Benajiba:07,Benajiba:08}. 
+We are similar to ANERSys in that we augment the lexicon Sarf
+with application relevant lexicon items and tags. 
 We differ in that they use statistical analysis models such as
 n-gram and maximum entropy measures.
 In other work, they
@@ -1156,11 +1151,11 @@ transformations to predefined graph edge labels.
 
 We evaluated our method against three books of 
 hadith~\cite{IbnHanbal,AlTousi,AlKulayni},
-the Genesis~\cite{},
-and one book of biographies with several volumes~\cite{khoei}. 
+and the book of Genesis~\cite{}.
+%and one book of biographies with several volumes~\cite{khoei}. 
 We define our metrics, present our evaluation reference with interannotation agreement results, 
 and then present the results for the hadith
-biography, and genealogical list applications.
+and genealogical list applications.
 
 {\bf Metrics.}~~
 Segmentation recall refers to the ratio of the narrations correctly detected against the
@@ -1343,65 +1338,65 @@ The precision is higher within the sanad since names are more frequent in the sa
 The recall is higher for the whole text since inside the sanad our method is more likely to resolve ambiguous tags 
 as name and narrator connectors than if outside the sanad.
 
-
-{\bf Biography narrator detection.}~~
-Table~\ref{t:narratorDifference} shows the accuracy results for the narrator detection and the biography boundary detection
-for the Khoei biography book.
-The first row shows the results computed by considering the biography book alone without the help of the narrator graph
-extracted from the hadith books. 
-Without the narrator graph, our method detected 94\% of the narrators mentioned in the book with 81\% precision. 
-The method without the narrator graph, detected correctly (94\% precision) the boundaries of the biographies. 
-
-With the help of the narrator graph, our method detected 65\% of the narrator names in the biography book. 
-The rest of the names were simply not found in the hadith books that we used to generate the narrator graph. 
-With the use of the narrator graph and the coloring algorithm, our method detected the boundaries of the biographies
-with 93\% precision. 
-We believe that an exhaustive graph that includes narrator names from more books of hadith will improve the 65\% narrator 
-detection recall metric.
-In all cases, narrator names that exist in the biography and not in the hadith books are not of interest to the narrator
-graph annotation problem.
-
-%The numbers in the right hand side of Table~\ref{t:narratorDifference}  may explain why 
-Narrator detection in biography books is harder than in hadith books. 
-For example, the ratio of narrator names to the rest of the text is 22\% in Musnad while it is 49\% in Khoei,
-and the average length of a narrator sequence in Musnad is 2.6 narrators while it is 3.5 narrators in Khoei.
-With the use of the narrator graph extracted from the hadith books, our method was able to improve biography boundary detection
-from 41\% to 93\%.
-This is evidence that cross-document entity detection helps to accurately find named entities in harder NLP tasks. 
-
-\begin{table*}[bt]                                     
-\centering                                            
-\caption{Accuracy results for the biography application.}
-\resizebox{.7\columnwidth}{!}{
-
-%\begin{tabular}{cp{0.3cm}c}
-
-	\begin{tabular}{cp{.1cm}cccp{.1cm}ccc}
-	          & & \multicolumn{3}{c}{narrator detection} & &  \multicolumn{3}{c}{biography boundary} \\
-	 & & recall & precision & F-score & & recall & precision & F-score \\ 
- \cline{3-5} \cline{7-9}
-%hadith	 & sanad & & 0.923 & 0.999 & 0.960 & & 0.996 & 0.999 & 0.998  \\
-%(musnad) & all & & 0.954 & 0.961 & 0.958 & & 0.996 & 0.987 & 0.992 \\ 
-%	\hline \hline
-w/o graph & & 0.943 & 0.812 & 0.873 & & 0.407 & 0.945 & 0.569 \\
-with graph & & 0.654 & 0.909 & 0.760 & & 0.933 & 0.960 & 0.946 \\ % found in narrator graph
-	 \end{tabular}   
-%&  &
-%	\begin{tabular}{ccc}
-%	& names    & nar. \\
-%    & per text & elements \\ \cline{2-3}
-%	\multirow{2}{*}{0.217} &\multirow{2}{*}{ 2.64}\\ \\
-%	\hline \hline
-%	\multirow{2}{*}{0.489} & \multirow{2}{*}{3.54}\\
-%    musnad & 0.217 & 2.64 \\ 
-%    biography & 0.489 & 3.54 \\
-%	\end{tabular}  \\
-%\end{tabular}          
-}                             
-\normalsize                   
-\label{t:narratorDifference} 
-\end{table*}    
-
+%
+%{\bf Biography narrator detection.}~~
+%Table~\ref{t:narratorDifference} shows the accuracy results for the narrator detection and the biography boundary detection
+%for the Khoei biography book.
+%The first row shows the results computed by considering the biography book alone without the help of the narrator graph
+%extracted from the hadith books. 
+%Without the narrator graph, our method detected 94\% of the narrators mentioned in the book with 81\% precision. 
+%The method without the narrator graph, detected correctly (94\% precision) the boundaries of the biographies. 
+%
+%With the help of the narrator graph, our method detected 65\% of the narrator names in the biography book. 
+%The rest of the names were simply not found in the hadith books that we used to generate the narrator graph. 
+%With the use of the narrator graph and the coloring algorithm, our method detected the boundaries of the biographies
+%with 93\% precision. 
+%We believe that an exhaustive graph that includes narrator names from more books of hadith will improve the 65\% narrator 
+%detection recall metric.
+%In all cases, narrator names that exist in the biography and not in the hadith books are not of interest to the narrator
+%graph annotation problem.
+%
+%%The numbers in the right hand side of Table~\ref{t:narratorDifference}  may explain why 
+%Narrator detection in biography books is harder than in hadith books. 
+%For example, the ratio of narrator names to the rest of the text is 22\% in Musnad while it is 49\% in Khoei,
+%and the average length of a narrator sequence in Musnad is 2.6 narrators while it is 3.5 narrators in Khoei.
+%With the use of the narrator graph extracted from the hadith books, our method was able to improve biography boundary detection
+%from 41\% to 93\%.
+%This is evidence that cross-document entity detection helps to accurately find named entities in harder NLP tasks. 
+%
+%\begin{table*}[bt]                                     
+%\centering                                            
+%\caption{Accuracy results for the biography application.}
+%\resizebox{.7\columnwidth}{!}{
+%
+%%\begin{tabular}{cp{0.3cm}c}
+%
+%	\begin{tabular}{cp{.1cm}cccp{.1cm}ccc}
+%	          & & \multicolumn{3}{c}{narrator detection} & &  \multicolumn{3}{c}{biography boundary} \\
+%	 & & recall & precision & F-score & & recall & precision & F-score \\ 
+% \cline{3-5} \cline{7-9}
+%%hadith	 & sanad & & 0.923 & 0.999 & 0.960 & & 0.996 & 0.999 & 0.998  \\
+%%(musnad) & all & & 0.954 & 0.961 & 0.958 & & 0.996 & 0.987 & 0.992 \\ 
+%%	\hline \hline
+%w/o graph & & 0.943 & 0.812 & 0.873 & & 0.407 & 0.945 & 0.569 \\
+%with graph & & 0.654 & 0.909 & 0.760 & & 0.933 & 0.960 & 0.946 \\ % found in narrator graph
+%	 \end{tabular}   
+%%&  &
+%%	\begin{tabular}{ccc}
+%%	& names    & nar. \\
+%%    & per text & elements \\ \cline{2-3}
+%%	\multirow{2}{*}{0.217} &\multirow{2}{*}{ 2.64}\\ \\
+%%	\hline \hline
+%%	\multirow{2}{*}{0.489} & \multirow{2}{*}{3.54}\\
+%%    musnad & 0.217 & 2.64 \\ 
+%%    biography & 0.489 & 3.54 \\
+%%	\end{tabular}  \\
+%%\end{tabular}          
+%}                             
+%\normalsize                   
+%\label{t:narratorDifference} 
+%\end{table*}    
+%
 
 % last set of tables
 
@@ -1651,6 +1646,9 @@ using our method had 35 nodes.
 %can be a rich source for building gazetteers for resource-poor languages.
 %
 %(present the necessary table and expand upon its significance)
+\section{Acknoledgements}
+\label{sec:acc}
+This work is supported by grant number 113030522236 from the Lebanese National Council for Scientific Research (LNCRS).
 
 \section{Conclusion and future work}
 \label{sec:future}
@@ -1658,9 +1656,9 @@ using our method had 35 nodes.
 We presented a method to detect named entities and relations amongst them from 
 Arabic text using morphological analysis, FSTs, and 
 graph transformation algorithms. 
-We implemented our method and evaluated it using three NLP applications.
-Our method extracted named entities with high accuracy in all application.
-Our method extracted relations amongst the named entities with high accuracy in the hadith and biography applications, 
+We implemented our method and evaluated it using two NLP applications.
+Our method extracted named entities with high accuracy in all applications.
+Our method extracted relations amongst the named entities with high accuracy in the hadith application, 
 and with acceptable accuracy in the genealogical lists application. 
 Our method learns named entities and semantics of named entities in terms of graph transformations that 
 replace a detected unclassified edge in a graph with predefined edges. 
@@ -1684,9 +1682,6 @@ We also plan to enhance the learning capabilities of our method.
 %similar to that of ElixirFM~\cite{Otakar:07} but that can be 
 %explored partially based on the case study. 
 
-%\section{Acknoledgements}
-%\label{sec:acc}
-%We thank the Lebanese National Council for Scientific Research (LNCSR) for funding this research.
 
 
 %For reasons of uniformity, Adobe's {\bf Times Roman} font should be
