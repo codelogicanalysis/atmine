@@ -357,7 +357,7 @@ public:
 				do
 				{
 #ifdef PREPROCESS_DESCRIPTIONS
-					if (IBN_descriptions.contains(Stem->solution->description_id))
+					if (IBN_descriptions.contains(Stem->solution->description_id()))
 #else
 					if (Stem->solution->description()=="son")
 #endif

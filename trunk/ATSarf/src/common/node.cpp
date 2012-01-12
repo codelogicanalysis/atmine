@@ -61,7 +61,5 @@ void node::addChild(node* child)
 	}
 	else
 		result_children->append((result_node*)child);
-#ifdef PARENT
 	child->parent=this;
-#endif
 }

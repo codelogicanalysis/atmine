@@ -54,9 +54,9 @@ CREATE TABLE `compatibility_rules` (
   `category_id2` int(11) NOT NULL,
   `type` bit(3) NOT NULL,
   `sources` char(16) NOT NULL,
-  `resulting_category` int(11) DEFAULT NULL,
+  `resulting_category` int(11) DEFAULT -1,
   `inflections` varchar(250) NOT NULL DEFAULT '',
-  PRIMARY KEY (`category_id1`,`category_id2`),
+  PRIMARY KEY (`category_id1`,`category_id2`, `resulting_category`),
   KEY `category_id2` (`category_id2`),
   KEY `resulting_category` (`resulting_category`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

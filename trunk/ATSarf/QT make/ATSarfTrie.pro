@@ -89,7 +89,8 @@ HEADERS += util/text_handling.h \
     ../src/util/editDistance.h \
     ../src/case/narratorEqualityModel.h \
     ../src/case/biographyGraphUtilities.h \
-    ../src/common/inflections.h
+    ../src/common/inflections.h \
+    ../src/case/atbExperiment.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -153,7 +154,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/util/editDistance.cpp \
     ../src/case/narratorEqualityModel.cpp \
     ../src/case/narratorEqualityComparision.cpp \
-    ../src/case/biographyGraphUtilities.cpp
+    ../src/case/biographyGraphUtilities.cpp \
+    ../src/case/atbExperiment.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

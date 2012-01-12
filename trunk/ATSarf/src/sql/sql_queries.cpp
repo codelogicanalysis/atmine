@@ -1160,51 +1160,56 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QS
 		assert(t1==t2);
 	stmt =QString("SELECT resulting_category FROM compatibility_rules WHERE category_id1=%1 AND category_id2=%2 AND type=%3").arg(id1).arg(id2).arg((int)rule);
 	perform_query(stmt);
-	if (query.next()) //already present
-	{
-		bool ok;
-		long old_result_id=query.value(0).toULongLong(&ok);
-		if (query.isNull(0))
-			old_result_id=-1;
-		if (old_result_id==result_id)
-			addSource("compatibility_rules",source_id,-1,QString("category_id1=%1 AND category_id2=%2").arg(id1).arg(id2),false);
-		else
-		{
-			if (KEEP_OLD)
-			{
-				warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). KEPT resulting_category_id %3 instead of %4\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
-			}
-			else
-			{
-				dbitvec sources(max_sources);
-				sources.reset();
-				int bit_index=get_bitindex(source_id,source_ids);
-				if (!(bit_index>=0 && bit_index<max_sources))
-				{
-					error << "Unexpected Error: source_id ="<<source_id<<"\n";
-					return -4;
+	if (query.size()>0) {//already present
+		bool insert_rule=true;
+		while (query.next()) {
+			bool ok;
+			long old_result_id=query.value(0).toULongLong(&ok);
+			if (query.isNull(0))
+				old_result_id=-1;
+			if (old_result_id==result_id) {
+				addSource("compatibility_rules",source_id,-1,QString("category_id1=%1 AND category_id2=%2").arg(id1).arg(id2),false);
+				insert_rule=false;
+				break;
+			} else {
+			#ifndef ALLOW_MULTIPLE_RESULTING_CATEGORIES
+				if (KEEP_OLD) {
+					warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). KEPT resulting_category_id %3 instead of %4\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
+				} else {
+					dbitvec sources(max_sources);
+					sources.reset();
+					int bit_index=get_bitindex(source_id,source_ids);
+					if (!(bit_index>=0 && bit_index<max_sources)) {
+						error << "Unexpected Error: source_id ="<<source_id<<"\n";
+						return -4;
+					}
+					sources.setBit(bit_index);
+					stmt= QString("UPDATE compatibility_rules SET resulting_category='%1' ,sources='%2' WHERE category_id1 = '%3' AND category_id2 = '%4'").arg(result_id).arg(bitset_to_string(sources)).arg( id1).arg(id2);
+					//qDebug() << stmt;
+					perform_query(stmt);
+					warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). REPLACED resulting_category_id %4 by %3\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
 				}
-				sources.setBit(bit_index);
-				stmt= QString("UPDATE compatibility_rules SET resulting_category='%1' ,sources='%2' WHERE category_id1 = '%3' AND category_id2 = '%4'").arg(result_id).arg(bitset_to_string(sources)).arg( id1).arg(id2);
-				//qDebug() << stmt;
-				perform_query(stmt);
-				warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). REPLACED resulting_category_id %4 by %3\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
+			#endif
 			}
 		}
-	}
-	else
-	{
+	#ifdef ALLOW_MULTIPLE_RESULTING_CATEGORIES
+		if (insert_rule) {
+			warning <<QString("MULTIPLE RESULTING CATEGORY at rule=(%1,%2)\n").arg(id1).arg(id2);
+			goto insert;
+		}
+	#endif
+	} else {
+	insert:
 		dbitvec sources(max_sources);
 		sources.reset();
 		int bit_index=get_bitindex(source_id,source_ids);
-		if (!(bit_index>=0 && bit_index<max_sources))
-		{
+		if (!(bit_index>=0 && bit_index<max_sources)) {
 			error << "Unexpected Error: source_id ="<<source_id<<"\n";
 			return -4;
 		}
 		sources.setBit(bit_index);
 		stmt="INSERT INTO compatibility_rules(category_id1, category_id2, type, sources, resulting_category, inflections)  VALUES(%1,%2,%3,'%4',%5,\"%6\")";
-		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( bitset_to_string(sources)).arg( (result_id==-1?QString("NULL"):QString("%1").arg(result_id))).arg(inflectionRule);
+		stmt=stmt.arg(id1).arg( id2).arg( (int)(rule)).arg( bitset_to_string(sources)).arg( (result_id==-1?QString("-1"):QString("%1").arg(result_id))).arg(inflectionRule);
 		perform_query(stmt);
 	}
 	update_dates(source_id);

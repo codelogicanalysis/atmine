@@ -43,9 +43,7 @@ class node
 		void removeChildren();
 		void initialize(const node& n)
 		{
-		#ifdef PARENT
 			parent=n.parent;
-		#endif
 		#ifdef BINARY_SEARCH
 			letter_children= new QVector<Ptr<letter_node> >(*n.letter_children);
 		#elif defined(HASH_TABLE)
@@ -56,12 +54,10 @@ class node
 			result_children=new QList<result_node*>(*n.result_children);
 		}
 	public:
-#ifdef PARENT
 		node * parent; //public member and can be defined by other classes such as treesearch upon traversal.
 		node * getPrevious() {
 			return parent;
 		}
-#endif
 		node():parent(NULL)
 		{
 			result_children=new QList<result_node*>;

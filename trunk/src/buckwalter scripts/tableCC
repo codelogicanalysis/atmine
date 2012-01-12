@@ -1,65 +1,55 @@
 ; rules of at, atA (PV)
-PVSuff-at-	Suff-0	PVSuff-ato-	r//(+1)||ْ\\
-Suff-0	{"PVSuff-at-" OR "PVSuff-atA"}	PVSuff-at
-{"PVSuff-atA" OR "PVSuff-ato-"}	VSuff-h	PVSuff-ath	r//ه||هُ\\ p//%||u\\ p//@||P\\ 
-{"PVSuff-atA" OR "PVSuff-ato-"}	{"PVSuff-~hA" OR  "PVSuff-k*" OR "PVSuff-~ni"}	PVSuff-ath	
+Suff-0	PVSuff-at-	PVSuff-atA-	r//(+2)||ْ\\
+Suff-0	{"PVSuff-at-" OR "PVSuff-atA-"}	PVSuff-at
+PVSuff-atA-	{"PVSuff-hu" OR  "PVSuff-k" OR "PVSuff-~ni"}	PVSuff-ath	
 
 ;rules of ta, tu, tm, ti (PV)
-Suff-0	{"PVSuff-~t*"}	PVSuff-~t
-Suff-0	{"PVSuff-t*"}	PVSuff-t
-{"PVSuff-~tu" OR "PVSuff-tu"}	{"PVSuff-k*" OR "PVSuff-~hA"}	{"($1[-1])h"}
-{"PVSuff-~ti" OR "PVSuff-ti" OR "PVSuff-~ta" OR "PVSuff-ta"}	{"PVSuff-~ni" OR "PVSuff-~hA"}	{"($1[-1])h"}
-{"PVSuff-tm" OR "PVSuff-~tm"}	{"PVSuff-~hA" OR "PVSuff-~ni"}	{"($1[-1])h"}	r//(+1)||ُو\\ 
-{"PVSuff-ti" OR "PVSuff-~ti"}	VSuff-h	{"($1[-1])h"}	r//ه||هِ\\ p//%||i\\ p//@||P\\ 
-{"PVSuff-~tu" OR "PVSuff-~ta" OR "PVSuff-tu" OR "PVSuff-ta"}	VSuff-h	{"($1[-1])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
-{"PVSuff-tm" OR "PVSuff-~tm"}	VSuff-h	{"($1[-1])h"}	r//(+1)||ُو\\ r//ه||هُ\\ p//%||u\\ p//@||P\\ 
+Suff-0	{"PVSuff-~t*" OR "PVSuff-t*"}	{"($2[-1])"}
+Suff-0	{"PVSuff-~tm" OR "PVSuff-tm"}	{"($2[-1])a"}	r//(+2)||ُو\\
+{"PVSuff-~tu" OR "PVSuff-tu"}	{"PVSuff-k" OR "PVSuff-hu"}	{"($1[-1])h"}
+{"PVSuff-~ta" OR "PVSuff-ta"}	{"PVSuff-~ni" OR "PVSuff-hu"}	{"($1[-1])h"}
+{"PVSuff-ti" OR "PVSuff-~ti"}	{"PVSuff-~ni" OR "PVSuff-hu"}	{"($1[-1])h"}	r//هُ||هِ\\ p//hu||hi\\  
 
 ;rules for aw, uw, w, awn (PV)
-{"PVSuff-aw-" OR "PVSuff-uw-"}	{"PVSuff-k*" OR "PVSuff-~hA" OR "PVSuff-~ni"}	{"($1[-1])h"}
-{"PVSuff-aw-" OR "PVSuff-uw-"}	VSuff-h	{"($1[-1])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
+{"PVSuff-aw-" OR "PVSuff-uw-"}	{"PVSuff-k" OR "PVSuff-hu" OR "PVSuff-~ni"}	{"($1[-1])h"}
 
 ;rules for CV
-{"CVSuff-w" OR "CVSuff-y" OR "CVSuff-o"}	CVSuff-~ni	{"($1)h"}
-{"CVSuff-w" OR "CVSuff-o"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||C\\ 
-CVSuff-y	VSuff-h	CVSuff-yh	r//ه||هِ\\ p//%||i\\ p//@||C\\ 
+{"CVSuff-w" OR "CVSuff-o"}	CVSuff-hu	{"($1)h"}	
+CVSuff-y	CVSuff-hu	CVSuff-yh	r//هُ||هِ\\ p//hu||hi\\  
 
 ;rules for a, 0a, |, A (PV)
-{"PVSuff-a" OR "PVSuff-0a" OR "PVSuff-|" OR "PVSuff-A"}	{"PVSuff-k*" OR "PVSuff-~hA" OR "PVSuff-~ni"}	{"($1)h"}
-{"PVSuff-a" OR "PVSuff-0a" OR "PVSuff-|" OR "PVSuff-A"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\
+{"PVSuff-a" OR "PVSuff-0a" OR "PVSuff-|" OR "PVSuff-A"}	{"PVSuff-k" OR "PVSuff-hu" OR "PVSuff-~ni"}	{"($1)h"}
 
 ;rules for na, nA (PV)
-{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	VSuff-h	{"($1[-2])h"}	r//ه||هُ\\ p//%||u\\ p//@||P\\ 
-{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	{"PVSuff-k*" OR "PVSuff-~hA"}	{"($1[-2])h"}
+{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	{"PVSuff-k" OR "PVSuff-hu"}	{"($1[-2])h"}
 {"PVSuff-~na-" OR "PVSuff-na-"}	PVSuff-~ni	{"($1[-2])h"}
 Suff-0	{"PVSuff-~nA-" OR "PVSuff-~na-" OR "PVSuff-nA-" OR "PVSuff-na-"}	{"($2[-2])"}
 
 ;rules for IV
-Suff-0	VSuff-h	IVSuff-h	p//%||u\\ p//@||I\\ 
-IVSuff-hA	Suff-0	IVSuff-h
-{"IVSuff-An" OR "IVSuff-y" OR "IVSuff-|n"}	VSuff-h	{"($1)h"}	r//ه||هِ\\ p//%||i\\ p//@||I\\ 
-{"IVSuff-*" AND NOT "IVSuff-*-" AND NOT "IVSuff-An" AND NOT "IVSuff-|n" AND NOT "IVSuff-y"}	VSuff-h	{"($1)h"}	r//ه||هُ\\ p//%||u\\ p//@||I\\
-{"IVSuff-*" AND NOT "IVSuff-*-"}	{"IVSuff-ny-nA" OR "IVSuff-hA"}	{"($1)h"}
 {"IVSuff-*-"}	IVSuff-k	{"($1[-1])k"}
+{"IVSuff-*" AND NOT "IVSuff-*-" AND NOT "IVSuff-*k" AND NOT "IVSuff-An" AND NOT "IVSuff-|n" AND NOT "IVSuff-y"}	{"IVSuff-hu" OR "IVSuff-ny-nA"}	{"($1)h"}
+{"IVSuff-An" OR "IVSuff-y" OR "IVSuff-|n"}	{"IVSuff-hu" OR "IVSuff-ny-nA"}	{"($1)h"}	r//هُ||هِ\\ p//hu||hi\\   
+Suff-0	IVSuff-hu	IVSuff-h	r//هُ||ه\\
 
 ; rules for N meaning possessive
-Suff-0	NSuff-h[o]	NSuff-h	p//%||u\\
-Suff-0	NSuff-hu	NSuff-h
+Suff-0	NSuff-hu	NSuff-h	r//هُ||ه\\   
+Suff-0	NSuff-atA-	NSuff-atAh
+Suff-0	NSuff-tay-	NSuff-tay
 
-{"NSuff-|-" OR "NSuff-A-" OR "NSuff-atA-" OR "NSuff-w-"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1[-1])h"}	r//ه||هُ\\ r//هُا||ها\\ p//%||u\\ 
-{"NSuff-iy-" OR "NSuff-ay-"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1[-1])h"}	r//ه||هِ\\ r//هِا||ها\\ p//%||i\\
-NSuff-tay-	{"NSuff-h[o]" OR "NSuff-hu"}	NSuff-tay	r//ه||هِ\\ r//هِا||ها\\ p//%||i\\
-{"NSuff-At" OR "NSuff-|t"}	{"NSuff-h[o]" OR "NSuff-hu"}	{"($1)h"}	p//%||u\\
-NSuff-at	{"NSuff-h[o]" OR "NSuff-hu"}	NSuff-ath	p//%||u\\ 
-
-{"NSuff-A-" OR "NSuff-|-" OR "NSuff-atA-"}	NSuff-ya	{"($1[-1])h"}
-{"NSuff-|t" OR "NSuff-At" OR "NSuff-at"}	NSuff-iy	{"($1)h"}
+{"NSuff-|-" OR "NSuff-A-" OR "NSuff-atA-"}	{"NSuff-hu" OR "NSuff-ya"}	{"($1[-1])h"}
+NSuff-w-	NSuff-hu	NSuff-wh	 
+{"NSuff-iy-" OR "NSuff-ay-"}	NSuff-hu	{"($1[-1])h"}	r//هُ||هِ\\ p//hu||hi\\   
+NSuff-tay-	NSuff-hu	NSuff-tay	r//هُ||هِ\\ p//hu||hi\\   
+{"NSuff-|t" OR "NSuff-At" OR "NSuff-at"}	{"NSuff-hu" OR "NSuff-iy"}	{"($1)h"}	r//هُ||ه\\    
 
 NSuff-ata-	NSuff-y~a	NSuff-tay
 NSuff-~iy-	NSuff-y~a	NSuff-iyh
 NSuff-ayo-	NSuff-y~a	NSuff-ayh
 NSuff-uw-	NSuff-y~a	NSuff-wh
 
-; others
-Suff-0	FWSuff-hu-he	FWSuff-hu-him	d//he/||him/\\ d//they||them\\ d//she||her\\
-Suff-0	NSuff-atA-	NSuff-atAh
-Suff-0	NSuff-tay-	NSuff-tay
+; FW
+Suff-0	FWSuff-hu-he	FWSuff-hu-him	d///he||/him\\ d//they||them\\ d//she||her\\
+Suff-0	FWSuff-hu-he	FWSuff-hi	r//هُ||هِ\\ p//hu||hi\\ d///he||/him\\ d//they||them\\ d//she||her\\
+Suff-0	FWSuff-niy-I	FWSuff-niy-me	d//I||me\\
+Suff-0	FWSuff-iy-I	FWSuff-iy-me	d//I||me\\
+Suff-0	FWSuff-nA-we	FWSuff-nA-us	d//we||us\\

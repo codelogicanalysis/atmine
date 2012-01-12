@@ -128,7 +128,7 @@ void database_info_block::buildTrie()
 }
 #endif
 
-void database_info_block::fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map)
+void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map)
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
@@ -181,7 +181,7 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map
 #endif
 }
 
-void database_info_block::buildMap(item_types type,ItemCatRaw2PosDescAbsMap * map)
+void database_info_block::buildMap(item_types type,ItemCatRaw2AbsDescPosMap * map)
 {
 #ifndef LOAD_FROM_FILE
 	fillMap(type,map);
@@ -215,9 +215,9 @@ database_info_block::database_info_block()
 #endif
 	comp_rules=new compatibility_rules();
 
-	map_prefix=new ItemCatRaw2PosDescAbsMap;
-	map_stem=new ItemCatRaw2PosDescAbsMap;
-	map_suffix=new ItemCatRaw2PosDescAbsMap;
+	map_prefix=new ItemCatRaw2AbsDescPosMap;
+	map_stem=new ItemCatRaw2AbsDescPosMap;
+	map_suffix=new ItemCatRaw2AbsDescPosMap;
 
 	descriptions=new QVector<QString>;
 }

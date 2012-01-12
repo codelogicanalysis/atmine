@@ -67,6 +67,7 @@ int tree::build_helper(item_types type, long cat_id1, int size, node * current)
 			all_item_info inf;
 			while(s3.retrieve(inf))	{
 					QString name= getColumn(interpret_type(type),"name",inf.item_id);
+					name=removeDiacritics(name);
 					QString inflectedRawData=inf.raw_data;
 					applyRawDataInflections(inflections,name,inflectedRawData); //name and inflectedRawData are changed
 				#ifdef MEMORY_EXHAUSTIVE

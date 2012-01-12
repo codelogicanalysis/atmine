@@ -11,9 +11,12 @@
 //#define INSERT_ONLY_NAMES
 //#define INSERT_ONLY_PREFIXES
 //#define INSERT_ONLY_SUFFIXES
-#define INSERT_ONLY_AFFIXES
+//#define INSERT_ONLY_AFFIXES
 #define SAMA
+#define MORPHEME_TOKENIZE
+#define ATB
 #define REPETITIONS 1
+
 
 int morphology(QString input_str,ATMProgressIFC * prg);
 int hadith(QString input_str,ATMProgressIFC * prg);

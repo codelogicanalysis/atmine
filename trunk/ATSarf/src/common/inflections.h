@@ -1,6 +1,7 @@
 #ifndef INFLECTIONS_H
 #define INFLECTIONS_H
 
+#include "common.h"
 #include <QString>
 #include <QStringList>
 
@@ -115,6 +116,31 @@ inline void applyDescriptionInflections(QString & inflection, QString & descript
 inline void applyPOSInflections(QString & inflection, QString & pos, bool first=false) {
 	POSInflections d(!first);
 	d(inflection,pos);
+}
+
+inline bool hasDescriptionRule(QString inflection) { //is conservative function, may return true when it is not, otherwise has to do split operation to be 100% accurate
+	QString start_prefix='d'+InflectionsDelimitors::start;
+	return (inflection.contains(start_prefix));
+}
+
+inline void applyInflections(QString inflectionRule, minimal_item_info & previous, minimal_item_info & current) {
+	applyPOSInflections(inflectionRule,current.POS);
+	applyPOSInflections(inflectionRule,previous.POS,true);
+
+	if (hasDescriptionRule(inflectionRule)) {
+		QString desc=current.description();
+		applyDescriptionInflections(inflectionRule,desc);
+		current.setDescription(desc);
+
+		desc=previous.description();
+		applyDescriptionInflections(inflectionRule,desc,true);
+		previous.setDescription(desc);
+	}
+}
+
+inline void applyInflections(QString inflectionRule, minimal_item_info & current) {
+	minimal_item_info previous;
+	applyInflections(inflectionRule,previous,current);
 }
 
 

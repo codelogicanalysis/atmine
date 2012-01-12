@@ -255,16 +255,16 @@ solution_position * StemSearch::computeFirstSolution()
 	solution->category_id=category_of_currentmatch;
 	if (!multi_p.raw_dataONLY())
 	{
-		ItemCatRaw2PosDescAbsMapItr itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
+		ItemCatRaw2AbsDescPosMapItr itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
 		assert(itr!=database_info.map_stem->end());
 		if (multi_p.abstract_category)
 			solution->abstract_categories=itr.value().first;
 		else
 			solution->abstract_categories=INVALID_BITSET;
 		if (multi_p.description)
-			solution->description_id=itr.value().second;
+			solution->setDescription(itr.value().second);
 		else
-			solution->description_id=-1;
+			solution->setDescription(-1);
 		if (multi_p.POS)
 			solution->POS=itr.value().third;
 		else
@@ -274,7 +274,7 @@ solution_position * StemSearch::computeFirstSolution()
 	else
 	{
 		solution->abstract_categories=INVALID_BITSET;
-		solution->description_id=-1;
+		solution->setDescription(-1);
 		solution->POS="";
 		first->indexes.append(AffixPosition(0,database_info.map_stem->end()));
 	}
@@ -289,14 +289,12 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 	SolutionsCompare comp(multi_p);
 	if (!multi_p.raw_dataONLY())
 	{
-		ItemCatRaw2PosDescAbsMapItr & itr=current->indexes[0].second;
+		ItemCatRaw2AbsDescPosMapItr & itr=current->indexes[0].second;
 		itr++;
 		QString raw_data=possible_raw_datas[current->indexes[0].first];
 		ItemEntryKey key=itr.key();
-		if (itr == database_info.map_stem->end() || key != ItemEntryKey(id_of_currentmatch,category_of_currentmatch,raw_data) )
-		{
-			if (current->indexes[0].first<possible_raw_datas.count()-1)//check for next time
-			{
+		if (itr == database_info.map_stem->end() || key != ItemEntryKey(id_of_currentmatch,category_of_currentmatch,raw_data) ) {
+			if (current->indexes[0].first<possible_raw_datas.count()-1) {//check for next time
 				current->indexes[0].first++;
 				solution->type=STEM;
 				if (multi_p.raw_data)
@@ -305,9 +303,7 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 					solution->raw_data="";
 				solution->category_id=category_of_currentmatch;
 				itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]));
-			}
-			else
-			{
+			} else {
 				//current->clear_stored_solutions();
 				return false;
 			}
@@ -317,9 +313,9 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 		else
 			solution->abstract_categories=INVALID_BITSET;
 		if (multi_p.description)
-			solution->description_id=itr.value().second;
+			solution->setDescription(itr.value().second);
 		else
-			solution->description_id=-1;
+			solution->setDescription(-1);
 		if (multi_p.POS)
 			solution->POS=itr.value().third;
 		else
@@ -328,21 +324,16 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 		if (comp.found(current,*solution))
 			return computeNextSolution(current);
 		current->store_solution(*solution);
-	}
-	else
-	{
-		if (current->indexes[0].first<possible_raw_datas.count()-1)
-		{
+	} else {
+		if (current->indexes[0].first<possible_raw_datas.count()-1) {
 			current->indexes[0].first++;
 			solution->type=STEM;
 			solution->raw_data=possible_raw_datas[current->indexes[0].first];
 			solution->category_id=category_of_currentmatch;
 			solution->abstract_categories=INVALID_BITSET;
-			solution->description_id=-1;
+			solution->setDescription(-1);
 			solution->POS="";
-		}
-		else
-		{
+		} else {
 			//current->clear_stored_solutions();
 			return false;
 		}

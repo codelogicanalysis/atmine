@@ -294,12 +294,12 @@ public:
 		if (info.finish>info.start) { //more than one letter to be tested for being a name
 			if (equal_withoutLastDiacritics(israel,stem_info->raw_data))
 				return true;
-			if (landDesc.isDescription(stem_info->description_id)) {
+			if (landDesc.isDescription(stem_info->description_id())) {
 				land=true;
 				return false;
 			}
 			bool plural;
-			descentDir=descentConnectors.getDirection(stem_info->description_id,plural);
+			descentDir=descentConnectors.getDirection(stem_info->description_id(),plural);
 			if (descentDir!=UNDEFINED_DIRECTION) {
 				pluralDescent=plural;
 				int suffSize=Suffix->info.finish - Suffix->info.start+1;
