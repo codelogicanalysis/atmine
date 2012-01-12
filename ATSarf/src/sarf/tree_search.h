@@ -30,7 +30,7 @@ class TreeSearch
 		AffixSolutionVector affix_info;
 		QList<result_node *> * result_nodes;
 	private:
-		ItemCatRaw2PosDescAbsMap * map;
+		ItemCatRaw2AbsDescPosMap * map;
 		friend class Stemmer;
 	public:
 	#endif
@@ -131,9 +131,7 @@ class TreeSearch
         tree* Tree;
 		text_info info;
         item_types type;
-#if defined(PARENT)
 		result_node * reached_node;
-#endif
         int position;//note that provided position is 1+last_letter after traversal
 		bool reduce_thru_diacritics;
 		virtual bool shouldcall_onmatch_ex(int)

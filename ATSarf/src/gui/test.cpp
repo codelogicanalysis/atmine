@@ -24,6 +24,7 @@ extern int deserializeGraph(QString fileName,ATMProgressIFC * prg);
 extern int mergeGraphs(QString file1,QString file2,ATMProgressIFC * prg);
 extern int bibleTagger(QString input_str);
 extern int hadithTagger(QString input_str);
+extern int atb(QString inputString,ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -112,7 +113,10 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	msg.setWindowTitle("Sarf");
 	msg.setText("Test Options Unavailable for submission version of software.");
 	msg.exec();
-#elif  defined(AUGMENT_DICTIONARY)
+#elif  defined(ATB)
+	if (atb(inputString,prg)<0)
+		return -1;
+#elif defined(AUGMENT_DICTIONARY)
 	if (augment()<0)
 		return -1;
 #elif 0

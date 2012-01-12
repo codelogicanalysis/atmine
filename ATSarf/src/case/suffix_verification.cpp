@@ -140,7 +140,7 @@ void drawAffixGraph(item_types type) {
 class ListAllAffixes {
 private:
 	item_types type;
-	ItemCatRaw2PosDescAbsMapPtr map;
+	ItemCatRaw2AbsDescPosMapPtr map;
 	QFile * file;
 	QTextStream * dout;
 	#define d_out *(dout)
@@ -153,7 +153,7 @@ private:
 				QString raw=raw_data+r->raw_datas[i].getActual();
 				QString cat=database_info.comp_rules->getCategoryName(r->get_resulting_category_id());
 				ItemEntryKey entry(r->get_affix_id(),r->get_previous_category_id(),r->raw_datas[i].getOriginal());
-				ItemCatRaw2PosDescAbsMapItr itr=map->find(entry);
+				ItemCatRaw2AbsDescPosMapItr itr=map->find(entry);
 				while (itr!=map->end() && itr.key()==entry) {
 					dbitvec d=itr.value().first;
 					QString pos2=itr.value().third;
@@ -170,17 +170,24 @@ private:
 					applyDescriptionInflections(inflectionRule,description,true);
 					QString desc;
 					if (type==SUFFIX){
+					#ifdef SAMA
+						QString suffix_delimitor=" + ";
+					#else
+						QString suffix_delimitor=" ";
+					#endif
 						bool r=isReverseDirection(d);
 						//qDebug()<<raw_data<<" "<<r;
+					#ifndef SAMA
 						if (description[0]=='[' && description.size()>0 && description[description.size()-1]==']' && !added_desc.isEmpty())
 							description="";
+					#endif
 						if (description.contains("%1"))
-							desc=description.arg(added_desc+(added_desc=="" || description=="%1"?"":" "));
+							desc=description.arg(added_desc+(added_desc=="" || description=="%1"?"":suffix_delimitor));
 						else {
 							if (r)
-								desc="%1"+added_desc+(added_desc=="" || description==""?"":" ")+description;
+								desc="%1"+added_desc+(added_desc=="" || description==""?"":suffix_delimitor)+description;
 							else
-								desc= description+(added_desc=="" || description==""?"":" ")+added_desc;
+								desc= description+(added_desc=="" || description==""?"":suffix_delimitor)+added_desc;
 						}
 						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);
 						//desc=(isReverseDirection(d)?added_desc+(added_desc==""?"":" ")+description: description+(description==""?"":" ")+added_desc);

@@ -3,6 +3,8 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "stemmer.h"
+#include "test.h"
+#include "inflections.h"
 
 SarfParameters sarfParameters;
 
@@ -153,8 +155,54 @@ bool Stemmer::on_match_helper()
 						suffix_infos=&Suffix->affix_info;
 						prefix_infos=&Prefix->affix_info;
 						stem_info=Stem->solution;
+
+						for (int j=0;j<2;j++) {
+							QVector<minimal_item_info> * infos=(j==0?prefix_infos:suffix_infos);
+							QList<result_node *> * results=(j==0?Prefix->result_nodes:Suffix->result_nodes);
+							for (int i=0;i<results->size();i++) {
+								QString inflectionRule=results->at(i)->getInflectionRule();
+								minimal_item_info & current=(*infos)[i];
+								if (i>1) {
+									minimal_item_info & previous=(*infos)[i-1];
+									applyInflections(inflectionRule,previous,current);
+								} else {
+									applyInflections(inflectionRule,current);
+								}
+							}
+						}
+						int count=0;
+						if (suffix_infos->size()>0) { //maybe not best solution working for now
+							minimal_item_info & info=(*suffix_infos)[0];
+							QStringRef diacritics_raw_after =addlastDiacritics(-1,-1,&info.raw_data);
+							if (diacritics_raw_after.size()>0) {
+								QStringRef diacritics_before=getDiacriticsBeforePosition(Suffix->info.start,Suffix->info.text);
+								count=0;
+								int i=0;
+								int s_r=diacritics_raw_after.size()-1;
+								int s=diacritics_before.size()-1;
+								int m=min(diacritics_raw_after.size(),diacritics_before.size());
+								while (i<m && diacritics_raw_after.at(s_r-i)==diacritics_before.at(s-i)) { //either common ending
+									count++;
+									i++;
+								}
+								if (count==0) {
+									int i=0;
+									while (i<m && diacritics_raw_after.at(i)==diacritics_before.at(i)) { //or common starting
+										count++;
+										i++;
+									}
+								}
+								Suffix->info.start-=count;
+								Stem->info.finish-=count;
+							}
+						}
+
 						if (!on_match())
 							return false;
+						if (count>0) {
+							Suffix->info.start+=count;
+							Stem->info.finish+=count;
+						}
 					}while (Stem->computeNextSolution(S_inf));
 					delete S_inf;
 				}while (Prefix->computeNextSolution(p_inf));
@@ -172,14 +220,64 @@ bool Stemmer::on_match_helper()
 	return true;
 #endif
 }
-bool Stemmer::on_match()
-{
+bool Stemmer::on_match() {
+#ifdef MORPHEME_TOKENIZE
+	out	<<"ALTERNATIVE:\t";
+	QString word;
+	for (int i=0;i<prefix_infos->size();i++)
+		word.append(prefix_infos->at(i).raw_data);
+	word.append(stem_info->raw_data);
+	for (int i=0;i<suffix_infos->size();i++)
+		word.append(suffix_infos->at(i).raw_data);
+	out <<" "<<word<<"\n";
+	//out<<"\t("<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<")\n";
+
+	int pos=Prefix->info.start;
+	for (int i=0;i<prefix_infos->size();i++) {
+		minimal_item_info & pre = (*prefix_infos)[i];
+		int pos2=Prefix->sub_positionsOFCurrentMatch[i];
+		if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
+			continue;
+		out	<<"PREFIX:\t"
+			<<info.text->mid(pos,pos2-pos+1)<<"\t"
+			<<pre.raw_data<<"\t"
+			<<"\""<<pre.description()<<"\"\t"
+			<<pre.POS<<"\n";
+		pos=pos2+1;
+	}
+
+	pos=Stem->info.start;
+	minimal_item_info & stem = *stem_info;
+	int pos2=Stem->info.finish;
+	out	<<"STEM:\t"
+		<<info.text->mid(pos,pos2-pos+1)<<"\t"
+		<<stem.raw_data<<"\t"
+		<<"\""<<stem.description()<<"\"\t"
+		<<stem.POS<<"\n";
+
+	pos=Suffix->info.start;
+	for (int i=0;i<suffix_infos->size();i++) {
+		minimal_item_info & suff = (*suffix_infos)[i];
+		int pos2=Suffix->sub_positionsOFCurrentMatch[i];
+		if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+			continue;
+		out	<<"SUFFIX:\t"
+			<<info.text->mid(pos,pos2-pos+1)<<"\t"
+			<<suff.raw_data<<"\t"
+			<<"\""<<suff.description()<<"\"\t"
+			<<suff.POS<<"\n";
+		pos=pos2+1;
+	}
+	assert(pos-1==Suffix->info.finish);
+	out<<"\n";
+
+#else
 	int count=0;
 	if (called_everything || type==PREFIX)
 	{
 		out<<QString(runwordIndex,'\t');
 		out<<"(";
-		for (int i=0;i<prefix_infos->count();i++) //TODO: results with incorrect behaviour assuming more than 1 category works for any item ( I dont think this is the case anymore)
+		for (int i=0;i<prefix_infos->count();i++)
 		{
 			if (count>0)
 					out << " + ";
@@ -214,12 +312,18 @@ bool Stemmer::on_match()
 		for (int i=0;i<suffix_infos->size();i++) {
 			//qDebug()<< "{"<<suffix_infos->at(i).POS<<"}";
 			QString desc=suffix_infos->at(i).description();
-			if (count>0)
-				out << " ";//" + ";
-			else {// (count==0)
+			if (count>0) {
+			#ifdef SAMA
+				out << " + ";
+			#else
+				out << " ";
+			#endif
+			} else {// (count==0)
+			#ifdef SAMA
 				if (suffix_infos->size()>1 && desc[0]=='[' && desc.size()>0 && desc[desc.size()-1]==']') {
 					desc="";
 				}
+			#endif
 			}
 			count++;
 			if (later_part=="" && suffix_infos->count()>i+1 && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
@@ -251,5 +355,6 @@ bool Stemmer::on_match()
 		out <<" "<<word;//<<" "<<"["<<suff<<"]";
 	}
 	out<<" "<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<"\n";
+#endif
 	return true;
 }

@@ -85,12 +85,16 @@ int insert_NProp(QString word,QList<long> * abstract_categories, int source_id, 
 }
 
 void findCategoryIds(item_types type,QString expression,QList<long> & category_ids) {
-	expression.replace(QRegExp("(AND|OR|NOT)\\s*\""),"\\1 name LIKE \"");
+	expression.replace(QRegExp("((?:AND|OR|NOT)\\s*\\(*)\\s*\""),"\\1 name LIKE \"");
 	int i1=expression.indexOf("\"");
 	int i2=expression.indexOf("name");
 	if (i1<i2 || (i2<0 && i1>=0))
 		expression.prepend("name LIKE ");
+	expression.replace("\\","\\\\");
+	expression.replace("%","\\%");
+	expression.replace("_","\\_");
 	expression.replace("*","%");
+
 	out<<"expression: {"<<expression<<"} was expanded to: <";
 	QString where_condition=QString("type=%1 AND abstract=0 AND %2").arg((int)type).arg(expression);
 	Retrieve_Template t("category","id","name",where_condition);

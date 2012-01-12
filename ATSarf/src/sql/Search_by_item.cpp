@@ -20,10 +20,10 @@ bool Search_by_item::retrieve_internal(all_item_info &info)
 	info.raw_data=query.value(3).toString();
 	info.POS=query.value(4).toString();
 	if (query.value(5).isNull())
-			info.description_id=-1;
+			info.setDescription(-1);
 	else
 	{
-			info.description_id=query.value(5).toULongLong();
+			info.setDescription(query.value(5).toULongLong());
 #if 0
 			if (description_id<0)
 				info.description="";
@@ -49,9 +49,9 @@ bool Search_by_item::retrieve_internal(minimal_item_info &info)
 	info.raw_data=query.value(3).toString();
 	info.POS=query.value(4).toString();
 	if (query.value(5).isNull())
-		info.description_id=-1;
+		info.setDescription(-1);
 	else
-		info.description_id=query.value(5).toULongLong();
+		info.setDescription(query.value(5).toULongLong());
 	if (type==STEM)
 		info.abstract_categories=string_to_bitset(query.value(6));
 	else

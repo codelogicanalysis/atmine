@@ -6,7 +6,7 @@
 #include <QPair>
 #include "database_info_block.h"
 
-typedef QPair<int,ItemCatRaw2PosDescAbsMapItr> AffixPosition;//index of raw_data and of corresponding entry in map corresponding for this raw_data
+typedef QPair<int,ItemCatRaw2AbsDescPosMapItr> AffixPosition;//index of raw_data and of corresponding entry in map corresponding for this raw_data
 typedef QVector<AffixPosition> InternalPositions;
 typedef QVector<minimal_item_info> StoredInfo;
 typedef QVector<minimal_item_info>  AffixSolutionVector;
@@ -40,6 +40,7 @@ public:
 	minimal_item_info & getIthAffixSolution(TreeSearch * affixMachine, int i);
 	AffixSolutionVector & getAffixSolution(TreeSearch * affixMachine);
 	minimal_item_info & getStemSolution(StemSearch * stemMachine);
+
 };
 
 class SolutionsCompare
@@ -62,7 +63,7 @@ public:
 			return false;
 		if (params.abstract_category && sol1.abstract_categories!=sol2.abstract_categories)
 			return false;
-		if (params.description && sol1.description_id!=sol2.description_id)
+		if (params.description && sol1.description_id()!=sol2.description_id())
 			return false;
 		if (params.POS && sol1.POS!=sol2.POS)
 			return false;

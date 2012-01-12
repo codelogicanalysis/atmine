@@ -70,6 +70,7 @@ static const QChar single_quotation5=QChar(0x02CB);//MODIFIER LETTER GRAVE ACCEN
 
 static const QChar paragraph_seperator=QChar(0x2029);//PARAGRAPH SEPARATOR
 static const QChar zero_width_space=QChar(0xFEFF);//ZERO WIDTH NO-BREAK SPACE
+static const QChar kashida= QChar(0x0640);
 
 static const QString delimiters=QString("[!_ :\\.,()-><{}=*+\\/|'\"\n\t\r")+fasila+question_mark+semicolon_ar+full_stop1+full_stop2+full_stop3+
 								double_quotation1+double_quotation2+double_quotation3+double_quotation4+double_quotation5+double_quotation6+

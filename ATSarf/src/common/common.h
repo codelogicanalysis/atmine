@@ -9,7 +9,6 @@
 #define USE_TRIE
 #define LOAD_FROM_FILE
 #define USE_TRIE_WALK
-//#define QUEUE
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 #define MULTIPLICATION
@@ -22,9 +21,7 @@
 #undef USE_TRIE_WALK
 #undef LOAD_FROM_FILE
 #endif
-#ifndef QUEUE
-#define PARENT
-#endif
+
 #ifdef REDUCE_THRU_DIACRITICS
 #undef MEMORY_EXHAUSTIVE
 #endif
@@ -33,7 +30,7 @@
 #define RUNON_WORDS
 #define ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
 #define REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS
-
+#define ALLOW_MULTIPLE_RESULTING_CATEGORIES
 
 using namespace std;
 
@@ -50,39 +47,43 @@ enum item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};
 
 typedef class minimal_item_info_
 {
+private:
+	QString desc;
+	long desc_id;
 public:
 	item_types type;
 	long category_id;
 	dbitvec abstract_categories; //only for STEMS
 	QString raw_data;
-	long description_id;
 	QString POS;
+public:
 
-	QString description() const;
+	void setDescription(long desc_id) {
+		desc="";
+		this->desc_id=desc_id;
+	}
+	void setDescription(QString desc) {
+		this->desc=desc;
+		desc_id=-1;
+	}
+	long description_id() const {
+		return desc_id;
+	}
+	QString description();
 
-	minimal_item_info_()
-	{
+	minimal_item_info_() {
 		abstract_categories.resize(max_sources);
 	}
 } minimal_item_info;
 
-typedef class all_item_info_
+typedef class all_item_info_ : public minimal_item_info_
 {
 public:
 	unsigned long long item_id;
-	long category_id;
-	dbitvec abstract_categories; //only for STEMS
 	dbitvec sources;
-	QString raw_data;
-	long description_id;
-	QString POS;
 	QString lemma_ID; //only for STEMs
 
-	QString description() const;
-
-	all_item_info_()
-	{
-		abstract_categories.resize(max_sources);
+	all_item_info_():minimal_item_info_(){
 		sources.resize(max_sources);
 	}
 } all_item_info;

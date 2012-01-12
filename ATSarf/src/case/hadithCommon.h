@@ -329,7 +329,7 @@
 		#ifndef PREPROCESS_DESCRIPTIONS
 			else if (description=="son")
 		#else
-			else if (familyNMC_descriptions.contains(stem_info->description_id) &&
+			else if (familyNMC_descriptions.contains(stem_info->description_id()) &&
 					#ifdef REFINEMENTS
 					 !equal_ignore_diacritics(stem_info->raw_data,_2ama) && !equal_ignore_diacritics(stem_info->raw_data,_3ama)
 					#endif
@@ -341,11 +341,11 @@
 			#endif
 			#ifdef REFINEMENTS
 				familyNMC=true;
-				if (IBN_descriptions.contains(stem_info->description_id))
+				if (IBN_descriptions.contains(stem_info->description_id()))
 					ibn=true;
-				if (AB_descriptions.contains(stem_info->description_id))
+				if (AB_descriptions.contains(stem_info->description_id()))
 					_2ab=true;
-				if (OM_descriptions.contains(stem_info->description_id))
+				if (OM_descriptions.contains(stem_info->description_id()))
 					_2om=true;
 				finishStem=Stem->info.finish;
 				startStem=Stem->info.start;
@@ -360,7 +360,7 @@
 		#ifndef PREPROCESS_DESCRIPTIONS
 			else if (description=="said" || description=="say" || description=="notify/communicate" || description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") || description.contains("narrate"))
 		#else
-			else if (NRC_descriptions.contains(stem_info->description_id))
+			else if (NRC_descriptions.contains(stem_info->description_id()))
 		#endif
 			{
 			#ifdef STATS

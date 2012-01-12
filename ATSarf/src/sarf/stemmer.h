@@ -68,8 +68,7 @@ public:
 };
 #endif
 
-class Stemmer
-{
+class Stemmer {
 public://protected:
 	multiply_params multi_p;
 	item_types type;
@@ -93,8 +92,7 @@ public:
 	SuffixMachine* Suffix;
 	text_info info;
 
-	Stemmer(QString *text,int start,bool get_all_details=true)
-	{
+	Stemmer(QString *text,int start,bool get_all_details=true) {
 		prefix_infos=NULL;
 		stem_info=NULL;
 		suffix_infos=NULL;
@@ -112,8 +110,7 @@ public:
 			machines.append(SubMachines(NULL, NULL, NULL)); //just to fill it with anything so that in on_match machine.size()==1
 	#endif
 	}
-	void setSolutionSettings(multiply_params params)
-	{
+	void setSolutionSettings(multiply_params params) {
 		multi_p=params;
 		Prefix->setSolutionSettings(params);
 	}

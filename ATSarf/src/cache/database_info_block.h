@@ -14,19 +14,18 @@
 typedef Triplet<long long, long, QString> ItemEntryKey;  //(item_id,category_id,raw_data)
 typedef Triplet<dbitvec,long,QString> ItemEntryInfo; //(abstract_categories or reverse_description,description_id,POS)
 
-typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2PosDescAbsMap;//change all uses of this map
-typedef ItemCatRaw2PosDescAbsMap * ItemCatRaw2PosDescAbsMapPtr;
-typedef ItemCatRaw2PosDescAbsMap::iterator ItemCatRaw2PosDescAbsMapItr;
+typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2AbsDescPosMap;//change all uses of this map
+typedef ItemCatRaw2AbsDescPosMap * ItemCatRaw2AbsDescPosMapPtr;
+typedef ItemCatRaw2AbsDescPosMap::iterator ItemCatRaw2AbsDescPosMapItr;
 
-class database_info_block
-{
+class database_info_block {
 	private:
 		void readTrieFromDatabaseAndBuildFile();
 		void buildTrie();
 		void buildDescriptions();
 		void readDescriptionsFromDatabaseAndBuildFile();
-		void buildMap(item_types type,ItemCatRaw2PosDescAbsMap * map);
-		void fillMap(item_types type,ItemCatRaw2PosDescAbsMap * map);
+		void buildMap(item_types type,ItemCatRaw2AbsDescPosMap * map);
+		void fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map);
     public:
 		ATMProgressIFC *prgsIFC;
 
@@ -38,9 +37,9 @@ class database_info_block
 #endif
 		compatibility_rules * comp_rules;
 
-		ItemCatRaw2PosDescAbsMapPtr map_prefix;
-		ItemCatRaw2PosDescAbsMapPtr map_stem;
-		ItemCatRaw2PosDescAbsMapPtr map_suffix;
+		ItemCatRaw2AbsDescPosMapPtr map_prefix;
+		ItemCatRaw2AbsDescPosMapPtr map_stem;
+		ItemCatRaw2AbsDescPosMapPtr map_suffix;
 
 		QVector<QString>* descriptions;
 
