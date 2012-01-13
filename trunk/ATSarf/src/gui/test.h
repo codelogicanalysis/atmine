@@ -12,6 +12,7 @@
 //#define INSERT_ONLY_PREFIXES
 //#define INSERT_ONLY_SUFFIXES
 //#define INSERT_ONLY_AFFIXES
+//#define AUGMENT_ORIGINAL
 #define SAMA
 #define MORPHEME_TOKENIZE
 #define ATB
