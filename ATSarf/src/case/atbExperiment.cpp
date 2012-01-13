@@ -53,6 +53,7 @@ AtbStemmer::Status AtbStemmer::updateSimilarFields(Status oldStat, Status curren
 	}
 	return D_ALL;
 }
+
 AtbStemmer::Status AtbStemmer::equal(int & index,minimal_item_info & item, Status currentStat, bool ignore) {
 	if (index>=voc.size())
 		return D_ALL;
@@ -94,20 +95,23 @@ AtbStemmer::Status AtbStemmer::equal(int & index,minimal_item_info & item, Statu
 			if (i!=index-1)
 				g_atb+=" + ";
 		}
+	#if 0
 		g.replace("with/by","by/with");
 		g.replace("for/to","to/for");
 		g.replace("it/him","him/it");
 		g.replace("it/he","he/it");
 		g.replace("so/and","and/so");
 		g.replace("as/like","like/such as");
-		g.replace(" + ","+");
 		g_atb.replace("with/by","by/with");
 		g_atb.replace("for/to","to/for");
 		g_atb.replace("it/him","him/it");
 		g_atb.replace("it/he","he/it");
 		g_atb.replace("so/and","and/so");
 		g_atb.replace("as/like","like/such as");
+	#endif
+		g.replace(" + ","+");
 		g_atb.replace(" + ","+");
+
 		bool eq_v=(v_atb==v),
 			 eq_g=(g_atb==g);
 		if (!eq_v && eq_g)
@@ -137,6 +141,7 @@ AtbStemmer::AtbStemmer(QString & input,const QStringList &aVoc, QStringList &aGl
 }
 
 bool AtbStemmer::on_match() {
+	vocalizedSolution="";
 	QList<int> splits;
 	QStringList splitVoc;
 	int stemSplitStartIndex,stemSplitEndIndex;
@@ -150,6 +155,7 @@ bool AtbStemmer::on_match() {
 		}
 		splits.append(Prefix->sub_positionsOFCurrentMatch[i]);
 		splitVoc.append(pre.POS.split("/")[0]);
+		vocalizedSolution+=pre.raw_data;
 		stat=equal(index,pre,stat);
 		if (stat==D_ALL)
 			return true;
@@ -162,6 +168,7 @@ bool AtbStemmer::on_match() {
 	for (int i=stemSplitStartIndex;i<=stemSplitEndIndex;i++) { //just to keep number of tokens aligned
 		splits.append(Stem->info.finish);
 		splitVoc.append(stem.POS.split("/")[0]);
+		vocalizedSolution+=stem.raw_data;
 	}
 	stat=equal(index,stem,stat,ignoreStem);
 	if (stat==D_ALL)
@@ -174,6 +181,7 @@ bool AtbStemmer::on_match() {
 		}
 		splits.append(Suffix->sub_positionsOFCurrentMatch[i]);
 		splitVoc.append(suff.POS.split("/")[0]);
+		vocalizedSolution+=suff.raw_data;
 		stat=equal(index,suff,stat);
 		if (stat==D_ALL)
 			return true;
@@ -196,6 +204,7 @@ bool AtbStemmer::on_match() {
 					return false;
 				}
 				int p=splits[j];
+			#ifdef SPECIAL_TOKENIZE
 				if (j+1 < splitVoc.size() && splitVoc[j+1].size()>0 && splitVoc[j].size()>0) {
 					bool eq=false;
 					QChar l1=splitVoc[j][splitVoc[j].size()-1];
@@ -210,9 +219,10 @@ bool AtbStemmer::on_match() {
 					}
 					if (l1==l2)
 						eq=true;
-					if (eq && !splitVoc[j+1].startsWith("ya"))
+					if (eq /*&& !splitVoc[j+1].startsWith("ya")*/)
 						p=getLastLetter_index(*info.text,p-1);
 				}
+			#endif
 				QString inp=info.text->mid(o,p-o+1);
 				if (inp!=input_after[i])
 					correctTokenize=false;
@@ -247,6 +257,17 @@ inline QStringList readNextLineHelper(QTextStream & file, QString & line) {
 int atb(QString inputString, ATMProgressIFC * prg) {
 #define readNextLine(file)  entries=readNextLineHelper(file, line)
 #define readNextLineEntry(file,field) readField(readNextLineHelper(file, line),field)
+
+	QFile conf("conflicts.txt");
+	if (!conf.open(QIODevice::ReadWrite)) {
+		out << "Conflicts File not found\n";
+		return 1;
+	}
+	QTextStream conflicts(&conf);
+#ifdef READ_CONFLICTS
+	int conflict_index=-1;
+	int conflictsSkipped=0;
+#endif
 
 	QDir folder(inputString+"/before","*.txt");
 	if (!folder.exists()) {
@@ -320,8 +341,18 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				vocalized_all+=voc_temp;
 				pos_after.append(pos);
 
-			}while (vocalized.endsWith("-") && !input_string.contains("-"));
+			} while (vocalized.endsWith("-") && !input_string.contains("-"));
 			assert(voc==vocalized_all);
+		#endif
+		#ifdef READ_CONFLICTS
+			if (conflict_index==-1) {
+				conflicts>>conflict_index;
+			}
+			if (conflict_index==all_count) {
+				conflictsSkipped++;
+				conflict_index=-1;
+				continue;
+			}
 		#endif
 
 			if (status==1 && !gloss.contains("NOT_IN_LEXICON") && input_string[input_string.size()-1]!=kashida) {
@@ -361,6 +392,9 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 						}
 						out<<"\n";
 					}
+					/*if (vocalized_all.remove("+")!=s.getVocalizedSolution()) {
+
+					}*/
 				} else {
 					notFound++;
 
@@ -382,6 +416,10 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 						<<input_string<<"\t"<<voc<<"\t"<<pos<<"\t"<<gloss<<"\n";
 					out<<"\n";
 
+				#ifdef SAVE_CONFLICTS
+					conflicts<<all_count<<"\n";
+				#endif
+
 				}
 			}
 			else if (status !=1) {
@@ -399,6 +437,8 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 		prg->report((double)count/num_files*100+0.5);
 	}
 
+	conf.close();
+
 	int total=found+notFound;
 	int other=notFound-notFoundGloss-notFoundVoc;
 	int tokenized=found-skipTokenize;
@@ -413,7 +453,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 					<<"Vocalization Missing Rate=\t"<<notFoundVoc<<"/"<<total<<" =\t"<<missVoc<<"\n"
 					<<"Other Missing Rate=\t\t"<<other<<"/"<<total<<" =\t"<<missOther<<"\n"
 					<<"Total Missing Rate=\t\t"<<notFound<<"/"<<total<<" =\t"<<miss<<"\n"
-					<<"Appened Ratio=\t\t"<<appended<<"/"<<all_count<<"=\t"<<appendedRatio<<"\n"
+					<<"Augmented Ratio=\t\t"<<appended<<"/"<<all_count<<"=\t"<<appendedRatio<<"\n"
 					<<"Correct Tokenization Ratio=\t"<<correctTokenize<<"/"<<tokenized<<"=\t"<<correctTokenization<<"\n"
 					<<"Skipped Tokenization Ratio=\t"<<skipTokenize<<"/"<<found<<"=\t"<<skipTokenization<<"\n";
 	return 0;

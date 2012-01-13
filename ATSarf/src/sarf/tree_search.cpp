@@ -205,8 +205,7 @@ bool TreeSearch::on_match_helper() {
 		return true;
 }
 
-void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index) //zero and initialize solutions till 'last_index' exclusive
-{
+void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index) { //zero and initialize solutions till 'last_index' exclusive
 	minimal_item_info inf;
 	int count=sub_positionsOFCurrentMatch.count();
 	for (int i=start_index;i<count;i++) {
@@ -258,15 +257,13 @@ void TreeSearch::initializeAffixInfo(solution_position * sol_pos,int start_index
 		sol_pos->indexes.remove(i);
 	sol_pos->store_solution(inf);//store the last bc it is the first to be modified (or accessed ??)
 }
-bool TreeSearch::increment(solution_position * info,int index)
-{
+bool TreeSearch::increment(solution_position * info,int index) {
 	if (multi_p.NONE())
 		return false;
 	result_node * r_node=result_nodes->at(index);
 	minimal_item_info & inf=affix_info[index];
 	SolutionsCompare comp(multi_p);
-	if (!multi_p.raw_dataONLY())
-	{
+	if (!multi_p.raw_dataONLY()) {
 		ItemCatRaw2AbsDescPosMapItr & itr=info->indexes[index].second;
 		itr++;
 		long id=r_node->get_affix_id(), catID=r_node->get_previous_category_id();
@@ -274,10 +271,8 @@ bool TreeSearch::increment(solution_position * info,int index)
 		RawData & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
 		QString raw_data_string=raw_data.getActual();
 		const ItemEntryKey & key=itr.key();
-		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data_string) )
-		{
-			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)//check for next time
-			{
+		if (itr == map->end() || key != ItemEntryKey(id,catID,raw_data.getOriginal()) ) {
+			if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1) {//check for next time
 				raw_index++;
 				inf.type=type;
 				RawData & raw_data=possible_raw_datasOFCurrentMatch[index][raw_index];
@@ -288,16 +283,12 @@ bool TreeSearch::increment(solution_position * info,int index)
 					inf.raw_data="";
 				inf.category_id=r_node->get_previous_category_id();
 				itr = map->find(ItemEntryKey(r_node->get_affix_id(),inf.category_id,raw_data.getOriginal()));
-			}
-			else
-			{
-				if (index>0)
-				{
+			} else {
+				if (index>0) {
 					initializeAffixInfo(info,index);
 					info->clear_stored_solutions();
 					return increment(info,index-1);
-				}
-				else
+				} else
 					return false;
 			}
 		}

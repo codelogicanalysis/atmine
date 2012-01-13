@@ -13,6 +13,11 @@
 #include "stemmer.h"
 
 #define TOKENIZE
+#define SPECIAL_TOKENIZE
+
+#define READ_CONFLICTS
+//#define SAVE_CONFLICTS
+
 
 class AtbStemmer: public Stemmer {
 public:
@@ -32,6 +37,7 @@ private:
 	bool correctTokenize:1;
 	bool skipTokenize:1;
 	QStringList sarfTokenization;
+	QString vocalizedSolution;
 
 private:
 	Status updateSimilarFields(Status oldStat, Status currentStat, QString currGloss, QString currVoc, int old_pos);
@@ -49,6 +55,7 @@ public:
 	bool isCorrectlyTokenized() const { return correctTokenize;}
 	bool isSkipTokenize() const { return skipTokenize;}
 	const QStringList & getTokenization() const { return sarfTokenization;}
+	QString getVocalizedSolution() const { return vocalizedSolution;}
 };
 
 int atb(QString inputString, ATMProgressIFC * prg);

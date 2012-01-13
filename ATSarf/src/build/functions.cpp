@@ -235,9 +235,14 @@ int insert_buckwalter()
 #else
 	const QString folder="../../src/buckwalter scripts/";
 #endif
+QString tag;
+#ifdef AUGMENT_ORIGINAL
+	tag="_original";
+#endif
+
 	const int num_files_items=3;
-	const QString item_files[num_files_items]= {	folder+"list_of_prefixes.txt",
-													folder+"list_of_suffixes.txt",
+	const QString item_files[num_files_items]= {	folder+"list_of_prefixes"+tag+".txt",
+													folder+"list_of_suffixes"+tag+".txt",
 													folder+"list_of_stems.txt"};
 	const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
 
@@ -346,8 +351,8 @@ int insert_buckwalter()
 	}
 	//compatibility rules
 	const int num_files_rules=5;
-	const QString rules_files[num_files_rules]= {folder+"tableAA", \
-												 folder+"tableCC", \
+	const QString rules_files[num_files_rules]= {folder+"tableAA"+tag, \
+												 folder+"tableCC"+tag, \
 												 folder+"tableAB", \
 												 folder+"tableBC", \
 												 folder+"tableAC"  };
