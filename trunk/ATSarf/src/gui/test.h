@@ -11,11 +11,13 @@
 //#define INSERT_ONLY_NAMES
 //#define INSERT_ONLY_PREFIXES
 //#define INSERT_ONLY_SUFFIXES
-//#define INSERT_ONLY_AFFIXES
+#define INSERT_ONLY_AFFIXES
+
 //#define AUGMENT_ORIGINAL
-#define SAMA
+//#define SAMA
 #define MORPHEME_TOKENIZE
-#define ATB
+//#define ATB
+//#define ATB2
 #define REPETITIONS 1
 
 

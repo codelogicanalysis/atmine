@@ -23,7 +23,7 @@ public:
 	ApplyInflections(bool applyPlusRules) { this->applyPlusRules=applyPlusRules;}
 	void operator()(QString & inflection,QString & field) {
 		//assume inflections in form (r/d)//{[reg exp]/(+1)/(+2)}||replacement\\ ...
-		if (inflection.isEmpty())
+		if (inflection.isEmpty() || inflection.count(' ')==inflection.size())
 			return;
 		QStringList l=inflection.split(InflectionsDelimitors::end);
 		QString s;

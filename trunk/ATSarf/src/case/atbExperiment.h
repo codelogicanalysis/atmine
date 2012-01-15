@@ -1,9 +1,8 @@
 #ifndef ATBEXPERIMENT_H
 #define ATBEXPERIMENT_H
-
-#include "atbExperiment.h"
 #include <QString>
 #include <QFile>
+#include <QSet>
 #include <QDir>
 #include <QTextStream>
 #include <QRegExp>
@@ -15,8 +14,10 @@
 #define TOKENIZE
 #define SPECIAL_TOKENIZE
 
-#define READ_CONFLICTS
-//#define SAVE_CONFLICTS
+//#define READ_CONFLICTS
+#define SAVE_CONFLICTS
+
+#define AMBIGUITY_REFINED
 
 
 class AtbStemmer: public Stemmer {
@@ -38,6 +39,7 @@ private:
 	bool skipTokenize:1;
 	QStringList sarfTokenization;
 	QString vocalizedSolution;
+	QString stemPos;
 
 private:
 	Status updateSimilarFields(Status oldStat, Status currentStat, QString currGloss, QString currVoc, int old_pos);
@@ -56,8 +58,27 @@ public:
 	bool isSkipTokenize() const { return skipTokenize;}
 	const QStringList & getTokenization() const { return sarfTokenization;}
 	QString getVocalizedSolution() const { return vocalizedSolution;}
+	QString getStemPOS() const { return stemPos;}
+};
+
+class AtbStemmerContextFree: public Stemmer {
+	QTextStream * f_out;
+	int num_solutions;
+	QSet<QString> modifiedPOSList;
+public:
+	AtbStemmerContextFree(QString &text,QTextStream * f_out): Stemmer(&text,0) {
+		this->f_out=f_out;
+		num_solutions=0;
+	}
+	bool on_match();
+	int getAmbiguity() const { return num_solutions;}
+	int getModifiedPosAmbiguity() const {return modifiedPOSList.size();}
 };
 
 int atb(QString inputString, ATMProgressIFC * prg);
+
+int atb2(QString inputString, ATMProgressIFC *prg);
+
+
 
 #endif // ATBEXPERIMENT_H

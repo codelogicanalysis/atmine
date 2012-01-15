@@ -10,7 +10,7 @@ private:
 	QString inflected;
 public:
 	QString getActual() {
-		if (inflected.isEmpty())
+		if (inflected=="*")
 			return original;
 		else
 			return inflected;
@@ -18,10 +18,10 @@ public:
 	QString getOriginal() {
 		return original;
 	}
-	RawData(QString original, QString inflected="") {
+	RawData(QString original, QString inflected="*") {
 		this->original=original;
 		if (original==inflected) {
-			inflected="";
+			this->inflected="*";
 		} else {
 			this->inflected=inflected;
 		}

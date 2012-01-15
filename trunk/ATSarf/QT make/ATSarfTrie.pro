@@ -90,7 +90,8 @@ HEADERS += util/text_handling.h \
     ../src/case/narratorEqualityModel.h \
     ../src/case/biographyGraphUtilities.h \
     ../src/common/inflections.h \
-    ../src/case/atbExperiment.h
+    ../src/case/atbExperiment.h \
+    ../src/util/transliteration.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -155,7 +156,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/narratorEqualityModel.cpp \
     ../src/case/narratorEqualityComparision.cpp \
     ../src/case/biographyGraphUtilities.cpp \
-    ../src/case/atbExperiment.cpp
+    ../src/case/atbExperiment.cpp \
+    ../src/util/transliteration.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
