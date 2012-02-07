@@ -35,11 +35,13 @@ public:
 };
 #endif
 
+typedef QVector<StemNode> StemNodesList;
+
 class ATTrie {
     private:
         ATTrieData * data;
     public:
-		QVector<StemNode> * nodes;
+		StemNodesList * nodes;
 
         ATTrie();
         ATTrie(const char * path);

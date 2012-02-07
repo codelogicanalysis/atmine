@@ -33,7 +33,7 @@ class database_info_block {
         tree* Suffix_Tree;
 #ifdef USE_TRIE
 		ATTrie * Stem_Trie;
-		QVector<StemNode> * trie_nodes;
+		StemNodesList * trie_nodes;
 #endif
 		compatibility_rules * comp_rules;
 

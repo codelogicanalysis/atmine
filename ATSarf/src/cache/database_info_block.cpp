@@ -211,7 +211,7 @@ database_info_block::database_info_block()
     Suffix_Tree=new tree();
 #ifdef USE_TRIE
 	Stem_Trie= new ATTrie();
-	trie_nodes=new QVector<StemNode>();
+	trie_nodes=new StemNodesList();
 #endif
 	comp_rules=new compatibility_rules();
 

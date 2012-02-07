@@ -6,8 +6,7 @@
 #include "database_info_block.h"
 
 
-class Search_by_item_locally
-{
+class Search_by_item_locally {
 private:
 	QHash<ItemEntryKey,ItemEntryInfo > * map;
 	item_types type;

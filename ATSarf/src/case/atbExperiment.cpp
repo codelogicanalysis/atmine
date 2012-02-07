@@ -1,4 +1,6 @@
 #include "atbExperiment.h"
+#include <cstdlib>
+#include <time.h>
 #include <QString>
 #include <QFile>
 #include <QDir>
@@ -9,6 +11,7 @@
 #include "logger.h"
 #include "stemmer.h"
 #include "transliteration.h"
+#include "diacritics.h"
 
 
 #ifdef SAVE_CONFLICTS
@@ -268,6 +271,7 @@ inline QString removeDiacriticPOS(QString pos) {
 
 bool AtbStemmerContextFree::on_match() {
 	num_solutions++;
+#ifndef ATB_DIACRITICS
 	QString pos,desc;
 	for (int i=0;i<prefix_infos->size();i++) {
 		minimal_item_info & pre = (*prefix_infos)[i];
@@ -290,9 +294,10 @@ bool AtbStemmerContextFree::on_match() {
 	(*f_out)<<desc<<"\t"<<pos<<"\n";
 	QString modifiedPOS=removeDiacriticPOS(pos);
 	modifiedPOSList.insert(modifiedPOS);
+#endif
 	return true;
 }
-
+#if 0
 int getNumberPrefixes(QString pos) {
 	static const QString pre[50]={"Aa/INTERROG_PART", ">a/IV1S", "Al/DET", "bi/PART", "bi/PREP", "fa/CONJ", "fa/CONNEC_PART",
 							"fa/RC_PART", "fa/SUB_CONJ", "fiy/PREP", "|/IV1S", "ka/PREP", "la/EMPHATIC_PART", "lA/NEG_PART",
@@ -368,7 +373,7 @@ int getNumberSuffixes(QString pos) {
 	}
 	return count;
 }
-
+#endif
 inline QString readField(QStringList entries, QString field) {
 	assert(entries.size()==2);
 	assert(entries[0].contains(field));
@@ -378,6 +383,26 @@ inline QString readField(QStringList entries, QString field) {
 inline QStringList readNextLineHelper(QTextStream & file, QString & line) {
 	line=file.readLine(0);
 	return line.split(": ",QString::KeepEmptyParts);
+}
+
+int addRandomDiacritics(QString & voc, int num_voc) {
+	QList<int> diacritics;
+	for (int i=0;i<voc.size();i++) {
+		QChar curr=voc[i];
+		if (isDiacritic(curr))
+			diacritics.append(i);
+	}
+	for (int i=0;i<num_voc;i++) {
+		int d_size=diacritics.size();
+		if (d_size==0)
+			return i;
+		int index=rand()%d_size;
+		diacritics.removeAt(index);
+	}
+	for (int i=diacritics.size()-1;i>=0;i--) {
+		voc.remove(diacritics[i],1);
+	}
+	return num_voc;
 }
 
 int atb(QString inputString, ATMProgressIFC * prg) {
@@ -417,6 +442,8 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	int ambiguity_POS_sum_detail[5][4]={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 	int ambiguity_count_detail[5][4]={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
+	int diacritics[5]={0,0,0,0,0};
+
 	foreach (file_name,folder.entryList())	{
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));
 		QFile input_after(folder.absolutePath().append(QString("/").append(file_name)).replace("before","after"));
@@ -442,12 +469,28 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			readNextLine(file);
 			int status =readNextLineEntry(file,"STATUS").toInt();
 			readNextLine(file);
-			readNextLine(file);
+			QString unsplitvoc=readNextLineEntry(file,"UNSPLITVOC");
 			QString pos =readNextLineEntry(file,"POS");
 			QString voc =readNextLineEntry(file,"VOC");
 			QString gloss =readNextLineEntry(file,"GLOSS");
 			readNextLine(file);
 			assert(line.isEmpty());
+
+		#ifdef ATB_DIACRITICS
+			int c=countDiacritics(input_string);
+			assert(unsplitvoc.size()>=2);
+			if (unsplitvoc!="None"){
+				unsplitvoc=unsplitvoc.mid(1,unsplitvoc.size()-2);
+				unsplitvoc=Buckwalter::convertFrom(unsplitvoc);
+			}
+			if (c>0) {
+				if(unsplitvoc!="None" && !equal(unsplitvoc, input_string))
+					error<<unsplitvoc<<"\t"<<input_string<<"\n";
+				out<<unsplitvoc<<"\t"<<input_string<<"\t"<<c<<"\n";
+				diacritics[c]++;
+			}
+			continue;
+		#endif
 
 			//read from after
 			QStringList input_after, unvocalized_after, vocalized_after,pos_after;
@@ -602,6 +645,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	conf.close();
 	morph_file.close();
 
+#ifndef ATB_DIACRITICS
 	int total=found+notFound;
 	int other=notFound-notFoundGloss-notFoundVoc;
 	int tokenized=found-skipTokenize;
@@ -645,12 +689,22 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			displayed_error<<"AMB POS\t"<<i<<","<<j<<"\t"<<a<<"\n";
 		}
 	}
+#else
+	int c=0;
+	for (int i=1;i<5;i++) {
+		double a=((double)diacritics[i])/all_count;
+		c+=diacritics[i];
+		displayed_error<<"Diacritics\t"<<i<<"\t"<<diacritics[i]<<"\t"<<a<<"\n";
+	}
+	double a=((double)c)/all_count;
+	displayed_error<<"Diacritics\t*\t"<<c<<"\t"<<a<<"\n";
+#endif
 	displayed_error<<"\n";
 
 	return 0;
 }
 
-int atb2(QString inputString, ATMProgressIFC *prg) {
+int atb2(QString, ATMProgressIFC *) {
 	QFile morph_file("morph.txt");
 	QFile morph_file1("morph1.txt");
 	if (!morph_file.open(QIODevice::ReadWrite) || !morph_file1.open(QIODevice::ReadWrite)) {
@@ -659,15 +713,15 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 	}
 	QTextStream morph1(&morph_file);
 	QTextStream morph2(&morph_file1);
-	int all_count=0,conflict_pos_count=0,conflict_desc_count=0,conflict_count_fa=0,added_count_alef=0,removed_count_wafa=0;
-	double conflict_pos_fraction=0,conflict_desc_fraction=0,conflict_fraction_fa=0,added_fraction_alef=0,removed_fraction_wafa=0;
+	int all_count=0,conflict_pos_count=0,conflict_desc_count=0,conflict_count_fa=0,added_count_alef=0,removed_count_wafa=0,added_count_inter=0;
+	double conflict_pos_fraction=0,conflict_desc_fraction=0,conflict_fraction_fa=0,added_fraction_alef=0,removed_fraction_wafa=0,added_fraction_inter=0;
 	while (!morph1.atEnd() && !morph2.atEnd()) {
 		all_count++;
 
 		QStringList desc1, desc2, pos1, pos2;
-		QString word1,word2;
+		//QString word1,word2;
 		QString line;
-		word1=morph1.readLine(0);
+		//word1=morph1.readLine(0);
 		do {
 			line=morph1.readLine(0);
 			if (line.isEmpty())
@@ -676,7 +730,7 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 			desc1.append(entries[0]);
 			pos1.append(entries[1]);
 		} while (!line.isEmpty());
-		word2=morph2.readLine(0);
+		//word2=morph2.readLine(0);
 		do {
 			line=morph2.readLine(0);
 			if (line.isEmpty())
@@ -694,7 +748,7 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 				, &posMax=(minimum==pos1.size()?pos2:pos1);
 		if (minimum!=maximum) {
 			bool alef=false;
-			int diff_fa=0,diff_wafa=0;
+			int diff_fa=0,diff_wafa=0,diff_inter=0;
 			for (int i=0;i<maximum;i++) {
 				if (posMax[i].startsWith("fa/RC_PART"))
 					diff_fa++;
@@ -702,6 +756,8 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 					alef=true;
 				if (posMax[i].startsWith("wa/CONJ+fa/CONJ"))
 					diff_wafa++;
+				if (posMax[i].startsWith("Aa/INTERROG_PART"))
+					diff_inter++;
 			}
 			if (diff_fa>0)
 				conflict_count_fa++;
@@ -709,6 +765,9 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 			if (diff_wafa>0)
 				removed_count_wafa++;
 			removed_fraction_wafa+=((double)diff_wafa)/maximum;
+			if (diff_inter>0)
+				added_count_inter++;
+			added_fraction_inter+=((double)diff_inter)/maximum;
 			if (alef) {
 				added_count_alef++;
 				added_fraction_alef+=((double)(maximum-minimum))/maximum;
@@ -747,16 +806,107 @@ int atb2(QString inputString, ATMProgressIFC *prg) {
 	double removed_fraction_ratio_wafa=removed_fraction_wafa/all_count;
 	double added_count_ratio_alef=((double)added_count_alef)/all_count;
 	double added_fraction_ratio_alef=added_fraction_alef/all_count;
+	double added_count_ratio_inter=((double)added_count_inter)/all_count;
+	double added_fraction_ratio_inter=added_fraction_inter/all_count;
 	displayed_error	<<"POS Conflict Ratio=\t\t"<<conflict_pos_count<<"/"<<all_count<<" =\t"<<pos_count_ratio<<"\n"
 					<<"Desc Conflict Ratio=\t\t"<<conflict_desc_count<<"/"<<all_count<<" =\t"<<desc_count_ratio<<"\n"
 					<<"Fa Conflict Ratio=\t\t"<<conflict_count_fa<<"/"<<all_count<<" =\t"<<conflict_count_ratio_fa<<"\n"
 					<<"WaFa Removed Ratio=\t\t"<<removed_count_wafa<<"/"<<all_count<<" =\t"<<removed_count_ratio_wafa<<"\n"
 					<<"Alef Added Ratio=\t\t"<<removed_fraction_wafa<<"/"<<all_count<<" =\t"<<added_count_ratio_alef<<"\n"
+					<<"Interrogation Added Ratio=\t"<<added_count_inter<<"/"<<all_count<<" =\t"<<added_count_ratio_inter<<"\n"
 					<<"POS Conflict Fraction Ratio=\t"<<conflict_pos_fraction<<"/"<<all_count<<" =\t"<<pos_fraction_ratio<<"\n"
 					<<"Desc Conflict Fraction Ratio=\t"<<conflict_desc_fraction<<"/"<<all_count<<" =\t"<<desc_fraction_ratio<<"\n"
 					<<"Fa Conflict Fraction Ratio=\t"<<conflict_fraction_fa<<"/"<<all_count<<" =\t"<<conflict_fraction_ratio_fa<<"\n"
-					<<"WaFa Removed Fraction Ratio=\t\t"<<removed_fraction_wafa<<"/"<<all_count<<" =\t"<<removed_fraction_ratio_wafa<<"\n"
-					<<"Alef Added Fraction Ratio=\t\t"<<added_fraction_alef<<"/"<<all_count<<" =\t"<<added_fraction_ratio_alef<<"\n";
+					<<"WaFa Removed Fraction Ratio=\t"<<removed_fraction_wafa<<"/"<<all_count<<" =\t"<<removed_fraction_ratio_wafa<<"\n"
+					<<"Alef Added Fraction Ratio=\t"<<added_fraction_alef<<"/"<<all_count<<" =\t"<<added_fraction_ratio_alef<<"\n"
+					<<"Interrogation Added Fraction Ratio=\t"<<added_fraction_inter<<"/"<<all_count<<" =\t"<<added_fraction_ratio_inter<<"\n";
 	return 0;
 }
 
+int atb3(QString inputString, ATMProgressIFC *prg) {
+	QFile diacritics_file(inputString);
+	if (!diacritics_file.open(QIODevice::ReadWrite) ) {
+		out << "Diacritics File not found\n";
+		return 1;
+	}
+	QString line;
+	int total=0;
+	int no_voc_total=0,voc_total=0;
+	int random_voc_ambiguity[5]={0,0,0,0,0};
+	int voc_ambiguity[5]={0,0,0,0,0};
+	int no_voc_ambiguity[5]={0,0,0,0,0};
+	int total_count[5]={0,0,0,0,0};
+	int random_total_count[5]={0,0,0,0,0};
+	int full_vocalized=0,random_full_vocalized=0;
+	QTextStream file(&diacritics_file);
+	while (!file.atEnd() ) {
+		line=file.readLine(0);
+		if (line.startsWith("Diacritics") || line.startsWith("ERROR") || line.isEmpty())
+			continue;
+		total++;
+		QStringList entries= line.split("\t",QString::KeepEmptyParts);
+		QString voc=entries[0];
+		QString partial_voc=entries[1];
+
+		int c=entries[2].toInt();
+		AtbStemmerContextFree stemmer(partial_voc,NULL);
+		stemmer();
+		int voc_amb=stemmer.getAmbiguity();
+		QString no_voc=removeDiacritics(partial_voc);
+		AtbStemmerContextFree stemmer2(no_voc,NULL);
+		stemmer2();
+		int no_voc_amb=stemmer2.getAmbiguity();
+		if (no_voc_amb!=voc_amb)
+			out<<partial_voc<<"\t"<<no_voc_amb<<"\t"<<voc_amb<<"\n";
+		no_voc_total+=no_voc_amb;
+		voc_total+=voc_amb;
+		no_voc_ambiguity[c]+=no_voc_amb;
+		voc_ambiguity[c]+=voc_amb;
+		total_count[c]++;
+		if (!partial_voc.contains(fathatayn) && c==1) {
+			no_voc_ambiguity[0]+=no_voc_amb;
+			voc_ambiguity[0]+=voc_amb;
+			total_count[0]++;
+		}
+		AtbStemmerContextFree stemmer3(voc,NULL);
+		stemmer3();
+		int full_amb=stemmer3.getAmbiguity();
+		full_vocalized+=full_amb;
+
+		//random voc
+		if (equal(voc,partial_voc)) {
+			random_voc_ambiguity[0]+=no_voc_amb;
+			random_total_count[0]++;
+			for (int i=1;i<5;i++) {
+				QString v=voc;
+				/*if (*/addRandomDiacritics(v,i);/*==i) {*/
+					AtbStemmerContextFree stemmer(v,NULL);
+					stemmer();
+					int amb=stemmer.getAmbiguity();
+					random_voc_ambiguity[i]+=amb;
+					random_total_count[i]++;
+				//}
+			}
+			random_full_vocalized+=full_amb;
+		}
+	}
+	for (int i=0;i<5;i++) {
+		double	voc_ratio=((double)voc_ambiguity[i])/total_count[i],
+				no_voc_ratio=((double)no_voc_ambiguity[i])/total_count[i];
+		QString num=QString("%1").arg(i);
+		if (i==0)
+			num=QString("1 (no ")+fathatayn+"  )";
+		displayed_error<<"Diacritics\t"<<num<<"\t"<<no_voc_ratio<<"\t"<<voc_ratio<<"\n";
+	}
+	double	voc_ratio=((double)voc_total)/total,
+			no_voc_ratio=((double)no_voc_total)/total,
+			full_voc_ratio=((double)full_vocalized)/total;
+	displayed_error<<"Diacritics\t*\t"<<no_voc_ratio<<"\t"<<voc_ratio<<"\t"<<full_voc_ratio<<"\n\n\n";
+	for (int i=0;i<5;i++) {
+		double	ratio=((double)random_voc_ambiguity[i])/random_total_count[i];
+		displayed_error<<"Diacritics\t"<<i<<"\t"<<ratio<<"\n";
+	}
+	double	random_full_voc_ratio=((double)random_full_vocalized)/random_total_count[0];
+	displayed_error<<"Diacritics\t*\t"<<random_full_voc_ratio<<"\n";
+	return 0;
+}

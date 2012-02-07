@@ -91,7 +91,9 @@ HEADERS += util/text_handling.h \
     ../src/case/biographyGraphUtilities.h \
     ../src/common/inflections.h \
     ../src/case/atbExperiment.h \
-    ../src/util/transliteration.h
+    ../src/util/transliteration.h \
+    ../src/case/diacriticDisambiguation.h \
+    ../src/case/affixTreeTraversal.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -127,7 +129,7 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/graph_nodes.cpp \
     ../src/case/graph.cpp \
     ../src/case/split_affixes.cpp \
-    ../src/case/suffix_verification.cpp \
+    ../src/case/affix_verification.cpp \
     ../src/case/timeRecognizer.cpp \
     ../src/case/timeManualTagger.cpp \
     ../src/case/narratordetector.cpp \
@@ -157,7 +159,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/narratorEqualityComparision.cpp \
     ../src/case/biographyGraphUtilities.cpp \
     ../src/case/atbExperiment.cpp \
-    ../src/util/transliteration.cpp
+    ../src/util/transliteration.cpp \
+    ../src/case/diacriticDisambiguation.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

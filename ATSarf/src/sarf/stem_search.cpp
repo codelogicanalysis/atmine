@@ -201,7 +201,7 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 				#ifdef DEBUG
 					out<<subword.toString()<<"-"<<possible_raw_datas[i]<<"\n";
 				#endif
-					if (!equal(subword,possible_raw_datas[i]))
+					if (!equal(subword,possible_raw_datas[i],true)) //force_shadde=true
 					{
 						possible_raw_datas.remove(i);
 						i--;

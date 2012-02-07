@@ -173,7 +173,7 @@ bool TreeSearch::on_match_helper() {
 				#ifdef DEBUG
 					qDebug() <<diacritics_of_word<<"\t"<<diacritics_of_rawdata;
 				#endif
-					if (!equal(diacritics_of_word,diacritics_of_rawdata)) {
+					if (!equal(diacritics_of_word,diacritics_of_rawdata,true)) {//force_shadde
 						possible_raw_datasOFCurrentMatch[k].removeAt(j);
 						j--;
 						continue;
@@ -182,7 +182,7 @@ bool TreeSearch::on_match_helper() {
 			#ifdef DEBUG
 				out<<"p-S:"<<k<<"<"<<sub_positionsOFCurrentMatch[k]<<">"<<"\t"<<subword.toString()<<"\t"<<possible_raw_datasOFCurrentMatch[k][j].getActual()<<"\n";
 			#endif
-				if (!equal(subword,rawdata)) {
+				if (!equal(subword,rawdata,true)) {//force_shadde
 					possible_raw_datasOFCurrentMatch[k].removeAt(j);
 					j--;
 				}

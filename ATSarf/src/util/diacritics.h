@@ -6,6 +6,52 @@
 #include <QRegExp>
 #include "letters.h"
 
+enum Diacritic {FATHA,KASRA,DAMMA,DAMMATAYN,FATHATAYN,KASRATAYN,SHADDA,SUKUN, UNDEFINED_DIACRITICS};
+
+inline QChar interpret_diacritic(Diacritic d) {
+	switch(d) {
+	case FATHA:
+		return fatha;
+	case KASRA:
+		return kasra;
+	case DAMMA:
+		return damma;
+	case DAMMATAYN:
+		return dammatayn;
+	case FATHATAYN:
+		return fathatayn;
+	case KASRATAYN:
+		return kasratayn;
+	case SHADDA:
+		return shadde;
+	case SUKUN:
+		return sukun;
+	default:
+		return '\0';
+	}
+}
+
+inline Diacritic interpret_diacritic(QChar d) {
+	if (d==fatha)
+		return FATHA;
+	if (d==kasra)
+		return KASRA;
+	if (d==damma)
+		return DAMMA;
+	if (d==dammatayn)
+		return DAMMATAYN;
+	if (d==fathatayn)
+		return FATHATAYN;
+	if (d==kasratayn)
+		return KASRATAYN;
+	if (d==shadde)
+		return SHADDA;
+	if (d==sukun)
+		return SUKUN;
+	else
+		return UNDEFINED_DIACRITICS;
+}
+
 inline bool isConsonant(const QChar & letter) {
 	if (letter !=ya2 && letter !=waw && letter !=alef) //not a very firm condition to assume consonant but might work here
 		return true;
@@ -20,6 +66,14 @@ inline bool isDiacritic(const QChar & letter) {
 	else
 		return false;
 }
+inline int countDiacritics(const QString & s) {
+	int count=0;
+	for (int i=0;i<s.size();i++)
+		if (isDiacritic(s[i]))
+			count++;
+	return count;
+}
+
 inline QString removeDiacritics(QString /*&*/text) {
 	QRegExp exp(QString("[")+shadde+fatha+damma+sukun+kasra+kasratayn+fathatayn+dammatayn+aleft_superscript+QString("]"));
 	return text.remove(exp);
@@ -82,6 +136,9 @@ inline QStringRef getDiacriticsBeforePosition(int pos,QString * text) {
 		}
 		return text->midRef(start+1,pos-start-1);
 	}
+}
+inline QString getDiacritics(QString & s, int & pos) { //get diacritics at position and move the 'pos'
+	return addlastDiacritics(pos,pos,&s,pos).toString();
 }
 
 inline int getPositionOneLetterBackward(int pos,QString * text) {

@@ -23,34 +23,79 @@ Notes:
 	extern bool runon;
 #endif
 
-inline bool equal_strict(QList<QChar> & list1,QList<QChar> & list2)
-{
-	int l1=list1.count(),l2=list2.count();
-	if (l1!=l2)
-		return false;
-	for (int i=0;i<l1;i++)
-		if (list1[i]!=list2[i])
-			return false;
-	return true;
+class DiacriticsList {
+private:
+	Diacritic main:4;
+	bool shadde:1;
+	bool inconsistent:1;
+public:
+	void clear() {
+		main=UNDEFINED_DIACRITICS;
+		shadde=false;
+		inconsistent=false;
+	}
+	DiacriticsList() {
+		clear();
+	}
+	void append(QChar c) {
+		Diacritic d=interpret_diacritic(c);
+		if (d==SHADDA)
+			shadde=true;
+		else if (main==UNDEFINED_DIACRITICS)
+			main=d;
+		else if (d!=main)
+			inconsistent=true;
+	}
+	bool operator ==(DiacriticsList & l) { //strict equality
+		return (main==l.main && shadde==l.shadde && inconsistent==l.inconsistent);
+	}
+	bool isConsistent(DiacriticsList & l,bool forceShadde=false) {
+		if (inconsistent || l.inconsistent) //i.e. diacritics not dependable
+			return true;
+		if (forceShadde) {
+			if (shadde && !l.shadde)
+				return false;
+		}
+		if (main!=UNDEFINED_DIACRITICS && l.main!=UNDEFINED_DIACRITICS)
+			return main==l.main;
+		return true;
+	}
+	QString getEquivalent() const {
+		if (inconsistent)
+			return "X";
+		QString s;
+		if (shadde)
+			s+=::shadde;
+		if (main!=UNDEFINED_DIACRITICS)
+			s+=interpret_diacritic(main);
+		return s;
+	}
+};
+
+
+inline bool equal(DiacriticsList & list1,DiacriticsList & list2, bool forceShadde=false) {
+	bool l=list1.isConsistent(list2,forceShadde);
+#if 0
+	if (forceShadde)
+		out<<list1.getEquivalent()<<"\t"<<list2.getEquivalent()<<"\t"<<l<<"\n";
+#endif
+	return l;
 }
 
-bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2) //modifies value of i1 and i2
-{
+bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2, bool force_shadde) {//modifies value of i1 and i2
 	//qDebug() << word1<<"-"<<word2;
 	int length1=word1.count();
 	int length2=word2.count();
 	i1=-1;i2=-1;
-	QList<QChar> diacritics1,diacritics2;
+	DiacriticsList diacritics1,diacritics2;
 	QChar letter1,letter2;
-	while (i1+1<length1 && i2+1<length2)
-	{
+	while (i1+1<length1 && i2+1<length2) {
 		i1++;
 		i2++;
 		diacritics1.clear();
 		diacritics2.clear();
-		while (i1<length1 && isDiacritic(word1.at(i1)))
-		{
-			if (word1.at(i1)!=shadde && word1.at(i1)!=aleft_superscript)
+		while (i1<length1 && isDiacritic(word1.at(i1))) {
+			if (/*word1.at(i1)!=shadde && */word1.at(i1)!=aleft_superscript)
 				diacritics1.append(word1.at(i1));
 			i1++;
 		}
@@ -60,9 +105,8 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 			letter1=word1.at(i1);
 		else
 			letter1='\0';
-		while (i2<length2 && isDiacritic(word2.at(i2)))
-		{
-			if (word2.at(i2)!=shadde && word2.at(i2)!=aleft_superscript)
+		while (i2<length2 && isDiacritic(word2.at(i2))) {
+			if (/*word2.at(i2)!=shadde && */word2.at(i2)!=aleft_superscript)
 				diacritics2.append(word2.at(i2));
 			i2++;
 		}
@@ -73,8 +117,7 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 		else
 			letter2='\0';
 		//now comparison first diacritics then next_letter
-		if (diacritics1.count()==0 || diacritics2.count()==0 || equal_strict(diacritics1,diacritics2))
-		{
+		if (equal(diacritics1,diacritics2,force_shadde)) {
 			if (equal(letter1,letter2))
 				continue;
 			else {
