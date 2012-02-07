@@ -86,7 +86,7 @@ ATTrie :: store(const QString & key, int index)
 }
 
 bool
-ATTrie :: retreive(const QString & key, const StemNode** node)
+ATTrie :: retreive(const QString & key, const StemNode** node) //seems to have memory leak but not used
 {
 	if (node == NULL)
 		return false;

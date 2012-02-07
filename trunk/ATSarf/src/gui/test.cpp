@@ -26,6 +26,9 @@ extern int bibleTagger(QString input_str);
 extern int hadithTagger(QString input_str);
 extern int atb(QString inputString,ATMProgressIFC * prg);
 extern int atb2(QString inputString,ATMProgressIFC * prg);
+extern int atb3(QString inputString,ATMProgressIFC * prg);
+extern void diacriticDisambiguationCount(item_types t);
+void diacriticDisambiguationCount(QString fileName,ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -114,11 +117,27 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	msg.setWindowTitle("Sarf");
 	msg.setText("Test Options Unavailable for submission version of software.");
 	msg.exec();
+#elif defined(DIACRITIC_DISAMBIGUATION)
+	displayed_error<<"Prefix:\n";
+	out<<"\n\nPrefix:\n";
+	diacriticDisambiguationCount(PREFIX);
+	displayed_error<<"Stem:\n";
+	out<<"\n\nStem:\n";
+	diacriticDisambiguationCount(STEM);
+	displayed_error<<"Suffix:\n";
+	out<<"\n\nSuffix:\n";
+	diacriticDisambiguationCount(SUFFIX);
+	displayed_error<<"\nFull:\n";
+	out<<"\n\nFull:\n";
+	diacriticDisambiguationCount(inputString,prg);
 #elif  defined(ATB)
 	if (atb(inputString,prg)<0)
 		return -1;
 #elif  defined(ATB2)
 	if (atb2(inputString,prg)<0)
+		return -1;
+#elif  defined(ATB3)
+	if (atb3(inputString,prg)<0)
 		return -1;
 #elif defined(AUGMENT_DICTIONARY)
 	if (augment()<0)
@@ -136,7 +155,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	return 0;
 }
 int verify(QString ,ATMProgressIFC *) {
-	drawAffixGraph(PREFIX);
+	//drawAffixGraph(PREFIX);
 	//drawAffixGraph(SUFFIX);
 	listAllAffixes(SUFFIX);
 	listAllAffixes(PREFIX);

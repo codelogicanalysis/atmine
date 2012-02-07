@@ -65,7 +65,10 @@ class StemSearch
 			return ((*cr)(prefix_category,category_of_currentmatch));
 		}
 		virtual bool onMatch()=0;
-		~StemSearch(){}
+		~StemSearch(){
+			if (solution!=NULL)
+				delete solution;
+		}
 		void setSolutionSettings(multiply_params params)
 		{
 			multi_p=params;

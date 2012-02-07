@@ -8,6 +8,7 @@
 
 
 //#define USE_ORIGINAL
+//#define USE_BAMA
 
 #define USE_TRIE
 #define LOAD_FROM_FILE
@@ -142,6 +143,8 @@ static const  QString databaseFileName=".atm_filled.sql";
 #ifdef LOAD_FROM_FILE
 #ifdef USE_ORIGINAL
 static const QString tag="_original";
+#elif defined(USE_BAMA)
+static const QString tag="_bama";
 #else
 static const QString tag="";
 #endif

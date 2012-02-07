@@ -38,7 +38,7 @@ class TreeSearch
 	public:
 		virtual bool isPrefix() const{ return false;}
 		const AffixSolutionVector & getSolution() const {return affix_info;}//make sure affix_info is not null!!
-		node_info * previousNode(node_info * current)
+		node_info * previousNode(node_info * current) //seems to have memory leak but not used
 		{
 			node* head=Tree->getFirstNode();
 			if (current->node==NULL)
@@ -69,7 +69,7 @@ class TreeSearch
 			assert(start<=finish);
 			return previous;
 		}
-		node_info * lastNode()
+		node_info * lastNode() //seems to have memory leak but not used
 		{
 			node_info * last=new node_info;
 			last->node=reached_node->getPreviousResultNode();
@@ -78,7 +78,7 @@ class TreeSearch
 			last->start=(sub_positionsOFCurrentMatch.size()>1?sub_positionsOFCurrentMatch[sub_positionsOFCurrentMatch.size()-2]:info.start);
 			return last;
 		}
-		QList<result_node *> * getSplitList()
+		QList<result_node *> * getSplitList() //seems to have memory leak
 		{
 			QList<result_node *> * list=new QList<result_node *>();
 			result_node * node=reached_node;
@@ -110,8 +110,8 @@ class TreeSearch
 				map=database_info.map_suffix;
 
 			affix_info.clear();
-			/*if (result_nodes!=NULL)
-				delete result_nodes;*/
+			if (result_nodes!=NULL)
+				delete result_nodes;
 			result_nodes=getSplitList();
 			solution_position * first=new solution_position();
 			initializeAffixInfo(first,0);
@@ -167,7 +167,12 @@ class TreeSearch
         virtual bool operator()();
 		/*virtual*/ void fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
         virtual bool onMatch() = 0;// returns true to continue, false to abort
-		virtual ~TreeSearch(){}
+		virtual ~TreeSearch(){
+		#ifdef MULTIPLICATION
+			if (result_nodes!=NULL)
+				delete result_nodes;
+		#endif
+		}
 };
 
 #endif // TREE_SEARCH_H
