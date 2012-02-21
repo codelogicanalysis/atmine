@@ -124,6 +124,25 @@ inline bool isNumber(QString * text,long & currentPos,long & finish) {
 	return ret_val;
 }
 
+inline QString getLastNWords(QString s, int N) {
+	int l=s.size();
+	int count=0;
+	do {
+		l=s.lastIndexOf(' ',l-1);
+		if (l<0) {
+			l=0;
+			break;
+		}
+		count++;
+	} while (count<N);
+	return s.mid(l-1);
+}
+
+inline void removeFirstWord(QString & s) {
+	int l=s.indexOf(' ');
+	if (l>=0)
+		s.remove(0,l+1);
+}
 
 
 #endif // TEXTPARSING_H

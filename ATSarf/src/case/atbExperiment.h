@@ -14,7 +14,7 @@
 #define TOKENIZE
 #define SPECIAL_TOKENIZE
 
-#define READ_CONFLICTS
+//#define READ_CONFLICTS
 //#define SAVE_CONFLICTS
 
 //#define AMBIGUITY_REFINED

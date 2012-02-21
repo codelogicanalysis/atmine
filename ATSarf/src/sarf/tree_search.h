@@ -134,12 +134,10 @@ class TreeSearch
 		result_node * reached_node;
         int position;//note that provided position is 1+last_letter after traversal
 		bool reduce_thru_diacritics;
-		virtual bool shouldcall_onmatch_ex(int)
-		{
+		virtual bool shouldcall_onmatch_ex(int)	{
 			return true;
 		}
-		virtual bool shouldcall_onmatch(int)
-		{
+		virtual bool shouldcall_onmatch(int) {
 			return true;
 		}
 		bool on_match_helper();

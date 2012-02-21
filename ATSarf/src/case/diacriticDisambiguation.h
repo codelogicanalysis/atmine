@@ -3,34 +3,75 @@
 
 #include "affixTreeTraversal.h"
 #include "stemmer.h"
+#include <QFile>
 
 class DiacriticDisambiguationBase {
 public:
-	enum Ambiguity {Vocalization, Description, POS, Tokenization, All_Ambiguity};
+	enum Ambiguity {Vocalization, Description, POS, Tokenization, Stem_Ambiguity, All_Ambiguity};
 	static QString interpret(Ambiguity a);
 	class Solution {
 	public:
 		QString voc;
 		QString desc;
 		QString pos;
-		Solution(QString raw,QString des,QString POS): voc(raw), desc(des),pos(POS) { }
+		bool featuresDefined:1;
+		int stemStart:4;
+		int suffStart:4;
+		int stemIndex:4; //the morpheme number of the stem in the solution, so that we can identify it, can be deduced anyways from numPrefixes
+		int numPrefixes:4;
+		int numSuffixes:4;
+		//TODO: other features
+	private:
+		QString getFeatureIndex(const QString & feature, int index) const;
+	public:
+		Solution(QString raw,QString des,QString POS);
+		Solution(QString raw,QString des,QString POS,
+				 int stemStart, int suffStart, int stemIndex, int numPrefixes, int numSuffixes);
 		bool equal (const Solution & other, Ambiguity m) const;
 	private:
 		int getTokenization() const;
 	};
 	typedef QList<Solution> SolutionList;
 	typedef QPair<QString, SolutionList > AffixSolutionList;
-	typedef QMap<long, AffixSolutionList> Map;
+	typedef QHash<long, AffixSolutionList> Map;
 protected:
-	Map solutionMap;
-	int total[(int)All_Ambiguity+1];
-	double left[(int)All_Ambiguity+1];
-	int countAmbiguity[(int)All_Ambiguity+1];
+	static const int ambiguitySize=(int)All_Ambiguity+1;
+	static const int maxDiacritics =15;
 protected:
-	DiacriticDisambiguationBase();
-	void store(long id, QString entry, QString raw_data, QString description, QString POS);
-	void analyze();
+	bool mapBased:1;
+	bool suppressOutput:1;
+	int diacriticsCount:4;
+	Map solutionMap; //TODO: better solution use unioin in terms of memory usage efficiency
+	QString currEntry;
+	long currId;
+	SolutionList currSol;
+	long long total[ambiguitySize];
+	long double left[ambiguitySize];
+	long long totalBranching[ambiguitySize];
+	long long leftBranching[ambiguitySize];
+	long long countAmbiguity[ambiguitySize];
+	long long bestLeft[ambiguitySize];
+	long long worstLeft[ambiguitySize];
+	long long countReduced[ambiguitySize];
+	long long reducingCombinations[ambiguitySize];
+	long long totalCombinations[ambiguitySize];
+	long long countWithoutDiacritics;
+private:
+	void printDiacriticDisplay(Diacritics d);
+	void printDiacritics(QString entry, int pos, QChar c); //for one diacritic
+	void printDiacritics(const QList<Diacritics> & d); //for multiple diacritcs
+	item_types getDiacriticPosition(Solution & sol, int diacriticPos) const;
 	SolutionList getUnique(const SolutionList & list, Ambiguity m);
+	void reset();
+protected:
+	DiacriticDisambiguationBase(bool mapBased, bool suppressOutput,int diacriticsCount=1);
+	void store(long id, QString entry, Solution & s);
+	void store(long id, QString entry, QString raw_data, QString description, QString POS);
+	void store(long id, QString entry, QString raw_data, QString description, QString POS, int stemStart,
+			   int suffStart, int stemIndex, int numPrefixes, int numSuffixes);
+	void analyze();
+	void analyzeOne(QString currAffix,const SolutionList & currSol);
+
 	virtual ~DiacriticDisambiguationBase();
 };
 
@@ -38,7 +79,7 @@ class AffixDisambiguation: public AffixTraversal, public DiacriticDisambiguation
 private:
 	void visit(node *n, QString affix, QString raw_data, long category_id, QString description, QString POS);
 public:
-	AffixDisambiguation(item_types type):AffixTraversal(type,true,true) {	}
+	AffixDisambiguation(item_types type, int numDiacritcs):AffixTraversal(type,true,true), DiacriticDisambiguationBase(true,false,numDiacritcs) {	}
 };
 
 class StemDisambiguation:public DiacriticDisambiguationBase {
@@ -46,7 +87,7 @@ private:
 	StemNodesList * stemNodes;
 	ItemCatRaw2AbsDescPosMapPtr map;
 public:
-	StemDisambiguation() {
+	StemDisambiguation(int numDiacritics=1): DiacriticDisambiguationBase(true,false,numDiacritics) {
 		stemNodes=database_info.trie_nodes;
 		map=database_info.map_stem;
 	}
@@ -56,16 +97,16 @@ public:
 
 class FullDisambiguation: public DiacriticDisambiguationBase {
 private:
-	QString fileName;
+	QString inputFileName, outputFileName;
+	QFile outFile;
+	QIODevice * oldDevice;
 	ATMProgressIFC * prg;
 
 	friend class DisambiguationStemmer;
 public:
-	FullDisambiguation(QString fileName, ATMProgressIFC * prg) {
-		this->fileName=fileName;
-		this->prg=prg;
-	}
+	FullDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs=1, QString outputFileName="fullOutput");
 	void operator()();
+	~FullDisambiguation();
 };
 
 class DisambiguationStemmer: public Stemmer {

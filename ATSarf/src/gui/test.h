@@ -16,12 +16,12 @@
 //#define AUGMENT_ORIGINAL
 //#define SAMA
 #define MORPHEME_TOKENIZE
-//#define ATB
+#define ATB
 //#define ATB2
 //#define ATB3
 #define REPETITIONS 1
 
-#define DIACRITIC_DISAMBIGUATION
+//#define DIACRITIC_DISAMBIGUATION
 
 int morphology(QString input_str,ATMProgressIFC * prg);
 int hadith(QString input_str,ATMProgressIFC * prg);

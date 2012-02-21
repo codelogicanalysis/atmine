@@ -226,6 +226,10 @@ bool HadithTaggerDialog::open_action() {
 	} else {
 		error << "Narrator Equality Annotation File does not exist\n";
 	}
+	/*HadithDagGraph *g=dynamic_cast<HadithDagGraph *>(globalGraph);
+	NarratorGraph * graph=g->getGraph();
+	graph->printStats();
+	qDebug()<<"Hadith Count:" <<tags.size();*/
 	return ret;
 }
 

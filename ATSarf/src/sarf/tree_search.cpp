@@ -308,9 +308,7 @@ bool TreeSearch::increment(solution_position * info,int index) {
 		if (comp.found(info,inf))
 			return increment(info,index);
 		info->store_solution(inf);
-	}
-	else
-	{
+	} else {
 		if (info->indexes[index].first<possible_raw_datasOFCurrentMatch[index].count()-1)
 		{
 			int & raw_index=info->indexes[index].first;

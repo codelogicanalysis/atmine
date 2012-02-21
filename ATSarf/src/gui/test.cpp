@@ -14,6 +14,7 @@
 #include "timeRecognizer.h"
 #include "bibleGeneology.h"
 #include <sys/time.h>
+#include "vocalizedCombinations.h"
 
 
 extern void splitRecursiveAffixes();
@@ -27,8 +28,8 @@ extern int hadithTagger(QString input_str);
 extern int atb(QString inputString,ATMProgressIFC * prg);
 extern int atb2(QString inputString,ATMProgressIFC * prg);
 extern int atb3(QString inputString,ATMProgressIFC * prg);
-extern void diacriticDisambiguationCount(item_types t);
-void diacriticDisambiguationCount(QString fileName,ATMProgressIFC * prg);
+extern void diacriticDisambiguationCount(item_types t, int numDiacritics=1);
+extern void diacriticDisambiguationCount(QString fileName, int numDiacritics,ATMProgressIFC * prg, QString outputFile="fullOutput");
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -112,12 +113,29 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
-#ifdef SUBMISSION
+#if 0
+	for (int i=0;i<10;i++) {
+		out<<i<<":\n";
+		VocalizedCombinations c(inputString,i);
+		if (c.isUnderVocalized())
+			out<<"\t---\n";
+		for (c.begin();!c.isFinished();++c) {
+			VocalizedCombinations::Combination comb=c.getCombination();
+			out<<"\t"<<comb.getString();
+			QList<Diacritics> list=comb.getDiacritics();
+			out<<"\t| ";
+			for (int j=0;j<list.size();j++)
+				out<<list[j].getEquivalent()<<" | ";
+			out<<"\n";
+		}
+	}
+#elif defined(SUBMISSION)
 	QMessageBox msg;
 	msg.setWindowTitle("Sarf");
 	msg.setText("Test Options Unavailable for submission version of software.");
 	msg.exec();
 #elif defined(DIACRITIC_DISAMBIGUATION)
+#if 0
 	displayed_error<<"Prefix:\n";
 	out<<"\n\nPrefix:\n";
 	diacriticDisambiguationCount(PREFIX);
@@ -127,9 +145,17 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	displayed_error<<"Suffix:\n";
 	out<<"\n\nSuffix:\n";
 	diacriticDisambiguationCount(SUFFIX);
+#else
 	displayed_error<<"\nFull:\n";
-	out<<"\n\nFull:\n";
-	diacriticDisambiguationCount(inputString,prg);
+	//out<<"\n\nFull:\n";
+	//diacriticDisambiguationCount(inputString,1,prg, "1dia.txt");
+	//diacriticDisambiguationCount(inputString,2,prg, "2dia.txt");
+	//diacriticDisambiguationCount(inputString,3,prg, "3dia.txt");
+	//diacriticDisambiguationCount(inputString,4,prg, "4dia.txt");
+
+	diacriticDisambiguationCount(inputString,-1,prg, "*dia.txt");
+
+#endif
 #elif  defined(ATB)
 	if (atb(inputString,prg)<0)
 		return -1;

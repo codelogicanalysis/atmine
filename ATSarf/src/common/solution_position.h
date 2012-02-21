@@ -30,7 +30,7 @@ public:
 	//int current_index;
 	InternalPositions indexes;
 	StoredInfo previous_solutions;//solutions stored for only current index
-	void store_solution(minimal_item_info & inf) {
+	void store_solution(const minimal_item_info & inf) {
 		previous_solutions.append(inf);
 	}
 	void clear_stored_solutions() {

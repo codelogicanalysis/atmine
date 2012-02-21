@@ -6,7 +6,7 @@
 #include <QRegExp>
 #include "letters.h"
 
-enum Diacritic {FATHA,KASRA,DAMMA,DAMMATAYN,FATHATAYN,KASRATAYN,SHADDA,SUKUN, UNDEFINED_DIACRITICS};
+enum Diacritic {FATHA,KASRA,DAMMA,DAMMATAYN,SHADDA,SUKUN,FATHATAYN,KASRATAYN,UNDEFINED_DIACRITICS};
 
 inline QChar interpret_diacritic(Diacritic d) {
 	switch(d) {
@@ -51,6 +51,72 @@ inline Diacritic interpret_diacritic(QChar d) {
 	else
 		return UNDEFINED_DIACRITICS;
 }
+
+class Diacritics {
+private:
+	Diacritic main:4;
+	bool shadde:1;
+	bool inconsistent:1;
+public:
+	void clear() {
+		main=UNDEFINED_DIACRITICS;
+		shadde=false;
+		inconsistent=false;
+	}
+	Diacritics() {
+		clear();
+	}
+	Diacritics(QChar c) {
+		clear();
+		append(c);
+	}
+	Diacritics(Diacritic c) {
+		clear();
+		append(c);
+	}
+	void append(Diacritic d) {
+		if (d==SHADDA)
+			shadde=true;
+		else if (main==UNDEFINED_DIACRITICS)
+			main=d;
+		else if (d!=main)
+			inconsistent=true;
+	}
+
+	void append(QChar c) {
+		Diacritic d=interpret_diacritic(c);
+		append(d);
+	}
+	bool operator ==(Diacritics & l) { //strict equality
+		return (main==l.main && shadde==l.shadde && inconsistent==l.inconsistent);
+	}
+	bool isSelfConsistent() const {return !inconsistent;}
+	bool isConsistent(Diacritics & l,bool forceShadde=false) {
+		if (inconsistent || l.inconsistent) //i.e. diacritics not dependable
+			return true;
+		if (forceShadde) {
+			if (shadde && !l.shadde)
+				return false;
+		}
+		if (main!=UNDEFINED_DIACRITICS && l.main!=UNDEFINED_DIACRITICS)
+			return main==l.main;
+		return true;
+	}
+
+	bool hasShadde() const { assert(!inconsistent);return shadde;}
+	Diacritic getMainDiacritic() const { assert(!inconsistent);return main;}
+	QString getEquivalent() const {
+		if (inconsistent)
+			return "X";
+		QString s;
+		if (shadde)
+			s+=::shadde;
+		if (main!=UNDEFINED_DIACRITICS)
+			s+=interpret_diacritic(main);
+		return s;
+	}
+};
+
 
 inline bool isConsonant(const QChar & letter) {
 	if (letter !=ya2 && letter !=waw && letter !=alef) //not a very firm condition to assume consonant but might work here
@@ -138,6 +204,8 @@ inline QStringRef getDiacriticsBeforePosition(int pos,QString * text) {
 	}
 }
 inline QString getDiacritics(QString & s, int & pos) { //get diacritics at position and move the 'pos'
+	if (pos>=s.size())
+		return "";
 	return addlastDiacritics(pos,pos,&s,pos).toString();
 }
 

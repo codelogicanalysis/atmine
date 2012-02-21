@@ -23,57 +23,7 @@ Notes:
 	extern bool runon;
 #endif
 
-class DiacriticsList {
-private:
-	Diacritic main:4;
-	bool shadde:1;
-	bool inconsistent:1;
-public:
-	void clear() {
-		main=UNDEFINED_DIACRITICS;
-		shadde=false;
-		inconsistent=false;
-	}
-	DiacriticsList() {
-		clear();
-	}
-	void append(QChar c) {
-		Diacritic d=interpret_diacritic(c);
-		if (d==SHADDA)
-			shadde=true;
-		else if (main==UNDEFINED_DIACRITICS)
-			main=d;
-		else if (d!=main)
-			inconsistent=true;
-	}
-	bool operator ==(DiacriticsList & l) { //strict equality
-		return (main==l.main && shadde==l.shadde && inconsistent==l.inconsistent);
-	}
-	bool isConsistent(DiacriticsList & l,bool forceShadde=false) {
-		if (inconsistent || l.inconsistent) //i.e. diacritics not dependable
-			return true;
-		if (forceShadde) {
-			if (shadde && !l.shadde)
-				return false;
-		}
-		if (main!=UNDEFINED_DIACRITICS && l.main!=UNDEFINED_DIACRITICS)
-			return main==l.main;
-		return true;
-	}
-	QString getEquivalent() const {
-		if (inconsistent)
-			return "X";
-		QString s;
-		if (shadde)
-			s+=::shadde;
-		if (main!=UNDEFINED_DIACRITICS)
-			s+=interpret_diacritic(main);
-		return s;
-	}
-};
-
-
-inline bool equal(DiacriticsList & list1,DiacriticsList & list2, bool forceShadde=false) {
+inline bool equal(Diacritics & list1,Diacritics & list2, bool forceShadde=false) {
 	bool l=list1.isConsistent(list2,forceShadde);
 #if 0
 	if (forceShadde)
@@ -87,7 +37,7 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &
 	int length1=word1.count();
 	int length2=word2.count();
 	i1=-1;i2=-1;
-	DiacriticsList diacritics1,diacritics2;
+	Diacritics diacritics1,diacritics2;
 	QChar letter1,letter2;
 	while (i1+1<length1 && i2+1<length2) {
 		i1++;

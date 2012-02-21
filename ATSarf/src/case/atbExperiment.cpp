@@ -435,14 +435,19 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	QString file_name;
 	int count=0;
 	int num_files=folder.entryList().size();
-	int ambiguity_sum[10]={0,0,0,0,0,0,0,0,0,0};
-	int ambiguity_POS_sum[10]={0,0,0,0,0,0,0,0,0,0};
-	int ambiguity_count[10]={0,0,0,0,0,0,0,0,0,0};
-	int ambiguity_sum_detail[5][4]={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-	int ambiguity_POS_sum_detail[5][4]={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-	int ambiguity_count_detail[5][4]={{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+	int ambiguity_sum[10]={0};
+	int ambiguity_POS_sum[10]={0};
+	int ambiguity_count[10]={0};
+	int ambiguity_sum_detail[5][4]={0};
+	int ambiguity_POS_sum_detail[5][4]={0};
+	int ambiguity_count_detail[5][4]={0};
 
-	int diacritics[5]={0,0,0,0,0};
+	const int max_diacritics=6;
+	int diacritics[max_diacritics]={0};
+	const int max_words_history=20;
+	bool wrongDiacritics=false;
+	int countWrong=0;
+	QString oldInput;
 
 	foreach (file_name,folder.entryList())	{
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));
@@ -477,6 +482,20 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			assert(line.isEmpty());
 
 		#ifdef ATB_DIACRITICS
+			if (wrongDiacritics) {
+				if (countWrong>0) {
+					oldInput+=" "+input_string;
+					countWrong--;
+				} else {
+					error<<"Text: "<<oldInput<<"\n\n";
+					wrongDiacritics=false;
+					oldInput=getLastNWords(oldInput,max_words_history);
+				}
+			} else {
+				if (all_count>max_words_history)
+					removeFirstWord(oldInput);
+				oldInput+=" "+input_string;
+			}
 			int c=countDiacritics(input_string);
 			assert(unsplitvoc.size()>=2);
 			if (unsplitvoc!="None"){
@@ -484,8 +503,11 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				unsplitvoc=Buckwalter::convertFrom(unsplitvoc);
 			}
 			if (c>0) {
-				if(unsplitvoc!="None" && !equal(unsplitvoc, input_string))
-					error<<unsplitvoc<<"\t"<<input_string<<"\n";
+				if(unsplitvoc!="None" && !equal(input_string,unsplitvoc,true)) {
+					wrongDiacritics=true;
+					countWrong=max_words_history;
+					error<<unsplitvoc<<"\t"<<input_string<<"\t"<<status<<"\n";
+				}
 				out<<unsplitvoc<<"\t"<<input_string<<"\t"<<c<<"\n";
 				diacritics[c]++;
 			}
@@ -691,7 +713,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	}
 #else
 	int c=0;
-	for (int i=1;i<5;i++) {
+	for (int i=1;i<max_diacritics;i++) {
 		double a=((double)diacritics[i])/all_count;
 		c+=diacritics[i];
 		displayed_error<<"Diacritics\t"<<i<<"\t"<<diacritics[i]<<"\t"<<a<<"\n";

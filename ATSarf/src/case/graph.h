@@ -1829,6 +1829,21 @@ public:
 	void performActionToExactCorrespondingNodes(GraphNodeItem * n, NarratorHash::FoundAction & visitor) {
 		hash.performActionToExactCorrespondingNodes(n,visitor);
 	}
+	void printStats() const{
+		int countActual=0;
+		int countChains=0;
+		for (int i=0;i<all_nodes.size();i++) {
+			NarratorNodeIfc * n=all_nodes[i];
+			if (n!=NULL) {
+				if (n->isActualNode())
+					countActual++;
+				if (n->isChainNode())
+					countChains++;
+			}
+		}
+		qDebug()<<"Actual: "<<countActual;
+		qDebug()<<"Chain: "<<countChains;
+	}
 
 	void serialize(QDataStream & streamOut) {
 	#define SERIALIZE_STOP -2
