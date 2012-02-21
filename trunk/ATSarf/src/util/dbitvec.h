@@ -94,12 +94,16 @@ public:
 	Byte operator [] (unsigned int bit) {
 		return Byte(bit, this);
 	}
-	dbitvec& operator=(const dbitvec& v1)
-	{
+	dbitvec& operator=(const dbitvec& v1) {
+	  if (v1.getNumBytes()!=getNumBytes()) {
+		  resize(v1.size);
+	  }
+	#if 0
 	  bytes = v1.getNumBytes();
 	  data = new unsigned char [bytes];
 	  if (data == NULL)
 		  throw MEM_EXCPT;
+	#endif
 	  memcpy(data, v1._data(), bytes);
 	  return *this;
 	}

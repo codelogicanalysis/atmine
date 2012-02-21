@@ -303,12 +303,36 @@ void MainWindow::on_cmd_browse_clicked(){
 }
 
 int main(int argc, char *argv[]){
+#if 1
 	QFileInfo fileinfo(argv[0]);
 	executable_timestamp=fileinfo.lastModified();
 	QApplication app(argc, argv);
 	MainWindow mainw;
 	mainw.show();
 	return app.exec();
+#else
+	initialize_variables();
+	EmptyProgressIFC emp;
+	database_info.fill(&emp);
+#if 1
+
+	QString output_str, error_str;
+	out.setString(&output_str);
+	out.setCodec("utf-8");
+	displayed_error.setString(&error_str);
+	displayed_error.setCodec("utf-8");
+#if 0
+	QString input=QString("")+dal+ra2+seen;
+	for (int i=0;i<20;i++)
+		morphology(input,&emp);
+#else
+	QString input="/home/jad/Desktop/linux/ATsarf-repository/src/sama_3_1/SAMA-3.1/script/unvoc.txt";
+	test(input,&emp);
+#endif
+	printf("%s",out.string()->toStdString().data());
+	printf("%s",displayed_error.string()->toStdString().data());
+#endif
+#endif
 }
 
 void MainWindow::on_exit_clicked(){

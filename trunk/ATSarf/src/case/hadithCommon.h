@@ -247,17 +247,14 @@
 			return true;
 		#else
 			solution_position * S_inf=Stem->computeFirstSolution();
-			do
-			{
+			do {
 				stem_info=Stem->solution;
 			#ifdef GET_AFFIXES_ALSO
 				solution_position * p_inf=Prefix->computeFirstSolution();
-				do
-				{
+				do {
 					prefix_infos=&Prefix->affix_info;
 					solution_position * s_inf=Suffix->computeFirstSolution();
-					do
-					{
+					do {
 						suffix_infos=&Suffix->affix_info;
 			#endif
 					#ifdef COUNT_AVERAGE_SOLUTIONS

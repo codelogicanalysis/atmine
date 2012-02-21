@@ -84,6 +84,8 @@ private:
 	int runwordIndex;
 	QList<SubMachines> machines;
 	friend class SuffixMachine;
+private:
+	void removeLastMachines();
 #endif
 public:
 	bool called_everything;

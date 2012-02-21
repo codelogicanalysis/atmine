@@ -93,7 +93,8 @@ HEADERS += util/text_handling.h \
     ../src/case/atbExperiment.h \
     ../src/util/transliteration.h \
     ../src/case/diacriticDisambiguation.h \
-    ../src/case/affixTreeTraversal.h
+    ../src/case/affixTreeTraversal.h \
+    ../src/util/vocalizedCombinations.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -160,7 +161,9 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/biographyGraphUtilities.cpp \
     ../src/case/atbExperiment.cpp \
     ../src/util/transliteration.cpp \
-    ../src/case/diacriticDisambiguation.cpp
+    ../src/case/diacriticDisambiguation.cpp \
+    ../src/log/ATMProgressIFC.cpp \
+    ../src/util/vocalizedCombinations.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

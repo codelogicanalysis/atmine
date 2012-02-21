@@ -22,8 +22,8 @@ bool PrefixMachine::onMatch()
 #ifdef DEBUG
 	qDebug()<<"p:"<<info.text->mid(info.start,position)<<"\n";
 #endif
-	/*if (controller->Stem!=NULL)
-		delete controller->Stem;//TODO: change this allocation, deallocation to clear*/
+	if (controller->Stem!=NULL)
+		delete controller->Stem;//TODO: change this allocation, deallocation to clear
 	controller->Stem=new StemMachine(controller,position,controller->Prefix->resulting_category_idOFCurrentMatch);
 	controller->Stem->setSolutionSettings(controller->multi_p);
 	return (*controller->Stem)();
@@ -36,8 +36,7 @@ StemMachine::StemMachine(Stemmer * controller,int start,long prefix_category):St
 
 bool StemMachine::onMatch()
 {
-	if (controller->called_everything)
-	{
+	if (controller->called_everything) {
 	#ifdef DEBUG
 		out<<"s:"<<info.text->mid(info.start,currentMatchPos-info.start+1)<<"\n";
 	#endif
@@ -46,9 +45,7 @@ bool StemMachine::onMatch()
 		controller->Suffix= new SuffixMachine(controller,currentMatchPos+1,controller->Prefix->resulting_category_idOFCurrentMatch,controller->Stem->category_of_currentmatch);
 		controller->Suffix->setSolutionSettings(controller->multi_p);
 		return (*controller->Suffix)();
-	}
-	else
-	{
+	} else {
 		if (!controller->on_match_helper())
 			return false;
 	}
@@ -83,7 +80,8 @@ bool SuffixMachine::onMatch()
 			controller->Prefix=controller->machines[index].Prefix;
 			controller->Stem=controller->machines[index].Stem;
 			controller->Suffix=controller->machines[index].Suffix;
-			controller->machines.removeLast();
+			//controller->machines.removeLast();
+			controller->removeLastMachines();
 			return result;
 		}
 	}
@@ -124,34 +122,39 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 	return false;
 }
 
+void Stemmer::removeLastMachines() {
+	SubMachines last=machines.last();
+	machines.removeLast();
+	if (last.Prefix!=NULL)
+		delete last.Prefix;
+	if (last.Stem!=NULL)
+		delete last.Stem;
+	if (last.Suffix!=NULL)
+		delete last.Suffix;
+}
+
 bool Stemmer::on_match_helper()
 {
 	info.finish=Suffix->info.finish;
 #ifdef RUNON_WORDS
 	if (sarfParameters.enableRunonwords)
 		machines.append(SubMachines(Prefix,Stem,Suffix));
-	for (int i=0;i<machines.size();i++)
-	{
+	for (int i=0;i<machines.size();i++) {
 		runwordIndex=i;
-		if (sarfParameters.enableRunonwords)
-		{
+		if (sarfParameters.enableRunonwords) {
 			SubMachines & m=machines[i];
 			Prefix=m.Prefix;
 			Stem=m.Stem;
 			Suffix=m.Suffix;
 		}
 #endif
-		if (get_all_details)
-		{
+		if (get_all_details) {
 			solution_position * s_inf=Suffix->computeFirstSolution();
-			do
-			{
+			do {
 				solution_position * p_inf=Prefix->computeFirstSolution();
-				do
-				{
+				do {
 					solution_position * S_inf=Stem->computeFirstSolution();
-					do
-					{
+					do {
 						suffix_infos=&Suffix->affix_info;
 						prefix_infos=&Prefix->affix_info;
 						stem_info=Stem->solution;
@@ -209,14 +212,15 @@ bool Stemmer::on_match_helper()
 				delete p_inf;
 			}while(Suffix->computeNextSolution(s_inf));
 			delete s_inf;
-		}
-		else
+		} else {
 			if (!on_match())
 				return false;
+		}
 #ifdef RUNON_WORDS
 	}
-	if (sarfParameters.enableRunonwords)
-		machines.removeLast();
+	if (sarfParameters.enableRunonwords) {
+		removeLastMachines();
+	}
 	return true;
 #endif
 }

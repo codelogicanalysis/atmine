@@ -5,8 +5,7 @@ class QColor;
 class QString;
 class AbstractGraph;
 
-class ATMProgressIFC
-{
+class ATMProgressIFC {
 public:
 	virtual void report(int value)=0;
 	virtual void startTaggingText(QString & text)=0;
@@ -17,5 +16,18 @@ public:
 	virtual QString getFileName()=0;
 	virtual void displayGraph(AbstractGraph * /*graph*/) {}
 };
+
+class EmptyProgressIFC: public ATMProgressIFC {
+public:
+	virtual void report(int value);
+	virtual void startTaggingText(QString & text);
+	virtual void tag(int start, int length,QColor color, bool textcolor=true);
+	virtual void finishTaggingText();
+	virtual void setCurrentAction(const QString & s);
+	virtual void resetActionDisplay();
+	virtual QString getFileName();
+};
+
+
 
 #endif // ATMPROGRESSIFC_H
