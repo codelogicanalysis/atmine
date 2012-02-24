@@ -11,10 +11,8 @@
 #include "logger.h"
 #include "textParsing.h"
 
-inline QString get_Possessive_form(QString word)
-{
-	if (word.length()>=2)
-	{
+inline QString get_Possessive_form(QString word) {
+	if (word.length()>=2) {
 		int last_index=getLastLetter_index(word,word.length()-1);
 		QChar last=_getLastLetter(word,last_index);
 		QChar before=getLastLetter(word.left(last_index));
@@ -30,17 +28,14 @@ inline QString get_Possessive_form(QString word)
 			return removeLastDiacritics(word).append(shadde);
 		else if (isConsonant(last) || last==waw)
 			return removeLastDiacritics(word).append(ya2);
-		else
-		{
+		else {
 			out << "Unknown Rule for Possessive form\n";
 			return QString::null;
 		}
-	}
-	else
+	} else
 		return word.append(ya2);
 }
-inline bool equal(const QChar & c1, const QChar & c2)
-{
+inline bool equal(const QChar & c1, const QChar & c2) {
 	if (c1==c2)
 		return true;
 	if (alefs.contains(c1) && alefs.contains(c2))
@@ -49,12 +44,10 @@ inline bool equal(const QChar & c1, const QChar & c2)
 		return true;
 	return false;
 }
-inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)
-{
+inline bool equal_ignore_diacritics(const QString &word1,const QString &word2) {
 	int length1=word1.length(),length2=word2.length();
 	int i=0,j=0;
-	while(i<length1 && j<length2)
-	{
+	while(i<length1 && j<length2) {
 		if (isDiacritic(word1[i]))
 			i++;
 		if (isDiacritic(word2[j]))
@@ -75,43 +68,56 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2)
 		i++;
 		j++;
 	}
-	if (length1-(i)<=0)
-	{
+	if (length1-(i)<=0) {
 		for (int f=j;f<length2;f++)
 			if (!isDiacritic(word2[f]))
 				return false;
-	}
-	else if (length2-(j)<=0)
-	{
+	} else if (length2-(j)<=0) {
 		for (int f=i;f<length1;f++)
 			if (!isDiacritic(word1[f]))
 				return false;
-	}
-	else
+	} else
 		return false;
 	return true;
 }
 bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2,bool force_shadde=false); //modifies value of i1 and i2
-inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_shadde=false) // is diacritics tolerant and ignores punctuation
-{
+inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_shadde=false) { // is diacritics tolerant and ignores punctuation
 	int i1,i2;
 	int length1=word1.length(),
 		length2=word2.length();
 	if (!checkIfSmallestIsPrefixOfLargest(word1,word2,i1,i2,force_shadde))
 		return false;
 	if (length1-(i1+1)<=0) {
+		Diacritics d2; //maybe not necessary since forcing some diacritics will not affect here
 		for (int i=i2+1;i<length2;i++) {
 			QChar letter=word2.at(i);
-			if (!isDiacritic(letter) && !isPunctuationMark(letter))
+			bool isDia=isDiacritic(letter),
+				 isPunc=isPunctuationMark(letter);
+			if (!isDia && !isPunc)
 				return false;
+			else if (isDia){
+				d2.append(letter);
+			}
 		}
+		Diacritics d1;
+		if (!d1.isConsistent(d2,force_shadde))
+			return false;
 	}
 	else if (length2-(i2+1)<=0) {
+		Diacritics d1;
 		for (int i=i1+1;i<length1;i++) {
 			QChar letter=word1.at(i);
-			if (!isDiacritic(letter) && !isPunctuationMark(letter))
+			bool isDia=isDiacritic(letter),
+				 isPunc=isPunctuationMark(letter);
+			if (!isDia && !isPunc)
 				return false;
+			else if (isDia) {
+				d1.append(letter);
+			}
 		}
+		Diacritics d2;
+		if (!d1.isConsistent(d2,force_shadde))
+			return false;
 	} else
 		return false;
 	return true;
@@ -130,8 +136,7 @@ inline bool startsWith(const QStringRef &text,const QString &substring, int & fi
 	if(text_length<substring_length)
 		return false;
 	int i2;
-	if (checkIfSmallestIsPrefixOfLargest(text,substring.rightRef(-1),finish_pos,i2))
-	{
+	if (checkIfSmallestIsPrefixOfLargest(text,substring.rightRef(-1),finish_pos,i2)) {
 		finish_pos++;
 		while(finish_pos<text_length && isDiacritic(text.at(finish_pos)))
 			finish_pos++;

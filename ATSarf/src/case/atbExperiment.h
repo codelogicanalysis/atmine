@@ -81,7 +81,5 @@ int atb(QString inputString, ATMProgressIFC * prg);
 
 int atb2(QString inputString, ATMProgressIFC *prg);
 
-int atb3(QString inputString, ATMProgressIFC *prg);
-
 
 #endif // ATBEXPERIMENT_H

@@ -39,6 +39,10 @@ bool VocalizedCombinations::initialize(int i, int index) {
 }
 
 void VocalizedCombinations::iterate(int i) {
+	if (indicies.size()==0) {
+		indicies.append(-1);
+		return;
+	}
 	int & index=indicies[i];
 	int diacriticIndexSize=diacritics.size();
 	if (index+1<diacriticIndexSize) {
@@ -83,7 +87,7 @@ QString VocalizedCombinations::getString() const {
 }
 
 bool VocalizedCombinations::isFinished() const {
-	return indicies.size()==0 || indicies.last()==-1;
+	return indicies.size()>0 && indicies.last()==-1;
 }
 
 VocalizedCombinations::Combination VocalizedCombinations::Combination::deduceCombination(QString voc) {

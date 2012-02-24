@@ -186,23 +186,17 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 			if (!onMatch())
 				return false;
 #else //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
-	while(s1.retrieve(category_of_currentmatch,possible_raw_datas))
-	{
-		if (isPrefixStemCompatible())
-		{
-			if (!reduce_thru_diacritics)
-			{
+	while(s1.retrieve(category_of_currentmatch,possible_raw_datas)) {
+		if (isPrefixStemCompatible()) {
+			if (!reduce_thru_diacritics) {
 				if (!onMatch())
 					return false;
-			}
-			else
-			{
+			} else {
 				for (int i=0;i<possible_raw_datas.count();i++) {
 				#ifdef DEBUG
 					out<<subword.toString()<<"-"<<possible_raw_datas[i]<<"\n";
 				#endif
-					if (!equal(subword,possible_raw_datas[i],true)) //force_shadde=true
-					{
+					if (!equal(subword,possible_raw_datas[i],true)) { //force_shadde=true
 						possible_raw_datas.remove(i);
 						i--;
 					}
