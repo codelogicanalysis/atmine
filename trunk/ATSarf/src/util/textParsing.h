@@ -93,12 +93,10 @@ inline long getLastLetter_IN_currentWord(QString * text,long start_letter_curren
 		start_letter_current_word++;
 #endif
 	bool first=true;
-	while(start_letter_current_word<size)
-	{
+	while(start_letter_current_word<size) {
 		if(!isDelimiter(text->at(start_letter_current_word)))
 			start_letter_current_word++;
-		else
-		{
+		else {
 			if (!first)
 				start_letter_current_word--;
 			break;

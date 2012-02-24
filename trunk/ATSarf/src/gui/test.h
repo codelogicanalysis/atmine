@@ -16,9 +16,9 @@
 //#define AUGMENT_ORIGINAL
 //#define SAMA
 #define MORPHEME_TOKENIZE
-#define ATB
+//#define ATB
 //#define ATB2
-//#define ATB3
+#define ATB_DIACRITIC
 #define REPETITIONS 1
 
 //#define DIACRITIC_DISAMBIGUATION

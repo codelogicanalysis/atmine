@@ -8,66 +8,6 @@
 #include "vocalizedCombinations.h"
 
 
-
-
-DiacriticDisambiguationBase::Solution::Solution(QString raw,QString des,QString POS): voc(raw), desc(des),pos(POS) {
-	featuresDefined=false;
-}
-
-DiacriticDisambiguationBase::Solution::Solution(QString raw,QString des,QString POS, int stemStart, int suffStart, int stemIndex, int numPrefixes, int numSuffixes) {
-	featuresDefined=true;
-	voc=raw;
-	desc=des;
-	pos=POS;
-	this->stemStart=stemStart;
-	this->suffStart=suffStart;
-	this->stemIndex=stemIndex;
-	this->numPrefixes=numPrefixes;
-	this->numSuffixes=numSuffixes;
-}
-
-QString DiacriticDisambiguationBase::Solution::getFeatureIndex(const QString & feature, int index) const {
-	assert(index>=0);
-	QStringList entries=feature.split("+");
-	assert(index<entries.size());
-	QString & r=entries[index];
-	if (r[0]==' ')
-		r.remove(0,1);
-	if (r[r.size()-1]==' ')
-		r.remove(r.size()-1,1);
-	return r;
-}
-
-int DiacriticDisambiguationBase::Solution::getTokenization() const {
-	return pos.count("PART")+pos.count("PREP")+pos.count("CONJ")+pos.count("DET")+pos.count("PRON")+pos.count("SUFF_DO");
-}
-
-bool DiacriticDisambiguationBase::Solution::equal (const DiacriticDisambiguationBase::Solution & other, Ambiguity m) const  {
-	if (m==DiacriticDisambiguationBase::Vocalization) {
-		return voc==other.voc;
-	} else if (m==DiacriticDisambiguationBase::Description) {
-		return desc==other.desc;
-	} else if (m==DiacriticDisambiguationBase::POS) {
-		return pos==other.pos;
-	} else if (m==DiacriticDisambiguationBase::Stem_Ambiguity) {
-		if (featuresDefined) {
-			int index1=stemIndex;
-			int index2=other.stemIndex;
-			QString pos1=getFeatureIndex(pos,index1);
-			QString pos2=getFeatureIndex(other.pos,index2);
-			QString desc1=getFeatureIndex(desc,index1);
-			QString desc2=getFeatureIndex(other.desc,index2);
-			return pos1==pos2 && desc1==desc2;
-		} else
-			return false;
-	} else if (m==DiacriticDisambiguationBase::Tokenization) {
-		int p1=getTokenization();
-		int p2=other.getTokenization();
-		return p1==p2;
-	}
-	return true;
-}
-
 void DiacriticDisambiguationBase::reset() {
 	for (int i=0;i< ambiguitySize;i++) {
 		total[i]=0;
@@ -92,9 +32,9 @@ DiacriticDisambiguationBase::DiacriticDisambiguationBase(bool mapBased, bool sup
 	reset();
 }
 
-void DiacriticDisambiguationBase::store(long id, QString entry, Solution & s) {
+void DiacriticDisambiguationBase::store(long id, QString entry, AmbiguitySolution & s) {
 	if (mapBased) {
-		AffixSolutionList & l=solutionMap[id];
+		EntryAmbiguitySolutionList & l=solutionMap[id];
 		l.second.append(s);
 		if (l.first.isEmpty())
 			l.first=entry;
@@ -115,60 +55,13 @@ void DiacriticDisambiguationBase::store(long id, QString entry, Solution & s) {
 
 void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS, int stemStart,
 		   int suffStart, int stemIndex, int numPrefixes, int numSuffixes) {
-	Solution s(raw_data,description,POS,stemStart,suffStart,stemIndex,numPrefixes,numSuffixes);
+	AmbiguitySolution s(raw_data,description,POS,stemStart,suffStart,stemIndex,numPrefixes,numSuffixes);
 	store(id,entry,s);
 }
 
 void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS) {
-	Solution s(raw_data,description,POS);
+	AmbiguitySolution s(raw_data,description,POS);
 	store(id,entry,s);
-}
-
-QString DiacriticDisambiguationBase::interpret(Ambiguity a) {
-	switch (a) {
-	case Vocalization:
-		return "VOC";
-	case Tokenization:
-		return "Token";
-	case Description:
-		return "Gloss";
-	case POS:
-		return "POS";
-	case Stem_Ambiguity:
-		return "Stem";
-	case All_Ambiguity:
-		return "All";
-	default:
-		return "---";
-	}
-}
-
-item_types DiacriticDisambiguationBase::getDiacriticPosition(Solution & sol, int diacriticPos) const {
-	if (sol.featuresDefined) {
-		if (diacriticPos>=sol.suffStart)
-			return SUFFIX;
-		else if (diacriticPos>=sol.stemStart)
-			return STEM;
-		else
-			return PREFIX;
-	} else {
-		return STEM;
-	}
-}
-
-DiacriticDisambiguationBase::SolutionList DiacriticDisambiguationBase::getUnique(const SolutionList & list, Ambiguity m) {
-	SolutionList l;
-	for (int i=0;i<list.size();i++) {
-		int j;
-		for (j=0;j<l.size();j++) {
-			if (l.at(j).equal(list.at(i),m)) {
-				break;
-			}
-		}
-		if (j==l.size())
-			l.append(list.at(i));
-	}
-	return l;
 }
 
 DiacriticDisambiguationBase::~DiacriticDisambiguationBase() {
@@ -196,7 +89,7 @@ void DiacriticDisambiguationBase::analyze() {
 	if (mapBased) {
 		for (Map::iterator itr=solutionMap.begin();itr!=solutionMap.end();itr++) {
 			QString currAffix=itr->first;
-			SolutionList currSol=itr->second;
+			AmbiguitySolutionList currSol=itr->second;
 			analyzeOne(currAffix,currSol);
 		}
 		solutionMap.clear();
@@ -242,16 +135,16 @@ void DiacriticDisambiguationBase::printDiacritics(const QList<Diacritics> & d) {
 		out<<"\t"<<"X";
 }
 
-void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const SolutionList & currSol) {
+void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySolutionList & currSol) {
 	/*typedef QHash<QString, int> String2Int;
 	typedef QPair<QString, int> StringIntPair;
 	String2Int vocalizationIndicies;*/
 
-	SolutionList currSolutions[ambiguitySize];
+	AmbiguitySolutionList currSolutions[ambiguitySize];
 	QList<int> index[ambiguitySize];
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		if ((Ambiguity)amb!=All_Ambiguity)
-			currSolutions[amb]=getUnique(currSol,(Ambiguity)amb);
+			currSolutions[amb]=getAmbiguityUnique(currSol,(Ambiguity)amb);
 		else
 			currSolutions[amb]=currSol;
 	#if 0
@@ -276,7 +169,6 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const SolutionLis
 
 
 	int sub_total[ambiguitySize]={0}, sub_left[ambiguitySize]={0};
-	//QList< QList<
 	int best_sub_Left[ambiguitySize]={0}, worst_sub_Left[ambiguitySize]={0};
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		best_sub_Left[amb]=currSolutions[amb].size();
@@ -469,37 +361,8 @@ void StemDisambiguation::operator()() {
 	}
 }
 
-bool DisambiguationStemmer::on_match() {
-	int stemStart=Stem->info.start;
-	int suffStart=Suffix->info.start;
-	int numPrefix=0,numSuff=0;
-	int stemIndex;
-	QString pos,desc,raw;
-	for (int i=0;i<prefix_infos->size();i++) {
-		minimal_item_info & pre = (*prefix_infos)[i];
-		if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
-			continue;
-		desc+=pre.description()+" + ";
-		pos+=pre.POS+"+";
-		raw+=pre.raw_data;
-		numPrefix++;
-	}
-	minimal_item_info & stem = *stem_info;
-	desc+=stem.description()+" + ";
-	pos+=stem.POS+"+";
-	raw+=stem.raw_data;
-	stemIndex=numPrefix;
-	for (int i=0;i<suffix_infos->size();i++) {
-		minimal_item_info & suff = (*suffix_infos)[i];
-		if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
-			continue;
-		desc+=suff.description()+" + ";
-		pos+=suff.POS+"+";
-		raw+=suff.raw_data;
-		numSuff++;
-	}
-	storage.store(id,info.getString(),raw,desc,pos,stemStart,suffStart,stemIndex,numPrefix,numSuff);
-	return true;
+void DisambiguationStemmer::store(QString entry,AmbiguitySolution & s) {
+	storage.store(id,entry,s);
 }
 
 FullDisambiguation::FullDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs, QString outputFileName): DiacriticDisambiguationBase(false,true, numDiacritcs) {

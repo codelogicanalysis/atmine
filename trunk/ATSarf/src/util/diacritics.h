@@ -6,7 +6,7 @@
 #include <QRegExp>
 #include "letters.h"
 
-enum Diacritic {FATHA,KASRA,DAMMA,DAMMATAYN,SHADDA,SUKUN,FATHATAYN,KASRATAYN,UNDEFINED_DIACRITICS};
+enum Diacritic {FATHA,KASRA,DAMMA,SHADDA,SUKUN,FATHATAYN,KASRATAYN,DAMMATAYN,UNDEFINED_DIACRITICS};
 
 inline QChar interpret_diacritic(Diacritic d) {
 	switch(d) {
@@ -97,6 +97,16 @@ public:
 		if (forceShadde) {
 			if (shadde && !l.shadde)
 				return false;
+			if (main==FATHATAYN) {
+				if (l.main!=FATHATAYN)
+					return false;
+			} else if (main==DAMMATAYN) {
+				if (l.main!=DAMMATAYN)
+					return false;
+			} else if (main==KASRATAYN) {
+				if (l.main!=KASRATAYN)
+					return false;
+			}
 		}
 		if (main!=UNDEFINED_DIACRITICS && l.main!=UNDEFINED_DIACRITICS)
 			return main==l.main;

@@ -27,7 +27,7 @@ extern int bibleTagger(QString input_str);
 extern int hadithTagger(QString input_str);
 extern int atb(QString inputString,ATMProgressIFC * prg);
 extern int atb2(QString inputString,ATMProgressIFC * prg);
-extern int atb3(QString inputString,ATMProgressIFC * prg);
+extern int atbDiacritic(QString inputString,ATMProgressIFC * prg);
 extern void diacriticDisambiguationCount(item_types t, int numDiacritics=1);
 extern void diacriticDisambiguationCount(QString fileName, int numDiacritics,ATMProgressIFC * prg, QString outputFile="fullOutput");
 
@@ -162,8 +162,8 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #elif  defined(ATB2)
 	if (atb2(inputString,prg)<0)
 		return -1;
-#elif  defined(ATB3)
-	if (atb3(inputString,prg)<0)
+#elif  defined(ATB_DIACRITIC)
+	if (atbDiacritic(inputString,prg)<0)
 		return -1;
 #elif defined(AUGMENT_DICTIONARY)
 	if (augment()<0)
