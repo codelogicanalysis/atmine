@@ -21,6 +21,8 @@
 
 #define ATB_DIACRITICS
 
+#define ATB_PRINT_ALL
+
 
 class AtbStemmer: public Stemmer {
 public:

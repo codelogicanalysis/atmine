@@ -180,7 +180,7 @@ inline QString removeLastDiacritics(const QString &word) { //removes last consec
 }
 QString getDiacriticword(int position,int startPos,QString diacritic_word);
 inline int getLastDiacritic(int position, QString * diacritic_word) { //get letter position after last diacritic starting from 'position+1', if no diacritic is found returns 'position+1'
-	if (position<-1)
+	if (position<-1 /*|| position ==diacritic_word->length()*/)
 		return position+1;
 	QChar nextletter;
 	do{

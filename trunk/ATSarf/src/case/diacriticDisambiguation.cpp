@@ -33,6 +33,11 @@ DiacriticDisambiguationBase::DiacriticDisambiguationBase(bool mapBased, bool sup
 }
 
 void DiacriticDisambiguationBase::store(long id, QString entry, AmbiguitySolution & s) {
+	//assert(equal(s.voc,entry));
+	if (!equal(s.voc,entry)) {
+		qDebug()<<"Conflict:\t"<<s.voc<<entry;
+		return;
+	}
 	if (mapBased) {
 		EntryAmbiguitySolutionList & l=solutionMap[id];
 		l.second.append(s);
@@ -50,7 +55,7 @@ void DiacriticDisambiguationBase::store(long id, QString entry, AmbiguitySolutio
 		}
 		currSol.append(s);
 	}
-	assert(equal(s.voc,entry));
+
 }
 
 void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS, int stemStart,
@@ -101,38 +106,39 @@ void DiacriticDisambiguationBase::analyze() {
 	}
 }
 
-void DiacriticDisambiguationBase::printDiacriticDisplay(Diacritics d) {
+void DiacriticDisambiguationBase::printDiacriticDisplay(Diacritics d, QTextStream * o) {
 	if (!d.isSelfConsistent()) {
-		out<<"~";
+		(*o)<<"~";
 		return;
 	}
-	out<<(d.hasShadde()?1:0);
-	out<<"-";
+	(*o)<<(d.hasShadde()?1:0);
+	(*o)<<"-";
 	Diacritic dia=d.getMainDiacritic();
-	out<< (dia==UNDEFINED_DIACRITICS?0:(int)dia +1);
+	(*o)<< (dia==UNDEFINED_DIACRITICS?0:(int)dia +1);
 }
 
-void DiacriticDisambiguationBase::printDiacritics(QString entry, int pos, QChar c) { //for one diacritic
-	out	<<diacriticsCount<<"\t"<<entry.size();
+void DiacriticDisambiguationBase::printDiacritics(QString entry, int pos, QChar c, QTextStream * o) { //for one diacritic
+
+	(*o)<<diacriticsCount<<"\t"<<entry.size();
 	for (int p=0;p<pos;p++)
-		out<<"\t"<<"0-0";
+		(*o)<<"\t"<<"0-0";
 	Diacritics dia(c);
-	out<<"\t";
-	printDiacriticDisplay(dia);
+	(*o)<<"\t";
+	printDiacriticDisplay(dia,o);
 	for (int p=pos+1;p<entry.size();p++)
-		out<<"\t"<<"0-0";
+		(*o)<<"\t"<<"0-0";
 	for (int p=entry.size();p<maxDiacritics;p++)
-		out<<"\t"<<"X";
+		(*o)<<"\t"<<"X";
 }
 
-void DiacriticDisambiguationBase::printDiacritics(const QList<Diacritics> & d) { //for multiple diacritcs
-	out	<<diacriticsCount<<"\t"<<d.size();
+void DiacriticDisambiguationBase::printDiacritics(const QList<Diacritics> & d, QTextStream * o) { //for multiple diacritcs
+	(*o)<<diacriticsCount<<"\t"<<d.size();
 	for (int i=0;i<d.size();i++) {
-		out<<"\t";
-		printDiacriticDisplay(d[i]);
+		(*o)<<"\t";
+		printDiacriticDisplay(d[i],o);
 	}
 	for (int i=d.size();i<maxDiacritics;i++)
-		out<<"\t"<<"X";
+		(*o)<<"\t"<<"X";
 }
 
 void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySolutionList & currSol) {
@@ -175,7 +181,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 	}
 
 
-
+#ifdef ONE_SPECIAL
 	if (diacriticsCount==1) {
 		for (int i=-1;i<currEntry.size();i++) {
 			int diacritics[ambiguitySize][(int)UNDEFINED_DIACRITICS+1]={0};
@@ -240,12 +246,15 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 
 		}
 	} else {
+#else
+	{
+#endif
 		typedef QSet<VocalizedCombinations::Combination> CombSet;
 		CombSet allPossibleComb;
 		QSet<QString> vocs;
-		for (int j=0;j<currSolutions[All_Ambiguity].size();j++) { //All_Ambiguity contains all solutions
-			QString voc=currSolutions[All_Ambiguity][j].voc;
-			if (diacriticsCount>1) {
+		for (int j=0;j<currSolutions[Vocalization].size();j++) { //All_Ambiguity contains all solutions
+			QString voc=currSolutions[Vocalization][j].voc;
+			if (diacriticsCount>0) {
 				if (vocs.contains(voc))
 					continue;
 				vocs.insert(voc);
@@ -273,7 +282,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 			for (int amb=0;amb<ambiguitySize;amb++) {
 				int valid_count=0;
 				for (int j=0;j<currSolutions[amb].size();j++) {
-					if (equal(currSolutions[amb][j].voc,s))
+					if (equal(s,currSolutions[amb][j].voc,true))
 						valid_count++;
 				}
 				valid_ratio[amb]=((double)valid_count)/(currSolutions[amb].size());
@@ -288,13 +297,16 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 			}
 			bool reduced=valid_ratio[All_Ambiguity]<1;
 			bool display=((numDia==diacriticsCount|| diacriticsCount==-1) && !suppressOutput && reduced);
-			if (display) {
-				out	<<s<<"\t";
-				printDiacritics(d);
-				for (int amb=0;amb<ambiguitySize;amb++) {
-					out<<"\t"<<valid_ratio[amb];
+			for (int i=0;i<2;i++) {
+				QTextStream * o=(i==0?&out:&hadith_out);
+				if (display || i==1) { //always display for hadith_out
+					(*o)<<s<<"\t";
+					printDiacritics(d,o);
+					for (int amb=0;amb<ambiguitySize;amb++) {
+						(*o)<<"\t"<<valid_ratio[amb];
+					}
+					(*o)<<"\n";
 				}
-				out<<"\n";
 			}
 		}
 	}
@@ -308,10 +320,14 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 			totalBranching[amb]+=sub_total[amb];
 			total[amb]+=currSolutions[amb].size();
 		#else
-			if (amb==(int)All_Ambiguity)
+			if (amb==(int)All_Ambiguity && !currEntry.isEmpty())
 				countWithoutDiacritics++;
 		#endif
 		} else {
+			/*if (diacriticsCount<0) {
+				qDebug()<<sub_total[amb]<<" vs "<<currSolutions[amb].size();
+				assert(sub_total[amb]==currSolutions[amb].size());
+			}*/
 			left[amb]+=((double)sub_left[amb])/sub_total[amb]*currSolutions[amb].size();
 			worstLeft[amb]+=worst_sub_Left[amb];
 			bestLeft[amb]+=best_sub_Left[amb];
@@ -365,24 +381,54 @@ void DisambiguationStemmer::store(QString entry,AmbiguitySolution & s) {
 	storage.store(id,entry,s);
 }
 
-FullDisambiguation::FullDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs, QString outputFileName): DiacriticDisambiguationBase(false,true, numDiacritcs) {
-	this->inputFileName=inputFileName;
-	this->outputFileName=outputFileName;
+FullListDisambiguation::FullListDisambiguation(QStringList & inputList, ATMProgressIFC * prg, int numDiacritcs): DiacriticDisambiguationBase(false,true, numDiacritcs), list(inputList) {
 	this->prg=prg;
-	if (!outputFileName.isEmpty()) {
+}
+
+void FullListDisambiguation::operator()() {
+	QString unvoc;
+	int count=0;
+	long size=list.size();
+	foreach(unvoc, list) {
+		DisambiguationStemmer s(count,unvoc,*this);
+		s();
+		count++;
+		prg->report((((double)count)/size)*100+0.5);
+	}
+}
+
+FullListDisambiguation::~FullListDisambiguation() {
+	analyze();
+}
+
+FullFileDisambiguation::FullFileDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs, QString reducedFileName, QString allFileName): DiacriticDisambiguationBase(false,true, numDiacritcs) {
+	this->inputFileName=inputFileName;
+	this->reducedFileName=reducedFileName;
+	this->allFileName=allFileName;
+	this->prg=prg;
+	if (!allFileName.isEmpty() || !reducedFileName.isEmpty()) {
 		suppressOutput=false;
 	}
 }
 
-void FullDisambiguation::operator()() {
-	if (!outputFileName.isEmpty()) {
-		QFile::remove(outputFileName);
-		outFile.setFileName(outputFileName);
-		assert(outFile.open(QFile::ReadWrite));
+void FullFileDisambiguation::operator()() {
+	if (!reducedFileName.isEmpty()) {
+		QFile::remove(reducedFileName);
+		reducedFile.setFileName(reducedFileName);
+		assert(reducedFile.open(QFile::ReadWrite));
 		oldDevice=out.device();
-		out.setDevice(&outFile);
+		out.setDevice(&reducedFile);
 		out.setCodec("utf-8");
 	}
+	if (!allFileName.isEmpty()) {
+		QFile::remove(allFileName);
+		allFile.setFileName(allFileName);
+		assert(allFile.open(QFile::ReadWrite));
+		oldDeviceAll=hadith_out.device();
+		hadith_out.setDevice(&allFile);
+		hadith_out.setCodec("utf-8");
+	}
+
 	QFile input(inputFileName);
 	if (!input.open(QIODevice::ReadOnly)) {
 		out << "File not found\n";
@@ -420,11 +466,14 @@ void FullDisambiguation::operator()() {
 	input.close();
 }
 
-FullDisambiguation::~FullDisambiguation() {
+FullFileDisambiguation::~FullFileDisambiguation() {
 	analyze();
-	if (outFile.isOpen())
-		outFile.close();
+	if (reducedFile.isOpen())
+		reducedFile.close();
 	out.setDevice(oldDevice);
+	if (allFile.isOpen())
+		allFile.close();
+	hadith_out.setDevice(oldDeviceAll);
 }
 
 
@@ -438,7 +487,13 @@ void diacriticDisambiguationCount(item_types t, int numDiacritics=1) {
 	}
 }
 
-void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC * prg, QString outputFile="fullOutput") {
-	FullDisambiguation d(fileName, prg, numDiacritics,outputFile);
+void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC * prg, QString reducedFile="reducedOutput", QString allFile="fullOutput") {
+	FullFileDisambiguation d(fileName, prg, numDiacritics,reducedFile,allFile);
 	d();
 }
+
+void diacriticDisambiguationCount(QStringList & list, int numDiacritics, ATMProgressIFC * prg) {
+	FullListDisambiguation d(list, prg, numDiacritics);
+	d();
+}
+

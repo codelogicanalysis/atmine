@@ -29,7 +29,8 @@ extern int atb(QString inputString,ATMProgressIFC * prg);
 extern int atb2(QString inputString,ATMProgressIFC * prg);
 extern int atbDiacritic(QString inputString,ATMProgressIFC * prg);
 extern void diacriticDisambiguationCount(item_types t, int numDiacritics=1);
-extern void diacriticDisambiguationCount(QString fileName, int numDiacritics,ATMProgressIFC * prg, QString outputFile="fullOutput");
+extern void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC * prg, QString reducedFile="reducedOutput", QString allFile="fullOutput");
+extern void diacriticDisambiguationCount(QStringList & list, int numDiacritics, ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -114,6 +115,10 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 
 int test(QString inputString,ATMProgressIFC * prg) {
 #if 0
+	QStringList entries=inputString.split("\t");
+	diacriticDisambiguationCount(entries,-1,prg);
+	//out<<equal(first, second);
+#elif 0
 	for (int i=0;i<10;i++) {
 		out<<i<<":\n";
 		VocalizedCombinations c(inputString,i);
@@ -147,13 +152,11 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	diacriticDisambiguationCount(SUFFIX);
 #else
 	displayed_error<<"\nFull:\n";
+	int count=2;
+	displayed_error<<"\nFull ("<<count<<"): \n";
 	//out<<"\n\nFull:\n";
-	//diacriticDisambiguationCount(inputString,1,prg, "1dia.txt");
-	//diacriticDisambiguationCount(inputString,2,prg, "2dia.txt");
-	//diacriticDisambiguationCount(inputString,3,prg, "3dia.txt");
-	//diacriticDisambiguationCount(inputString,4,prg, "4dia.txt");
-
-	diacriticDisambiguationCount(inputString,-1,prg, "*dia.txt");
+	QString name=QString("%1dia").arg(count>=0?QString("%1").arg(count):"*");
+	diacriticDisambiguationCount(inputString,count,prg, name+".reduced.txt",name+".all.txt");
 
 #endif
 #elif  defined(ATB)

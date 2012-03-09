@@ -7,6 +7,7 @@
 #include "ambiguity.h"
 
 class DiacriticDisambiguationBase {
+	friend class DisambiguationStemmer;
 public:
 	typedef QHash<long, EntryAmbiguitySolutionList> Map;
 protected:
@@ -31,9 +32,9 @@ protected:
 	long long totalCombinations[ambiguitySize];
 	long long countWithoutDiacritics;
 private:
-	void printDiacriticDisplay(Diacritics d);
-	void printDiacritics(QString entry, int pos, QChar c); //for one diacritic
-	void printDiacritics(const QList<Diacritics> & d); //for multiple diacritcs
+	void printDiacriticDisplay(Diacritics d, QTextStream * o=&out);
+	void printDiacritics(QString entry, int pos, QChar c, QTextStream * o=&out); //for one diacritic
+	void printDiacritics(const QList<Diacritics> & d , QTextStream * o=&out); //for multiple diacritcs
 	void reset();
 protected:
 	DiacriticDisambiguationBase(bool mapBased, bool suppressOutput,int diacriticsCount=1);
@@ -67,28 +68,37 @@ public:
 };
 
 
-class FullDisambiguation: public DiacriticDisambiguationBase {
+class FullFileDisambiguation: public DiacriticDisambiguationBase {
 private:
-	QString inputFileName, outputFileName;
-	QFile outFile;
-	QIODevice * oldDevice;
+	QString inputFileName, reducedFileName, allFileName;
+	QFile reducedFile, allFile;
+	QIODevice * oldDevice, * oldDeviceAll;
 	ATMProgressIFC * prg;
-
-	friend class DisambiguationStemmer;
 public:
-	FullDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs=1, QString outputFileName="fullOutput");
+	FullFileDisambiguation(QString inputFileName, ATMProgressIFC * prg, int numDiacritcs=1, QString reducedFile="reducedOutput", QString allFile="fullOutput");
 	void operator()();
-	~FullDisambiguation();
+	~FullFileDisambiguation();
 };
+
+class FullListDisambiguation: public DiacriticDisambiguationBase {
+private:
+	QStringList & list;
+	ATMProgressIFC * prg;
+public:
+	FullListDisambiguation(QStringList & inputList, ATMProgressIFC * prg, int numDiacritcs=1);
+	void operator()();
+	~FullListDisambiguation();
+};
+
 
 class DisambiguationStemmer: public AmbiguityStemmerBase {
 private:
 	long id;
-	FullDisambiguation & storage;
+	DiacriticDisambiguationBase & storage;
 protected:
 	virtual void store(QString entry,AmbiguitySolution & s);
 public:
-	DisambiguationStemmer(long id,QString & word,FullDisambiguation & t): AmbiguityStemmerBase(word),storage(t) {
+	DisambiguationStemmer(long id,QString & word,DiacriticDisambiguationBase & t): AmbiguityStemmerBase(word),storage(t) {
 		this->id=id;
 	}
 };
