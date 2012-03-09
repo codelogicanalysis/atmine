@@ -166,9 +166,11 @@ bool TreeSearch::on_match_helper() {
 			//qDebug() <<subword;
 			for (int j=0;j<possible_raw_datasOFCurrentMatch[k].count();j++) {
 				QString rawdata=possible_raw_datasOFCurrentMatch[k][j].getActual();
-				if (rawdata.size()>0 && isDiacritic(rawdata[0])) {//in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
+				bool raw_has_diacritics=startPos>0 && isDiacritic((*info.text)[startPos-1]);
+				bool input_ended_with_diacritic=subword.size()>0 && isDiacritic(subword.at(subword.size()-1));
+				if (raw_has_diacritics || input_ended_with_diacritic) {//in this case we can assume we are working in the first suffix or recursive affixes whose diacritics are for those before them
 					QStringRef diacritics_of_word=getDiacriticsBeforePosition(startPos,info.text),
-							   diacritics_of_rawdata=addlastDiacritics(0,0,&rawdata);//to get first couple of diacritics of raw_data without letters
+						diacritics_of_rawdata=(rawdata.size()>0?addlastDiacritics(0,0,&rawdata):QStringRef());//to get first couple of diacritics of raw_data without letters
 
 				#ifdef DEBUG
 					qDebug() <<diacritics_of_word<<"\t"<<diacritics_of_rawdata;

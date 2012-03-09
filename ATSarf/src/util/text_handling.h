@@ -81,7 +81,7 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2) {
 	return true;
 }
 bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2,bool force_shadde=false); //modifies value of i1 and i2
-inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_shadde=false) { // is diacritics tolerant and ignores punctuation
+inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_shadde=false, bool force_last=true) { // is diacritics tolerant and ignores punctuation
 	int i1,i2;
 	int length1=word1.length(),
 		length2=word2.length();
@@ -100,7 +100,7 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_sha
 			}
 		}
 		Diacritics d1;
-		if (!d1.isConsistent(d2,force_shadde))
+		if (force_last && !d1.isConsistent(d2,force_shadde))
 			return false;
 	}
 	else if (length2-(i2+1)<=0) {
@@ -116,17 +116,17 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_sha
 			}
 		}
 		Diacritics d2;
-		if (!d1.isConsistent(d2,force_shadde))
+		if (force_last && !d1.isConsistent(d2,force_shadde))
 			return false;
 	} else
 		return false;
 	return true;
 }
-inline bool equal(const QString &word1,const QString &word2,bool force_shadde=false) {// is diacritics tolerant
-	return equal(word1.rightRef(-1),word2.rightRef(-1),force_shadde);//rightRef of <0 returns whole string
+inline bool equal(const QString &word1,const QString &word2,bool force_shadde=false, bool force_last=true) {// is diacritics tolerant
+	return equal(word1.rightRef(-1),word2.rightRef(-1),force_shadde, force_last);//rightRef of <0 returns whole string
 }
-inline bool equal(const QStringRef &word1,const QString &word2,bool force_shadde=false) { // is diacritics tolerant
-	return equal(word1,word2.rightRef(-1),force_shadde);//rightRef of <0 returns whole string
+inline bool equal(const QStringRef &word1,const QString &word2,bool force_shadde=false, bool force_last=true) { // is diacritics tolerant
+	return equal(word1,word2.rightRef(-1),force_shadde, force_last);//rightRef of <0 returns whole string
 }
 inline bool equal_withoutLastDiacritics(const QString &word1,const QString &word2) { // is diacritics tolerant
 	return equal(removeLastDiacritics(word1),removeLastDiacritics(word2));

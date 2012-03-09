@@ -483,7 +483,11 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				unsplitvoc=unsplitvoc.mid(1,unsplitvoc.size()-2);
 				unsplitvoc=Buckwalter::convertFrom(unsplitvoc);
 			}
+		#ifdef ATB_PRINT_ALL
 			if (c>0) {
+		#else
+			if (status==1) {
+		#endif
 				if(unsplitvoc!="None" && !equal(input_string,unsplitvoc,true)) {
 					wrongDiacritics=true;
 					countWrong=max_words_history;

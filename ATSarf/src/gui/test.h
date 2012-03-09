@@ -21,7 +21,7 @@
 #define ATB_DIACRITIC
 #define REPETITIONS 1
 
-//#define DIACRITIC_DISAMBIGUATION
+#define DIACRITIC_DISAMBIGUATION
 
 int morphology(QString input_str,ATMProgressIFC * prg);
 int hadith(QString input_str,ATMProgressIFC * prg);

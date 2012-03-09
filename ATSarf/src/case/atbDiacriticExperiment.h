@@ -8,6 +8,9 @@
 #include "ambiguity.h"
 
 #define MAX_FOR_UNDERVOCALIZED
+//#define THEORETICAL_DIACRITICS
+#define CHECK_ALL
+#define RECALL_DIACRITICS
 
 class AmbCombStat {
 public:
@@ -25,6 +28,10 @@ public:
 	void reset(QString voc);
 	void augmentStats(QString comb, int ambiguity);
 };
+
+/*class EmpiricalDiacriticDisambiguation {
+public:
+};*/
 
 typedef QList<AmbCombStat> AmbiguityStatList;
 

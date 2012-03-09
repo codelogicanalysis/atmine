@@ -3,6 +3,7 @@
 #include <QTextStream>
 #include "atbDiacriticExperiment.h"
 #include "vocalizedCombinations.h"
+#include "transliteration.h"
 
 void AmbCombStat::reset(QString voc) {
 	this->voc=voc;
@@ -119,12 +120,17 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 	int partial_best_total[ambiguitySize]={0};
 	int partial_worst_total[ambiguitySize]={0};
 	double partial_average_total[ambiguitySize]={0};
+	int correctly_detected[ambiguitySize]={0}, correctly_detectedNoDiacritics[ambiguitySize]={0};
 #endif
 	int countReduced=0, countEquivalent=0, countEquivalentTanween=0, countReducedTanween=0, countTanween=0;
 	QTextStream file(&diacritics_file);
 	int filePos=0;
-	int fileSize=file.readAll().size();
+#ifdef THEORETICAL_DIACRITICS
+	long fileSize=diacritics_file.size();
+#else
+	long fileSize=file.readAll().size();
 	file.seek(0);
+#endif
 	while (!file.atEnd() ) {
 		line=file.readLine(0);
 		filePos+=line.size()+1;
@@ -132,10 +138,26 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 			continue;
 		total++;
 		QStringList entries= line.split("\t",QString::KeepEmptyParts);
+	#ifndef THEORETICAL_DIACRITICS
 		QString voc=entries[0];
 		QString partial_voc=entries[1];
 		QString no_voc=removeDiacritics(partial_voc);
 		int c=entries[2].toInt();
+	#else
+		QString voc=Buckwalter::convertFrom(entries[0]);
+		QString no_voc=Buckwalter::convertFrom(entries[1]);
+	#endif
+		QString ignore;
+	#ifdef RECALL_DIACRITICS
+		ignore=(entries.size()==4?entries[3]:"");
+		if(!equal(voc,no_voc))
+			continue;
+	#endif
+	#ifdef THEORETICAL_DIACRITICS
+		{
+			for (int amb=0;amb<ambiguitySize;amb++) {
+				{
+	#else
 	#ifndef CHECK_ALL
 		if (equal(partial_voc,voc,true)) {
 	#endif
@@ -145,7 +167,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 			stemmer2();
 			AmbiguityStemmer stemmer3(voc);
 			stemmer3();
-
 
 			for (int amb=0;amb<ambiguitySize;amb++) {
 				Ambiguity ambiguity=(Ambiguity)amb;
@@ -176,10 +197,24 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 					} else {
 						print=&displayed_error;
 					}
+				#ifndef RECALL_DIACRITICS
 					(*print)<<partial_voc<<"\t"<<no_voc_amb<<"\t"<<voc_amb<<"\n";
+				#endif
 				}
+	#ifdef RECALL_DIACRITICS
+		if (equal(no_voc,voc))
+			correctly_detectedNoDiacritics[amb]++;
+		else if (ambiguity==All_Ambiguity)
+			displayed_error<<no_voc<<"\t"<<voc<<"\n";
+		if (ignore=="i") {
+			correctly_detected[amb]++;
+			assert(!equal(partial_voc,voc,true));
+		}
+	#endif
 	#ifdef CHECK_ALL
 		if (equal(partial_voc,voc,true)) {
+			correctly_detected[amb]++;
+	#endif
 	#endif
 			#ifdef RANDOM_DIACRITICS
 				//random voc
@@ -197,7 +232,9 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 				}
 				random_full_vocalized[amb]+=full_amb;
 			#else
+			#ifndef THEORETICAL_DIACRITICS
 				if (ambiguity==All_Ambiguity) {
+			#endif
 					for (int i=0;i<maxDiacritics;i++) {
 						AmbiguityStatList d;
 						getStatDiacriticAssignment(voc,i,d);
@@ -210,7 +247,7 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 								other_best_ambiguity[i][amb]+=best;
 								other_worst_ambiguity[i][amb]+=worst;
 								other_count[i][amb]++;
-
+							#ifndef THEORETICAL_DIACRITICS
 								if (c==i ) {
 									partial_average[i][amb]+=average;
 									partial_best[i][amb]+=best;
@@ -225,7 +262,7 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 										partial_worst[0][amb]+=worst;
 									}
 								}
-
+							#endif
 							}
 						}
 					}
@@ -234,18 +271,30 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 			#endif
 			}
 			countEquivalent++;
+		#ifndef THEORETICAL_DIACRITICS
 			if (Has_Tanween) {
 				countEquivalentTanween++;
 			}
+		#endif
 
 		}
+	#ifndef THEORETICAL_DIACRITICS
 		if (Has_Tanween)
 			countTanween++;
+	#endif
 
 		prg->report(((double)filePos)/fileSize*100+0.5);
 	}
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		displayed_error<<interpret((Ambiguity)amb)<<":\n";
+#ifndef RECALL_DIACRITICS
+	#ifdef CHECK_ALL
+		int total_equivalent=total;
+	#else
+		int total_equivalent=countEquivalent;
+	#endif
+		double full_voc_ratio=((double)full_vocalized[amb])/total_equivalent;
+	#ifndef THEORETICAL_DIACRITICS
 		for (int i=0;i<maxDiacritics;i++) {
 			double	voc_ratio=((double)voc_ambiguity[i][amb])/total_count[i][amb],
 					no_voc_ratio=((double)no_voc_ambiguity[i][amb])/total_count[i][amb],
@@ -269,16 +318,15 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 			displayed_error	<<"\tDiacritics\t"<<num<<"\t"<<no_voc_ratio<<"\t"<<voc_ratio
 							<<"->\t"<<average_ratio<<"\t("<<best_ratio<<",\t"<<worst_ratio<<")\n";
 		}
-		double	voc_ratio=((double)voc_total[amb])/total,
-				no_voc_ratio=((double)no_voc_total[amb])/total,
-				full_voc_ratio=((double)full_vocalized[amb])/total,
-				average_ratio=((double)partial_average_total[amb])/total,
-				best_ratio=((double)partial_best_total[amb])/total,
-				worst_ratio=((double)partial_worst_total[amb])/total;
+		double	voc_ratio=((double)voc_total[amb])/total_equivalent,
+				no_voc_ratio=((double)no_voc_total[amb])/total_equivalent,
+				average_ratio=((double)partial_average_total[amb])/total_equivalent,
+				best_ratio=((double)partial_best_total[amb])/total_equivalent,
+				worst_ratio=((double)partial_worst_total[amb])/total_equivalent;
 		displayed_error	<<"\tDiacritics\t+\t"<<no_voc_ratio<<"\t"<<voc_ratio
 						<<"->\t"<<average_ratio<<"\t("<<best_ratio<<",\t"<<worst_ratio<<")\n";
 
-		int t=total+total_count[0][amb]-total_count[1][amb];
+		int t=total_equivalent+total_count[0][amb]-total_count[1][amb];
 		double	voc_ratio1=((double)voc_total[amb]+voc_ambiguity[0][amb]-voc_ambiguity[1][amb])/t,
 				no_voc_ratio1=((double)no_voc_total[amb]+no_voc_ambiguity[0][amb]-no_voc_ambiguity[1][amb])/t,
 				average_ratio1=((double)partial_average_total[amb]+partial_average[0][amb]-partial_average[1][amb])/t,
@@ -288,6 +336,8 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 						<<"->\t"<<average_ratio1<<"\t("<<best_ratio1<<",\t"<<worst_ratio1<<")\n";
 
 		displayed_error	<<"\tDiacritics\t*\t"<<full_voc_ratio<<"\n\n\n";
+
+	#endif
 	#ifdef RANDOM_DIACRITICS
 		for (int i=0;i<maxDiacritics;i++) {
 			double	ratio=((double)random_voc_ambiguity[i][amb])/random_total_count[i][amb];
@@ -304,6 +354,12 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 		}
 		displayed_error<<"\tDiacritics\t*\t"<<full_voc_ratio<<"\n";
 	#endif
+#else
+		displayed_error	<<"\tRecall=\t"<<correctly_detected[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<correctly_detected[amb]/((double)correctly_detectedNoDiacritics[amb])<<"\n"
+						<<"\tPrecision=\t"<<correctly_detected[amb]<<"/"<<voc_total[amb]<<"=\t"<<correctly_detected[amb]/((double)voc_total[amb])<<"\n\n";
+		displayed_error	<<"\tRecall (no)=\t"<<correctly_detectedNoDiacritics[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<1.0<<"\n"
+						<<"\tPrecision (no)=\t"<<correctly_detectedNoDiacritics[amb]<<"/"<<no_voc_total[amb]<<"=\t"<<correctly_detectedNoDiacritics[amb]/((double)no_voc_total[amb])<<"\n\n";
+#endif
 	}
 	displayed_error<<"\nEquivalent Factor:\t"<<countEquivalent<<"/"<<total<<"=\t"<<((double)countEquivalent)/total<<"\n";
 	displayed_error<<"Reduction Factor:\t"<<countReduced<<"/"<<countEquivalent<<"=\t"<<((double)countReduced)/countEquivalent<<"\n";
