@@ -461,7 +461,6 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			QString gloss =readNextLineEntry(file,"GLOSS");
 			readNextLine(file);
 			assert(line.isEmpty());
-
 		#ifdef ATB_DIACRITICS
 			if (wrongDiacritics) {
 				if (countWrong>0) {
@@ -498,7 +497,6 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			}
 			continue;
 		#endif
-
 			//read from after
 			QStringList input_after, unvocalized_after, vocalized_after,pos_after;
 		#ifdef TOKENIZE
@@ -633,6 +631,25 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				#endif
 
 				}
+			#if 0
+				out<<input_string;
+
+				out<<"\t";
+				assert(p.size()==v.size());
+				for (int i=0;i<p.size();i++) {
+					out<<v[i]<<"/"<<p[i];
+					if (i!=p.size()-1)
+						out<<"+";
+				}
+				out <<"\t";
+				for (int i=0;i<input_after.size();i++) {
+					out<<input_after[i];
+					if (i!=input_after.size()-1)
+						out<<"+";
+				}
+
+				out<<"\n";
+			#endif
 			}
 			else if (status !=1) {
 				if (alefs.contains(input_string[0]) && pos.startsWith("INTERROG_PART")) {
