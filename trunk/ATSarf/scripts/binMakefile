@@ -34,7 +34,7 @@ ATSarf_LIBS_LINKFLAGS+=$(QT_LIBS_LDDFLAGS)
 ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
 
 $(APPLICATION): $(ATSarf_LIBS)
-	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) -lcommon
+	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
 
 #--------------------------------------------------
 include $(TOP)/scripts/rulesMakefile

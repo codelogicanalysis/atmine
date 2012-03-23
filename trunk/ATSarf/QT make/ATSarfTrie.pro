@@ -167,7 +167,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/log/ATMProgressIFC.cpp \
     ../src/util/vocalizedCombinations.cpp \
     ../src/case/atbDiacriticExperiment.cpp \
-    ../src/util/ambiguity.cpp
+    ../src/util/ambiguity.cpp \
+    ../src/case/madaExperiment.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

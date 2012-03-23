@@ -31,6 +31,7 @@ extern int atbDiacritic(QString inputString,ATMProgressIFC * prg);
 extern void diacriticDisambiguationCount(item_types t, int numDiacritics=1);
 extern void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC * prg, QString reducedFile="reducedOutput", QString allFile="fullOutput");
 extern void diacriticDisambiguationCount(QStringList & list, int numDiacritics, ATMProgressIFC * prg);
+extern int mada(QString folderName, ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -114,7 +115,10 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
-#if 0
+#if 1
+	if (mada(inputString,prg))
+		return -1;
+#elif 0
 	QStringList entries=inputString.split("\t");
 	diacriticDisambiguationCount(entries,-1,prg);
 	//out<<equal(first, second);
@@ -152,7 +156,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	diacriticDisambiguationCount(SUFFIX);
 #else
 	displayed_error<<"\nFull:\n";
-	int count=2;
+	int count=-1;
 	displayed_error<<"\nFull ("<<count<<"): \n";
 	//out<<"\n\nFull:\n";
 	QString name=QString("%1dia").arg(count>=0?QString("%1").arg(count):"*");
