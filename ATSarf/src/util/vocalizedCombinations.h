@@ -3,27 +3,36 @@
 
 #include "diacritics.h"
 #include <QHash>
+#include <QSet>
 
-class VocalizedCombinations {
+class VocalizedCombination {
+private:
+	friend class VocalizedCombinationsGenerator;
+	QString voc;
+	QList<int> positions;
+	QList<Diacritics> list;
+private:
+	VocalizedCombination(const QString & aVoc, const QList<int> & aPositions): voc(aVoc), positions(aPositions) {	}
 public:
-	class Combination {
-	private:
-		friend class VocalizedCombinations;
-		QString voc;
-		QList<int> positions;
-		QList<Diacritics> list;
-	private:
-		Combination(const QString & aVoc, const QList<int> & aPositions): voc(aVoc), positions(aPositions) {	}
-	public:
-		static Combination deduceCombination(QString voc);
-	public:
-		QString getString() const { return voc;}
-		const QList<int> & getPositions() const { return positions;}
-		int getNumDiacritics() const { return positions.size();}
-		const QList<Diacritics> & getDiacritics();
-		bool operator ==(const Combination & other) const  { return voc==other.voc; }
-	};
+	static VocalizedCombination deduceCombination(QString voc);
+public:
+	QString getString() const { return voc;}
+	const QList<int> & getPositions() const { return positions;}
+	int getNumDiacritics() const { return positions.size();}
+	const QList<Diacritics> & getDiacritics();
+	bool operator ==(const VocalizedCombination & other) const  { return voc==other.voc; }
+};
 
+class VocCombIndexListPair {
+public:
+	VocalizedCombination comb;
+	QSet<int> indicies;
+
+	VocCombIndexListPair(VocalizedCombination & c):comb(c) {}
+	bool operator ==(const VocCombIndexListPair & other) const  { return comb==other.comb; }
+};
+
+class VocalizedCombinationsGenerator {
 private:
 	class DiacPos {
 	public:
@@ -43,18 +52,22 @@ private:
 	bool initialize(int i, int index);
 	void iterate(int i);
 public:
-	VocalizedCombinations(QString voc, int numVoc);
+	VocalizedCombinationsGenerator(QString voc, int numVoc);
 	bool isUnderVocalized() const {return numDiacritics>diacritics.size();}
-	VocalizedCombinations & begin();
-	VocalizedCombinations & operator++();
+	VocalizedCombinationsGenerator & begin();
+	VocalizedCombinationsGenerator & operator++();
 	bool isFinished() const;
 	QString getString() const;
-	Combination getCombination() const;
-	Combination operator *() const { return getCombination(); }
+	VocalizedCombination getCombination() const;
+	VocalizedCombination operator *() const { return getCombination(); }
 };
 
-inline unsigned int qHash(const VocalizedCombinations::Combination & c) {
+inline unsigned int qHash(const VocalizedCombination & c) {
 	return qHash(c.getString());
+}
+
+inline unsigned int qHash(const VocCombIndexListPair & c) {
+	return qHash(c.comb);
 }
 
 #endif // VOCALIZEDCOMBINATIONS_H

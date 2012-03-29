@@ -125,15 +125,9 @@ public:
 			s+=interpret_diacritic(main);
 		return s;
 	}
+	bool isEmpty() const { return !hasShadde() && main==UNDEFINED_DIACRITICS && isSelfConsistent(); }
 };
 
-
-inline bool isConsonant(const QChar & letter) {
-	if (letter !=ya2 && letter !=waw && letter !=alef) //not a very firm condition to assume consonant but might work here
-		return true;
-	else
-		return false;
-}
 inline bool isDiacritic(const QChar & letter) {
 	if (letter==shadde || letter==shadde || letter==fatha || letter==damma || letter==kasra ||
 			letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn ||
@@ -142,6 +136,7 @@ inline bool isDiacritic(const QChar & letter) {
 	else
 		return false;
 }
+
 inline int countDiacritics(const QString & s) {
 	int count=0;
 	for (int i=0;i<s.size();i++)

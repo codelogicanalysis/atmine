@@ -45,6 +45,7 @@ extern bool filling;
 extern dbitvec INVALID_BITSET;
 
 void initialize_variables(); //must be called at the start
+void initialize_other(); //must be called at start but after datastructures loaded
 
 enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
 enum item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};

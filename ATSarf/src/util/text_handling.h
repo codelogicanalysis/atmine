@@ -11,6 +11,18 @@
 #include "logger.h"
 #include "textParsing.h"
 
+enum RelativePos{Beggining, Middle, End};
+
+inline RelativePos getRelativePos(int pos, int size) {
+	assert(pos>=0 && pos<size);
+	if (pos==0)
+		return Beggining;
+	else if (pos==size-1)
+		return End;
+	else
+		return Middle;
+}
+
 inline QString get_Possessive_form(QString word) {
 	if (word.length()>=2) {
 		int last_index=getLastLetter_index(word,word.length()-1);
@@ -202,6 +214,13 @@ inline QString withoutAL( QString word)
 	removeAL(word);
 	return word;
 }
+
+inline void removeFirstWord(QString & s) {
+	int l=s.indexOf(' ');
+	if (l>=0)
+		s.remove(0,l+1);
+}
+
 
 inline bool overLaps(int start1,int end1,int start2,int end2) {
 	assert(start1<=end1 && start2<=end2);

@@ -4,9 +4,12 @@
 #include <QTextStream>
 #include "transliteration.h"
 #include "stemmer.h"
+#include "morphemes.h"
 #include "diacriticDisambiguation.h"
 #include "vocalizedCombinations.h"
 
+
+typedef QSet<VocCombIndexListPair> CombSet;
 
 void DiacriticDisambiguationBase::reset() {
 	for (int i=0;i< ambiguitySize;i++) {
@@ -58,9 +61,8 @@ void DiacriticDisambiguationBase::store(long id, QString entry, AmbiguitySolutio
 
 }
 
-void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS, int stemStart,
-		   int suffStart, int stemIndex, int numPrefixes, int numSuffixes) {
-	AmbiguitySolution s(raw_data,description,POS,stemStart,suffStart,stemIndex,numPrefixes,numSuffixes);
+void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS, Morphemes morphemes) {
+	AmbiguitySolution s(raw_data,description,POS,morphemes);
 	store(id,entry,s);
 }
 
@@ -107,71 +109,105 @@ void DiacriticDisambiguationBase::analyze() {
 }
 
 void DiacriticDisambiguationBase::printDiacriticDisplay(Diacritics d, QTextStream * o) {
+#ifdef ALL_DIA
 	if (!d.isSelfConsistent()) {
-		(*o)<<"~";
+		(*o)<<"~"<<diacritic_shadde_delimeter<<"~";
 		return;
 	}
 	(*o)<<(d.hasShadde()?1:0);
-	(*o)<<"-";
+	(*o)<<diacritic_shadde_delimeter;
 	Diacritic dia=d.getMainDiacritic();
 	(*o)<< (dia==UNDEFINED_DIACRITICS?0:(int)dia +1);
+#else
+	if (!d.isSelfConsistent()) {
+		(*o)<<"~";
+	} else if (d.hasShadde()) {
+		(*o)<<(int)SHADDA;
+	} else {
+		Diacritic dia=d.getMainDiacritic();
+		if (dia!=UNDEFINED_DIACRITICS)
+			(*o)<<(int)dia;
+	}
+#endif
 }
 
 void DiacriticDisambiguationBase::printDiacritics(QString entry, int pos, QChar c, QTextStream * o) { //for one diacritic
-
-	(*o)<<diacriticsCount<<"\t"<<entry.size();
+	(*o)<<entry.size()<<"\t"<<diacriticsCount;
+#ifdef ALL_DIA
 	for (int p=0;p<pos;p++)
-		(*o)<<"\t"<<"0-0";
+		(*o)<<"\t"<<"0"<<diacritic_shadde_delimeter<<"0";
 	Diacritics dia(c);
 	(*o)<<"\t";
 	printDiacriticDisplay(dia,o);
 	for (int p=pos+1;p<entry.size();p++)
-		(*o)<<"\t"<<"0-0";
+		(*o)<<"\t"<<"0"<<diacritic_shadde_delimeter<<"0";
 	for (int p=entry.size();p<maxDiacritics;p++)
-		(*o)<<"\t"<<"X";
+		(*o)<<"\t"<<"X"<<diacritic_shadde_delimeter<<"X";
+#else
+	Diacritics dia(c);
+	(*o)<<"\t"<<pos<<"\t";
+	printDiacriticDisplay(dia,o);
+#endif
 }
 
-void DiacriticDisambiguationBase::printDiacritics(const QList<Diacritics> & d, QTextStream * o) { //for multiple diacritcs
-	(*o)<<diacriticsCount<<"\t"<<d.size();
+void DiacriticDisambiguationBase::printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, const QList<int> & diaPos, QTextStream * o) { //for multiple diacritcs
+	(*o)<<d.size()<<"\t"<<diacriticsCount;
+#if ALL_DIA
 	for (int i=0;i<d.size();i++) {
 		(*o)<<"\t";
 		printDiacriticDisplay(d[i],o);
 	}
 	for (int i=d.size();i<maxDiacritics;i++)
-		(*o)<<"\t"<<"X";
+		(*o)<<"\t"<<"X"<<diacritic_shadde_delimeter<<"X";
+#else
+	for (int i=0;i<d.size();i++) {
+		const Diacritics & dia=d[i];
+		if (!dia.isEmpty()) {
+			(*o)<<"\t"<<i<<"\t";
+			printDiacriticDisplay(dia,o);
+			int relPos, morphSize;
+			int vocPos=i;
+			MorphemeType t=sol.getMorphemeTypeAtPosition(vocPos,diaPos,relPos,morphSize);
+			QChar letterBefore=voc[vocPos-1];
+			(*o)<<"\t"<<(int)t<<"\t"<<getRelativePos(relPos,morphSize)<<"\t"<<letterBefore<<"\t"<<isConsonant(letterBefore);
+		}
+	}
+#endif
 }
 
-void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySolutionList & currSol) {
-	/*typedef QHash<QString, int> String2Int;
-	typedef QPair<QString, int> StringIntPair;
-	String2Int vocalizationIndicies;*/
 
+void insertIntoCombSet(CombSet & allPossibleComb,VocalizedCombination & comb,int index, QSet<Morphemes> & uniqueFullTokenization, Morphemes & m) {
+	if (uniqueFullTokenization.contains(m))
+		return;
+	uniqueFullTokenization.insert(m);
+	CombSet::iterator itr=allPossibleComb.find(comb);
+	if (itr==allPossibleComb.end()) {
+		VocCombIndexListPair p(comb);
+		p.indicies.insert(index);
+		allPossibleComb.insert(p);
+	} else {
+		VocCombIndexListPair & p=(VocCombIndexListPair &)(*itr); //safe since changing p by adding index does not disrupt its position in set
+		p.indicies.insert(index);
+	}
+}
+
+
+void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySolutionList & currSol) {
 	AmbiguitySolutionList currSolutions[ambiguitySize];
+#ifdef ONE_SPECIAL
 	QList<int> index[ambiguitySize];
+#endif
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		if ((Ambiguity)amb!=All_Ambiguity)
 			currSolutions[amb]=getAmbiguityUnique(currSol,(Ambiguity)amb);
 		else
 			currSolutions[amb]=currSol;
-	#if 0
-		if (!suppressOutput)
-			out<<currAffix<<": ";
-	#endif
+	#ifdef ONE_SPECIAL
 		for (int i=0;i<currSolutions[amb].size();i++) {
 			index[amb].append(-1);
-		#if 0
-			if (!suppressOutput)
-				out<<currSolutions[amb][i].voc<<", ";
-		#endif
 		}
+	#endif
 	}
-	/*for (int i=0;i<currSolutions[(int)Vocalization].size();i++) {
-		vocalizationIndicies[currSolutions[(int)Vocalization][i].voc]=i;
-	}*/
-#if 0
-	if (!suppressOutput)
-		out<<"\n";
-#endif
 
 
 	int sub_total[ambiguitySize]={0}, sub_left[ambiguitySize]={0};
@@ -249,32 +285,39 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 #else
 	{
 #endif
-		typedef QSet<VocalizedCombinations::Combination> CombSet;
+		typedef QSet<VocCombIndexListPair> CombSet;
 		CombSet allPossibleComb;
+		QSet<Morphemes> uniqueFullTokenization;
 		QSet<QString> vocs;
-		for (int j=0;j<currSolutions[Vocalization].size();j++) { //All_Ambiguity contains all solutions
-			QString voc=currSolutions[Vocalization][j].voc;
+		for (int j=0;j<currSolutions[All_Ambiguity].size();j++) { //All_Ambiguity contains all solutions
+			QString voc=currSolutions[All_Ambiguity][j].voc;
+			Morphemes & m=currSolutions[All_Ambiguity][j].morphemes;
 			if (diacriticsCount>0) {
 				if (vocs.contains(voc))
 					continue;
 				vocs.insert(voc);
-				VocalizedCombinations v(voc,diacriticsCount);
-				if (v.isUnderVocalized())
-					allPossibleComb.insert(VocalizedCombinations::Combination::deduceCombination(voc));
-				else {
+				VocalizedCombinationsGenerator v(voc,diacriticsCount);
+				if (v.isUnderVocalized()) {
+					VocalizedCombination c=VocalizedCombination::deduceCombination(voc);
+					insertIntoCombSet(allPossibleComb,c,j,uniqueFullTokenization,m);
+				} else {
 					for (v.begin();!v.isFinished();++v) {
-						allPossibleComb.insert(v.getCombination());
+						VocalizedCombination c=v.getCombination();
+						insertIntoCombSet(allPossibleComb,c,j,uniqueFullTokenization,m);
 					}
 				}
 			} else { //i.e. all diacritics
-				allPossibleComb.insert(VocalizedCombinations::Combination::deduceCombination(voc));
+				VocalizedCombination c=VocalizedCombination::deduceCombination(voc);
+				insertIntoCombSet(allPossibleComb,c,j,uniqueFullTokenization,m);
 			}
 		}
 		CombSet::iterator itr=allPossibleComb.begin();
 		for (;itr!=allPossibleComb.end();itr++) {
-			VocalizedCombinations::Combination & c=(VocalizedCombinations::Combination &)(*itr);
+			VocCombIndexListPair & combIndexList=(VocCombIndexListPair &)(*itr);
+			VocalizedCombination & c=combIndexList.comb;
 			QString s=c.getString();
 			const QList<Diacritics> & d=c.getDiacritics();
+			const QList<int> & diaPos=c.getPositions();
 			int numDia=c.getNumDiacritics();
 			if (numDia==0)
 				continue;
@@ -300,12 +343,16 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 			for (int i=0;i<2;i++) {
 				QTextStream * o=(i==0?&out:&hadith_out);
 				if (display || i==1) { //always display for hadith_out
-					(*o)<<s<<"\t";
-					printDiacritics(d,o);
-					for (int amb=0;amb<ambiguitySize;amb++) {
-						(*o)<<"\t"<<valid_ratio[amb];
+					for (QSet<int>::iterator itr=combIndexList.indicies.begin();itr!=combIndexList.indicies.end();++itr) {
+						int index=*itr;
+						AmbiguitySolution & sol =currSolutions[All_Ambiguity][index]; //make instead of indicies in general to indicies to uniques ones out of All_Ambiguity
+						(*o)<<s<<"\t";
+						printDiacritics(s,d,sol,diaPos,o);
+						for (int amb=0;amb<ambiguitySize;amb++) {
+							(*o)<<"\t"<<valid_ratio[amb];
+						}
+						(*o)<<"\n";
 					}
-					(*o)<<"\n";
 				}
 			}
 		}

@@ -9,6 +9,7 @@
 #include "letters.h"
 #include "sql_queries.h"
 #include "common.h"
+#include "morphemes.h"
 
 dbitvec INVALID_BITSET(max_sources);
 
@@ -52,6 +53,10 @@ void initialize_variables()
 	INVALID_BITSET.reset();
 	INVALID_BITSET.setBit(max_sources-1,true);
 	//INVALID_BITSET.show();
+}
+
+void initialize_other() {
+	morpheme_initialize();
 }
 
 bool filling=true;

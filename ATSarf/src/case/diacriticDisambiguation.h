@@ -5,6 +5,11 @@
 #include "affixTreeTraversal.h"
 #include "stemmer.h"
 #include "ambiguity.h"
+#include "morphemes.h"
+
+const static QChar diacritic_shadde_delimeter='\t';
+
+
 
 class DiacriticDisambiguationBase {
 	friend class DisambiguationStemmer;
@@ -34,14 +39,13 @@ protected:
 private:
 	void printDiacriticDisplay(Diacritics d, QTextStream * o=&out);
 	void printDiacritics(QString entry, int pos, QChar c, QTextStream * o=&out); //for one diacritic
-	void printDiacritics(const QList<Diacritics> & d , QTextStream * o=&out); //for multiple diacritcs
+	void printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, const QList<int> & diaPos, QTextStream * o=&out); //for multiple diacritcs
 	void reset();
 protected:
 	DiacriticDisambiguationBase(bool mapBased, bool suppressOutput,int diacriticsCount=1);
 	void store(long id, QString entry, AmbiguitySolution & s);
 	void store(long id, QString entry, QString raw_data, QString description, QString POS);
-	void store(long id, QString entry, QString raw_data, QString description, QString POS, int stemStart,
-			   int suffStart, int stemIndex, int numPrefixes, int numSuffixes);
+	void store(long id, QString entry, QString raw_data, QString description, QString POS, Morphemes morphemes);
 	void analyze();
 	void analyzeOne(QString currAffix,const AmbiguitySolutionList & currSol);
 
@@ -102,5 +106,7 @@ public:
 		this->id=id;
 	}
 };
+
+
 
 #endif // DIACRITICDISAMBIGUATION_H
