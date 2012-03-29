@@ -287,8 +287,8 @@ void MainWindow::on_fill_clicked(){
 	generate_bit_order("source",source_ids);
 	generate_bit_order("category",abstract_category_ids,"abstract");
 #endif
-	initialize_other();
 	database_info.fill(this);
+	initialize_other();
 	hadith_initialize();
 	geneology_initialize();
 	time_initialize();

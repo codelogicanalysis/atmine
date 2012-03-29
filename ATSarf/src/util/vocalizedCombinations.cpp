@@ -67,18 +67,22 @@ VocalizedCombinationsGenerator & VocalizedCombinationsGenerator::operator++() {
 }
 
 VocalizedCombination VocalizedCombinationsGenerator::getCombination() const {
-	QList<int> positions;
+	DiacriticsPositionsList diaSummary;
 	QString s=unvoc;
 	assert(numDiacritics==indicies.size());
 	for (int i=numDiacritics-1;i>=0;i--) {
 		int index=indicies[i];
 		const DiacPos & d=diacritics[index];
 		int pos=d.pos;
-		positions.prepend(pos);
 		QChar diacritic=d.diacritic;
+
+		Diacritic dia=interpret_diacritic(diacritic);
+		DiacriticsNposition diaNPos(pos,dia);
+		diaSummary.prepend(diaNPos);
+
 		s.insert(pos+1,diacritic);
 	}
-	return VocalizedCombination(s,positions);
+	return VocalizedCombination(s,diaSummary);
 }
 
 QString VocalizedCombinationsGenerator::getString() const {
@@ -91,18 +95,22 @@ bool VocalizedCombinationsGenerator::isFinished() const {
 }
 
 VocalizedCombination VocalizedCombination::deduceCombination(QString voc) {
-	VocalizedCombination comb(voc,QList<int>());
+	VocalizedCombination comb(voc,DiacriticsPositionsList());
 	bool lastDiacritic=false;
 	int shift=0;
 	for (int i=0;i<voc.size();i++) {
 		QChar c=voc[i];
 		if (isDiacritic(c)) {
-			comb.list.last().append(c);
+			Diacritic d=interpret_diacritic(c);
+			comb.list.last().append(d);
+			int pos;
 			shift++;
 			if (!lastDiacritic)
-				comb.positions.append(i-shift);
+				pos=i-shift;
 			else
-				comb.positions.append(comb.positions.last());
+				pos=comb.shortList.last().position;
+			DiacriticsNposition s(pos,d);
+			comb.shortList.append(s);
 			lastDiacritic=true;
 		} else {
 			lastDiacritic=false;
@@ -116,10 +124,10 @@ const QList<Diacritics> & VocalizedCombination::getDiacritics() {
 	if (list.size()==0) {
 		int pos=0;
 		int shift=0;
-		for (int i=0;i<positions.size();i++) {
+		for (int i=0;i<shortList.size();i++) {
 			shift++;
-			bool lastDiacritic=(i>0 && positions[i] == positions[i-1]);
-			int dia_pos_original=positions[i];
+			bool lastDiacritic=(i>0 && shortList[i].position == shortList[i-1].position);
+			int dia_pos_original=shortList[i].position;
 			int dia_pos=dia_pos_original+shift;
 			if (!lastDiacritic)
 				pos++;
@@ -127,16 +135,18 @@ const QList<Diacritics> & VocalizedCombination::getDiacritics() {
 				list.append(Diacritics());
 			}
 			assert(pos==dia_pos);
+			QChar c=voc[pos];
 			if (i>0 && lastDiacritic)
-				list.last().append(voc[pos]);
+				list.last().append(c);
 			else
-				list.append(Diacritics(voc[pos]));
+				list.append(Diacritics(c));
+			assert(interpret_diacritic(c)==shortList[i].diacritic);
 			pos++;
 		}
 		for (;pos<voc.size();pos++) {
 			list.append(Diacritics());
 		}
 	}
-	assert(list.size()==voc.size()-positions.size());
+	assert(list.size()==voc.size()-shortList.size());
 	return list;
 }

@@ -14,7 +14,7 @@
 enum RelativePos{Beggining, Middle, End};
 
 inline RelativePos getRelativePos(int pos, int size) {
-	assert(pos>=0 && pos<size);
+	assert((pos>=0 && pos<size) || (pos==size && size==0));
 	if (pos==0)
 		return Beggining;
 	else if (pos==size-1)
@@ -28,17 +28,17 @@ inline QString get_Possessive_form(QString word) {
 		int last_index=getLastLetter_index(word,word.length()-1);
 		QChar last=_getLastLetter(word,last_index);
 		QChar before=getLastLetter(word.left(last_index));
-		if (last==alef && isConsonant(before))
+		if (last==alef && !isLongVowel(before))
 			return removeLastDiacritics(word).append(waw).append(ya2);
 		else if (last==alef && before==waw )
 			return removeLastDiacritics(removeLastLetter(word)).append(ya2);
 		else if (last==alef && before==ya2 )
 			return removeLastDiacritics(removeLastLetter(word)).append(shadde);
-		else if (last==ta2_marbouta && isConsonant(before))
+		else if (last==ta2_marbouta && !isLongVowel(before))
 			return removeLastDiacritics(removeLastLetter(word)).append(ya2);
 		else if (last==ya2)
 			return removeLastDiacritics(word).append(shadde);
-		else if (isConsonant(last) || last==waw)
+		else if (!isLongVowel(last) || last==waw)
 			return removeLastDiacritics(word).append(ya2);
 		else {
 			out << "Unknown Rule for Possessive form\n";

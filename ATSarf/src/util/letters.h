@@ -32,6 +32,7 @@ static const QChar ba2=QChar(0x0628);
 static const QChar ra2=QChar(0x0631);
 static const QChar noon=QChar(0x0646);
 static const QChar seen=QChar(0x0633);
+static const QChar sheen=QChar(0x0634);
 static const QChar meem=QChar(0x0645);
 static const QChar _3yn=QChar(0x0639);
 static const QChar ta2=QChar(0x062A);
@@ -46,6 +47,10 @@ static const QChar feh =QChar(0x0641);
 static const QChar madda =QChar(0x0653);
 static const QChar zain =QChar(0x0632);
 static const QChar thal =QChar(0x0630);
+static const QChar sad =QChar(0x0635);
+static const QChar dad =QChar(0x0636);
+static const QChar tah =QChar(0x0637);
+static const QChar zah =QChar(0x0638);
 static const QChar alef_maksoura= QChar(0x0649);
 
 static const QChar question_mark=QChar(0x061F);
@@ -99,11 +104,17 @@ inline bool isNumber(const QChar & letter) { return letter<='9' && letter >='0';
 
 inline bool isDelimiterOrNumber(const QChar & letter) { return isNumber(letter) || isDelimiter(letter);}
 
-inline bool isConsonant(const QChar & letter) {
-if (letter !=ya2 && letter !=waw && !alefs.contains(letter) ) //not a very firm condition to assume consonant but might work here
-	return true;
-else
-	return false;
+inline bool isLongVowel(const QChar & letter) {
+	return (letter ==ya2 || letter ==waw || alefs.contains(letter) );
 }
+
+inline bool isShamsi(const QChar & letter) {
+	// ت، ث، د ،ذ ،ر، ز، ش، س، ص، ض، ط، ظ، ل، ن
+	return (letter ==ta2 || letter ==tha2 || letter==dal || letter==thal ||
+			letter ==ra2 || letter==zain || letter==sheen || letter==seen ||
+			letter ==sad || letter==dad || letter==tah || letter==zah ||
+			letter==lam || letter==noon);
+}
+
 #endif	/* _LETTERS_H */
 

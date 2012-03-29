@@ -820,7 +820,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	if (abstract_ids!=NULL)
 	{
 		for (int i=0; i<abstract_ids->count();i++)
-			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(STEM))))
+			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(type))))
 			{
 				if (abstract_ids->operator [](i)!=-1)
 					warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));

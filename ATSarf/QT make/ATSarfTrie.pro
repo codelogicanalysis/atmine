@@ -167,9 +167,10 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/log/ATMProgressIFC.cpp \
     ../src/util/vocalizedCombinations.cpp \
     ../src/case/atbDiacriticExperiment.cpp \
-	../src/util/morphemes.cpp \
+    ../src/util/morphemes.cpp \
     ../src/util/ambiguity.cpp \
-    ../src/case/madaExperiment.cpp
+    ../src/case/madaExperiment.cpp \
+    ../src/case/affix_verification.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

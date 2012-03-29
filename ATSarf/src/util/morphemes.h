@@ -7,13 +7,13 @@
 #include "common.h"
 
 
-enum MorphemeType {Proc3, Proc2, Proc1, Proc0, Prefix, Stem, Suffix, Enc0, Invalid_morpheme};
+enum MorphemeType {Proc3, Proc2, Proc1, Proc0, Det, Prefix, Stem, Suffix, Enc0, CaseEnding, Invalid_morpheme};
 
-const int morpheme_bits_size=6;
-extern int bit_PROC3, bit_PROC2, bit_PROC1, bit_PROC0, bit_DET, bit_ENC0;
+const int morpheme_bits_size=7;
+extern int bit_PROC3, bit_PROC2, bit_PROC1, bit_PROC0, bit_DET, bit_ENC0, bit_CASE;
 extern int * morpheme_bits[morpheme_bits_size];
-static const QString morpheme_abstract_desc[morpheme_bits_size]={"proc3", "proc2", "proc1", "proc1", "det", "enc0"};
-static const MorphemeType morpheme_types[morpheme_bits_size]={Proc3, Proc2, Proc1, Proc0, Proc0, Enc0}; //TODO: make det
+static const QString morpheme_abstract_desc[morpheme_bits_size]={"prc3", "prc2", "prc1", "prc0", "det", "enc0", "case"};
+static const MorphemeType morpheme_types[morpheme_bits_size]={Proc3, Proc2, Proc1, Proc0, Det, Enc0, CaseEnding}; //TODO: make det
 
 
 class Morpheme{
@@ -35,18 +35,19 @@ public:
 			return STEM;
 		case Suffix:
 		case Enc0:
+		case CaseEnding:
 			return SUFFIX;
 		default:
 			return ITEM_TYPES_LAST_ONE;
 		}
 	}
-	int size() const { assert(end>=start);return end-start+1;}
+	int size() const { assert(end>=start-1);return end-start+1;}
 	bool operator==(const Morpheme & m ) const {return start==m.start && end==m.end && type==m.type;}
 	void setType(dbitvec abstract_categories, item_types itemType) {
 		typedef QPair<int, int> IndexPair;
 		IndexPair range[3]={IndexPair(0,4), //Prefix
 							IndexPair(0,-1), //Stem => check nothing
-							IndexPair(5,5)}; //Suffix
+							IndexPair(5,6)}; //Suffix
 		bool typeSet=false;
 		if (itemType==STEM) {//check nothing
 			type=Stem;
@@ -55,7 +56,8 @@ public:
 			assert(itemType!=ITEM_TYPES_LAST_ONE);
 			IndexPair & r=range[(int)itemType];
 			for (int i=r.first;i<=r.second;i++) {
-				if (abstract_categories.getBit(*morpheme_bits[i])) {
+				int bit=*morpheme_bits[i];
+				if (bit>=0 && abstract_categories.getBit(bit)) {
 					type= morpheme_types[i];
 					typeSet=true;
 				}
@@ -125,6 +127,42 @@ public:
 	const Morpheme & operator [](int i) const { return list[i];}
 	int size() const {return list.size(); }
 };
+
+class MorphemeDiacritic { //used to model information about a morpheme on which we have a diacritic
+public:
+	MorphemeType type:5;
+	int diacriticRelativePos:10;
+public:
+	MorphemeDiacritic(MorphemeType t, int pos): type(t),diacriticRelativePos(pos) {}
+	bool operator ==(const MorphemeDiacritic & m) const { return type==m.type && diacriticRelativePos==m.diacriticRelativePos;}
+};
+
+typedef QList<MorphemeDiacritic> MorphemeDiacritics; //used to store unique info we are interested in
+
+inline unsigned int qHash(const Morpheme & m) {
+	return qHash(m.start+m.end+(int)m.type);
+}
+
+inline unsigned int qHash(const Morphemes & m) {
+	unsigned int h=0;
+	for (int i=0;i<m.size();i++)
+		h+=qHash(m[i]);
+	return h;
+}
+
+inline unsigned int qHash(const MorphemeDiacritic & m) {
+	return qHash((int)m.type+m.diacriticRelativePos);
+}
+
+template<class T>
+inline unsigned int qHash(const QList<T> & m) { //used for qHash(MorphemeDiacritics)
+	unsigned int h=0;
+	for (int i=0;i<m.size();i++)
+		h+=qHash(m[i]);
+	return h;
+}
+
+
 
 void morpheme_initialize();
 

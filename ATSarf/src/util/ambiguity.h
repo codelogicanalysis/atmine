@@ -3,6 +3,7 @@
 
 #include "stemmer.h"
 #include "morphemes.h"
+#include "vocalizedCombinations.h"
 
 enum Ambiguity {Vocalization, Description, POS, Tokenization, Stem_Ambiguity, All_Ambiguity};
 static const int ambiguitySize=(int)All_Ambiguity+1;
@@ -22,7 +23,8 @@ public:
 	AmbiguitySolution(QString raw,QString des,QString POS);
 	AmbiguitySolution(QString raw,QString des,QString POS, Morphemes morphemes);
 	bool equal (const AmbiguitySolution & other, Ambiguity m) const;
-	MorphemeType getMorphemeTypeAtPosition(int & diacriticPos, const QList<int> & diaPos,int & relativePos, int & morphemeSize);
+	MorphemeType getMorphemeTypeAtPosition(int diacriticPos, Diacritics dia, int & relativePos, int & morphemeSize);
+	MorphemeDiacritics getMorphemeDiacriticSummary(VocalizedCombination & comb);
 private:
 	int getTokenization() const;
 };
@@ -53,16 +55,6 @@ public:
 	int getAmbiguity(Ambiguity amb) const;
 };
 
-inline unsigned int qHash(const Morpheme & m) {
-	return qHash(m.start+m.end+(int)m.type);
-}
-
-inline unsigned int qHash(const Morphemes & m) {
-	unsigned int h=0;
-	for (int i=0;i<m.size();i++)
-		h+=qHash(m[i]);
-	return h;
-}
 
 
 

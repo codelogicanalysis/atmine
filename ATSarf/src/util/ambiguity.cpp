@@ -55,6 +55,53 @@ bool AmbiguitySolution::equal (const AmbiguitySolution & other, Ambiguity m) con
 	return true;
 }
 
+MorphemeType AmbiguitySolution::getMorphemeTypeAtPosition(int diacriticPos, Diacritics dia, int & relativePos, int & morphemeSize) {
+#if 0
+	//TODO: check if works correctly for more than one diacritic
+	int diaPosTemp=diacriticPos; //the loop below performed to make diaPos consistent with position in word with diacritics and not just position of letter (assuming no diacritics)
+	for (int i=0;i<diaPos.size();i++) { //can be made faster
+		if (diacriticPos<=diaPos[i])
+			diaPosTemp++;
+	}
+	diacriticPos=diaPosTemp;
+#endif
+	if (featuresDefined) {
+		for (int i=morphemes.size()-1;i>=0;i--) {
+			Morpheme & m=morphemes[i];
+			int relPos=diacriticPos-m.start;
+			MorphemeType type=m.type;
+			int morphSize=m.size();
+			if (morphSize==0 && (type!=CaseEnding || dia.getMainDiacritic()==UNDEFINED_DIACRITICS)) //which means it is shadde and has no other diacritic (reached here => diacritic and main is undefined => shadde)
+				continue;
+			if (relPos==-1 && morphSize==0)
+				relPos=0;
+			if (relPos>=0) {
+				relativePos=relPos;
+				morphemeSize=morphSize;
+				assert(morphSize==0 || (relativePos<morphemeSize));
+				return m.type;
+			}
+		}
+	}
+	relativePos=diacriticPos;
+	morphemeSize=voc.size(); //not very correct depends on degree of vocalization of the input, but best approximation we can do for now. anyways we must not reach this line in our application
+	return Stem;
+}
+
+MorphemeDiacritics AmbiguitySolution::getMorphemeDiacriticSummary(VocalizedCombination & comb) {
+	MorphemeDiacritics summary;
+	DiacriticsPositionsList dias=comb.getShortList();
+	for (int i=0;i<dias.size();i++) {
+		DiacriticsNposition & diaPos=dias[i];
+		int relativePos, morphSize;
+		MorphemeType t=getMorphemeTypeAtPosition(diaPos.position,diaPos.diacritic,relativePos,morphSize);
+		MorphemeDiacritic d(t,relativePos);
+		summary.append(d);
+	}
+	return summary;
+}
+
+
 QString interpret(Ambiguity a) {
 	switch (a) {
 	case Vocalization:
@@ -72,31 +119,6 @@ QString interpret(Ambiguity a) {
 	default:
 		return "---";
 	}
-}
-
-
-MorphemeType AmbiguitySolution::getMorphemeTypeAtPosition(int & diacriticPos, const QList<int> & diaPos, int & relativePos, int & morphemeSize) {
-	//TODO: check if works correctly for more than one diacritic
-	int diaPosTemp=diacriticPos; //the loop below performed to make diaPos consistent with position in word with diacritics and not just position of letter (assuming no diacritics)
-	for (int i=0;i<diaPos.size();i++) { //can be made faster
-		if (diacriticPos<=diaPos[i])
-			diaPosTemp++;
-	}
-	diacriticPos=diaPosTemp;
-	if (featuresDefined) {
-		for (int i=morphemes.size()-1;i>=0;i--) {
-			Morpheme & m=morphemes[i];
-			int relPos=diacriticPos-m.start;
-			if (relPos>=0) {
-				relativePos=relPos;
-				morphemeSize=m.size();
-				return m.type;
-			}
-		}
-	}
-	relativePos=diacriticPos;
-	morphemeSize=voc.size(); //not very correct depends on degree of vocalization of the input, but best approximation we can do for now. anyways we must not reach this line in our application
-	return Stem;
 }
 
 AmbiguitySolutionList getAmbiguityUnique(const AmbiguitySolutionList & list, Ambiguity m) {
@@ -129,7 +151,7 @@ bool AmbiguityStemmerBase::on_match() {
 		Morpheme m(last,current);
 		m.setType(pre.abstract_categories,PREFIX);
 		morphemes.append(m);
-		last=current;
+		last=current+1;
 	}
 	minimal_item_info & stem = *stem_info;
 	desc+=stem.description()+" + ";
@@ -138,7 +160,7 @@ bool AmbiguityStemmerBase::on_match() {
 	int current=Stem->info.finish;
 	Morpheme m(last,current,::Stem);
 	morphemes.append(m);
-	last=current;
+	last=current+1;
 
 	for (int i=0;i<suffix_infos->size();i++) {
 		minimal_item_info & suff = (*suffix_infos)[i];
@@ -151,7 +173,7 @@ bool AmbiguityStemmerBase::on_match() {
 		Morpheme m(last,current);
 		m.setType(suff.abstract_categories,SUFFIX);
 		morphemes.append(m);
-		last=current;
+		last=current+1;
 	}
 	AmbiguitySolution s(raw,desc,pos,morphemes);
 	store(info.getString(),s);
