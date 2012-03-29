@@ -98,5 +98,12 @@ inline bool isNonConnectingLetter(const QChar & letter) { return nonconnectingLe
 inline bool isNumber(const QChar & letter) { return letter<='9' && letter >='0';}
 
 inline bool isDelimiterOrNumber(const QChar & letter) { return isNumber(letter) || isDelimiter(letter);}
+
+inline bool isConsonant(const QChar & letter) {
+if (letter !=ya2 && letter !=waw && !alefs.contains(letter) ) //not a very firm condition to assume consonant but might work here
+	return true;
+else
+	return false;
+}
 #endif	/* _LETTERS_H */
 

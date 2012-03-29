@@ -72,7 +72,7 @@ void getStatDiacriticAssignment( QString voc, int numDiacritics, AmbiguityStatLi
 	stats.clear();
 	for (int i=0;i<ambiguitySize;i++)
 		stats.append(AmbCombStat(voc));
-	VocalizedCombinations c(voc,numDiacritics);
+	VocalizedCombinationsGenerator c(voc,numDiacritics);
 	if (c.isUnderVocalized()) {
 	#ifdef MAX_FOR_UNDERVOCALIZED
 		QString s=voc;

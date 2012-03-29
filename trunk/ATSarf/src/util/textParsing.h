@@ -136,11 +136,4 @@ inline QString getLastNWords(QString s, int N) {
 	return s.mid(l-1);
 }
 
-inline void removeFirstWord(QString & s) {
-	int l=s.indexOf(' ');
-	if (l>=0)
-		s.remove(0,l+1);
-}
-
-
 #endif // TEXTPARSING_H

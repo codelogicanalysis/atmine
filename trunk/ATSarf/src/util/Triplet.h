@@ -8,7 +8,7 @@
 template <class T1, class T2, class T3>
 struct Triplet
 {
-	Triplet() : first(T1()), second(T2()), third(T2())  {}
+	Triplet() : first(T1()), second(T2()), third(T3())  {}
 	Triplet(const T1 &t1, const T2 &t2, const T3 &t3) : first(t1), second(t2), third(t3) {}
 
 	Triplet<T1, T2, T3> &operator=(const Triplet<T1, T2, T3> &other)

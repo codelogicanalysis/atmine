@@ -5,16 +5,12 @@ AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS): voc(r
 	featuresDefined=false;
 }
 
-AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS, int stemStart, int suffStart, int stemIndex, int numPrefixes, int numSuffixes) {
+AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS, Morphemes morphemes) {
 	featuresDefined=true;
 	voc=raw;
 	desc=des;
 	pos=POS;
-	this->stemStart=stemStart;
-	this->suffStart=suffStart;
-	this->stemIndex=stemIndex;
-	this->numPrefixes=numPrefixes;
-	this->numSuffixes=numSuffixes;
+	this->morphemes=morphemes;
 }
 
 QString AmbiguitySolution::getFeatureIndex(const QString & feature, int index) const {
@@ -42,8 +38,8 @@ bool AmbiguitySolution::equal (const AmbiguitySolution & other, Ambiguity m) con
 		return pos==other.pos;
 	} else if (m==Stem_Ambiguity) {
 		if (featuresDefined) {
-			int index1=stemIndex;
-			int index2=other.stemIndex;
+			int index1=morphemes.getStemIndex();
+			int index2=other.morphemes.getStemIndex();
 			QString pos1=getFeatureIndex(pos,index1);
 			QString pos2=getFeatureIndex(other.pos,index2);
 			QString desc1=getFeatureIndex(desc,index1);
@@ -79,17 +75,28 @@ QString interpret(Ambiguity a) {
 }
 
 
-item_types getDiacriticPosition(AmbiguitySolution & sol, int diacriticPos) {
-	if (sol.featuresDefined) {
-		if (diacriticPos>=sol.suffStart)
-			return SUFFIX;
-		else if (diacriticPos>=sol.stemStart)
-			return STEM;
-		else
-			return PREFIX;
-	} else {
-		return STEM;
+MorphemeType AmbiguitySolution::getMorphemeTypeAtPosition(int & diacriticPos, const QList<int> & diaPos, int & relativePos, int & morphemeSize) {
+	//TODO: check if works correctly for more than one diacritic
+	int diaPosTemp=diacriticPos; //the loop below performed to make diaPos consistent with position in word with diacritics and not just position of letter (assuming no diacritics)
+	for (int i=0;i<diaPos.size();i++) { //can be made faster
+		if (diacriticPos<=diaPos[i])
+			diaPosTemp++;
 	}
+	diacriticPos=diaPosTemp;
+	if (featuresDefined) {
+		for (int i=morphemes.size()-1;i>=0;i--) {
+			Morpheme & m=morphemes[i];
+			int relPos=diacriticPos-m.start;
+			if (relPos>=0) {
+				relativePos=relPos;
+				morphemeSize=m.size();
+				return m.type;
+			}
+		}
+	}
+	relativePos=diacriticPos;
+	morphemeSize=voc.size(); //not very correct depends on degree of vocalization of the input, but best approximation we can do for now. anyways we must not reach this line in our application
+	return Stem;
 }
 
 AmbiguitySolutionList getAmbiguityUnique(const AmbiguitySolutionList & list, Ambiguity m) {
@@ -108,11 +115,9 @@ AmbiguitySolutionList getAmbiguityUnique(const AmbiguitySolutionList & list, Amb
 }
 
 bool AmbiguityStemmerBase::on_match() {
-	int stemStart=Stem->info.start;
-	int suffStart=Suffix->info.start;
-	int numPrefix=0,numSuff=0;
-	int stemIndex;
+	Morphemes morphemes;
 	QString pos,desc,raw;
+	int last=0;
 	for (int i=0;i<prefix_infos->size();i++) {
 		minimal_item_info & pre = (*prefix_infos)[i];
 		if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
@@ -120,13 +125,21 @@ bool AmbiguityStemmerBase::on_match() {
 		desc+=pre.description()+" + ";
 		pos+=pre.POS+"+";
 		raw+=pre.raw_data;
-		numPrefix++;
+		int current=Prefix->sub_positionsOFCurrentMatch[i];
+		Morpheme m(last,current);
+		m.setType(pre.abstract_categories,PREFIX);
+		morphemes.append(m);
+		last=current;
 	}
 	minimal_item_info & stem = *stem_info;
 	desc+=stem.description()+" + ";
 	pos+=stem.POS+"+";
 	raw+=stem.raw_data;
-	stemIndex=numPrefix;
+	int current=Stem->info.finish;
+	Morpheme m(last,current,::Stem);
+	morphemes.append(m);
+	last=current;
+
 	for (int i=0;i<suffix_infos->size();i++) {
 		minimal_item_info & suff = (*suffix_infos)[i];
 		if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
@@ -134,9 +147,13 @@ bool AmbiguityStemmerBase::on_match() {
 		desc+=suff.description()+" + ";
 		pos+=suff.POS+"+";
 		raw+=suff.raw_data;
-		numSuff++;
+		int current=Suffix->sub_positionsOFCurrentMatch[i];
+		Morpheme m(last,current);
+		m.setType(suff.abstract_categories,SUFFIX);
+		morphemes.append(m);
+		last=current;
 	}
-	AmbiguitySolution s(raw,desc,pos,stemStart,suffStart,stemIndex,numPrefix,numSuff);
+	AmbiguitySolution s(raw,desc,pos,morphemes);
 	store(info.getString(),s);
 	return true;
 }

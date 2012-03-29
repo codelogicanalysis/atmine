@@ -1,6 +1,6 @@
 #include "vocalizedCombinations.h"
 
-VocalizedCombinations::VocalizedCombinations(QString voc, int numDiacritics) {
+VocalizedCombinationsGenerator::VocalizedCombinationsGenerator(QString voc, int numDiacritics) {
 	this->voc=voc;
 	for (int i=0;i<voc.size();i++) {
 		QChar curr=voc[i];
@@ -14,7 +14,7 @@ VocalizedCombinations::VocalizedCombinations(QString voc, int numDiacritics) {
 	assert(unvoc==removeDiacritics(this->voc));
 	this->numDiacritics=numDiacritics;
 }
-VocalizedCombinations & VocalizedCombinations::begin() {
+VocalizedCombinationsGenerator & VocalizedCombinationsGenerator::begin() {
 	indicies.clear();
 	if (isUnderVocalized()) {
 		indicies.append(-1); //i.e. finished
@@ -26,7 +26,7 @@ VocalizedCombinations & VocalizedCombinations::begin() {
 	return *this;
 }
 
-bool VocalizedCombinations::initialize(int i, int index) {
+bool VocalizedCombinationsGenerator::initialize(int i, int index) {
 	indicies[i]=index;
 	for (int j=i+1;j<numDiacritics;j++) {
 		int newIndex=indicies[j-1]+1;
@@ -38,7 +38,7 @@ bool VocalizedCombinations::initialize(int i, int index) {
 	return true;
 }
 
-void VocalizedCombinations::iterate(int i) {
+void VocalizedCombinationsGenerator::iterate(int i) {
 	if (indicies.size()==0) {
 		indicies.append(-1);
 		return;
@@ -61,12 +61,12 @@ void VocalizedCombinations::iterate(int i) {
 	}
 }
 
-VocalizedCombinations & VocalizedCombinations::operator++() {
+VocalizedCombinationsGenerator & VocalizedCombinationsGenerator::operator++() {
 	iterate(numDiacritics-1);
 	return *this;
 }
 
-VocalizedCombinations::Combination VocalizedCombinations::getCombination() const {
+VocalizedCombination VocalizedCombinationsGenerator::getCombination() const {
 	QList<int> positions;
 	QString s=unvoc;
 	assert(numDiacritics==indicies.size());
@@ -78,20 +78,20 @@ VocalizedCombinations::Combination VocalizedCombinations::getCombination() const
 		QChar diacritic=d.diacritic;
 		s.insert(pos+1,diacritic);
 	}
-	return Combination(s,positions);
+	return VocalizedCombination(s,positions);
 }
 
-QString VocalizedCombinations::getString() const {
-	const Combination & c=getCombination();
+QString VocalizedCombinationsGenerator::getString() const {
+	const VocalizedCombination & c=getCombination();
 	return c.getString();
 }
 
-bool VocalizedCombinations::isFinished() const {
+bool VocalizedCombinationsGenerator::isFinished() const {
 	return indicies.size()>0 && indicies.last()==-1;
 }
 
-VocalizedCombinations::Combination VocalizedCombinations::Combination::deduceCombination(QString voc) {
-	VocalizedCombinations::Combination comb(voc,QList<int>());
+VocalizedCombination VocalizedCombination::deduceCombination(QString voc) {
+	VocalizedCombination comb(voc,QList<int>());
 	bool lastDiacritic=false;
 	int shift=0;
 	for (int i=0;i<voc.size();i++) {
@@ -112,7 +112,7 @@ VocalizedCombinations::Combination VocalizedCombinations::Combination::deduceCom
 	return comb;
 }
 
-const QList<Diacritics> & VocalizedCombinations::Combination::getDiacritics() {
+const QList<Diacritics> & VocalizedCombination::getDiacritics() {
 	if (list.size()==0) {
 		int pos=0;
 		int shift=0;
