@@ -430,6 +430,8 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	int countWrong=0;
 	QString oldInput;
 
+
+	int correct=0,all=0;
 	foreach (file_name,folder.entryList())	{
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));
 		QFile input_after(folder.absolutePath().append(QString("/").append(file_name)).replace("before","after"));
@@ -461,6 +463,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 			QString gloss =readNextLineEntry(file,"GLOSS");
 			readNextLine(file);
 			assert(line.isEmpty());
+#if 0
 		#ifdef ATB_DIACRITICS
 			if (wrongDiacritics) {
 				if (countWrong>0) {
@@ -541,7 +544,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				continue;
 			}
 		#endif
-
+#endif
 			if (status==1 && !gloss.contains("NOT_IN_LEXICON") && input_string[input_string.size()-1]!=kashida) {
 				QStringList p=pos.split("+");
 				QStringList v=voc.split("+");
@@ -552,6 +555,20 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 					if (g[i].endsWith(" "))
 						g[i]=g[i].mid(0,g[i].size()-1);
 				}
+				QString voc_all;
+				for (int i=0;i<v.size();i++) {
+					QString v_ind=Buckwalter::convertFrom(v[i]);
+					if (!v_ind.startsWith('('))
+						voc_all+=v_ind;
+				}
+				voc_all=removeDiacritics(voc_all);
+				QString inp=removeDiacritics(input_string);
+				if (equal(voc_all,inp))
+					correct++;
+				else
+					out<<voc_all<<"\t"<<inp<<"\n";
+				all++;
+#if 0
 				AtbStemmer s(input_string,v,g,p,input_after,pos_after,true);
 				s();
 				AtbStemmer::Status stat=s.getStatus();
@@ -658,6 +675,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 					out	<<"("<<appended<<"/"<<all_count<<")"<<file_name<<":\n"
 						<<input_string<<"\t"<<voc<<"\t"<<pos<<"\t"<<gloss<<"\n";
 				}
+#endif
 			}
 		}
 		input.close();
@@ -669,6 +687,8 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	conf.close();
 	morph_file.close();
 
+
+	out<<correct<<"/"<<all<<"="<<((double)correct)/all;
 #ifndef ATB_DIACRITICS
 	int total=found+notFound;
 	int other=notFound-notFoundGloss-notFoundVoc;

@@ -96,7 +96,8 @@ HEADERS += util/text_handling.h \
     ../src/case/affixTreeTraversal.h \
     ../src/util/vocalizedCombinations.h \
     ../src/case/atbDiacriticExperiment.h \
-    ../src/util/ambiguity.h
+    ../src/util/ambiguity.h \
+    ../src/util/morphemes.h
 HEADERS += trie.h \
     utilities.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -132,7 +133,6 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/graph_nodes.cpp \
     ../src/case/graph.cpp \
     ../src/case/split_affixes.cpp \
-    ../src/case/affix_verification.cpp \
     ../src/case/timeRecognizer.cpp \
     ../src/case/timeManualTagger.cpp \
     ../src/case/narratordetector.cpp \
@@ -167,6 +167,7 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/log/ATMProgressIFC.cpp \
     ../src/util/vocalizedCombinations.cpp \
     ../src/case/atbDiacriticExperiment.cpp \
+	../src/util/morphemes.cpp \
     ../src/util/ambiguity.cpp \
     ../src/case/madaExperiment.cpp
 

@@ -933,7 +933,9 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	if (existsEntry(item_category,-1,primary_condition,false))
 	{
 		sources=addSource(item_category,source_id,-1,primary_condition,false);
+#if 0
 		if (type==STEM)
+#endif
 			for (int i=0; i<abstract_ids->count();i++)
 				abstract_categories=addAbstractCategory(primary_condition,abstract_ids->at(i));
 		assert (sources!=INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/); //assumed to mean row was modified
@@ -978,8 +980,8 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 	}
 	else
 	{
-		stmt="INSERT INTO %1_category(%1_id, category_id, sources, raw_data, description_id, POS,reverse_description)  VALUES('%2','%3','%4','%5','%6','%7',%8)";
-		stmt=stmt.arg(table).arg( item_id).arg( category_id).arg( bitset_to_string(sources)).arg( raw_data).arg( description_id).arg(POS).arg(lemma_ID.toInt());
+		stmt="INSERT INTO %1_category(%1_id, category_id, abstract_categories, sources, raw_data, description_id, POS,reverse_description)  VALUES('%2','%3','%4','%5','%6','%7','%8',%9)";
+		stmt=stmt.arg(table).arg( item_id).arg( category_id).arg( bitset_to_string(abstract_categories)).arg( bitset_to_string(sources)).arg( raw_data).arg( description_id).arg(POS).arg(lemma_ID.toInt());
 	}
 	perform_query(stmt);
 	update_dates(source_id);
