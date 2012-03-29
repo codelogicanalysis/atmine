@@ -5,20 +5,30 @@
 #include <QHash>
 #include <QSet>
 
+class DiacriticsNposition {
+public:
+	int position;
+	Diacritic diacritic;
+public:
+	DiacriticsNposition(int p, Diacritic dia): position(p), diacritic(dia) { }
+};
+
+typedef QList<DiacriticsNposition> DiacriticsPositionsList;
+
 class VocalizedCombination {
 private:
 	friend class VocalizedCombinationsGenerator;
 	QString voc;
-	QList<int> positions;
+	DiacriticsPositionsList shortList;
 	QList<Diacritics> list;
 private:
-	VocalizedCombination(const QString & aVoc, const QList<int> & aPositions): voc(aVoc), positions(aPositions) {	}
+	VocalizedCombination(const QString & aVoc, const DiacriticsPositionsList & aShortList): voc(aVoc), shortList(aShortList) {	}
 public:
 	static VocalizedCombination deduceCombination(QString voc);
 public:
 	QString getString() const { return voc;}
-	const QList<int> & getPositions() const { return positions;}
-	int getNumDiacritics() const { return positions.size();}
+	const DiacriticsPositionsList & getShortList() const { return shortList;}
+	int getNumDiacritics() const { return shortList.size();}
 	const QList<Diacritics> & getDiacritics();
 	bool operator ==(const VocalizedCombination & other) const  { return voc==other.voc; }
 };
@@ -39,7 +49,7 @@ private:
 		int pos;
 		QChar diacritic;
 	public:
-		DiacPos(int position,QChar dia): pos(position), diacritic(dia) { }
+		DiacPos(int p, QChar d):pos(p),diacritic(d) {}
 	};
 
 private:

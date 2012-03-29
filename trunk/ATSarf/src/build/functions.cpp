@@ -336,7 +336,7 @@ QString tag;
 					abstract_category=lemmaID;
 					lemmaID="";
 					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)types[j])))==-1)	{
-						abstract_id=insert_category(abstract_category,STEM,source_id,true);
+						abstract_id=insert_category(abstract_category,types[j],source_id,true);
 						out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
 					}
 				}
@@ -347,10 +347,7 @@ QString tag;
 			}*/
 			QList<long> *abstract_categories=new QList<long>();
 			abstract_categories->append(abstract_id);
-			if ((types[j]==STEM?
-				 insert_item(STEM,item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0:
-				 insert_item(types[j],item,raw_data,category,source_id,NULL,description,POS,"",lemmaID)<0))
-			{
+			if (insert_item(types[j],item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0) {
 				out<<"Error at line "<<line_num<<": '"<<line<<"', Item was not inserted\n";
 				return -1;
 			}

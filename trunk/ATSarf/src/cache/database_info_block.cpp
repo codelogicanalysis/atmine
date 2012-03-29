@@ -70,7 +70,9 @@ void database_info_block::readTrieFromDatabaseAndBuildFile()
 		if(!equal(name,raw_data)) {
 			error<<"Conflict Database:\t"<<name<<"\t"<<raw_data;
 			if (raw_data.endsWith(' ')) {
-				raw_data.remove(raw_data.size()-1);
+				do {
+					raw_data=raw_data.remove(raw_data.size()-1,1);
+				} while (raw_data.endsWith(' '));
 				assert(equal(raw_data,name));
 			} else {
 				name=removeDiacritics(name);
@@ -145,21 +147,19 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map
 	prgsIFC->setCurrentAction(table.toUpper()+" INFO");
 	for (int i=0;i<(type==STEM?1:2);i++) {
 		QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
-		stmt=stmt.arg(table).arg((type==STEM?", abstract_categories":"")).append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
+		stmt=stmt.arg(table).arg(", abstract_categories").append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
 		assert (execute_query(stmt,query));
 		int size=query.size();
-		while (query.next())
-		{
+		int counter=0;
+		while (query.next()) {
 			long long item_id=query.value(0).toULongLong();
 			long category_id =query.value(1).toULongLong();
 			QString raw_data=query.value(2).toString();
 			QString POS=query.value(3).toString();
 			long description_id=query.value(4).toULongLong();
 			dbitvec abstract_categories(max_sources);
-			if (type==STEM)
-				abstract_categories=string_to_bitset(query.value(5));
-			else {
-				abstract_categories.reset();
+			abstract_categories=string_to_bitset(query.value(5));
+			if (type!=STEM) {
 				if (i==1)
 					setReverseDirection(abstract_categories);
 				else
@@ -168,7 +168,8 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map
 			ItemEntryKey key(item_id,category_id,raw_data);
 			ItemEntryInfo entry(abstract_categories,description_id,POS);
 			map->insertMulti(key,entry);
-			prgsIFC->report((double)i/size*100+0.5);
+			counter++;
+			prgsIFC->report((double)counter/size*100+0.5);
 		}
 	}
 #ifdef LOAD_FROM_FILE

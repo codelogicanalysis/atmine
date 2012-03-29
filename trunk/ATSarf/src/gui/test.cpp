@@ -125,11 +125,11 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #elif 0
 	for (int i=0;i<10;i++) {
 		out<<i<<":\n";
-		VocalizedCombinations c(inputString,i);
+		VocalizedCombinationsGenerator c(inputString,i);
 		if (c.isUnderVocalized())
 			out<<"\t---\n";
 		for (c.begin();!c.isFinished();++c) {
-			VocalizedCombinations::Combination comb=c.getCombination();
+			VocalizedCombination comb=c.getCombination();
 			out<<"\t"<<comb.getString();
 			QList<Diacritics> list=comb.getDiacritics();
 			out<<"\t| ";
@@ -190,8 +190,8 @@ int test(QString inputString,ATMProgressIFC * prg) {
 int verify(QString ,ATMProgressIFC *) {
 	//drawAffixGraph(PREFIX);
 	//drawAffixGraph(SUFFIX);
-	//listAllAffixes(SUFFIX);
-	//listAllAffixes(PREFIX);
+	listAllAffixes(SUFFIX);
+	listAllAffixes(PREFIX);
 	return 0;
 }
 int breakAffix(QString, ATMProgressIFC *) {

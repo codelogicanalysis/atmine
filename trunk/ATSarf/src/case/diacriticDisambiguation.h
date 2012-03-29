@@ -39,7 +39,7 @@ protected:
 private:
 	void printDiacriticDisplay(Diacritics d, QTextStream * o=&out);
 	void printDiacritics(QString entry, int pos, QChar c, QTextStream * o=&out); //for one diacritic
-	void printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, const QList<int> & diaPos, QTextStream * o=&out); //for multiple diacritcs
+	void printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, QTextStream * o=&out); //for multiple diacritcs
 	void reset();
 protected:
 	DiacriticDisambiguationBase(bool mapBased, bool suppressOutput,int diacriticsCount=1);
