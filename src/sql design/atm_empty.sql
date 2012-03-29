@@ -130,12 +130,13 @@ DROP TABLE IF EXISTS `prefix_category`;
 CREATE TABLE `prefix_category` (
   `prefix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
+  `abstract_categories` char(16) NOT NULL,
   `sources` char(16) NOT NULL,
   `raw_data` varchar(60) NOT NULL DEFAULT '',
   `POS` varchar(250) NOT NULL DEFAULT '',
   `description_id` bigint(20) DEFAULT NULL,
   `reverse_description` bit(1) DEFAULT b'0',
-  PRIMARY KEY (`prefix_id`,`category_id`,`raw_data`,`POS`),
+  PRIMARY KEY (`prefix_id`,`category_id`,`raw_data`,`description_id`,`POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -269,12 +270,13 @@ DROP TABLE IF EXISTS `suffix_category`;
 CREATE TABLE `suffix_category` (
   `suffix_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
+  `abstract_categories` char(16) NOT NULL,
   `sources` char(16) NOT NULL,
   `raw_data` varchar(60) NOT NULL DEFAULT '',
   `POS` varchar(250) NOT NULL DEFAULT '',
   `description_id` bigint(20) DEFAULT NULL,
   `reverse_description` bit(1) DEFAULT b'0',
-  PRIMARY KEY (`suffix_id`,`category_id`,`raw_data`,`POS`),
+  PRIMARY KEY (`suffix_id`,`category_id`,`raw_data`,`description_id`,`POS`),
   KEY `category_id` (`category_id`),
   KEY `description_id` (`description_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
