@@ -321,19 +321,28 @@ QString tag;
 					QStringList abstract_list=POS.split("+").at(0).split("/");
 					if (abstract_list.size()>=2)
 						abstract_category=	abstract_list.at(1);
-					else
-					{
+					else {
 						abstract_category="";
 						out << "Unexpected Error: split on "<<POS<<" "<<abstract_list.size()<<" "<<abstract_list.at(0);
 						return 1;
 					}
-					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)STEM)))==-1)
-					{
+					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)STEM)))==-1)	{
 						abstract_id=insert_category(abstract_category,STEM,source_id,true);
 						//out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
 					}
 				}
-			} /*else {
+			} else {
+				if (!lemmaID.isEmpty() && lemmaID!="1") {
+					abstract_category=lemmaID;
+					lemmaID="";
+					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)types[j])))==-1)	{
+						abstract_id=insert_category(abstract_category,STEM,source_id,true);
+						out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
+					}
+				}
+			}
+
+			/*else {
 				reverse_description=(bool)lemmaID.toInt();
 			}*/
 			QList<long> *abstract_categories=new QList<long>();

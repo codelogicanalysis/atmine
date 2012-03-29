@@ -115,7 +115,7 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
-#if 1
+#if 0
 	if (mada(inputString,prg))
 		return -1;
 #elif 0
@@ -156,7 +156,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	diacriticDisambiguationCount(SUFFIX);
 #else
 	displayed_error<<"\nFull:\n";
-	int count=-1;
+	int count=1;
 	displayed_error<<"\nFull ("<<count<<"): \n";
 	//out<<"\n\nFull:\n";
 	QString name=QString("%1dia").arg(count>=0?QString("%1").arg(count):"*");
@@ -190,8 +190,8 @@ int test(QString inputString,ATMProgressIFC * prg) {
 int verify(QString ,ATMProgressIFC *) {
 	//drawAffixGraph(PREFIX);
 	//drawAffixGraph(SUFFIX);
-	listAllAffixes(SUFFIX);
-	listAllAffixes(PREFIX);
+	//listAllAffixes(SUFFIX);
+	//listAllAffixes(PREFIX);
 	return 0;
 }
 int breakAffix(QString, ATMProgressIFC *) {
