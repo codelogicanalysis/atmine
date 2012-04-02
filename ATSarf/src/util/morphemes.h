@@ -68,6 +68,11 @@ public:
 
 		}
 	}
+public:
+	static QString interpret(MorphemeType t){
+		static const QString morpheme_name[(int)Invalid_morpheme+1]={"Proc3", "Proc2", "Proc1", "Proc0", "Det", "Pref", "Stem", "Suff", "Enc0", "Case", "Invalid"};
+		return morpheme_name[(int)t];
+	}
 };
 class Morphemes  {
 private:

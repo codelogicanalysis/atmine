@@ -67,18 +67,6 @@ void database_info_block::readTrieFromDatabaseAndBuildFile()
 		category_id=query.value(2).toLongLong();
 #ifdef REDUCE_THRU_DIACRITICS
 		raw_data=query.value(3).toString();
-		if(!equal(name,raw_data)) {
-			error<<"Conflict Database:\t"<<name<<"\t"<<raw_data;
-			if (raw_data.endsWith(' ')) {
-				do {
-					raw_data=raw_data.remove(raw_data.size()-1,1);
-				} while (raw_data.endsWith(' '));
-				assert(equal(raw_data,name));
-			} else {
-				name=removeDiacritics(name);
-			}
-
-		}
 		node->add_info(category_id,raw_data);
 #else
 		node->add_info(category_id);
@@ -114,20 +102,16 @@ void database_info_block::buildTrie()
 		QDataStream in(&file);    // read the data serialized from the file
 		QString version;
 		in >> version;
-		if (version==cache_version())
-		{
+		if (version==cache_version()) {
 			in >> *(database_info.trie_nodes);
 			file.close();
-		}
-		else
-		{
+		} else {
 			file.close();
 			readTrieFromDatabaseAndBuildFile();
 			return;
 		}
 		QFile input(trie_path);
-		if (input.open(QIODevice::ReadOnly))
-		{
+		if (input.open(QIODevice::ReadOnly)) {
 			delete database_info.Stem_Trie;
 			input.close();
 			database_info.Stem_Trie=new ATTrie(trie_path.toStdString().data());
@@ -146,8 +130,8 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map
 	QString table = interpret_type(type);
 	prgsIFC->setCurrentAction(table.toUpper()+" INFO");
 	for (int i=0;i<(type==STEM?1:2);i++) {
-		QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id %2 FROM %1_category");
-		stmt=stmt.arg(table).arg(", abstract_categories").append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
+		QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id, abstract_categories FROM %1_category");
+		stmt=stmt.arg(table).append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
 		assert (execute_query(stmt,query));
 		int size=query.size();
 		int counter=0;

@@ -17,6 +17,7 @@
 #define SAMA
 #define MORPHEME_TOKENIZE
 #define DIACRITIC_DISAMBIGUATION
+#define REDUCED_EQ_AMBIGUIOUS
 //#define ATB
 //#define ATB2
 //#define ATB_DIACRITIC

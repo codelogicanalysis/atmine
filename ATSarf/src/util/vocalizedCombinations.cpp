@@ -150,3 +150,25 @@ const QList<Diacritics> & VocalizedCombination::getDiacritics() {
 	assert(list.size()==voc.size()-shortList.size());
 	return list;
 }
+
+bool VocalizedCombination::hasSelfInconsistency() const {
+	if (list.size()>0) {
+		for (int i=0;i<list.size();i++) {
+			if (!list[i].isSelfConsistent())
+				return true;
+		}
+		return false;
+	} else {
+		Diacritics last;
+		for (int i=0;i<shortList.size();i++) {
+			bool lastDiacritic=(i>0 && shortList[i].position == shortList[i-1].position);
+			Diacritic c=shortList[i].diacritic;
+			if (!lastDiacritic)
+				last.clear();
+			last.append(c);
+			if (!last.isSelfConsistent())
+				return true;
+		}
+		return false;
+	}
+}

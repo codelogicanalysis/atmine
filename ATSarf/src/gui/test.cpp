@@ -15,6 +15,7 @@
 #include "bibleGeneology.h"
 #include <sys/time.h>
 #include "vocalizedCombinations.h"
+#include "transliteration.h"
 
 
 extern void splitRecursiveAffixes();
@@ -32,6 +33,7 @@ extern void diacriticDisambiguationCount(item_types t, int numDiacritics=1);
 extern void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC * prg, QString reducedFile="reducedOutput", QString allFile="fullOutput");
 extern void diacriticDisambiguationCount(QStringList & list, int numDiacritics, ATMProgressIFC * prg);
 extern int mada(QString folderName, ATMProgressIFC * prg);
+extern int diacriticStatistics(QString inputString, ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -117,6 +119,12 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 int test(QString inputString,ATMProgressIFC * prg) {
 #if 0
 	if (mada(inputString,prg))
+		return -1;
+#elif 0
+	out<<Buckwalter::convertTo(inputString);
+
+#elif 0
+	if (diacriticStatistics(inputString, prg))
 		return -1;
 #elif 0
 	QStringList entries=inputString.split("\t");

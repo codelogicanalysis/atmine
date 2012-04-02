@@ -250,7 +250,10 @@ solution_position * StemSearch::computeFirstSolution()
 	if (!multi_p.raw_dataONLY())
 	{
 		ItemCatRaw2AbsDescPosMapItr itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
-		assert(itr!=database_info.map_stem->end());
+		if (itr==database_info.map_stem->end()) {
+			qDebug() <<"Stem Map Error, Not found:\t("<<id_of_currentmatch<<", "<<category_of_currentmatch<<", "<<possible_raw_datas[0]<<")";
+			assert(itr!=database_info.map_stem->end());
+		}
 		if (multi_p.abstract_category)
 			solution->abstract_categories=itr.value().first;
 		else

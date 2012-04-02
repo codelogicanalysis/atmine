@@ -12,13 +12,8 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../src/build
 INCLUDEPATH += $$TOP/datrie/
 
-# INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4
-INCLUDEPATH += $$TOP/datrie
-
-# INCLUDEPATH += $$TOP/datrie/libdatrie-0.2.4/datrie
 INCLUDEPATH += $$TOP/datrie/datrie
-HEADERS += util/text_handling.h \
-    ../src/util/diacritics.h \
+HEADERS += ../src/util/diacritics.h \
     ../src/util/dbitvec.h \
     ../src/sql/sql_queries.h \
     ../src/sql/Search_Compatibility.h \
@@ -97,9 +92,10 @@ HEADERS += util/text_handling.h \
     ../src/util/vocalizedCombinations.h \
     ../src/case/atbDiacriticExperiment.h \
     ../src/util/ambiguity.h \
-    ../src/util/morphemes.h
-HEADERS += trie.h \
-    utilities.h
+    ../src/util/morphemes.h \
+    ../src/case/diacriticsPostProcessing.h
+HEADERS += $$TOP/datrie/datrie/trie.h
+
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
     ../src/util/dbitvec.cpp \
@@ -170,7 +166,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/util/morphemes.cpp \
     ../src/util/ambiguity.cpp \
     ../src/case/madaExperiment.cpp \
-    ../src/case/affix_verification.cpp
+    ../src/case/affix_verification.cpp \
+    ../src/case/diacriticsPostProcessing.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
