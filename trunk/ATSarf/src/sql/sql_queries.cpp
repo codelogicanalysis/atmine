@@ -784,28 +784,39 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		raw_data=name;
 	int i=0;
 	//QString reducedName;
-	if (type==STEM && name.length()>0)
-		do
-		{
+	if (type==STEM && name.length()>0) {
+		do {
 			//qDebug()<<"o:"<<name;
-			if (alefs.contains(name[i]))
-			{
+			if (alefs.contains(name[i])) {
 				QString corresponding_part=getDiacriticword(i,i,raw_data);//must be one letter
 				assert(corresponding_part.length()>0);
-				if (name[i]!=corresponding_part[0])
-				{
+				if (name[i]!=corresponding_part[0]){
 					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
 					assert(alefs.contains(corresponding_part[0]));
 					name[i]=corresponding_part[0];
 				}
 			}
-			/*if (i>0 && isNonConnectingLetter(name[i-1]))
-			{
+			/*if (i>0 && isNonConnectingLetter(name[i-1])) {
 				reducedName=name.remove(i,1);
 				//TODO: remove also from raw_data then later call insert_item again
 			}*/
 			//qDebug()<<"n:"<<name;
 		}while ((i=name.indexOf(' ',i)+1)>0 && i<name.length());
+	}
+#endif
+#if 1
+	if(!equal(name,raw_data)) {
+		error<<"Conflict Lexicon:\t"<<name<<"\t"<<raw_data;
+		if (raw_data.endsWith(' ')) {
+			do {
+				raw_data=raw_data.remove(raw_data.size()-1,1);
+			} while (raw_data.endsWith(' '));
+			assert(equal(raw_data,name));
+		} else {
+			name=removeDiacritics(raw_data);
+		}
+		displayed_error <<" Corrected to:\t"<<name<<"\t"<<raw_data<<"\n";
+	}
 #endif
 	QString table=interpret_type(type);
 	QString item_category=QString("%1_category").arg(table);

@@ -31,6 +31,7 @@ public:
 	int getNumDiacritics() const { return shortList.size();}
 	const QList<Diacritics> & getDiacritics();
 	bool operator ==(const VocalizedCombination & other) const  { return voc==other.voc; }
+	bool hasSelfInconsistency() const;
 };
 
 class VocCombIndexListPair {

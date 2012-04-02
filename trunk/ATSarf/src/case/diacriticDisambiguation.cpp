@@ -182,6 +182,10 @@ void DiacriticDisambiguationBase::printDiacritics(QString unvoc,const QList<Diac
 
 void insertIntoCombSet(QSet<TextNmorphDiaPair> & alreadyProceesed,CombSet & allPossibleComb,VocalizedCombination & comb,int index, AmbiguitySolution & sol) {
 	QString s=comb.getString();
+	if (comb.hasSelfInconsistency()) {
+		qDebug()<<"Found inconsistency in generated lexicon entries:\t"<<s<<"\tpos: "<<sol.voc;
+		return;
+	}
 	MorphemeDiacritics mD=sol.getMorphemeDiacriticSummary(comb);
 	TextNmorphDiaPair p(s,mD);
 	if (alreadyProceesed.contains(p))
@@ -340,7 +344,11 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 					reducingCombinations[amb]++;
 				totalCombinations[amb]++;
 			}
+		#ifndef REDUCED_EQ_AMBIGUIOUS
 			bool reduced=valid_ratio[All_Ambiguity]<1;
+		#else
+			bool reduced=currSolutions[Vocalization].size()>1;
+		#endif
 			bool display=((numDia==diacriticsCount|| diacriticsCount==-1) && !suppressOutput && reduced);
 			for (int i=0;i<2;i++) {
 				QTextStream * o=(i==0?&out:&hadith_out);
@@ -350,6 +358,8 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 						AmbiguitySolution & sol =currSolutions[All_Ambiguity][index]; //make instead of indicies in general to indicies to uniques ones out of All_Ambiguity
 						(*o)<<s<<"\t";
 						printDiacritics(currEntry,d,sol,o);
+						int vocLeft=currSolutions[Vocalization].size();
+						(*o)<<"\t"<<vocLeft;
 						for (int amb=0;amb<ambiguitySize;amb++) {
 							(*o)<<"\t"<<valid_ratio[amb];
 						}
@@ -358,6 +368,8 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 				}
 			}
 		}
+		if (allPossibleComb.size()==0)
+			return;
 	}
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		if (sub_total[amb]==0) {
