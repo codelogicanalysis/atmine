@@ -123,7 +123,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 #elif 0
 	out<<Buckwalter::convertTo(inputString);
 
-#elif 0
+#elif 1
 	if (diacriticStatistics(inputString, prg))
 		return -1;
 #elif 0

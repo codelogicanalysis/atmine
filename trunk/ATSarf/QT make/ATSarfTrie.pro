@@ -11,7 +11,6 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../src/sql \
     ../src/build
 INCLUDEPATH += $$TOP/datrie/
-
 INCLUDEPATH += $$TOP/datrie/datrie
 HEADERS += ../src/util/diacritics.h \
     ../src/util/dbitvec.h \
@@ -93,9 +92,9 @@ HEADERS += ../src/util/diacritics.h \
     ../src/case/atbDiacriticExperiment.h \
     ../src/util/ambiguity.h \
     ../src/util/morphemes.h \
-    ../src/case/diacriticsPostProcessing.h
+    ../src/case/diacriticsPostProcessing.h \
+    ../src/util/combinations.h
 HEADERS += $$TOP/datrie/datrie/trie.h
-
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
     ../src/util/dbitvec.cpp \
@@ -167,7 +166,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/util/ambiguity.cpp \
     ../src/case/madaExperiment.cpp \
     ../src/case/affix_verification.cpp \
-    ../src/case/diacriticsPostProcessing.cpp
+    ../src/case/diacriticsPostProcessing.cpp \
+    ../src/util/combinations.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

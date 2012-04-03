@@ -12,64 +12,23 @@ VocalizedCombinationsGenerator::VocalizedCombinationsGenerator(QString voc, int 
 	}
 	unvoc=voc; //now all diacritics stripped out
 	assert(unvoc==removeDiacritics(this->voc));
-	this->numDiacritics=numDiacritics;
+	generator=new CombinationGenerator(numDiacritics,diacritics.size());
 }
 VocalizedCombinationsGenerator & VocalizedCombinationsGenerator::begin() {
-	indicies.clear();
-	if (isUnderVocalized()) {
-		indicies.append(-1); //i.e. finished
-	} else {
-		for (int i=0;i<numDiacritics;i++) {
-			indicies.append(i);
-		}
-	}
+	generator->begin();
 	return *this;
 }
 
-bool VocalizedCombinationsGenerator::initialize(int i, int index) {
-	indicies[i]=index;
-	for (int j=i+1;j<numDiacritics;j++) {
-		int newIndex=indicies[j-1]+1;
-		if (newIndex<diacritics.size())
-			indicies[j]=newIndex;
-		else
-			return false;
-	}
-	return true;
-}
-
-void VocalizedCombinationsGenerator::iterate(int i) {
-	if (indicies.size()==0) {
-		indicies.append(-1);
-		return;
-	}
-	int & index=indicies[i];
-	int diacriticIndexSize=diacritics.size();
-	if (index+1<diacriticIndexSize) {
-		index++;
-	} else {
-		bool init=false;
-		while (i>0) {
-			i--;
-			init=initialize(i,indicies[i]+1);
-			if (init)
-				break;
-		}
-		if (!init)
-			indicies.last()=-1;
-
-	}
-}
-
 VocalizedCombinationsGenerator & VocalizedCombinationsGenerator::operator++() {
-	iterate(numDiacritics-1);
+	++(*generator);
 	return *this;
 }
 
 VocalizedCombination VocalizedCombinationsGenerator::getCombination() const {
 	DiacriticsPositionsList diaSummary;
 	QString s=unvoc;
-	assert(numDiacritics==indicies.size());
+	const Combination & indicies=generator->getCombination();
+	int numDiacritics=indicies.size();
 	for (int i=numDiacritics-1;i>=0;i--) {
 		int index=indicies[i];
 		const DiacPos & d=diacritics[index];
@@ -91,7 +50,7 @@ QString VocalizedCombinationsGenerator::getString() const {
 }
 
 bool VocalizedCombinationsGenerator::isFinished() const {
-	return indicies.size()>0 && indicies.last()==-1;
+	return generator->isFinished();
 }
 
 VocalizedCombination VocalizedCombination::deduceCombination(QString voc) {
