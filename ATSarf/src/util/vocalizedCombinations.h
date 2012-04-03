@@ -2,6 +2,7 @@
 #define VOCALIZEDCOMBINATIONS_H
 
 #include "diacritics.h"
+#include "combinations.h"
 #include <QHash>
 #include <QSet>
 
@@ -57,20 +58,17 @@ private:
 	QString voc;
 	QString unvoc;
 	QList<DiacPos> diacritics;
-	QList<int> indicies;
-	int numDiacritics;
-private:
-	bool initialize(int i, int index);
-	void iterate(int i);
+	CombinationGenerator * generator;
 public:
 	VocalizedCombinationsGenerator(QString voc, int numVoc);
-	bool isUnderVocalized() const {return numDiacritics>diacritics.size();}
+	bool isUnderVocalized() const {return generator->isUnderDefined();}
 	VocalizedCombinationsGenerator & begin();
 	VocalizedCombinationsGenerator & operator++();
 	bool isFinished() const;
 	QString getString() const;
 	VocalizedCombination getCombination() const;
 	VocalizedCombination operator *() const { return getCombination(); }
+	~VocalizedCombinationsGenerator() {delete generator;}
 };
 
 inline unsigned int qHash(const VocalizedCombination & c) {
