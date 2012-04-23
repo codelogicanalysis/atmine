@@ -62,7 +62,7 @@ void DiacriticsPostProcessing::addToHash(StatTable & stats, QString feature, dou
 }
 
 void DiacriticsPostProcessing::restartLumpedEntries(QString newUnique) {
-	if (!lastUnique.isEmpty()) {
+	if (!lastUnique.isEmpty() || (testedFeaturesList.size()==0 && !newUnique.isEmpty())) {
 		for (int i=0;i<lastPairs.size();i++) {
 			int num_per_unique=0;
 			for (StatTable::iterator pair_itr=lastPairs[i].begin();pair_itr!=lastPairs[i].end();pair_itr++) {
@@ -80,7 +80,7 @@ void DiacriticsPostProcessing::restartLumpedEntries(QString newUnique) {
 		}
 		totalLines++;
 	}
-	lastUnique=newUnique;
+	lastUnique=(testedFeaturesList.size()==0?"":newUnique); //if no features keep empty, we are providing a non-empty argument just to get into last if
 	for (int i=0;i<lastPairs.size();i++) {
 		lastPairs[i].clear();
 	}
@@ -111,7 +111,7 @@ void DiacriticsPostProcessing::clearStats() {
 }
 
 void DiacriticsPostProcessing::displayStats() {
-	restartLumpedEntries();
+	restartLumpedEntries(testedFeaturesList.size()==0?"<dummy>":"");
 	for (StatTable::iterator itr=stats.begin();itr!=stats.end();itr++) {
 		Average & av=*itr;
 		QString key=itr.key();
@@ -133,9 +133,9 @@ void DiacriticsPostProcessing::displayStats() {
 }
 
 void DiacriticsPostProcessing::checkFeatureConsistency() {
-	assert(testedFeaturesList.size()>0);
 	assert(uniqueFeatures.size()>0);
 #if 0
+	assert(testedFeaturesList.size()>0);
 	for (int i=0;i<testedFeatures.size();i++) {
 		assert(uniqueFeatures.contains(testedFeatures[i]));
 	}
@@ -253,12 +253,14 @@ OneDiacriticEvaluation::OneDiacriticEvaluation(IndexList features,Ambiguity am) 
 
 int diacriticStatistics(QString inputString, ATMProgressIFC * prg) {
 	OneDiacriticEvaluation::IndexList list;
+#if 0
 	//list.append(OneDiacriticEvaluation::letterIndex);
 	list.append(OneDiacriticEvaluation::diacriticIndex);
 	list.append(OneDiacriticEvaluation::morphemeIndex);
 	list.append(OneDiacriticEvaluation::morphemeRelPosIndex);
 	list.append(OneDiacriticEvaluation::longVowelIndex);
 	list.append(OneDiacriticEvaluation::shamsiIndex);
+#endif
 	OneDiacriticEvaluation e(list,/*Stem_Ambiguity*/Vocalization);
 	e(inputString,prg);
 	return 0;
