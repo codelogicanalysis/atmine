@@ -58,6 +58,12 @@ Q_INLINE_TEMPLATE uint qHash ( Triplet<long long, long, QString> t)
 	return uint(qHash(t.first));//+qHash(t.second)+qHash(t.third));
 }
 
+template<class T1, class T2, class T3>
+Q_INLINE_TEMPLATE uint qHash ( Triplet<T1, T2, T3> t)
+{
+	return uint(qHash(t.first)+qHash(t.second)+qHash(t.third));
+}
+
 template <class T1, class T2, class T3>
 Q_INLINE_TEMPLATE QDataStream &operator<<(QDataStream &out, const Triplet<T1, T2, T3> &t)
 {

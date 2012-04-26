@@ -34,6 +34,7 @@ extern void diacriticDisambiguationCount(QString fileName, int numDiacritics, AT
 extern void diacriticDisambiguationCount(QStringList & list, int numDiacritics, ATMProgressIFC * prg);
 extern int mada(QString folderName, ATMProgressIFC * prg);
 extern int diacriticStatistics(QString inputString, ATMProgressIFC * prg);
+extern int regressionTest(QString inputString, ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -118,19 +119,22 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 
 int test(QString inputString,ATMProgressIFC * prg) {
 #if 0
+	if (regressionTest(inputString,prg))
+		return -1;
+#elif 0
 	if (mada(inputString,prg))
 		return -1;
 #elif 0
 	out<<Buckwalter::convertTo(inputString);
 
-#elif 1
+#elif 0
 	if (diacriticStatistics(inputString, prg))
 		return -1;
 #elif 0
 	QStringList entries=inputString.split("\t");
 	diacriticDisambiguationCount(entries,-1,prg);
 	//out<<equal(first, second);
-#elif 0
+#elif 1
 	for (int i=0;i<10;i++) {
 		out<<i<<":\n";
 		VocalizedCombinationsGenerator c(inputString,i);

@@ -14,14 +14,15 @@ public:
 	QString voc;
 	QString desc;
 	QString pos;
+	QString stemPOS;
 	bool featuresDefined:1;
 	Morphemes morphemes;
 	//TODO: other features
 private:
 	QString getFeatureIndex(const QString & feature, int index) const;
 public:
-	AmbiguitySolution(QString raw,QString des,QString POS);
-	AmbiguitySolution(QString raw,QString des,QString POS, Morphemes morphemes);
+	AmbiguitySolution(QString raw,QString des,QString POS, QString stemPOS);
+	AmbiguitySolution(QString raw,QString des,QString POS, QString stemPOS,Morphemes morphemes);
 	bool equal (const AmbiguitySolution & other, Ambiguity m) const;
 	MorphemeType getMorphemeTypeAtPosition(int diacriticPos, Diacritics dia, int & relativePos, int & morphemeSize);
 	MorphemeDiacritics getMorphemeDiacriticSummary(VocalizedCombination & comb);

@@ -6,7 +6,7 @@
 #include <QRegExp>
 #include "letters.h"
 
-enum Diacritic {FATHA,KASRA,DAMMA,SHADDA,SUKUN,FATHATAYN,KASRATAYN,DAMMATAYN,UNDEFINED_DIACRITICS};
+enum Diacritic {FATHA,KASRA,DAMMA,SHADDA,SUKUN,FATHATAYN,KASRATAYN,DAMMATAYN,ALEF_SUPERSCRIPT,UNDEFINED_DIACRITICS};
 
 inline QChar interpret_diacritic(Diacritic d) {
 	switch(d) {
@@ -26,6 +26,8 @@ inline QChar interpret_diacritic(Diacritic d) {
 		return shadde;
 	case SUKUN:
 		return sukun;
+	case ALEF_SUPERSCRIPT:
+		return aleft_superscript;
 	default:
 		return '\0';
 	}
@@ -48,6 +50,8 @@ inline Diacritic interpret_diacritic(QChar d) {
 		return SHADDA;
 	if (d==sukun)
 		return SUKUN;
+	if (d==aleft_superscript)
+		return ALEF_SUPERSCRIPT;
 	else
 		return UNDEFINED_DIACRITICS;
 }
@@ -107,7 +111,15 @@ public:
 				if (l.main!=KASRATAYN)
 					return false;
 			}
+		#ifdef ALEF_SUPER_FORCE //we can force it if we are super sure lexicon has all such placees, which is not the case
+			if (main==ALEF_SUPERSCRIPT && l.main!=ALEF_SUPERSCRIPT)
+				return false;
+		#endif
 		}
+		#ifndef ALEF_SUPER_FORCE
+			if ((main==ALEF_SUPERSCRIPT && l.main==FATHA) ||(l.main==ALEF_SUPERSCRIPT && main==FATHA))
+				return true;
+		#endif
 		if (main!=UNDEFINED_DIACRITICS && l.main!=UNDEFINED_DIACRITICS)
 			return main==l.main;
 		return true;
