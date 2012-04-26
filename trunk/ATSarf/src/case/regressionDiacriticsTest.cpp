@@ -23,7 +23,7 @@ int regressionTest(QString input, ATMProgressIFC * prg) {
 	DecisionTreeRegression::TerminationRule rule(minInstances,threshold);
 	QList<int> list;
 #if 1
-	list.append(OneDiacriticEvaluation::letterIndex);
+	//list.append(OneDiacriticEvaluation::letterIndex);
 	list.append(OneDiacriticEvaluation::diacriticIndex);
 	list.append(OneDiacriticEvaluation::morphemeIndex);
 	list.append(OneDiacriticEvaluation::morphemeRelPosIndex);
