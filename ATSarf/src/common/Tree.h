@@ -3,8 +3,6 @@
 
 #include <QList>
 
-
-
 template<class NodeType, class EdgeType>
 class Node {
 private:
@@ -13,11 +11,12 @@ private:
 	NodeType value;
 public:
 	Node(const NodeType & val): value(val) {}
-	NodeType & getValue() const { return value;}
+	const NodeType & getValue() const { return value;}
 	Node<NodeType, EdgeType> * getChild(int i) { return children[i];}
-	EdgeType & getEdge(int i) const {return edges[i];}
+	const EdgeType & getEdge(int i) const {return edges[i];}
 	int size() const { return children.size();}
 	void addNode(const EdgeType & edge,Node<NodeType, EdgeType> * node) { children.append(node); edges.append(edge);}
+	bool isLeaf() const {return size()==0;}
 };
 
 
@@ -37,9 +36,8 @@ public:
 	Tree() { root=NULL;}
 	Tree(Node<NodeType, EdgeType> * root) {this->root=root;}
 	void setRoot(Node<NodeType, EdgeType> * root) {this->root=root;}
-	~Tree() {
-		deleteHelper(root);
-	}
+	Node<NodeType, EdgeType> * getRoot() const {return root;}
+	~Tree() {deleteHelper(root);}
 };
 
 #endif // TREE_H

@@ -100,7 +100,9 @@ HEADERS += ../src/util/diacritics.h \
     ../src/util/decisionTreeRegression.h \
     ../src/common/Tree.h \
     ../src/util/distinguishingLargeFileIterator.h \
-    ../src/util/iterativeStandardDeviation.h
+    ../src/util/iterativeStandardDeviation.h \
+    ../src/common/TreeVisitor.h \
+    ../src/common/Tree2Dot.h
 HEADERS += $$TOP/datrie/datrie/trie.h
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
@@ -178,7 +180,8 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/util/largeFileIterator.cpp \
     ../src/util/iterativeMathFunctions.cpp \
     ../src/util/decisionTreeRegression.cpp \
-    ../src/util/distinguishingLargeFileIterator.cpp
+    ../src/util/distinguishingLargeFileIterator.cpp \
+    ../src/case/regressionDiacriticsTest.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

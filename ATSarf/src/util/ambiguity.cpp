@@ -1,15 +1,16 @@
 #include "ambiguity.h"
 
 
-AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS): voc(raw), desc(des),pos(POS) {
+AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS, QString stem_POS): voc(raw), desc(des),pos(POS), stemPOS(stem_POS) {
 	featuresDefined=false;
 }
 
-AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS, Morphemes morphemes) {
+AmbiguitySolution::AmbiguitySolution(QString raw,QString des,QString POS,QString stemPOS, Morphemes morphemes) {
 	featuresDefined=true;
 	voc=raw;
 	desc=des;
 	pos=POS;
+	this->stemPOS=stemPOS;
 	this->morphemes=morphemes;
 }
 
@@ -138,7 +139,7 @@ AmbiguitySolutionList getAmbiguityUnique(const AmbiguitySolutionList & list, Amb
 
 bool AmbiguityStemmerBase::on_match() {
 	Morphemes morphemes;
-	QString pos,desc,raw;
+	QString pos,desc,raw,stemPOS;
 	int last=0;
 	for (int i=0;i<prefix_infos->size();i++) {
 		minimal_item_info & pre = (*prefix_infos)[i];
@@ -154,6 +155,8 @@ bool AmbiguityStemmerBase::on_match() {
 		last=current+1;
 	}
 	minimal_item_info & stem = *stem_info;
+	QStringList stemPOSentries=stem.POS.split('/');
+	stemPOS=(stemPOSentries.size()>1?stemPOSentries.at(1):"");
 	desc+=stem.description()+" + ";
 	pos+=stem.POS+"+";
 	raw+=stem.raw_data;
@@ -175,7 +178,7 @@ bool AmbiguityStemmerBase::on_match() {
 		morphemes.append(m);
 		last=current+1;
 	}
-	AmbiguitySolution s(raw,desc,pos,morphemes);
+	AmbiguitySolution s(raw,desc,pos,stemPOS,morphemes);
 	store(info.getString(),s);
 	return true;
 }

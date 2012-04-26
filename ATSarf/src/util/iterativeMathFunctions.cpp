@@ -1,6 +1,5 @@
 #include <math.h>
 #include "iterativeMathFunctions.h"
-#include "iterativeStandardDeviation.h"
 
 
 long double IterativeMathFunctions::weightedSumHelper(InstanceIterator & itr, long double & totalWeight) {
@@ -36,35 +35,31 @@ double IterativeMathFunctions::weightedStandardDeviation(InstanceIterator & itr)
 	return dev.getValue();
 }
 
-double IterativeMathFunctions::weightedStandardDeviationReduction(DistinguishingLargeFileIterator & itr, QStringList & distingushingValues, QList<double> & meanValues, QList<double> & standardDeviations) {
+double IterativeMathFunctions::weightedStandardDeviationReduction(DistinguishingLargeFileIterator & itr, QStringList & distingushingValues, ItDevList & devs, ItDev & totalDev) {
 	distingushingValues.clear();
-	standardDeviations.clear();
-	meanValues.clear();
-	IterativeStandardDeviation totalDeviation;
-	typedef QMap<QString,IterativeStandardDeviation> DevMap;
+	devs.clear();
+	totalDev.clear();
+	typedef QMap<QString,ItDev> DevMap;
 	DevMap deviationMaps;
 	double xi,wi;
 	for (itr.start();itr.getInstance(xi,wi);itr.next()) {
-		totalDeviation.update(xi,wi);
+		totalDev.update(xi,wi);
 		QString distinguishingVal=itr.getDistinguishingValue();
 		deviationMaps[distinguishingVal].update(xi,wi);
 	}
-	double totalDev=totalDeviation.getValue();
-	int totalInstances=totalDeviation.getInstancesNum();
+	int totalInstances=totalDev.getInstancesNum();
 	double distTotalDev=0;
 	for (DevMap::iterator i=deviationMaps.begin();i!=deviationMaps.end();i++) {
 		distingushingValues.append(i.key());
 		IterativeStandardDeviation & d=*i;
+		devs.append(d);
 		double dev=d.getValue();
-		double mean=d.getWeightedMean();
-		standardDeviations.append(dev);
-		meanValues.append(mean);
 		int num=d.getInstancesNum();
 		double probability=((double)num)/totalInstances;
 		distTotalDev+=(dev*probability);
 
 	}
-	double SDR=totalDev-distTotalDev;
+	double SDR=totalDev.getValue()-distTotalDev;
 	return SDR;
 }
 

@@ -1,4 +1,5 @@
 #include <QFile>
+#include <QDebug>
 #include <QTextStream>
 #include <QStringList>
 #include <assert.h>
@@ -12,6 +13,10 @@ LargeFileIterator::LargeFileIterator(QString fileName, int valueColumn, int weig
 
 LargeFileIterator::LargeFileIterator(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg){
 	initialize(fileName,valueColumn,weightColumn,prg);
+}
+
+long LargeFileIterator::getSize(QString line){
+	return line.toUtf8().size()+1;
 }
 
 void LargeFileIterator::initialize(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg) {
@@ -29,33 +34,52 @@ void LargeFileIterator::initialize(QString fileName, int valueColumn, int weight
 	}
 	file= new QTextStream(inputFile);
 	file->setCodec("utf-8");
+	size=inputFile->size();
+	pos=0;
+	if (!file->atEnd()) {
+		QString line=file->readLine();
+		columns=line.split('\t');
+		secondLinePos=file->pos();
+		pos+=getSize(line);
+	}
 }
 
 
 void LargeFileIterator::processLine() {
+start: //to avoid deep recursion
 	atEnd=file->atEnd();
 	if (!atEnd) {
 		QString line=file->readLine();
+		pos+=getSize(line);
 		QStringList entries=line.split('\t');
-		assert(entries.size()>valueColumn);
+		//assert(entries.size()>valueColumn);
+		if(entries.size()<valueColumn) {
+			qDebug()<<line;
+			goto start;//return processLine();
+		}
 		currValue=entries.at(valueColumn).toDouble();
-		currWeight=entries.at(weightColumn).toDouble();
+		if (weightColumn>=0)
+			currWeight=entries.at(weightColumn).toDouble();
+		else
+			currWeight=1;
 		ConditionMap::iterator itr=conditions.begin();
 		for (;itr!=conditions.end();itr++) {
 			int col=itr.key();
 			QString val=itr.value();
 			QString curCondVal=entries.at(col);
 			if (curCondVal!=val)
-				return processLine();
+				goto start;//return processLine();
 		}
 		extractAdditionalInfo(entries);
+		if (prg!=NULL)
+			prg->report((double)pos/size+0.5);
 	}
 }
 
 void LargeFileIterator::extractAdditionalInfo(const QStringList &) { }
 
 void LargeFileIterator::start() {
-	file->seek(0);
+	file->seek(secondLinePos);
 	processLine();
 }
 

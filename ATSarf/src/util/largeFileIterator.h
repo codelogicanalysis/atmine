@@ -2,6 +2,7 @@
 #define LARGEFILEITERATOR_H
 
 #include <QString>
+#include <QStringList>
 #include <QMap>
 #include "instanceIterator.h"
 #include "ATMProgressIFC.h"
@@ -27,9 +28,14 @@ private:
 	//related to file
 	QFile * inputFile;
 	QTextStream * file;
+	QStringList columns;
+	long secondLinePos;
 
 	ATMProgressIFC *prg; //TODO: not used yet
+	long size;
+	long pos;
 private:
+	long getSize(QString line);
 	void processLine();
 	void initialize(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg);
 protected:
@@ -41,6 +47,7 @@ public:
 	virtual void next();
 	virtual bool getInstance(double & value, double & weight) const;
 	~LargeFileIterator();
+	QStringList & getColumnNames() {return columns;}
 };
 
 #endif // LARGEFILEITERATOR_H

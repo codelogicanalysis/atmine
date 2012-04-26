@@ -2,6 +2,8 @@
 #include <QMap>
 #include <QFile>
 #include <QTextStream>
+#include "Quadruplet.h"
+#include "Triplet.h"
 #include "transliteration.h"
 #include "stemmer.h"
 #include "morphemes.h"
@@ -9,7 +11,8 @@
 #include "vocalizedCombinations.h"
 
 typedef QSet<VocCombIndexListPair> CombSet;
-typedef QPair<QString,MorphemeDiacritics> TextNmorphDiaPair;
+//typedef Quadruplet<QString,QString, QString,MorphemeDiacritics> TextNposNvocNmorphDiaQuadruplet;
+typedef Triplet<QString,QString, MorphemeDiacritics> TextNposNmorphDiaTriplet;
 
 void DiacriticDisambiguationBase::reset() {
 	for (int i=0;i< ambiguitySize;i++) {
@@ -62,12 +65,12 @@ void DiacriticDisambiguationBase::store(long id, QString entry, AmbiguitySolutio
 }
 
 void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS, Morphemes morphemes) {
-	AmbiguitySolution s(raw_data,description,POS,morphemes);
+	AmbiguitySolution s(raw_data,description,POS,"",morphemes);
 	store(id,entry,s);
 }
 
 void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data, QString description, QString POS) {
-	AmbiguitySolution s(raw_data,description,POS);
+	AmbiguitySolution s(raw_data,description,"",POS);
 	store(id,entry,s);
 }
 
@@ -151,7 +154,7 @@ void DiacriticDisambiguationBase::printDiacritics(QString entry, int pos, QChar 
 }
 
 void DiacriticDisambiguationBase::printDiacritics(QString unvoc,const QList<Diacritics> & d, AmbiguitySolution sol, QTextStream * o) { //for multiple diacritcs
-	(*o)<<d.size()<<"\t"<<diacriticsCount;
+	(*o)<<sol.voc<<"\t"<<d.size()<<"\t"<<diacriticsCount;
 #if ALL_DIA
 	for (int i=0;i<d.size();i++) {
 		(*o)<<"\t";
@@ -173,21 +176,24 @@ void DiacriticDisambiguationBase::printDiacritics(QString unvoc,const QList<Diac
 				<<"\t"<<getRelativePos(relPos,morphSize)
 				<<"\t"<<letterBefore
 				<<"\t"<<isLongVowel(letterBefore)
-				<<"\t"<<isShamsi(letterBefore);
+				<<"\t"<<isShamsi(letterBefore)
+				<<"\t"<<sol.stemPOS;
 		}
 	}
 #endif
 }
 
 
-void insertIntoCombSet(QSet<TextNmorphDiaPair> & alreadyProceesed,CombSet & allPossibleComb,VocalizedCombination & comb,int index, AmbiguitySolution & sol) {
+void insertIntoCombSet(QSet<TextNposNmorphDiaTriplet> & alreadyProceesed,CombSet & allPossibleComb,VocalizedCombination & comb,int index, AmbiguitySolution & sol) {
 	QString s=comb.getString();
 	if (comb.hasSelfInconsistency()) {
 		qDebug()<<"Found inconsistency in generated lexicon entries:\t"<<s<<"\tpos: "<<sol.voc;
 		return;
 	}
 	MorphemeDiacritics mD=sol.getMorphemeDiacriticSummary(comb);
-	TextNmorphDiaPair p(s,mD);
+	QString pos=sol.stemPOS;
+	//QString voc=sol.voc;
+	TextNposNmorphDiaTriplet p(s,pos/*,voc*/,mD);
 	if (alreadyProceesed.contains(p))
 		return;
 	alreadyProceesed.insert(p);
@@ -297,7 +303,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 	{
 #endif
 		CombSet allPossibleComb;
-		QSet<TextNmorphDiaPair> alreadyProceesed;
+		QSet<TextNposNmorphDiaTriplet> alreadyProceesed;
 		for (int j=0;j<currSolutions[All_Ambiguity].size();j++) { //All_Ambiguity contains all solutions
 			AmbiguitySolution & sol=currSolutions[All_Ambiguity][j];
 			QString voc=sol.voc;
@@ -353,13 +359,14 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 			for (int i=0;i<2;i++) {
 				QTextStream * o=(i==0?&out:&hadith_out);
 				if (display || i==1) { //always display for hadith_out
+					int total=combIndexList.indicies.size();
 					for (QSet<int>::iterator itr=combIndexList.indicies.begin();itr!=combIndexList.indicies.end();++itr) {
 						int index=*itr;
 						AmbiguitySolution & sol =currSolutions[All_Ambiguity][index]; //make instead of indicies in general to indicies to uniques ones out of All_Ambiguity
 						(*o)<<s<<"\t";
 						printDiacritics(currEntry,d,sol,o);
 						int vocLeft=currSolutions[Vocalization].size();
-						(*o)<<"\t"<<vocLeft;
+						(*o)<<"\t"<<vocLeft<<"\t"<<(1.0/((double)total));
 						for (int amb=0;amb<ambiguitySize;amb++) {
 							(*o)<<"\t"<<valid_ratio[amb];
 						}

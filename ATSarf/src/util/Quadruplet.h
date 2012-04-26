@@ -9,7 +9,7 @@
 template <class T1, class T2, class T3,class T4>
 struct Quadruplet
 {
-	Quadruplet() : first(T1()), second(T2()), third(T2())  {}
+	Quadruplet()  {}
 	Quadruplet(const T1 &t1, const T2 &t2, const T3 &t3, const T4 &t4) : first(t1), second(t2), third(t3),forth(t4) {}
 
 	Quadruplet<T1, T2, T3, T4> &operator=(const Quadruplet<T1, T2, T3, T4> &other)
@@ -60,6 +60,12 @@ Q_INLINE_TEMPLATE bool operator>=(const  Quadruplet<T1, T2, T3, T4> &p1, const  
 Q_INLINE_TEMPLATE uint qHash ( Quadruplet<long long, long, QString,bool> t)
 {
 	return uint(qHash(t.first));//+qHash(t.second)+qHash(t.third));
+}
+
+template <class T1, class T2, class T3,class T4>
+Q_INLINE_TEMPLATE uint qHash ( Quadruplet<T1, T2, T3, T4> t)
+{
+	return uint(qHash(t.first)+qHash(t.second)+qHash(t.third)+qHash(t.forth));
 }
 
 template <class T1, class T2, class T3,class T4>
