@@ -16,7 +16,13 @@ LargeFileIterator::LargeFileIterator(QString fileName, int valueColumn, int weig
 }
 
 long LargeFileIterator::getSize(QString line){
-	return line.toUtf8().size()+1;
+	int s=line.toAscii().size()+1;
+	return s;
+}
+
+void LargeFileIterator::reportProgress() {
+	if (prg!=NULL)
+		prg->report(((double)pos)/size*100+0.5);
 }
 
 void LargeFileIterator::initialize(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg) {
@@ -71,8 +77,7 @@ start: //to avoid deep recursion
 				goto start;//return processLine();
 		}
 		extractAdditionalInfo(entries);
-		if (prg!=NULL)
-			prg->report((double)pos/size*100+0.5);
+		reportProgress();
 	}
 }
 
@@ -97,6 +102,7 @@ bool LargeFileIterator::getInstance(double & value, double & weight) const{
 }
 
 LargeFileIterator::~LargeFileIterator() {
+	reportProgress();
 	if (inputFile!=NULL) {
 		inputFile->close();
 		delete inputFile;

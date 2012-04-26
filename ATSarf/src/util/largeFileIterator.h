@@ -35,6 +35,7 @@ private:
 	long size;
 	long pos;
 private:
+	void reportProgress();
 	long getSize(QString line);
 	void processLine();
 	void initialize(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg);
