@@ -487,7 +487,7 @@ void FullFileDisambiguation::operator()() {
 		oldDevice=out.device();
 		out.setDevice(&reducedFile);
 		out.setCodec("utf-8");
-		out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphRel\tMorphAbs\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
+		out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphAbs\tMorphRel\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
 	}
 	if (!allFileName.isEmpty()) {
 		QFile::remove(allFileName);
