@@ -72,7 +72,7 @@ start: //to avoid deep recursion
 		}
 		extractAdditionalInfo(entries);
 		if (prg!=NULL)
-			prg->report((double)pos/size+0.5);
+			prg->report((double)pos/size*100+0.5);
 	}
 }
 

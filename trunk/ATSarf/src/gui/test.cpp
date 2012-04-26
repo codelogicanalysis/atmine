@@ -118,7 +118,7 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 }
 
 int test(QString inputString,ATMProgressIFC * prg) {
-#if 0
+#if 1
 	if (regressionTest(inputString,prg))
 		return -1;
 #elif 0
