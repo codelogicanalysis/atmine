@@ -26,6 +26,7 @@ private:
 	QStringList columnNames;
 	int weightColumn;
 	int targetColumn;
+	int itrCnt;
 
 	//used for termination
 	TerminationRule terminationRule;

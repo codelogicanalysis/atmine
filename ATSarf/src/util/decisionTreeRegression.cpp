@@ -28,6 +28,8 @@ RegressionNode * DecisionTreeRegression::buildTreeNode(QList<int> workingfeature
 		QStringList bestValues;
 		ItDevList bestDevs;
 		for (int i=0;i<workingfeatureColumns.size();i++) {
+			itrCnt++;
+			prg->setCurrentAction(QString("Iterator %1").arg(itrCnt));
 			DistinguishingLargeFileIterator itr(fileName,targetColumn,weightColumn,map,workingfeatureColumns[i],prg);
 			if (columnNames.size()==0)
 				columnNames=itr.getColumnNames();
@@ -77,6 +79,7 @@ RegressionNode * DecisionTreeRegression::buildTreeNode(QList<int> workingfeature
 RegressionTree * DecisionTreeRegression::buildTree(ATMProgressIFC * prg) {
 	columnNames.clear();
 	ConditionMap map;
+	itrCnt=0;
 	QList<int> workingfeatureColumns=featureColumns;
 	RegressionNode * node=buildTreeNode(workingfeatureColumns,map,prg);
 	return new RegressionTree(node);

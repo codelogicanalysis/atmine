@@ -6,20 +6,28 @@
 #include "diacriticsPostProcessing.h"
 #include "combinations.h"
 
+//#define STAT_OLD
+
+#ifdef STAT_OLD
+const int corr=0;
+#else
+const int corr=1;
+#endif
+
 const int OneDiacriticEvaluation::vocIndex=0;
-const int OneDiacriticEvaluation::sizeIndex=1;
-const int OneDiacriticEvaluation::diacriticCountIndex=2;
-const int OneDiacriticEvaluation::diacriticPosIndex=3;
-const int OneDiacriticEvaluation::diacriticIndex=4;
-const int OneDiacriticEvaluation::morphemeIndex=5;
-const int OneDiacriticEvaluation::morphemeActualPosIndex=6;
-const int OneDiacriticEvaluation::morphemeRelPosIndex=7;
-const int OneDiacriticEvaluation::letterIndex=8;
-const int OneDiacriticEvaluation::longVowelIndex=9;
-const int OneDiacriticEvaluation::shamsiIndex=10;
-const int OneDiacriticEvaluation::ambiguityIndexStart=12;
+const int OneDiacriticEvaluation::sizeIndex=1+corr;
+const int OneDiacriticEvaluation::diacriticCountIndex=2+corr;
+const int OneDiacriticEvaluation::diacriticPosIndex=3+corr;
+const int OneDiacriticEvaluation::diacriticIndex=4+corr;
+const int OneDiacriticEvaluation::morphemeIndex=5+corr;
+const int OneDiacriticEvaluation::morphemeActualPosIndex=6+corr;
+const int OneDiacriticEvaluation::morphemeRelPosIndex=7+corr;
+const int OneDiacriticEvaluation::letterIndex=8+corr;
+const int OneDiacriticEvaluation::longVowelIndex=9+corr;
+const int OneDiacriticEvaluation::shamsiIndex=10+corr;
+const int OneDiacriticEvaluation::ambiguityIndexStart=12+corr*3;
 const QPair<int,int> OneDiacriticEvaluation::uniqueFeatureRange(0,0);
-const QPair<int,int> OneDiacriticEvaluation::morphemeFeatureRange(5,7);
+const QPair<int,int> OneDiacriticEvaluation::morphemeFeatureRange(5+corr,7+corr);
 
 QString DiacriticsPostProcessing::preProcessFeature(int ,QString feature) {
 	return feature;

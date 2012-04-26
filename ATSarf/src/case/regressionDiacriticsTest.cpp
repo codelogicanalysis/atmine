@@ -22,16 +22,17 @@ int regressionTest(QString input, ATMProgressIFC * prg) {
 	double minInstances=(entries.size()>2)?entries[2].toDouble():3;
 	DecisionTreeRegression::TerminationRule rule(minInstances,threshold);
 	QList<int> list;
-#if 0
+#if 1
 	list.append(OneDiacriticEvaluation::letterIndex);
 	list.append(OneDiacriticEvaluation::diacriticIndex);
 	list.append(OneDiacriticEvaluation::morphemeIndex);
 	list.append(OneDiacriticEvaluation::morphemeRelPosIndex);
 	list.append(OneDiacriticEvaluation::longVowelIndex);
 	list.append(OneDiacriticEvaluation::shamsiIndex);
-	int weightColumn=-1;
+	list.append(12);
+	int weightColumn=14;//-1
 	int targetColumn=OneDiacriticEvaluation::ambiguityIndexStart;
-
+	minInstances=20;
 #else
 	list.append(0);
 	list.append(1);

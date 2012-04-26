@@ -60,7 +60,7 @@ start: //to avoid deep recursion
 		QStringList entries=line.split('\t');
 		//assert(entries.size()>valueColumn);
 		if(entries.size()<valueColumn) {
-			qDebug()<<line;
+			//qDebug()<<line;
 			goto start;//return processLine();
 		}
 		currValue=entries.at(valueColumn).toDouble();
