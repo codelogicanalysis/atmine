@@ -29,10 +29,10 @@ RegressionNode * DecisionTreeRegression::buildTreeNode(QList<int> workingfeature
 		ItDevList bestDevs;
 		for (int i=0;i<workingfeatureColumns.size();i++) {
 			itrCnt++;
-			prg->setCurrentAction(QString("Iterator %1 [%2]").arg(itrCnt).arg(columnNames[workingfeatureColumns[i]]));
 			DistinguishingLargeFileIterator itr(fileName,targetColumn,weightColumn,map,workingfeatureColumns[i],prg);
 			if (columnNames.size()==0)
 				columnNames=itr.getColumnNames();
+			prg->setCurrentAction(QString("Iterator %1 [%2]").arg(itrCnt).arg(columnNames[workingfeatureColumns[i]]));
 			QStringList values;
 			ItDevList devs;
 			ItDev totalDev;

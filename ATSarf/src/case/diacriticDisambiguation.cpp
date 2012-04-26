@@ -487,6 +487,7 @@ void FullFileDisambiguation::operator()() {
 		oldDevice=out.device();
 		out.setDevice(&reducedFile);
 		out.setCodec("utf-8");
+		out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphRel\tMorphAbs\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
 	}
 	if (!allFileName.isEmpty()) {
 		QFile::remove(allFileName);
@@ -495,11 +496,12 @@ void FullFileDisambiguation::operator()() {
 		oldDeviceAll=hadith_out.device();
 		hadith_out.setDevice(&allFile);
 		hadith_out.setCodec("utf-8");
+		hadith_out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphRel\tMorphAbs\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
 	}
 
 	QFile input(inputFileName);
 	if (!input.open(QIODevice::ReadOnly)) {
-		out << "File not found\n";
+		error << "File not found\n";
 		return;
 	}
 	QTextStream file(&input);
