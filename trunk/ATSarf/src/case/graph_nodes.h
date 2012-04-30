@@ -481,9 +481,9 @@ public:
 			}
 		}
 	#else
-		int largestsize=list[0].CanonicalName().size(), index=0;
+		int largestsize=list[0]->CanonicalName().size(), index=0;
 		for (int i=1;i<list.size();i++) {
-			int size=list[i].CanonicalName().size();
+			int size=list[i]->CanonicalName().size();
 			if (largestsize<size) {
 				largestsize=size;
 				index=i;
@@ -746,11 +746,11 @@ public:
 	#ifdef SMALLEST_CANONICAL
 		//qDebug()<<"---";
 		int smallestsize=groupList[0]->CanonicalName().size(), index=0;
-		//qDebug()<<"("<<equalnarrators[0].CanonicalName();
+		//qDebug()<<"("<<groupList[0]->CanonicalName();
 		for (int i=1;i<groupList.size();i++)
 		{
 			int size=groupList[i]->CanonicalName().size();
-			//qDebug()<<equalnarrators[i].CanonicalName();
+			//qDebug()<<groupList[i]->CanonicalName();
 			if (smallestsize>size)
 			{
 				smallestsize=size;
@@ -759,12 +759,12 @@ public:
 		}
 	#else
 		//qDebug()<<"---";
-		int largestsize=equalnarrators[0].CanonicalName().size(), index=0;
-		//qDebug()<<"("<<equalnarrators[0].CanonicalName();
-		for (int i=1;i<equalnarrators.size();i++)
+		int largestsize=groupList[0]->CanonicalName().size(), index=0;
+		//qDebug()<<"("<<groupList[0]->CanonicalName();
+		for (int i=1;i<groupList.size();i++)
 		{
-			int size=equalnarrators[i].CanonicalName().size();
-			//qDebug()<<equalnarrators[i].CanonicalName();
+			int size=groupList[i]->CanonicalName().size();
+			//qDebug()<<groupList[i]->CanonicalName();
 			if (largestsize<size)
 			{
 				largestsize=size;
@@ -774,7 +774,7 @@ public:
 	#endif
 		if (index>=0)
 		{
-			//qDebug()<<")=>{"<<equalnarrators[index].CanonicalName()<<"}";
+			//qDebug()<<")=>{"<<groupList[index]->CanonicalName()<<"}";
 			return groupList[index]->CanonicalName();
 		}
 		else

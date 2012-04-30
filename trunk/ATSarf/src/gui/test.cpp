@@ -17,7 +17,6 @@
 #include "vocalizedCombinations.h"
 #include "transliteration.h"
 
-
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
 extern void listAllAffixes(item_types type);
@@ -134,7 +133,7 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	QStringList entries=inputString.split("\t");
 	diacriticDisambiguationCount(entries,-1,prg);
 	//out<<equal(first, second);
-#elif 1
+#elif 0
 	for (int i=0;i<10;i++) {
 		out<<i<<":\n";
 		VocalizedCombinationsGenerator c(inputString,i);

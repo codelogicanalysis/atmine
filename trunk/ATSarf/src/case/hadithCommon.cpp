@@ -120,14 +120,16 @@ void hadith_initialize() {
 	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
 	long abstract_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryID("Compound Names");
 	int bit_COMPOUND_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
-	bits_NAME.append(bit_COMPOUND_NAMES);
+	if (bit_COMPOUND_NAMES>=0)
+		bits_NAME.append(bit_COMPOUND_NAMES);
 	long abstract_NOUN_PROP=database_info.comp_rules->getAbstractCategoryID("Female Names");//"NOUN_PROP"
 	bit_NOUN_PROP=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
 
 	long abstract_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
 	bit_ENARRATOR_NAMES=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
 #ifdef ADD_ENARRATOR_NAMES
-	bits_NAME.append(bit_ENARRATOR_NAMES);
+	if (bit_ENARRATOR_NAMES>=0)
+		bits_NAME.append(bit_ENARRATOR_NAMES);
 #endif
 #elif defined(JUST_BUCKWALTER)
 	long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
@@ -150,7 +152,8 @@ void hadith_initialize() {
 	abstract_COUNTRY=-1;
 #endif
 	int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-	bits_NAME.append(bit_NAME);
+	if (bit_NAME>=0)
+		bits_NAME.append(bit_NAME);
 #ifdef REFINEMENTS
 	QFile input(PhrasesFileName);	 //contains compound words or phrases
 									 //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
