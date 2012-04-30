@@ -761,7 +761,7 @@ int insert_time_categorizations()
 		if (!addAbstractCategory(item,raw_data,category,source_id,abstract_categories,description,POS))
 		{
 			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
-			return -1;
+			//return -1;
 		}
 	}
 	out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);

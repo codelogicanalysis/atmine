@@ -8,7 +8,7 @@
 
 
 //#define USE_ORIGINAL
-//#define USE_BAMA
+#define USE_BAMA
 
 #define USE_TRIE
 #define LOAD_FROM_FILE

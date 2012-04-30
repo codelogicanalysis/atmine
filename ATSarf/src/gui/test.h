@@ -14,9 +14,9 @@
 //#define INSERT_ONLY_AFFIXES
 
 //#define AUGMENT_ORIGINAL
-#define SAMA
+//#define SAMA
 #define MORPHEME_TOKENIZE
-#define DIACRITIC_DISAMBIGUATION
+//#define DIACRITIC_DISAMBIGUATION
 #define REDUCED_EQ_AMBIGUIOUS
 //#define ATB
 //#define ATB2
