@@ -41,10 +41,15 @@ int regressionTest(QString input, ATMProgressIFC * prg) {
 	int weightColumn=-1;
 	int targetColumn=5;
 #endif
-	DecisionTreeRegression r(fileName,list,weightColumn,targetColumn,rule);
+	DecisionTreeRegression r(fileName,list,weightColumn,targetColumn,rule,prg);
 	RegressionTree * tree=r.buildTree(prg);
 	RegressionTree2Dot d("g.dot");
 	d.DFS(*tree);
+	QFile file("g.tree");
+	if (!file.open(QIODevice::WriteOnly))
+		return -1;
+	QDataStream o(&file);
+	o<<*tree;
 	return 0;
 }
 

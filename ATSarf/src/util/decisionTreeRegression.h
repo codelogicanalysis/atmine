@@ -7,6 +7,8 @@
 #include "ATMProgressIFC.h"
 #include "distinguishingLargeFileIterator.h"
 
+#define COPY_NEEDED_TO_TEMPORARY_FILE
+
 typedef QString RegressionNodeType;
 typedef QString RegressionEdgeType;
 typedef Node<RegressionNodeType,RegressionEdgeType> RegressionNode;
@@ -32,12 +34,13 @@ private:
 	TerminationRule terminationRule;
 	double terminationDevThreshold;
 private:
-	void initialize(QString fileName, QList<int> & featureColumns, int weightColumn, int targetColumn);
+	void initialize(QString fileName, QList<int> & featureColumns, int weightColumn, int targetColumn,ATMProgressIFC * prg);
 	RegressionNode * buildTreeNode(QList<int> workingfeatureColumns,ConditionMap map,ATMProgressIFC * prg);
 public:
-	DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn, TerminationRule rule);
-	DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn=-1);
+	DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn, TerminationRule rule,ATMProgressIFC * prg);
+	DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn, ATMProgressIFC * prg);
 	RegressionTree * buildTree(ATMProgressIFC * prg);
+	~DecisionTreeRegression();
 };
 
 

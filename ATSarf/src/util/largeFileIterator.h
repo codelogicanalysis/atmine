@@ -36,7 +36,6 @@ private:
 	long pos;
 private:
 	void reportProgress();
-	long getSize(QString line);
 	void processLine();
 	void initialize(QString fileName, int valueColumn, int weightColumn, ATMProgressIFC *prg);
 protected:
@@ -49,6 +48,7 @@ public:
 	virtual bool getInstance(double & value, double & weight) const;
 	~LargeFileIterator();
 	QStringList & getColumnNames() {return columns;}
+	static long getSize(QString line);
 };
 
 #endif // LARGEFILEITERATOR_H
