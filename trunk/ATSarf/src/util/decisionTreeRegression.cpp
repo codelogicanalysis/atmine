@@ -1,22 +1,85 @@
 #include <assert.h>
+#include <QFile>
+#include <QTextStream>
+#include "logger.h"
 #include "decisionTreeRegression.h"
 #include "distinguishingLargeFileIterator.h"
 #include "iterativeMathFunctions.h"
 
 
-void DecisionTreeRegression::initialize(QString fileName, QList<int> & featureColumns, int targetColumn, int weightColumn){
+void DecisionTreeRegression::initialize(QString fileName, QList<int> & featureColumns, int targetColumn, int weightColumn,ATMProgressIFC * prg){
+#ifdef COPY_NEEDED_TO_TEMPORARY_FILE
+	QString tempFileName=fileName+".temp";
+	QFile temp(tempFileName);
+	temp.remove();
+	if (!temp.open(QIODevice::WriteOnly)) {
+		error << "Unable to open temporary file '"<<tempFileName<<"'\n";
+		return;
+	}
+	QFile file(fileName);
+	if (!file.open(QIODevice::ReadOnly)) {
+		error << "Unable to open file '"<<fileName<<"'\n";
+		return;
+	}
+	QTextStream tempStream(&temp), fileStream(&file) ;
+	tempStream.setCodec("utf-8");
+	fileStream.setCodec("utf-8");
+	int size=file.size();
+	int pos=0;
+	if (prg!=NULL)
+		prg->setCurrentAction("Writing Needed Info to temp file");
+	while (!file.atEnd()) {
+		QString line=fileStream.readLine();
+		QStringList entries=line.split('\t');
+		pos+=LargeFileIterator::getSize(line);
+		for (int i=0;i<featureColumns.size();i++) {
+			int index=featureColumns[i];
+			QString feature=entries[index];
+			tempStream<<feature<<"\t";
+		}
+		if (weightColumn>=0) {
+			QString weight=entries[weightColumn];
+			tempStream<<weight<<"\t";
+		}
+		QString target=entries[targetColumn];
+		tempStream<<target<<"\n";
+		if (prg!=NULL)
+			prg->report(((double)pos)/size*100+0.5);
+	}
+	temp.close();
+	file.close();
+	this->featureColumns.clear(); //not necessary, but additional safety
+	for (int i=0;i<featureColumns.size();i++) {
+		this->featureColumns.append(i);
+	}
+	if (weightColumn>=0)
+		this->weightColumn=featureColumns.size();
+	else
+		this->weightColumn=-1;
+	targetColumn=featureColumns.size()+1;
+	this->fileName=tempFileName;
+#else
 	this->fileName=fileName;
 	this->featureColumns=featureColumns;
 	this->weightColumn=weightColumn;
 	this->targetColumn=targetColumn;
+#endif
 }
 
-DecisionTreeRegression::DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn){
-	initialize(fileName,featureColumns,weightColumn,targetColumn);
+DecisionTreeRegression::~DecisionTreeRegression() {
+#ifdef COPY_NEEDED_TO_TEMPORARY_FILE
+	if (!QFile::remove(fileName)) {
+		error << "Unable to delete temporary file '"<<fileName<<"'\n";
+	}
+#endif
 }
 
-DecisionTreeRegression::DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn, TerminationRule rule){
-	initialize(fileName,featureColumns,weightColumn,targetColumn);
+DecisionTreeRegression::DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn,ATMProgressIFC * prg){
+	initialize(fileName,featureColumns,weightColumn,targetColumn,prg);
+}
+
+DecisionTreeRegression::DecisionTreeRegression(QString fileName, QList<int> featureColumns, int targetColumn, int weightColumn, TerminationRule rule,ATMProgressIFC * prg){
+	initialize(fileName,featureColumns,weightColumn,targetColumn,prg);
 	this->terminationRule=rule;
 }
 
