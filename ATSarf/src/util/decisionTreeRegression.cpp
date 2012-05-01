@@ -56,7 +56,7 @@ void DecisionTreeRegression::initialize(QString fileName, QList<int> & featureCo
 		this->weightColumn=featureColumns.size();
 	else
 		this->weightColumn=-1;
-	targetColumn=featureColumns.size()+1;
+	this->targetColumn=featureColumns.size()+1;
 	this->fileName=tempFileName;
 #else
 	this->fileName=fileName;
@@ -145,5 +145,6 @@ RegressionTree * DecisionTreeRegression::buildTree(ATMProgressIFC * prg) {
 	itrCnt=0;
 	QList<int> workingfeatureColumns=featureColumns;
 	RegressionNode * node=buildTreeNode(workingfeatureColumns,map,prg);
+	assert(node!=NULL);
 	return new RegressionTree(node);
 }
