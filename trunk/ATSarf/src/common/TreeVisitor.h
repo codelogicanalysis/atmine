@@ -14,6 +14,7 @@ private:
 	void dfsHelper(Node<NodeType,EdgeType> * node) {
 		if (!visitNode(node))
 			return;
+
 		for (int i=0;i<node->size();i++) {
 			Node<NodeType,EdgeType> * child=node->getChild(i);
 			if (!visitEdge(node,i))

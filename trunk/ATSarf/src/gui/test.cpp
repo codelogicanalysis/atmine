@@ -34,6 +34,7 @@ extern void diacriticDisambiguationCount(QStringList & list, int numDiacritics, 
 extern int mada(QString folderName, ATMProgressIFC * prg);
 extern int diacriticStatistics(QString inputString, ATMProgressIFC * prg);
 extern int regressionTest(QString inputString, ATMProgressIFC * prg);
+extern int regressionReload(QString input, ATMProgressIFC * prg);
 
 int word_sarf_test(QString input_str){
 	QString line=input_str.split('\n')[0];
@@ -70,6 +71,7 @@ int morphology(QString input_str,ATMProgressIFC *) {
 		return -1;
 	return 0;
 }
+
 int hadith(QString input_str,ATMProgressIFC * prg) {
 	for (int i=0;i<REPETITIONS;i++) {
 		timeval tim;
@@ -118,6 +120,9 @@ int hadith_annotation(QString inputString,ATMProgressIFC *) {
 
 int test(QString inputString,ATMProgressIFC * prg) {
 #if 1
+	if (regressionReload(inputString,prg))
+		return -1;
+#elif 0
 	if (regressionTest(inputString,prg))
 		return -1;
 #elif 0

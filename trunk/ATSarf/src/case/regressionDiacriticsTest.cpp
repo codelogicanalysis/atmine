@@ -1,10 +1,11 @@
 #include "decisionTreeRegression.h"
 #include "Tree2Dot.h"
+#include "TreeFilter.h"
 #include "diacriticsPostProcessing.h"
 
 class RegressionTree2Dot: public Tree2Dot<RegressionNodeType, RegressionEdgeType> {
 protected:
-	virtual QString getExtraNodeLayout(Node<RegressionNodeType, RegressionEdgeType> * node) {
+	virtual QString getExtraNodeLayout(Node<RegressionNodeType, RegressionEdgeType> * & node) {
 		if (node->isLeaf()) {
 			return "style=filled, shape=box, fillcolor=gray";
 		}
@@ -13,7 +14,6 @@ protected:
 public:
 	RegressionTree2Dot(QString file):Tree2Dot<RegressionNodeType, RegressionEdgeType>(file) {}
 };
-
 
 int regressionTest(QString input, ATMProgressIFC * prg) {
 	QStringList entries=input.split('\t');
@@ -51,5 +51,36 @@ int regressionTest(QString input, ATMProgressIFC * prg) {
 	QDataStream o(&file);
 	o<<*tree;
 	return 0;
+}
+
+class ThresholdFilterVisitor: public TreeFilter<RegressionNodeType, RegressionEdgeType> {
+private:
+	double threshold;
+protected:
+	bool shouldBeRemoved(RegressionNode *node) {
+		if (node->isLeaf()) {
+			RegressionNodeType t=node->getValue();
+			double val=t.toDouble();
+			return (val>threshold);
+		}
+		return false;
+	}
+public:
+	ThresholdFilterVisitor( double thr):TreeFilter<RegressionNodeType, RegressionEdgeType>(), threshold(thr) {}
+};
+
+int regressionReload(QString input, ATMProgressIFC * /*prg*/) {
+	RegressionTree * tree=new RegressionTree();
+	QFile file("g.tree");
+	if (!file.open(QIODevice::ReadOnly))
+		return -1;
+	QDataStream i(&file);
+	i>>*tree;
+	double threshold=input.toDouble();
+	ThresholdFilterVisitor v(threshold);
+	v.DFS(*tree);
+	RegressionTree2Dot d("g1.dot");
+	d.DFS(*tree);
+
 }
 

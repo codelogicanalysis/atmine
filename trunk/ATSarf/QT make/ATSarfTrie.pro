@@ -102,7 +102,8 @@ HEADERS += ../src/util/diacritics.h \
     ../src/util/distinguishingLargeFileIterator.h \
     ../src/util/iterativeStandardDeviation.h \
     ../src/common/TreeVisitor.h \
-    ../src/common/Tree2Dot.h
+    ../src/common/Tree2Dot.h \
+    ../src/common/TreeFilter.h
 HEADERS += $$TOP/datrie/datrie/trie.h
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
