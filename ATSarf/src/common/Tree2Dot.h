@@ -46,7 +46,7 @@ protected:
 		d_out<<s1<<"->"<<s2<<"[label=\""<<e<<"\""<<additionalEdge<<"];\n";
 		return true;
 	}
-	virtual bool visitNode(Node<NodeType, EdgeType> *node) {
+	virtual bool visitNode(Node<NodeType, EdgeType> * node) {
 		QString v=node->getValue();
 		QString additionalNode=getExtraNodeLayout(node);
 		if (!additionalNode.isEmpty())
