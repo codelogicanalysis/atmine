@@ -1,3 +1,7 @@
+/**
+  * @file   tree_search.cpp
+  * @author Jad Makhlouta and documented by Ameen Jaber
+  */
 #include "tree_search.h"
 #include "logger.h"
 #include "suffix_search.h"

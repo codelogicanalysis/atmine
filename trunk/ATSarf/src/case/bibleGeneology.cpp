@@ -405,6 +405,7 @@ void readFromDatabasePreProcessedGenealogyDescriptions() {
 	else
 		error <<"Unexpected Error: Unable to write PreProcessed Genealogy Descriptions to file\n";
 }
+
 void readFromFilePreprocessedGenealogyDescriptions() {
 #ifndef LOAD_FROM_FILE
 	readFromDatabasePreProcessedGenealogyDescriptions();
@@ -438,7 +439,9 @@ void geneology_initialize() {
 	bits_gene_NAME.append(bit_NAME);
 #endif
 
+#ifdef PREPROCESS_DESCRIPTIONS
 	readFromFilePreprocessedGenealogyDescriptions();
+#endif
 
 	long abstract_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryID("VERB_PERFECT");
 	bit_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_VERB_PERFECT);

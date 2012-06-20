@@ -67,6 +67,7 @@ inline void display(QString t) {
 	#define display(c)
 #endif
 
+typedef int (*functionUsingChains_t)(ChainsContainer &, ATMProgressIFC *, QString);
 
 class HadithSegmentor {
 private:
@@ -82,7 +83,8 @@ private:
 	int temp_names_per_narrator;
 	QString current_exact,current_stem;
 #endif
-	int segmentHelper(QString * text,int start,int end,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString),ATMProgressIFC *prg,bool segmentNarrators) {
+
+        int segmentHelper(QString * text,int start,int end,functionUsingChains_t functionUsingChains,ATMProgressIFC *prg,bool segmentNarrators) {
 	#ifdef COMPARE_TO_BUCKWALTER
 		QFile myfile("output");
 

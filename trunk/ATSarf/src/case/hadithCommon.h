@@ -6,7 +6,6 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
-
 #include "hadith.h"
 #include "stemmer.h"
 #include "letters.h"
@@ -21,6 +20,9 @@
 
 	class BiographySegmenterAlgorithm;
 
+        /*
+         * Definition of a class for the Hadith and its parameters
+         */
 	class HadithParameters
 	{
 	public:
@@ -160,7 +162,8 @@
 
 	void hadith_initialize();
 
-	class hadith_stemmer: public Stemmer { //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
+        class hadith_stemmer: public Stemmer {
+            //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
 	private:
 		bool place;
 	#ifdef TEST_WITHOUT_SKIPPING

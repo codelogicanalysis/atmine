@@ -38,7 +38,7 @@ ATTrie :: ATTrie() : data(NULL) {
 ATTrie :: ATTrie(const char * path) : data(NULL) {
 	nodes=database_info.trie_nodes;
 	data = new ATTrieData;
-#if 1 //added by Jad due to an error occuring in desctructor when trie is loaded from file
+        if (path == NULL) {
 	data->amap = alpha_map_new();
 	if (data->amap == NULL)
 		throw "AlphaMapConstructionException";
@@ -47,11 +47,13 @@ ATTrie :: ATTrie(const char * path) : data(NULL) {
 	// AlphaChar is uint32
 	// this needs to change later to allow only Arabic and Latin
 	alpha_map_add_range(data->amap, 1, 0xFFFFFFFE);
-	data->trie = trie_new(data->amap);
-#endif
+        //data->trie = trie_new(data->amap);
+    } else {
     data->trie = trie_new_from_file(path);
+    data->amap = NULL;
     if (data->trie == NULL)
         throw "TrieConstructionException";
+}
 }
 
 void 

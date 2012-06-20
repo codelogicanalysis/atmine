@@ -1,3 +1,8 @@
+/**
+  * @file   stemmer.cpp
+  * @author Jad Makhlouta
+  * @brief  This file implements functions of the stemmer class mainly and other classes defined in Stemmer.h
+  */
 #include "logger.h"
 #include "Search_by_item_locally.h"
 #include "text_handling.h"
@@ -8,11 +13,20 @@
 
 SarfParameters sarfParameters;
 
+/**
+  * This method implements the constructor of the PrefixMachine which in turn calls the PrefixSearch constructor; the class which PrefixMachine inherets from.
+  * @param  controller
+  * @param  start   index of the input string to be analyzed
+  */
 PrefixMachine::PrefixMachine(Stemmer * controller,int start):PrefixSearch(controller->info.text,start)
 {
 	this->controller=controller;
 }
 
+/**
+  * This method is called upon finding a Prefix Match
+  * @return It returns true if a prefix match is found, else false
+  */
 bool PrefixMachine::onMatch()
 {
 #if 0
@@ -29,11 +43,21 @@ bool PrefixMachine::onMatch()
 	return (*controller->Stem)();
 }
 
+/**
+  * This method implements the constructor of the StemMachine which in turn calls the StemSearch constructor; the class which StemMachine inherets from.
+  * @param  controller
+  * @param  start   index of the input at which the StemMachine is required to operate
+  * @param  prefix_category
+  */
 StemMachine::StemMachine(Stemmer * controller,int start,long prefix_category):StemSearch(controller->info.text,start,prefix_category)
 {
 	this->controller =controller;
 }
 
+/**
+  * This method is called upon finding a Stem Match
+  * @return It returns true if a prefix match is found, else false
+  */
 bool StemMachine::onMatch()
 {
 	if (controller->called_everything) {
@@ -52,11 +76,22 @@ bool StemMachine::onMatch()
 	return true;
 }
 
+/**
+  * This method implements the constructor of the SuffixMachine which in turn calls the SuffixSearch constructor; the class which SuffixMachine inherets from.
+  * @param  controller
+  * @param  start   index of the input at which the SuffixMachine is required to operate
+  * @param  prefix_category
+  * @param  stem_category
+  */
 SuffixMachine::SuffixMachine(Stemmer * controller,int start, long prefix_category,long stem_category):SuffixSearch(controller->info.text,start,prefix_category,stem_category)
 {
 	this->controller=controller;
 }
 
+/**
+  * This method is called upon finding a Suffix Match
+  * @return It returns true if a prefix match is found, else false
+  */
 bool SuffixMachine::onMatch()
 {
 #if 0
@@ -88,6 +123,7 @@ bool SuffixMachine::onMatch()
 #endif
 	return controller->on_match_helper();
 }
+
 
 bool SuffixMachine::shouldcall_onmatch(int position)
 {
@@ -123,22 +159,27 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 }
 
 void Stemmer::removeLastMachines() {
-	SubMachines last=machines.last();
+        //SubMachines last=machines.last();
 	machines.removeLast();
+        /*
 	if (last.Prefix!=NULL)
 		delete last.Prefix;
 	if (last.Stem!=NULL)
 		delete last.Stem;
 	if (last.Suffix!=NULL)
 		delete last.Suffix;
+                */
 }
 
 bool Stemmer::on_match_helper()
 {
-	info.finish=Suffix->info.finish;
+        // Set the finish index of the input as the finish index returned by the Suffix machine
+        info.finish=Suffix->info.finish;
 #ifdef RUNON_WORDS
-	if (sarfParameters.enableRunonwords)
-		machines.append(SubMachines(Prefix,Stem,Suffix));
+        // check if run on words is set
+        if (sarfParameters.enableRunonwords)
+                // append the solution to the SubMachines structure
+                machines.append(SubMachines(Prefix,Stem,Suffix));
 	for (int i=0;i<machines.size();i++) {
 		runwordIndex=i;
 		if (sarfParameters.enableRunonwords) {
@@ -148,7 +189,7 @@ bool Stemmer::on_match_helper()
 			Suffix=m.Suffix;
 		}
 #endif
-		if (get_all_details) {
+                if (get_all_details) {
 			solution_position * s_inf=Suffix->computeFirstSolution();
 			do {
 				solution_position * p_inf=Prefix->computeFirstSolution();
@@ -224,6 +265,10 @@ bool Stemmer::on_match_helper()
 	return true;
 #endif
 }
+
+/**
+  * This method is called upon finding a match for the input word
+  */
 bool Stemmer::on_match() {
 #ifdef MORPHEME_TOKENIZE
 	out	<<"ALTERNATIVE:\t";
@@ -231,6 +276,9 @@ bool Stemmer::on_match() {
 	for (int i=0;i<prefix_infos->size();i++)
 		word.append(prefix_infos->at(i).raw_data);
 	word.append(stem_info->raw_data);
+        QString raw1 = stem_info->raw_data;
+        QString POS2 = stem_info->POS;
+        QString desc1 = stem_info->description();
 	for (int i=0;i<suffix_infos->size();i++)
 		word.append(suffix_infos->at(i).raw_data);
 	out <<" "<<word<<"\n";

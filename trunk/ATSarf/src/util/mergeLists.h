@@ -1,6 +1,10 @@
 #ifndef MERGELISTS_H
 #define MERGELISTS_H
-
+/**
+  * @file   mergeLists.h
+  * @author Jad Makhlouta
+  * @brief  This class defines a class and methods to merge lists
+  */
 #include <QList>
 
 template <typename T>

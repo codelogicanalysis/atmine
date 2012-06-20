@@ -1,3 +1,8 @@
+/**
+  * @file   stem_search.cpp
+  * @author Jad Makhlouta and documented by Ameen Jaber
+  * @brief
+  */
 #include "Search_by_item.h"
 #include "text_handling.h"
 #include "diacritics.h"

@@ -45,7 +45,8 @@ void database_info_block::readTrieFromDatabaseAndBuildFile()
 	int index=0;
 	last_id=-1;
 	int total=query.size(), current=0;
-	prgsIFC->setCurrentAction("STEM TRIE");
+        if(prgsIFC != NULL)
+            prgsIFC->setCurrentAction("STEM TRIE");
 	while (query.next())
 	{
 		stem_id=query.value(0).toULongLong();
@@ -67,12 +68,24 @@ void database_info_block::readTrieFromDatabaseAndBuildFile()
 		category_id=query.value(2).toLongLong();
 #ifdef REDUCE_THRU_DIACRITICS
 		raw_data=query.value(3).toString();
+		if(!equal(name,raw_data)) {
+			error<<"Conflict Database:\t"<<name<<"\t"<<raw_data;
+			if (raw_data.endsWith(' ')) {
+                                while (raw_data.endsWith(' '))
+                                    raw_data=raw_data.remove(raw_data.size()-1,1);
+				assert(equal(raw_data,name));
+			} else {
+				name=removeDiacritics(name);
+			}
+
+		}
 		node->add_info(category_id,raw_data);
 #else
 		node->add_info(category_id);
 #endif
 		current++;
-		prgsIFC->report((double)current/total*100+0.5);
+                if(prgsIFC != NULL)
+                    prgsIFC->report((double)current/total*100+0.5);
 	}
 #ifdef LOAD_FROM_FILE
 	//out<<QDateTime::currentDateTime().time().toString()<<"\n";
@@ -114,7 +127,15 @@ void database_info_block::buildTrie()
 		if (input.open(QIODevice::ReadOnly)) {
 			delete database_info.Stem_Trie;
 			input.close();
-			database_info.Stem_Trie=new ATTrie(trie_path.toStdString().data());
+                        const char * fPath = trie_path.toLatin1();
+                        try
+                        {
+                            database_info.Stem_Trie=new ATTrie(fPath);
+                        }
+                        catch(const char * ex)
+                        {
+                            error<<"Fail to build stem trie from file "<<fPath<<". Exception is "<<ex<<'.'<<endl;
+                        }
 			//out<<QDateTime::currentDateTime().time().toString()<<"\n";
 		}
 	}
@@ -128,7 +149,8 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map
 {
 	QSqlQuery query(db);
 	QString table = interpret_type(type);
-	prgsIFC->setCurrentAction(table.toUpper()+" INFO");
+        if(prgsIFC != NULL)
+            prgsIFC->setCurrentAction(table.toUpper()+" INFO");
 	for (int i=0;i<(type==STEM?1:2);i++) {
 		QString stmt( "SELECT %1_id, category_id, raw_data, POS, description_id, abstract_categories FROM %1_category");
 		stmt=stmt.arg(table).append((type==STEM?"":QString(" WHERE reverse_description=%1").arg(i)));
@@ -153,7 +175,8 @@ void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map
 			ItemEntryInfo entry(abstract_categories,description_id,POS);
 			map->insertMulti(key,entry);
 			counter++;
-			prgsIFC->report((double)counter/size*100+0.5);
+                        if(prgsIFC != NULL)
+                            prgsIFC->report((double)counter/size*100+0.5);
 		}
 	}
 #ifdef LOAD_FROM_FILE
@@ -205,7 +228,11 @@ database_info_block::database_info_block()
     Prefix_Tree=new tree();
     Suffix_Tree=new tree();
 #ifdef USE_TRIE
+    try {
 	Stem_Trie= new ATTrie();
+    }catch(const char * ex)  {
+        error<<"Fail to build step trie. Exception is "<<ex<<'.'<<endl;
+    }
 	trie_nodes=new StemNodesList();
 #endif
 	comp_rules=new compatibility_rules();
@@ -219,18 +246,19 @@ database_info_block::database_info_block()
 
 void database_info_block::readDescriptionsFromDatabaseAndBuildFile()
 {
-	prgsIFC->setCurrentAction("DESCRIPTIONS");
-	int size=0;
-	{//get max_id
-		Retrieve_Template max_id("description","max(id)","");
-		if (max_id.retrieve())
-			size=max_id.get(0).toInt()+1;
-	}
-	delete descriptions;
-	descriptions=new QVector<QString>(size);
-	Retrieve_Template desc("description","id","name","");
-	int row=0, id=0;
-	if (desc.retrieve())
+    if(prgsIFC != NULL)
+        prgsIFC->setCurrentAction("DESCRIPTIONS");
+    int size=0;
+    {//get max_id
+        Retrieve_Template max_id("description","max(id)","");
+        if (max_id.retrieve())
+            size=max_id.get(0).toInt()+1;
+    }
+    delete descriptions;
+    descriptions=new QVector<QString>(size);
+    Retrieve_Template desc("description","id","name","");
+    int row=0, id=0;
+    if (desc.retrieve())
 	{
 		while(row<size) //just in case some ID's are not there we fill them invalid
 		{
@@ -242,7 +270,8 @@ void database_info_block::readDescriptionsFromDatabaseAndBuildFile()
 			else
 				(*descriptions)[row]="";
 			row++;
-			prgsIFC->report((double)row/size*100+0.5);
+                        if(prgsIFC != NULL)
+                            prgsIFC->report((double)row/size*100+0.5);
 		}
 	}
 #ifdef LOAD_FROM_FILE
@@ -290,7 +319,7 @@ void database_info_block::fill(ATMProgressIFC *p)
 	buildMap(PREFIX,map_prefix);
 	buildMap(STEM,map_stem);
 	buildMap(SUFFIX,map_suffix);
-	p->resetActionDisplay();
+        p->resetActionDisplay();
 	filling=false;
 }
 
