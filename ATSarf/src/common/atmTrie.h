@@ -1,3 +1,8 @@
+/**
+  * @file   atmTrie.h
+  * @brief  this header file contains the definition of the ATTrie structure, which is the trie storing the stem data
+  * @author Jad Makhlouta
+  */
 #ifndef _ATM_TRIE_H
 #define	_ATM_TRIE_H
 
@@ -37,6 +42,11 @@ public:
 
 typedef QVector<StemNode> StemNodesList;
 
+/**
+  * @class  ATTrie
+  * @brief  This class implements the trie structure used to store the root arabic words present in our lexer
+  * @author Jad Makhlouta
+  */
 class ATTrie {
     private:
         ATTrieData * data;
@@ -48,48 +58,66 @@ class ATTrie {
         ~ATTrie() ;
 
         void save(const char * path);
-		//bool store(const QString & key, StemNode * node) ;
-		bool retreive(const QString & key, const StemNode ** node) ;
-		bool retreive(const QString & key, int* index);
-		bool store(const QString & key, int index) ;
+                //bool store(const QString & key, StemNode * node) ;
+        bool retreive(const QString & key, const StemNode ** node) ;
+        bool retreive(const QString & key, int* index);
+        bool store(const QString & key, int index) ;
         bool remove(const QString & key);
         bool isDirty() const;
 
         typedef void * Position;
 
-        // starts the walk and returns a position pointer to
-        // be used in the walk
+        /**
+          * This method starts the walk and returns a position pointer to be used in the walk
+          */
         Position startWalk();
-        // create a clone position, useful for backtracking
+
+        /**
+          * This method creates a clone position, useful for backtracking
+          */
         Position clonePosition(Position p);
-        // saves a position, useful not to create many clones
+
+        /**
+          * This method saves a position, useful not to create many clones
+          */
         void savePosition(Position dst, Position src);
-        // frees the position
+
+        /**
+          * This method frees the position
+          */
         void freePosition(Position p);
-        // resets the position to the root of the trie
+
+        /**
+          * This method resets the position to the root of the trie
+          */
         void rewindPosition(Position p);
 
-        // This is the actual walk routine
-        // it advances pos if 'c' was an edge from the current
-        // position and return true
-        // otherwise it returns false
+        /**
+          * This method implements the actual walk routine it advances pos if 'c' was an edge from the current position
+          * @return This method returns true if such an advance is done, otherwise it returns false
+          */
         bool walk(Position pos, QChar c);
 
-        // Checks wherthe 'c' is an edge from the current position
+        /**
+          * This method checks whether 'c' is an edge from the current position
+          */
         bool isWalkable(Position pos, QChar c);
 
-        // checks if the current position is a terminal
-        // position, in that case a StemNode is attached
-        // to it and you can use getData
+        /**
+          * This method checks if the current position is a terminal position, in that case a StemNode is attached
+          * to it and you can use getData
+          */
         bool isTerminal(Position pos);
 
-        // checks whether we are at a leaf
-        // this means we have a single and a terminal node
+        /**
+          * This method checks whether we are at a leaf this means we have a single and a terminal node
+          */
         bool isLeaf(Position pos);
 
-        // checks whether we are at a single node
-        // this means there is no other path from here to
-        // the leaf (in other words we are on a single path)
+        /**
+          * This method checks whether we are at a single node this means there is no other path from here to
+          * the leaf (in other words we are on a single path)
+          */
         bool isSingle(Position pos);
 
         //given a terminal position

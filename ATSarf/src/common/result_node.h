@@ -36,20 +36,20 @@ class result_node:public node {
     private:
         long previous_category_id;
         long affix_id;
-		long resulting_category_id :63;
-		bool isAcceptState:1;
-		QString inflectionRule;
+                long resulting_category_id :63;
+                bool isAcceptState:1;
+                QString inflectionRule;
 
-		void initialize(const result_node & n)
-		{
-		#ifdef REDUCE_THRU_DIACRITICS
-			raw_datas=n.raw_datas;
-		#endif
-			set_previous_category_id(n.previous_category_id);
-			set_resulting_category_id(n.resulting_category_id);
-			set_affix_id(n.affix_id);
-			inflectionRule=n.inflectionRule;
-		}
+                void initialize(const result_node & n)
+                {
+                #ifdef REDUCE_THRU_DIACRITICS
+                        raw_datas=n.raw_datas;
+                #endif
+                        set_previous_category_id(n.previous_category_id);
+                        set_resulting_category_id(n.resulting_category_id);
+                        set_affix_id(n.affix_id);
+                        inflectionRule=n.inflectionRule;
+                }
     public:
 
 		void setInflectionRule(QString rule) {

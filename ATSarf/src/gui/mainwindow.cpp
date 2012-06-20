@@ -133,6 +133,7 @@ void MainWindow::changeEvent(QEvent *e){
     }
 }
 
+// Function called upon pressing "Hadith" button
 void MainWindow::on_chk_hadith_toggled(bool checked){
 	if (checked) {
 		m_ui->label_narr->setText("NARR Min:");
@@ -169,14 +170,24 @@ void MainWindow::on_chk_bible_toggled(bool checked){
 	}
 }
 
+// Function called upon pressing "GO!" button
 void MainWindow::on_pushButton_clicked(){
-	QString error_str,output_str,hadith_str;
+        QString error_str,output_str,hadith_str;    // strings for error, output, and input hadith
+        /*
+         * v1: check for min narrator number conversion
+         * v2: check for max NMC tolerance number conversion
+         * v3: check for max NRC tolerance number conmversion
+         * v4:
+         * v5:
+         * v6:
+         */
 	bool v1,v2,v3,v4,v5,v6=true;
-	int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);
-	int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);
-	int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);
+        int narr_min=m_ui->NARRATOR->toPlainText().toInt(&v1);  //set minimum number of narrators
+        int nmc_max=m_ui->NMC->toPlainText().toInt(&v2);    //max number of name connectors between 2 names ~ NMC
+        int nrc_max=m_ui->NRC->toPlainText().toInt(&v3);    //max number of words tolerated between 2 narrator connectors ~ NRC
 	int equality_radius=m_ui->EQ_radius->toPlainText().toInt(&v5);
 	if (m_ui->chk_hadith->isChecked()) {
+                // check if hadith option is selected
 		hadithParameters.equality_delta=m_ui->EQ_delta->toPlainText().toDouble(&v4);
 		hadithParameters.narr_min=narr_min;
 		hadithParameters.nmc_max=nmc_max;
@@ -199,7 +210,7 @@ void MainWindow::on_pushButton_clicked(){
 		m_ui->errors->setText("Parameters for Hadith/Genealogy Segmentaion are not valid integers/doubles!\n");
 		return;
 	}
-	QString input=m_ui->input->toPlainText();
+        QString input=m_ui->input->toPlainText();   //get the input text/word from the GUI
 	out.setString(&output_str);
 	out.setCodec("utf-8");
 	in.setString(&input);
@@ -213,8 +224,8 @@ void MainWindow::on_pushButton_clicked(){
 		verify(input,this);
 	else if (m_ui->chk_hadith->isChecked())
 		rc=hadith(input,this);
-	else if ( m_ui->chk_morphology->isChecked())
-		morphology(input,this);
+        else if ( m_ui->chk_morphology->isChecked())    //checking for morphology option
+                morphology(input,this); //calling morphology routine
 	else if (m_ui->chk_testing->isChecked())
 		test(input,this);
 	else if (m_ui->chk_AffixBreaker->isChecked())
@@ -279,6 +290,7 @@ void MainWindow::displayGraph(AbstractGraph * graph) {
 	{}
 }
 
+// Initialize the lexicon
 void MainWindow::on_fill_clicked(){
 	initialize_variables();
 #ifndef SUBMISSION
@@ -326,7 +338,7 @@ int main(int argc, char *argv[]){
 	for (int i=0;i<20;i++)
 		morphology(input,&emp);
 #else
-	QString input="/home/jad/Desktop/linux/ATsarf-repository/src/sama_3_1/SAMA-3.1/script/unvoc.txt";
+        QString input="/home/jad/Desktop/linux/ATsarf-repository/src/sama_3_1/SAMA-3.1/script/unvoc.txt";
 	test(input,&emp);
 #endif
 	printf("%s",out.string()->toStdString().data());

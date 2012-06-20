@@ -16,6 +16,8 @@
 #include <sys/time.h>
 #include "vocalizedCombinations.h"
 #include "transliteration.h"
+#include "POSVerb.h"
+#include "GlossSFR.h"
 
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
@@ -36,12 +38,38 @@ extern int diacriticStatistics(QString inputString, ATMProgressIFC * prg);
 extern int regressionTest(QString inputString, ATMProgressIFC * prg);
 extern int regressionReload(QString input, ATMProgressIFC * prg);
 
+/**
+  * This method extracts the valid data from the input string and passes it to the Stemmer function
+  * @author Jad Makhlouta
+  * @param  input_str   This is the input string by user
+  * @return Returns 0 if function is successful
+  */
 int word_sarf_test(QString input_str){
-	QString line=input_str.split('\n')[0];
-	Stemmer stemmer(&line,0);
-	stemmer();
+        QString line=input_str.split('\n')[0];  /// Splits the input string based on new line characters and takes first entry of it
+#if 1
+        Stemmer stemmer(&line,0);   /// Passes extracted string to stemmer class constructor
+        stemmer();  /// Invoke the stemmer routine using () operator overloading
+#endif
+
+#if 0
+        // The next couple lines of codes are for testing purpose of the Stemmer class
+        //QStringList list = line.split(' ', QString::SkipEmptyParts);
+
+            POSVerb posverb(&line);
+            posverb();
+#endif
+#if 0
+        // The next couple lines of codes are for testing purpose of the Stemmer class
+        QStringList list = line.split(' ', QString::SkipEmptyParts);
+        for(int i=0; i<list.size(); i++)
+        {
+            GlossSFR GlossSFR(&(list[i]));
+            GlossSFR();
+        }
+#endif
 	return 0;
 }
+
 int augment(){
 #if !defined(INSERT_ONLY_TIME) && !defined(INSERT_ONLY_NAMES)
 	if (insert_buckwalter()<0)
@@ -65,7 +93,13 @@ int augment(){
 #endif
 	return 0;
 }
-
+/**
+  * This method is called in order to extract the morphological analysis of the entered word
+  * @author Jad Makhlouta
+  * @param  input_str   the string/word entered by the user
+  * @param  ATMProgressIFC  pointer to function calling this method
+  * @return returns an integer 0 if function operated normal else -1
+  */
 int morphology(QString input_str,ATMProgressIFC *) {
 	if (word_sarf_test(input_str))
 		return -1;
@@ -204,8 +238,8 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	return 0;
 }
 int verify(QString ,ATMProgressIFC *) {
-	//drawAffixGraph(PREFIX);
-	//drawAffixGraph(SUFFIX);
+        drawAffixGraph(PREFIX);
+        drawAffixGraph(SUFFIX);
 	listAllAffixes(SUFFIX);
 	listAllAffixes(PREFIX);
 	return 0;

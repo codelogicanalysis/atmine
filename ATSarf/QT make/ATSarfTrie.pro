@@ -1,4 +1,5 @@
 TOP = ../third/
+
 INCLUDEPATH += $$QTDIR/include/QtSql \
     $$QTDIR/include/Qt \
     ../src/common \
@@ -94,16 +95,7 @@ HEADERS += ../src/util/diacritics.h \
     ../src/util/morphemes.h \
     ../src/case/diacriticsPostProcessing.h \
     ../src/util/combinations.h \
-    ../src/util/instanceIterator.h \
-    ../src/util/largeFileIterator.h \
-    ../src/util/iterativeMathFunctions.h \
-    ../src/util/decisionTreeRegression.h \
-    ../src/common/Tree.h \
-    ../src/util/distinguishingLargeFileIterator.h \
-    ../src/util/iterativeStandardDeviation.h \
-    ../src/common/TreeVisitor.h \
-    ../src/common/Tree2Dot.h \
-    ../src/common/TreeFilter.h
+    ../src/common/initialize_tool.h
 HEADERS += $$TOP/datrie/datrie/trie.h
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
@@ -178,11 +170,7 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/affix_verification.cpp \
     ../src/case/diacriticsPostProcessing.cpp \
     ../src/util/combinations.cpp \
-    ../src/util/largeFileIterator.cpp \
-    ../src/util/iterativeMathFunctions.cpp \
-    ../src/util/decisionTreeRegression.cpp \
-    ../src/util/distinguishingLargeFileIterator.cpp \
-    ../src/case/regressionDiacriticsTest.cpp
+    ../src/common/initialize_tool.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \

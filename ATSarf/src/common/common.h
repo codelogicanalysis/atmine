@@ -1,11 +1,16 @@
+/**
+  * @file   common.h
+  * @author Jad Makhlouta and documented by Ameen Jaber
+  * @brief  This file implements common structures and enums used by the different classes and routines defined
+  */
 #ifndef _COMMON_H
 #define _COMMON_H
 
+//#include <QFile>
+//#include "ATMProgressIFC.h"
 #include <QString>
 #include <QStringList>
-#include "hadith.h"
 #include "dbitvec.h"
-
 
 //#define USE_ORIGINAL
 #define USE_BAMA
@@ -44,23 +49,40 @@ extern bool filling;
 
 extern dbitvec INVALID_BITSET;
 
-void initialize_variables(); //must be called at the start
+void initialize_variables(); //must be called at the start - called by initialize
 void initialize_other(); //must be called at start but after datastructures loaded
 
+/**
+  * @enum   rules
+  * @brief  This enumerator defines the different rule classes for the matching different solutions
+  */
 enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
-enum item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};
 
+/**
+  * @enum   item_types
+  * @brief  This enumerator defines the different types of an item being prefix,suffix, or stem
+  */
+enum  item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};   // Ask about the last one
+
+/**
+  * @typedef minimal_item_info
+  * @brief The following defines a class type including the minimal information of a match which could be stem or an affix
+  */
 typedef class minimal_item_info_
 {
 private:
-	QString desc;
+        /// This includes the description of a matching prefix/stem/suffix which is the gloss
+        QString desc;
 	long desc_id;
 public:
-	item_types type;
-	long category_id;
+        /// The type of the item being prefix, suffix, or stem
+        item_types type;
+        long category_id;
 	dbitvec abstract_categories; //only for STEMS
-	QString raw_data;
-	QString POS;
+        /// This string holds the root or stem of the input string
+        QString raw_data;
+        /// This string saves the part of speech of the match
+        QString POS;
 public:
 
 	void setDescription(long desc_id) {
@@ -93,13 +115,27 @@ public:
 	}
 } all_item_info;
 
+/**
+  * @typedef    text_info
+  * @brief  The following defines a structure for the text information which is passed to different parts of the stemmer.
+  * It includes a pointer to the text and start/finish indixes
+  */
 typedef struct text_info_
 {
 	QString *text;
-	long start,finish;
-	QString getString(){ return text->mid(start, finish-start+1);}//TODO: solve bug in inconsistent start when diacritics exist
-}text_info;
+        long start, finish;
+        QString getString(){
+            //TODO: solve bug in inconsistent start when diacritics exist
+            unsigned int len = finish - start + 1;
+            return text->mid(start, len);
+        }
+} text_info;
 
+/**
+  * @class  multiply_params
+  * @brief  This class defines the different parameter settings for the solution extracted. Based on the required
+  * details of the solution required, the booleans within are set.
+  */
 class multiply_params
 {
 public:
@@ -127,6 +163,10 @@ public:
 	{
 		return (raw_data && description && POS && abstract_category);
 	}
+
+        /**
+          * This method is the constructor of the class multiply params
+          */
 	multiply_params()
 	{
 		setAll();

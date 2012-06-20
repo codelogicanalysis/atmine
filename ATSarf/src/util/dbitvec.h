@@ -1,12 +1,10 @@
 #ifndef _ATMINE_DBITVEC_H_
 #define _ATMINE_DBITVEC_H_
-/*!
-file: dbitvec.h
-date: mar 3, 2010
-author: fadi 
-
-brief: provides a bitvector with [] access and dynamic size
-
+/**
+  * @file   dbitvec.h
+  * @date   mar 3, 2010
+  * @author Dr. Fadi Zaraket
+  * @brief  provides a bitvector with [] access and dynamic size
   */
 
 #include <string.h> // for memset
@@ -14,20 +12,28 @@ brief: provides a bitvector with [] access and dynamic size
 #include <cstring>
 #include <assert.h>
 
+/**
+  * @class  dbitvec
+  * @author Dr. Fadi Zaraket
+  * @brief  This is a user defined dynamic bit vector with '[]' access operator
+  */
 class dbitvec {
-	unsigned int size;
-	unsigned int bytes;
-	unsigned char * data;
+        unsigned int size;  //!< size of this vector
+        unsigned int bytes; //!< bytes
+        unsigned char * data;   //!< pointer to data
 
-	friend QDataStream &operator<<(QDataStream &out, const dbitvec &d);
-	friend QDataStream &operator>>(QDataStream &in, dbitvec &d);
+        friend QDataStream &operator<<(QDataStream &out, const dbitvec &d); //!< overload '<<' operator function declaration
+        friend QDataStream &operator>>(QDataStream &in, dbitvec &d);    //!< overload '>>' operator function declaration
 public:
+        /**
+          * @brief  define a type called exception_em of enum type for exceptions
+          */
 	typedef enum {
 		NONE, MEM_EXCPT,BIT_BOUND_EXCPT
 	} exception_em;
 
-	dbitvec(): size(0), bytes(0), data(0) { }
-	void resize(unsigned int length);
+        dbitvec(): size(0), bytes(0), data(0) { }   //!< This is the definition of a default constructor of the class
+        void resize(unsigned int length);   //!< function defined to resize the bit vector
 	dbitvec(unsigned int length): size(length) {
 		bytes = (size+7) >> 3; // (ceiling(size/8))
 		data = new unsigned char [bytes];

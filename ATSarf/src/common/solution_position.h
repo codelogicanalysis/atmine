@@ -1,3 +1,4 @@
+
 #ifndef SOLUTION_POSITION_H
 #define SOLUTION_POSITION_H
 
@@ -9,6 +10,8 @@
 typedef QPair<int,ItemCatRaw2AbsDescPosMapItr> AffixPosition;//index of raw_data and of corresponding entry in map corresponding for this raw_data
 typedef QVector<AffixPosition> InternalPositions;
 typedef QVector<minimal_item_info> StoredInfo;
+
+/// type definition representing a vector of affix solutions
 typedef QVector<minimal_item_info>  AffixSolutionVector;
 
 class TreeSearch;

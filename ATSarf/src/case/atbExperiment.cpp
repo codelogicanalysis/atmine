@@ -681,7 +681,8 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 		input.close();
 		input_after.close();
 		count++;
-		prg->report((double)count/num_files*100+0.5);
+                if(prg != NULL)
+                    prg->report((double)count/num_files*100+0.5);
 	}
 
 	conf.close();

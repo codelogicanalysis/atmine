@@ -15,6 +15,8 @@
 
 class ChainNarratorPrim;
 class Chain;
+class ATMProgressIFC;
+
 typedef QList<Chain *> ChainsContainer;
 
 extern int segmentNarrators(QString * text,int (*functionUsingChains)(ChainsContainer &, ATMProgressIFC *, QString), ATMProgressIFC *prg);

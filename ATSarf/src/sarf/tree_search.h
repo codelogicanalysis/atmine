@@ -1,3 +1,9 @@
+/**
+  * @file tree_search.h
+  * @author Jad Makhoulta and documented by Ameen Jaber
+  * @brief  This file includes the declaration of the TreeSearch class which is the base class for prefix
+  * and suffix search
+  */
 #ifndef _TREE_SEARCH_H
 #define _TREE_SEARCH_H
 
@@ -17,27 +23,54 @@
 
 class Stemmer;
 
+/**
+  * @class  TreeSearch
+  * @author Jad Makhlouta
+  * @brief  This class implements the structure and functions used for affix matching
+  */
 class TreeSearch
 {
 	public://private
 		bool filled_details;
-		multiply_params multi_p;
+
+                /// This structure holds the settings required for the final result returned
+                multiply_params multi_p;
 		QList<int> sub_positionsOFCurrentMatch;//end of last split
 	#ifndef MULTIPLICATION
 		QList<long> catsOFCurrentMatch;
 		QList<long> idsOFCurrentMatch;
 	#else
-		AffixSolutionVector affix_info;
-		QList<result_node *> * result_nodes;
+                /// Vector containing the affix solutions found
+                AffixSolutionVector affix_info;
+
+                /// List of the result nodes of the affix solutions found
+                QList<result_node *> * result_nodes;
 	private:
-		ItemCatRaw2AbsDescPosMap * map;
+                /// Pointer to a triplet hash table that takes id/category/raw_data and returns abstract/description/POS of an affix solution
+                ItemCatRaw2AbsDescPosMap * map;
 		friend class Stemmer;
 	public:
 	#endif
-        long resulting_category_idOFCurrentMatch;
+                /// Holds the category_id of the current affix match
+                long resulting_category_idOFCurrentMatch;
 	public:
+                /**
+                  * This method checks if the obtanined solution is a prefix
+                  * @return Returns true if solution is a prefix, else returns false
+                  */
 		virtual bool isPrefix() const{ return false;}
+
+                /**
+                  * This method returns a reference to the affix solution vector
+                  * @return Returns a reference to the affix solution vector
+                  */
 		const AffixSolutionVector & getSolution() const {return affix_info;}//make sure affix_info is not null!!
+
+                /**
+                  * This method returns the previous node of a current input node in the trie structure
+                  * @param  current Pointer to a node_info structure
+                  * @return This method returns a node_info pointer to the previous node
+                  */
 		node_info * previousNode(node_info * current) //seems to have memory leak but not used
 		{
 			node* head=Tree->getFirstNode();
@@ -128,12 +161,18 @@ class TreeSearch
 #ifdef REDUCE_THRU_DIACRITICS
 		QList<QList <RawData > > possible_raw_datasOFCurrentMatch;
 #endif
-        tree* Tree;
-		text_info info;
-        item_types type;
+                tree* Tree;
+
+                /// variable of type text_info that holds input text information
+                text_info info;
+
+                /// Holds the type of the required solution search
+                item_types type;
 		result_node * reached_node;
-        int position;//note that provided position is 1+last_letter after traversal
-		bool reduce_thru_diacritics;
+                int position;//note that provided position is 1+last_letter after traversal
+
+                /// boolean to specify whether reduction trhough diacritics is required
+                bool reduce_thru_diacritics;
 		virtual bool shouldcall_onmatch_ex(int)	{
 			return true;
 		}
@@ -141,11 +180,24 @@ class TreeSearch
 			return true;
 		}
 		bool on_match_helper();
+
+                /**
+                  * This method sets the settings for the solution required to be extracted
+                  * @param  params
+                  */
 		void setSolutionSettings(multiply_params params)
 		{
 			multi_p=params;
 		}
     public:
+                /**
+                  * This method implements the constructor of the TreeSearch class
+                  * @param  type    Specifies the type of solution required being prefix, or suffix
+                  * @param  text    Pointer to the input text
+                  * @param  start   Specify the starting index
+                  * @param  reduce_thru_diacritics  boolean to whether a solution reduced using diacretics is required
+                  * or not. It is initially set to true
+                  */
 		TreeSearch(item_types type,QString* text,int start,bool reduce_thru_diacritics=true)
 		{
 			info.text=text;
@@ -153,7 +205,8 @@ class TreeSearch
 			info.start=start;
 			info.finish=start;
 			this->reduce_thru_diacritics=reduce_thru_diacritics;
-			if (type==PREFIX)
+                        // load the tree structure based on the input type whether it is a prefix or suffix
+                        if (type==PREFIX)
 				Tree=database_info.Prefix_Tree;
 			else if (type==SUFFIX)
 				Tree=database_info.Suffix_Tree;

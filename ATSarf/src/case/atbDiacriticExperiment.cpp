@@ -282,8 +282,8 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 		if (Has_Tanween)
 			countTanween++;
 	#endif
-
-		prg->report(((double)filePos)/fileSize*100+0.5);
+                if(prg != NULL)
+                    prg->report(((double)filePos)/fileSize*100+0.5);
 	}
 	for (int amb=0;amb<ambiguitySize;amb++) {
 		displayed_error<<interpret((Ambiguity)amb)<<":\n";

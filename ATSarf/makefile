@@ -18,6 +18,11 @@ all:
 		cd $$i; $(MAKE) $(MAKECMDGOALS); cd $(TOP); \
 	done
 	
+docs:
+	mkdir -p doc/html
+	#cp doc/icon.jpg doc/html/
+	doxygen
+
 clean:
 #	@echo $(DIRECTORIES)
 	@for i in $(DIRECTORIES); do \
