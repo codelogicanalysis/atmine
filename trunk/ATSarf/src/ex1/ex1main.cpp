@@ -23,14 +23,48 @@ void doit(QString & input, QTextStream & outStream)
     }
 }
 
+class MyProgressIFC : public EmptyProgressIFC {
 
-int main(int argc, char *argv[])
+public:
+    virtual void report(int value)
+    {
+        cout<<"Progress is "<<value<<'.'<<endl;
+    }
+
+    virtual void startTaggingText(QString & text)
+    {
+    }
+
+    virtual void tag(int start, int length,QColor color, bool textcolor=true)
+    {
+    }
+
+    virtual void finishTaggingText()
+    {
+    }
+
+    virtual void setCurrentAction(const QString & s)
+    {
+    }
+
+    virtual void resetActionDisplay()
+    {
+    }
+
+    virtual QString getFileName()
+    {
+        return "";
+    }
+    virtual void displayGraph(AbstractGraph * /*graph*/) {}
+};
+
+int verbPOSExamplewithInterface()
 {
     QFile Ofile("output.txt");
     QFile Efile("error.txt");
     Ofile.open(QIODevice::WriteOnly);
     Efile.open(QIODevice::WriteOnly);
-    EmptyProgressIFC * emptyPIFC = new EmptyProgressIFC();
+    MyProgressIFC * pIFC = new MyProgressIFC();
 
     /*
     displayed_error.setDevice(&Efile);
@@ -38,7 +72,7 @@ int main(int argc, char *argv[])
     initialize_variables();
     */
 
-    bool all_set = initialize_tool(&Ofile,&Efile, emptyPIFC);
+    bool all_set = sarfStart(&Ofile,&Efile, pIFC);
 
     if(!all_set)
     {
@@ -77,6 +111,7 @@ int main(int argc, char *argv[])
     }
 
     Ofile.close();
+    sarfExit();
      // Add code to show the output, or write it to a file
 /*
     QApplication a(argc, argv);
@@ -84,5 +119,55 @@ int main(int argc, char *argv[])
     w.show();
     return a.exec();
 */
-    return 0;   
+    return 0;
+}
+
+int verbPOSExampleDefault()
+{
+
+    bool all_set = sarfStart();
+
+    if(!all_set)
+    {
+        error<<"Can't Set up Project";
+    }
+    else
+    {
+        cout<<"All Set"<<endl;
+    }
+    /*
+    start_connection(emptyPIFC);
+    generate_bit_order("source",source_ids);
+    generate_bit_order("category",abstract_category_ids,"abstract");
+    */
+    //database_info.fill(emptyPIFC);
+
+    char filename[100];
+    cout << "please enter a file name: " << endl;
+    cin >> filename;
+
+
+
+    QFile Ifile(filename);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+       cerr << "error opening file." << endl;
+       return -1;
+    }
+
+    QTextStream in(&Ifile);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        doit(line,out);
+    }
+    sarfExit();
+    return 0;
+}
+
+
+int main(int argc, char *argv[])
+{
+    verbPOSExamplewithInterface();
+    cout<<"Testing testing ..."<<endl;
+    verbPOSExampleDefault();
+    return 0;
 }

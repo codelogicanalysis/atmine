@@ -292,8 +292,7 @@ void close_connection()
 {
 		db.close();
 		//TODO: must destroy the db before calling the following
-		//QSqlDatabase::removeDatabase("atm");
-
+                //QSqlDatabase::removeDatabase("atm");
 }
 bool existsID(QString table,unsigned long long id,QString additional_condition)
 {
