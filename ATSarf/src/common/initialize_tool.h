@@ -4,5 +4,8 @@
 #include <QFile>
 #include "ATMProgressIFC.h"
 
-bool initialize_tool(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC);  // must be called for tool general initialization
+bool sarfStart(QFile * _out=NULL, QFile * _displayed_error=NULL, ATMProgressIFC * pIFC=NULL);  // must be called for tool general initialization
+
+bool sarfExit();
+
 #endif // INITIALIZE_TOOL_H
