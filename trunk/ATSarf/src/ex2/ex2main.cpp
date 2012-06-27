@@ -20,7 +20,7 @@ void doit(QString & input)
 }
 
 
-int main(int argc, char *argv[])
+int ex2_main(int argc, char *argv[])
 {
     /*
     initialize_variables();
