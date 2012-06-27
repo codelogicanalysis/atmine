@@ -41,7 +41,7 @@ EX1_LIBDIR = ../lib/libex1.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommo
 EX1_LIBS_LINKFLAGS=-L ../lib -lex1 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 ex1: $(EX1_LIBDIR)
-	$(CXX) -o $@ $(LDDFLAGS) $(EX1_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ ex1.cpp $(LDDFLAGS) $(EX1_LIBS_LINKFLAGS) \
 		$(EX1_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
@@ -49,7 +49,7 @@ EX2_LIBDIR = ../lib/libex2.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommo
 EX2_LIBS_LINKFLAGS=-L ../lib -lex2 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 ex2: $(EX2_LIBDIR)
-	$(CXX) -o $@ $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ ex2.cpp $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
 		$(EX2_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 #--------------------------------------------------

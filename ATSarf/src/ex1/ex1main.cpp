@@ -1,18 +1,27 @@
-#include <QFile>
+/**
+  * @file   ex1main.cpp
+  * @author Ameen Jaber
+  * @brief  This file implements the main of an example to illustrate the use of the morphological analyzer. In this example,
+  * we extract the words from an input file with possible verb POS tags, and return them to the user in an output file.
+  */
 #include <QtGui/QApplication>
 #include <iostream>
+#include <QFile>
 #include "stemmer.h"
 #include "POSVerb.h"
-//#include "GlossSFR.h"
 #include "sql_queries.h"
 #include "database_info_block.h"
 #include "initialize_tool.h"
-#include "MainWindow.h"
+#include <QColor>
 
 
 using namespace std;
 
-void doit(QString & input, QTextStream & outStream)
+
+/**
+  * This method initializes a sample of the class defined and triggers the pracket operator in it to start the tool
+  */
+void process(QString & input, QTextStream & outStream)
 {
     QStringList list = input.split(' ', QString::SkipEmptyParts);
     for(int i=0; i<list.size(); i++)
@@ -55,7 +64,7 @@ public:
     {
         return "";
     }
-    virtual void displayGraph(AbstractGraph * /*graph*/) {}
+    virtual void displayGraph(AbstractGraph *) {}
 };
 
 int verbPOSExamplewithInterface()
@@ -65,12 +74,6 @@ int verbPOSExamplewithInterface()
     Ofile.open(QIODevice::WriteOnly);
     Efile.open(QIODevice::WriteOnly);
     MyProgressIFC * pIFC = new MyProgressIFC();
-
-    /*
-    displayed_error.setDevice(&Efile);
-    out.setDevice(&Ofile);
-    initialize_variables();
-    */
 
     bool all_set = sarfStart(&Ofile,&Efile, pIFC);
 
@@ -82,12 +85,6 @@ int verbPOSExamplewithInterface()
     {
         cout<<"All Set"<<endl;
     }
-    /*
-    start_connection(emptyPIFC);
-    generate_bit_order("source",source_ids);
-    generate_bit_order("category",abstract_category_ids,"abstract");
-    */
-    //database_info.fill(emptyPIFC);
 
     char filename[100];
     cout << "please enter a file name: " << endl;
@@ -102,23 +99,17 @@ int verbPOSExamplewithInterface()
     }
 
 
-    QTextStream output(&Ofile); // we will serialize the data into the file
+    QTextStream output(&Ofile);
 
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        doit(line,output);
+        process(line,output);
     }
 
     Ofile.close();
     sarfExit();
-     // Add code to show the output, or write it to a file
-/*
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
-*/
+
     return 0;
 }
 
@@ -135,12 +126,6 @@ int verbPOSExampleDefault()
     {
         cout<<"All Set"<<endl;
     }
-    /*
-    start_connection(emptyPIFC);
-    generate_bit_order("source",source_ids);
-    generate_bit_order("category",abstract_category_ids,"abstract");
-    */
-    //database_info.fill(emptyPIFC);
 
     char filename[100];
     cout << "please enter a file name: " << endl;
@@ -157,17 +142,16 @@ int verbPOSExampleDefault()
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        doit(line,out);
+        process(line,out);
     }
     sarfExit();
     return 0;
 }
 
-
-int main(int argc, char *argv[])
+int ex1_main(int argc, char *argv[])
 {
-    verbPOSExamplewithInterface();
-    cout<<"Testing testing ..."<<endl;
+//    verbPOSExamplewithInterface();
+    /// This method shows the
     verbPOSExampleDefault();
     return 0;
 }

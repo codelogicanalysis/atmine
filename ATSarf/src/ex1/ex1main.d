@@ -1,6 +1,6 @@
-ex1main.o: ex1main.cpp ../../third/qt/include/QtCore/QFile \
- ../../third/qt/include/QtCore/qfile.h \
- ../../third/qt/include/QtCore/qiodevice.h \
+ex1main.o: ex1main.cpp ../../third/qt/include/QtGui/QApplication \
+ ../../third/qt/include/QtGui/qapplication.h \
+ ../../third/qt/include/QtCore/qcoreapplication.h \
  ../../third/qt/include/QtCore/qobject.h \
  ../../third/qt/include/QtCore/qobjectdefs.h \
  ../../third/qt/include/QtCore/qnamespace.h \
@@ -92,17 +92,17 @@ ex1main.o: ex1main.cpp ../../third/qt/include/QtCore/QFile \
  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/bits/stdio_lim.h \
- ../../third/qt/include/QtCore/qscopedpointer.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/sys_errlist.h \
- ../../third/qt/include/QtGui/QApplication \
- ../../third/qt/include/QtGui/qapplication.h \
- ../../third/qt/include/QtCore/qcoreapplication.h \
+ ../../third/qt/include/QtCore/qscopedpointer.h \
  ../../third/qt/include/QtCore/qcoreevent.h \
  ../../third/qt/include/QtCore/qeventloop.h \
  ../../third/qt/include/QtGui/qwindowdefs.h \
  ../../third/qt/include/QtCore/qpoint.h \
  ../../third/qt/include/QtCore/qsize.h \
  ../../third/qt/include/QtGui/qcursor.h /usr/include/c++/4.4/iostream \
+ ../../third/qt/include/QtCore/QFile \
+ ../../third/qt/include/QtCore/qfile.h \
+ ../../third/qt/include/QtCore/qiodevice.h /usr/include/libio.h \
+ /usr/include/_G_config.h /usr/include/bits/sys_errlist.h \
  ../../src/sarf/stemmer.h ../../src/sarf/prefix_search.h \
  ../../src/sarf/tree_search.h /usr/include/assert.h \
  ../../third/qt/include/QtCore/QVector \
@@ -176,30 +176,7 @@ ex1main.o: ex1main.cpp ../../third/qt/include/QtCore/QFile \
  ../../src/common/solution_position.h ../../src/common/node.h \
  ../../src/util/diacritics.h ../../src/sarf/stem_search.h \
  ../../src/sarf/suffix_search.h POSVerb.h \
- ../../src/common/initialize_tool.h MainWindow.h \
- ../../third/qt/include/QtGui/QMainWindow \
- ../../third/qt/include/QtGui/qmainwindow.h \
- ../../third/qt/include/QtGui/qwidget.h \
- ../../third/qt/include/QtCore/qmargins.h \
- ../../third/qt/include/QtGui/qpaintdevice.h \
- ../../third/qt/include/QtCore/qrect.h \
- ../../third/qt/include/QtGui/qpalette.h \
+ ../../src/common/initialize_tool.h ../../third/qt/include/QtGui/QColor \
  ../../third/qt/include/QtGui/qcolor.h \
  ../../third/qt/include/QtGui/qrgb.h \
- ../../third/qt/include/QtCore/qstringlist.h \
- ../../third/qt/include/QtGui/qbrush.h \
- ../../third/qt/include/QtGui/qmatrix.h \
- ../../third/qt/include/QtGui/qpolygon.h \
- ../../third/qt/include/QtGui/qregion.h \
- ../../third/qt/include/QtCore/qline.h \
- ../../third/qt/include/QtGui/qtransform.h \
- ../../third/qt/include/QtGui/qpainterpath.h \
- ../../third/qt/include/QtGui/qimage.h \
- ../../third/qt/include/QtGui/qpixmap.h \
- ../../third/qt/include/QtGui/qfont.h \
- ../../third/qt/include/QtGui/qfontmetrics.h \
- ../../third/qt/include/QtGui/qfontinfo.h \
- ../../third/qt/include/QtGui/qsizepolicy.h \
- ../../third/qt/include/QtGui/qkeysequence.h \
- ../../third/qt/include/QtGui/qtabwidget.h \
- ../../third/qt/include/QtGui/qicon.h
+ ../../third/qt/include/QtCore/qstringlist.h
