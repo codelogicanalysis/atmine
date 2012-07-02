@@ -4,13 +4,9 @@
   * @brief  This file implements the main of an example to illustrate the use of the morphological analyzer. In this example,
   * we extract the words from an input file with possible verb POS tags, and return them to the user in an output file.
   */
-#include <QtGui/QApplication>
 #include <iostream>
 #include <QFile>
-#include "stemmer.h"
 #include "POSVerb.h"
-#include "sql_queries.h"
-#include "database_info_block.h"
 #include "initialize_tool.h"
 #include <QColor>
 
@@ -19,9 +15,8 @@ using namespace std;
 
 
 /**
-  * This method initializes a sample of the class defined and triggers the pracket operator in it to start the tool
+  * This method runs an instance of the class defined and triggers the pracket operator in it to start the tool
   * @param input This is a string representing the iput string to be processed
-  * @param outStream
   */
 void run_process(QString & input) {
 
@@ -33,6 +28,12 @@ void run_process(QString & input) {
     }
 }
 
+/**
+  * @class MyProgressIFC
+  * @brief This class inherets from EmptyProgressIFC and implements the different functions present in it. Those functions
+  * are used in order to expose the progress of the program we implemented. For detailed description, refer to the
+  * documentation of the class.
+  */
 class MyProgressIFC : public EmptyProgressIFC {
 
 public:
@@ -61,13 +62,27 @@ public:
     virtual void displayGraph(AbstractGraph *) {}
 };
 
+/**
+  * This function tests the verbPOS example with an interface for the output result and error. In addition, a user
+  * implementation of the progress functions is used through the class MyProgressIFC previously declared.
+  * @return This function returns 0 if successful, else -1
+  */
 int verbPOSExamplewithInterface() {
+
+    /*
+     * The following lines define the output files in which the resulting output or error are written.
+     * Also, an instance of the progress class MyProgressIFC is initialized.
+     */
     QFile Ofile("output.txt");
     QFile Efile("error.txt");
     Ofile.open(QIODevice::WriteOnly);
     Efile.open(QIODevice::WriteOnly);
     MyProgressIFC * pIFC = new MyProgressIFC();
 
+    /*
+     * The previously declared files and progress instance are passed to the sarfStart function in order to initilaize the
+     * tool.
+     */
     bool all_set = sarfStart(&Ofile,&Efile, pIFC);
 
     if(!all_set) {
@@ -77,16 +92,22 @@ int verbPOSExamplewithInterface() {
         cout<<"All Set"<<endl;
     }
 
+    // Take the input file name from the user and save it in a char string, which is then passed to a QFile
     char filename[100];
     cout << "please enter a file name: " << endl;
     cin >> filename;
 
+    // The input file name is passed to a QFile which implements an interface for reading from and writing to files
     QFile Ifile(filename);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
        cerr << "error opening file." << endl;
        return -1;
     }
 
+    /*
+     * The opened input file is passed to a text stream in order to read it and pass the lines to the core function to
+     * run the implemented analyzer on.
+     */
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
@@ -94,12 +115,22 @@ int verbPOSExamplewithInterface() {
     }
 
     Ofile.close();
+
+    // This function is called after the processing is done in order to close the tool properly.
     sarfExit();
     return 0;
 }
 
+/**
+  * This tests a default version of the verbPOS example where no destination is specified for the output and error by the user.
+  * @return The function returns 0 if successful, else -1.
+  */
 int verbPOSExampleDefault() {
 
+    /*
+     * sarfStart is a function used to initialize the Sarf tool
+     * It returns 1 if succesful else 0
+     */
     bool all_set = sarfStart();
 
     if(!all_set) {
@@ -109,30 +140,52 @@ int verbPOSExampleDefault() {
         cout<<"All Set"<<endl;
     }
 
+    // Take the input file name from the user and save it in a char string, which is then passed to a QFile
     char filename[100];
     cout << "please enter a file name: " << endl;
     cin >> filename;
 
+    // The input file name is passed to a QFile which implements an interface for reading from and writing to files
     QFile Ifile(filename);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
        cerr << "error opening file." << endl;
        return -1;
     }
 
+
+    /*
+     * The opened input file is passed to a text stream in order to read it and pass the lines to the core function to
+     * run the implemented analyzer on.
+     */
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
         run_process(line);
     }
+
+    // This function is called after the processing is done in order to close the tool properly.
     sarfExit();
     return 0;
 }
 
 int ex1_main(int argc, char *argv[]) {
 
-    verbPOSExamplewithInterface();
-    cout<<"Done with example with interface\n";
-    /// This method shows the
-    verbPOSExampleDefault();
+    int test = verbPOSExamplewithInterface();
+    if(!test) {
+        cout<<"The example with interface is successful\n";
+    }
+    else {
+        cout<<"The example with interface failed\n";
+    }
+
+    /*
+    test = verbPOSExampleDefault();
+    if(!test) {
+        cout<<"The example without interface is successful\n";
+    }
+    else {
+        cout<<"The example without interface failed\n";
+    }
+    */
     return 0;
 }
