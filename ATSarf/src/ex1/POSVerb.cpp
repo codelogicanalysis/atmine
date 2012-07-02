@@ -5,7 +5,7 @@
  * @param text This is the input text to be processed
  * @param r	
  */
-POSVerb::POSVerb(QString *text, QTextStream &r) : Stemmer(text,0), result(r)
+POSVerb::POSVerb(QString *text/*, QTextStream &r*/) : Stemmer(text,0)/*, result(r)*/
 {
     this->text = *text;
 };
@@ -23,7 +23,8 @@ bool POSVerb::on_match()
         if (!(RelatedW.contains(this->text,Qt::CaseInsensitive)))
         {
             RelatedW += this->text;
-            result<<this->text<<endl;
+            out<<this->text<<endl;
+            //result<<this->text<<endl;
         }
     }
     return true;

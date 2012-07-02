@@ -20,14 +20,15 @@ using namespace std;
 
 /**
   * This method initializes a sample of the class defined and triggers the pracket operator in it to start the tool
+  * @param input This is a string representing the iput string to be processed
+  * @param outStream
   */
-void process(QString & input, QTextStream & outStream)
-{
+void run_process(QString & input) {
+
     QStringList list = input.split(' ', QString::SkipEmptyParts);
-    for(int i=0; i<list.size(); i++)
-    {
+    for(int i=0; i<list.size(); i++) {
         QString * inString = &(list[i]);
-        POSVerb posverb(inString, outStream);
+        POSVerb posverb(inString);
 	posverb();
     }
 }
@@ -35,40 +36,32 @@ void process(QString & input, QTextStream & outStream)
 class MyProgressIFC : public EmptyProgressIFC {
 
 public:
-    virtual void report(int value)
-    {
+    virtual void report(int value) {
         cout<<"Progress is "<<value<<'.'<<endl;
     }
 
-    virtual void startTaggingText(QString & text)
-    {
+    virtual void startTaggingText(QString & text) {
     }
 
-    virtual void tag(int start, int length,QColor color, bool textcolor=true)
-    {
+    virtual void tag(int start, int length,QColor color, bool textcolor=true) {
     }
 
-    virtual void finishTaggingText()
-    {
+    virtual void finishTaggingText() {
     }
 
-    virtual void setCurrentAction(const QString & s)
-    {
+    virtual void setCurrentAction(const QString & s) {
     }
 
-    virtual void resetActionDisplay()
-    {
+    virtual void resetActionDisplay() {
     }
 
-    virtual QString getFileName()
-    {
+    virtual QString getFileName() {
         return "";
     }
     virtual void displayGraph(AbstractGraph *) {}
 };
 
-int verbPOSExamplewithInterface()
-{
+int verbPOSExamplewithInterface() {
     QFile Ofile("output.txt");
     QFile Efile("error.txt");
     Ofile.open(QIODevice::WriteOnly);
@@ -77,12 +70,10 @@ int verbPOSExamplewithInterface()
 
     bool all_set = sarfStart(&Ofile,&Efile, pIFC);
 
-    if(!all_set)
-    {
+    if(!all_set) {
         error<<"Can't Set up Project";
     }
-    else
-    {
+    else {
         cout<<"All Set"<<endl;
     }
 
@@ -90,48 +81,37 @@ int verbPOSExamplewithInterface()
     cout << "please enter a file name: " << endl;
     cin >> filename;
 
-
-
     QFile Ifile(filename);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
        cerr << "error opening file." << endl;
        return -1;
     }
 
-
-    QTextStream output(&Ofile);
-
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        process(line,output);
+        run_process(line);
     }
 
     Ofile.close();
     sarfExit();
-
     return 0;
 }
 
-int verbPOSExampleDefault()
-{
+int verbPOSExampleDefault() {
 
     bool all_set = sarfStart();
 
-    if(!all_set)
-    {
+    if(!all_set) {
         error<<"Can't Set up Project";
     }
-    else
-    {
+    else {
         cout<<"All Set"<<endl;
     }
 
     char filename[100];
     cout << "please enter a file name: " << endl;
     cin >> filename;
-
-
 
     QFile Ifile(filename);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -142,15 +122,16 @@ int verbPOSExampleDefault()
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        process(line,out);
+        run_process(line);
     }
     sarfExit();
     return 0;
 }
 
-int ex1_main(int argc, char *argv[])
-{
-//    verbPOSExamplewithInterface();
+int ex1_main(int argc, char *argv[]) {
+
+    verbPOSExamplewithInterface();
+    cout<<"Done with example with interface\n";
     /// This method shows the
     verbPOSExampleDefault();
     return 0;

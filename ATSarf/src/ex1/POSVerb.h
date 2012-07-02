@@ -17,7 +17,7 @@ private:
     /// String that holds the previous solutions which were accepted as verbs in order to prevent repitition
     QString RelatedW;
     /// TextStream that stores the different solutions extracted by the functions
-    QTextStream & result;
+    //QTextStream & result;
 
 public:
 
@@ -26,7 +26,7 @@ public:
      * @param text This is the input text to be processed
      * @param r	
      */
-    POSVerb(QString * text, QTextStream & r);
+    POSVerb(QString * text/*, QTextStream & r*/);
 
     /**
      * This is the function called by the tool upon finding a possible solution for the input. By implementing this method, we control the accepted solutions that meet
