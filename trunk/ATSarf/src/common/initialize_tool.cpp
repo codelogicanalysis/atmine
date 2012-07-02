@@ -17,7 +17,9 @@ bool sarfStart(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC) {
             pIFC = new EmptyProgressIFC();
         }
         displayed_error.setDevice(_displayed_error);
+        displayed_error.setCodec("utf-8");
         out.setDevice(_out);
+        out.setCodec("utf-8");
         initialize_variables();
         start_connection(pIFC);
         generate_bit_order("source",source_ids);
