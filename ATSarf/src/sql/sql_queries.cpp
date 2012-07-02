@@ -290,9 +290,10 @@ bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 }
 void close_connection()
 {
-		db.close();
-		//TODO: must destroy the db before calling the following
-                //QSqlDatabase::removeDatabase("atm");
+                db.close();
+                db = QSqlDatabase();
+                QSqlDatabase::removeDatabase("atm");
+                //TODO: must destroy the db before calling the following
 }
 bool existsID(QString table,unsigned long long id,QString additional_condition)
 {

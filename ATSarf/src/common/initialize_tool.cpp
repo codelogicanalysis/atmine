@@ -29,8 +29,8 @@ bool sarfStart(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC) {
     }
     catch(const char * ex)  {
             error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
+            return 0;
         }
-    return 0;
 }
 
 bool sarfExit()
