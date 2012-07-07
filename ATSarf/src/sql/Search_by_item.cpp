@@ -60,7 +60,7 @@ bool Search_by_item::retrieve_internal(minimal_item_info &info)
 }
 Search_by_item::Search_by_item(item_types type,long long id)
 {
-        QSqlQuery temp(db);
+        QSqlQuery temp(theSarf->db);
         query=temp;
         this->type=type;
         this->id=id;
@@ -77,7 +77,7 @@ Search_by_item::Search_by_item(item_types type,long long id)
 }
 Search_by_item::Search_by_item(item_types type,QString name)
 {
-        QSqlQuery temp(db);
+        QSqlQuery temp(theSarf->db);
         query=temp;
         this->type=type;
         this->name=name;
@@ -95,7 +95,7 @@ Search_by_item::Search_by_item(item_types type,QString name)
 }
 Search_by_item::Search_by_item(item_types type,QString name,QVector<QString> names)
 {
-		QSqlQuery temp(db);
+                QSqlQuery temp(theSarf->db);
 		query=temp;
 		this->type=type;
 		QString table = interpret_type(type);

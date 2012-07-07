@@ -90,14 +90,14 @@ public:
 
 		hadith_text=new QString();
 		hadith_out.setString(hadith_text);
-		out.setString(hadith_text);
+                theSarf->out.setString(hadith_text);
 
 	#ifdef ERRORS_LOCALIZED_DISPLAY
 		errors=new QTextBrowser(this);
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
 		grid->addWidget(errors,6,0,1,11);
-		displayed_error.setString(errors_text);
+                theSarf->displayed_error.setString(errors_text);
 
 
 		errors->setText(*errors_text);

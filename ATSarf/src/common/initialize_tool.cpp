@@ -1,3 +1,4 @@
+/*
 #include "initialize_tool.h"
 #include "sql_queries.h"
 #include "common.h"
@@ -16,10 +17,10 @@ bool sarfStart(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC) {
         if(pIFC==NULL) {
             pIFC = new EmptyProgressIFC();
         }
-        displayed_error.setDevice(_displayed_error);
-        displayed_error.setCodec("utf-8");
-        out.setDevice(_out);
-        out.setCodec("utf-8");
+        theSarf->displayed_error.setDevice(_displayed_error);
+        theSarf->displayed_error.setCodec("utf-8");
+        theSarf->out.setDevice(_out);
+        theSarf->out.setCodec("utf-8");
         initialize_variables();
         start_connection(pIFC);
         generate_bit_order("source",source_ids);
@@ -38,3 +39,4 @@ bool sarfExit()
     close_connection();
     return 1;
 }
+*/

@@ -1864,32 +1864,32 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			if (annotatedNames.size()>0) {
 			#ifndef SUBMISSION
 				itr=commonContextNames.begin();
-				displayed_error<<"Contextually-Detected Correct Names:\n";
+                                theSarf->displayed_error<<"Contextually-Detected Correct Names:\n";
 				for (;itr!=commonContextNames.end();itr++)
-					displayed_error<<itr->getString()<<"\n";
+                                        theSarf->displayed_error<<itr->getString()<<"\n";
 				itr=detectedOnlyInNonContext.begin();
-				displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
+                                theSarf->displayed_error<<"Additional Correct Names Only Detected Un-Contexually:\n";
 				for (;itr!=detectedOnlyInNonContext.end();itr++)
-					displayed_error<<itr->getString()<<"\n";
+                                        theSarf->displayed_error<<itr->getString()<<"\n";
 				itr=nonDetectedNonContextNames.begin();
-				displayed_error<<"Names not detected without Context:\n";
+                                theSarf->displayed_error<<"Names not detected without Context:\n";
 				for (;itr!=nonDetectedNonContextNames.end();itr++)
-					displayed_error<<itr->getString()<<"\n";
+                                        theSarf->displayed_error<<itr->getString()<<"\n";
 				itr=nonDetectedContextNames.begin();
-				displayed_error<<"Names not detected with Context:\n";
+                                theSarf->displayed_error<<"Names not detected with Context:\n";
 				for (;itr!=nonDetectedContextNames.end();itr++)
-					displayed_error<<itr->getString()<<"\n";
+                                        theSarf->displayed_error<<itr->getString()<<"\n";
 				itr=incorrectlyDetectedNames.begin();
-				displayed_error<<"Names Incorrectly detected:\n";
+                                theSarf->displayed_error<<"Names Incorrectly detected:\n";
 				for (;itr!=incorrectlyDetectedNames.end();itr++)
-					displayed_error<<itr->getString()<<"\n";
+                                        theSarf->displayed_error<<itr->getString()<<"\n";
 			#endif
 
 				contextRecall=(double)commonContextNames.size()/annotatedNames.size();
 				contextPrecision=(double)commonContextNames.size()/contextNames.size();
 				allRecall=(double)commonNonContextNames.size()/annotatedNames.size();
 				allPrecision=(double)commonNonContextNames.size()/nonContextNames.size();
-				displayed_error << "-------------------------\n"
+                                theSarf->displayed_error << "-------------------------\n"
 								<< "Context Names:\n"
 								<< "\trecall=\t"<<commonContextNames.size()<<"/"<<annotatedNames.size()<<"=\t"<<contextRecall<<"\n"
 								<< "\tprecision=\t"<<commonContextNames.size()<<"/"<<contextNames.size()<<"=\t"<<contextPrecision<<"\n"
@@ -1944,14 +1944,14 @@ inline bool result(WordType t, StateInfo &  stateInfo,HadithData *currentChain, 
 			double narratorConcentration=(double)totalNarratorWords/totalWords;
 			double aggregationAverage=average(aggregationCountList);
 
-			displayed_error	<< "-------------------------\n"
+                        theSarf->displayed_error	<< "-------------------------\n"
 							<< (names?"Sanad ":"POR ")<<"Narrators:\n";
 							contextStatistics.calculateStatistics();
 							contextStatistics.displayStatistics();
-			displayed_error << "All Narrators:\n";
+                        theSarf->displayed_error << "All Narrators:\n";
 							nonContextStatistics.calculateStatistics();
 							nonContextStatistics.displayStatistics();
-			displayed_error << "Narrator Concentration:\n"
+                        theSarf->displayed_error << "Narrator Concentration:\n"
 							<< "\tword concentration=\t"<<totalNarratorWords<<"/"<<totalWords<<"=\t"<<narratorConcentration<<"\n"
 							<< "\tnarrator count=\t"<<annotatedNarrators.size()<<"\n"
 							<< "Agregation Count Average:\n"

@@ -29,7 +29,7 @@ inline QString cache_version()
 
 void database_info_block::readTrieFromDatabaseAndBuildFile()
 {
-	QSqlQuery query(db);
+        QSqlQuery query(theSarf->db);
 #ifdef REDUCE_THRU_DIACRITICS
 	QString stmt=QString("SELECT stem.id, stem.name, stem_category.category_id, stem_category.raw_data FROM stem, stem_category WHERE stem.id=stem_category.stem_id ORDER BY stem.id ASC");
 #else
@@ -147,7 +147,7 @@ void database_info_block::buildTrie()
 
 void database_info_block::fillMap(item_types type,ItemCatRaw2AbsDescPosMap * map)
 {
-	QSqlQuery query(db);
+        QSqlQuery query(theSarf->db);
 	QString table = interpret_type(type);
         if(prgsIFC != NULL)
             prgsIFC->setCurrentAction(table.toUpper()+" INFO");

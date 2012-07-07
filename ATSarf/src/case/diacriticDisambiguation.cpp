@@ -77,7 +77,7 @@ void DiacriticDisambiguationBase::store(long id, QString entry, QString raw_data
 DiacriticDisambiguationBase::~DiacriticDisambiguationBase() {
 	analyze();
 	for (int amb=0;amb<ambiguitySize;amb++) {
-		displayed_error	<<interpret((Ambiguity)amb)<<":"<<"\t"
+                theSarf->displayed_error	<<interpret((Ambiguity)amb)<<":"<<"\t"
 						<<(double)(((long double)total[amb])/countAmbiguity[amb])<<" -->\t"
 						<<(double)(left[amb]/countAmbiguity[amb])<<" =>\t"
 						<<(long long)left[amb]<<"/"<<total[amb]<<" =\t"
@@ -91,7 +91,7 @@ DiacriticDisambiguationBase::~DiacriticDisambiguationBase() {
 						<<(double)((long double)countReduced[amb])/countAmbiguity[amb]<<"\t"
 						<<(double)((long double)reducingCombinations[amb])/totalCombinations[amb]<<"\n";
 	}
-	displayed_error	<<"\nUndiacritized:\t"<<countWithoutDiacritics<<"/"<<countAmbiguity[All_Ambiguity]<<"=\t"
+        theSarf->displayed_error	<<"\nUndiacritized:\t"<<countWithoutDiacritics<<"/"<<countAmbiguity[All_Ambiguity]<<"=\t"
 					<<(double)((long double)countWithoutDiacritics)/countAmbiguity[All_Ambiguity]<<"\n";
 }
 
@@ -357,7 +357,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry,const AmbiguitySo
 		#endif
 			bool display=((numDia==diacriticsCount|| diacriticsCount==-1) && !suppressOutput && reduced);
 			for (int i=0;i<2;i++) {
-				QTextStream * o=(i==0?&out:&hadith_out);
+                                QTextStream * o=(i==0?&(theSarf->out):&hadith_out);
 				if (display || i==1) { //always display for hadith_out
 					int total=combIndexList.indicies.size();
 					for (QSet<int>::iterator itr=combIndexList.indicies.begin();itr!=combIndexList.indicies.end();++itr) {
@@ -484,10 +484,10 @@ void FullFileDisambiguation::operator()() {
 		QFile::remove(reducedFileName);
 		reducedFile.setFileName(reducedFileName);
 		assert(reducedFile.open(QFile::ReadWrite));
-		oldDevice=out.device();
-		out.setDevice(&reducedFile);
-		out.setCodec("utf-8");
-		out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphAbs\tMorphRel\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
+                oldDevice=theSarf->out.device();
+                theSarf->out.setDevice(&reducedFile);
+                theSarf->out.setCodec("utf-8");
+                theSarf->out<<"partial_voc\tfull_voc\tsize\tnumDia\tposDia\tdia\tmorph\tmorphAbs\tMorphRel\tletter\tvowel\tshamsi\tPOS\tVocLeft\tVOC_A\tGloss_A\tPOS_A\tToken_A\tStem_A\tAll_A\n";
 	}
 	if (!allFileName.isEmpty()) {
 		QFile::remove(allFileName);
@@ -540,7 +540,7 @@ FullFileDisambiguation::~FullFileDisambiguation() {
 	analyze();
 	if (reducedFile.isOpen())
 		reducedFile.close();
-	out.setDevice(oldDevice);
+        theSarf->out.setDevice(oldDevice);
 	if (allFile.isOpen())
 		allFile.close();
 	hadith_out.setDevice(oldDeviceAll);

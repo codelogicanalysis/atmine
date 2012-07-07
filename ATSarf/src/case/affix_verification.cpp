@@ -40,7 +40,7 @@ void drawAffixGraph(item_types type) {
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
 	{
-		out<<"Error openning file\n";
+		theSarf->out<<"Error openning file\n";
 		return;
 	}
 
@@ -153,7 +153,7 @@ public:
 		file=new QFile(QString("%1.list").arg(t));
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite)) {
-			out<<"Error openning file\n";
+			theSarf->out<<"Error openning file\n";
 			return;
 		}
 		dout=new QTextStream(file);

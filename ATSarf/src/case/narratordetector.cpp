@@ -1093,18 +1093,18 @@ public:
 	#endif
 		QFile input(input_str);
 		if (!input.open(QIODevice::ReadOnly)) {
-			out << "File not found\n";
+                        theSarf->out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
 		text=new QString(file.readAll());
 		if (text==NULL)	{
-			out<<"file error:"<<input.errorString()<<"\n";
+                        theSarf->out<<"file error:"<<input.errorString()<<"\n";
 			return 1;
 		}
 		if (text->isEmpty()) { //ignore empty files
-			out<<"empty file\n";
+                        theSarf->out<<"empty file\n";
 			return 0;
 		}
 		long text_size=text->size();
@@ -1297,7 +1297,7 @@ public:
 						bool isReal=true;
 	#endif
 						if (!tagNarrator(n,isReal))
-							out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
+                                                        theSarf->out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
 					}
 					tester_Counter++;
 				}

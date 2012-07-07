@@ -1,3 +1,4 @@
+
 #include "GlossSFR.h"
 
 
@@ -25,7 +26,7 @@ bool GlossSFR::on_match()
     if(RELATED && !Present)
     {
         RelatedW += this->text;
-        out<<this->text<<'\n';
+        theSarf->out<<this->text<<'\n';
     }
     return true;
 };

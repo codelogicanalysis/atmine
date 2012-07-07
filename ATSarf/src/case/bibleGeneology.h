@@ -293,7 +293,7 @@ private:
 	}
 	void printTree(int indentation) {
 		if (this==NULL)
-			out<<"NULL";
+			theSarf->out<<"NULL";
 		else {
 			QString sp="";
 			if (spouses.size()>0) {
@@ -303,7 +303,7 @@ private:
 				}
 				sp+="] ";
 			}
-			out<<QString(indentation,'>')/*<<"["<<height<<"]"*/<<name.getString()<<sp<<"\n";
+			theSarf->out<<QString(indentation,'>')/*<<"["<<height<<"]"*/<<name.getString()<<sp<<"\n";
 			for (int i=0;i<children.size();i++) {
 				children[i]->printTree(indentation+1);
 			}
@@ -510,10 +510,10 @@ public:
 	void outputTree() {
 		//out<<"{Output}\n";
 		if (this==NULL)
-			out<<"NULL";
+			theSarf->out<<"NULL";
 		else
 			root->printTree(0);
-		out<<"\n";
+		theSarf->out<<"\n";
 	}
 	int getTreeLevels() {
 		if (this==NULL)

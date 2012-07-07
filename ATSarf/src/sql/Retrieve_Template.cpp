@@ -6,7 +6,7 @@ typedef QVector<QString> Columns;
 typedef QVector<QVariant> Elements;
 
 void Retrieve_Template::intitialize(QString table,Columns columns,QString where){
-	this->query=new QSqlQuery (db);
+        this->query=new QSqlQuery (theSarf->db);
 	QString cols;
 	for(int i=0;i<columns.count();i++)
 	{

@@ -271,7 +271,7 @@ bool Stemmer::on_match_helper()
   */
 bool Stemmer::on_match() {
 #ifdef MORPHEME_TOKENIZE
-	out	<<"ALTERNATIVE:\t";
+        theSarf->out<<"ALTERNATIVE:\t";
 	QString word;
 	for (int i=0;i<prefix_infos->size();i++)
 		word.append(prefix_infos->at(i).raw_data);
@@ -281,8 +281,8 @@ bool Stemmer::on_match() {
         QString desc1 = stem_info->description();
 	for (int i=0;i<suffix_infos->size();i++)
 		word.append(suffix_infos->at(i).raw_data);
-	out <<" "<<word<<"\n";
-	//out<<"\t("<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<")\n";
+        theSarf->out <<" "<<word<<"\n";
+        //theSarf->out<<"\t("<<Prefix->info.start+1<<","<<Suffix->info.finish+1<<")\n";
 
 	int pos=Prefix->info.start;
 	for (int i=0;i<prefix_infos->size();i++) {
@@ -290,7 +290,7 @@ bool Stemmer::on_match() {
 		int pos2=Prefix->sub_positionsOFCurrentMatch[i];
 		if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
 			continue;
-		out	<<"PREFIX:\t"
+                theSarf->out	<<"PREFIX:\t"
 			<<info.text->mid(pos,pos2-pos+1)<<"\t"
 			<<pre.raw_data<<"\t"
 			<<"\""<<pre.description()<<"\"\t"
@@ -301,7 +301,7 @@ bool Stemmer::on_match() {
 	pos=Stem->info.start;
 	minimal_item_info & stem = *stem_info;
 	int pos2=Stem->info.finish;
-	out	<<"STEM:\t"
+        theSarf->out	<<"STEM:\t"
 		<<info.text->mid(pos,pos2-pos+1)<<"\t"
 		<<stem.raw_data<<"\t"
 		<<"\""<<stem.description()<<"\"\t"
@@ -313,7 +313,7 @@ bool Stemmer::on_match() {
 		int pos2=Suffix->sub_positionsOFCurrentMatch[i];
 		if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
 			continue;
-		out	<<"SUFFIX:\t"
+                theSarf->out	<<"SUFFIX:\t"
 			<<info.text->mid(pos,pos2-pos+1)<<"\t"
 			<<suff.raw_data<<"\t"
 			<<"\""<<suff.description()<<"\"\t"
@@ -321,41 +321,41 @@ bool Stemmer::on_match() {
 		pos=pos2+1;
 	}
 	assert(pos-1==Suffix->info.finish);
-	out<<"\n";
+        theSarf->out<<"\n";
 
 #else
 	int count=0;
 	if (called_everything || type==PREFIX)
 	{
-		out<<QString(runwordIndex,'\t');
-		out<<"(";
+                theSarf->out<<QString(runwordIndex,'\t');
+                theSarf->out<<"(";
 		for (int i=0;i<prefix_infos->count();i++)
 		{
 			if (count>0)
-					out << " + ";
+                                        theSarf->out << " + ";
 			count++;
 			const minimal_item_info & rmii = prefix_infos->at(i);
-			out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ rmii.description();
+                        theSarf->out<</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ rmii.description();
 		}
-		out <<")-";
+                theSarf->out <<")-";
 	}
 	if (called_everything || type==STEM)
 	{
-		out<< "-(";
+                theSarf->out<< "-(";
 		count=0;
 		if (count>0)
-				out << " OR ";
+                                theSarf->out << " OR ";
 		count++;
-		out<</*Stem->startingPos-1<<" "<<*/ stem_info->description();
-		out<<" [ ";
+                theSarf->out<</*Stem->startingPos-1<<" "<<*/ stem_info->description();
+                theSarf->out<<" [ ";
 		for (unsigned int i=0;i<stem_info->abstract_categories.length();i++)
 			if (stem_info->abstract_categories[i]) {
 				int abstract_id=database_info.comp_rules->getAbstractCategoryID(i);
 				if (abstract_id>=0)
-					out<<database_info.comp_rules->getCategoryName(abstract_id)<< " ";
+                                        theSarf->out<<database_info.comp_rules->getCategoryName(abstract_id)<< " ";
 			}
-		out<<"]";
-		out <<")-";
+                theSarf->out<<"]";
+                theSarf->out <<")-";
 	}
 	if (called_everything || type==SUFFIX) {
 		QString later_part="";

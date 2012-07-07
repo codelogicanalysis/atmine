@@ -27,7 +27,7 @@ protected:
 		file=new QFile(fileName);
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite)) {
-			out<<"Error openning '"<<fileName<<"'' file\n";
+			theSarf->out<<"Error openning '"<<fileName<<"'' file\n";
 			finish();
 			return;
 		}

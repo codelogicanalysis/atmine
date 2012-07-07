@@ -335,7 +335,7 @@ public:
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite))
 		{
-			out<<"Error openning file\n";
+                        theSarf->out<<"Error openning file\n";
 			return;
 		}
 
@@ -357,7 +357,7 @@ public:
 		displayChainNumsEndingJustAfter(n,s);
 	#ifdef DISPLAY_GRAPHNODES_CONTENT
 		if (n.isGraphNode())
-			out<<n.toString()<<"\n";
+                        theSarf->out<<n.toString()<<"\n";
 	#endif
 		return true;
 	}
@@ -365,10 +365,10 @@ public:
 	virtual void detectedCycle(NarratorNodeIfc & n)
 	{
 		NarratorNodeIfc * current=&n;
-		out<<"cycle at ";
-		out<<"[";
+                theSarf->out<<"cycle at ";
+                theSarf->out<<"[";
 		QString s=n.CanonicalName();
-		out<<s<<",";
+                theSarf->out<<s<<",";
 		const GraphVisitorController::ParentStack & stack=controller->getParentStack();
 		int size=stack.size();
 		for (int i=size-1; i>=0; i--)
@@ -377,9 +377,9 @@ public:
 			if (current==&n && i!=size-1)
 				break;
 			s=current->CanonicalName();
-			out<<s<<",";
+                        theSarf->out<<s<<",";
 		}
-		out<<"]\n";
+                theSarf->out<<"]\n";
 	#if 0
 		do
 		{
@@ -1389,7 +1389,7 @@ private:
 				return itr;
 			}
 		}
-		out<<"conflict at:"<<c->CanonicalName()<<"\t"<<n->CanonicalName()<<"\n";
+                theSarf->out<<"conflict at:"<<c->CanonicalName()<<"\t"<<n->CanonicalName()<<"\n";
 		return NodeIterator::null;
 	}
 	bool areEqual(NarratorNodeIfc * n1,NarratorNodeIfc * n2) {
@@ -1906,7 +1906,7 @@ public:
 			hadithFileList.append(v);
 			QFile input(v.fileName);
 			if (!input.open(QIODevice::ReadOnly)) {
-				out << "Hadith File needed but not found: "<<v.fileName<<"\n";
+                                theSarf->out << "Hadith File needed but not found: "<<v.fileName<<"\n";
 				return;
 			}
 			QTextStream file(&input);

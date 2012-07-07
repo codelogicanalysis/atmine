@@ -13,7 +13,7 @@ bool POSVerb::on_match()
         if (!(RelatedW.contains(this->text,Qt::CaseInsensitive)))
         {
             RelatedW += this->text;
-            out<<this->text<<'\n';
+            theSarf->out<<this->text<<'\n';
         }
     }
     return true;

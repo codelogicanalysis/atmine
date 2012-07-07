@@ -1011,7 +1011,7 @@ protected:
 		file=new QFile("graph.dot");
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite)) {
-			out<<"Error openning file\n";
+                        theSarf->out<<"Error openning file\n";
 			return;
 		}
 
@@ -1307,11 +1307,11 @@ bool GeneTree::buildFromText(QString text, TwoLevelSelection * sel,QString *file
 	}
 }
 QString GeneTree::getText() {
-	QString *out_text=out.string();
+        QString *out_text=theSarf->out.string();
 	QString s;
-	out.setString(&s);
+        theSarf->out.setString(&s);
 	outputTree();
-	out.setString(out_text);
+        theSarf->out.setString(out_text);
 	return s;
 }
 void GeneTree::fillNullGraph(MainSelectionList & names, QString * text) {
@@ -2165,7 +2165,7 @@ private:
 												localMergedGraph->deleteGraph(); \
 												localMergedGraph=NULL;\
 												if (geneologyParameters.detailed_statistics) { \
-													displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
+                                                                                                        theSarf->displayed_error <<">Graph:\t"<<stats.foundRecall<<"\t"<<stats.neigborhoodRecall<<"\t"<<stats.contextRecall<<"\t"<<stats.spousesRecall<<"\t"<<stats.childrenRecall<<"\n"; \
 												} \
 											}
 
@@ -2263,7 +2263,7 @@ private:
 					boundaryPrecisionList.append(0);
 				}
 				if (geneologyParameters.detailed_statistics) {
-					displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+                                        theSarf->displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 									<</*text->mid(start2,end2-start2+1)*/j<<"\t"
 									<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
 				}
@@ -2282,7 +2282,7 @@ private:
 				}
 			} else if (before(start1,end1,start2,end2)) {
 				if (geneologyParameters.detailed_statistics) {
-					displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+                                        theSarf->displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 									<<"-----\n";
 				}
 				visitedNodes.clear();
@@ -2293,7 +2293,7 @@ private:
 				i++;
 			} else if (after(start1,end1,start2,end2) ) {
 				if (geneologyParameters.detailed_statistics) {
-					displayed_error	<<"-----\t"
+                                        theSarf->displayed_error	<<"-----\t"
 									<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 				}
 				modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
@@ -2311,7 +2311,7 @@ private:
 		while (i<tags.size()) {
 			if (geneologyParameters.detailed_statistics) {
 				//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
-				displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
+                                theSarf->displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<<"-----\n";
 			}
 			//MERGE_GLOBAL_TREE
@@ -2322,7 +2322,7 @@ private:
 		while (j<outputList.size()) {
 			if (geneologyParameters.detailed_statistics) {
 				//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-				displayed_error <<"-----\t"
+                                theSarf->displayed_error <<"-----\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			}
 			modifySizeStatistics(outputList[j].getNamesList().size(),maxOutput,minOutput,sumOutput,countOutput);
@@ -2373,7 +2373,7 @@ private:
 		globalTree->deleteGraph();
 	#endif
 	#ifdef DETAILED_DISPLAY
-		displayed_error << "-------------------------\n"
+                theSarf->displayed_error << "-------------------------\n"
 						<< "Segmentation:\n"
 						<< "\trecall=\t\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<segmentationRecall<<"\n"
 						<< "\tprecision=\t\t"<<allCommonCount<<"/"<<outputList.size()<<"=\t"<<segmentationPrecision<<"\n"
@@ -2508,18 +2508,18 @@ public:
 		fileName=input_str;
 		QFile input(input_str);
 		if (!input.open(QIODevice::ReadOnly)) {
-			out << "File not found\n";
+                        theSarf->out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
 		text=new QString(file.readAll());
 		if (text->isNull())	{
-			out<<"file error:"<<input.errorString()<<"\n";
+                        theSarf->out<<"file error:"<<input.errorString()<<"\n";
 			return 1;
 		}
 		if (text->isEmpty()) {//ignore empty files
-			out<<"empty file\n";
+                        theSarf->out<<"empty file\n";
 			return 0;
 		}
 		return segmentHelper(text,prg);

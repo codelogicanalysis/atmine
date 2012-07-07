@@ -1,3 +1,4 @@
+/*
 #ifndef INITIALIZE_TOOL_H
 #define INITIALIZE_TOOL_H
 
@@ -9,3 +10,4 @@ bool sarfStart(QFile * _out=NULL, QFile * _displayed_error=NULL, ATMProgressIFC 
 bool sarfExit();
 
 #endif // INITIALIZE_TOOL_H
+*/

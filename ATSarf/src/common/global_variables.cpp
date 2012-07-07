@@ -14,11 +14,11 @@
 
 dbitvec INVALID_BITSET(max_sources);
 
-QSqlDatabase db;
+//QSqlDatabase db;
 
-QTextStream out;
-QTextStream in;
-QTextStream displayed_error;
+//QTextStream out;
+//QTextStream in;
+//QTextStream displayed_error;
 QTextStream hadith_out;
 //QTextStream chainOut;
 

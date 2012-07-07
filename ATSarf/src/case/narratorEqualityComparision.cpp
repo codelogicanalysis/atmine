@@ -56,10 +56,10 @@ int narrator_equality_comparision(QString input_str, ATMProgressIFC *) {
 		#ifndef DETAILED_DISPLAY
 			if (eq ==!(equalOur || eNarratorEqual))
 		#endif
-				displayed_error<<n1<<"\t"<<n2<<"\t"<<eq<<"\t"<<equalOur<<"\t"<<eNarratorEqual<<"\n";
+                                theSarf->displayed_error<<n1<<"\t"<<n2<<"\t"<<eq<<"\t"<<equalOur<<"\t"<<eNarratorEqual<<"\n";
 		}
 	}
-	displayed_error <<	"eNarrator:\n"
+        theSarf->displayed_error <<	"eNarrator:\n"
 					<<  "\trecall:\t"<<countCorrectEqualeNarrator<<"/"<<countAnnotationEqual<<"=\t"
 							<<(double)countCorrectEqualeNarrator/countAnnotationEqual<<"\n"
 					<<  "\tprecision:\t"<<countCorrectEqualeNarrator<<"/"<<countAllEqualeNarrator<<"=\t"

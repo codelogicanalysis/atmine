@@ -125,8 +125,8 @@ public:
 		errors->resize(errors->width(),50);
 		errors_text=new QString();
 		grid->addWidget(errors,6,0,1,12);
-		displayed_error.setString(errors_text);
-		out.setString(errors_text);
+                theSarf->displayed_error.setString(errors_text);
+                theSarf->out.setString(errors_text);
 	#endif
 		displayUncoloredGraph();
 	#ifdef ERRORS_BIO

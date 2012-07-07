@@ -27,7 +27,7 @@ AbstractGraph * HadithInterAnnotatorAgreement::newGraph(bool global) {
 
 void HadithInterAnnotatorAgreement::displayStatistics() {
 	#ifdef DETAILED_DISPLAY
-		displayed_error << "-------------------------\n"
+                theSarf->displayed_error << "-------------------------\n"
 						<< "Segmentation:\n"
 						<< "\trecall=\t\t"<<commonCount<<"/"<<correctTagsCount<<"=\t"<<segmentationRecall<<"\n"
 						<< "\tprecision=\t\t"<<allCommonCount<<"/"<<generatedTagsCount<<"=\t"<<segmentationPrecision<<"\n"
@@ -45,7 +45,7 @@ void HadithInterAnnotatorAgreement::displayStatistics() {
 						<< "\trecall=\t"<<boundaryRecall<<"\n"
 						<< "\tprecision=\t"<<boundaryPrecision<<"\n";
 		if (displayPORstatistics) {
-			displayed_error << "POR (merged nodes):\n"
+                        theSarf->displayed_error << "POR (merged nodes):\n"
 							<< "\tall errors:\n"
 							<< "\t\trecall=\t"<<mergesRecallALL<<"\n"
 							<< "\t\tprecision=\t"<<mergesPrecisionALL<<"\n"
@@ -54,7 +54,7 @@ void HadithInterAnnotatorAgreement::displayStatistics() {
 							<< "\t\tprecision=\t"<<mergesPrecisionNew<<"\n";
 		}
 	#else
-		displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
+                theSarf->displayed_error<<tags.size()<<"\t"<<detectionRecall<<"\t"<<detectionPrecision
 									<<"\t"<<boundaryRecall <<"\t"<<boundaryPrecision
 									<<"\t"<<graphFound     <<"\t"<<graphSimilarContext<<"\n";
 	#endif
@@ -301,18 +301,18 @@ int hadith_agreement(QString input_str,ATMProgressIFC *prg) {
 
 	QFile input(input_str);
 	if (!input.open(QIODevice::ReadOnly)) {
-		out << "File not found\n";
+                theSarf->out << "File not found\n";
 		return 1;
 	}
 	QTextStream file(&input);
 	file.setCodec("utf-8");
 	QString *text=new QString(file.readAll());
 	if (text->isNull())	{
-		out<<"file error:"<<input.errorString()<<"\n";
+                theSarf->out<<"file error:"<<input.errorString()<<"\n";
 		return 1;
 	}
 	if (text->isEmpty()) {//ignore empty files
-		out<<"empty file\n";
+                theSarf->out<<"empty file\n";
 		return 0;
 	}
 

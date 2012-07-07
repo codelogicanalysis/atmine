@@ -90,13 +90,13 @@ QAbstractItemModel * HadithDagGraph::getTreeModel() {
 }
 
 void HadithDagGraph::displayGraph(ATMProgressIFC *prg) {
-	QIODevice * oldDevice=out.device();
+        QIODevice * oldDevice=theSarf->out.device();
 	QString s;
-	out.setString(&s);
+        theSarf->out.setString(&s);
 	DisplayNodeVisitor visitor;
 	GraphVisitorController c(&visitor,graph,true,true);
 	graph->DFS_traverse(c);
-	out.setDevice(oldDevice);
+        theSarf->out.setDevice(oldDevice);
 	prg->displayGraph(this);
 }
 

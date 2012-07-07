@@ -37,10 +37,10 @@ public:
 		{
 			QVector<long>::iterator i = qBinaryFind(category_ids.begin(),category_ids.end(), cat_id);
 			if (i!=category_ids.end())
-			{
+                        {
 				int index=i-category_ids.begin();//maybe does not work for 64-bit machine
 				for (int j=0;j<raw_datas[index].size();j++)
-					if (equal(raw_datas[index][j],raw_data))
+                                    if (equal(raw_datas[index][j],raw_data))
 						return true;
 				return false;
 			}

@@ -41,7 +41,7 @@ inline QString get_Possessive_form(QString word) {
 		else if (!isLongVowel(last) || last==waw)
 			return removeLastDiacritics(word).append(ya2);
 		else {
-			out << "Unknown Rule for Possessive form\n";
+                        theSarf->out << "Unknown Rule for Possessive form\n";
 			return QString::null;
 		}
 	} else

@@ -15,7 +15,7 @@
 
 using namespace std;
 
-extern QSqlDatabase db;
+//extern QSqlDatabase db;
 
 #define perform_query(stmt)  \
 	if (!execute_query(stmt)) \
@@ -37,7 +37,8 @@ dbitvec string_to_bitset(QVariant val);
 QString bitset_to_string(dbitvec b);
 int get_bitindex(int id,int array[]);//very slow, implement differently later
 bool start_connection(ATMProgressIFC *); //and do other initializations
-void close_connection();
+
+void check_for_staleness();
 int generate_bit_order(QString table,int array[],QString filter_column="");
 long get_abstractCategory_id(int bit);
 #if 0

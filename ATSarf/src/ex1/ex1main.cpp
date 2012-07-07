@@ -9,14 +9,14 @@
 #include "POSVerb.h"
 #include "initialize_tool.h"
 #include <QColor>
-
+#include <sarf.h>
 
 using namespace std;
 
 
 /**
   * This method runs an instance of the class defined and triggers the pracket operator in it to start the tool
-  * @param input This is a string representing the iput string to be processed
+  * @param input This is a string representing the input string to be processed
   */
 void run_process(QString & input) {
 
@@ -83,7 +83,10 @@ int verbPOSExamplewithInterface() {
      * The previously declared files and progress instance are passed to the sarfStart function in order to initilaize the
      * tool.
      */
-    bool all_set = sarfStart(&Ofile,&Efile, pIFC);
+    Sarf srf;
+    bool all_set = srf.start(&Ofile,&Efile, pIFC);
+
+    Sarf::use(&srf);
 
     if(!all_set) {
         error<<"Can't Set up Project";
@@ -108,16 +111,18 @@ int verbPOSExamplewithInterface() {
      * The opened input file is passed to a text stream in order to read it and pass the lines to the core function to
      * run the implemented analyzer on.
      */
+
+
     QTextStream in(&Ifile);
     while (!in.atEnd()) {
         QString line = in.readLine();
         run_process(line);
     }
 
-    Ofile.close();
-
     // This function is called after the processing is done in order to close the tool properly.
-    sarfExit();
+    srf.exit();
+    //Ofile.close();
+
     return 0;
 }
 
@@ -131,7 +136,10 @@ int verbPOSExampleDefault() {
      * sarfStart is a function used to initialize the Sarf tool
      * It returns 1 if succesful else 0
      */
-    bool all_set = sarfStart();
+    Sarf srf;
+    bool all_set = srf.start();
+
+    Sarf::use(&srf);
 
     if(!all_set) {
         error<<"Can't Set up Project";
@@ -164,21 +172,17 @@ int verbPOSExampleDefault() {
     }
 
     // This function is called after the processing is done in order to close the tool properly.
-    sarfExit();
+    srf.exit();
+    //delete theSarf;
+
     return 0;
 }
 
 int ex1_main(int argc, char *argv[]) {
 
-    int test = verbPOSExamplewithInterface();
-    if(!test) {
-        cout<<"The example with interface is successful\n";
-    }
-    else {
-        cout<<"The example with interface failed\n";
-    }
+    //theSarf = new Sarf();
+    int test;
 
-    /*
     test = verbPOSExampleDefault();
     if(!test) {
         cout<<"The example without interface is successful\n";
@@ -186,6 +190,16 @@ int ex1_main(int argc, char *argv[]) {
     else {
         cout<<"The example without interface failed\n";
     }
-    */
+
+#if 1
+    test = verbPOSExamplewithInterface();
+    if(!test) {
+        cout<<"The example with interface is successful\n";
+    }
+    else {
+        cout<<"The example with interface failed\n";
+    }
+#endif
+
     return 0;
 }

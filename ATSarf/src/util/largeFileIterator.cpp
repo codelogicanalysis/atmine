@@ -1,3 +1,4 @@
+
 #include <QFile>
 #include <QDebug>
 #include <QTextStream>
@@ -35,7 +36,7 @@ void LargeFileIterator::initialize(QString fileName, int valueColumn, int weight
 
 	inputFile= new QFile(fileName);
 	if (!inputFile->open(QIODevice::ReadOnly)) {
-		out << "File not found\n";
+                theSarf->out << "File not found\n";
 		return;
 	}
 	file= new QTextStream(inputFile);

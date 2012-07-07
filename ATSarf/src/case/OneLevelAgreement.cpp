@@ -27,7 +27,7 @@ int OneLevelAgreement::calculateStatistics() {
 
 void OneLevelAgreement::displayStatistics(QString structure){
 #ifdef DETAILED_DISPLAY
-	displayed_error << "-------------------------\n"
+        theSarf->displayed_error << "-------------------------\n"
 					<< structure<<" Detection:\n"
 					<< "\trecall=\t\t"<<nameRecall<<"\n"
 					<< "\tprecision=\t\t"<<namePrecision<<"\n"

@@ -172,7 +172,7 @@ void MainWindow::on_chk_bible_toggled(bool checked){
 
 // Function called upon pressing "GO!" button
 void MainWindow::on_pushButton_clicked(){
-        QString error_str,output_str,hadith_str;    // strings for error, output, and input hadith
+    QString error_str,output_str,hadith_str;    // strings for error, output, and input hadith
         /*
          * v1: check for min narrator number conversion
          * v2: check for max NMC tolerance number conversion
@@ -211,12 +211,12 @@ void MainWindow::on_pushButton_clicked(){
 		return;
 	}
         QString input=m_ui->input->toPlainText();   //get the input text/word from the GUI
-	out.setString(&output_str);
-	out.setCodec("utf-8");
-	in.setString(&input);
-	in.setCodec("utf-8");
-	displayed_error.setString(&error_str);
-	displayed_error.setCodec("utf-8");
+        theSarf->out.setString(&output_str);
+        theSarf->out.setCodec("utf-8");
+        theSarf->in.setString(&input);
+        theSarf->in.setCodec("utf-8");
+        theSarf->displayed_error.setString(&error_str);
+        theSarf->displayed_error.setCodec("utf-8");
 	hadith_out.setString(&hadith_str);
 	hadith_out.setCodec("utf-8");
 	int rc;
@@ -292,14 +292,23 @@ void MainWindow::displayGraph(AbstractGraph * graph) {
 
 // Initialize the lexicon
 void MainWindow::on_fill_clicked(){
-	initialize_variables();
+    /*
+    theSarf = new Sarf();
+    bool all_set = theSarf->start(this);
+    if(!all_set) {
+        m_ui->errors->setText("Can't set up the project\n");
+    }
+    */
+    //Sarf::use(&srf);
+
+    initialize_variables();
 #ifndef SUBMISSION
-	start_connection(this);
-	//generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
-	generate_bit_order("source",source_ids);
-	generate_bit_order("category",abstract_category_ids,"abstract");
+        start_connection(this);
+        //generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
+        generate_bit_order("source",source_ids);
+        generate_bit_order("category",abstract_category_ids,"abstract");
 #endif
-	database_info.fill(this);
+        database_info.fill(this);
 	initialize_other();
 	hadith_initialize();
 	geneology_initialize();
@@ -316,23 +325,27 @@ void MainWindow::on_cmd_browse_clicked(){
 
 int main(int argc, char *argv[]){
 #if 1
+        theSarf = new Sarf();
 	QFileInfo fileinfo(argv[0]);
 	executable_timestamp=fileinfo.lastModified();
 	QApplication app(argc, argv);
 	MainWindow mainw;
 	mainw.show();
-	return app.exec();
+        int r = app.exec();
+        theSarf->exit();
+        delete theSarf;
+
+        return r;
 #else
 	initialize_variables();
 	EmptyProgressIFC emp;
 	database_info.fill(&emp);
 #if 1
-
 	QString output_str, error_str;
-	out.setString(&output_str);
+        out.setString(&output_str);
 	out.setCodec("utf-8");
 	displayed_error.setString(&error_str);
-	displayed_error.setCodec("utf-8");
+        displayed_error.setCodec("utf-8");
 #if 0
 	QString input=QString("")+dal+ra2+seen;
 	for (int i=0;i<20;i++)
@@ -348,5 +361,5 @@ int main(int argc, char *argv[]){
 }
 
 void MainWindow::on_exit_clicked(){
-	exit(0);
+    exit(0);
 }

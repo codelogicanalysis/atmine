@@ -23,8 +23,7 @@ bool POSVerb::on_match()
         if (!(RelatedW.contains(this->text,Qt::CaseInsensitive)))
         {
             RelatedW += this->text;
-            out<<this->text<<endl;
-            //result<<this->text<<endl;
+            theSarf->out<<this->text<<endl;
         }
     }
     return true;
