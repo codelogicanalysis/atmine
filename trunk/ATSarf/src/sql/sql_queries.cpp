@@ -21,7 +21,7 @@
 #include "diacritics.h"
 #include "dbitvec.h"
 
-QSqlQuery query;
+//QSqlQuery query;
 #ifdef LOAD_FROM_FILE
 extern QStringList cacheFileList;
 #endif
@@ -64,6 +64,7 @@ QString interpret_type(item_types t) //TODO: switch into table
 		return "--";
 	}
 }
+
 QString interpret_type(rules r)
 {
 	static QString typeNameTable[RULES_LAST_ONE]={"AA","AB","AC","BC","CC"};
@@ -98,7 +99,7 @@ bool execute_query(QString stmt, QSqlQuery &query)
 }
 bool execute_query(QString stmt)
 {
-	return execute_query(stmt,query);
+        return execute_query(stmt,theSarf->query);
 }
 int generate_bit_order(QString table,int array[],QString filter_column)
 {
@@ -106,9 +107,9 @@ int generate_bit_order(QString table,int array[],QString filter_column)
 	perform_query(stmt);
 	int i=0;
 	bool ok;
-	while (query.next())
+        while (theSarf->query.next())
 	{
-		array[i]=query.value(0).toInt(&ok);
+                array[i]=theSarf->query.value(0).toInt(&ok);
 		if (ok==false)
 		{
 			error << "Unexpected Error: Non-integer ID\n";
@@ -237,9 +238,9 @@ void check_for_staleness()
 	else
 		return;
 	execute_query("SHOW TABLE STATUS");
-	while (query.next())
+        while (theSarf->query.next())
 	{
-		QDateTime d=query.value(12).toDateTime();
+                QDateTime d=theSarf->query.value(12).toDateTime();
 #ifndef IGNORE_EXEC_TIMESTAMP
 		if (d>executable_timestamp || d>cache_time)
 #else
@@ -255,52 +256,57 @@ void check_for_staleness()
 	}
 #endif
 }
+
 bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
 {
-	db = QSqlDatabase::addDatabase("QMYSQL");
-	db.setHostName("localhost");
-	db.setDatabaseName("atm");
-	db.setUserName("root");
-	db.setPassword("");
-	bool ok = db.open();
-	if (ok)
-	{
-		db.exec("SET NAMES 'utf8'");
-		QSqlQuery temp(db);
-		query=temp;
-		check_for_staleness();
-		return 0;
-	}
-	else
-	{
-		if (!tried_once)
-		{
-			system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
-			system(string("mysql --user=\"root\" --password=\"\" atm <\""+databaseFileName.toStdString()+"\"").c_str());
-			tried_once=true;
-			start_connection(p_ifc);
-		}
-		else
-		{
-			std::cout <<"Unable to build databases. Reason: "<<db.lastError().text().toStdString()<<"\n";
-			return 1;
-		}
-	}
-	return 0;
+    if(theSarf->db.isOpen()) {
+            return true;
+    }
+    static char connectionIndex = '0' -1;
+    connectionIndex ++;
+    QString connectionName("SarfConnection");
+    connectionName += connectionIndex;
+
+    theSarf->db = QSqlDatabase::addDatabase("QMYSQL",connectionName);
+    theSarf->db.setHostName("localhost");
+    theSarf->db.setDatabaseName("atm");
+    theSarf->db.setUserName("root");
+    theSarf->db.setPassword("");
+    bool ok = theSarf->db.open();
+    if (ok)
+    {
+        theSarf->db.exec("SET NAMES 'utf8'");
+        QSqlQuery temp(theSarf->db);
+        theSarf->query=temp;
+        check_for_staleness();
+        return 0;
+    }
+    else
+    {
+        if (!tried_once)
+        {
+            system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
+            system(string("mysql --user=\"root\" --password=\"\" atm <\""+databaseFileName.toStdString()+"\"").c_str());
+            tried_once=true;
+            start_connection(p_ifc);
+        }
+        else
+        {
+            std::cerr <<"Unable to build databases. Reason: "<<theSarf->db.lastError().text().toStdString()<<"\n";
+            return 1;
+        }
+    }
+    return 0;
 }
-void close_connection()
-{
-                db.close();
-                db = QSqlDatabase();
-                QSqlDatabase::removeDatabase("atm");
-                //TODO: must destroy the db before calling the following
-}
+
+
+
 bool existsID(QString table,unsigned long long id,QString additional_condition)
 {
 	QString stmt( "SELECT * FROM %1 WHERE id ='%2' %3");
 	stmt=stmt.arg(table).arg(id).arg((additional_condition==""?additional_condition:"AND "+additional_condition));
 	perform_query(stmt);
-	return (query.size()>0);
+        return (theSarf->query.size()>0);
 }
 long long getID(QString table, QString name, QString additional_condition, QString column_name)
 {
@@ -308,8 +314,8 @@ long long getID(QString table, QString name, QString additional_condition, QStri
 	QString stmt( "SELECT id FROM %1 WHERE %4 =\"%2\" %3");
 	stmt=stmt.arg(table).arg(name).arg((additional_condition==QString("")?additional_condition:"AND "+additional_condition)).arg(column_name);
 	perform_query(stmt);
-	if (query.next())
-		return query.value(0).toULongLong(&ok);
+        if (theSarf->query.next())
+                return theSarf->query.value(0).toULongLong(&ok);
 	else
 		return -1;
 }
@@ -319,8 +325,8 @@ QString getColumn(QString table, QString column_name, long long id, QString addi
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):"")).arg((additional_condition==QString("")?additional_condition:(has_id==true?"AND ":"")+additional_condition)).arg(column_name);
 	if (!execute_query(stmt))
 		return QString::null;
-	if (query.next())
-		return query.value(0).toString();
+        if (theSarf->query.next())
+                return theSarf->query.value(0).toString();
 	else
 	{
 		if (has_id) //just not to show this warning for checkCompatibility
@@ -346,8 +352,8 @@ bool existsEntry(QString table,unsigned long long id=-1, QString additional_cond
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):QString(""))).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition));
 	if (!execute_query(stmt))
 		return false; //must not reach here
-	if (query.next())
-		return query.value(0).toInt()>0;
+        if (theSarf->query.next())
+                return theSarf->query.value(0).toInt()>0;
 	else
 	{
 		qDebug() <<stmt;
@@ -360,8 +366,8 @@ dbitvec get_bitset_column(QString table,QString column,unsigned long long id=-1,
 	stmt=stmt.arg(table).arg((has_id?QString("id ='%1'").arg(id):QString(""))).arg((additional_condition==""?additional_condition:(has_id?"AND ":"")+additional_condition)).arg(column);
 	if (!execute_query(stmt))
 		return INVALID_BITSET; //must not reach here
-	if (query.next())
-		return string_to_bitset(query.value(0));
+        if (theSarf->query.next())
+                return string_to_bitset(theSarf->query.value(0));
 	else
 	{
 		qDebug() <<stmt;
@@ -377,9 +383,9 @@ int get_type_of_category(long category_id, item_types & type)
 	bool ok;
 	QString stmt=QString("SELECT cast(type as unsigned) from category WHERE id=%1").arg(category_id);
 	perform_query(stmt);
-	if (query.next())
+        if (theSarf->query.next())
 	{
-		type=(item_types)query.value(0).toInt(&ok);
+                type=(item_types)(theSarf->query).value(0).toInt(&ok);
 		if (!ok)
 		{
 			error << "Unexpected Error: Non-integer type\n";
@@ -651,20 +657,20 @@ int resolve_conflict(QString table, QString column_name, QVariant new_value, QSt
 	//qDebug() << stmt;
 	perform_query(stmt);
 	//I assume that such an entry exists
-	if (query.size()==0)
+        if (theSarf->query.size()==0)
 	{
 		error << "Unexpected Error: No conflict is present since row does not even exist\n";
 		return -2;
 	}
 	//TODO: change null condition to include empty
-	if (query.next() && !query.value(0).isNull()) //else null is casted "cleanly" to 0
+        if (theSarf->query.next() && !theSarf->query.value(0).isNull()) //else null is casted "cleanly" to 0
 	{
 		/*long long val=query.value(0).toULongLong(&longlong);
 		if (longlong)
 			old_value= val;
 		else
 			old_value=query.value(0).toString();*/
-		old_value=query.value(0);
+                old_value=theSarf->query.value(0);
 	}
 	else
 		isNull=true;
@@ -771,7 +777,7 @@ long long insert_description(QString name,item_types type)
 	{
 		QString stmt( "INSERT INTO description(name,type) VALUES('%1',%2)");
 		stmt=stmt.arg(name).arg((int)type);
-		query.exec(stmt);
+                theSarf->query.exec(stmt);
 	}
 	return getID("description",name,QString("type=%1").arg((int)type));//get id of inserted
 }
@@ -815,7 +821,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 		} else {
 			name=removeDiacritics(raw_data);
 		}
-		displayed_error <<" Corrected to:\t"<<name<<"\t"<<raw_data<<"\n";
+                theSarf->displayed_error <<" Corrected to:\t"<<name<<"\t"<<raw_data<<"\n";
 	}
 #endif
 	QString table=interpret_type(type);
@@ -1006,7 +1012,7 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 	stmt=stmt.arg(interpret_type(type)).arg(item_id).arg(category_id)
 			 .arg(raw_data).arg(description_id).arg(POS);
 	perform_query(stmt);
-	if (query.numRowsAffected()==0)
+        if (theSarf->query.numRowsAffected()==0)
 	{
 		//try finding a different id for description (eg the id given is for a prefix while we are looking for suffix)
 		QString stmt2( QString("SELECT id FROM description ")+
@@ -1014,8 +1020,8 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 		stmt2=stmt2.arg(description_id).arg((int)type);
 		perform_query(stmt2);
 		long desc_other=description_id;
-		while (query.next()) {
-			desc_other=query.value(0).toLongLong();
+                while (theSarf->query.next()) {
+                        desc_other=theSarf->query.value(0).toLongLong();
 			QString stmt( QString("DELETE FROM %1_category ")+
 						  "WHERE %1_id=%2 AND category_id=%3 AND raw_data=\"%4\" "+
 								"AND description_id=%5 AND POS=\"%6\"");
@@ -1023,13 +1029,13 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 					 .arg(raw_data).arg(desc_other).arg(POS);
 			perform_query(stmt);
 		}
-		if (query.numRowsAffected()==0) {
+                if (theSarf->query.numRowsAffected()==0) {
 			error << "No entry removed in "+interpret_type(type)+"_category!\n";
 			return -2;
 		} else {
 			description_id=desc_other;
 		}
-	} else if (query.numRowsAffected()>1) {
+        } else if (theSarf->query.numRowsAffected()>1) {
 		error << "More than one entry in "+interpret_type(type)+"_category removed!\n";
 		return -2;
 	}
@@ -1038,8 +1044,8 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 				  "WHERE %1_id=%2";
 	stmt=stmt.arg(interpret_type(type)).arg(item_id);
 	perform_query(stmt);
-	assert(query.next());
-	if (query.record().value(0)==0) {
+        assert(theSarf->query.next());
+        if (theSarf->query.record().value(0)==0) {
 		QString stmt( "DELETE FROM %1 WHERE id=%2");
 		stmt=stmt.arg(interpret_type(type)).arg(item_id);
 		perform_query(stmt);
@@ -1050,72 +1056,72 @@ int remove_item(item_types type,long item_id, QString raw_data, long category_id
 long display_table(QString table) //TODO: has some error in producing sources for example may result in "3,0,0" and also in rules type may result in "AA" always
 {
 
-	out<<"--------------------------------------------------\n"<<table<<":\n";
+        theSarf->out<<"--------------------------------------------------\n"<<table<<":\n";
 	QString stmt("SHOW COLUMNS FROM %1");
 	stmt=stmt.arg(table);
 	perform_query(stmt);
 
 	int source_column=-1,type_column=-1,abstract_categories_column=-1, col=-1;
-	int columns=query.size();
-	while ( query.next())
+        int columns=theSarf->query.size();
+        while ( theSarf->query.next())
 	{
 		col++;
 		//qDebug()<<query.value(0).toString();
-		out<<(!query.value(0).isNull() ? query.value(0).toString() : "NULL");
-		if (query.value(0).toString()=="sources")
+                theSarf->out<<(!theSarf->query.value(0).isNull() ? theSarf->query.value(0).toString() : "NULL");
+                if (theSarf->query.value(0).toString()=="sources")
 			source_column=col;
-		if (query.value(0).toString()=="type")
+                if (theSarf->query.value(0).toString()=="type")
 			type_column=col;
-		if (query.value(0).toString()=="abstract_categories")
+                if (theSarf->query.value(0).toString()=="abstract_categories")
 			abstract_categories_column=col;
-		out << "\t";
+                theSarf->out << "\t";
 	}
-	out<<"\n";
+        theSarf->out<<"\n";
 
 	stmt=QString("SELECT * FROM %1").arg(table);
 	perform_query(stmt);
 	QSqlRecord row;
-	while (query.next())
+        while (theSarf->query.next())
 	{
-		row=query.record();
+                row=theSarf->query.record();
 		for (int i=0; i< columns;i++)
 		{
 			if (i==source_column)
 			{
 				dbitvec b=string_to_bitset(row.value(i));
 				if (b.NothingSet())
-					out<<"--------";
+                                        theSarf->out<<"--------";
 				else
 					for (int k=0; k<max_sources;k++)
 						if (b[k]==1)
-							out<<source_ids[k]<<",";
-				out<<"\t";
+                                                        theSarf->out<<source_ids[k]<<",";
+                                theSarf->out<<"\t";
 			}
 			else if(i==type_column)
 			{
 				bool ok;
 				if (table=="category")
-					out<<interpret_type((item_types)row.value(i).toInt(&ok)).toUpper()<<"\t";
+                                        theSarf->out<<interpret_type((item_types)row.value(i).toInt(&ok)).toUpper()<<"\t";
 				if (table=="compatibility_rules")
-					out<<interpret_type((rules)row.value(i).toInt(&ok))<<"\t";
+                                        theSarf->out<<interpret_type((rules)row.value(i).toInt(&ok))<<"\t";
 			}
 			else if(i==abstract_categories_column)
 			{
 				dbitvec b=string_to_bitset(row.value(i));
 				if (b.NothingSet())
-					out<<"--------";
+                                        theSarf->out<<"--------";
 				else
 					for (int k=0; k<max_sources;k++)
 						if (b[k]==1)
-							out<<abstract_category_ids[k]<<",";
-				out<<"\t";
+                                                        theSarf->out<<abstract_category_ids[k]<<",";
+                                theSarf->out<<"\t";
 			}
 			else
-				out<<QString("%1\t").arg(!row.value(i).isNull() ? (!(row.value(i).toString()==QString(""))?row.value(i).toString():QString("    ")) : QString("NULL"));
+                                theSarf->out<<QString("%1\t").arg(!row.value(i).isNull() ? (!(row.value(i).toString()==QString(""))?row.value(i).toString():QString("    ")) : QString("NULL"));
 		}
-		out<<"\n";
+                theSarf->out<<"\n";
 	}
-	out<<QString("Rows: %1\n").arg((long)query.size());
+        theSarf->out<<QString("Rows: %1\n").arg((long)theSarf->query.size());
 	return 0;
 }
 int insert_source(QString name, QString normalization_process, QString creator) //returns current number of sources
@@ -1123,11 +1129,11 @@ int insert_source(QString name, QString normalization_process, QString creator) 
 	QString stmt("SELECT id FROM source WHERE description =\"%1\"");
 	stmt=stmt.arg(name);
 	perform_query(stmt);
-	if (query.next())
+        if (theSarf->query.next())
 	{
 		warning<<"INSERT Operation ignored, since a source with same description exists!\n";
 		bool ok;
-		int val=query.value(0).toInt(&ok);
+                int val=theSarf->query.value(0).toInt(&ok);
 		if (ok)
 			return val;
 		else
@@ -1173,12 +1179,12 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QS
 		assert(t1==t2);
 	stmt =QString("SELECT resulting_category FROM compatibility_rules WHERE category_id1=%1 AND category_id2=%2 AND type=%3").arg(id1).arg(id2).arg((int)rule);
 	perform_query(stmt);
-	if (query.size()>0) {//already present
+        if (theSarf->query.size()>0) {//already present
 		bool insert_rule=true;
-		while (query.next()) {
+                while (theSarf->query.next()) {
 			bool ok;
-			long old_result_id=query.value(0).toULongLong(&ok);
-			if (query.isNull(0))
+                        long old_result_id=theSarf->query.value(0).toULongLong(&ok);
+                        if (theSarf->query.isNull(0))
 				old_result_id=-1;
 			if (old_result_id==result_id) {
 				addSource("compatibility_rules",source_id,-1,QString("category_id1=%1 AND category_id2=%2").arg(id1).arg(id2),false);

@@ -150,7 +150,7 @@ void HadithChainGraph::displayGraph(ATMProgressIFC *prg) {
 	QFile file("graph.dot");
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite)) {
-		out<<"Error openning file\n";
+                theSarf->out<<"Error openning file\n";
 		return;
 	}
 	QTextStream d_out(&file);

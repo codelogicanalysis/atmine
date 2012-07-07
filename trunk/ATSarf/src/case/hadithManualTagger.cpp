@@ -310,9 +310,9 @@ void HadithTaggerDialog::resultTree_contextMenu(const QPoint & p) {
 
 void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
 	if (colorSelectedNodeInGraphAct->isChecked() && globalGraphAct->isChecked()) {
-		QIODevice * d=out.device();
+                QIODevice * d=theSarf->out.device();
 		QString s;
-		out.setString(&s);
+                theSarf->out.setString(&s);
 		DisplayLocalNodesVisitor::DetectedNodesMap map;
 		NarratorNodeIfc * node=(NarratorNodeIfc *)index.internalPointer();
 		HadithDagGraph * g=dynamic_cast<HadithDagGraph*>(globalGraph);
@@ -353,7 +353,7 @@ void HadithTaggerDialog::resultTree_clicked ( const QModelIndex & index ) {
 		} else
 			graph->setPixmap(QPixmap());
 		graph->repaint();
-		out.setDevice(d);
+                theSarf->out.setDevice(d);
 	}
 }
 

@@ -153,7 +153,7 @@ void AbstractTwoLevelAgreement::overLapMainFinished(int i,int j,const SelectionL
 	}
 	if (underComputation) { //under computation only
 		if (hadithParameters.detailed_statistics) {
-			displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+			theSarf->displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<</*text->mid(start2,end2-start2+1)*/j<<"\t"
 							<<countCommon<<"/"<<countCorrect<<"\t"<<allCommonCount<<"/"<<countDetected<<"\n";
 		}
@@ -269,7 +269,7 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 			}
 		} else if (before(start1,end1,start2,end2)) {
 			if (hadithParameters.detailed_statistics) {
-				displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
+				theSarf->displayed_error	<</*text->mid(start1,end1-start1+1)*/i<<"\t"
 								<<"-----\n";
 			}
 			//[max-boundary computations
@@ -281,7 +281,7 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 			i++;
 		} else if (after(start1,end1,start2,end2) ) {
 			if (hadithParameters.detailed_statistics) {
-				displayed_error	<<"-----\t"
+				theSarf->displayed_error	<<"-----\t"
 								<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			}
 			//[max-boundary computations
@@ -303,7 +303,7 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 	while (i<tags.size()) {
 		if (hadithParameters.detailed_statistics) {
 			//int start1=tags[i].getMainStart(),end1=tags[i].getMainEnd();
-			displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
+			theSarf->displayed_error <</*text->mid(start1,end1-start1+1)*/i<<"\t"
 							<<"-----\n";
 		}
 		beforeMovingToNextTag(i,j);
@@ -312,7 +312,7 @@ int AbstractTwoLevelAgreement::calculateStatisticsHelper() {
 	while (j<outputList.size()) {
 		if (hadithParameters.detailed_statistics) {
 			//int start2=outputList[j].getMainStart(),end2=outputList[j].getMainEnd();
-			displayed_error <<"-----\t"
+			theSarf->displayed_error <<"-----\t"
 							<</*text->mid(start2,end2-start2+1)*/j<<"\n";
 			beforeMovingToNextOutput(i,j);
 		}

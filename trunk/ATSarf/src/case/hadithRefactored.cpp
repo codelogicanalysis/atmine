@@ -165,8 +165,8 @@ private:
 						newHadithStart=currentData.mainStructureStartIndex;
 						//long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
 						//long end=stateInfo.endPos;
-						out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
-						out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
+                                                theSarf->out<<"\n"<<hadith_Counter<<" new hadith start: "<<text->mid(newHadithStart,display_letters)<<endl;
+                                                theSarf->out<<"sanad end: "<<text->mid(sanadEnd-display_letters+1,display_letters)<<endl<<endl;
 					}
 					#ifdef CHAIN_BUILDING
 						currentChain->chain->serialize(chainOut);
@@ -281,7 +281,7 @@ private:
 	#if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
 		if (!segmentNarrators && newHadithStart<0)
 		{
-			out<<"no hadith found\n";
+                        theSarf->out<<"no hadith found\n";
 			chainOutput.close();
 			return 2;
 		}
@@ -320,7 +320,7 @@ private:
 				{
 					Narrator * n=(Narrator *)curr_struct;
 					if (n->m_narrator.size()==0) {
-						out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
+                                                theSarf->out<<"found a problem an empty narrator in ("<<tester_Counter<<","<<j<<")\n";
 						continue;
 					}
 					prg->tag(curr_struct->getStart(),curr_struct->getLength(),Qt::darkYellow,false);
@@ -423,18 +423,18 @@ public:
 		fileName=input_str;
 		QFile input(input_str);
 		if (!input.open(QIODevice::ReadOnly)) {
-			out << "File not found\n";
+                        theSarf->out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
 		file.setCodec("utf-8");
 		text=new QString(file.readAll());
 		if (text->isNull())	{
-			out<<"file error:"<<input.errorString()<<"\n";
+                        theSarf->out<<"file error:"<<input.errorString()<<"\n";
 			return 1;
 		}
 		if (text->isEmpty()) {//ignore empty files
-			out<<"empty file\n";
+                        theSarf->out<<"empty file\n";
 			return 0;
 		}
 		return segmentHelper(text,0,text->size()-1,functionUsingChains,prg,false);

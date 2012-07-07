@@ -116,9 +116,9 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 		gettimeofday(&tim, NULL);
 		double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
 	#if REPETITIONS<2
-		out	<<"elapsed time="<<t2-t1<<"s\n";
+                theSarf->out<<"elapsed time="<<t2-t1<<"s\n";
 	#else
-		out	<<t2-t1<<"\n";
+                theSarf->out<<t2-t1<<"\n";
 	#endif
 	}
 	return 0;

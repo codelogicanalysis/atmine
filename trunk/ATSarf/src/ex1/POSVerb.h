@@ -24,13 +24,12 @@ public:
     /**
      * This is the constructor of the POSVerb class
      * @param text This is the input text to be processed
-     * @param r	
      */
     POSVerb(QString * text/*, QTextStream & r*/);
 
     /**
      * This is the function called by the tool upon finding a possible solution for the input. By implementing this method, we control the accepted solutions that meet
-     * meets our functionality required.
+     * our functionality required.
      * @return This function returns a boolean that is processed by the tool, as long as the returned value is true the tool continues to find the next possible
      * solution till all possible ones and extracted, else if the returned value is false it will stop the analysis process.
      */

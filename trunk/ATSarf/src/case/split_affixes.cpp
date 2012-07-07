@@ -55,7 +55,7 @@ SplitDialog::SplitDialog():QDialog() {
 	connect(specialize,SIGNAL(clicked()),this,SLOT(specialize_clicked()));
 	connect(renameCat,SIGNAL(clicked()),this,SLOT(specializeAllDuplicateEntries()));
 	connect(removeStale,SIGNAL(clicked()),this,SLOT(removeStaleCategoriesAndAffixes()));
-	displayed_error.setString(errors_text);
+        theSarf->displayed_error.setString(errors_text);
 	loadAffixList();
 	loadCompatibilityList();
 	this->resize(900,700);
@@ -184,7 +184,7 @@ void SplitDialog::makeNonAcceptStatesAccept() {
 		QString cat=database_info.comp_rules->getCategoryName(category_id);
 		QString catres=database_info.comp_rules->getCategoryName(resulting_category);
 		warning << QString("Set category %1 back into %2 \n").arg(cat).arg(catres);
-		QSqlQuery query(db);
+                QSqlQuery query(theSarf->db);
 		QString stmt=QString(tr("UPDATE %1_category ")+
 								"SET category_id=%3 "+
 								"WHERE category_id=%2")
@@ -241,7 +241,7 @@ void SplitDialog::removeStaleCategoriesAndAffixes() {
 									"FROM  compatibility_rules "+
 									"WHERE type=%1 AND (category_id1=%2 AND category_id2=%3)")
 						  .arg((int)rule).arg(category_id1).arg(category_id2);
-			QSqlQuery query(db);
+                        QSqlQuery query(theSarf->db);
 			execute_query(stmt,query);
 			assert(query.numRowsAffected()==1);
 
@@ -347,7 +347,7 @@ void SplitDialog::mergeSimilarCategories(bool first) {
 			int ret = msgBox.exec();
 			if (ret==QMessageBox::Yes) {
 				warning << QString("Merged the 2 categories: %1, %2 into %1\n").arg(cat1).arg(cat2);
-				QSqlQuery query(db);
+                                QSqlQuery query(theSarf->db);
 				QString stmt=QString(tr("UPDATE %1_category ")+
 										"SET category_id=%2 "+
 										"WHERE category_id=%3")
@@ -373,7 +373,7 @@ void SplitDialog::mergeSimilarCategories(bool first) {
 void SplitDialog::removeDummyRulesForConsistencyIfNotNeeded() {
 	item_types type=(item_types)affixType->itemData(affixType->currentIndex()).toInt();
 	rules rule=(type==PREFIX?AA:CC);
-	QSqlQuery query(db);
+        QSqlQuery query(theSarf->db);
 	QString stmt=QString(tr("SELECT t1.category_id2, t2.category_id2  ")+
 					"FROM  compatibility_rules t1, compatibility_rules t2 "+
 					"WHERE t1.type=%1 AND t2.type=%1 AND t1.category_id1=%2 AND t2.category_id1=%2 AND t1.resulting_category=t2.resulting_category AND t1.category_id2<t2.category_id2")
@@ -396,7 +396,7 @@ void SplitDialog::removeDummyRulesForConsistencyIfNotNeeded() {
 		QString catMain=database_info.comp_rules->getCategoryName(idMain),
 				catOld=database_info.comp_rules->getCategoryName(idOld);
 		warning << QString("Revert the 2 categories: %1, %2 into %1\n").arg(catMain).arg(catOld);
-		QSqlQuery query(db);
+                QSqlQuery query(theSarf->db);
 		QString stmt=QString(tr("UPDATE %1_category ")+
 								"SET category_id=%2 "+
 								"WHERE category_id=%3")
@@ -622,7 +622,7 @@ void SplitDialog::specializeHelper(QString category_original, QString category_s
 	}
 
 	//second change categories of those selected
-	QSqlQuery query(db);
+        QSqlQuery query(theSarf->db);
 	QList<QTableWidgetSelectionRange>  selection=originalAffixList->selectedRanges();
 	for (int i=0;i<selection.size();i++) {
 		int top=selection[i].topRow();

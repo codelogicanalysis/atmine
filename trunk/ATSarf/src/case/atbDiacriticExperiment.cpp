@@ -93,7 +93,7 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 
 	QFile diacritics_file(inputString);
 	if (!diacritics_file.open(QIODevice::ReadWrite) ) {
-		out << "Diacritics File not found\n";
+                theSarf->out << "Diacritics File not found\n";
 		return 1;
 	}
 	QString line;
@@ -189,13 +189,13 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 				if (ambiguity==All_Ambiguity) {
 					QTextStream * print;
 					if (no_voc_amb!=voc_amb) {
-						print=&out;
+                                                print=&(theSarf->out);
 						countReduced++;
 						if (Has_Tanween) {
 							countReducedTanween++;
 						}
 					} else {
-						print=&displayed_error;
+                                                print=&(theSarf->displayed_error);
 					}
 				#ifndef RECALL_DIACRITICS
 					(*print)<<partial_voc<<"\t"<<no_voc_amb<<"\t"<<voc_amb<<"\n";
@@ -205,7 +205,7 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 		if (equal(no_voc,voc))
 			correctly_detectedNoDiacritics[amb]++;
 		else if (ambiguity==All_Ambiguity)
-			displayed_error<<no_voc<<"\t"<<voc<<"\n";
+                        theSarf->displayed_error<<no_voc<<"\t"<<voc<<"\n";
 		if (ignore=="i") {
 			correctly_detected[amb]++;
 			assert(!equal(partial_voc,voc,true));
@@ -286,7 +286,7 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
                     prg->report(((double)filePos)/fileSize*100+0.5);
 	}
 	for (int amb=0;amb<ambiguitySize;amb++) {
-		displayed_error<<interpret((Ambiguity)amb)<<":\n";
+                theSarf->displayed_error<<interpret((Ambiguity)amb)<<":\n";
 #ifndef RECALL_DIACRITICS
 	#ifdef CHECK_ALL
 		int total_equivalent=total;
@@ -341,33 +341,33 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 	#ifdef RANDOM_DIACRITICS
 		for (int i=0;i<maxDiacritics;i++) {
 			double	ratio=((double)random_voc_ambiguity[i][amb])/random_total_count[i][amb];
-			displayed_error<<"\tDiacritics\t"<<i<<"\t"<<ratio<<"\n";
+                        theSarf->displayed_error<<"\tDiacritics\t"<<i<<"\t"<<ratio<<"\n";
 		}
 		double	random_full_voc_ratio=((double)random_full_vocalized[amb])/random_total_count[0][amb];
-		displayed_error<<"\tDiacritics\t*\t"<<random_full_voc_ratio<<"\n";
+                theSarf->displayed_error<<"\tDiacritics\t*\t"<<random_full_voc_ratio<<"\n";
 	#else
 		for (int i=0;i<maxDiacritics;i++) {
 			double	ratio=((double)other_ambiguity[i][amb])/other_count[i][amb];
 			double	best_ratio=((double)other_best_ambiguity[i][amb])/other_count[i][amb];
 			double	worst_ratio=((double)other_worst_ambiguity[i][amb])/other_count[i][amb];
-			displayed_error<<"\tDiacritics\t"<<i<<"\t"<<ratio<<"\t("<<best_ratio<<",\t"<<worst_ratio<<")\n";
+                        theSarf->displayed_error<<"\tDiacritics\t"<<i<<"\t"<<ratio<<"\t("<<best_ratio<<",\t"<<worst_ratio<<")\n";
 		}
-		displayed_error<<"\tDiacritics\t*\t"<<full_voc_ratio<<"\n";
+                theSarf->displayed_error<<"\tDiacritics\t*\t"<<full_voc_ratio<<"\n";
 	#endif
 #else
-		displayed_error	<<"\tRecall=\t"<<correctly_detected[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<correctly_detected[amb]/((double)correctly_detectedNoDiacritics[amb])<<"\n"
+                theSarf->displayed_error	<<"\tRecall=\t"<<correctly_detected[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<correctly_detected[amb]/((double)correctly_detectedNoDiacritics[amb])<<"\n"
 						<<"\tPrecision=\t"<<correctly_detected[amb]<<"/"<<voc_total[amb]<<"=\t"<<correctly_detected[amb]/((double)voc_total[amb])<<"\n\n";
-		displayed_error	<<"\tRecall (no)=\t"<<correctly_detectedNoDiacritics[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<1.0<<"\n"
+                theSarf->displayed_error	<<"\tRecall (no)=\t"<<correctly_detectedNoDiacritics[amb]<<"/"<<correctly_detectedNoDiacritics[amb]<<"=\t"<<1.0<<"\n"
 						<<"\tPrecision (no)=\t"<<correctly_detectedNoDiacritics[amb]<<"/"<<no_voc_total[amb]<<"=\t"<<correctly_detectedNoDiacritics[amb]/((double)no_voc_total[amb])<<"\n\n";
 #endif
 	}
-	displayed_error<<"\nEquivalent Factor:\t"<<countEquivalent<<"/"<<total<<"=\t"<<((double)countEquivalent)/total<<"\n";
-	displayed_error<<"Reduction Factor:\t"<<countReduced<<"/"<<countEquivalent<<"=\t"<<((double)countReduced)/countEquivalent<<"\n";
-	displayed_error<<"\nEquivalent Tanween Factor:\t"<<countEquivalentTanween<<"/"<<countTanween<<"=\t"<<((double)countEquivalentTanween)/countTanween<<"\n";
-	displayed_error<<"Reduction Tanween Factor:\t"<<countReducedTanween<<"/"<<countEquivalentTanween<<"=\t"<<((double)countReducedTanween)/countEquivalentTanween<<"\n";
+        theSarf->displayed_error<<"\nEquivalent Factor:\t"<<countEquivalent<<"/"<<total<<"=\t"<<((double)countEquivalent)/total<<"\n";
+        theSarf->displayed_error<<"Reduction Factor:\t"<<countReduced<<"/"<<countEquivalent<<"=\t"<<((double)countReduced)/countEquivalent<<"\n";
+        theSarf->displayed_error<<"\nEquivalent Tanween Factor:\t"<<countEquivalentTanween<<"/"<<countTanween<<"=\t"<<((double)countEquivalentTanween)/countTanween<<"\n";
+        theSarf->displayed_error<<"Reduction Tanween Factor:\t"<<countReducedTanween<<"/"<<countEquivalentTanween<<"=\t"<<((double)countReducedTanween)/countEquivalentTanween<<"\n";
 	int countNonReduced=countReduced-countReducedTanween;
 	int countNonEquivalent=countEquivalent-countEquivalentTanween;
-	displayed_error<<"Reduction Non-Tanween Factor:\t"<<countNonReduced<<"/"<<countNonEquivalent<<"=\t"<<((double)countNonReduced)/countNonEquivalent<<"\n";
+        theSarf->displayed_error<<"Reduction Non-Tanween Factor:\t"<<countNonReduced<<"/"<<countNonEquivalent<<"=\t"<<((double)countNonReduced)/countNonEquivalent<<"\n";
 	return 0;
 }
 

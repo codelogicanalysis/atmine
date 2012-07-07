@@ -135,9 +135,9 @@ void DiacriticsPostProcessing::displayStats() {
 				modifiedKey+=", ";
 			modifiedKey+=modifiedFeature;
 		}
-		out<<modifiedKey<<"\t("<<av.fractionOf(totalLines)<<"):\t"<<av.toString()<<'\n';
+                theSarf->out<<modifiedKey<<"\t("<<av.fractionOf(totalLines)<<"):\t"<<av.toString()<<'\n';
 	}
-	out<<"Total unique entries:\t"<<totalLines<<"\n";
+        theSarf->out<<"Total unique entries:\t"<<totalLines<<"\n";
 }
 
 void DiacriticsPostProcessing::checkFeatureConsistency() {
@@ -155,7 +155,7 @@ void DiacriticsPostProcessing::operator()(QString fileName, ATMProgressIFC * prg
 	clearStats();
 	QFile input(fileName);
 	if (!input.open(QIODevice::ReadOnly)) {
-		out << "File not found\n";
+                theSarf->out << "File not found\n";
 		return;
 	}
 	QTextStream file(&input);

@@ -32,7 +32,7 @@ QString Search_Compatibility::getInflectionRules(){
 Search_Compatibility::Search_Compatibility(rules rule, long category_id,bool first)
 {
         err=false;
-        QSqlQuery temp(db);
+        QSqlQuery temp(theSarf->db);
         query=temp;
         this->rule=rule;
         item_types t1,t2,t_cat;

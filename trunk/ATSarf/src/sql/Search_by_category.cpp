@@ -44,7 +44,7 @@ bool Search_by_category::retrieve_internal(all_item_info & info)
 Search_by_category::Search_by_category(long category_id)
 {
         err=false;
-        QSqlQuery temp(db);
+        QSqlQuery temp(theSarf->db);
         query=temp;
         get_type_of_category(category_id,type);
         QString table = interpret_type(type);

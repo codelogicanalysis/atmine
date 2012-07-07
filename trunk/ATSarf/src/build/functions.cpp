@@ -95,7 +95,7 @@ void findCategoryIds(item_types type,QString expression,QList<long> & category_i
 	expression.replace("_","\\_");
 	expression.replace("*","%");
 
-	out<<"expression: {"<<expression<<"} was expanded to: <";
+	theSarf->out<<"expression: {"<<expression<<"} was expanded to: <";
 	QString where_condition=QString("type=%1 AND abstract=0 AND %2").arg((int)type).arg(expression);
 	Retrieve_Template t("category","id","name",where_condition);
 	while (t.retrieve()) {
@@ -104,10 +104,10 @@ void findCategoryIds(item_types type,QString expression,QList<long> & category_i
 		//Search_by_category c(id);
 		//if (c.size()>0) {
 			category_ids.append(id);
-			out<< cat<<",";
+			theSarf->out<< cat<<",";
 		//}
 	}
-	out<<">\n";
+	theSarf->out<<">\n";
 #ifdef INSERT_ONLY_SUFFIXES
 	if (type==SUFFIX)
 #elif defined(INSERT_ONLY_PREFIXES)
@@ -211,7 +211,7 @@ int insertRuleAccordingToExpression(item_types type,QString cat1,QString cat2,QS
 					} while(true);
 					cat_idr=insert_category(resCatTemp,type,source_id,false);
 				} else {
-					out<<"Unknown Result Category Expression \""<<resCat<<"\"\n";
+					theSarf->out<<"Unknown Result Category Expression \""<<resCat<<"\"\n";
 					//assert(false,"Unknown Result Category Expression!");
 					return -1;
 				}
@@ -262,7 +262,7 @@ QString tag;
 		int num_entries=6;
 		QFile input(item_files[j]);
 		if (!input.open(QIODevice::ReadWrite)) {
-			out << "File not found\n";
+			theSarf->out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
@@ -282,7 +282,7 @@ QString tag;
 			QStringList entries=line.split("\t",QString::KeepEmptyParts);
 			if (entries.size()<num_entries)
 			{
-				out<<"Error at line "<<line_num<<": '"<<line<<"', Insufficient tab-delimited entries\n";
+				theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"', Insufficient tab-delimited entries\n";
 				return -1;
 			}
 			QString item=entries[0];
@@ -323,7 +323,7 @@ QString tag;
 						abstract_category=	abstract_list.at(1);
 					else {
 						abstract_category="";
-						out << "Unexpected Error: split on "<<POS<<" "<<abstract_list.size()<<" "<<abstract_list.at(0);
+						theSarf->out << "Unexpected Error: split on "<<POS<<" "<<abstract_list.size()<<" "<<abstract_list.at(0);
 						return 1;
 					}
 					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)STEM)))==-1)	{
@@ -337,7 +337,7 @@ QString tag;
 					lemmaID="";
 					if ((abstract_id=getID("category",abstract_category,QString("type=%1 AND abstract=1").arg((int)types[j])))==-1)	{
 						abstract_id=insert_category(abstract_category,types[j],source_id,true);
-						out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
+						theSarf->out<< QString("Inserted new Abstract Category '%1'\n").arg(abstract_category);
 					}
 				}
 			}
@@ -348,11 +348,11 @@ QString tag;
 			QList<long> *abstract_categories=new QList<long>();
 			abstract_categories->append(abstract_id);
 			if (insert_item(types[j],item,raw_data,category,source_id,abstract_categories,description,POS,"",lemmaID)<0) {
-				out<<"Error at line "<<line_num<<": '"<<line<<"', Item was not inserted\n";
+				theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"', Item was not inserted\n";
 				return -1;
 			}
 		}
-		out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(interpret_type(types[j]));
+		theSarf->out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(interpret_type(types[j]));
 		input.close();
 	}
 	//compatibility rules
@@ -369,7 +369,7 @@ QString tag;
 		QFile input(rules_files[j]);
 		if (!input.open(QIODevice::ReadWrite))
 		{
-			out << QString("File %1 not found\n").arg(rules_files[j]);
+			theSarf->out << QString("File %1 not found\n").arg(rules_files[j]);
 			if (j<2)
 				continue;
 			else
@@ -396,7 +396,7 @@ QString tag;
 				entries=line.split(QRegExp(QString("[\t ]")),QString::KeepEmptyParts);
 			if (entries.size()<2)
 			{
-				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+				theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}
 			QString cat1=entries[0];
@@ -406,7 +406,7 @@ QString tag;
 			if (rule[j]==AA || rule[j]==CC)	{
 				item_types type=(rule[j]==AA?PREFIX:SUFFIX);
 				if (entries.size()<3) {
-					out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+					theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 					return -1;
 				} else {
 					resCat=entries[2];
@@ -419,7 +419,7 @@ QString tag;
 						 exp3=resCat.startsWith("{") && resCat.endsWith("}");
 					if (exp1|| exp2 || exp3) {
 						if (insertRuleAccordingToExpression(type,cat1,cat2,resCat,inflectionRule,source_id)<0)
-							out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+							theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 						continue; //it will call insert_compatibility_rules as needed internally (maybe multiple times)
 					} else {
 						assert (insert_category(cat1,(rule[j]==AA?PREFIX:SUFFIX),source_id,false)>=0);
@@ -436,11 +436,11 @@ QString tag;
 //#endif
 			if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,inflectionRule,source_id)<0)
 			{
-				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+				theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				continue; //files contain undefined categories, so just ignore these
 			}
 		}
-		out <<QString("\nSuccessfully processed all %1 %2 compatibility rules\n").arg(line_num).arg(interpret_type(rule[j]));
+		theSarf->out <<QString("\nSuccessfully processed all %1 %2 compatibility rules\n").arg(line_num).arg(interpret_type(rule[j]));
 		input.close();
 	}
 	return 0;
@@ -451,7 +451,7 @@ int insert_propernames()
 	QDir folder("../../dic/N","*.txt");
 	if (!folder.exists())
 	{
-		out << "Invalid Folder\n";
+		theSarf->out << "Invalid Folder\n";
 		return -1;
 	}
 	long abstract_Noun_Prop_id=insert_category("NOUN_PROP",STEM,dbitvec(max_sources),true); //returns id if already present
@@ -468,13 +468,13 @@ int insert_propernames()
 	#else
 		if (file_name=="all_n.txt")	{
 	#endif
-			out << "Ignored "+file_name +" file\n";
+			theSarf->out << "Ignored "+file_name +" file\n";
 			continue;
 		}
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));
 		if (!input.open(QIODevice::ReadWrite))
 		{
-			out << "Unexpected Error: File not found\n";
+			theSarf->out << "Unexpected Error: File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
@@ -532,12 +532,12 @@ int insert_propernames()
 					abstract_categories->append(abstract_female_names);
 			}
 			if (insert_NProp(name, abstract_categories,source_id,"Name of Person")<0) {
-				out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+				theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 				return -1;
 			}
 			delete abstract_categories;
 		}
-		out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+		theSarf->out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 		input.close();
 	}
 	return 0;
@@ -548,7 +548,7 @@ int insert_placenames() //not yet complete
 		QDir folder("../../dic/P");
 	if (!folder.exists())
 	{
-		out << "Invalid Folder\n";
+		theSarf->out << "Invalid Folder\n";
 		return -1;
 	}
 	int folders_source_id=insert_source("ar.wikipedia.org/","direct copy from html and dividing them into folders and subfiles according to continents and cities/towns","Hamza Harkous");
@@ -567,14 +567,14 @@ int insert_placenames() //not yet complete
 		{
 			if (file_name.startsWith("Google"))
 			{
-				out << QString("Ignored %1 file\n").arg(file_name);
+				theSarf->out << QString("Ignored %1 file\n").arg(file_name);
 				continue;
 			}
 			long abstract_category_id;
 			QFile input(folder.absolutePath().append(QString("/").append(file_name)));
 			if (!input.open(QIODevice::ReadWrite))
 			{
-				out << "Unexpected Error: File not found\n";
+				theSarf->out << "Unexpected Error: File not found\n";
 				return 1;
 			}
 			QTextStream file(&input);
@@ -617,7 +617,7 @@ int insert_placenames() //not yet complete
 				if (insert_NProp(line, abstract_categories,source_id,file_name.split(".").at(0))<0)
 				{/*return -1*/;}
 			}
-			out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+			theSarf->out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 			input.close();
 		}
 		else if (!file_name.contains('.'))//assuming this means folder
@@ -625,7 +625,7 @@ int insert_placenames() //not yet complete
 			QDir folder2(folder.absolutePath().append(QString("/").append(file_name)),"*.txt");
 			if (!folder2.exists())
 			{
-				out << "Unexpected Error: Folder that was assumed to exist does not\n";
+				theSarf->out << "Unexpected Error: Folder that was assumed to exist does not\n";
 				return -1;
 			}
 			QStringList continent=file_name.split("-");
@@ -650,7 +650,7 @@ int insert_placenames() //not yet complete
 				QFile input(folder2.absolutePath().append(QString("/").append(file_name2)));
 				if (!input.open(QIODevice::ReadWrite))
 				{
-					out << "Unexpected Error: File not found\n";
+					theSarf->out << "Unexpected Error: File not found\n";
 					return 1;
 				}
 				QTextStream file(&input);
@@ -697,7 +697,7 @@ int insert_placenames() //not yet complete
 					if (insert_NProp(city[0], abstract_categories,folders_source_id,"city/town in "+country_english)<0)
 					{/*return -1*/;}
 				}
-				out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name2);
+				theSarf->out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name2);
 				input.close();
 			}
 		}
@@ -711,7 +711,7 @@ int insert_time_categorizations()
 	QString file_name="../../dic/T/categorized.txt";
 	QFile input(file_name);
 	if (!input.open(QIODevice::ReadWrite)) {
-		out << "Unexpected Error: File not found\n";
+		theSarf->out << "Unexpected Error: File not found\n";
 		return 1;
 	}
 	QTextStream file(&input);
@@ -733,7 +733,7 @@ int insert_time_categorizations()
 		QStringList entries=line.split("\t",QString::KeepEmptyParts);
 		if (entries.size()<7)
 		{
-			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 			return -1;
 		}
 		QString item=entries[0];
@@ -760,11 +760,11 @@ int insert_time_categorizations()
 		abstract_categories->append(cateorized_abstract_category_id);
 		if (!addAbstractCategory(item,raw_data,category,source_id,abstract_categories,description,POS))
 		{
-			out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
+			theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
 			//return -1;
 		}
 	}
-	out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
+	theSarf->out <<QString("\nSuccessfully processed all %1 %2 entries\n").arg(line_num).arg(file_name);
 	input.close();
 	return 0;
 }

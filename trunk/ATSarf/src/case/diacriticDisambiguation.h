@@ -37,9 +37,9 @@ protected:
 	long long totalCombinations[ambiguitySize];
 	long long countWithoutDiacritics;
 private:
-	void printDiacriticDisplay(Diacritics d, QTextStream * o=&out);
-	void printDiacritics(QString entry, int pos, QChar c, QTextStream * o=&out); //for one diacritic
-	void printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, QTextStream * o=&out); //for multiple diacritcs
+        void printDiacriticDisplay(Diacritics d, QTextStream * o=&(theSarf->out));
+        void printDiacritics(QString entry, int pos, QChar c, QTextStream * o=&(theSarf->out)); //for one diacritic
+        void printDiacritics(QString voc,const QList<Diacritics> & d, AmbiguitySolution sol, QTextStream * o=&(theSarf->out)); //for multiple diacritcs
 	void reset();
 protected:
 	DiacriticDisambiguationBase(bool mapBased, bool suppressOutput,int diacriticsCount=1);

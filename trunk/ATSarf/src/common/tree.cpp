@@ -42,7 +42,7 @@ inline bool hasCompatibleAffixes(item_types type,long cat_r_id) {
 
 void tree::print_tree_helper(node * current_node, int level)
 {
-    out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
+    theSarf->out<<QString().fill(' ',level*7)<<current_node->to_string(isAffix)<<"\n";
 	QVector<letter_node* > list=current_node->getLetterChildren();
 	for(int i=0;i<list.count();i++)
 		print_tree_helper(list.at(i),level+1);
@@ -434,7 +434,7 @@ int tree::build_affix_tree(item_types type)
 		file=NULL;
 	}
 #endif
-	QSqlQuery query(db);
+        QSqlQuery query(theSarf->db);
     QString stmt=QString("SELECT id, name FROM %1").arg(interpret_type(type));
     QString name;
     unsigned long affix_id1;
@@ -497,11 +497,11 @@ int tree::build_affix_tree(item_types type)
 void tree::print_tree()
 {
     if (isAffix)
-            out	<<QString().fill('-',40)<<"\n"
+            theSarf->out	<<QString().fill('-',40)<<"\n"
                     <<"\t"<<interpret_type(type)<<" Tree\n"
                     <<QString().fill('-',40)<<"\n";
     print_tree_helper(base,0);
-    out	<<QString().fill('-',40)<<"\n"
+    theSarf->out<<QString().fill('-',40)<<"\n"
             <<"letter nodes count= "<<letter_nodes<<"\n"
             <<"result nodes count= "<<result_nodes<<"\n"
             <<QString().fill('-',40)<<"\n";

@@ -392,7 +392,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 
 	QFile conf("conflicts.txt");
 	if (!conf.open(QIODevice::ReadWrite)) {
-		out << "Conflicts File not found\n";
+                theSarf->out << "Conflicts File not found\n";
 		return 1;
 	}
 	QTextStream conflicts(&conf);
@@ -402,14 +402,14 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 #endif
 	QFile morph_file("morph.txt");
 	if (!morph_file.open(QIODevice::ReadWrite)) {
-		out << "All Morphology Solutions File not found\n";
+                theSarf->out << "All Morphology Solutions File not found\n";
 		return 1;
 	}
 	QTextStream morph(&morph_file);
 
 	QDir folder(inputString+"/before","*.txt");
 	if (!folder.exists()) {
-		out << "Invalid Folder\n";
+                theSarf->out << "Invalid Folder\n";
 		return -1;
 	}
 	int found=0, notFound=0, notFoundGloss=0, notFoundVoc=0, appended=0, all_count=0,correctTokenize=0,skipTokenize=0,voc_conflict=0;
@@ -436,7 +436,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 		QFile input(folder.absolutePath().append(QString("/").append(file_name)));
 		QFile input_after(folder.absolutePath().append(QString("/").append(file_name)).replace("before","after"));
 		if (!input.open(QIODevice::ReadOnly) || !input_after.open(QIODevice::ReadOnly)) {
-			out << "File not found\n";
+                        theSarf->out << "File not found\n";
 			return 1;
 		}
 		QTextStream file(&input);
@@ -566,7 +566,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 				if (equal(voc_all,inp))
 					correct++;
 				else
-					out<<voc_all<<"\t"<<inp<<"\n";
+                                        theSarf->out<<voc_all<<"\t"<<inp<<"\n";
 				all++;
 #if 0
 				AtbStemmer s(input_string,v,g,p,input_after,pos_after,true);
@@ -689,7 +689,7 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	morph_file.close();
 
 
-	out<<correct<<"/"<<all<<"="<<((double)correct)/all;
+        theSarf->out<<correct<<"/"<<all<<"="<<((double)correct)/all;
 #ifndef ATB_DIACRITICS
 	int total=found+notFound;
 	int other=notFound-notFoundGloss-notFoundVoc;
@@ -739,12 +739,12 @@ int atb(QString inputString, ATMProgressIFC * prg) {
 	for (int i=1;i<max_diacritics;i++) {
 		double a=((double)diacritics[i])/all_count;
 		c+=diacritics[i];
-		displayed_error<<"Diacritics\t"<<i<<"\t"<<diacritics[i]<<"\t"<<a<<"\n";
+                theSarf->displayed_error<<"Diacritics\t"<<i<<"\t"<<diacritics[i]<<"\t"<<a<<"\n";
 	}
 	double a=((double)c)/all_count;
-	displayed_error<<"Diacritics\t*\t"<<c<<"\t"<<a<<"\n";
+        theSarf->displayed_error<<"Diacritics\t*\t"<<c<<"\t"<<a<<"\n";
 #endif
-	displayed_error<<"\n";
+        theSarf->displayed_error<<"\n";
 
 	return 0;
 }
@@ -753,7 +753,7 @@ int atb2(QString, ATMProgressIFC *) {
 	QFile morph_file("morph.txt");
 	QFile morph_file1("morph1.txt");
 	if (!morph_file.open(QIODevice::ReadWrite) || !morph_file1.open(QIODevice::ReadWrite)) {
-		out << "All Morphology Solutions File not found\n";
+                theSarf->out << "All Morphology Solutions File not found\n";
 		return 1;
 	}
 	QTextStream morph1(&morph_file);
@@ -823,10 +823,10 @@ int atb2(QString, ATMProgressIFC *) {
 		for (int i=0;i<descMin.size();i++) {
 			if (!posMax.contains(posMin[i])) {
 				pos_diff++;
-				out<<"POS:\t"<<posMin[i]<<"\n";
+                                theSarf->out<<"POS:\t"<<posMin[i]<<"\n";
 			} else if (!descMax.contains(descMin[i])) {
 				desc_diff++;
-				out<<"GLOSS:\t"<<descMin[i]<<"\n";
+                                theSarf->out<<"GLOSS:\t"<<descMin[i]<<"\n";
 			}
 		}
 		if (pos_diff>0)
@@ -853,7 +853,7 @@ int atb2(QString, ATMProgressIFC *) {
 	double added_fraction_ratio_alef=added_fraction_alef/all_count;
 	double added_count_ratio_inter=((double)added_count_inter)/all_count;
 	double added_fraction_ratio_inter=added_fraction_inter/all_count;
-	displayed_error	<<"POS Conflict Ratio=\t\t"<<conflict_pos_count<<"/"<<all_count<<" =\t"<<pos_count_ratio<<"\n"
+        theSarf->displayed_error	<<"POS Conflict Ratio=\t\t"<<conflict_pos_count<<"/"<<all_count<<" =\t"<<pos_count_ratio<<"\n"
 					<<"Desc Conflict Ratio=\t\t"<<conflict_desc_count<<"/"<<all_count<<" =\t"<<desc_count_ratio<<"\n"
 					<<"Fa Conflict Ratio=\t\t"<<conflict_count_fa<<"/"<<all_count<<" =\t"<<conflict_count_ratio_fa<<"\n"
 					<<"WaFa Removed Ratio=\t\t"<<removed_count_wafa<<"/"<<all_count<<" =\t"<<removed_count_ratio_wafa<<"\n"

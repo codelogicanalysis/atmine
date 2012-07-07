@@ -543,7 +543,7 @@ int calculateStatistics(QString filename){
 			boundaryRecallList.append((double)countCommon/countCorrect);
 			boundaryPrecisionList.append((double)countCommon/countDetected);
 			if (hadithParameters.detailed_statistics) {
-				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+                                theSarf->displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 								<<time_text->mid(start2,end2-start2+1)<<"\t"
 								<<countCommon<<"/"<<countCorrect<<"\t"<<countCommon<<"/"<<countDetected<<"\n";
 			}
@@ -553,13 +553,13 @@ int calculateStatistics(QString filename){
 				j++;
 		} else if (before(start1,end1,start2,end2)) {
 			if (hadithParameters.detailed_statistics) {
-				displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+                                theSarf->displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 								<<"-----\n";
 			}
 			i++;
 		} else if (after(start1,end1,start2,end2)) {
 			if (hadithParameters.detailed_statistics) {
-				displayed_error	<<"-----\t"
+                                theSarf->displayed_error	<<"-----\t"
 								<<time_text->mid(start2,end2-start2+1)<<"\n";
 			}
 			j++;
@@ -568,13 +568,13 @@ int calculateStatistics(QString filename){
 	if (hadithParameters.detailed_statistics) {
 		while (i<tags.size()) {
 			int start1=tags[i].first,end1=tags[i].second;
-			displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
+                        theSarf->displayed_error	<<time_text->mid(start1,end1-start1+1)<<"\t"
 							<<"-----\n";
 			i++;
 		}
 		while (j<timeVector->size()) {
 			int start2=(*timeVector)[j].getStart(),end2=(*timeVector)[j].getEnd();
-			displayed_error	<<"-----\t"
+                        theSarf->displayed_error	<<"-----\t"
 							<<time_text->mid(start2,end2-start2+1)<<"\n";
 			j++;
 		}
@@ -586,7 +586,7 @@ int calculateStatistics(QString filename){
 		   boundaryRecall=average(boundaryRecallList),
 		   boundaryPrecision=average(boundaryPrecisionList);
 #ifdef DETAILED_DISPLAY
-	displayed_error << "-------------------------\n"
+        theSarf->displayed_error << "-------------------------\n"
 					<< "Detection:\n"
 					<< "\trecall=\t"<<commonCount<<"/"<<tags.size()<<"=\t"<<detectionRecall<<"\n"
 					<< "\tprecision=\t"<<commonCount<<"/"<<timeVector->size()<<"=\t"<<detectionPrecision<<"\n"
@@ -610,7 +610,7 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 	QFile input(filename);
 	if (!input.open(QIODevice::ReadOnly))
 	{
-		out << "File not found\n";
+                theSarf->out << "File not found\n";
 		return 1;
 	}
 	QTextStream file(&input);
@@ -618,12 +618,12 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 	assert (time_text==NULL);
 	time_text=new QString(file.readAll());
 	if (time_text->isNull()) {
-		out<<"file error:"<<input.errorString()<<"\n";
+                theSarf->out<<"file error:"<<input.errorString()<<"\n";
 		return 1;
 	}
 	if (time_text->isEmpty()) //ignore empty files
 	{
-		out<<"empty file\n";
+                theSarf->out<<"empty file\n";
 		return 0;
 	}
 	long text_size=time_text->size();
@@ -653,7 +653,7 @@ int timeRecognizeHelper(QString input_str,ATMProgressIFC *prg) {
 		#ifdef TIME_REFINEMENTS
 			if (!(stateInfo.hasTimeUnit && !t.getString().contains(' '))) {
 		#endif
-				out << t.getString()<<"\n";
+                                theSarf->out << t.getString()<<"\n";
 				prg->tag(t.getStart(),t.getLength(),Qt::darkYellow,false);//Qt::gray
 				const TimeEntityVector & absolute=t.getAbsoluteParts();
 				for (int j=0;j<absolute.size();j++)

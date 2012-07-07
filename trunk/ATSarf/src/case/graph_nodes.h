@@ -239,7 +239,7 @@ private:
 			return chain_num;
 		}
 		void printChainContext() { //for debugging purposes only
-			out<<chain_num<<"["<<index<<"]\n";
+                        theSarf->out<<chain_num<<"["<<index<<"]\n";
 			//qDebug()<<chain_num<<"["<<index<<"]\n";;
 		}
 	};
