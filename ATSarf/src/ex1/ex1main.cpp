@@ -7,7 +7,6 @@
 #include <iostream>
 #include <QFile>
 #include "POSVerb.h"
-#include "initialize_tool.h"
 #include <QColor>
 #include <sarf.h>
 
