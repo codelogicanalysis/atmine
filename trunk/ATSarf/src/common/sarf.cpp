@@ -9,9 +9,8 @@ Sarf::Sarf() :
 {
 }
 
-/*
 bool
-Sarf::start(ATMProgressIFC * pIFC) {
+Sarf::start(QString * output_str, QString * error_str, ATMProgressIFC * pIFC) {
     try {
         out.setString(output_str);
         out.setCodec("utf-8");
@@ -29,12 +28,11 @@ Sarf::start(ATMProgressIFC * pIFC) {
     }
     return true;
 }
-*/
 
 Sarf::~Sarf() {
     if (theSarf == this) {
+        //out << "Destructing Sarf instance. Sarf services are not available until you construct another Sarf instance.";
         theSarf = NULL;
-        out << "Destructing Sarf instance. Sarf services are not available until you construct another Sarf instance.";
     }
 }
 

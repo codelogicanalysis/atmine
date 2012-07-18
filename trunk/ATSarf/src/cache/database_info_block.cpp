@@ -109,7 +109,7 @@ void database_info_block::buildTrie()
 #ifndef LOAD_FROM_FILE
 	readTrieFromDatabaseAndBuildFile();
 #else
-	QFile file(trie_list_path.toStdString().data());
+    QFile file(trie_list_path);
 	if (file.open(QIODevice::ReadOnly))
 	{
 		QDataStream in(&file);    // read the data serialized from the file
@@ -123,17 +123,20 @@ void database_info_block::buildTrie()
 			readTrieFromDatabaseAndBuildFile();
 			return;
 		}
+
 		QFile input(trie_path);
+
 		if (input.open(QIODevice::ReadOnly)) {
-			delete database_info.Stem_Trie;
+
+            if (database_info.Stem_Trie != NULL)
+                delete database_info.Stem_Trie;
+
 			input.close();
-                        const char * fPath = trie_path.toLatin1();
-                        try
-                        {
-                            database_info.Stem_Trie=new ATTrie(fPath);
-                        }
-                        catch(const char * ex)
-                        {
+                        //const char * fPath = trie_path.toLatin1();
+                        QString fPath = trie_path;
+                        try {
+                            database_info.Stem_Trie=new ATTrie(fPath.toLatin1() );
+                        }  catch(const char * ex) {
                             error<<"Fail to build stem trie from file "<<fPath<<". Exception is "<<ex<<'.'<<endl;
                         }
 			//out<<QDateTime::currentDateTime().time().toString()<<"\n";

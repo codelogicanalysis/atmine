@@ -26,7 +26,7 @@ public:
     Sarf();
     ~Sarf();
     bool start(QFile * _out=NULL, QFile * _displayed_error=NULL, ATMProgressIFC * pIFC=NULL);
-    //bool start(/*QString * output_str, QString * error_str, */ATMProgressIFC * pIFC);
+    bool start(QString * output_str, QString * error_str, ATMProgressIFC * pIFC);
 
     bool exit();
 

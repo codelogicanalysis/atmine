@@ -37,6 +37,14 @@ ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
 $(APPLICATION): $(ATSarf_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
 
+EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
+EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+
+ex0: $(EX0_LIBDIR)
+	$(CXX) -o $@ ex0.cpp $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
+		$(EX0_LIBS_LINKFLAGS) \
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
 EX1_LIBDIR = ../lib/libex1.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
 EX1_LIBS_LINKFLAGS=-L ../lib -lex1 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 

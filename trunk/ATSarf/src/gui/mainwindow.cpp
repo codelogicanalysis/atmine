@@ -170,9 +170,10 @@ void MainWindow::on_chk_bible_toggled(bool checked){
 	}
 }
 
+QString error_str,output_str,hadith_str;    // strings for error, output, and input hadith
+
 // Function called upon pressing "GO!" button
 void MainWindow::on_pushButton_clicked(){
-    QString error_str,output_str,hadith_str;    // strings for error, output, and input hadith
         /*
          * v1: check for min narrator number conversion
          * v2: check for max NMC tolerance number conversion
@@ -292,23 +293,21 @@ void MainWindow::displayGraph(AbstractGraph * graph) {
 
 // Initialize the lexicon
 void MainWindow::on_fill_clicked(){
-    /*
     theSarf = new Sarf();
-    bool all_set = theSarf->start(this);
+    bool all_set = theSarf->start(&output_str, &error_str, this);
     if(!all_set) {
         m_ui->errors->setText("Can't set up the project\n");
     }
-    */
-    //Sarf::use(&srf);
+    Sarf::use(theSarf);
 
-    initialize_variables();
+    //initialize_variables();
 #ifndef SUBMISSION
-        start_connection(this);
+        //start_connection(this);
         //generate_bit_order's are last 2 statements that need database but are not used except in statements that need the database, so they dont hurt to remain
-        generate_bit_order("source",source_ids);
-        generate_bit_order("category",abstract_category_ids,"abstract");
+        //generate_bit_order("source",source_ids);
+        //generate_bit_order("category",abstract_category_ids,"abstract");
 #endif
-        database_info.fill(this);
+        //database_info.fill(this);
 	initialize_other();
 	hadith_initialize();
 	geneology_initialize();
@@ -325,17 +324,17 @@ void MainWindow::on_cmd_browse_clicked(){
 
 int main(int argc, char *argv[]){
 #if 1
-        theSarf = new Sarf();
+    //theSarf = new Sarf();
 	QFileInfo fileinfo(argv[0]);
 	executable_timestamp=fileinfo.lastModified();
 	QApplication app(argc, argv);
 	MainWindow mainw;
-	mainw.show();
-        int r = app.exec();
-        theSarf->exit();
-        delete theSarf;
+    mainw.show();
+    int r = app.exec();
+    theSarf->exit();
+    delete theSarf;
 
-        return r;
+    return r;
 #else
 	initialize_variables();
 	EmptyProgressIFC emp;
