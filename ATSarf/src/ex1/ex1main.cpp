@@ -7,8 +7,8 @@
 #include <iostream>
 #include <QFile>
 #include "POSVerb.h"
-#include <QColor>
 #include <sarf.h>
+#include <myprogressifc.h>
 
 using namespace std;
 
@@ -28,45 +28,11 @@ void run_process(QString & input) {
 }
 
 /**
-  * @class MyProgressIFC
-  * @brief This class inherets from EmptyProgressIFC and implements the different functions present in it. Those functions
-  * are used in order to expose the progress of the program we implemented. For detailed description, refer to the
-  * documentation of the class.
-  */
-class MyProgressIFC : public EmptyProgressIFC {
-
-public:
-    virtual void report(int value) {
-        cout<<"Progress is "<<value<<'.'<<endl;
-    }
-
-    virtual void startTaggingText(QString & text) {
-    }
-
-    virtual void tag(int start, int length,QColor color, bool textcolor=true) {
-    }
-
-    virtual void finishTaggingText() {
-    }
-
-    virtual void setCurrentAction(const QString & s) {
-    }
-
-    virtual void resetActionDisplay() {
-    }
-
-    virtual QString getFileName() {
-        return "";
-    }
-    virtual void displayGraph(AbstractGraph *) {}
-};
-
-/**
   * This function tests the verbPOS example with an interface for the output result and error. In addition, a user
   * implementation of the progress functions is used through the class MyProgressIFC previously declared.
   * @return This function returns 0 if successful, else -1
   */
-int verbPOSExamplewithInterface() {
+int verbPOSExampleWithInterface() {
 
     /*
      * The following lines define the output files in which the resulting output or error are written.
@@ -191,7 +157,7 @@ int ex1_main(int argc, char *argv[]) {
     }
 
 #if 1
-    test = verbPOSExamplewithInterface();
+    test = verbPOSExampleWithInterface();
     if(!test) {
         cout<<"The example with interface is successful\n";
     }

@@ -95,7 +95,6 @@ HEADERS += ../src/util/diacritics.h \
     ../src/util/morphemes.h \
     ../src/case/diacriticsPostProcessing.h \
     ../src/util/combinations.h \
-    ../src/common/initialize_tool.h \
     ../src/common/sarf.h
 HEADERS += $$TOP/datrie/datrie/trie.h
 SOURCES += ../src/util/text_handling.cpp \
@@ -171,7 +170,6 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/case/affix_verification.cpp \
     ../src/case/diacriticsPostProcessing.cpp \
     ../src/util/combinations.cpp \
-    ../src/common/initialize_tool.cpp \
     ../src/common/sarf.cpp
 
 # LIBS += -ldatrie
