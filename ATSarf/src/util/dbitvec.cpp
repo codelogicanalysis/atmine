@@ -15,7 +15,6 @@ void dbitvec::resize(unsigned int length)  {
 	unsigned char * newdata =  new unsigned char [newbytes];
 
         if (newdata == NULL) {
-                qDebug()<<"line 17 cpp\n";
 		throw MEM_EXCPT;
             }
 
