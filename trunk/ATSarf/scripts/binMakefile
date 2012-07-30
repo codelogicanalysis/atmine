@@ -60,5 +60,14 @@ ex2: $(EX2_LIBDIR)
 	$(CXX) -o $@ ex2.cpp $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
 		$(EX2_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
+TAGGER_LIBDIR = ../lib/libTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
+TAGGER_LIBS_LINKFLAGS=-L ../lib -lTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+
+tagger: $(TAGGER_LIBDIR)
+	$(CXX) -o $@ tagger.cpp $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
+		$(TAGGER_LIBS_LINKFLAGS) \
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
 #--------------------------------------------------
 include $(TOP)/scripts/rulesMakefile

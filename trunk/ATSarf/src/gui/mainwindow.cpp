@@ -174,6 +174,8 @@ QString error_str,output_str,hadith_str;    // strings for error, output, and in
 
 // Function called upon pressing "GO!" button
 void MainWindow::on_pushButton_clicked(){
+        error_str = "";
+        output_str = "";
         /*
          * v1: check for min narrator number conversion
          * v2: check for max NMC tolerance number conversion
@@ -324,16 +326,26 @@ void MainWindow::on_cmd_browse_clicked(){
 
 int main(int argc, char *argv[]){
 #if 1
+    /*
+    QJson::Parser parser;
+    bool ok;
+    QVariantMap result = parser.parse (json, &ok).toMap();
+    if (!ok) {
+      qFatal("An error occured during parsing");
+      exit (1);
+    }
+    */
     //theSarf = new Sarf();
-	QFileInfo fileinfo(argv[0]);
-	executable_timestamp=fileinfo.lastModified();
-	QApplication app(argc, argv);
-	MainWindow mainw;
+    QFileInfo fileinfo(argv[0]);
+    executable_timestamp=fileinfo.lastModified();
+    QApplication app(argc, argv);
+    MainWindow mainw;
     mainw.show();
     int r = app.exec();
-    theSarf->exit();
-    delete theSarf;
-
+    if (theSarf != NULL) {
+        theSarf->exit();
+        delete theSarf;
+    }
     return r;
 #else
 	initialize_variables();
