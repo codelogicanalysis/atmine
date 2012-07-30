@@ -11,6 +11,7 @@
 #include <QDataStream>
 #include <cstring>
 #include <assert.h>
+#include <QDebug>
 
 /**
   * @class  dbitvec
@@ -37,15 +38,19 @@ public:
 	dbitvec(unsigned int length): size(length) {
 		bytes = (size+7) >> 3; // (ceiling(size/8))
 		data = new unsigned char [bytes];
-		if (data == NULL)
+                if (data == NULL) {
+                    qDebug()<<"line 40\n";
 			throw MEM_EXCPT;
+                    }
 		reset();
 	}
 	dbitvec(const dbitvec & v1 ): size(v1.length()) {
 		bytes = v1.getNumBytes();
 		data = new unsigned char [bytes];
-		if (data == NULL)
+                if (data == NULL) {
+                        qDebug()<<"line 51\n";
 			throw MEM_EXCPT;
+                    }
 		memcpy(data, v1._data(), bytes);
 	}
 	~dbitvec()	{
@@ -65,16 +70,20 @@ public:
 	}
 	//TODO: resize, copy constructor
 	bool getBit(unsigned int i) const {
-		if (i >= size)
+            if (i >= size) {
+                        qDebug()<<"line 72\n";
 			throw BIT_BOUND_EXCPT;
+                    }
 		unsigned int byte = i >> 3; // i / 8
 		unsigned int bit = i & 0x7; // i % 8
 		unsigned char mask = 1<< bit;
 		return (data[byte] & mask ) != 0;
 	}
 	void setBit(unsigned int i, bool b = true) const {
-		if (i >= size)
+            if (i >= size) {
+                        qDebug()<<"line 84\n";
 			throw BIT_BOUND_EXCPT;
+                    }
 		unsigned int byte = i >> 3; // i / 8
 		unsigned int bit = i & 0x7; // i % 8
 		unsigned char mask = 1<< bit;

@@ -14,8 +14,10 @@ void dbitvec::resize(unsigned int length)  {
 	unsigned int newbytes = (length+7) >> 3;
 	unsigned char * newdata =  new unsigned char [newbytes];
 
-	if (newdata == NULL)
+        if (newdata == NULL) {
+                qDebug()<<"line 17 cpp\n";
 		throw MEM_EXCPT;
+            }
 
 	if (size == 0) {
 		size = length;
