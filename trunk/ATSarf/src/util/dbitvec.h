@@ -39,7 +39,6 @@ public:
 		bytes = (size+7) >> 3; // (ceiling(size/8))
 		data = new unsigned char [bytes];
                 if (data == NULL) {
-                    qDebug()<<"line 40\n";
 			throw MEM_EXCPT;
                     }
 		reset();
@@ -48,7 +47,6 @@ public:
 		bytes = v1.getNumBytes();
 		data = new unsigned char [bytes];
                 if (data == NULL) {
-                        qDebug()<<"line 51\n";
 			throw MEM_EXCPT;
                     }
 		memcpy(data, v1._data(), bytes);
@@ -71,7 +69,6 @@ public:
 	//TODO: resize, copy constructor
 	bool getBit(unsigned int i) const {
             if (i >= size) {
-                        qDebug()<<"line 72\n";
 			throw BIT_BOUND_EXCPT;
                     }
 		unsigned int byte = i >> 3; // i / 8
@@ -81,7 +78,6 @@ public:
 	}
 	void setBit(unsigned int i, bool b = true) const {
             if (i >= size) {
-                        qDebug()<<"line 84\n";
 			throw BIT_BOUND_EXCPT;
                     }
 		unsigned int byte = i >> 3; // i / 8
