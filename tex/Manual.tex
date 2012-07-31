@@ -1,0 +1,714 @@
+\documentclass{article}
+\usepackage{graphicx}
+%\usepackage{arabtex}
+
+\title{Stemmer Tool Manual}
+\author{Ameen Jaber}
+\usepackage{float}
+\usepackage{arabtex}
+\usepackage{fancyhdr} % Custom headers and footers
+\usepackage{fancyvrb}
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{12pt} % Customize the height of the header
+\usepackage{hyperref}
+
+%\usepackage{utf8}
+%\fullvocalize
+%\transtrue
+%\arabtrue
+
+\setlength\parindent{0pt}
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+\normalfont \normalsize 
+\textsc{American University of Beirut} \\ [25pt]
+\horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+\huge AUB Sarf\\
+Arabic Morphological Analyzer\\
+User Guide
+\horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+}
+
+\author{Sarf Team: Jad Makhlouta, Hamza Harkous, and Ameen Jaber\\Advisor: Dr. Fadi Zaraket}
+
+\date{\normalsize\today}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\section{Introduction}
+\paragraph{}
+Sarf is an Arabic Morphological Analyzer. Morphology is the analysis of the structure of a word into its morphemes identified as stems and affixes, including prefixes and suffixes. Moreover, types are associated with those morphemes such as gloss and part of speech (POS) tags. Sarf takes a word such as ``\RL{wyAkolohA}'' and returns its morphological solutions. Figure~\ref{tab:SarfSample} below shows a sample output of Sarf's Analysis.
+
+%\begin{figure}[H]
+%\centering
+%  \includegraphics[width=4in]{Sample.png}
+%  \caption[Sample morphological solution of ``\RL{wyAkolohA}'']
+%   {Sample morphological solution of ``\RL{wyAkolohA}''}
+%   \label{fig:Sample}
+%\end{figure}
+%For more information on the morphological features of Sarf, please refer to {\bf PAPER}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ | lcl | }
+\hline
+\textbf{ALTERNATIVE}:& \fullvocalize\RL{waya'kolhA} & \\
+\textbf{PREFIX:}\novocalize\RL{w} & \vocalize\RL{wa}	& \textbf{"[part.]"	wa/PART}\\
+\textbf{PREFIX:}\novocalize\RL{y} & \vocalize\RL{ya}	& \textbf{"he/it"	ya/IV3MS}\\
+\textbf{STEM:}\novocalize\RL{'kl}  & \fullvocalize\RL{'kol} & \textbf{"eat/consume"}\\
+\textbf{$>$okul/VERB\_IMPERFECT} & & \\
+\textbf{SUFFIX:} & \textbf{$^{o}$} &   \textbf{"[jus.]"	o/IVSUFF\_MOOD:J}\\
+\textbf{SUFFIX:}\novocalize\RL{hA}& \vocalize\RL{hA}	& \textbf{"it/them/her"}\\
+\textbf{hA/IVSUFF\_DO:3FS} & & \\
+\hline
+\end{tabular}
+\caption{Sample morphological solution of ``\fullvocalize\RL{waya'kolhA}''}
+\label{tab:SarfSample}
+\end{table}
+
+\paragraph{}
+The rest of this document describes how to get the source code of Sarf, build it, and use it through three simple examples.
+
+\section{Get the Source Code}
+\label{sec:sourcecode}
+
+Sarf is an open source tool. The code is currently hosted on google code under the project name ``atmine''. To download the code, you can use the svn interface:\\
+\begin{verbatim}
+svn checkout http://atmine.googlecode.com/svn/trunk/ atmine-read-only.
+\end{verbatim}
+Preferablly, you should be able to get a stable version of Sarf from the download section under:\\
+\begin{verbatim}
+http://code.google.com/p/atmine/downloads/list
+\end{verbatim}
+\paragraph{}
+From the following link, download a zipped file named ``ATSarf-0.1.tar.bz2'' which contains all the files required to run the morphological analyzer along with all the applications implemented based on it. After downloading the compressed folder, extract it and you should have a folder named ``ATSarf'', which is the root folder of the Sarf.\\
+You also need the encoded lexicon in the ``Bama-Public.zip'' file to be extracted in your running directory. This zip file is found in the original compressed file introduced above or in ``ATSarf/bin'' directory if you are using svn to download the code.
+
+\section{Build the Tool}
+\subsection{Dependencies}
+In order to be able to build and run Sarf, the following dependencies must be installed:
+\begin{itemize}
+\item mysql-client
+\item mysql-server
+\item libmysqlcppconn
+\item libmysqlcppconn-dev
+%\item subversion
+\item qt-sdk
+%\item qtcreator
+\item g++
+%\item graphviz
+\end{itemize}
+The above tools can be downloaded and installed using the ``Synaptic Package Manager'' in ubuntu systems or through the ``apt-get'' command. You can use similar commands such as yum in other linux distributions.
+\subsubsection{datrie}
+You also need to download the double-array trie library called ``datrie''. Datrie can be downloaded from the following link:\\
+\url{http://linux.thai.net/~thep/datrie/datrie.html#Download }\\
+After downloading the trie structure to a destination you specify, go to {\bf datrie/libdatrie-0.2.3} and apply the following commands to configure and build.
+\begin{enumerate}
+\item ./configure
+\item make
+\end{enumerate}
+Note that the name of the folder ``libdatrie-0.2.3'' includes the version of the library downloaded. So you could have a number in your download referring to a different version, which shouldn't cause any problem.
+
+\subsection{links}
+The directory ``ATSarf/third/'' in the extracted Sarf code should contain links to the dependencies as follows.
+
+To create the links, you can use the ``ln'' command as follows.\\
+\begin{verbatim}
+ln -s TARGET LINK_NAME
+\end{verbatim}
+where TARGET is the dependency we want to point to and LINK\_NAME is the name of the link to be created.
+
+Given that you put the datrie file in the same directory as the root folder ``ATSarf'', you can set the link to it as follows:
+\begin{verbatim}
+ln -s ../datrie/libdatrie-0.2.3/ datrie
+\end{verbatim}
+
+Moreover, you need to set a link to the Qt library as well using the same procedure used for the preceding link. 
+The following command should do the trick if you are using an Ubuntu 10.10 version of linux:
+\begin{verbatim}
+ln -s /usr/share/qt4 qt
+\end{verbatim}
+Otherwis, you'll have to find the qt4 files on your system and create a link for them.
+
+\subsection{Build Database}
+
+\paragraph{}
+In case you downloaded the tool from google code using the svn interface, you can either use the files found in the compressed folder ``Bama-Public.tar.bz2'' as instructed in section~\ref{sec:sourcecode} or you'll have to build the database.\\
+In order to build the database, open a terminal and execute the following comands:
+
+\begin{enumerate}
+\item sudo mysql -u root
+\item create database atm;
+\item exit;
+\item cd atmine/src/sql design
+\item sudo mysql atm $<$ atm\_filled.sql
+\end{enumerate}
+
+\paragraph{}
+The first command opens ``mysql'' database with root access where the password is empty. In case you had different settings for ``mysql'', you'll have to insert them. Inside ``mysql'', use the second command to create the database required, then command 3 to close it.\\
+Now move to the ``atmine/src/sql design'' directory as shown in line 4, then execute command 5. If everything works normal, the database should be created and filled by now.
+
+\subsection{Build}
+Now we are ready to build Sarf.
+Go to the ``ATSarf/'' directory and build the tool using the following command:
+\begin{verbatim}
+make
+\end{verbatim}
+
+\subsubsection{Windows-cygwin}
+
+To build and run Sarf on windows, you need to have cygwin installed along with the packages shown previously. Also, you need to install x11 which is the windowing server of cygwin.
+%{\bf TODO: Explain how to do this on windows}
+
+\section{Run Sarf}
+
+\subsection{Try existing applications}
+Now that you have built Sarf, you can try existing applications that use it. To do that launch the GUI from ``ATSarf/bin'' by double clicking the executable output file called ``ATSarf''.
+To test Sarf, first press the button with the label ``fill'', which fills the structures required for analysis. Then, you insert a word in the textbox present to the right of the label ``input'' in the upper left of the GUI and press ``GO!''. You can see the result in the textbox present under the label ``Output''.
+
+The GUI includes other applications based on the arabic morphological analyzer such as Hadith Analysis that extracts the so called ``matn'' and ``sanad'' automatically and builds a combined gragh out of it. 
+
+%{\bf TODO: Describe how to try them with sample files}
+
+\subsection{Build your first Simple Sarf application - Hello World Example}
+\label{subsec:hwex}
+
+Other than using the provided GUI, you can create you own program based on the libraries to either use Sarf functionality as it is or extend it.
+
+\paragraph{}
+The following example explains the steps of using the basic function of the morphological analyzer through a simple program. Hence, we will build a simple stemmer that takes an Arabic word and returns the different morphological solutions similar to the example shown in the introduction of the manual.
+
+\subsubsection{Default}
+\label{subsubsec:default}
+
+\paragraph{}
+We start by creating a folder in ``ATSarf/src'' and name it ``ex0''. Inside this folder, we create a file and call it ``ex0main.cpp'' which implements the main of our program. Avoid naming your files with existing file names in the code of Sarf. Inside the file ``ex0main.cpp'', create a function called ``stemmerExampleDefault()'' which reads the input, triggers the tool, and writes the output solution to the terminal along with any errors if present. This function returns an integer of 0 value if successful, else -1.
+
+\begin{Verbatim}[numbers=left]
+#include <iostream>
+#include <QFile>
+#include <sarf.h>
+#include <stemmer.h>
+
+int stemmerExampleDefault() {
+	//code goes here
+\end{Verbatim}
+
+\paragraph{}
+The header file ``sarf.h'' in the code above (line 3) is included in order to use the ``Sarf'' class and its functions. This class is used to initialize Sarf tool, customize it, and terminate it when done. Also, the header ``stemmer.h'' (line 4) is included to use ``Stemmer'' which is the main class of Sarf tool to be used.. Throughout this example, We will explain how to perform the following tasks:
+
+\begin{itemize}
+\item Delcare {\em sarf}  an instance of the Sarf class
+\item Call {sarf.start } method: initializes the tool
+\item Process the input
+\item Call {sarf.exit } method: Exit the tool
+\end{itemize}
+
+\paragraph{}
+\begin{Verbatim}[numbers=left,firstnumber=8]
+    Sarf srf;
+    bool all_set = srf.start();
+
+    Sarf::use(&srf);
+
+    if(!all_set) {
+        error<<"Can't Set up Project";
+        return -1;
+    }
+    else {
+        cout<<"All Set"<<endl;
+    }
+\end{Verbatim}
+
+\paragraph{}
+Inside the ``stemmerExampleDefault'' function, we start by declaring an instance of the class Sarf as shown in the code above (line 8). Then, we call call the ``start'' function at line 9 to initialize the tool by reading the required data from the lexicon databases and initialize internal variables. The method start returns a boolean of true value if successful, else false.\\
+
+By calling start without parameters, the output will be written on the terminal, both tool output and any error that might be encountered.
+
+\paragraph{}
+After this step, we call the static ``use'' method of Sarf (line 10) and pass a reference to the declared Sarf instance as a parameter. This is used to set a global variable internally. The ``use'' function allows you to have more than 1 sarf instance.
+
+\begin{Verbatim}[numbers=left,firstnumber=20]
+    char filename[100];
+    cout << "please enter a file name: " << endl;
+    cin >> filename;
+
+    QFile Ifile(filename);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+       cerr << "error opening file." << endl;
+       return -1;
+    }
+
+    QTextStream in(&Ifile);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        run_process(line);
+    }
+    srf.exit();
+    return 0;
+}
+\end{Verbatim}
+
+\paragraph{}
+Line 21 above asks the user to enter the input file name and line 25 tests if opening the file is successful or not. Then in each iteration of the while loop at Line 31, we read a line from the 
+input file (line 32) and pass it to the function ``run\_process'' declared inside the ex0main.cpp file.
+
+\paragraph{}
+Then,  we call the ``srf.exit'' (line 35) to exit the program gracefully and clean the sarf structure which deletes any open query along with the database. The last step in building this example is to implement the ``run\_Process'' function used in line 33.
+
+\begin{Verbatim}[numbers=left]
+void run_process(QString & input) {
+
+    QStringList list = input.split(' ', QString::SkipEmptyParts);
+    for(int i=0; i<list.size(); i++) {
+        QString * inString = &(list[i]);
+        Stemmer stemmer(inString,0);
+        stemmer();
+    }
+}
+\end{Verbatim}
+
+\paragraph{}
+The ``run\_process'' function shown above takes a reference to a QString input representing a line of words, and splits it based on the space character as shown in line 3. Then, it iterates over all the words in the QStringList ``list'', and passes them one by one to the constructor of ``Stemmer'' (line 6).
+
+\paragraph{}
+The ``Stemmer'' class is the main structure in Sarf. The result of this morphological analysis is printed to the console as explained previously. Thus, an instance of the Stemmer class is declared in line 6 taking the following parameters:
+\begin{itemize}
+\item A pointer of type QString pointing to the input word to analyze.
+\item A starting index for the input word analysis to start from.
+\end{itemize}
+In line 7, we call the bracket operator which triggers the tool to start the analysis.
+
+\begin{Verbatim}[numbers=left]
+int ex0_main(int argc, char *argv[]) {
+
+    int test;
+    
+    test = stemmerExampleDefault();
+    if(!test) {
+        cout<<"The example without interface is successful\n";
+    }
+    else {
+        cout<<"The example without interface failed\n";
+    }
+\end{Verbatim}
+
+\paragraph{}
+The last step is to create the main in which we call the ``stemmerExampleDefault()'', where the code is shown above. Name your main function ``ex0\_main'' to respect the linking conventions in ATSarf, and we will deal with this issue later in the configuration step.
+
+\begin{center}
+\textbf{Configuration}
+\end{center}
+
+\paragraph{}
+Now that we are done with the coding part, we still need to configure the environment for compilation. Thus, the first step is to add a link to the makefile template which has rules to build an archive (lib\%.a) from a directory. The makefile is called ``archiveMakefile'' found  in ``ATSarf/scripts''. Hence, in order to create the link, we use the following command line given that we are in the directory of the example:
+
+\begin{Verbatim}
+ln -s ../../scripts/archiveMakefile makefile
+\end{Verbatim}
+
+Next, we add a file in ``ATSarf/bin'' called ex0.cpp and inside this file we add the following lines of code:
+\begin{Verbatim}[numbers=left]
+extern int ex0_main(int argc, char ** argv);
+
+int
+main(int argc, char ** argv) {
+  return ex0_main(argc, argv);
+}
+\end{Verbatim}
+
+\paragraph{}
+In the lines of code shown above, the extern keyword in line 1 declares ``ex0\_main'' and specifies that it has external linkage. Note that ``ex0\_main'' is the function that we used in place of the main in the file ``ex0main.cpp'' to respect the linking conventions of the project. Then, in lines 3-6 we write our main that calles the ``ex0\_main'' function previously declared.
+
+\paragraph{}
+The last step left is to modify the makefile found in ``ATSarf/bin'' directory to create an executable program out of the libraries created in compilation. Thus, we add the following rules to the makefile to create the ex0 executable.
+
+\begin{Verbatim}[numbers=left]
+EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a
+ ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a
+  ../lib/libutil.a
+EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog
+ -lsarf -lsql -lutil
+
+ex0: $(EX0_LIBDIR)
+	$(CXX) -o $@ ex0.cpp $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
+		$(EX0_LIBS_LINKFLAGS) \
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+\end{Verbatim}
+
+\paragraph{}
+In line 1 above, we define the libraries from the lib directory that our program depends on. Also, in line 4 we specify the flags referring to those libraries for dependency resolving. Last in line 7, we introduce the target and dependecies along with the compilation command. The following can be used as a template for any other program.
+
+\paragraph{}
+Now that all the steps of implementation and configuration are done, we only need to compile the project. For that purpose, move to the directory ``ATSarf'' in the terminal and run the makefile through the command make. If all the steps are done correctly, you should have an executable with the name ``ex0'' in the ``bin'' directory.
+
+\subsubsection{Interface}
+\label{subsubsec:interface}
+
+\paragraph{}
+Sarf can be used with an interface which states a destination for the output analysis, error, and implementation for a structure internally used showing the progress of internal work along with other features.
+
+\paragraph{}
+Similar to the Default example explained above, we start by creating the program folder ``exo'' in ``ATSarf/src'' directory. We introduce an additional header file called ``myprogressifc.h'' which includes the implementation of the class ``MYProgressIFC''. This class implements functions that are internally used in the tool, and returns data that the user might find useful about the tool progress.
+
+\label{vrbtm:myprogressifc}
+\begin{Verbatim}[numbers=left]
+class MyProgressIFC : public ATMProgressIFC {
+
+public:
+    virtual void report(int value) {
+        cout<<"Progress is "<<value<<'.'<<endl;
+    }
+
+    virtual void startTaggingText(QString & text) {
+    }
+
+    virtual void tag(int start, int length,QColor color, bool textcolor=true) {
+    }
+
+    virtual void finishTaggingText() {
+    }
+
+    virtual void setCurrentAction(const QString & s) {
+    }
+
+    virtual void resetActionDisplay() {
+    }
+
+    virtual QString getFileName() {
+        return "";
+    }
+};
+\end{Verbatim}
+
+\paragraph{}
+Thus, we create a file called ``myprogressifc.h'' in the example folder ``ex0''. Inside of it, we include the implementation of the class as shown above, where ``MyProgressIFC'' inherets from a predefined structure called ``ATMProgressIFC''. The class inhereted from is abstract, thus all its functions should be implemented even if not used.
+
+\paragraph{}
+Some of the functions of the abstract class ``ATMProgressIFC'' are related to other applications than the morphological analyzer, thus we don't need to discuss them at the moment. However, the relevant functions that could be of benefit are the following:
+
+\begin{itemize}
+\item report(int value): This function reports the value of progress at a scale from 0-100 at different steps of the initialization of the tool or execution. This value is being printed to the terminal in the code above lines 4-6.
+\item setCurrentAction(const QString \& s): This function reports the current action being performed by the tool through the QString parameter. Usually, this parameter can refer to an action being performed in one of different structures found in the analyzer.
+\item resetActionDisplay(): This function resets the action settings explained above. So in case we had a progress bar as is the case in a GUI, this function can be used to reset the progress bar.
+\end{itemize}
+
+\paragraph{}
+The next steps are almost the same as the default example in \ref{subsubsec:default}. Thus, we create the file ``ex0main.cpp'' and proceed to implement the relevant functions. The main function added is ``stemmerExamplewithInterface()'' which is very similar to ``stemmerExampleDefault()''.
+
+\begin{Verbatim}[numbers=left]
+int stemmerExamplewithInterface() {
+
+    QFile Ofile("output.txt");
+    QFile Efile("error.txt");
+    Ofile.open(QIODevice::WriteOnly);
+    Efile.open(QIODevice::WriteOnly);
+    MyProgressIFC * pIFC = new MyProgressIFC();
+
+    Sarf srf;
+    bool all_set = srf.start(&Ofile,&Efile, pIFC);
+
+    Sarf::use(&srf);
+
+    if(!all_set) {
+        error<<"Can't Set up Project";
+    }
+    else {
+        cout<<"All Set"<<endl;
+    }
+
+    char filename[100];
+    cout << "please enter a file name: " << endl;
+    cin >> filename;
+
+    QFile Ifile(filename);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+       cerr << "error opening file." << endl;
+       return -1;
+    }
+
+    QTextStream in(&Ifile);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        run_process(line);
+    }
+    srf.exit();
+    return 0;
+}
+\end{Verbatim}
+
+\paragraph{}
+As shown in the code above, the steps are exactly the same as the default function except for the parameters passed to the ``start'' function. In lines 3-6, we declare two files named ``output.txt'' for the analysis output and ``error.txt'' for any possible errors., then we set the properties of the files as write only. Then in line 7, we initialize a pointer pIFC of the previously defined class ``MYProgressIFC''.
+
+\paragraph{}
+The sarf instance is declared as before, however the start function now takes three variables as follows:
+\begin{itemize}
+\item QFile * \_out: This is a pointer to a QFile used to print the result in.
+\item QFile * \_displayed\_error: This is a pointer to a QFile used to print any errors that could occur in.
+\item ATMProgressIFC * pIFC: This is a pointer to a structure that inherets from ATMProgressIFC as we did in the above class ``MyProgressIFC''.
+\end{itemize}
+
+\paragraph{}
+The rest of the function proceeds exactly same as the default case. Also, we can use the same ``run\_process'' function implemented previously, then call the function ``stemmerExamplewithInterface()'' in ``ex0\_main'' function.\\
+The configuration steps are not required if we decide to include those modifications inside the same example, else the same configuration procedure explained in \ref{subsubsec:default} should be applied here.
+
+\section{Examples}
+\label{sec:examples}
+\paragraph{}
+This section explains the steps required to implement two examples examples in which the user can implement a specific functionality based on the Sarf. These steps can be generalized to implement any other functionality the user wants.
+
+\subsection{Example-Verb Extraction}
+\paragraph{}
+This example extracts all the words from an input file that have a ``verb'' part of speech (POS) tag. In other words, the output is a list of all the words extracted from the input file that could be interpreted as a verb, since an arabic word can possess multiple meanings and POS.
+
+\paragraph{}
+The following example takes a specific case to implement, however you can search for other POS tags. The following is a list of those tags:
+\begin{itemize}
+\item VERB: regular verb.
+\item VERB\_PERFECT: verb in perfect form.
+\item NOUN: regular noun.
+\item NOUN\_PROP: proper noun.
+\item ADJ: adjective.
+\item PREP: preposition.
+\end{itemize}
+
+\paragraph{}
+We start by creating a folder for our program in the directory ``ATSarf/src'' and name it ``ex1''. In this folder, we will create the following three files:
+\begin{itemize}
+\item POSVerb.h
+\item POSVerb.cpp
+\item ex1main.cpp
+\end{itemize}
+
+\begin{Verbatim}[numbers=left]
+#include<stemmer.h>
+#include<QTextStream>
+
+class POSVerb : public Stemmer
+{
+private:
+    QString text;
+    QString RelatedW;
+
+public:
+    POSVerb(QString * text);
+    bool on_match();
+};
+\end{Verbatim}
+
+\paragraph{}
+In the file ``POSVerb.h'', we will create a class called ``POSVerb'' as shown in the code above. This class inherets from the class ``Stemmer'' which is the main structure used for the arabic morphological analysis. For that purpose, we add the include ``stemmer.h'' shown in line 1.\\
+
+Inside the class defined, we add two private variables:
+\begin{itemize}
+\item text (line 7): String that holds the input text
+\item RelatedW (line 8): String that holds the previous solutions which were accepted as verbs in order to prevent repitition since a single word can have different solutions from the analyzer.
+\end{itemize}
+
+Moreover, we define two public functions:
+\begin{itemize}
+\item POSVerb (line 11): This is the constructor of the POSVerb class and it takes a QString as the input text to be processed.
+\item on\_match (line 12): This function is called by the tool upon finding a possible solution for an input word and is defined as a virtual function in the stemmer class. By implementing this method, we control the accepted solutions that meet our functionality required.
+\end{itemize}
+
+\begin{Verbatim}[numbers=left]
+POSVerb::POSVerb(QString *text) : Stemmer(text,0)
+{
+    this->text = *text;
+};
+\end{Verbatim}
+
+\paragraph{}
+Now that we have defined our class along with the required functions and variables, we have to implement the functions in the ``POSVerb.cpp'' file.\\
+The constructor takes the input text and sets its text variable to its value as shown in the code above (line 3). Also, it calls the constructor of the Stemmer class which takes the input text along with the starting index as its parameters. In our case, the starting index is 0.
+
+\paragraph{}
+The on\_match() function is triggered by the tool upon finding a solution for a word. A solution refers to a combination of prefix, stem , and suffix along with descriptions of those parts including the POS and gloss. In our program, we require the POS field to include a verb tag.
+
+\begin{Verbatim}[numbers=left]
+bool POSVerb::on_match()
+{
+    if(stem_info->POS.contains("VERB", Qt::CaseInsensitive) )
+    {
+        if (!(RelatedW.contains(this->text,Qt::CaseInsensitive)))
+        {
+            RelatedW += this->text;
+            theSarf->out<<this->text<<endl;
+        }
+    }
+    return true;
+};
+\end{Verbatim}
+
+\paragraph{}
+The implementation of this function is shown above. In line 3, we check if the stem's POS includes the ``VERB'' tag by checking the POS variable of the stem\_info structure.\\
+
+stem\_info is a variable of the structure ``minimal\_item\_info'' which holds the solution details. For further details about the ``minimal\_item\_info structure'', refer to section\ref{sec:classes}.\\
+
+If the tag is ``VERB'', we check in line 5 if this word is preiously caught as a correct solution by searching for it in the RelatedW variable. If not, we add it to the RelatedW variable and write it to a QTextStream called out. This variable is found in the global instance of the Sarf class introduced previously.
+
+\paragraph{}
+The on\_match function returns a boolean which is caught by the tool, if that boolean is true the tool will continue to find all the possible solutios till no more are found, else if false is returned the tool will stop.
+
+\paragraph{}
+Now, we need to build the file ``ex1main.cpp'' which is the same as the one explained in the ``Hello World Example''\ref{subsec:hwex}. The only difference is in the implementation of the ``run\_process'' where we should create an instance of the POSVerb class instead of Stemmer as shown in the code below line 6. Then, we trigger the tool by calling the bracket operator (line 7).
+
+\begin{Verbatim}[numbers=left]
+void run_process(QString & input) {
+
+    QStringList list = input.split(' ', QString::SkipEmptyParts);
+    for(int i=0; i<list.size(); i++) {
+        QString * inString = &(list[i]);
+        POSVerb posverb(inString);
+	posverb();
+    }
+}
+\end{Verbatim}
+
+\paragraph{}
+If we want to implement the example with an interface, we should include a class implementation similar to the one introduced in ``mprogressifc.h''\ref{vrbtm:myprogressifc} and pass it to the Sarf start function along with the output and error files. Moreover, the required headers should be included in the file ``ex1main.cpp'' such as ``POSVerb.h''.\\
+With all the required files implemented, we prepare the example for compilation as explained before in example\ref{subsec:hwex}; configuration step.
+
+\subsection{Example-Word related Extraction}
+\paragraph{}
+In this example, our aim is to extract every word in a text file input that is related in gloss
+to a list of predefined english words. Hence, any word that has a solution with a gloss tag including one of the predefined words will be considered a valid solution and is extracted.
+
+\paragraph{}
+We need a structure similar to the one in the previous example and the configuration process is exactly the same. Hence, in this example we will only focus on implementing the functionality of the program and not the details which are previously explained. The main files that will be explained are the following:
+
+\begin{itemize}
+\item GlossSFR.h
+\item GlossSFR.cpp
+\end{itemize}
+
+\begin{Verbatim}[numbers=left]
+class GlossSFR : public Stemmer
+{
+private:
+    QString text;
+    QString RelatedW;
+    QStringList _LIST;
+
+public:
+    GlossSFR(QString * text);
+    bool on_match();
+};
+\end{Verbatim}
+
+\paragraph{}
+In ``GlossSFR.h'', we create the needed class. The code for that is shown above where we use similar functions and variables to the previous example. The variables defined are as follows:
+
+\begin{itemize}
+\item text (line 4): QString that holds the input word
+\item RelatedW (line 5): QString that holds the previous solutions which were accepted in order to prevent repitition since a single word can have different solutions from the analyzer.
+\item \_LIST (line 6): QStringList that holds the english words which we will search the gloss tag of each solution for.
+\end{itemize}
+
+\paragraph{}
+As for the functions, we define two functions. The first of which is the constructor of the class and the second is the ``on\_match'' function explained earlier. Line 9 is the constructor of the class and it takes a pointer to the input word as a parameter. As for the ``on\_match'' function (line 10), we need to implement it to select the solutions that meet with our specifications.
+
+\begin{Verbatim}[numbers=left]
+GlossSFR::GlossSFR(QString *text) : Stemmer(text,0)
+{
+    this->text = *text;
+     _LIST<<"flower"<<"nose"<<"smell"<<"rose";
+};
+\end{Verbatim}
+
+\paragraph{}
+Next, we need to implement the previously defined functions in the file ``GlossSFR.cpp''. The first function is the constructor where we set the internal text variable to the input and fill ``\_LIST'' with the gloss words we intend to look for in Sarf solutions. Similar to what is done before, we call the constructor of the Stemmer class as well passing the input string and starting index.
+
+\begin{Verbatim}[numbers=left]
+bool GlossSFR::on_match()
+{
+    bool RELATED=false;
+
+    for(int i =0; i<_LIST.size(); i++)
+    {
+        QString _desc = stem_info->description();
+        if(_desc.contains(_LIST[i],Qt::CaseInsensitive))
+        {
+            RELATED = true;
+            break;
+        }
+    }
+    bool Present = RelatedW.contains(this->text,Qt::CaseInsensitive);
+    if(RELATED && !Present)
+    {
+        RelatedW += this->text;
+        theSarf->out<<this->text<<'\n';
+    }
+    return true;
+};
+\end{Verbatim}
+
+\paragraph{}
+Moreover, the code for ``on\_match'' function is shown above. In the lines 5-13, we loop over the strings in ``\_LIST'' and check whether the description field in ``stem\_info'' contains that gloss. The description fields in ``stem\_info'' refers to the gloss field of the solution.\\
+Thus, we extract the description field in line 7 and check in line 8 whether this field contains the string in ``\_LIST''.  If true, we set the boolean ``RELATED'' to true and exit the loop since we only care if the input is related to any of the base words.
+
+\paragraph{}
+Then, we check if the input word has been detected as a solution in previous matches by searching for it in the variable ``RelatedW''. If it is not found and the RELATED boolean is true, then we add the input word to RelatedW and out variables which are explained before.
+
+\paragraph{}
+With those two files implemented, we need to add ``ex2main.cpp'' then configure the program for compilation as previously done.
+
+\section{Classes}
+\label{sec:classes}
+
+\paragraph{}
+The following section explains a list of the important and useful structures and classes needed in order to use the tool.
+
+\subsection{Stemmer}
+\paragraph{}
+This class implements the methods that extract the different morphological features of an arabic string input such as the stem, prefix, and suffix along with features for the stem such as the POS and Gloss.
+
+\subsection{Prefix}
+This class implements the methods that extract the prefix morpheme of the input arabic word along with the relevant POS and gloss tags.
+
+
+\subsection{Stem}
+This class implements the methods that extract the stem morpheme of the input arabic word along with the relevant POS and gloss tags. This machine is triggered after finding a correct possible prefix for the word which can vary from zero to multiple prefixes.
+
+\subsection{Suffix}
+This class implements the methods that extract the suffix morpheme of the input arabic word along with the relevant POS and gloss tags. This stage of the analysis is triggered after finding a possible prefix/stem solution. Based on this solution, the Suffix machine is triggered to detect the suffix.
+
+\subsection{minimal\_item\_info}
+\paragraph{}
+The following defines a class type including the minimal information of a match which could be stem or an affix. This structure includes the following variables:
+\begin{itemize}
+\item QString desc: This includes the description of a matching prefix/stem/suffix which is the gloss.
+\item QString raw\_data: This string holds the lexicon or stem of the input string.
+\item QString POS: This string holds the part of speech of the match.
+\item item\_types type: This variable specifies the type of the solution which can be PREFIX, STEM, or SUFFIX. ``item\_types'' is an enum so PREFIX has a 1 value, STEM has a 2 value, and SUFFIX has a 3 value.
+\end{itemize}
+
+%\section{Functions}
+
+%\section{Important Global Variables}
+
+%\section{Frequently Asked Questions}
+
+\section{How to Get Help}
+\paragraph{}
+If you need more details about the code,you can find the documentation in ``ATSarf/doc/html'', and open it by double clicking on the file ``index.html''. We used doxygen to automatically generate the documentation of Sarf.
+
+\paragraph{}
+For any further questions, contact us at the following email: \textbf{aaj15@aub.edu.lb}
+
+\end{document}
