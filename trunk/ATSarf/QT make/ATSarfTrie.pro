@@ -187,5 +187,6 @@ CONFIG += debug_and_release
 # QMAKE_LFLAGS += -O3
 # debug
 QT += sql
+QTPLUGIN += qsqlmysql
 FORMS += ../src/gui/mainwindow.ui
 OTHER_FILES += 
