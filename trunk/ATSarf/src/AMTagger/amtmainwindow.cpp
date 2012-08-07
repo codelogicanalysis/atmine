@@ -1,21 +1,44 @@
 #include <QtGui/QApplication>
 #include "amtmainwindow.h"
-#include "ui_amtmainwindow.h"
+//#include "ui_amtmainwindow.h"
 #include <qjson/parser.h>
 
 #include <QContextMenuEvent>
 #include <QTextCodec>
 #include <QTextStream>
 #include <QMessageBox>
+#include<QDockWidget>
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::AMTMainWindow), browseFileDlg(NULL)
+    //ui(new Ui::AMTMainWindow),
+    browseFileDlg(NULL)
 {
-    ui->setupUi(this);
+    //ui->setupUi(this);
 
     createActions();
     createMenus();
+
+    QDockWidget *dock = new QDockWidget(tr("Text View"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+    txtBrwsr = new QTextBrowser();
+    dock->setWidget(txtBrwsr);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+//    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Tag View"), this);
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    tagDescription = new QTreeView (dock);
+
+    dock->setWidget(tagDescription );
+
+//    tagDescription ->setWidgetResizable(true);
+
+    //addDockWidget(Qt::BottomDockWidgetArea, dock);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
 }
@@ -68,7 +91,7 @@ void AMTMainWindow::open()
 void AMTMainWindow::startTaggingText(QString & text){
     if (this==NULL)
         return;
-    QTextBrowser * taggedBox=ui->textBrowser;
+    QTextBrowser * taggedBox=txtBrwsr;
     taggedBox->clear();
     taggedBox->setLayoutDirection(Qt::RightToLeft);
     QTextCursor c=taggedBox->textCursor();
@@ -137,7 +160,7 @@ void AMTMainWindow::process(QByteArray & json) {
 void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor){
     if (this==NULL)
         return;
-    QTextBrowser * taggedBox= ui->textBrowser;
+    QTextBrowser * taggedBox= txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
 #if 0
     int lastpos=c.position();
@@ -164,7 +187,7 @@ void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor
 void AMTMainWindow::finishTaggingText(){
     if (this==NULL)
         return;
-    QTextBrowser * taggedBox= ui->textBrowser;
+    QTextBrowser * taggedBox= txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
     c.movePosition(QTextCursor::End,QTextCursor::MoveAnchor);
     taggedBox->setTextCursor(c);
@@ -270,16 +293,21 @@ void AMTMainWindow::createMenus()
     editMenu->addAction(pasteAct);
     editMenu->addSeparator();
 
+    viewMenu = menuBar()->addMenu(tr("&View"));
+
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+
+
 }
 
 AMTMainWindow::~AMTMainWindow()
 {
-    delete ui;
+    //delete ui;
 }
 
+/*
 int main(int argc, char *argv[])
 {
     QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
@@ -291,8 +319,8 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+*/
 
-/*
 int AMT_main(int argc, char *argv[])
 {
     QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
@@ -304,4 +332,3 @@ int AMT_main(int argc, char *argv[])
 
     return a.exec();
 }
-*/
