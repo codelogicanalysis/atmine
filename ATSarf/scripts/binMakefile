@@ -30,6 +30,9 @@ include $(TOP)/scripts/macrosMakefile
 DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
 DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
 
+QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
+QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
+
 ATSarf_LIBS_LINKFLAGS+=$(QT_LIBS_LDDFLAGS) 
 ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
 
@@ -61,13 +64,21 @@ ex2: $(EX2_LIBDIR)
 		$(EX2_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
-TAGGER_LIBDIR = ../lib/libTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-TAGGER_LIBS_LINKFLAGS=-L ../lib -lTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+GLOSSEXT_LIBDIR = ../lib/libglossExt.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
+GLOSSEXT_LIBS_LINKFLAGS=-L ../lib -lglossExt -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+
+glossExt: $(GLOSSEXT_LIBDIR)
+	$(CXX) -o $@ glossExt.cpp $(LDDFLAGS) $(GLOSSEXT_LIBS_LINKFLAGS) \
+		$(GLOSSEXT_LIBS_LINKFLAGS) \
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
+TAGGER_LIBDIR = ../lib/libAMTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a $(QJSON_LIBS)
+TAGGER_LIBS_LINKFLAGS=-L ../lib -lAMTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 tagger: $(TAGGER_LIBDIR)
-	$(CXX) -o $@ tagger.cpp $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ AMTagger.cpp $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(TAGGER_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS) $(QJSON_LIB_LDDFLAGS)
 
 #--------------------------------------------------
 include $(TOP)/scripts/rulesMakefile

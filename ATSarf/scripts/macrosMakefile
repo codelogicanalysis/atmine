@@ -24,10 +24,13 @@ else
     DATRIE=third/wdatrie
 endif
 
+QJSON=third/qjson
+
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build src/gui
 INCLUDEDIRS+= include
 INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
+INCLUDEDIRS+= $(QJSON)
 INCLUDEFLAGS=-I.
 INCLUDEFLAGS+=$(patsubst %,-I$(TOP)/%, $(INCLUDEDIRS))
 #echoinclude:

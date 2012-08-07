@@ -3,10 +3,10 @@
 
 #include <QMainWindow>
 #include<QFileDialog>
-
-namespace Ui {
-class AMTMainWindow;
-}
+#include<QTextBrowser>
+#include<QTreeView>
+#include <QMenu>
+#include <QMenuBar>
 
 class AMTMainWindow : public QMainWindow
 {
@@ -35,7 +35,9 @@ class AMTMainWindow : public QMainWindow
 
          QMenu *fileMenu;
          QMenu *editMenu;
+         QMenu * viewMenu;
          QMenu *helpMenu;
+
          QAction *openAct;
          QAction *saveAct;
          QAction *saveasAct;
@@ -45,13 +47,17 @@ class AMTMainWindow : public QMainWindow
          QAction *pasteAct;
          QAction *aboutAct;
          QAction *aboutQtAct;
+
+         QTextBrowser * txtBrwsr;
+         QTreeView * tagDescription;
+
     
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
          ~AMTMainWindow();
     
 private:
-         Ui::AMTMainWindow *ui;
+//         Ui::AMTMainWindow *ui;
          QFileDialog * browseFileDlg;
 };
 
