@@ -67,13 +67,7 @@ cleanaux:
 	@rm -rf *Parser.c *Parser.h
 
 #empty rules to allow parametrized make
-opt: all
-
-64: all
-
-32: all
-
-cyg: all
+opt 32 64 cyg ex0 ex1 ex2 ATSarf: all
 
 #rules to make C code from antler grammar
 %Lexer.c %Parser.c: %.g

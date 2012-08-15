@@ -11,7 +11,7 @@
 #
 # Apr 8, 2010    fadi   initial creation
 
-APPLICATION=ATSarf
+APPLICATION=ATSarfGui
 TARGET=$(APPLICATION)
 
 # the following macro defines the top directory relative to the
@@ -24,64 +24,59 @@ endif
 
 include $(TOP)/scripts/macrosMakefile
 
-#ATSarf_LIBS+=$(ANTLR_LIBS)
-#ATSarf_LIBS_LINKFLAGS+=$(ANTLR_LIB_LDDFLAGS)
-
 DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
 DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
 
 QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
 QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
 
-ATSarf_LIBS_LINKFLAGS+=$(QT_LIBS_LDDFLAGS) 
-ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
+THIRD_LIBS_LINKFLAGS= $(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
+#ATSarf_LIBS+=$(ANTLR_LIBS)
+#ATSarf_LIBS_LINKFLAGS+=$(ANTLR_LIB_LDDFLAGS)
+
+ATSarf_LIBS_LINKFLAGS4= $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
+
+ATSarfGui_LIBS=$(ATSarf_LIBS) $(TOP)/lib/libcase.a $(TOP)/lib/libgui.a
+ATSarfGui_LIBS_LINKFLAGS= -L$(TOP)/lib -lgui -lcase $(ATSarf_LIBS_LINKFLAGS4)
 
 #DAT_CLEAN_TARGETS=${filter-out .svn,$(CPPSOURCES)}
 #DAT_CLEAN_TARGETS=${filter-out .svn,$(CPPSOURCES)}
 DAT_CLEAN_TARGETS=${wildcard .*.dat}
 
-$(APPLICATION): $(ATSarf_LIBS)
-	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
+$(APPLICATION): $(ATSarfGui_LIBS)
+	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
+		$(THIRD_LIBS_LINKFLAGS)
 
-MTEST_LIBDIR = ../lib/libmtest.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-MTEST_LIBS_LINKFLAGS=-L ../lib -lmtest -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
-mtest: $(MTEST_LIBDIR)
-	$(CXX) -o $@ $(LDDFLAGS) $(MTEST_LIBS_LINKFLAGS) \
-		$(MTEST_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
-
-EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
+EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
 
 ex0: $(EX0_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
-		$(EX0_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+		$(THIRD_LIBS_LINKFLAGS)
 
-EX1_LIBDIR = ../lib/libex1.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-EX1_LIBS_LINKFLAGS=-L ../lib -lex1 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+EX1_LIBDIR = $(TOP)/lib/libex1.a $(ATSarf_LIBS)
+EX1_LIBS_LINKFLAGS=-L$(TOP)/lib -lex1 $(ATSarf_LIBS_LINKFLAGS4)
 
 ex1: $(EX1_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(EX1_LIBS_LINKFLAGS) \
-		$(EX1_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+		$(THIRD_LIBS_LINKFLAGS)
 
-EX2_LIBDIR = ../lib/libex2.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-EX2_LIBS_LINKFLAGS=-L ../lib -lex2 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+EX2_LIBDIR = $(TOP)/lib/libex2.a $(ATSarf_LIBS)
+EX2_LIBS_LINKFLAGS=-L$(TOP)/lib -lex2 $(ATSarf_LIBS_LINKFLAGS4)
 
 ex2: $(EX2_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
-		$(EX2_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+		$(THIRD_LIBS_LINKFLAGS)
 
-TAGGER_LIBDIR = ../lib/libTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a $(QJSON_LIBS)
-TAGGER_LIBS_LINKFLAGS=-L ../lib -lTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(ATSarf_LIBS) $(QJSON_LIBS)
+TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger $(ATSarf_LIBS_LINKFLAGS4)
 
 tagger: $(TAGGER_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
-		$(TAGGER_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS) $(QJSON_LIB_LDDFLAGS)
+		$(THIRD_LIBS_LINKFLAGS) \
+		$(QJSON_LIB_LDDFLAGS)
 
 cleandata:
 		rm -rf $(DAT_CLEAN_TARGETS)
