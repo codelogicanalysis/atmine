@@ -1,18 +1,19 @@
 TOP = ../third/
-
 INCLUDEPATH += $$QTDIR/include/QtSql \
     $$QTDIR/include/Qt \
     ../src/common \
     ../src/util \
-    ../src/gui \
+    ../apps/gui \
     ../src/sarf \
-    ../src/case \
+    ../apps/case \
     ../src/log \
     ../src/cache \
     ../src/sql \
     ../src/build
+
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
+
 HEADERS += ../src/util/diacritics.h \
     ../src/util/dbitvec.h \
     ../src/sql/sql_queries.h \
@@ -31,16 +32,12 @@ HEADERS += ../src/util/diacritics.h \
     ../src/cache/database_info_block.h \
     ../src/cache/compatibility_rules.h \
     ../src/build/functions.h \
-    ../src/gui/test.h \
-    ../src/gui/mainwindow.h \
     ../src/log/logger.h \
     ../src/common/common.h \
     ../src/sql/Retrieve_Template.h \
     ../src/common/StemNode.h \
     ../src/common/atmTrie.h \
-    ../src/case/hadith.h \
     ../src/util/letters.h \
-    ../src/case/narrator_abstraction.h \
     ../src/log/ATMProgressIFC.h \
     ../src/util/Math_functions.h \
     ../src/cache/Search_by_item_locally.h \
@@ -49,54 +46,68 @@ HEADERS += ../src/util/diacritics.h \
     ../src/common/node_info.h \
     ../src/common/solution_position.h \
     ../src/util/reference.h \
-    ../src/case/graph_nodes.h \
-    ../src/case/graph.h \
     ../src/util/text_handling.h \
-    ../src/case/hadith_utilities.h \
-    ../src/case/split_affixes.h \
     ../src/util/Quadruplet.h \
     ../src/util/textParsing.h \
-    ../src/case/timeRecognizer.h \
-    ../src/case/timeManualTagger.h \
-    ../src/case/narratordetector.h \
-    ../src/case/hadithCommon.h \
-    ../src/case/narratorHash.h \
-    ../src/case/biographies.h \
-    ../src/case/localizeddisplay.h \
     ../src/util/mergeLists.h \
-    ../src/case/bibleGeneology.h \
-    ../src/case/bibleManualTagger.h \
-    ../src/case/genealogyItem.h \
-    ../src/case/abstractAnnotator.h \
-    ../src/case/geneMainwindow.h \
-    ../src/case/abstractTwoLevelAnnotator.h \
-    ../src/case/abstractGraph.h \
-    ../src/case/twoLevelTaggerSelection.h \
-    ../src/case/hadithChainGraph.h \
-    ../src/case/hadithChainItemModel.h \
-    ../src/case/hadithManualTagger.h \
-    ../src/case/hadithDagGraph.h \
-    ../src/case/hadithDagItemModel.h \
-    ../src/case/AbstractTwoLevelAgreement.h \
-    ../src/case/hadithInterAnnotatorAgreement.h \
-    ../src/case/genealogyInterAnnotatorAgreement.h \
-    ../src/case/OneLevelAgreement.h \
     ../src/util/editDistance.h \
-    ../src/case/narratorEqualityModel.h \
-    ../src/case/biographyGraphUtilities.h \
     ../src/common/inflections.h \
-    ../src/case/atbExperiment.h \
     ../src/util/transliteration.h \
-    ../src/case/diacriticDisambiguation.h \
-    ../src/case/affixTreeTraversal.h \
     ../src/util/vocalizedCombinations.h \
-    ../src/case/atbDiacriticExperiment.h \
     ../src/util/ambiguity.h \
     ../src/util/morphemes.h \
-    ../src/case/diacriticsPostProcessing.h \
     ../src/util/combinations.h \
-    ../src/common/sarf.h
+    ../src/common/sarf.h \
+    ../apps/case/twoLevelTaggerSelection.h \
+    ../apps/case/timeRecognizer.h \
+    ../apps/case/timeManualTagger.h \
+    ../apps/case/split_affixes.h \
+    ../apps/case/OneLevelAgreement.h \
+    ../apps/case/narratorHash.h \
+    ../apps/case/narratorEqualityModel.h \
+    ../apps/case/narratordetector.h \
+    ../apps/case/narrator_abstraction.h \
+    ../apps/case/localizeddisplay.h \
+    ../apps/case/hadith_utilities.h \
+    ../apps/case/hadithManualTagger.h \
+    ../apps/case/hadithInterAnnotatorAgreement.h \
+    ../apps/case/hadithDagItemModel.h \
+    ../apps/case/hadithDagGraph.h \
+    ../apps/case/hadithCommon.h \
+    ../apps/case/hadithChainItemModel.h \
+    ../apps/case/hadithChainGraph.h \
+    ../apps/case/hadith.h \
+    ../apps/case/graph_nodes.h \
+    ../apps/case/graph.h \
+    ../apps/case/geneMainwindow.h \
+    ../apps/case/genealogyItem.h \
+    ../apps/case/genealogyInterAnnotatorAgreement.h \
+    ../apps/case/diacriticsPostProcessing.h \
+    ../apps/case/diacriticDisambiguation.h \
+    ../apps/case/biographyGraphUtilities.h \
+    ../apps/case/biographies.h \
+    ../apps/case/bibleManualTagger.h \
+    ../apps/case/bibleGeneology.h \
+    ../apps/case/atbExperiment.h \
+    ../apps/case/atbDiacriticExperiment.h \
+    ../apps/case/affixTreeTraversal.h \
+    ../apps/case/abstractTwoLevelAnnotator.h \
+    ../apps/case/AbstractTwoLevelAgreement.h \
+    ../apps/case/abstractGraph.h \
+    ../apps/case/abstractAnnotator.h \
+    ../apps/gui/test.h \
+    ../apps/gui/mainwindow.h \
+    ../src/common/TreeVisitor.h \
+    ../src/common/TreeFilter.h \
+    ../src/common/Tree2Dot.h \
+    ../src/util/largeFileIterator.h \
+    ../src/util/iterativeStandardDeviation.h \
+    ../src/util/iterativeMathFunctions.h \
+    ../src/util/instanceIterator.h \
+    ../src/util/distinguishingLargeFileIterator.h \
+    ../src/util/decisionTreeRegression.h
 HEADERS += $$TOP/datrie/datrie/trie.h
+
 SOURCES += ../src/util/text_handling.cpp \
     ../src/util/diacritics.cpp \
     ../src/util/dbitvec.cpp \
@@ -115,62 +126,67 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/cache/database_info_block.cpp \
     ../src/cache/compatibility_rules.cpp \
     ../src/build/functions.cpp \
-    ../src/gui/test.cpp \
-    ../src/gui/mainwindow.cpp \
     ../src/sarf/tree_search.cpp \
     ../src/sql/Retrieve_Template.cpp \
     ../src/common/global_variables.cpp \
     ../src/common/StemNode.cpp \
     ../src/common/atmTrie.cpp \
-    ../src/case/narrator_abstraction.cpp \
     ../src/util/Math_functions.cpp \
     ../src/cache/Search_by_item_locally.cpp \
     ../src/common/common.cpp \
     ../src/common/solution_position.cpp \
-    ../src/case/graph_nodes.cpp \
-    ../src/case/graph.cpp \
-    ../src/case/split_affixes.cpp \
-    ../src/case/timeRecognizer.cpp \
-    ../src/case/timeManualTagger.cpp \
-    ../src/case/narratordetector.cpp \
-    ../src/case/hadithCommon.cpp \
-    ../src/case/narratorHash.cpp \
-    ../src/case/biographies.cpp \
-    ../src/case/hadithRefactored.cpp \
-    ../src/case/localizeddisplay.cpp \
-    ../src/case/bibleGeneology.cpp \
-    ../src/case/bibleManualTagger.cpp \
-    ../src/case/genealogyItem.cpp \
-    ../src/case/abstractAnnotator.cpp \
-    ../src/case/geneMainwindow.cpp \
-    ../src/case/abstractTwoLevelAnnotator.cpp \
-    ../src/case/twoLevelTaggerSelection.cpp \
-    ../src/case/hadithChainGraph.cpp \
-    ../src/case/hadithChainItemModel.cpp \
-    ../src/case/hadithManualTagger.cpp \
-    ../src/case/hadithDagGraph.cpp \
-    ../src/case/hadithDagItemModel.cpp \
-    ../src/case/AbstractTwoLevelAgreement.cpp \
-    ../src/case/hadithInterAnnotatorAgreement.cpp \
-    ../src/case/genealogyInterAnnotatorAgreement.cpp \
-    ../src/case/OneLevelAgreement.cpp \
     ../src/util/editDistance.cpp \
-    ../src/case/narratorEqualityModel.cpp \
-    ../src/case/narratorEqualityComparision.cpp \
-    ../src/case/biographyGraphUtilities.cpp \
-    ../src/case/atbExperiment.cpp \
     ../src/util/transliteration.cpp \
-    ../src/case/diacriticDisambiguation.cpp \
     ../src/log/ATMProgressIFC.cpp \
     ../src/util/vocalizedCombinations.cpp \
-    ../src/case/atbDiacriticExperiment.cpp \
     ../src/util/morphemes.cpp \
     ../src/util/ambiguity.cpp \
-    ../src/case/madaExperiment.cpp \
-    ../src/case/affix_verification.cpp \
-    ../src/case/diacriticsPostProcessing.cpp \
     ../src/util/combinations.cpp \
-    ../src/common/sarf.cpp
+    ../src/common/sarf.cpp \
+    ../apps/case/twoLevelTaggerSelection.cpp \
+    ../apps/case/timeRecognizer.cpp \
+    ../apps/case/timeManualTagger.cpp \
+    ../apps/case/split_affixes.cpp \
+    ../apps/case/regressionDiacriticsTest.cpp \
+    ../apps/case/OneLevelAgreement.cpp \
+    ../apps/case/narratorHash.cpp \
+    ../apps/case/narratorEqualityModel.cpp \
+    ../apps/case/narratorEqualityComparision.cpp \
+    ../apps/case/narratordetector.cpp \
+    ../apps/case/narrator_abstraction.cpp \
+    ../apps/case/madaExperiment.cpp \
+    ../apps/case/localizeddisplay.cpp \
+    ../apps/case/hadithRefactored.cpp \
+    ../apps/case/hadithManualTagger.cpp \
+    ../apps/case/hadithInterAnnotatorAgreement.cpp \
+    ../apps/case/hadithDagItemModel.cpp \
+    ../apps/case/hadithDagGraph.cpp \
+    ../apps/case/hadithCommon.cpp \
+    ../apps/case/hadithChainItemModel.cpp \
+    ../apps/case/hadithChainGraph.cpp \
+    ../apps/case/graph_nodes.cpp \
+    ../apps/case/graph.cpp \
+    ../apps/case/geneMainwindow.cpp \
+    ../apps/case/genealogyItem.cpp \
+    ../apps/case/genealogyInterAnnotatorAgreement.cpp \
+    ../apps/case/diacriticsPostProcessing.cpp \
+    ../apps/case/diacriticDisambiguation.cpp \
+    ../apps/case/biographyGraphUtilities.cpp \
+    ../apps/case/biographies.cpp \
+    ../apps/case/bibleManualTagger.cpp \
+    ../apps/case/bibleGeneology.cpp \
+    ../apps/case/atbExperiment.cpp \
+    ../apps/case/atbDiacriticExperiment.cpp \
+    ../apps/case/affix_verification.cpp \
+    ../apps/case/abstractTwoLevelAnnotator.cpp \
+    ../apps/case/AbstractTwoLevelAgreement.cpp \
+    ../apps/case/abstractAnnotator.cpp \
+    ../apps/gui/test.cpp \
+    ../apps/gui/mainwindow.cpp \
+    ../src/util/decisionTreeRegression.cpp \
+    ../src/util/distinguishingLargeFileIterator.cpp \
+    ../src/util/largeFileIterator.cpp \
+    ../src/util/iterativeMathFunctions.cpp
 
 # LIBS += -ldatrie
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
@@ -187,6 +203,5 @@ CONFIG += debug_and_release
 # QMAKE_LFLAGS += -O3
 # debug
 QT += sql
-QTPLUGIN += qsqlmysql
-FORMS += ../src/gui/mainwindow.ui
-OTHER_FILES += 
+FORMS += ../apps/gui/mainwindow.ui
+OTHER_FILES +=

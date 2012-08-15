@@ -326,15 +326,6 @@ void MainWindow::on_cmd_browse_clicked(){
 
 int main(int argc, char *argv[]){
 #if 1
-    /*
-    QJson::Parser parser;
-    bool ok;
-    QVariantMap result = parser.parse (json, &ok).toMap();
-    if (!ok) {
-      qFatal("An error occured during parsing");
-      exit (1);
-    }
-    */
     //theSarf = new Sarf();
     QFileInfo fileinfo(argv[0]);
     executable_timestamp=fileinfo.lastModified();
