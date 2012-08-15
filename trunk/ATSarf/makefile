@@ -40,4 +40,4 @@ clean:
 		cd $$i; $(MAKE) clean; cd $(TOP); \
 	done
 
-opt 32 64 cyg ex0 ex1 ex2 ATSarf: all
+opt 32 64 cyg ex0 ex1 ex2 ATSarf tagger: all
