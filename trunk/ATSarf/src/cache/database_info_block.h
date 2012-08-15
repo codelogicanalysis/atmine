@@ -17,12 +17,16 @@
 #include "dbitvec.h"
 #include "ATMProgressIFC.h"
 
-typedef Triplet<long long, long, QString> ItemEntryKey;  /// Input triplet to hash table (item_id,category_id,raw_data)
-typedef Triplet<dbitvec,long,QString> ItemEntryInfo; /// Output triplet from the hash table (abstract_categories or reverse_description,description_id,POS)
-
-typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2AbsDescPosMap;/// Hash table that takes ItemEntry triplet and returns ItemEntryInfo triplet
-typedef ItemCatRaw2AbsDescPosMap * ItemCatRaw2AbsDescPosMapPtr; /// Type definition of a pointer to a triplet to triplet hash function
-typedef ItemCatRaw2AbsDescPosMap::iterator ItemCatRaw2AbsDescPosMapItr; /// Type definition of an iterator over a hash function
+/// Input triplet to hash table (item_id,category_id,raw_data)
+typedef Triplet<long long, long, QString> ItemEntryKey;
+/// Output triplet from the hash table (abstract_categories or reverse_description,description_id,POS)
+typedef Triplet<dbitvec,long,QString> ItemEntryInfo;
+/// Hash table that takes ItemEntry triplet and returns ItemEntryInfo triplet
+typedef QMultiHash<ItemEntryKey,ItemEntryInfo > ItemCatRaw2AbsDescPosMap;
+/// Type definition of a pointer to a triplet to triplet hash function
+typedef ItemCatRaw2AbsDescPosMap * ItemCatRaw2AbsDescPosMapPtr;
+/// Type definition of an iterator over a hash function
+typedef ItemCatRaw2AbsDescPosMap::iterator ItemCatRaw2AbsDescPosMapItr;
 
 /**
   * @class  database_info_block
@@ -49,9 +53,12 @@ class database_info_block {
 #endif
 		compatibility_rules * comp_rules;
 
-                ItemCatRaw2AbsDescPosMapPtr map_prefix; /// Triplet Hash for the prefix
-                ItemCatRaw2AbsDescPosMapPtr map_stem;   /// Triplet Hash for the stem
-                ItemCatRaw2AbsDescPosMapPtr map_suffix; /// Triplet Hash for the suffix
+                /// Triplet Hash for the prefix
+                ItemCatRaw2AbsDescPosMapPtr map_prefix;
+                /// Triplet Hash for the stem
+                ItemCatRaw2AbsDescPosMapPtr map_stem;
+                /// Triplet Hash for the suffix
+                ItemCatRaw2AbsDescPosMapPtr map_suffix;
 
 		QVector<QString>* descriptions;
 

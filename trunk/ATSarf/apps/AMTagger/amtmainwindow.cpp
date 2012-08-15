@@ -11,36 +11,34 @@
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    //ui(new Ui::AMTMainWindow),
     browseFileDlg(NULL)
 {
-    //ui->setupUi(this);
+    resize(800,600);
+    txtBrwsr = new QTextBrowser();
+    setCentralWidget(txtBrwsr);
 
     createActions();
     createMenus();
-
-    QDockWidget *dock = new QDockWidget(tr("Text View"), this);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    txtBrwsr = new QTextBrowser();
-    dock->setWidget(txtBrwsr);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-//    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-
-    dock = new QDockWidget(tr("Tag View"), this);
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    tagDescription = new QTreeView (dock);
-
-    dock->setWidget(tagDescription );
-
-//    tagDescription ->setWidgetResizable(true);
-
-    //addDockWidget(Qt::BottomDockWidgetArea, dock);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
+    createDockWindows();
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
+}
+
+void AMTMainWindow::createDockWindows() {
+
+    QDockWidget *dock = new QDockWidget(tr("Tag View"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    tagDescription = new QTreeWidget(dock);
+    dock->setWidget(tagDescription);
+
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Description"), this);
+    descBrwsr = new QTextBrowser(dock);
+    dock->setWidget(descBrwsr);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
 }
 
 void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)

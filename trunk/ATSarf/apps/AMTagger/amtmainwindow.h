@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include<QFileDialog>
 #include<QTextBrowser>
-#include<QTreeView>
+#include<QTreeWidget>
 #include <QMenu>
 #include <QMenuBar>
 
@@ -28,6 +28,7 @@ class AMTMainWindow : public QMainWindow
      private:
          void createActions();
          void createMenus();
+         void createDockWindows();
          void startTaggingText(QString & text);
          void finishTaggingText();
          void process(QByteArray & json);
@@ -35,7 +36,7 @@ class AMTMainWindow : public QMainWindow
 
          QMenu *fileMenu;
          QMenu *editMenu;
-         QMenu * viewMenu;
+         QMenu *viewMenu;
          QMenu *helpMenu;
 
          QAction *openAct;
@@ -49,7 +50,8 @@ class AMTMainWindow : public QMainWindow
          QAction *aboutQtAct;
 
          QTextBrowser * txtBrwsr;
-         QTreeView * tagDescription;
+         QTreeWidget * tagDescription;
+         QTextBrowser * descBrwsr;
 
     
 public:
@@ -57,7 +59,6 @@ public:
          ~AMTMainWindow();
     
 private:
-//         Ui::AMTMainWindow *ui;
          QFileDialog * browseFileDlg;
 };
 

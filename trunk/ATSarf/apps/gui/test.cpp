@@ -16,8 +16,8 @@
 #include <sys/time.h>
 #include "vocalizedCombinations.h"
 #include "transliteration.h"
-#include "POSVerb.h"
-#include "GlossSFR.h"
+//#include "POSVerb.h"
+//#include "GlossSFR.h"
 
 extern void splitRecursiveAffixes();
 extern void drawAffixGraph(item_types type);
