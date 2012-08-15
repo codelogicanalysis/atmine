@@ -41,7 +41,7 @@ void drawAffixGraph(item_types type) {
 	file.remove();
 	if (!file.open(QIODevice::ReadWrite))
 	{
-		theSarf->out<<"Error openning file\n";
+		out<<"Error openning file\n";
 		return;
 	}
 
@@ -231,7 +231,7 @@ public:
 		file->remove();
 		if (!file->open(QIODevice::ReadWrite))
 		{
-			theSarf->out<<"Error openning file\n";
+			out<<"Error openning file\n";
 			return;
 		}
 
