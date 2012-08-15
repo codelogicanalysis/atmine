@@ -143,7 +143,7 @@ int verbPOSExampleDefault() {
     return 0;
 }
 
-int ex1_main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
     //theSarf = new Sarf();
     int test;
