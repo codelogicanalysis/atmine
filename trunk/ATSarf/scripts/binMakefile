@@ -43,6 +43,14 @@ DAT_CLEAN_TARGETS=${wildcard .*.dat}
 $(APPLICATION): $(ATSarf_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
 
+MTEST_LIBDIR = ../lib/libmtest.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
+MTEST_LIBS_LINKFLAGS=-L ../lib -lmtest -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+
+mtest: $(MTEST_LIBDIR)
+	$(CXX) -o $@ $(LDDFLAGS) $(MTEST_LIBS_LINKFLAGS) \
+		$(MTEST_LIBS_LINKFLAGS) \
+		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+
 EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
 EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
