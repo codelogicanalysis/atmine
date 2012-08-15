@@ -36,6 +36,9 @@ QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
 ATSarf_LIBS_LINKFLAGS+=$(QT_LIBS_LDDFLAGS) 
 ATSarf_LIBS_LINKFLAGS+=$(DATRIE_LIB_LDDFLAGS)
 
+#DAT_CLEAN_TARGETS=${filter-out .svn,$(CPPSOURCES)}
+#DAT_CLEAN_TARGETS=${filter-out .svn,$(CPPSOURCES)}
+DAT_CLEAN_TARGETS=${wildcard .*.dat}
 
 $(APPLICATION): $(ATSarf_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS) $(ATSarf_LIBS_LINKFLAGS)
@@ -44,7 +47,7 @@ EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommo
 EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 ex0: $(EX0_LIBDIR)
-	$(CXX) -o $@ ex0.cpp $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
 		$(EX0_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
@@ -52,7 +55,7 @@ EX1_LIBDIR = ../lib/libex1.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommo
 EX1_LIBS_LINKFLAGS=-L ../lib -lex1 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 ex1: $(EX1_LIBDIR)
-	$(CXX) -o $@ ex1.cpp $(LDDFLAGS) $(EX1_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ $(LDDFLAGS) $(EX1_LIBS_LINKFLAGS) \
 		$(EX1_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
@@ -60,25 +63,19 @@ EX2_LIBDIR = ../lib/libex2.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommo
 EX2_LIBS_LINKFLAGS=-L ../lib -lex2 -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 ex2: $(EX2_LIBDIR)
-	$(CXX) -o $@ ex2.cpp $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ $(LDDFLAGS) $(EX2_LIBS_LINKFLAGS) \
 		$(EX2_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
-GLOSSEXT_LIBDIR = ../lib/libglossExt.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a
-GLOSSEXT_LIBS_LINKFLAGS=-L ../lib -lglossExt -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
-
-glossExt: $(GLOSSEXT_LIBDIR)
-	$(CXX) -o $@ glossExt.cpp $(LDDFLAGS) $(GLOSSEXT_LIBS_LINKFLAGS) \
-		$(GLOSSEXT_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
-
-TAGGER_LIBDIR = ../lib/libAMTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a $(QJSON_LIBS)
-TAGGER_LIBS_LINKFLAGS=-L ../lib -lAMTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
+TAGGER_LIBDIR = ../lib/libTagger.a ../lib/libbuild.a ../lib/libcache.a ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a ../lib/libutil.a $(QJSON_LIBS)
+TAGGER_LIBS_LINKFLAGS=-L ../lib -lTagger -lbuild -lcache -lcommon -llog -lsarf -lsql -lutil
 
 tagger: $(TAGGER_LIBDIR)
-	$(CXX) -o $@ AMTagger.cpp $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
+	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(TAGGER_LIBS_LINKFLAGS) \
 		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS) $(QJSON_LIB_LDDFLAGS)
 
+cleandata:
+		rm -rf $(DAT_CLEAN_TARGETS)
 #--------------------------------------------------
 include $(TOP)/scripts/rulesMakefile
