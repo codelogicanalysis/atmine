@@ -19,6 +19,10 @@ class AMTMainWindow : public QMainWindow
          void open();
          void save();
          void saveas();
+         void tagadd();
+         void tagremove();
+         void tagtypeadd();
+         void tagtyperemove();
          void cut();
          void copy();
          void paste();
@@ -32,9 +36,11 @@ class AMTMainWindow : public QMainWindow
          void startTaggingText(QString & text);
          void finishTaggingText();
          void process(QByteArray & json);
-         void tagWord(int start, int length, QColor fcolor, QColor bcolor);
+         void tagWord(int start, int length, QColor fcolor, QColor bcolor, bool underline, bool italic, bool bold);
 
          QMenu *fileMenu;
+         QMenu *tagMenu;
+         QMenu *tagtypeMenu;
          QMenu *editMenu;
          QMenu *viewMenu;
          QMenu *helpMenu;
@@ -43,6 +49,10 @@ class AMTMainWindow : public QMainWindow
          QAction *saveAct;
          QAction *saveasAct;
          QAction *exitAct;
+         QAction *tagaddAct;
+         QAction *tagremoveAct;
+         QAction *tagtypeaddAct;
+         QAction *tagtyperemoveAct;
          QAction *cutAct;
          QAction *copyAct;
          QAction *pasteAct;

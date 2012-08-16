@@ -9,6 +9,10 @@
 #include <QMessageBox>
 #include<QDockWidget>
 
+#include<common.h>
+#include <addtagview.h>
+#include <addtagtypeview.h>
+
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
     browseFileDlg(NULL)
@@ -72,6 +76,7 @@ void AMTMainWindow::open()
         QString text = Ifile.readAll();
         Ifile.close();
 
+        _atagger->tagFile = fileName + ".tag";
         QFile ITfile(fileName+".tag");
         if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::about(this, tr("Input Tag File"),
@@ -79,6 +84,8 @@ void AMTMainWindow::open()
         }
 
         QByteArray Tags = ITfile.readAll();
+
+        ITfile.close();
 
         startTaggingText(text);
         process(Tags);
@@ -113,49 +120,89 @@ void AMTMainWindow::process(QByteArray & json) {
                      tr("The <b>Tag File</b> has a wrong format"));
     }
 
-    foreach(QVariant tag, result["TagArray"].toList()) {
+    _atagger->textFile = result["file"].toString();
+    _atagger->tagtypeFile = result["TagTypeFile"].toString();
 
-        QString desc = "";
-        int legendid;
-        QString name = "";
-        QString foreground_color = "";
-        QString background_color = "";
-        QString font = "";
+    foreach(QVariant tag, result["TagArray"].toList()) {
 
         QVariantMap tagElements = tag.toMap();
         int start = tagElements["pos"].toInt();
         int length = tagElements["length"].toInt();
         QString tagtype = tagElements["type"].toString();
+        QString source = tagElements["source"].toString();
+        bool check;
+        if(source == "sarf") {
+            check = _atagger->insertTag(tagtype,start,length,sarf);
+        }
+        else {
+            check = _atagger->insertTag(tagtype,start,length,user);
+        }
+    }
 
-        foreach(QVariant type, result["TagSet"].toList()) {
+    /** Read the TagType file and store it **/
 
-            QVariantMap typeElements = type.toMap();
-            if(QString::compare(typeElements["Tag"].toString(), tagtype, Qt::CaseInsensitive) == 0) {
-                desc = typeElements["Description"].toString();
-                legendid = typeElements["Legend"].toInt();
+    QFile ITfile(_atagger->tagtypeFile);
+    if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag Type File</b> can't be opened!"));
+    }
 
-                foreach(QVariant legend, result["Legend"].toList()) {
+    QByteArray tagtypedata = ITfile.readAll();
+    ITfile.close();
 
-                    QVariantMap legendElements = legend.toMap();
-                    if(legendElements["id"].toInt() == legendid) {
-                        name = legendElements["Name"].toString();
-                        foreground_color = legendElements["foreground_color"].toString();
-                        background_color = legendElements["background_color"].toString();
-                        font = legendElements["font"].toString();
+    result = parser.parse (tagtypedata,&ok).toMap();
 
-                        QColor fcolor(foreground_color);
-                        QColor bcolor(background_color);
-                        tagWord(start,length,fcolor,bcolor);
-                        break;
-                    }
-                }
+    if (!ok) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag File</b> has a wrong format"));
+    }
+
+    foreach(QVariant type, result["TagSet"].toList()) {
+        QString tag;
+        QString desc;
+        int id;
+        QString foreground_color;
+        QString background_color;
+        int font;
+        bool underline;
+        bool bold;
+        bool italic;
+
+        QVariantMap typeElements = type.toMap();
+
+        tag = typeElements["Tag"].toString();
+        desc = typeElements["Description"].toString();
+        id = typeElements["Legend"].toInt();
+        foreground_color = typeElements["foreground_color"].toString();
+        background_color = typeElements["background_color"].toString();
+        font = typeElements["font"].toInt();
+        underline = typeElements["underline"].toBool();
+        bold = typeElements["bold"].toBool();
+        italic = typeElements["italic"].toBool();
+        _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic);
+    }
+
+    /** Apply Tags on Input Text **/
+
+    for(int i =0; i< _atagger->tagVector->count(); i++) {
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j)).tag) {
+                int start = (_atagger->tagVector->at(i)).pos;
+                int length = (_atagger->tagVector->at(i)).length;
+                QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
+                int font = (_atagger->tagTypeVector->at(j)).font;
+                bool underline = (_atagger->tagTypeVector->at(j)).underline;
+                bool bold = (_atagger->tagTypeVector->at(j)).bold;
+                bool italic = (_atagger->tagTypeVector->at(j)).italic;
+                tagWord(start,length,fgcolor,bgcolor,underline,italic,bold);
                 break;
             }
         }
     }
 }
 
-void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor){
+void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor, bool underline, bool italic, bool bold){
     if (this==NULL)
         return;
     QTextBrowser * taggedBox= txtBrwsr;
@@ -180,9 +227,14 @@ void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor
     taggedBox->setTextCursor(c);
     taggedBox->setTextColor(fcolor);
     taggedBox->setTextBackgroundColor(bcolor);
+    taggedBox->setFontUnderline(underline);
+    taggedBox->setFontItalic(italic);
+    if(bold)
+        taggedBox->setFontWeight(QFont::Bold);
+    //taggedBox->setFontPointSize();
 }
 
-void AMTMainWindow::finishTaggingText(){
+void AMTMainWindow::finishTaggingText() {
     if (this==NULL)
         return;
     QTextBrowser * taggedBox= txtBrwsr;
@@ -191,38 +243,86 @@ void AMTMainWindow::finishTaggingText(){
     taggedBox->setTextCursor(c);
 }
 
-void AMTMainWindow::save()
-{
+void AMTMainWindow::save() {
+
+    /** Convert TagType to QJSON **/
+
+    QVariantMap tagtypedata;
+    QVariantList tagtypeset;
+    for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
+        QVariantMap data;
+        data.insert("Tag",(_atagger->tagTypeVector->at(i)).tag);
+        data.insert("Description",(_atagger->tagTypeVector->at(i)).description);
+        data.insert("id",_atagger->tagTypeVector->count());
+        data.insert("foreground_color",(_atagger->tagTypeVector->at(i)).fgcolor);
+        data.insert("background_color",(_atagger->tagTypeVector->at(i)).bgcolor);
+        data.insert("font",(_atagger->tagTypeVector->at(i)).font);
+        data.insert("underline",(_atagger->tagTypeVector->at(i)).underline);
+        data.insert("bold",(_atagger->tagTypeVector->at(i)).bold);
+        data.insert("italic",(_atagger->tagTypeVector->at(i)).italic);
+
+        tagtypeset << data;
+    }
+    tagtypedata.insert("TagSet",tagtypeset);
+
+    /** Convert Tag to JSON **/
+
+    QVariantMap tagdata;
+    tagdata.insert("file",_atagger->textFile);
+    tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
+    QVariantList tagset;
+    for(int i=0; i<_atagger->tagVector->count(); i++) {
+        QVariantMap data;
+        data.insert("type",(_atagger->tagVector->at(i)).type);
+        data.insert("pos",(_atagger->tagVector->at(i)).pos);
+        data.insert("length",(_atagger->tagVector->at(i)).length);
+        data.insert("source",(_atagger->tagVector->at(i)).source);
+        tagset << data;
+    }
+    tagdata.insert("TagArray",tagset);
+
+    /** Save to Default Destination **/
+}
+
+void AMTMainWindow::saveas() {
 
 }
 
-void AMTMainWindow::saveas()
-{
+void AMTMainWindow::tagadd() {
+    AddTagView * atv = new AddTagView(this);
+    atv->show();
+}
+
+void AMTMainWindow::tagremove() {
 
 }
 
-void AMTMainWindow::cut()
-{
+void AMTMainWindow::tagtypeadd() {
+    AddTagTypeView * attv = new AddTagTypeView(this);
+    attv->show();
+}
+
+void AMTMainWindow::tagtyperemove() {
 
 }
 
-void AMTMainWindow::copy()
-{
+void AMTMainWindow::cut() {
 
 }
 
-void AMTMainWindow::paste()
-{
+void AMTMainWindow::copy() {
 
 }
 
-void AMTMainWindow::about()
-{
+void AMTMainWindow::paste() {
 
 }
 
-void AMTMainWindow::aboutQt()
-{
+void AMTMainWindow::about() {
+
+}
+
+void AMTMainWindow::aboutQt() {
 
 }
 
@@ -247,6 +347,23 @@ void AMTMainWindow::createActions()
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+
+    tagaddAct = new QAction(tr("&Tag Add"), this);
+    //tagaddAct->setShortcuts(QKeySequence::);
+    tagaddAct->setStatusTip(tr("Add a Tag"));
+    connect(tagaddAct, SIGNAL(triggered()), this, SLOT(tagadd()));
+
+    tagremoveAct = new QAction(tr("&Tag Remove"), this);
+    tagremoveAct->setStatusTip(tr("Remove a Tag"));
+    connect(tagremoveAct, SIGNAL(triggered()), this, SLOT(tagremove()));
+
+    tagtypeaddAct = new QAction(tr("&TagType Add"), this);
+    tagtypeaddAct->setStatusTip(tr("Add a TagType"));
+    connect(tagtypeaddAct, SIGNAL(triggered()), this, SLOT(tagtypeadd()));
+
+    tagtyperemoveAct = new QAction(tr("&TagType Remove"), this);
+    tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
+    connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
     cutAct = new QAction(tr("Cu&t"), this);
     cutAct->setShortcuts(QKeySequence::Cut);
@@ -285,6 +402,16 @@ void AMTMainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
+    tagMenu = menuBar()->addMenu(tr("&Tag"));
+    tagMenu->addAction(tagaddAct);
+    tagMenu->addAction(tagremoveAct);
+    tagMenu->addSeparator();
+
+    tagtypeMenu = menuBar()->addMenu(tr("&TagType"));
+    tagtypeMenu->addAction(tagtypeaddAct);
+    tagtypeMenu->addAction(tagtyperemoveAct);
+    tagtypeMenu->addSeparator();
+
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(cutAct);
     editMenu->addAction(copyAct);
@@ -296,33 +423,18 @@ void AMTMainWindow::createMenus()
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+}
 
+AMTMainWindow::~AMTMainWindow() {
 
 }
 
-AMTMainWindow::~AMTMainWindow()
-{
-    //delete ui;
-}
-
-/*
 int main(int argc, char *argv[])
 {
     QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
     QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 
-    QApplication a(argc, argv);
-    AMTMainWindow w;
-    w.show();
-
-    return a.exec();
-}
-*/
-
-int main(int argc, char *argv[])
-{
-    QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
-    QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
+    _atagger=new ATagger();
 
     QApplication a(argc, argv);
     AMTMainWindow w;
