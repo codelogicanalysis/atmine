@@ -18,7 +18,14 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     browseFileDlg(NULL)
 {
     resize(800,600);
-    txtBrwsr = new QTextBrowser();
+
+    //QDockWidget *dock = new QDockWidget(tr("Text View"), this);
+    txtBrwsr = new QTextBrowser(this);
+    //txtBrwsr = new QTextEdit();
+    //dock->setWidget(txtBrwsr);
+
+    //txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
+    //connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
     setCentralWidget(txtBrwsr);
 
     createActions();
@@ -45,13 +52,41 @@ void AMTMainWindow::createDockWindows() {
     viewMenu->addAction(dock->toggleViewAction());
 }
 
+void AMTMainWindow::showContextMenu(const QPoint &pt) {
+
+    QMenu * menu = txtBrwsr->createStandardContextMenu();
+    QMenu * tags;
+    //menu = new QMenu();
+    tags = menu->addMenu(tr("&Tag"));
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        QAction * taginstance;
+        char * tagValue = (_atagger->tagTypeVector->at(i)).tag.toLocal8Bit().data();
+        taginstance = new QAction(tr(tagValue), this);
+        connect(taginstance, SIGNAL(triggered()), this, SLOT(tag(tagValue)));
+        tags->addAction(taginstance);
+    }
+    menu->addAction(untagAct);
+    menu->addAction(addtagAct);
+    menu->exec(txtBrwsr->mapToGlobal(pt));
+    delete menu;
+}
+
 void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
  {
-     QMenu menu(this);
-     menu.addAction(cutAct);
-     menu.addAction(copyAct);
-     menu.addAction(pasteAct);
-     menu.exec(event->globalPos());
+     QMenu * menu;
+     QMenu * tags;
+     menu = new QMenu();
+     tags = menu->addMenu(tr("&Tag"));
+     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {        
+         QAction * taginstance;
+         char * tagValue = (_atagger->tagTypeVector->at(i)).tag.toLocal8Bit().data();
+         taginstance = new QAction(tr(tagValue), this);
+         connect(taginstance, SIGNAL(triggered()), this, SLOT(tag(tagValue)));
+         tags->addAction(taginstance);
+     }
+     menu->addAction(untagAct);
+     menu->addAction(addtagAct);
+     menu->exec(event->globalPos());
 }
 
 void AMTMainWindow::open()
@@ -97,6 +132,7 @@ void AMTMainWindow::startTaggingText(QString & text){
     if (this==NULL)
         return;
     QTextBrowser * taggedBox=txtBrwsr;
+    //QTextEdit * taggedBox = txtBrwsr;
     taggedBox->clear();
     taggedBox->setLayoutDirection(Qt::RightToLeft);
     QTextCursor c=taggedBox->textCursor();
@@ -195,17 +231,22 @@ void AMTMainWindow::process(QByteArray & json) {
                 bool underline = (_atagger->tagTypeVector->at(j)).underline;
                 bool bold = (_atagger->tagTypeVector->at(j)).bold;
                 bool italic = (_atagger->tagTypeVector->at(j)).italic;
-                tagWord(start,length,fgcolor,bgcolor,underline,italic,bold);
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
                 break;
             }
         }
     }
+
+    /** Add Tags to tagDescription Tree **/
+
+    fillTreeWidget();
 }
 
-void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor, bool underline, bool italic, bool bold){
+void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int font, bool underline, bool italic, bool bold){
     if (this==NULL)
         return;
     QTextBrowser * taggedBox= txtBrwsr;
+    //QTextEdit * taggedBox = txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
 #if 0
     int lastpos=c.position();
@@ -238,6 +279,7 @@ void AMTMainWindow::finishTaggingText() {
     if (this==NULL)
         return;
     QTextBrowser * taggedBox= txtBrwsr;
+    //QTextEdit * taggedBox = txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
     c.movePosition(QTextCursor::End,QTextCursor::MoveAnchor);
     taggedBox->setTextCursor(c);
@@ -306,15 +348,15 @@ void AMTMainWindow::tagtyperemove() {
 
 }
 
-void AMTMainWindow::cut() {
+void AMTMainWindow::tag(char * tagValue) {
 
 }
 
-void AMTMainWindow::copy() {
+void AMTMainWindow::untag() {
 
 }
 
-void AMTMainWindow::paste() {
+void AMTMainWindow::addtagtype() {
 
 }
 
@@ -365,23 +407,20 @@ void AMTMainWindow::createActions()
     tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
-    cutAct = new QAction(tr("Cu&t"), this);
-    cutAct->setShortcuts(QKeySequence::Cut);
-    cutAct->setStatusTip(tr("Cut the current selection's contents to the "
-                             "clipboard"));
-    connect(cutAct, SIGNAL(triggered()), this, SLOT(cut()));
+    tagAct = new QAction(tr("Tag"), this);
+    //tagAct->setShortcuts(QKeySequence::Cut);
+    tagAct->setStatusTip(tr("Tag selected word"));
+    connect(tagAct, SIGNAL(triggered()), this, SLOT(tag()));
 
-    copyAct = new QAction(tr("&Copy"), this);
-    copyAct->setShortcuts(QKeySequence::Copy);
-    copyAct->setStatusTip(tr("Copy the current selection's contents to the "
-                              "clipboard"));
-    connect(copyAct, SIGNAL(triggered()), this, SLOT(copy()));
+    untagAct = new QAction(tr("Untag"), this);
+    //untagAct->setShortcuts(QKeySequence::Copy);
+    untagAct->setStatusTip(tr("Untag selected word"));
+    connect(untagAct, SIGNAL(triggered()), this, SLOT(untag()));
 
-    pasteAct = new QAction(tr("&Paste"), this);
-    pasteAct->setShortcuts(QKeySequence::Paste);
-    pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
-                               "selection"));
-    connect(pasteAct, SIGNAL(triggered()), this, SLOT(paste()));
+    addtagAct = new QAction(tr("&Add TagType"), this);
+    //addtagAct->setShortcuts(QKeySequence::Paste);
+    addtagAct->setStatusTip(tr("Add a TagType"));
+    connect(addtagAct, SIGNAL(triggered()), this, SLOT(addtagtype()));
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -412,17 +451,32 @@ void AMTMainWindow::createMenus()
     tagtypeMenu->addAction(tagtyperemoveAct);
     tagtypeMenu->addSeparator();
 
-    editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(cutAct);
-    editMenu->addAction(copyAct);
-    editMenu->addAction(pasteAct);
-    editMenu->addSeparator();
-
     viewMenu = menuBar()->addMenu(tr("&View"));
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+}
+
+void AMTMainWindow::fillTreeWidget() {
+    QTreeWidgetItem * tags = new QTreeWidgetItem(tagDescription);
+    tags->setText(0,tr("Tags"));
+    for(int i=0; i < _atagger->tagVector->count(); i++) {
+        QTreeWidgetItem * tag = new QTreeWidgetItem(tags);
+        //char * _i = itoa(i,_i,10);
+        tag->setText(0,tr("Tag "));
+        QTreeWidgetItem * type = new QTreeWidgetItem(tag);
+        type->setText(0,(_atagger->tagVector->at(i)).type);
+        QTreeWidgetItem * source = new QTreeWidgetItem(tag);
+        QString src;
+        if((_atagger->tagVector->at(i)).source == user) {
+            src = "user";
+        }
+        else {
+            src = "sarf";
+        }
+        source->setText(0,src);
+    }
 }
 
 AMTMainWindow::~AMTMainWindow() {

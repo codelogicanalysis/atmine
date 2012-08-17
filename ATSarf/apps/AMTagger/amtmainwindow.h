@@ -5,6 +5,8 @@
 #include<QFileDialog>
 #include<QTextBrowser>
 #include<QTreeWidget>
+#include<QTextEdit>
+
 #include <QMenu>
 #include <QMenuBar>
 
@@ -14,6 +16,7 @@ class AMTMainWindow : public QMainWindow
 
     protected:
          void contextMenuEvent(QContextMenuEvent *event);
+         void showContextMenu(const QPoint &pt);
 
      private slots:
          void open();
@@ -23,9 +26,9 @@ class AMTMainWindow : public QMainWindow
          void tagremove();
          void tagtypeadd();
          void tagtyperemove();
-         void cut();
-         void copy();
-         void paste();
+         void tag(char *);
+         void untag();
+         void addtagtype();
          void about();
          void aboutQt();
 
@@ -33,10 +36,11 @@ class AMTMainWindow : public QMainWindow
          void createActions();
          void createMenus();
          void createDockWindows();
+         void fillTreeWidget();
          void startTaggingText(QString & text);
          void finishTaggingText();
          void process(QByteArray & json);
-         void tagWord(int start, int length, QColor fcolor, QColor bcolor, bool underline, bool italic, bool bold);
+         void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
 
          QMenu *fileMenu;
          QMenu *tagMenu;
@@ -53,13 +57,14 @@ class AMTMainWindow : public QMainWindow
          QAction *tagremoveAct;
          QAction *tagtypeaddAct;
          QAction *tagtyperemoveAct;
-         QAction *cutAct;
-         QAction *copyAct;
-         QAction *pasteAct;
+         QAction *tagAct;
+         QAction *untagAct;
+         QAction *addtagAct;
          QAction *aboutAct;
          QAction *aboutQtAct;
 
          QTextBrowser * txtBrwsr;
+         //QTextEdit * txtBrwsr;
          QTreeWidget * tagDescription;
          QTextBrowser * descBrwsr;
 
