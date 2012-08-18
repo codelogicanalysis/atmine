@@ -1,15 +1,20 @@
 #ifndef ATAGGER_H
 #define ATAGGER_H
 
-#include<QVector>
+#include <QVector>
+#include <QByteArray>
 #include "tag.h"
 #include "tagtype.h"
+#include "common.h"
+
+class ATagger;
 
 class ATagger {
 public:
     ATagger();
     bool insertTag(QString, int, int, Source);
     bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool);
+    QByteArray dataInJsonFormat(Data _data);
 //private:
     QVector<Tag> *tagVector;
     QVector<TagType> *tagTypeVector;

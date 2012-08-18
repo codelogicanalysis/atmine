@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
-#include <atagger.h>
 
-extern ATagger *_atagger;
+typedef enum {user, sarf} Source;
+typedef enum {tagV, tagTV} Data;
 
 #endif // COMMON_H
