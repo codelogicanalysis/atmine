@@ -1,8 +1,7 @@
 #ifndef TAG_H
 #define TAG_H
 #include<QString>
-
-typedef enum {user, sarf} Source;
+#include "common.h"
 
 class Tag {
 public:

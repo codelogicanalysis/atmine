@@ -1,7 +1,7 @@
 #include <QtGui/QApplication>
 #include "amtmainwindow.h"
-//#include "ui_amtmainwindow.h"
 #include <qjson/parser.h>
+//#include "ui_amtmainwindow.h"
 
 #include <QContextMenuEvent>
 #include <QTextCodec>
@@ -12,6 +12,7 @@
 #include<common.h>
 #include <addtagview.h>
 #include <addtagtypeview.h>
+#include "global.h"
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,14 +20,13 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 {
     resize(800,600);
 
-    //QDockWidget *dock = new QDockWidget(tr("Text View"), this);
-    txtBrwsr = new QTextBrowser(this);
-    //txtBrwsr = new QTextEdit();
-    //dock->setWidget(txtBrwsr);
-
+    QDockWidget *dock = new QDockWidget(tr("Text View"), this);
+    txtBrwsr = new QTextBrowser(dock);
+    dock->setWidget(txtBrwsr);
     //txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
     //connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
     setCentralWidget(txtBrwsr);
+    //addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     createActions();
     createMenus();
@@ -98,7 +98,7 @@ void AMTMainWindow::open()
         browseFileDlg->setFileMode(QFileDialog::ExistingFile);
         browseFileDlg->setViewMode(QFileDialog::Detail);
     }
-     if (browseFileDlg->exec()){
+     if(browseFileDlg->exec()) {
         QStringList files = browseFileDlg->selectedFiles();
         QString fileName = files[0];
 
@@ -111,8 +111,8 @@ void AMTMainWindow::open()
         QString text = Ifile.readAll();
         Ifile.close();
 
-        _atagger->tagFile = fileName + ".tag";
-        QFile ITfile(fileName+".tag");
+        _atagger->tagFile = fileName.replace(QString(".txt"), ".tags");
+        QFile ITfile(_atagger->tagFile);
         if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::about(this, tr("Input Tag File"),
                          tr("The <b>Tag File</b> can't be opened!"));
@@ -285,53 +285,64 @@ void AMTMainWindow::finishTaggingText() {
     taggedBox->setTextCursor(c);
 }
 
+bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD) {
+
+    QFile tfile(fileName);
+    QString tfileName = fileName;
+    tfileName.replace(QString(".tags"), QString(".tagtypes"));
+    QFile ttfile(tfileName);
+    if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(tfile.errorString()));
+        return false;
+    }
+
+    if (!ttfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(tfileName)
+                             .arg(ttfile.errorString()));
+        return false;
+    }
+
+    QTextStream outt(&tfile);
+    outt << tagD;
+
+    QTextStream outtt(&ttfile);
+    outtt << tagTD;
+
+    return true;
+ }
+
 void AMTMainWindow::save() {
 
-    /** Convert TagType to QJSON **/
-
-    QVariantMap tagtypedata;
-    QVariantList tagtypeset;
-    for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        QVariantMap data;
-        data.insert("Tag",(_atagger->tagTypeVector->at(i)).tag);
-        data.insert("Description",(_atagger->tagTypeVector->at(i)).description);
-        data.insert("id",_atagger->tagTypeVector->count());
-        data.insert("foreground_color",(_atagger->tagTypeVector->at(i)).fgcolor);
-        data.insert("background_color",(_atagger->tagTypeVector->at(i)).bgcolor);
-        data.insert("font",(_atagger->tagTypeVector->at(i)).font);
-        data.insert("underline",(_atagger->tagTypeVector->at(i)).underline);
-        data.insert("bold",(_atagger->tagTypeVector->at(i)).bold);
-        data.insert("italic",(_atagger->tagTypeVector->at(i)).italic);
-
-        tagtypeset << data;
-    }
-    tagtypedata.insert("TagSet",tagtypeset);
-
-    /** Convert Tag to JSON **/
-
-    QVariantMap tagdata;
-    tagdata.insert("file",_atagger->textFile);
-    tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
-    QVariantList tagset;
-    for(int i=0; i<_atagger->tagVector->count(); i++) {
-        QVariantMap data;
-        data.insert("type",(_atagger->tagVector->at(i)).type);
-        data.insert("pos",(_atagger->tagVector->at(i)).pos);
-        data.insert("length",(_atagger->tagVector->at(i)).length);
-        data.insert("source",(_atagger->tagVector->at(i)).source);
-        tagset << data;
-    }
-    tagdata.insert("TagArray",tagset);
-
     /** Save to Default Destination **/
+
+    QByteArray tagData = _atagger->dataInJsonFormat(tagV);
+    QByteArray tagtypeData = _atagger->dataInJsonFormat(tagTV);
+
+    saveFile(_atagger->tagFile,tagData,tagtypeData);
 }
 
-void AMTMainWindow::saveas() {
+bool AMTMainWindow::saveas() {
 
+    /** Save to specified Destination with .tag extension **/
+
+    QByteArray tagData = _atagger->dataInJsonFormat(tagV);
+    QByteArray tagtypeData = _atagger->dataInJsonFormat(tagTV);
+
+    QString fileName = QFileDialog::getSaveFileName(this);
+         if (fileName.isEmpty())
+             return false;
+
+         return saveFile(fileName,tagData,tagtypeData);
 }
 
 void AMTMainWindow::tagadd() {
-    AddTagView * atv = new AddTagView(this);
+    QTextCursor cursor = txtBrwsr->textCursor();
+    AddTagView * atv = new AddTagView(cursor.selectionStart(), cursor.selectionEnd(), this);
     atv->show();
 }
 

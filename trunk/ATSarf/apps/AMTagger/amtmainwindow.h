@@ -21,7 +21,7 @@ class AMTMainWindow : public QMainWindow
      private slots:
          void open();
          void save();
-         void saveas();
+         bool saveas();
          void tagadd();
          void tagremove();
          void tagtypeadd();
@@ -41,6 +41,7 @@ class AMTMainWindow : public QMainWindow
          void finishTaggingText();
          void process(QByteArray & json);
          void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
+         bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD);
 
          QMenu *fileMenu;
          QMenu *tagMenu;
