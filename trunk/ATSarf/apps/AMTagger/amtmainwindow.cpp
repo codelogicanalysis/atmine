@@ -1,7 +1,6 @@
 #include <QtGui/QApplication>
 #include "amtmainwindow.h"
 #include <qjson/parser.h>
-//#include "ui_amtmainwindow.h"
 
 #include <QContextMenuEvent>
 #include <QTextCodec>
@@ -12,6 +11,7 @@
 #include<common.h>
 #include <addtagview.h>
 #include <addtagtypeview.h>
+#include <removetagtypeview.h>
 #include "global.h"
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
@@ -91,6 +91,8 @@ void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
 
 void AMTMainWindow::open()
 {
+    _atagger = NULL;
+    _atagger = new ATagger();
     if (browseFileDlg == NULL) {
         QString dir = QDir::currentPath();
         browseFileDlg = new QFileDialog(NULL, QString("Open File"), dir, QString("All Files (*)"));
@@ -272,6 +274,7 @@ void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor
     taggedBox->setFontItalic(italic);
     if(bold)
         taggedBox->setFontWeight(QFont::Bold);
+    taggedBox->setFontPointSize(font);
     //taggedBox->setFontPointSize();
 }
 
@@ -341,13 +344,31 @@ bool AMTMainWindow::saveas() {
 }
 
 void AMTMainWindow::tagadd() {
-    QTextCursor cursor = txtBrwsr->textCursor();
-    AddTagView * atv = new AddTagView(cursor.selectionStart(), cursor.selectionEnd(), this);
-    atv->show();
+    //QTextCursor cursor = txtBrwsr->textCursor();
+    //AddTagView * atv = new AddTagView(cursor.selectionStart(), cursor.selectionEnd(), this);
+    if(txtBrwsr->textCursor().selectedText() != "") {
+        AddTagView * atv = new AddTagView(txtBrwsr, this);
+        atv->show();
+    }
+    else {
+        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
+            return;
+        }
+    }
 }
 
 void AMTMainWindow::tagremove() {
-
+    QTextCursor cursor = txtBrwsr->textCursor();
+    int start = cursor.selectionStart();
+    int length = cursor.selectionEnd() - cursor.selectionStart();
+    for(int i=0; i < _atagger->tagVector->count(); i++) {
+        if((_atagger->tagVector->at(i)).pos == start) {
+            tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
+            _atagger->tagVector->remove(i);
+            cursor.clearSelection();
+            fillTreeWidget();
+        }
+    }
 }
 
 void AMTMainWindow::tagtypeadd() {
@@ -356,7 +377,8 @@ void AMTMainWindow::tagtypeadd() {
 }
 
 void AMTMainWindow::tagtyperemove() {
-
+    RemoveTagTypeView * rttv = new RemoveTagTypeView(txtBrwsr,tagDescription,this);
+    rttv->show();
 }
 
 void AMTMainWindow::tag(char * tagValue) {
@@ -421,7 +443,7 @@ void AMTMainWindow::createActions()
     tagAct = new QAction(tr("Tag"), this);
     //tagAct->setShortcuts(QKeySequence::Cut);
     tagAct->setStatusTip(tr("Tag selected word"));
-    connect(tagAct, SIGNAL(triggered()), this, SLOT(tag()));
+    connect(tagAct, SIGNAL(triggered()), this, SLOT(tag(char *)));
 
     untagAct = new QAction(tr("Untag"), this);
     //untagAct->setShortcuts(QKeySequence::Copy);
@@ -470,6 +492,7 @@ void AMTMainWindow::createMenus()
 }
 
 void AMTMainWindow::fillTreeWidget() {
+    tagDescription->clear();
     QTreeWidgetItem * tags = new QTreeWidgetItem(tagDescription);
     tags->setText(0,tr("Tags"));
     for(int i=0; i < _atagger->tagVector->count(); i++) {

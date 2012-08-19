@@ -18,6 +18,10 @@ class AMTMainWindow : public QMainWindow
          void contextMenuEvent(QContextMenuEvent *event);
          void showContextMenu(const QPoint &pt);
 
+     public slots:
+         void fillTreeWidget();
+         void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
+
      private slots:
          void open();
          void save();
@@ -36,11 +40,9 @@ class AMTMainWindow : public QMainWindow
          void createActions();
          void createMenus();
          void createDockWindows();
-         void fillTreeWidget();
          void startTaggingText(QString & text);
          void finishTaggingText();
          void process(QByteArray & json);
-         void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
          bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD);
 
          QMenu *fileMenu;
@@ -69,7 +71,6 @@ class AMTMainWindow : public QMainWindow
          QTreeWidget * tagDescription;
          QTextBrowser * descBrwsr;
 
-    
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
          ~AMTMainWindow();
