@@ -8,6 +8,9 @@
 #include <QScrollArea>
 #include <QGridLayout>
 #include <QColorDialog>
+#include <QCheckBox>
+#include<QComboBox>
+#include "colorlisteditor.h"
 
 class AddTagTypeView : public QMainWindow
 {
@@ -29,14 +32,12 @@ private:
     QLabel * lblitalic;
     QLineEdit * lineEditTag;
     QLineEdit * lineEditDescription;
-    QLineEdit * lineEditfgcolor;
-    QColorDialog * colorfgcolor;
-    QLineEdit * lineEditbgcolor;
-    QColorDialog * colorbgcolor;
-    QLineEdit * lineEditfont;
-    QLineEdit * lineEditunderline;
-    QLineEdit * lineEditBold;
-    QLineEdit * lineEditItalic;
+    ColorListEditor * colorfgcolor;
+    ColorListEditor * colorbgcolor;
+    QComboBox * cbfont;
+    QCheckBox * cbunderline;
+    QCheckBox * cbBold;
+    QCheckBox * cbItalic;
     QPushButton * btnAddTagType;
     QScrollArea *scrollArea;
     QGridLayout * grid;

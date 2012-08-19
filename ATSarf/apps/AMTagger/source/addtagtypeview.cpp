@@ -1,8 +1,19 @@
 #include "addtagtypeview.h"
+#include "atagger.h"
+#include "global.h"
+#include <QItemEditorFactory>
+#include <sstream>
+#include <QMessageBox>
 
 AddTagTypeView::AddTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
+    /*
+    QItemEditorFactory *factory = new QItemEditorFactory;
+    QItemEditorCreatorBase *colorListCreator = new QStandardItemEditorCreator<ColorListEditor>();
+    factory->registerEditor(QVariant::Color, colorListCreator);
+    QItemEditorFactory::setDefaultFactory(factory);
+    */
     lblTag = new QLabel(this);
     lblDescription = new QLabel(this);
     lblfgcolor = new QLabel(this);
@@ -23,12 +34,20 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
 
     lineEditTag = new QLineEdit(this);
     lineEditDescription = new QLineEdit(this);
-    lineEditfgcolor = new QLineEdit(this);
-    lineEditbgcolor = new QLineEdit(this);
-    lineEditfont = new QLineEdit(this);
-    lineEditunderline = new QLineEdit(this);
-    lineEditBold = new QLineEdit(this);
-    lineEditItalic = new QLineEdit(this);
+    //lineEditfgcolor = new QLineEdit(this);
+    //lineEditbgcolor = new QLineEdit(this);
+    colorfgcolor = new ColorListEditor(this);
+    colorbgcolor = new ColorListEditor(this);
+    cbfont = new QComboBox(this);
+    for(int i=5; i<20; i++) {
+        std::stringstream out;
+        out << i;
+        std::string str = out.str();
+        cbfont->addItem(QString::fromStdString(str));
+    }
+    cbunderline = new QCheckBox(this);
+    cbBold = new QCheckBox(this);
+    cbItalic = new QCheckBox(this);
 
     btnAddTagType = new QPushButton(this);
     btnAddTagType->setText("Add TagType");
@@ -40,17 +59,17 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
     grid->addWidget(lblDescription,1,0);
     grid->addWidget(lineEditDescription,1,1);
     grid->addWidget(lblfgcolor,2,0);
-    grid->addWidget(lineEditfgcolor,2,1);
+    grid->addWidget(colorfgcolor,2,1);
     grid->addWidget(lblbgcolor,3,0);
-    grid->addWidget(lineEditbgcolor,3,1);
+    grid->addWidget(colorbgcolor,3,1);
     grid->addWidget(lblfont,4,0);
-    grid->addWidget(lineEditfont,4,1);
+    grid->addWidget(cbfont,4,1);
     grid->addWidget(lblunderline,5,0);
-    grid->addWidget(lineEditunderline,5,1);
+    grid->addWidget(cbunderline,5,1);
     grid->addWidget(lblbold,6,0);
-    grid->addWidget(lineEditBold,6,1);
+    grid->addWidget(cbBold,6,1);
     grid->addWidget(lblitalic,7,0);
-    grid->addWidget(lineEditItalic,7,1);
+    grid->addWidget(cbItalic,7,1);
     grid->addWidget(btnAddTagType,8,0,1,2,Qt::AlignCenter);
     setCentralWidget(scrollArea);
 
@@ -62,5 +81,24 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
 }
 
 void AddTagTypeView::addTagType_clicked() {
+    QString tag = lineEditTag->text();
+    for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
+        if((_atagger->tagTypeVector->at(i)).tag == tag) {
 
+            switch( QMessageBox::information( this, "Tag Type","The <b>TagType</b> is duplicate!","&Ok",0,0) ) {
+                return;
+            }
+        }
+    }
+    QString description = lineEditDescription->text();
+    int id = _atagger->tagTypeVector->count();
+    QString fgcolor = colorfgcolor->color().name();
+    QString bgcolor = colorbgcolor->color().name();
+    int font = cbfont->currentText().toInt();
+    bool underline = cbunderline->isChecked();
+    bool bold = cbBold->isChecked();
+    bool italic = cbItalic->isChecked();
+    _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic);
+
+    this->close();
 }
