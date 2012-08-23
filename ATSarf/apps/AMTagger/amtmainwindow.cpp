@@ -5,14 +5,19 @@
 #include <QContextMenuEvent>
 #include <QTextCodec>
 #include <QTextStream>
-#include <QMessageBox>
 #include<QDockWidget>
+#include<QList>
 
-#include<common.h>
+#include "commonS.h"
 #include <addtagview.h>
 #include <addtagtypeview.h>
 #include <removetagtypeview.h>
 #include "global.h"
+
+//#include "stemmer.h"
+//#include "ATMProgressIFC.h"
+
+#include <QMessageBox>
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,8 +28,8 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QDockWidget *dock = new QDockWidget(tr("Text View"), this);
     txtBrwsr = new QTextBrowser(dock);
     dock->setWidget(txtBrwsr);
-    //txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
-    //connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
+    txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
     setCentralWidget(txtBrwsr);
     //addDockWidget(Qt::LeftDockWidgetArea, dock);
 
@@ -40,6 +45,13 @@ void AMTMainWindow::createDockWindows() {
     QDockWidget *dock = new QDockWidget(tr("Tag View"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     tagDescription = new QTreeWidget(dock);
+    tagDescription->setColumnCount(5);
+    QStringList columns;
+    columns << "Word" << "TagType" << "Source" << "POS" << "Length";
+    QTreeWidgetItem* item=new QTreeWidgetItem(columns);
+    connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
+    tagDescription->setHeaderItem(item);
+
     dock->setWidget(tagDescription);
 
     addDockWidget(Qt::RightDockWidgetArea, dock);
@@ -54,23 +66,28 @@ void AMTMainWindow::createDockWindows() {
 
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
-    QMenu * menu = txtBrwsr->createStandardContextMenu();
-    QMenu * tags;
-    //menu = new QMenu();
-    tags = menu->addMenu(tr("&Tag"));
+    signalMapper = new QSignalMapper(this);
+    QMenu * menu = new QMenu();
+    QMenu * mTags;
+    mTags = menu->addMenu(tr("&Tag"));
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        char * tagValue = (_atagger->tagTypeVector->at(i)).tag.toLocal8Bit().data();
-        taginstance = new QAction(tr(tagValue), this);
-        connect(taginstance, SIGNAL(triggered()), this, SLOT(tag(tagValue)));
-        tags->addAction(taginstance);
+        //const char * tagValueChar = (_atagger->tagTypeVector->at(i)).tag.toLocal8Bit().data();
+        //const QString tagValueQSt = QString::fromLatin1(tagValueChar);
+        taginstance = new QAction((_atagger->tagTypeVector->at(i)).tag,this);
+        //taginstance = new QAction(tr(tagValueChar), this);
+        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i)).tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+        mTags->addAction(taginstance);
     }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
     menu->addAction(untagAct);
+    menu->addSeparator();
     menu->addAction(addtagAct);
     menu->exec(txtBrwsr->mapToGlobal(pt));
     delete menu;
 }
-
+/*
 void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
  {
      QMenu * menu;
@@ -88,6 +105,7 @@ void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
      menu->addAction(addtagAct);
      menu->exec(event->globalPos());
 }
+*/
 
 void AMTMainWindow::open()
 {
@@ -274,6 +292,8 @@ void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor
     taggedBox->setFontItalic(italic);
     if(bold)
         taggedBox->setFontWeight(QFont::Bold);
+    else
+        taggedBox->setFontWeight(QFont::Normal);
     taggedBox->setFontPointSize(font);
     //taggedBox->setFontPointSize();
 }
@@ -295,18 +315,18 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD, QByteArr
     tfileName.replace(QString(".tags"), QString(".tagtypes"));
     QFile ttfile(tfileName);
     if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
+        /*QMessageBox::warning(this, tr("Application"),
                              tr("Cannot write file %1:\n%2.")
                              .arg(fileName)
-                             .arg(tfile.errorString()));
+                             .arg(tfile.errorString()));*/
         return false;
     }
 
-    if (!ttfile.open(QFile::WriteOnly | QFile::Text)) {
+    if (!ttfile.open(QFile::WriteOnly | QFile::Text)) {/*
         QMessageBox::warning(this, tr("Application"),
                              tr("Cannot write file %1:\n%2.")
                              .arg(tfileName)
-                             .arg(ttfile.errorString()));
+                             .arg(ttfile.errorString()));*/
         return false;
     }
 
@@ -381,15 +401,51 @@ void AMTMainWindow::tagtyperemove() {
     rttv->show();
 }
 
-void AMTMainWindow::tag(char * tagValue) {
+void AMTMainWindow::tag(QString tagValue) {
+    if(txtBrwsr->textCursor().selectedText() != "") {
+        QTextCursor cursor = txtBrwsr->textCursor();
+        _atagger->insertTag(tagValue,cursor.selectionStart(), cursor.selectionEnd(), user);
 
+        for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
+            if((_atagger->tagTypeVector->at(i)).tag == tagValue) {
+                QColor bgcolor((_atagger->tagTypeVector->at(i)).bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(i)).fgcolor);
+                int font = (_atagger->tagTypeVector->at(i)).font;
+                bool underline = (_atagger->tagTypeVector->at(i)).underline;
+                bool bold = (_atagger->tagTypeVector->at(i)).bold;
+                bool italic = (_atagger->tagTypeVector->at(i)).italic;
+
+                tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold);
+            }
+        }
+        cursor.clearSelection();
+        fillTreeWidget();
+    }
+    else {
+        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
+            return;
+        }
+    }
 }
 
 void AMTMainWindow::untag() {
 
+    QTextCursor cursor = txtBrwsr->textCursor();
+    int start = cursor.selectionStart();
+    int length = cursor.selectionEnd() - cursor.selectionStart();
+    for(int i=0; i < _atagger->tagVector->count(); i++) {
+        if((_atagger->tagVector->at(i)).pos == start) {
+            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
+            _atagger->tagVector->remove(i);
+            cursor.clearSelection();
+            fillTreeWidget();
+        }
+    }
 }
 
 void AMTMainWindow::addtagtype() {
+    AddTagTypeView * attv = new AddTagTypeView();
+    attv->show();
 
 }
 
@@ -440,10 +496,10 @@ void AMTMainWindow::createActions()
     tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
-    tagAct = new QAction(tr("Tag"), this);
+    //tagAct = new QAction(tr("Tag"), this);
     //tagAct->setShortcuts(QKeySequence::Cut);
-    tagAct->setStatusTip(tr("Tag selected word"));
-    connect(tagAct, SIGNAL(triggered()), this, SLOT(tag(char *)));
+    //tagAct->setStatusTip(tr("Tag selected word"));
+    //connect(tagAct, SIGNAL(triggered()), this, SLOT(tag(QString)));
 
     untagAct = new QAction(tr("Untag"), this);
     //untagAct->setShortcuts(QKeySequence::Copy);
@@ -493,24 +549,106 @@ void AMTMainWindow::createMenus()
 
 void AMTMainWindow::fillTreeWidget() {
     tagDescription->clear();
-    QTreeWidgetItem * tags = new QTreeWidgetItem(tagDescription);
-    tags->setText(0,tr("Tags"));
-    for(int i=0; i < _atagger->tagVector->count(); i++) {
-        QTreeWidgetItem * tag = new QTreeWidgetItem(tags);
-        //char * _i = itoa(i,_i,10);
-        tag->setText(0,tr("Tag "));
-        QTreeWidgetItem * type = new QTreeWidgetItem(tag);
-        type->setText(0,(_atagger->tagVector->at(i)).type);
-        QTreeWidgetItem * source = new QTreeWidgetItem(tag);
-        QString src;
-        if((_atagger->tagVector->at(i)).source == user) {
+     QList<QTreeWidgetItem *> items;
+     for(int i=0; i < _atagger->tagVector->count(); i++) {
+         QStringList entry;
+         QTextCursor cursor = txtBrwsr->textCursor();
+         int pos = (_atagger->tagVector->at(i)).pos;
+         int length = (_atagger->tagVector->at(i)).length;
+         cursor.setPosition(pos,QTextCursor::MoveAnchor);
+         cursor.setPosition(pos + length,QTextCursor::KeepAnchor);
+         QString text = cursor.selectedText();
+         entry<<text;
+         entry<<(_atagger->tagVector->at(i)).type;
+         QString src;
+         if((_atagger->tagVector->at(i)).source == user) {
             src = "user";
         }
         else {
             src = "sarf";
         }
-        source->setText(0,src);
+        entry<<src;
+        entry<<QString::number(pos);
+        entry<<QString::number(length);
+        items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
     }
+     tagDescription->insertTopLevelItems(0, items);
+}
+
+void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
+    descBrwsr->clear();
+    QString type = item->text(1);
+    for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
+        if((_atagger->tagTypeVector->at(j)).tag == type) {
+            QString desc = (_atagger->tagTypeVector->at(j)).description;
+            QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
+            QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
+            int font = (_atagger->tagTypeVector->at(j)).font;
+            bool underline = (_atagger->tagTypeVector->at(j)).underline;
+            bool bold = (_atagger->tagTypeVector->at(j)).bold;
+            bool italic = (_atagger->tagTypeVector->at(j)).italic;
+            descBrwsr->append("Word: " + item->text(0));
+            descBrwsr->append("Description: "+ desc);
+            descBrwsr->append("Tag Type: " + type);
+            descBrwsr->append("Source: " + item->text(2));
+            descBrwsr->append("Position: " + item->text(3));
+            descBrwsr->append("Length: " + item->text(4));
+            descBrwsr->append("Background Color: " + bgcolor.name());
+            descBrwsr->append("Foreground Color: " + fgcolor.name());
+            if(underline)
+                descBrwsr->append("Underline: true");
+            else
+                descBrwsr->append("Underline: false");
+            if(bold)
+                descBrwsr->append("Bold: true");
+            else
+                descBrwsr->append("Bold: false");
+            if(italic)
+                descBrwsr->append("Italic: true");
+            else
+                descBrwsr->append("Italic: false");
+        }
+    }
+}
+
+void AMTMainWindow::sarfTagging() {
+    /*
+    QFile Ofile("output.txt");
+    QFile Efile("error.txt");
+    Ofile.open(QIODevice::WriteOnly);
+    Efile.open(QIODevice::WriteOnly);
+    EmptyProgressIFC * pIFC = new EmptyProgressIFC();
+
+    Sarf srf;
+    bool all_set = srf.start(&Ofile,&Efile, pIFC);
+
+    Sarf::use(&srf);
+
+    if(!all_set) {
+        //error<<"Can't Set up Project";
+    }
+    else {
+        //cout<<"All Set"<<endl;
+    }
+
+    char filename[100];
+    //cout << "please enter a file name: " << endl;
+    //cin >> filename;
+
+    QFile Ifile(filename);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        //cerr << "error opening file." << endl;
+        //return -1;
+    }
+
+    QTextStream in(&Ifile);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        //run_process(line);
+    }
+
+    srf.exit();
+    */
 }
 
 AMTMainWindow::~AMTMainWindow() {
@@ -523,6 +661,9 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 
     _atagger=new ATagger();
+
+    //Stemmer stemmer = new Stemmer("Ameen",0);
+    //stemmer();
 
     QApplication a(argc, argv);
     AMTMainWindow w;

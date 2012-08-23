@@ -18,10 +18,8 @@ public:
 
 public slots:
     void removeTagType_clicked();
-
-signals:
-    void tagWordS(int start, int length, QColor bgcolor, QColor fgcolor, int font, bool underline, bool bold, bool italic);
-    void fillTreeWidgetS();
+    //void tagWordS(int start, int length, QColor bgcolor, QColor fgcolor, int font, bool underline, bool bold, bool italic);
+    //void fillTreeWidgetS();
 
 private:
     QLabel * lblType;
@@ -32,9 +30,6 @@ private:
     QWidget * parent;
     QTextBrowser *txtBrwsr;
     QTreeWidget * tagDescription;
-
-
-
 };
 
 #endif // REMOVETAGTYPEVIEW_H

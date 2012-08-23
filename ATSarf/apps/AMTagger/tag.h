@@ -1,7 +1,7 @@
 #ifndef TAG_H
 #define TAG_H
 #include<QString>
-#include "common.h"
+#include "commonS.h"
 
 class Tag {
 public:
