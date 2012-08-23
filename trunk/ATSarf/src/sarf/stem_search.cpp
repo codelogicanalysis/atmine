@@ -216,6 +216,7 @@ bool StemSearch::on_match_helper(int last_letter_index,Search_StemNode & s1)
 
 #else
 	long cat_id;
+	//long cat_id = -1; // FADI: this should be initialized appropriately
 	while(s1.retrieve(cat_id))
 	{
 		if (shouldcall_onmatch(last_letter_index))
@@ -254,7 +255,8 @@ solution_position * StemSearch::computeFirstSolution()
 	solution->category_id=category_of_currentmatch;
 	if (!multi_p.raw_dataONLY())
 	{
-		ItemCatRaw2AbsDescPosMapItr itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]));
+		ItemEntryKey key(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[0]);
+		ItemCatRaw2AbsDescPosMapItr itr = database_info.map_stem->find(key);
 		if (itr==database_info.map_stem->end()) {
 			qDebug() <<"Stem Map Error, Not found:\t("<<id_of_currentmatch<<", "<<category_of_currentmatch<<", "<<possible_raw_datas[0]<<")";
 			assert(itr!=database_info.map_stem->end());
@@ -295,7 +297,8 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 		itr++;
 		QString raw_data=possible_raw_datas[current->indexes[0].first];
 		ItemEntryKey key=itr.key();
-		if (itr == database_info.map_stem->end() || key != ItemEntryKey(id_of_currentmatch,category_of_currentmatch,raw_data) ) {
+		ItemEntryKey k1(id_of_currentmatch,category_of_currentmatch,raw_data);
+		if (itr == database_info.map_stem->end() || key != k1 ) {
 			if (current->indexes[0].first<possible_raw_datas.count()-1) {//check for next time
 				current->indexes[0].first++;
 				solution->type=STEM;
@@ -304,7 +307,8 @@ bool StemSearch::computeNextSolution(solution_position * current)//compute next 
 				else
 					solution->raw_data="";
 				solution->category_id=category_of_currentmatch;
-				itr = database_info.map_stem->find(ItemEntryKey(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]));
+				ItemEntryKey k2(id_of_currentmatch,category_of_currentmatch,possible_raw_datas[current->indexes[0].first]);
+				itr = database_info.map_stem->find(k2);
 			} else {
 				//current->clear_stored_solutions();
 				return false;
