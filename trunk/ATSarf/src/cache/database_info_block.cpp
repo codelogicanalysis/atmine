@@ -68,17 +68,6 @@ void database_info_block::readTrieFromDatabaseAndBuildFile()
 		category_id=query.value(2).toLongLong();
 #ifdef REDUCE_THRU_DIACRITICS
 		raw_data=query.value(3).toString();
-		if(!equal(name,raw_data)) {
-			error<<"Conflict Database:\t"<<name<<"\t"<<raw_data;
-			if (raw_data.endsWith(' ')) {
-                                while (raw_data.endsWith(' '))
-                                    raw_data=raw_data.remove(raw_data.size()-1,1);
-				assert(equal(raw_data,name));
-			} else {
-				name=removeDiacritics(name);
-			}
-
-		}
 		node->add_info(category_id,raw_data);
 #else
 		node->add_info(category_id);

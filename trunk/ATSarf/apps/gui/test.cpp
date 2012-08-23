@@ -238,8 +238,8 @@ int test(QString inputString,ATMProgressIFC * prg) {
 	return 0;
 }
 int verify(QString ,ATMProgressIFC *) {
-        drawAffixGraph(PREFIX);
-        drawAffixGraph(SUFFIX);
+        //drawAffixGraph(PREFIX);
+        //drawAffixGraph(SUFFIX);
 	listAllAffixes(SUFFIX);
 	listAllAffixes(PREFIX);
 	return 0;
