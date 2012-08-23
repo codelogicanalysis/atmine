@@ -13,6 +13,7 @@
 #include <addtagtypeview.h>
 #include <removetagtypeview.h>
 #include "global.h"
+#include "edittagtypeview.h"
 
 //#include "stemmer.h"
 //#include "ATMProgressIFC.h"
@@ -81,7 +82,7 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         mTags->addAction(taginstance);
     }
     connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
-    menu->addAction(untagAct);
+    menu->addAction(untagMAct);
     menu->addSeparator();
     menu->addAction(addtagAct);
     menu->exec(txtBrwsr->mapToGlobal(pt));
@@ -107,8 +108,7 @@ void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
 }
 */
 
-void AMTMainWindow::open()
-{
+void AMTMainWindow::open() {
     _atagger = NULL;
     _atagger = new ATagger();
     if (browseFileDlg == NULL) {
@@ -260,6 +260,7 @@ void AMTMainWindow::process(QByteArray & json) {
     /** Add Tags to tagDescription Tree **/
 
     fillTreeWidget();
+    createTagMenu();
 }
 
 void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int font, bool underline, bool italic, bool bold){
@@ -391,6 +392,11 @@ void AMTMainWindow::tagremove() {
     }
 }
 
+void AMTMainWindow::edittagtypes() {
+    EditTagTypeView * ettv = new EditTagTypeView(this);
+    ettv->show();
+}
+
 void AMTMainWindow::tagtypeadd() {
     AddTagTypeView * attv = new AddTagTypeView(this);
     attv->show();
@@ -479,14 +485,18 @@ void AMTMainWindow::createActions()
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
-    tagaddAct = new QAction(tr("&Tag Add"), this);
+    tagaddAct = new QAction(tr("&Tag"), this);
     //tagaddAct->setShortcuts(QKeySequence::);
     tagaddAct->setStatusTip(tr("Add a Tag"));
     connect(tagaddAct, SIGNAL(triggered()), this, SLOT(tagadd()));
 
-    tagremoveAct = new QAction(tr("&Tag Remove"), this);
+    tagremoveAct = new QAction(tr("&Untag"), this);
     tagremoveAct->setStatusTip(tr("Remove a Tag"));
     connect(tagremoveAct, SIGNAL(triggered()), this, SLOT(tagremove()));
+
+    edittagtypesAct = new QAction(tr("EditTagTypes..."),this);
+    edittagtypesAct->setStatusTip(tr("Edit Tag Types"));
+    connect(edittagtypesAct, SIGNAL(triggered()), this, SLOT(edittagtypes()));
 
     tagtypeaddAct = new QAction(tr("&TagType Add"), this);
     tagtypeaddAct->setStatusTip(tr("Add a TagType"));
@@ -501,10 +511,10 @@ void AMTMainWindow::createActions()
     //tagAct->setStatusTip(tr("Tag selected word"));
     //connect(tagAct, SIGNAL(triggered()), this, SLOT(tag(QString)));
 
-    untagAct = new QAction(tr("Untag"), this);
+    untagMAct = new QAction(tr("Untag"), this);
     //untagAct->setShortcuts(QKeySequence::Copy);
-    untagAct->setStatusTip(tr("Untag selected word"));
-    connect(untagAct, SIGNAL(triggered()), this, SLOT(untag()));
+    untagMAct->setStatusTip(tr("Untag selected word"));
+    connect(untagMAct, SIGNAL(triggered()), this, SLOT(untag()));
 
     addtagAct = new QAction(tr("&Add TagType"), this);
     //addtagAct->setShortcuts(QKeySequence::Paste);
@@ -530,21 +540,39 @@ void AMTMainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
-    tagMenu = menuBar()->addMenu(tr("&Tag"));
-    tagMenu->addAction(tagaddAct);
+    tagMenu = menuBar()->addMenu(tr("&Tags"));
+    mTags = tagMenu->addMenu(tr("&Tag"));
+    createTagMenu();
+
     tagMenu->addAction(tagremoveAct);
     tagMenu->addSeparator();
+    tagMenu->addAction(edittagtypesAct);
 
+    /*
     tagtypeMenu = menuBar()->addMenu(tr("&TagType"));
     tagtypeMenu->addAction(tagtypeaddAct);
     tagtypeMenu->addAction(tagtyperemoveAct);
     tagtypeMenu->addSeparator();
+    */
 
     viewMenu = menuBar()->addMenu(tr("&View"));
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
+}
+
+void AMTMainWindow::createTagMenu() {
+    mTags->clear();
+    signalMapperM = new QSignalMapper(this);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        QAction * taginstance;
+        taginstance = new QAction((_atagger->tagTypeVector->at(i)).tag,this);
+        signalMapperM->setMapping(taginstance, (_atagger->tagTypeVector->at(i)).tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapperM, SLOT(map()));
+        mTags->addAction(taginstance);
+    }
+    connect(signalMapperM, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
 }
 
 void AMTMainWindow::fillTreeWidget() {
