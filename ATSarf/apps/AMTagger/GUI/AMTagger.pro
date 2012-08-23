@@ -16,7 +16,8 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../../../src/log \
     ../../../src/sarf \
     ../../../src/sql \
-    ../../../src/util
+    ../../../src/util \
+    ../../../apps/case
 
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
@@ -87,7 +88,7 @@ HEADERS += \
     ../../../src/util/Math_functions.h \
     ../../../src/util/mergeLists.h \
     ../../../src/util/morphemes.h \
-    ../test.h
+    ../edittagtypeview.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -137,8 +138,8 @@ SOURCES += \
     ../../../src/util/vocalizedCombinations.cpp \
     ../../../src/util/Math_functions.cpp \
     ../../../src/util/morphemes.cpp \
-    ../test.cpp \
-    ../global_variables.cpp
+    ../edittagtypeview.cpp \
+    ../../../src/common/global_variables.cpp
 
 FORMS    +=
 

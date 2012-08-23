@@ -32,6 +32,7 @@ class AMTMainWindow : public QMainWindow
          bool saveas();
          void tagadd();
          void tagremove();
+         void edittagtypes();
          void tagtypeadd();
          void tagtyperemove();
          void untag();
@@ -42,6 +43,7 @@ class AMTMainWindow : public QMainWindow
      private:
          void createActions();
          void createMenus();
+         void createTagMenu();
          void createDockWindows();
          void startTaggingText(QString & text);
          void finishTaggingText();
@@ -55,6 +57,7 @@ class AMTMainWindow : public QMainWindow
          QMenu *editMenu;
          QMenu *viewMenu;
          QMenu *helpMenu;
+         QMenu * mTags;
 
          QAction *openAct;
          QAction *saveAct;
@@ -62,10 +65,11 @@ class AMTMainWindow : public QMainWindow
          QAction *exitAct;
          QAction *tagaddAct;
          QAction *tagremoveAct;
+         QAction *edittagtypesAct;
          QAction *tagtypeaddAct;
          QAction *tagtyperemoveAct;
          QAction *tagAct;
-         QAction *untagAct;
+         QAction *untagMAct;
          QAction *addtagAct;
          QAction *aboutAct;
          QAction *aboutQtAct;
@@ -82,6 +86,7 @@ public:
 private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;
+         QSignalMapper *signalMapperM;
 };
 
 #endif // AMTMAINWINDOW_H
