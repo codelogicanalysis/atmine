@@ -5,7 +5,7 @@
 #include <QByteArray>
 #include "tag.h"
 #include "tagtype.h"
-#include "common.h"
+#include "commonS.h"
 
 class ATagger;
 

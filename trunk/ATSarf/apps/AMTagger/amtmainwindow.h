@@ -9,18 +9,22 @@
 
 #include <QMenu>
 #include <QMenuBar>
+#include <QSignalMapper>
+//#include <QTreeWidgetItem>
 
 class AMTMainWindow : public QMainWindow
 {
     Q_OBJECT
 
     protected:
-         void contextMenuEvent(QContextMenuEvent *event);
-         void showContextMenu(const QPoint &pt);
+         //void contextMenuEvent(QContextMenuEvent *event);
 
      public slots:
          void fillTreeWidget();
+         void showContextMenu(const QPoint &pt);
          void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
+         void tag(QString tagValue);
+         void itemSelectionChanged(QTreeWidgetItem*,int);
 
      private slots:
          void open();
@@ -30,7 +34,6 @@ class AMTMainWindow : public QMainWindow
          void tagremove();
          void tagtypeadd();
          void tagtyperemove();
-         void tag(char *);
          void untag();
          void addtagtype();
          void about();
@@ -44,6 +47,7 @@ class AMTMainWindow : public QMainWindow
          void finishTaggingText();
          void process(QByteArray & json);
          bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD);
+         void sarfTagging();
 
          QMenu *fileMenu;
          QMenu *tagMenu;
@@ -77,6 +81,7 @@ public:
     
 private:
          QFileDialog * browseFileDlg;
+         QSignalMapper *signalMapper;
 };
 
 #endif // AMTMAINWINDOW_H
