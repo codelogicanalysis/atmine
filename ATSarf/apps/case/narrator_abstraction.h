@@ -15,7 +15,6 @@
 
 class ChainNarratorPrim;
 class Chain;
-class ATMProgressIFC;
 
 typedef QList<Chain *> ChainsContainer;
 

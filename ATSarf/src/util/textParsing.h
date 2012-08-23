@@ -1,5 +1,6 @@
 #ifndef TEXTPARSING_H
 #define TEXTPARSING_H
+#include "hadith.h"
 #include "letters.h"
 #include "diacritics.h"
 

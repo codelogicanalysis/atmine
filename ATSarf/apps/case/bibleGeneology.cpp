@@ -439,9 +439,7 @@ void geneology_initialize() {
 	bits_gene_NAME.append(bit_NAME);
 #endif
 
-#ifdef PREPROCESS_DESCRIPTIONS
-	readFromFilePreprocessedGenealogyDescriptions();
-#endif
+        readFromFilePreprocessedGenealogyDescriptions();
 
 	long abstract_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryID("VERB_PERFECT");
 	bit_VERB_PERFECT=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_VERB_PERFECT);

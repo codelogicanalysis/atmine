@@ -159,7 +159,7 @@ bool SuffixMachine::shouldcall_onmatch(int position)
 }
 
 void Stemmer::removeLastMachines() {
-        //SubMachines last=machines.last();
+        SubMachines last=machines.last();
 	machines.removeLast();
         /*
 	if (last.Prefix!=NULL)
