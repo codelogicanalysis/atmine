@@ -197,7 +197,7 @@ The following example explains the steps of using the basic function of the morp
 \label{subsubsec:default}
 
 \paragraph{}
-We start by creating a folder in ``ATSarf/src'' and name it ``ex0''. Inside this folder, we create a file and call it ``ex0main.cpp'' which implements the main of our program. Avoid naming your files with existing file names in the code of Sarf. Inside the file ``ex0main.cpp'', create a function called ``stemmerExampleDefault()'' which reads the input, triggers the tool, and writes the output solution to the terminal along with any errors if present. This function returns an integer of 0 value if successful, else -1.
+We start by creating a folder in ``ATSarf/apps'' and name it ``ex0''. Inside this folder, we create a file and call it ``ex0main.cpp'' which implements the main of our program. Avoid naming your files with existing file names in the code of Sarf. Inside the file ``ex0main.cpp'', create a function called ``stemmerExampleDefault()'' which reads the input, triggers the tool, and writes the output solution to the terminal along with any errors if present. This function returns an integer of 0 value if successful, else -1.
 
 \begin{Verbatim}[numbers=left]
 #include <iostream>
@@ -295,7 +295,7 @@ The ``Stemmer'' class is the main structure in Sarf. The result of this morpholo
 In line 7, we call the bracket operator which triggers the tool to start the analysis.
 
 \begin{Verbatim}[numbers=left]
-int ex0_main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
     int test;
     
@@ -309,7 +309,7 @@ int ex0_main(int argc, char *argv[]) {
 \end{Verbatim}
 
 \paragraph{}
-The last step is to create the main in which we call the ``stemmerExampleDefault()'', where the code is shown above. Name your main function ``ex0\_main'' to respect the linking conventions in ATSarf, and we will deal with this issue later in the configuration step.
+The last step is to create the main in which we call the ``stemmerExampleDefault()'', where the code is shown above.
 
 \begin{center}
 \textbf{Configuration}
@@ -322,40 +322,30 @@ Now that we are done with the coding part, we still need to configure the enviro
 ln -s ../../scripts/archiveMakefile makefile
 \end{Verbatim}
 
-Next, we add a file in ``ATSarf/bin'' called ex0.cpp and inside this file we add the following lines of code:
-\begin{Verbatim}[numbers=left]
-extern int ex0_main(int argc, char ** argv);
-
-int
-main(int argc, char ** argv) {
-  return ex0_main(argc, argv);
-}
-\end{Verbatim}
-
 \paragraph{}
-In the lines of code shown above, the extern keyword in line 1 declares ``ex0\_main'' and specifies that it has external linkage. Note that ``ex0\_main'' is the function that we used in place of the main in the file ``ex0main.cpp'' to respect the linking conventions of the project. Then, in lines 3-6 we write our main that calles the ``ex0\_main'' function previously declared.
-
-\paragraph{}
-The last step left is to modify the makefile found in ``ATSarf/bin'' directory to create an executable program out of the libraries created in compilation. Thus, we add the following rules to the makefile to create the ex0 executable.
+We have to modify the makefile found in ``ATSarf/bin'' directory to create an executable program out of the libraries created in compilation. Thus, we add the following rules to the makefile to create the ex0 executable.
 
 \begin{Verbatim}[numbers=left]
-EX0_LIBDIR = ../lib/libex0.a ../lib/libbuild.a ../lib/libcache.a
- ../lib/libcommon.a ../lib/liblog.a ../lib/libsarf.a ../lib/libsql.a
-  ../lib/libutil.a
-EX0_LIBS_LINKFLAGS=-L ../lib -lex0 -lbuild -lcache -lcommon -llog
- -lsarf -lsql -lutil
+EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
+EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
 
 ex0: $(EX0_LIBDIR)
-	$(CXX) -o $@ ex0.cpp $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
-		$(EX0_LIBS_LINKFLAGS) \
-		$(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+	$(CXX) -o $@ $(LDDFLAGS) $(EX0_LIBS_LINKFLAGS) \
+		$(THIRD_LIBS_LINKFLAGS)
 \end{Verbatim}
 
 \paragraph{}
-In line 1 above, we define the libraries from the lib directory that our program depends on. Also, in line 4 we specify the flags referring to those libraries for dependency resolving. Last in line 7, we introduce the target and dependecies along with the compilation command. The following can be used as a template for any other program.
+In line 1 above, we define the macro ``EX0\_LIBDIR'' which includes the libraries from the ``lib'' directory that our program depends on. We have to add our application archive library to this macro in addition to the ATSarf libraries included in the predefined macro ``ATSarf\_LIBS''. Also, in line 2 we specify the flags referring to those libraries for dependency resolving. Last in line 4, we introduce the target and dependecies along with the compilation command. The following can be used as a template for any other program.
+
+\begin{verbatim}
+opt 32 64 cyg ATSarf ex0: all
+\end{verbatim}
 
 \paragraph{}
-Now that all the steps of implementation and configuration are done, we only need to compile the project. For that purpose, move to the directory ``ATSarf'' in the terminal and run the makefile through the command make. If all the steps are done correctly, you should have an executable with the name ``ex0'' in the ``bin'' directory.
+Last in the makefile present in the directory ``ATSarf'', you have to add the name of your application to the last line as shown above. The name has to be the same as the taget name in the makefile added to the makefile in ``ATSarf/bin'' directory.
+
+\paragraph{}
+Now that all the steps of implementation and configuration are done, we only need to compile the project. Move to the directory ``ATSarf'' in the terminal and run the makefile through the command ``make ex0''. If all the steps are done correctly, you should have an executable with the name ``ex0'' in the ``bin'' directory.
 
 \subsubsection{Interface}
 \label{subsubsec:interface}
@@ -364,7 +354,7 @@ Now that all the steps of implementation and configuration are done, we only nee
 Sarf can be used with an interface which states a destination for the output analysis, error, and implementation for a structure internally used showing the progress of internal work along with other features.
 
 \paragraph{}
-Similar to the Default example explained above, we start by creating the program folder ``exo'' in ``ATSarf/src'' directory. We introduce an additional header file called ``myprogressifc.h'' which includes the implementation of the class ``MYProgressIFC''. This class implements functions that are internally used in the tool, and returns data that the user might find useful about the tool progress.
+Similar to the Default example explained above, we start by creating the program folder ``exo'' in ``ATSarf/apps'' directory. We introduce an additional header file called ``myprogressifc.h'' which includes the implementation of the class ``MYProgressIFC''. This class implements functions that are internally used in the tool, and returns data that the user might find useful about the tool progress.
 
 \label{vrbtm:myprogressifc}
 \begin{Verbatim}[numbers=left]
@@ -464,7 +454,7 @@ The sarf instance is declared as before, however the start function now takes th
 \end{itemize}
 
 \paragraph{}
-The rest of the function proceeds exactly same as the default case. Also, we can use the same ``run\_process'' function implemented previously, then call the function ``stemmerExamplewithInterface()'' in ``ex0\_main'' function.\\
+The rest of the function proceeds exactly same as the default case. Also, we can use the same ``run\_process'' function implemented previously, then call the function ``stemmerExamplewithInterface()'' in the main.\\
 The configuration steps are not required if we decide to include those modifications inside the same example, else the same configuration procedure explained in \ref{subsubsec:default} should be applied here.
 
 \section{Examples}
@@ -488,7 +478,7 @@ The following example takes a specific case to implement, however you can search
 \end{itemize}
 
 \paragraph{}
-We start by creating a folder for our program in the directory ``ATSarf/src'' and name it ``ex1''. In this folder, we will create the following three files:
+We start by creating a folder for our program in the directory ``ATSarf/apps'' and name it ``ex1''. In this folder, we will create the following three files:
 \begin{itemize}
 \item POSVerb.h
 \item POSVerb.cpp
