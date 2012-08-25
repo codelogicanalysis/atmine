@@ -77,7 +77,7 @@ class AMTMainWindow : public QMainWindow
          QTextBrowser * txtBrwsr;
          //QTextEdit * txtBrwsr;
          QTreeWidget * tagDescription;
-         QTextBrowser * descBrwsr;
+         QTreeWidget * descBrwsr;
 
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
