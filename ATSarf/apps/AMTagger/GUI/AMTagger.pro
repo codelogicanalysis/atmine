@@ -17,7 +17,8 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../../../src/sarf \
     ../../../src/sql \
     ../../../src/util \
-    ../../../apps/case
+    ../../../apps/case \
+    ../../../apps/gui
 
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie

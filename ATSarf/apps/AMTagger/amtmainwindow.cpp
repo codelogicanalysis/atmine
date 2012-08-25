@@ -48,7 +48,7 @@ void AMTMainWindow::createDockWindows() {
     tagDescription = new QTreeWidget(dock);
     tagDescription->setColumnCount(5);
     QStringList columns;
-    columns << "Word" << "TagType" << "Source" << "POS" << "Length";
+    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
     QTreeWidgetItem* item=new QTreeWidgetItem(columns);
     connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
     tagDescription->setHeaderItem(item);
@@ -59,7 +59,13 @@ void AMTMainWindow::createDockWindows() {
     viewMenu->addAction(dock->toggleViewAction());
 
     dock = new QDockWidget(tr("Description"), this);
-    descBrwsr = new QTextBrowser(dock);
+    descBrwsr = new QTreeWidget(dock);
+    descBrwsr->setColumnCount(2);
+    QStringList columnsD;
+    columnsD << "Field" << "Value";
+    QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
+    descBrwsr->setHeaderItem(itemD);
+
     dock->setWidget(descBrwsr);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
@@ -73,10 +79,7 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     mTags = menu->addMenu(tr("&Tag"));
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        //const char * tagValueChar = (_atagger->tagTypeVector->at(i)).tag.toLocal8Bit().data();
-        //const QString tagValueQSt = QString::fromLatin1(tagValueChar);
         taginstance = new QAction((_atagger->tagTypeVector->at(i)).tag,this);
-        //taginstance = new QAction(tr(tagValueChar), this);
         signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i)).tag);
         connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
         mTags->addAction(taginstance);
@@ -85,9 +88,17 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     menu->addAction(untagMAct);
     menu->addSeparator();
     menu->addAction(addtagAct);
+    if(txtBrwsr->textCursor().selectedText().isEmpty()) {
+        mTags->setEnabled(false);
+        untagMAct->setEnabled(false);
+    }
+    else {
+        untagMAct->setEnabled(true);
+    }
     menu->exec(txtBrwsr->mapToGlobal(pt));
     delete menu;
 }
+
 /*
 void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
  {
@@ -363,7 +374,7 @@ bool AMTMainWindow::saveas() {
 
          return saveFile(fileName,tagData,tagtypeData);
 }
-
+/** Not needed Anymore**/
 void AMTMainWindow::tagadd() {
     //QTextCursor cursor = txtBrwsr->textCursor();
     //AddTagView * atv = new AddTagView(cursor.selectionStart(), cursor.selectionEnd(), this);
@@ -410,7 +421,9 @@ void AMTMainWindow::tagtyperemove() {
 void AMTMainWindow::tag(QString tagValue) {
     if(txtBrwsr->textCursor().selectedText() != "") {
         QTextCursor cursor = txtBrwsr->textCursor();
-        _atagger->insertTag(tagValue,cursor.selectionStart(), cursor.selectionEnd(), user);
+        int start = cursor.selectionStart();
+        int length = cursor.selectionEnd() - cursor.selectionStart();
+        _atagger->insertTag(tagValue, start, length, user);
 
         for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
             if((_atagger->tagTypeVector->at(i)).tag == tagValue) {
@@ -605,6 +618,8 @@ void AMTMainWindow::fillTreeWidget() {
 
 void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     descBrwsr->clear();
+    txtBrwsr->textCursor().clearSelection();
+    QList<QTreeWidgetItem *> items;
     QString type = item->text(1);
     for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
         if((_atagger->tagTypeVector->at(j)).tag == type) {
@@ -615,26 +630,59 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             bool underline = (_atagger->tagTypeVector->at(j)).underline;
             bool bold = (_atagger->tagTypeVector->at(j)).bold;
             bool italic = (_atagger->tagTypeVector->at(j)).italic;
-            descBrwsr->append("Word: " + item->text(0));
-            descBrwsr->append("Description: "+ desc);
-            descBrwsr->append("Tag Type: " + type);
-            descBrwsr->append("Source: " + item->text(2));
-            descBrwsr->append("Position: " + item->text(3));
-            descBrwsr->append("Length: " + item->text(4));
-            descBrwsr->append("Background Color: " + bgcolor.name());
-            descBrwsr->append("Foreground Color: " + fgcolor.name());
+
+            QTextCursor c = txtBrwsr->textCursor();
+            c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
+            c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
+            txtBrwsr->setTextCursor(c);
+
+            QStringList entry;
+            entry << "Word" << item->text(0);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Description" <<desc;
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "TagType" << type;
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Source" << item->text(2);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Position" << item->text(3);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Length" << item->text(4);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Background Color" << bgcolor.name();
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Foreground Color" << fgcolor.name();
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Font Size" << QString::number(font);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
             if(underline)
-                descBrwsr->append("Underline: true");
+                entry << "Underline" << "True";
             else
-                descBrwsr->append("Underline: false");
+                entry << "Underline" <<  "False";
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
             if(bold)
-                descBrwsr->append("Bold: true");
+                entry << "Bold" << "True";
             else
-                descBrwsr->append("Bold: false");
+                entry << "Bold" << "False";
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
             if(italic)
-                descBrwsr->append("Italic: true");
+                entry << "Italic" << "True";
             else
-                descBrwsr->append("Italic: false");
+                entry << "Italic" << "False";
+
+            descBrwsr->insertTopLevelItems(0, items);
+            break;
         }
     }
 }
