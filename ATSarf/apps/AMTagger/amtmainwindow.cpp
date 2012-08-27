@@ -132,6 +132,7 @@ void AMTMainWindow::contextMenuEvent(QContextMenuEvent *event)
 void AMTMainWindow::open() {
     _atagger = NULL;
     _atagger = new ATagger();
+    /*
     if (browseFileDlg == NULL) {
         QString dir = QDir::currentPath();
         browseFileDlg = new QFileDialog(NULL, QString("Open File"), dir, QString("All Files (*)"));
@@ -142,31 +143,39 @@ void AMTMainWindow::open() {
      if(browseFileDlg->exec()) {
         QStringList files = browseFileDlg->selectedFiles();
         QString fileName = files[0];
-
-        QFile Ifile(fileName);
-        if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QMessageBox::about(this, tr("Input File"),
-                         tr("The <b>File</b> can't be opened!"));
-        }
-
-        QString text = Ifile.readAll();
-        Ifile.close();
-
-        _atagger->tagFile = fileName.replace(QString(".txt"), ".tags");
-        QFile ITfile(_atagger->tagFile);
-        if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            QMessageBox::about(this, tr("Input Tag File"),
-                         tr("The <b>Tag File</b> can't be opened!"));
-        }
-
-        QByteArray Tags = ITfile.readAll();
-
-        ITfile.close();
-
-        startTaggingText(text);
-        process(Tags);
-        finishTaggingText();
     }
+    */
+    QString fileName = QFileDialog::getOpenFileName(this,
+             tr("Open Tagged Text File"), "",
+             tr("Tag Types (*.txt);;All Files (*)"));
+
+    QFile Ifile(fileName);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input File"),
+                     tr("The <b>File</b> can't be opened!"));
+        return;
+    }
+
+    _atagger->textFile = fileName;
+
+    QString text = Ifile.readAll();
+    _atagger->text = text;
+    Ifile.close();
+
+    _atagger->tagFile = fileName.replace(QString(".txt"), ".tags");
+    QFile ITfile(_atagger->tagFile);
+    if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag File</b> can't be opened!"));
+    }
+
+    QByteArray Tags = ITfile.readAll();
+
+    ITfile.close();
+
+    startTaggingText(text);
+    process(Tags);
+    finishTaggingText();
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
@@ -197,7 +206,7 @@ void AMTMainWindow::process(QByteArray & json) {
                      tr("The <b>Tag File</b> has a wrong format"));
     }
 
-    _atagger->textFile = result["file"].toString();
+    //_atagger->textFile = result["file"].toString();
     _atagger->tagtypeFile = result["TagTypeFile"].toString();
 
     foreach(QVariant tag, result["TagArray"].toList()) {
@@ -261,6 +270,16 @@ void AMTMainWindow::process(QByteArray & json) {
 
     /** Apply Tags on Input Text **/
 
+    applyTags();
+
+    /** Add Tags to tagDescription Tree **/
+
+    fillTreeWidget();
+    createTagMenu();
+}
+
+void AMTMainWindow::applyTags() {
+
     for(int i =0; i< _atagger->tagVector->count(); i++) {
         for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
             if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j)).tag) {
@@ -277,9 +296,6 @@ void AMTMainWindow::process(QByteArray & json) {
             }
         }
     }
-
-    /** Add Tags to tagDescription Tree **/
-
     fillTreeWidget();
     createTagMenu();
 }
@@ -330,12 +346,20 @@ void AMTMainWindow::finishTaggingText() {
     taggedBox->setTextCursor(c);
 }
 
-bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD) {
+bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD, QString newttPath) {
 
-    QFile tfile(fileName);
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        /*QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(tfile.errorString()));*/
+        return false;
+    }
+
     QString tfileName = fileName;
-    tfileName.replace(QString(".tags"), QString(".tagtypes"));
-    QFile ttfile(tfileName);
+    tfileName.replace(QString(".txt"), QString(".tags"));
+    QFile tfile(tfileName);
     if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
         /*QMessageBox::warning(this, tr("Application"),
                              tr("Cannot write file %1:\n%2.")
@@ -344,19 +368,36 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD, QByteArr
         return false;
     }
 
-    if (!ttfile.open(QFile::WriteOnly | QFile::Text)) {/*
-        QMessageBox::warning(this, tr("Application"),
+    QString ttfileName;
+    if(!newttPath.isEmpty()) {
+        // SaveAs Case
+        ttfileName = newttPath;
+    }
+    else {
+        // Save Case
+       ttfileName = _atagger->tagtypeFile;
+    }
+    QFile ttfile(ttfileName);
+    if (!ttfile.open(QFile::WriteOnly | QFile::Text)) {
+        /*QMessageBox::warning(this, tr("Application"),
                              tr("Cannot write file %1:\n%2.")
-                             .arg(tfileName)
-                             .arg(ttfile.errorString()));*/
+                             .arg(fileName)
+                             .arg(tfile.errorString()));*/
         return false;
     }
 
-    QTextStream outt(&tfile);
-    outt << tagD;
+    QTextStream outt(&file);
+    outt << _atagger->text;
 
-    QTextStream outtt(&ttfile);
-    outtt << tagTD;
+    QTextStream outtags(&tfile);
+    outtags << tagD;
+
+    QTextStream outtagtypes(&ttfile);
+    outtagtypes << tagTD;
+
+    file.close();
+    tfile.close();
+    ttfile.close();
 
     return true;
  }
@@ -368,21 +409,32 @@ void AMTMainWindow::save() {
     QByteArray tagData = _atagger->dataInJsonFormat(tagV);
     QByteArray tagtypeData = _atagger->dataInJsonFormat(tagTV);
 
-    saveFile(_atagger->tagFile,tagData,tagtypeData);
+    saveFile(_atagger->textFile,tagData,tagtypeData);
 }
 
 bool AMTMainWindow::saveas() {
 
     /** Save to specified Destination with .tag extension **/
 
+    QString fileName = QFileDialog::getSaveFileName(this,
+             tr("Save Text,Tags,and TagTypes"), "",
+             tr("Text (*.txt);;All Files (*)"));
+
+    if (fileName.isEmpty())
+        return false;
+
+    /** Simple Swap then return to riginal value to avoid copying _atagger **/
+    QString newttPath = fileName;
+    newttPath = newttPath.replace(QString(".txt"), QString(".tagtypes"));
+    QString oldttPath = _atagger->tagtypeFile;
+    _atagger->tagtypeFile = newttPath;
     QByteArray tagData = _atagger->dataInJsonFormat(tagV);
     QByteArray tagtypeData = _atagger->dataInJsonFormat(tagTV);
+    _atagger->tagtypeFile = oldttPath;
 
-    QString fileName = QFileDialog::getSaveFileName(this);
-         if (fileName.isEmpty())
-             return false;
+    //QString fileName = QFileDialog::getSaveFileName(this);
 
-         return saveFile(fileName,tagData,tagtypeData);
+    return saveFile(fileName,tagData,tagtypeData,newttPath);
 }
 /** Not needed Anymore**/
 void AMTMainWindow::tagadd() {
@@ -468,7 +520,7 @@ void AMTMainWindow::untag() {
             tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
             _atagger->tagVector->remove(i);
             cursor.clearSelection();
-            fillTreeWidget();
+            fillTreeWidget();  
         }
     }
 }

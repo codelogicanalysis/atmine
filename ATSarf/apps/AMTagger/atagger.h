@@ -18,6 +18,7 @@ public:
 //private:
     QVector<Tag> *tagVector;
     QVector<TagType> *tagTypeVector;
+    QString text;
     QString textFile;
     QString tagFile;
     QString tagtypeFile;
