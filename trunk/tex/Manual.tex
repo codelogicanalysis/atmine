@@ -107,6 +107,7 @@ In order to be able to build and run Sarf, the following dependencies must be in
 \item mysql-server
 \item libmysqlcppconn
 \item libmysqlcppconn-dev
+%\item libqjson-dev
 %\item subversion
 \item qt-sdk
 %\item qtcreator
@@ -124,6 +125,11 @@ After downloading the trie structure to a destination you specify, go to {\bf da
 \end{enumerate}
 Note that the name of the folder ``libdatrie-0.2.3'' includes the version of the library downloaded. So you could have a number in your download referring to a different version, which shouldn't cause any problem.
 
+\subsubsection{QJson}
+QJson is a qt-based library that maps JSON data to QVariant objects: JSON arrays will be mapped to QVariantList instances, while JSON objects will be mapped to QVariantMap. This library can be downloaded from the following link:\\
+\url{http://sourceforge.net/projects/qjson/files/}\\
+After downloading QJson to the desired destination, follow the instructions found in the ``INSTALL'' file found in the root directory ``qjson'' to install the library.
+
 \subsection{links}
 The directory ``ATSarf/third/'' in the extracted Sarf code should contain links to the dependencies as follows.
 
@@ -133,9 +139,14 @@ ln -s TARGET LINK_NAME
 \end{verbatim}
 where TARGET is the dependency we want to point to and LINK\_NAME is the name of the link to be created.
 
-Given that you put the datrie file in the same directory as the root folder ``ATSarf'', you can set the link to it as follows:
+Given that you put the datrie file in the same directory as the root folder ``ATSarf'' and you are in the ``third'' directory, you can set the link to it as follows:
 \begin{verbatim}
-ln -s ../datrie/libdatrie-0.2.3/ datrie
+ln -s ../../datrie/libdatrie-0.2.3/ datrie
+\end{verbatim}
+
+Similarly, given that you add the QJson library to the same directory as the root folder ``ATSarf'', add a link to it using the following command:
+\begin{verbatim}
+ln -s ../../qjson/ qjson
 \end{verbatim}
 
 Moreover, you need to set a link to the Qt library as well using the same procedure used for the preceding link. 
