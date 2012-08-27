@@ -9,7 +9,8 @@
 #include <QGridLayout>
 #include <QColorDialog>
 #include <QCheckBox>
-#include<QComboBox>
+#include <QComboBox>
+#include "edittagtypeview.h"
 #include "colorlisteditor.h"
 
 class AddTagTypeView : public QMainWindow
