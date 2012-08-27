@@ -20,11 +20,16 @@
 
 #include <QMessageBox>
 
+bool parentCheck;
+
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
     browseFileDlg(NULL)
 {
     resize(800,600);
+
+    // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
+    parentCheck = false;
 
     QDockWidget *dock = new QDockWidget(tr("Text View"), this);
     txtBrwsr = new QTextBrowser(dock);
@@ -39,6 +44,11 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     createDockWindows();
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
+
+    /** clear all views **/
+    descBrwsr->clear();
+    tagDescription->clear();
+    txtBrwsr->clear();
 }
 
 void AMTMainWindow::createDockWindows() {
@@ -159,7 +169,7 @@ void AMTMainWindow::open() {
     }
 }
 
-void AMTMainWindow::startTaggingText(QString & text){
+void AMTMainWindow::startTaggingText(QString & text) {
     if (this==NULL)
         return;
     QTextBrowser * taggedBox=txtBrwsr;
@@ -409,6 +419,7 @@ void AMTMainWindow::edittagtypes() {
 }
 
 void AMTMainWindow::tagtypeadd() {
+    parentCheck = false;
     AddTagTypeView * attv = new AddTagTypeView(this);
     attv->show();
 }

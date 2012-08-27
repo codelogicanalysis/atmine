@@ -3,5 +3,6 @@
 #include "atagger.h"
 
 extern ATagger *_atagger;
+extern bool parentCheck;
 
 #endif // GLOBAL_H
