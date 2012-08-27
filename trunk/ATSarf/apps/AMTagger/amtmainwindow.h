@@ -43,6 +43,7 @@ public:
          void fillTreeWidget();
          void finishTaggingText();
          void process(QByteArray & json);
+         void applyTags();
 
 private:
          void createActions();
@@ -50,7 +51,7 @@ private:
          void createTagMenu();
          void createDockWindows();
          void startTaggingText(QString & text);
-         bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD);
+         bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD, QString newttPath=QString(""));
          void sarfTagging();
 
          QMenu *fileMenu;
