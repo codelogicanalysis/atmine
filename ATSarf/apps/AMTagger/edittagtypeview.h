@@ -14,6 +14,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFontComboBox>
+#include <QMenu>
 #include "amtmainwindow.h"
 #include "colorlisteditor.h"
 #include "tagtype.h"
@@ -23,6 +24,9 @@ class EditTagTypeView : public QMainWindow
     Q_OBJECT
 public:
     explicit EditTagTypeView(QWidget *parent = 0);
+
+private:
+    void createMenus();
 
 public slots:
     void update_TagTypes();
@@ -69,5 +73,6 @@ private:
     QScrollArea *scroll3;
     bool edit;
     QVector<TagType> *tagTypeVector;
+    QMenu *viewMenu;
 };
 #endif // EDITTAGTYPEVIEW_H

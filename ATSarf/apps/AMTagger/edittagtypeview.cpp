@@ -6,12 +6,18 @@
 #include <sstream>
 #include <QMessageBox>
 #include <QColor>
+#include <QDockWidget>
 
 EditTagTypeView::EditTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
 
     resize(700,500);
+
+    /** Create Menu **/
+    createMenus();
+
+    /** Initialize Elements **/
 
     lblTag = new QLabel(this);
     lblDescription = new QLabel(this);
@@ -58,8 +64,6 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     cbItalic = new QCheckBox(this);
     cbItalic->setEnabled(false);
 
-    //btnAddTagType = new QPushButton(this);
-    //btnAddTagType->setText("Add TagType");
     btnAdd = new QPushButton(this);
     btnAdd->setText("+");
     btnAdd->setFixedSize(20,20);
@@ -85,26 +89,33 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     btnLoad->setFixedSize(60,30);
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(load_clicked()));
 
-    scroll1 = new QScrollArea();
+    /** Create Dock Windows **/
+
+    QDockWidget *dock = new QDockWidget(tr("Tag Types"), this);
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    lvTypes = new QListWidget(dock);
+    lvTypes->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(lvTypes, SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(item_clicked()));
+    //setCentralWidget(lvTypes);
+    dock->setWidget(lvTypes);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Tag Add/Rmv/Edit"), this);
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    scroll1 = new QScrollArea(dock);
     gButtons1 = new QGridLayout(scroll1);
     gButtons1->addWidget(btnAdd,0,0);
     gButtons1->addWidget(btnRmv,0,1);
     gButtons1->addWidget(btnEdit,0,2);
 
-    scroll2 = new QScrollArea();
-    gButtons2 = new QGridLayout(scroll2);
-    gButtons2->addWidget(btnSave,0,0);
-    gButtons2->addWidget(btnLoad,0,1);
+    dock->setWidget(scroll1);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
 
-    lvTypes = new QListWidget(this);
-    lvTypes->setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(lvTypes, SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(item_clicked()));
-
-    gVertical1 = new QGridLayout();
-    gVertical1->addWidget(lvTypes,0,0);
-    gVertical1->addWidget(scroll1,1,0);
-
-    scroll3 = new QScrollArea();
+    dock = new QDockWidget(tr("TagType Details"), this);
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    scroll3 = new QScrollArea(dock);
     grid=new QGridLayout(scroll3);
     grid->addWidget(lblTag,0,0);
     grid->addWidget(lineEditTag,0,1);
@@ -123,20 +134,23 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     grid->addWidget(lblitalic,7,0);
     grid->addWidget(cbItalic,7,1);
 
-    gVertical2 = new QGridLayout();
-    gVertical2->addWidget(scroll3,0,0);
-    gVertical2->addWidget(scroll2,1,0);
-    //grid->addWidget(btnAddTagType,8,0,1,2,Qt::AlignCenter);
+    dock->setWidget(scroll3);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
 
-    scrollArea=new QScrollArea(this);
-    gFinal = new QGridLayout(scrollArea);
-    gFinal->addWidget(lvTypes,0,0);
-    gFinal->addWidget(scroll3,0,1);
-    gFinal->addWidget(scroll1,1,0);
-    gFinal->addWidget(scroll2,1,1);
+    dock = new QDockWidget(tr("Tag Save/Load"), this);
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    scroll2 = new QScrollArea(dock);
+    gButtons2 = new QGridLayout(scroll2);
+    gButtons2->addWidget(btnSave,0,0);
+    gButtons2->addWidget(btnLoad,0,1);
 
+    dock->setWidget(scroll2);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
 
     /** Fill Data in View **/
+
     tagTypeVector = new QVector<TagType>();
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         tagTypeVector->append(_atagger->tagTypeVector->at(i));
@@ -162,7 +176,6 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     edit = false;
 
-    setCentralWidget(scrollArea);
     setWindowTitle(tr("Edit Tag Type DialogBox"));
 }
 
@@ -187,6 +200,17 @@ void EditTagTypeView::update_TagTypes() {
     cbItalic->setChecked((tagTypeVector->at(0)).italic);
 
     edit = false;
+}
+
+void EditTagTypeView::createMenus()
+{
+    viewMenu = menuBar()->addMenu(tr("&View"));
+
+    /*
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+    helpMenu->addAction(aboutQtAct);
+    */
 }
 
 void EditTagTypeView::add_clicked() {
