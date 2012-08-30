@@ -70,6 +70,6 @@ void AddTagView::addTag_clicked() {
         }
     }
     cursor.clearSelection();
-    ((AMTMainWindow*)parentWidget())->fillTreeWidget();
+    ((AMTMainWindow*)parentWidget())->fillTreeWidget(user);
     this->close();
 }

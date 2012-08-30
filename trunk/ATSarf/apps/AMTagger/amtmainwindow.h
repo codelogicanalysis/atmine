@@ -10,9 +10,10 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSignalMapper>
-//#include <QTreeWidgetItem>
+#include "ATMProgressIFC.h"
+#include "commonS.h"
 
-class AMTMainWindow : public QMainWindow
+class AMTMainWindow : public QMainWindow,public ATMProgressIFC
 {
     Q_OBJECT
 
@@ -38,9 +39,16 @@ class AMTMainWindow : public QMainWindow
          void addtagtype();
          void about();
          void aboutQt();
+         void sarfTagging();
 
 public:
-         void fillTreeWidget();
+         virtual void report(int value);
+         virtual void tag(int start, int length,QColor color, bool textcolor);
+         virtual void setCurrentAction(const QString & s);
+         virtual void resetActionDisplay();
+         virtual QString getFileName();
+
+         void fillTreeWidget(Source Data);
          void finishTaggingText();
          void process(QByteArray & json);
          void applyTags();
@@ -51,8 +59,7 @@ private:
          void createTagMenu();
          void createDockWindows();
          void startTaggingText(QString & text);
-         bool saveFile(const QString &fileName, QByteArray &tagD, QByteArray &tagTD, QString newttPath=QString(""));
-         void sarfTagging();
+         bool saveFile(const QString &fileName, QByteArray &tagD);
 
          QMenu *fileMenu;
          QMenu *tagMenu;
@@ -61,6 +68,7 @@ private:
          QMenu *viewMenu;
          QMenu *helpMenu;
          QMenu * mTags;
+         QMenu *sarfMenu;
 
          QAction *openAct;
          QAction *saveAct;
@@ -76,6 +84,7 @@ private:
          QAction *addtagAct;
          QAction *aboutAct;
          QAction *aboutQtAct;
+         QAction *sarfAct;
 
          QTextBrowser * txtBrwsr;
          //QTextEdit * txtBrwsr;

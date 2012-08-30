@@ -146,7 +146,7 @@ void SplitDialog::findDuplicates() {
 					pos2==pos1 &&
 					description2==description1
 				) {
-				warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") found with 2 categories: "<<category1<<" & "<<category2<<"\n";
+				_warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") found with 2 categories: "<<category1<<" & "<<category2<<"\n";
 			}
 		}
 	}
@@ -183,7 +183,7 @@ void SplitDialog::makeNonAcceptStatesAccept() {
 		}
 		QString cat=database_info.comp_rules->getCategoryName(category_id);
 		QString catres=database_info.comp_rules->getCategoryName(resulting_category);
-		warning << QString("Set category %1 back into %2 \n").arg(cat).arg(catres);
+		_warning << QString("Set category %1 back into %2 \n").arg(cat).arg(catres);
                 QSqlQuery query(theSarf->db);
 		QString stmt=QString(tr("UPDATE %1_category ")+
 								"SET category_id=%3 "+
@@ -235,7 +235,7 @@ void SplitDialog::removeStaleCategoriesAndAffixes() {
 			QString cat1=database_info.comp_rules->getCategoryName(category_id1);
 			QString cat2=database_info.comp_rules->getCategoryName(category_id2);
 			QString catr=database_info.comp_rules->getCategoryName(resulting_category);
-			warning<<"Removing Rule ("<<cat1<<","<<cat2<<","<<catr<<")\n";
+			_warning<<"Removing Rule ("<<cat1<<","<<cat2<<","<<catr<<")\n";
 
 			QString stmt=QString(tr("DELETE  ")+
 									"FROM  compatibility_rules "+
@@ -346,7 +346,7 @@ void SplitDialog::mergeSimilarCategories(bool first) {
 			msgBox.setDefaultButton(QMessageBox::Yes);
 			int ret = msgBox.exec();
 			if (ret==QMessageBox::Yes) {
-				warning << QString("Merged the 2 categories: %1, %2 into %1\n").arg(cat1).arg(cat2);
+				_warning << QString("Merged the 2 categories: %1, %2 into %1\n").arg(cat1).arg(cat2);
                                 QSqlQuery query(theSarf->db);
 				QString stmt=QString(tr("UPDATE %1_category ")+
 										"SET category_id=%2 "+
@@ -395,7 +395,7 @@ void SplitDialog::removeDummyRulesForConsistencyIfNotNeeded() {
 		}
 		QString catMain=database_info.comp_rules->getCategoryName(idMain),
 				catOld=database_info.comp_rules->getCategoryName(idOld);
-		warning << QString("Revert the 2 categories: %1, %2 into %1\n").arg(catMain).arg(catOld);
+		_warning << QString("Revert the 2 categories: %1, %2 into %1\n").arg(catMain).arg(catOld);
                 QSqlQuery query(theSarf->db);
 		QString stmt=QString(tr("UPDATE %1_category ")+
 								"SET category_id=%2 "+
@@ -486,10 +486,10 @@ void SplitDialog::split_clicked() {
 				if (rowIndex2<0) {
 					if (getPartialConnectedRow(affix2,raw_data2,pos2,description2,category,category1)>0) {
 						addRule=false; //already added
-						warning<< "Added 3-way rule!\n";
+						_warning<< "Added 3-way rule!\n";
 					} else {
 						if (!pos2.isEmpty())
-							warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") not found.\n";
+							_warning<<"("<<affix2<<","<<raw_data2<<","<<description2<<","<<pos2<<") not found.\n";
 						continue;
 					}
 				} else {
@@ -502,7 +502,7 @@ void SplitDialog::split_clicked() {
 					if (reverse_description){
 						originalAffixList->setItem(rowIndex2,6,new QTableWidgetItem(QString("1")));
 						QString category2=originalAffixList->item(rowIndex2,2)->text();
-						warning<<"updating reverse_description...\n";
+						_warning<<"updating reverse_description...\n";
 						KEEP_OLD=false;
 						insert_item(t,affix2,raw_data2,category2,source_id,new QList<long>,description2,pos2,"","1");
 					}
@@ -561,7 +561,7 @@ void SplitDialog::reverse_clicked() {
 					if (ret==QMessageBox::Yes)
 					{
 						insert_compatibility_rules(rule,category_id1,category_id2,source_id);
-						warning<<"Added Rule ("<<database_info.comp_rules->getCategoryName(category_id1)<<","<<database_info.comp_rules->getCategoryName(category_id2)<<")\n"
+						_warning<<"Added Rule ("<<database_info.comp_rules->getCategoryName(category_id1)<<","<<database_info.comp_rules->getCategoryName(category_id2)<<")\n"
 								<<"\tcategory3="<<database_info.comp_rules->getCategoryName(category_id3)<<",resulting1="<<database_info.comp_rules->getCategoryName(resulting_category1)<<",resulting2="<<database_info.comp_rules->getCategoryName(resulting_category2)<<"\n";
 					}
 				}
@@ -652,7 +652,7 @@ void SplitDialog::specializeHelper(QString category_original, QString category_s
 								  "WHERE category_id=%3")
 					  .arg(interpret_type(t)).arg(left_id).arg(cat_org_id),query);
 		if (query.numRowsAffected()==0)
-			warning << "Operation performed performed just renaming because there are no left entries of this query\n";
+			_warning << "Operation performed performed just renaming because there are no left entries of this query\n";
 		if (left_id!=cat_org_id)
 			insert_compatibility_rules(rule,cat_empty,left_id,cat_org_id,source_id);
 		//fifth: remove all rules AA or CC having the old_category if (old not used again)
@@ -858,7 +858,7 @@ int SplitDialog::getPartialConnectedRow(QString affix,QString raw_data,QString p
 				/*system(QString(tr("rm ")+compatibility_rules_path+" "+description_path).toStdString().data());
 				database_info.comp_rules->buildFromFile();
 				database_info.fill((ATMProgressIFC*)parentWidget());*/
-				warning<< "Adding prefix ("<<affix<<","<<raw_data<<","<<newCat<<","<<description<<","<<pos<<"\n";
+				_warning<< "Adding prefix ("<<affix<<","<<raw_data<<","<<newCat<<","<<description<<","<<pos<<"\n";
 				assert(added_affix_id>=0);
 				originalAffixList->setRowCount(rowCount+1);
 				originalAffixList->setItem(rowCount,0,new QTableWidgetItem(tr("%1").arg(added_affix_id)));
@@ -899,7 +899,7 @@ int SplitDialog::getRow(const QString & affix,const QString & raw_data, const QS
 				/*system(QString(tr("rm ")+compatibility_rules_path+" "+description_path).toStdString().data());
 				database_info.comp_rules->buildFromFile();
 				database_info.fill((ATMProgressIFC*)parentWidget());*/
-				warning<< "Adding prefix ("<<affix<<","<<raw_data<<","<<newCat<<","<<description<<","<<pos<<"\n";
+				_warning<< "Adding prefix ("<<affix<<","<<raw_data<<","<<newCat<<","<<description<<","<<pos<<"\n";
 				assert(added_affix_id>=0);
 				originalAffixList->setRowCount(rowCount+1);
 				originalAffixList->setItem(rowCount,0,new QTableWidgetItem(tr("%1").arg(added_affix_id)));
