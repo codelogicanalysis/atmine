@@ -200,7 +200,7 @@ int insertRuleAccordingToExpression(item_types type,QString cat1,QString cat2,QS
 								i=j-1;
 							} else {
 								i++;
-								warning<< "More replacement positions (@) than search positions (*) in '"<<resCatTemp<<"'\n";
+                                                                _warning<< "More replacement positions (@) than search positions (*) in '"<<resCatTemp<<"'\n";
 							}
 							resCatTemp.replace(position,size+3,l[i]);
 						} else {

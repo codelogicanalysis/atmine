@@ -331,7 +331,7 @@ QString getColumn(QString table, QString column_name, long long id, QString addi
 	{
 		if (has_id) //just not to show this warning for checkCompatibility
 		{
-			warning << QString("Name not found for given id '%1'\n").arg(id);
+                        _warning << QString("Name not found for given id '%1'\n").arg(id);
 		}
 		return "";
 	}
@@ -420,7 +420,7 @@ bool get_types_of_rule(rules rule, item_types &t1, item_types &t2)
 		t2=SUFFIX;
 		break;
 	default:
-		warning << QString("INVALID compatibility rule type!\n");
+                _warning << QString("INVALID compatibility rule type!\n");
 		return false; //must not reach here
 	}
 	return true;
@@ -520,7 +520,7 @@ bool addAbstractCategory(QString name, QString raw_data, QString category, int s
 				assert(corresponding_part.length()>0);
 				if (name[i]!=corresponding_part[0])
 				{
-					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
+                                        _warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
 					if(!alefs.contains(corresponding_part[0])) {
 						qDebug()<<corresponding_part[0]<<" "<<alefs;
 						return -1;
@@ -543,7 +543,7 @@ bool addAbstractCategory(QString name, QString raw_data, QString category, int s
 			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(STEM))))
 			{
 				if (abstract_ids->operator [](i)!=-1)
-					warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
+                                        _warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
 				abstract_ids->removeAt(i);
 				i--;
 			}
@@ -680,7 +680,7 @@ int resolve_conflict(QString table, QString column_name, QVariant new_value, QSt
 	{
 		if ((KEEP_OLD && !isNull) || (!KEEP_OLD && new_value.isNull()))
 		{
-			warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). KEPT %1 %4 instead of %5\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
+                        _warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). KEPT %1 %4 instead of %5\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
 			addSource(table,source_id,-1,primary_key_condition,false);
 		}
 		else
@@ -724,11 +724,11 @@ int resolve_conflict(QString table, QString column_name, QVariant new_value, QSt
 			perform_query(stmt);
 			if (!isNull)
 			{
-				warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). Replaced %1 %5 instead of %4\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
+                                _warning << QString("CONFLICT with '%1' in table '%2' at entry satisfying the following condition (%3). Replaced %1 %5 instead of %4\n").arg(column_name).arg(table).arg(primary_key_condition).arg(old_value.toString()).arg(new_value.toString());
 			}
 			else
 			{
-				warning << QString("UPDATED '%1' in table '%2' at entry satisfying the following condition (%3), from NULL to %1 = '%4'\n").arg(column_name).arg(table).arg(primary_key_condition).arg(new_value.toString());
+                                _warning << QString("UPDATED '%1' in table '%2' at entry satisfying the following condition (%3), from NULL to %1 = '%4'\n").arg(column_name).arg(table).arg(primary_key_condition).arg(new_value.toString());
 			}
 		}
 	}
@@ -797,7 +797,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 				QString corresponding_part=getDiacriticword(i,i,raw_data);//must be one letter
 				assert(corresponding_part.length()>0);
 				if (name[i]!=corresponding_part[0]){
-					warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
+                                        _warning<<"Modified '"<<name <<"' with raw data '"<<raw_data<<"' to be strictly equal\n";
 					assert(alefs.contains(corresponding_part[0]));
 					name[i]=corresponding_part[0];
 				}
@@ -840,7 +840,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 			if (abstract_ids->operator [](i)==-1 || !existsID("category",abstract_ids->operator [](i),QString("abstract=1 AND type =%1").arg((int)(type))))
 			{
 				if (abstract_ids->operator [](i)!=-1)
-					warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
+                                        _warning<< QString("Undefined Abstract Category Provided '%1'. Will be ignored\n").arg(abstract_ids->at(i));
 				abstract_ids->removeAt(i);
 				i--;
 			}
@@ -875,7 +875,7 @@ long insert_item(item_types type,QString name, QString raw_data, QString categor
 			return -1;
 		}
 		if (warn_about_automatic_insertion)
-			warning << QString("New %2 Category Automatically inserted: '%1'").arg(category).arg(table.toUpper())<<"\n";
+                        _warning << QString("New %2 Category Automatically inserted: '%1'").arg(category).arg(table.toUpper())<<"\n";
 		//new_category=true;
 	}
 	else
@@ -1131,7 +1131,7 @@ int insert_source(QString name, QString normalization_process, QString creator) 
 	perform_query(stmt);
         if (theSarf->query.next())
 	{
-		warning<<"INSERT Operation ignored, since a source with same description exists!\n";
+                _warning<<"INSERT Operation ignored, since a source with same description exists!\n";
 		bool ok;
                 int val=theSarf->query.value(0).toInt(&ok);
 		if (ok)
@@ -1193,7 +1193,7 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QS
 			} else {
 			#ifndef ALLOW_MULTIPLE_RESULTING_CATEGORIES
 				if (KEEP_OLD) {
-					warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). KEPT resulting_category_id %3 instead of %4\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
+                                        _warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). KEPT resulting_category_id %3 instead of %4\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
 				} else {
 					dbitvec sources(max_sources);
 					sources.reset();
@@ -1206,14 +1206,14 @@ int insert_compatibility_rules(rules rule, long id1,long id2, long result_id, QS
 					stmt= QString("UPDATE compatibility_rules SET resulting_category='%1' ,sources='%2' WHERE category_id1 = '%3' AND category_id2 = '%4'").arg(result_id).arg(bitset_to_string(sources)).arg( id1).arg(id2);
 					//qDebug() << stmt;
 					perform_query(stmt);
-					warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). REPLACED resulting_category_id %4 by %3\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
+                                        _warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). REPLACED resulting_category_id %4 by %3\n").arg(id1).arg(id2).arg(old_result_id).arg(result_id);
 				}
 			#endif
 			}
 		}
 	#ifdef ALLOW_MULTIPLE_RESULTING_CATEGORIES
 		if (insert_rule) {
-			warning <<QString("MULTIPLE RESULTING CATEGORY at rule=(%1,%2)\n").arg(id1).arg(id2);
+                        _warning <<QString("MULTIPLE RESULTING CATEGORY at rule=(%1,%2)\n").arg(id1).arg(id2);
 			goto insert;
 		}
 	#endif
@@ -1288,7 +1288,7 @@ bool areCompatible(rules rule,long category1,long category2, long& resulting_cat
 				resulting_category=result_id;
 			else
 			{
-				warning << "Unknown resulting Category\n";
+                                _warning << "Unknown resulting Category\n";
 				resulting_category=-1;
 			}
 		}

@@ -13,11 +13,13 @@ class ATagger {
 public:
     ATagger();
     bool insertTag(QString, int, int, Source);
+    bool insertSarfTag(QString, int, int, Source);
     bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool);
     QByteArray dataInJsonFormat(Data _data);
 //private:
     QVector<Tag> *tagVector;
     QVector<TagType> *tagTypeVector;
+    QVector<Tag> *sarfTagVector;
     QString text;
     QString textFile;
     QString tagFile;

@@ -48,7 +48,7 @@ void RemoveTagTypeView::removeTagType_clicked() {
                 }
             }
             _atagger->tagTypeVector->remove(i);
-            ((AMTMainWindow*)parentWidget())->fillTreeWidget();
+            ((AMTMainWindow*)parentWidget())->fillTreeWidget(user);
             break;
         }
     }

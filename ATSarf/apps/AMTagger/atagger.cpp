@@ -8,12 +8,20 @@ ATagger::ATagger() {
 
     tagVector = new QVector<Tag>();
     tagTypeVector = new QVector<TagType>();
+    sarfTagVector = new QVector<Tag>();
 }
 
 bool ATagger::insertTag(QString type, int pos, int length, Source source) {
 
     Tag tag(type,pos,length,source);
     tagVector->append(tag);
+    return true;
+}
+
+bool ATagger::insertSarfTag(QString type, int pos, int length, Source source) {
+
+    Tag tag(type,pos,length,source);
+    sarfTagVector->append(tag);
     return true;
 }
 

@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QColor>
 #include <QDockWidget>
+#include <QInputDialog>
+#include <QTextStream>
 
 EditTagTypeView::EditTagTypeView(QWidget *parent) :
     QMainWindow(parent)
@@ -85,7 +87,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     connect(btnSave,SIGNAL(clicked()),this,SLOT(save_clicked()));
 
     btnLoad = new QPushButton(this);
-    btnLoad->setText("Source");
+    btnLoad->setText("Load");
     btnLoad->setFixedSize(60,30);
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(load_clicked()));
 
@@ -214,15 +216,48 @@ void EditTagTypeView::createMenus()
 }
 
 void EditTagTypeView::add_clicked() {
-    parentCheck = true;
-    AddTagTypeView * attv = new AddTagTypeView(this);
-    attv->show();
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Add New Tag"),
+                                             tr("Tag Name:"), QLineEdit::Normal,
+                                             QString(), &ok);
+    if (!ok || text.isEmpty())
+        return;
+
+    for(int i=0; i< tagTypeVector->count(); i++) {
+        if((tagTypeVector->at(i)).tag == text) {
+            QMessageBox::warning(this,"Warning","Tag Type Name already Present!");
+            return;
+        }
+    }
+
+    lvTypes->addItem(text);
+    lvTypes->setCurrentRow(lvTypes->count()-1);
+
+    edit= true;
+    btnEdit->setText("lock");
+    lineEditTag->setEnabled(true);
+    lineEditTag->setText(QString());
+    lineEditDescription->setEnabled(true);
+    lineEditDescription->setText(QString());
+    colorfgcolor->setEnabled(true);
+    colorbgcolor->setEnabled(true);
+    cbfont->setEnabled(true);
+    cbunderline->setEnabled(true);
+    cbunderline->setChecked(false);
+    cbBold->setEnabled(true);
+    cbBold->setChecked(false);
+    cbItalic->setEnabled(true);
+    cbItalic->setChecked(false);
+
+    //parentCheck = true;
+    //AddTagTypeView * attv = new AddTagTypeView(this);
+    //attv->show();
 }
 
 void EditTagTypeView::rmv_clicked() {
 
     int index = lvTypes->currentRow();
-    if(index != -1) {
+    if(index != -1 && index < tagTypeVector->count()) {
         tagTypeVector->remove(index);
     }
     update_TagTypes();
@@ -230,6 +265,7 @@ void EditTagTypeView::rmv_clicked() {
 
 void EditTagTypeView::edit_clicked() {
     if(!edit) {
+        btnEdit->setText("Lock");
         edit= true;
         lineEditTag->setEnabled(true);
         lineEditDescription->setEnabled(true);
@@ -241,6 +277,7 @@ void EditTagTypeView::edit_clicked() {
         cbItalic->setEnabled(true);
     }
     else {
+        btnEdit->setText("...");
         edit = false;
         lineEditTag->setEnabled(false);
         lineEditDescription->setEnabled(false);
@@ -253,21 +290,47 @@ void EditTagTypeView::edit_clicked() {
 
         int index = lvTypes->currentRow();
         QString tag = lineEditTag->text();
-        (*tagTypeVector)[index].tag = tag;
-        (*tagTypeVector)[index].description = lineEditDescription->text();
-        (*tagTypeVector)[index].fgcolor = colorfgcolor->color().name();
-        (*tagTypeVector)[index].bgcolor = colorbgcolor->color().name();
-        (*tagTypeVector)[index].font = cbfont->currentText().toInt();
-        (*tagTypeVector)[index].underline = cbunderline->isChecked();
-        (*tagTypeVector)[index].bold = cbBold->isChecked();
-        (*tagTypeVector)[index].italic = cbItalic->isChecked();
+        QString description = lineEditDescription->text();
+        QString fgcolor = colorfgcolor->color().name();
+        QString bgcolor = colorbgcolor->color().name();
+        int font = cbfont->currentText().toInt();
+        bool underline = cbunderline->isChecked();
+        bool bold = cbBold->isChecked();
+        bool italic = cbItalic->isChecked();
+        if(index >= tagTypeVector->count()) {
+            TagType t(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic);
+            tagTypeVector->append(t);
+        }
+        else {
+            (*tagTypeVector)[index].tag = tag;
+            (*tagTypeVector)[index].description = description;
+            (*tagTypeVector)[index].fgcolor = fgcolor;
+            (*tagTypeVector)[index].bgcolor = bgcolor;
+            (*tagTypeVector)[index].font = font;
+            (*tagTypeVector)[index].underline = underline;
+            (*tagTypeVector)[index].bold = bold;
+            (*tagTypeVector)[index].italic = italic;
+        }
+        update_TagTypes();
     }
 }
 
 void EditTagTypeView::save_clicked() {
     *(_atagger->tagTypeVector) = *(tagTypeVector);
     ((AMTMainWindow*)parentWidget())->applyTags();
-    ((AMTMainWindow*)parentWidget())->save();
+
+    /** Save to Default Destination **/
+
+    QByteArray tagtypeData = _atagger->dataInJsonFormat(tagTV);
+    QFile tfile(_atagger->tagtypeFile);
+    if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
+        return;
+    }
+
+    QTextStream outtags(&tfile);
+    outtags << tagtypeData;
+    tfile.close();
 }
 
 void EditTagTypeView::load_clicked() {

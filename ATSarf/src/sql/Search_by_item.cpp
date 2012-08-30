@@ -215,7 +215,7 @@ QString Search_by_item::getGrammarStem() //just for stems
         }
         else
         {
-                warning << "getGrammarStem() does not work for PREFIX or SUFFIX\n";
+                _warning << "getGrammarStem() does not work for PREFIX or SUFFIX\n";
                 return "";
         }
 }
@@ -225,7 +225,7 @@ dbitvec Search_by_item::getGrammarStem_sources() //just for stems
                 return getSources("stem",id);
         else
         {
-                warning << "getGrammarStem_sources() does not work for PREFIX or SUFFIX\n";
+                _warning << "getGrammarStem_sources() does not work for PREFIX or SUFFIX\n";
                 return INVALID_BITSET;
         }
 }
