@@ -13,11 +13,12 @@
 EditTagTypeView::EditTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
-
-    resize(700,500);
+    //resize(700,500);
 
     /** Create Menu **/
-    createMenus();
+    //createMenus();
+
+    QGridLayout *grid = new QGridLayout();
 
     /** Initialize Elements **/
 
@@ -39,17 +40,31 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     lblbold->setText("Bold:");
     lblitalic->setText("Italic:");
 
+    grid->addWidget(lblTag,0,3);
+    grid->addWidget(lblDescription,1,3);
+    grid->addWidget(lblfgcolor,2,3);
+    grid->addWidget(lblbgcolor,3,3);
+    grid->addWidget(lblfont,4,3);
+    grid->addWidget(lblunderline,5,3);
+    grid->addWidget(lblbold,6,3);
+    grid->addWidget(lblitalic,7,3);
+
     lineEditTag = new QLineEdit(this);
     lineEditTag->setEnabled(false);
     lineEditDescription = new QLineEdit(this);
     lineEditDescription->setEnabled(false);
-    //lineEditfgcolor = new QLineEdit(this);
-    //lineEditbgcolor = new QLineEdit(this);
+
+    grid->addWidget(lineEditTag,0,4);
+    grid->addWidget(lineEditDescription,1,4);
+
     colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setEnabled(false);
     colorbgcolor = new ColorListEditor(this);
     colorbgcolor->setEnabled(false);
-    //cbfont = new QFontComboBox(this);
+
+    grid->addWidget(colorfgcolor,2,4);
+    grid->addWidget(colorbgcolor,3,4);
+
     cbfont = new QComboBox(this);
     cbfont->setEnabled(false);
     for(int i=5; i<20; i++) {
@@ -59,6 +74,8 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
         cbfont->addItem(QString::fromStdString(str));
     }
 
+    grid->addWidget(cbfont,4,4);
+
     cbunderline = new QCheckBox(this);
     cbunderline->setEnabled(false);
     cbBold = new QCheckBox(this);
@@ -66,38 +83,61 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     cbItalic = new QCheckBox(this);
     cbItalic->setEnabled(false);
 
+    grid->addWidget(cbunderline,5,4);
+    grid->addWidget(cbBold,6,4);
+    grid->addWidget(cbItalic,7,4);
+
     btnAdd = new QPushButton(this);
     btnAdd->setText("+");
-    btnAdd->setFixedSize(20,20);
+    btnAdd->setFixedSize(40,25);
     connect(btnAdd,SIGNAL(clicked()),this,SLOT(add_clicked()));
+
+    grid->addWidget(btnAdd,8,0);
 
     btnRmv = new QPushButton(this);
     btnRmv->setText("-");
-    btnRmv->setFixedSize(20,20);
+    btnRmv->setFixedSize(40,25);
     connect(btnRmv,SIGNAL(clicked()),this,SLOT(rmv_clicked()));
+
+    grid->addWidget(btnRmv,8,1);
 
     btnEdit = new QPushButton(this);
     btnEdit->setText("...");
-    btnEdit->setFixedSize(40,20);
+    btnEdit->setFixedSize(40,25);
     connect(btnEdit,SIGNAL(clicked()),this,SLOT(edit_clicked()));
+
+    grid->addWidget(btnEdit,8,2);
 
     btnSave = new QPushButton(this);
     btnSave->setText("Save");
-    btnSave->setFixedSize(60,30);
+    //btnSave->setFixedSize(60,30);
     connect(btnSave,SIGNAL(clicked()),this,SLOT(save_clicked()));
+
+    grid->addWidget(btnSave,8,3);
 
     btnLoad = new QPushButton(this);
     btnLoad->setText("Load");
-    btnLoad->setFixedSize(60,30);
+    //`btnLoad->setFixedSize(60,30);
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(load_clicked()));
+
+    grid->addWidget(btnLoad,8,4);
+
+    lvTypes = new QListWidget(this);
+    lvTypes->setSelectionMode(QAbstractItemView::SingleSelection);
+    connect(lvTypes, SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(item_clicked()));
+
+    grid->addWidget(lvTypes,0,0,8,3);
+
+    QWidget *widget = new QWidget(this);
+
+    widget->setLayout(grid);
+    setCentralWidget(widget);
 
     /** Create Dock Windows **/
 
+    /*
     QDockWidget *dock = new QDockWidget(tr("Tag Types"), this);
     dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    lvTypes = new QListWidget(dock);
-    lvTypes->setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(lvTypes, SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(item_clicked()));
     //setCentralWidget(lvTypes);
     dock->setWidget(lvTypes);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
@@ -150,6 +190,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     dock->setWidget(scroll2);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
+    */
 
     /** Fill Data in View **/
 
