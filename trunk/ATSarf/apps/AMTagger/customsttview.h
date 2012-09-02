@@ -8,6 +8,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QListWidget>
+#include <QRadioButton>
 #include "colorlisteditor.h"
 
 class QGroupBox;
@@ -36,11 +37,18 @@ private slots:
     void btnUnselect_clicked();
 
 private:
+    QRadioButton *btnPOS;
+    QRadioButton *btnGloss;
+    QRadioButton *btnStem;
+    QRadioButton *btnPrefix;
+    QRadioButton *btnSuffix;
+    /*
     QPushButton *btnPOS;
     QPushButton *btnGloss;
     QPushButton *btnStem;
     QPushButton *btnPrefix;
     QPushButton *btnSuffix;
+    */
     QPushButton *btnTagTypes;
     QPushButton *btnSelectAll;
     QPushButton *btnUnselectAll;
@@ -75,6 +83,15 @@ private:
 
     QListWidget *listPossibleTags;
     QListWidget *listSelectedTags;
+
+    QStringList listStems;
+    QStringList listPOS;
+    QStringList listGloss;
+    QStringList listPrefix;
+    QStringList listSuffix;
+    QStringList listTagTypes;
+
+    QString field;
 };
 
 #endif // CUSTOMSTTVIEW_H

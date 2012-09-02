@@ -1,5 +1,6 @@
 #include "customsttview.h"
 #include "sstream"
+#include "logger.h"
 #include <QGridLayout>
 #include <QScrollArea>
 
@@ -8,11 +9,21 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 {
     QGridLayout *grid = new QGridLayout();
 
+    btnPOS = new QRadioButton(tr("POS"), this);
+    btnGloss = new QRadioButton(tr("Gloss"), this);
+    btnStem = new QRadioButton(tr("Stem"), this);
+    btnPrefix = new QRadioButton(tr("Prefix"), this);
+    btnSuffix = new QRadioButton(tr("Suffix"), this);
+
+    btnStem->setChecked(true);
+    field = "Stem";
+    /*
     btnPOS = new QPushButton(tr("POS"), this);
     btnGloss = new QPushButton(tr("Gloss"), this);
     btnStem = new QPushButton(tr("Stem"), this);
     btnPrefix = new QPushButton(tr("Prefix"), this);
     btnSuffix = new QPushButton(tr("Suffix"), this);
+    */
     btnTagTypes = new QPushButton(tr("TagTypes"), this);
     btnSelectAll = new QPushButton(tr("Select All"), this);
     btnUnselectAll = new QPushButton(tr("Unselect All"), this);
@@ -20,7 +31,6 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     btnUnselect = new QPushButton(tr("<"), this);
     btnSave = new QPushButton(tr("Save"), this);
     btnLoad = new QPushButton(tr("Load"), this);
-
 
     connect(btnPOS,SIGNAL(clicked()),this,SLOT(btnPOS_clicked()));
     connect(btnGloss,SIGNAL(clicked()),this,SLOT(btnGloss_clicked()));
@@ -35,11 +45,11 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnSave,SIGNAL(clicked()),this,SLOT(btnSave_clicked()));
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(btnLoad_clicked()));
 
-    grid->addWidget(btnPOS,0,0);
-    grid->addWidget(btnGloss,0,1);
-    grid->addWidget(btnStem,0,2);
-    grid->addWidget(btnPrefix,0,3);
-    grid->addWidget(btnSuffix,0,4);
+    grid->addWidget(btnStem,0,0);
+    grid->addWidget(btnPrefix,0,1);
+    grid->addWidget(btnSuffix,0,2);
+    grid->addWidget(btnGloss,0,3);
+    grid->addWidget(btnPOS,0,4);
     grid->addWidget(btnTagTypes,0,5);
     grid->addWidget(btnSelectAll,7,0);
     grid->addWidget(btnUnselectAll,7,1);
@@ -101,7 +111,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(cbunderline,7,6);
 
     listPossibleTags = new QListWidget(this);
+    listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
     listSelectedTags = new QListWidget(this);
+    listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
 
     grid->addWidget(listPossibleTags,2,0,12,2);
     grid->addWidget(listSelectedTags,2,3,12,2);
@@ -112,6 +124,40 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     setCentralWidget(widget);
     setWindowTitle(tr("Custom Sarf Tag Types"));
     //resize(480, 320);
+
+    /** Do queries and Fill Tables**/
+    theSarf->query.exec("SELECT raw_data FROM stem_category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty()))
+            listStems << theSarf->query.value(0).toString();
+    }
+
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listStems);
+
+    theSarf->query.exec("SELECT raw_data FROM prefix_category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty()))
+            listPrefix << theSarf->query.value(0).toString();
+    }
+
+    theSarf->query.exec("SELECT raw_data FROM suffix_category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty()))
+            listSuffix << theSarf->query.value(0).toString();
+    }
+
+    theSarf->query.exec("SELECT name FROM description");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty()))
+            listGloss << theSarf->query.value(0).toString();
+    }
+
+    theSarf->query.exec("SELECT POS FROM stem_category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty()))
+            listPOS << theSarf->query.value(0).toString();
+    }
 }
 
 void CustomSTTView::btnAdd_clicked() {
@@ -119,7 +165,9 @@ void CustomSTTView::btnAdd_clicked() {
 }
 
 void CustomSTTView::btnGloss_clicked() {
-
+    field = "Gloss";
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listGloss);
 }
 
 void CustomSTTView::btnLoad_clicked() {
@@ -127,11 +175,15 @@ void CustomSTTView::btnLoad_clicked() {
 }
 
 void CustomSTTView::btnPOS_clicked() {
-
+    field = "POS";
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listPOS);
 }
 
 void CustomSTTView::btnPrefix_clicked() {
-
+    field = "Prefix";
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listPrefix);
 }
 
 void CustomSTTView::btnSave_clicked() {
@@ -139,19 +191,27 @@ void CustomSTTView::btnSave_clicked() {
 }
 
 void CustomSTTView::btnSelectAll_clicked() {
-
+    listPossibleTags->selectAll();
 }
 
 void CustomSTTView::btnStem_clicked() {
-
+    field = "Stem";
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listStems);
 }
 
 void CustomSTTView::btnSelect_clicked() {
-
+    foreach(QListWidgetItem* item, listPossibleTags->selectedItems()) {
+        listSelectedTags->addItem(field + " -> " + item->text());
+    }
+    listSelectedTags->sortItems(Qt::AscendingOrder);
+    listPossibleTags->clearSelection();
 }
 
 void CustomSTTView::btnSuffix_clicked() {
-
+    field = "Suffix";
+    listPossibleTags->clear();
+    listPossibleTags->addItems(listSuffix);
 }
 
 void CustomSTTView::btnTagTypes_clicked() {
@@ -159,9 +219,9 @@ void CustomSTTView::btnTagTypes_clicked() {
 }
 
 void CustomSTTView::btnUnselectAll_clicked() {
-
+    listPossibleTags->clearSelection();
 }
 
 void CustomSTTView::btnUnselect_clicked() {
-
+    qDeleteAll(listSelectedTags->selectedItems());
 }

@@ -49,7 +49,21 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     descBrwsr->clear();
     tagDescription->clear();
     txtBrwsr->clear();
-    initSarf = true;
+
+    /** Initialize Sarf **/
+    theSarf = new Sarf();
+    bool all_set = theSarf->start(&output_str, &error_str, this);
+    if(!all_set) {
+        QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
+        return;
+    }
+    Sarf::use(theSarf);
+    initialize_other();
+
+    theSarf->out.setString(&output_str);
+    theSarf->out.setCodec("utf-8");
+    theSarf->displayed_error.setString(&error_str);
+    theSarf->displayed_error.setCodec("utf-8");
 }
 
 void AMTMainWindow::createDockWindows() {
@@ -701,29 +715,10 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     }
 }
 
-QString error_str,output_str;
-
 void AMTMainWindow::sarfTagging() {
 
     startTaggingText(_atagger->text);
-
-    if(initSarf) {
-
-        theSarf = new Sarf();
-        bool all_set = theSarf->start(&output_str, &error_str, this);
-        if(!all_set) {
-            QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
-            return;
-        }
-        Sarf::use(theSarf);
-        initialize_other();
-
-        theSarf->out.setString(&output_str);
-        theSarf->out.setCodec("utf-8");
-        theSarf->displayed_error.setString(&error_str);
-        theSarf->displayed_error.setCodec("utf-8");
-        initSarf = false;
-    }
+    _atagger->sarfTagVector->clear();
 
     error_str = "";
     output_str = "";

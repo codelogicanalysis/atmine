@@ -120,7 +120,7 @@ void database_info_block::buildTrie()
             if (database_info.Stem_Trie != NULL)
                 delete database_info.Stem_Trie;
 
-			input.close();
+                        input.close();
                         //const char * fPath = trie_path.toLatin1();
                         QString fPath = trie_path;
                         try {
@@ -128,7 +128,7 @@ void database_info_block::buildTrie()
                         }  catch(const char * ex) {
                             error<<"Fail to build stem trie from file "<<fPath<<". Exception is "<<ex<<'.'<<endl;
                         }
-			//out<<QDateTime::currentDateTime().time().toString()<<"\n";
+                        //out<<QDateTime::currentDateTime().time().toString()<<"\n";
 		}
 	}
 	else
