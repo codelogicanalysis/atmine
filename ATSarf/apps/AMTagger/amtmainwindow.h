@@ -101,7 +101,8 @@ private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;
          QSignalMapper *signalMapperM;
-         bool initSarf;
+         QString error_str;
+         QString output_str;
 };
 
 #endif // AMTMAINWINDOW_H
