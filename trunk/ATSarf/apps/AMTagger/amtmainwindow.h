@@ -40,6 +40,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void about();
          void aboutQt();
          void sarfTagging();
+         void customizeSarfTags();
 
 public:
          virtual void report(int value);
@@ -84,6 +85,7 @@ private:
          QAction *addtagAct;
          QAction *aboutAct;
          QAction *aboutQtAct;
+         QAction *sarftagsAct;
          QAction *sarfAct;
 
          QTextBrowser * txtBrwsr;
@@ -99,6 +101,7 @@ private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;
          QSignalMapper *signalMapperM;
+         bool initSarf;
 };
 
 #endif // AMTMAINWINDOW_H

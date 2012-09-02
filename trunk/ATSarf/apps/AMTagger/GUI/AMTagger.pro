@@ -90,7 +90,8 @@ HEADERS += \
     ../../../src/util/mergeLists.h \
     ../../../src/util/morphemes.h \
     ../edittagtypeview.h \
-    ../sarftag.h
+    ../sarftag.h \
+    ../customsttview.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -142,7 +143,8 @@ SOURCES += \
     ../../../src/util/morphemes.cpp \
     ../edittagtypeview.cpp \
     ../../../src/common/global_variables.cpp \
-    ../sarftag.cpp
+    ../sarftag.cpp \
+    ../customsttview.cpp
 
 FORMS    +=
 

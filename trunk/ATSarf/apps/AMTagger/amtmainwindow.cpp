@@ -14,6 +14,7 @@
 #include <removetagtypeview.h>
 #include "global.h"
 #include "edittagtypeview.h"
+#include "customsttview.h"
 #include "sarftag.h"
 #include "textParsing.h"
 #include <QMessageBox>
@@ -48,6 +49,7 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     descBrwsr->clear();
     tagDescription->clear();
     txtBrwsr->clear();
+    initSarf = true;
 }
 
 void AMTMainWindow::createDockWindows() {
@@ -512,7 +514,11 @@ void AMTMainWindow::createActions()
     tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
-    sarfAct = new QAction(tr("Sarf"), this);
+    sarftagsAct = new QAction(tr("Customize Tags"), this);
+    connect(sarftagsAct, SIGNAL(triggered()), this, SLOT(customizeSarfTags()));
+
+    sarfAct = new QAction(tr("Run Sarf"), this);
+    sarfAct->setEnabled(false);
     //tagAct->setShortcuts(QKeySequence::Cut);
     //tagAct->setStatusTip(tr("Tag selected word"));
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
@@ -561,7 +567,8 @@ void AMTMainWindow::createMenus()
     tagtypeMenu->addSeparator();
     */
 
-    sarfMenu = menuBar()->addMenu(tr("Automatic"));
+    sarfMenu = menuBar()->addMenu(tr("Sarf"));
+    sarfMenu->addAction(sarftagsAct);
     sarfMenu->addAction(sarfAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
@@ -699,21 +706,28 @@ QString error_str,output_str;
 void AMTMainWindow::sarfTagging() {
 
     startTaggingText(_atagger->text);
-    theSarf = new Sarf();
-    bool all_set = theSarf->start(&output_str, &error_str, this);
-    if(!all_set) {
-        QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
-        return;
+
+    if(initSarf) {
+
+        theSarf = new Sarf();
+        bool all_set = theSarf->start(&output_str, &error_str, this);
+        if(!all_set) {
+            QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
+            return;
+        }
+        Sarf::use(theSarf);
+        initialize_other();
+
+        theSarf->out.setString(&output_str);
+        theSarf->out.setCodec("utf-8");
+        theSarf->displayed_error.setString(&error_str);
+        theSarf->displayed_error.setCodec("utf-8");
+        initSarf = false;
     }
-    Sarf::use(theSarf);
-    initialize_other();
 
     error_str = "";
     output_str = "";
-    theSarf->out.setString(&output_str);
-    theSarf->out.setCodec("utf-8");
-    theSarf->displayed_error.setString(&error_str);
-    theSarf->displayed_error.setCodec("utf-8");
+
     QString text = _atagger->text;
     QStringList textList = _atagger->text.split(' ',QString::SkipEmptyParts);
     int start = 0;
@@ -747,6 +761,12 @@ void AMTMainWindow::sarfTagging() {
 
     fillTreeWidget(sarf);
     finishTaggingText();
+}
+
+void AMTMainWindow::customizeSarfTags() {
+    sarfAct->setEnabled(true);
+    CustomSTTView * cttv = new CustomSTTView(this);
+    cttv->show();
 }
 
 void AMTMainWindow::resetActionDisplay() {
