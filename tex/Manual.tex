@@ -17,6 +17,10 @@
 \renewcommand{\footrulewidth}{0pt} % Remove footer underlines
 \setlength{\headheight}{12pt} % Customize the height of the header
 \usepackage{hyperref}
+\hypersetup{%
+    pdfborder = {0 0 0}
+}
+\bibliographystyle{plain}
 
 %\usepackage{utf8}
 %\fullvocalize
@@ -50,9 +54,13 @@ User Guide
 
 \newpage
 
+\tableofcontents
+
+\newpage
+
 \section{Introduction}
 \paragraph{}
-Sarf is an Arabic Morphological Analyzer. Morphology is the analysis of the structure of a word into its morphemes identified as stems and affixes, including prefixes and suffixes. Moreover, types are associated with those morphemes such as gloss and part of speech (POS) tags. Sarf takes a word such as ``\RL{wyAkolohA}'' and returns its morphological solutions. Figure~\ref{tab:SarfSample} below shows a sample output of Sarf's Analysis.
+Sarf is an Arabic Morphological Analyzer. Morphology is the analysis of the structure of a word into its morphemes identified as stems and affixes, including prefixes and suffixes. Moreover, types are associated with those morphemes such as gloss and part of speech (POS) tags. Sarf takes a word such as ``\fullvocalize\RL{waya'kolhA}'' and returns its morphological solutions. Figure~\ref{tab:SarfSample} below shows a sample output of Sarf's Analysis.
 
 %\begin{figure}[H]
 %\centering
@@ -91,21 +99,24 @@ Sarf is an open source tool. The code is currently hosted on google code under t
 \begin{verbatim}
 svn checkout http://atmine.googlecode.com/svn/trunk/ atmine-read-only.
 \end{verbatim}
-Preferablly, you should be able to get a stable version of Sarf from the download section under:\\
+Preferablly, get a stable version of Sarf from the download section under:\\
 \begin{verbatim}
 http://code.google.com/p/atmine/downloads/list
 \end{verbatim}
 \paragraph{}
-From the following link, download a zipped file named ``ATSarf-0.1.tar.bz2'' which contains all the files required to run the morphological analyzer along with all the applications implemented based on it. After downloading the compressed folder, extract it and you should have a folder named ``ATSarf'', which is the root folder of the Sarf.\\
-You also need the encoded lexicon in the ``Bama-Public.zip'' file to be extracted in your running directory. This zip file is found in the original compressed file introduced above or in ``ATSarf/bin'' directory if you are using svn to download the code.
+From the link above, download a zipped file named ``ATSarf-0.1.tar.bz2'' which contains all the files required to run the morphological analyzer along with all the applications implemented based on it. After downloading the compressed folder, extract it and you should have a folder named ``ATSarf-0.1''. Inside this folder, you'll find ``ATSarf''; the top folder of Sarf.\\
+You also need the encoded lexicon in the zip file ``Bama-Public.zip''. This zip file is found in ``ATsarf-0.1'' introduced above or in ``ATSarf/bin'' directory if you are using svn to download the code. You have to extract this file in your running directory in order for the tool to work correctly.
 
 \section{Build the Tool}
+The following are the steps required to build Sarf on a linux machine.
+
 \subsection{Dependencies}
+\label{subsec:dependencies}
 In order to be able to build and run Sarf, the following dependencies must be installed:
 \begin{itemize}
 \item mysql-client
 \item mysql-server
-\item libmysqlcppconn
+\item libmysqlcppconn4
 \item libmysqlcppconn-dev
 %\item libqjson-dev
 %\item subversion
@@ -123,32 +134,52 @@ After downloading the trie structure to a destination you specify, go to {\bf da
 \item ./configure
 \item make
 \end{enumerate}
-Note that the name of the folder ``libdatrie-0.2.3'' includes the version of the library downloaded. So you could have a number in your download referring to a different version, which shouldn't cause any problem.
+Note that the name of the folder ``libdatrie-0.2.3'' includes the version of the library downloaded ``0.2.3''.If you download another version of this library, it will have a different name referring to a different version. Using any of the other versions of datrie shouldn't lead to anu problem, however it is preffered to use the same version as the one introduced above.
 
-\subsubsection{QJson}
+\subsubsection{QJson- Only Needed by Tagger Application}
 QJson is a qt-based library that maps JSON data to QVariant objects: JSON arrays will be mapped to QVariantList instances, while JSON objects will be mapped to QVariantMap. This library can be downloaded from the following link:\\
 \url{http://sourceforge.net/projects/qjson/files/}\\
-After downloading QJson to the desired destination, follow the instructions found in the ``INSTALL'' file found in the root directory ``qjson'' to install the library.
+After downloading QJson to the desired destination, follow the instructions in the ``INSTALL'' file found in the top directory ``qjson'' to install the library.
 
 \subsection{links}
-The directory ``ATSarf/third/'' in the extracted Sarf code should contain links to the dependencies as follows.
+In the directory ``ATSarf/third'', we have to create symbolic links to target dependencies. Those dependencies are third party software such as datrie and qjson downloaded and installed in subsection~\ref{subsec:dependencies}.\\
 
 To create the links, you can use the ``ln'' command as follows.\\
 \begin{verbatim}
 ln -s TARGET LINK_NAME
 \end{verbatim}
-where TARGET is the dependency we want to point to and LINK\_NAME is the name of the link to be created.
+where TARGET is the dependency we want to point to and LINK\_NAME is the name of the link to be created.\\
 
-Given that you put the datrie file in the same directory as the root folder ``ATSarf'' and you are in the ``third'' directory, you can set the link to it as follows:
+\subsubsection{datrie link}
+Given that you put the datrie file in the same directory as the top folder ``ATSarf'' and you are in the ``third'' directory, you can use the following command line to set the link:
 \begin{verbatim}
 ln -s ../../datrie/libdatrie-0.2.3/ datrie
 \end{verbatim}
 
-Similarly, given that you add the QJson library to the same directory as the root folder ``ATSarf'', add a link to it using the following command:
+\subsubsection{qjson link}
+Similarly, given that you add the QJson library to the same directory as the top folder ``ATSarf'', add a link to it using the following command:
 \begin{verbatim}
 ln -s ../../qjson/ qjson
 \end{verbatim}
 
+Alternatively, you can install qjson using the command line:
+\begin{verbatim}
+apt-get install libqjson-dev
+\end{verbatim}
+
+Given that you are in third directory, create the directories qjson/build/lib as follows :
+\begin{verbatim}
+mkdir -p qjson/build/lib
+\end{verbatim}
+
+The last step would be to locate the shared library of qjson in your system and create a link to it as follows:
+\begin{verbatim}
+cd qjson/build/lib
+ln -f QJSONLIB_PATH/libqjson.so
+\end{verbatim}
+where QJSONLIB\_PATH is the path of the qjson library in your system.\\
+
+\subsubsection{Qt link}
 Moreover, you need to set a link to the Qt library as well using the same procedure used for the preceding link. 
 The following command should do the trick if you are using an Ubuntu 10.10 version of linux:
 \begin{verbatim}
@@ -171,7 +202,7 @@ In order to build the database, open a terminal and execute the following comand
 \end{enumerate}
 
 \paragraph{}
-The first command opens ``mysql'' database with root access where the password is empty. In case you had different settings for ``mysql'', you'll have to insert them. Inside ``mysql'', use the second command to create the database required, then command 3 to close it.\\
+The first command opens ``mysql'' database with mysql root access where the password is empty. In case you had different settings for ``mysql'', you'll have to insert them. Inside ``mysql'', use the second command to create the database required, then command 3 to close it.\\
 Now move to the ``atmine/src/sql design'' directory as shown in line 4, then execute command 5. If everything works normal, the database should be created and filled by now.
 
 \subsection{Build}
@@ -189,14 +220,35 @@ To build and run Sarf on windows, you need to have cygwin installed along with t
 \section{Run Sarf}
 
 \subsection{Try existing applications}
-Now that you have built Sarf, you can try existing applications that use it. To do that launch the GUI from ``ATSarf/bin'' by double clicking the executable output file called ``ATSarf''.
-To test Sarf, first press the button with the label ``fill'', which fills the structures required for analysis. Then, you insert a word in the textbox present to the right of the label ``input'' in the upper left of the GUI and press ``GO!''. You can see the result in the textbox present under the label ``Output''.
+Now that you have built Sarf, you can try existing applications that use it. To do that launch the GUI from ``ATSarf/bin'' by double clicking the executable output file called ``ATSarfGui''.
 
-The GUI includes other applications based on the arabic morphological analyzer such as Hadith Analysis that extracts the so called ``matn'' and ``sanad'' automatically and builds a combined gragh out of it. 
+\subsubsection{Morphology - Sarf}
+To test Sarf, first press the button with the label ``fill'', which fills the structures required for analysis. Then, type an arabic word in the textbox present to the right of the label ``input'' in the upper left of the GUI and press ``GO!''. You can see the results in the output textbox.\\
 
+\subsubsection{Hadith}
+The GUI includes other applications based on the arabic morphological analyzer (Sarf) such as Hadith Analysis that extracts the so called ``matn'' and ``sanad'' automatically and builds a combined graph out of it. To test this application follow the following steps:
+\begin{enumerate}
+\item Press Fill
+\item Select Hadith Radio Button
+\item Press Browse and go to ATSarf/tests
+\item Select the file hadith/kafi1.txt
+\item Press Go!
+\end{enumerate}
+
+At this stage, the output will be the input hadith text shown in the textbox to the right with tagged narrators referring to what is called ``sanad''. Also, the start of each hadith and end of its sanad are shown in the left textbox.\\
+
+Moreover, you can pass biography text file to the ``biographies view'' that opens upon finishing the previous step. To do so, follow these steps:
+\begin{enumerate}
+\item Press Browse and go to ATSarf/tests/Kafi
+\item Select khoei.txt
+\item Press ``Parse Biographies''
+\end{enumerate}
+
+% narrator/biography pair
+The output will be the list of narrators from the hadith with the corresponding biographies. For further explanation about this application, refer to \cite{zaraket2012arabic}.
 %{\bf TODO: Describe how to try them with sample files}
 
-\subsection{Build your first Simple Sarf application - Hello World Example}
+\section{Build your first Simple Sarf application - Hello World Example}
 \label{subsec:hwex}
 
 Other than using the provided GUI, you can create you own program based on the libraries to either use Sarf functionality as it is or extend it.
@@ -711,5 +763,7 @@ If you need more details about the code,you can find the documentation in ``ATSa
 
 \paragraph{}
 For any further questions, contact us at the following email: \textbf{aaj15@aub.edu.lb}
+
+\bibliography{manual}
 
 \end{document}
