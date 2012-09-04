@@ -35,6 +35,7 @@ private slots:
     void btnLoad_clicked();
     void btnSelect_clicked();
     void btnUnselect_clicked();
+    void editPattern_changed(QString text);
 
 private:
     QRadioButton *btnPOS;

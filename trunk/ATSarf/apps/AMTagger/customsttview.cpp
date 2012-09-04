@@ -1,8 +1,11 @@
 #include "customsttview.h"
 #include "sstream"
 #include "logger.h"
+#include "global.h"
 #include <QGridLayout>
 #include <QScrollArea>
+#include <QMessageBox>
+#include <QFileDialog>
 
 CustomSTTView::CustomSTTView(QWidget *parent) :
     QMainWindow(parent)
@@ -29,8 +32,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     btnUnselectAll = new QPushButton(tr("Unselect All"), this);
     btnSelect = new QPushButton(tr(">"), this);
     btnUnselect = new QPushButton(tr("<"), this);
-    btnSave = new QPushButton(tr("Save"), this);
+    btnAdd = new QPushButton(tr("Add"), this);
     btnLoad = new QPushButton(tr("Load"), this);
+    btnSave = new QPushButton(tr("Save"), this);
 
     connect(btnPOS,SIGNAL(clicked()),this,SLOT(btnPOS_clicked()));
     connect(btnGloss,SIGNAL(clicked()),this,SLOT(btnGloss_clicked()));
@@ -42,8 +46,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnUnselectAll,SIGNAL(clicked()),this,SLOT(btnUnselectAll_clicked()));
     connect(btnSelect,SIGNAL(clicked()),this,SLOT(btnSelect_clicked()));
     connect(btnUnselect,SIGNAL(clicked()),this,SLOT(btnUnselect_clicked()));
-    connect(btnSave,SIGNAL(clicked()),this,SLOT(btnSave_clicked()));
+    connect(btnAdd,SIGNAL(clicked()),this,SLOT(btnAdd_clicked()));
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(btnLoad_clicked()));
+    connect(btnSave, SIGNAL(clicked()), this, SLOT(btnSave_clicked()));
 
     grid->addWidget(btnStem,0,0);
     grid->addWidget(btnPrefix,0,1);
@@ -51,11 +56,12 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnGloss,0,3);
     grid->addWidget(btnPOS,0,4);
     grid->addWidget(btnTagTypes,0,5);
+    grid->addWidget(btnSave,0,6);
     grid->addWidget(btnSelectAll,7,0);
     grid->addWidget(btnUnselectAll,7,1);
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
-    grid->addWidget(btnSave,10,5);
+    grid->addWidget(btnAdd,10,5);
     grid->addWidget(btnLoad,10,6);
 
     lblPattern = new QLabel(tr("Pattern"),this);
@@ -79,6 +85,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(lblUnderline,7,5);
 
     editPattern = new QLineEdit(this);
+    connect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
     editTagName = new QLineEdit(this);
     editDescription = new QLineEdit(this);
 
@@ -160,10 +167,6 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     }
 }
 
-void CustomSTTView::btnAdd_clicked() {
-
-}
-
 void CustomSTTView::btnGloss_clicked() {
     field = "Gloss";
     listPossibleTags->clear();
@@ -186,8 +189,35 @@ void CustomSTTView::btnPrefix_clicked() {
     listPossibleTags->addItems(listPrefix);
 }
 
-void CustomSTTView::btnSave_clicked() {
+void CustomSTTView::btnAdd_clicked() {
 
+    QString tag = editTagName->text();
+    QVector < QPair< QString, QString > > tags;
+    for(int i=0; i< (listSelectedTags->count()); i++) {
+        QStringList items = listSelectedTags->item(i)->text().split(" -> ");
+        QPair<QString,QString> pair(items[0],items[1]);
+        tags.append(pair);
+    }
+    QString desc = editDescription->text();
+    int id = _atagger->sarfTagTypeVector->count();
+    QString fgcolor = colorfgcolor->color().name();
+    QString bgcolor = colorbgcolor->color().name();
+    int font = cbfont->currentText().toInt();
+    bool underline = cbunderline->isChecked();
+    bool bold = cbBold->isChecked();
+    bool italic = cbItalic->isChecked();
+
+    if(!tag.isEmpty() && !tags.isEmpty() && !desc.isEmpty()) {
+        _atagger->insertSarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic);
+        QMessageBox::information(this,"TagType Add",tag + " added successfully!");
+        editTagName->clear();
+        editPattern->clear();
+        listSelectedTags->clear();
+        editDescription->clear();
+    }
+    else {
+        QMessageBox::warning(this,"Warning","One of the fields is Empty!!");
+    }
 }
 
 void CustomSTTView::btnSelectAll_clicked() {
@@ -224,4 +254,62 @@ void CustomSTTView::btnUnselectAll_clicked() {
 
 void CustomSTTView::btnUnselect_clicked() {
     qDeleteAll(listSelectedTags->selectedItems());
+}
+
+void CustomSTTView::editPattern_changed(QString text) {
+    QStringList *list;
+    if(btnStem->isChecked()) {
+        list = &listStems;
+    }
+    else if(btnPrefix->isChecked()) {
+        list = &listPrefix;
+    }
+    else if(btnSuffix->isChecked()) {
+        list = &listSuffix;
+    }
+    else if(btnGloss->isChecked()) {
+        list = &listGloss;
+    }
+    else if(btnPOS->isChecked()) {
+        list = &listPOS;
+    }
+
+    QRegExp regExp(text);
+    listPossibleTags->clear();
+    if(editPattern->text().isEmpty()) {
+        listPossibleTags->addItems(*list);
+    }
+    else {
+        listPossibleTags->addItems(list->filter(regExp));
+    }
+}
+
+void CustomSTTView::btnSave_clicked() {
+    QByteArray sarftagtypeData = _atagger->dataInJsonFormat(sarfTTV);
+
+    QString fileName;
+    if(_atagger->sarftagtypeFile.isEmpty()) {
+        fileName = QFileDialog::getSaveFileName(
+                this,
+                tr("Save Sarf Tag Types"), "",
+                tr("Text (*.tagtypes);;All Files (*)"));
+    }
+    else {
+        fileName = _atagger->sarftagtypeFile;
+    }
+
+    QFile tfile(fileName);
+    if(_atagger->sarftagtypeFile.isEmpty() && tfile.exists()) {
+        QMessageBox::warning(this,"Warning", "File already exists, please try another name");
+        return;
+    }
+    if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
+        return;
+    }
+    _atagger->sarftagtypeFile = fileName;
+
+    QTextStream outtags(&tfile);
+    outtags << sarftagtypeData;
+    tfile.close();
 }
