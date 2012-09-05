@@ -57,12 +57,14 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
             data.insert("bold",(_atagger->sarfTagTypeVector->at(i)).bold);
             data.insert("italic",(_atagger->sarfTagTypeVector->at(i)).italic);
 
-            QVariantMap tags;
+            QVariantList tagsarray;
             for(int j=0; j < (_atagger->sarfTagTypeVector->at(i).tags.count()); j++) {
+                QVariantMap tagsdata;
                 const QPair< QString, QString> * pair = &(_atagger->sarfTagTypeVector->at(i).tags.at(j));
-                tags.insert(pair->first,pair->second);
+                tagsdata.insert(pair->first,pair->second);
+                tagsarray << tagsdata;
             }
-            data.insert("Tags",tags);
+            data.insert("Tags",tagsarray);
 
             sarftagtypeset << data;
         }

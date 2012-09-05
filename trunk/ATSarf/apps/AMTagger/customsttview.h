@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QListWidget>
 #include <QRadioButton>
+#include <QTreeWidget>
 #include "colorlisteditor.h"
 
 class QGroupBox;
@@ -22,12 +23,6 @@ public:
 signals:
 
 private slots:
-    void btnPOS_clicked();
-    void btnGloss_clicked();
-    void btnStem_clicked();
-    void btnPrefix_clicked();
-    void btnSuffix_clicked();
-    void btnTagTypes_clicked();
     void btnSelectAll_clicked();
     void btnUnselectAll_clicked();
     void btnAdd_clicked();
@@ -36,21 +31,18 @@ private slots:
     void btnSelect_clicked();
     void btnUnselect_clicked();
     void editPattern_changed(QString text);
+    void cbTagType_changed(QString text);
+    void fgcolor_changed(QString color);
+    void bgcolor_changed(QString color);
+    void font_changed(QString fontSize);
+    void tagName_changed(QString name);
+    void tagName_Edited(QString name);
+    void underline_clicked(bool underline);
+    void bold_clicked(bool bold);
+    void italic_clicked(bool italic);
+    void desc_edited();
 
 private:
-    QRadioButton *btnPOS;
-    QRadioButton *btnGloss;
-    QRadioButton *btnStem;
-    QRadioButton *btnPrefix;
-    QRadioButton *btnSuffix;
-    /*
-    QPushButton *btnPOS;
-    QPushButton *btnGloss;
-    QPushButton *btnStem;
-    QPushButton *btnPrefix;
-    QPushButton *btnSuffix;
-    */
-    QPushButton *btnTagTypes;
     QPushButton *btnSelectAll;
     QPushButton *btnUnselectAll;
     QPushButton *btnAdd;
@@ -70,27 +62,29 @@ private:
     QLabel *lblUnderline;
 
     QLineEdit *editPattern;
-    QLineEdit *editTagName;
     QLineEdit *editDescription;
 
     ColorListEditor * colorfgcolor;
     ColorListEditor * colorbgcolor;
 
-    QComboBox * cbfont;
+    QComboBox *cbTagType;
+    QComboBox *cbTagName;
+    QComboBox *cbfont;
 
-    QCheckBox * cbunderline;
-    QCheckBox * cbBold;
-    QCheckBox * cbItalic;
+    QCheckBox *cbunderline;
+    QCheckBox *cbBold;
+    QCheckBox *cbItalic;
 
     QListWidget *listPossibleTags;
-    QListWidget *listSelectedTags;
+    QTreeWidget *listSelectedTags;
 
     QStringList listStems;
-    QStringList listPOS;
+    QStringList listStemPOS;
     QStringList listGloss;
     QStringList listPrefix;
+    QStringList listPrefixPOS;
     QStringList listSuffix;
-    QStringList listTagTypes;
+    QStringList listSuffixPOS;
 
     QString field;
 };

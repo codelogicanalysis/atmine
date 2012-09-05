@@ -30,7 +30,7 @@ bool SarfTag::on_match() {
     for( int i=0; i< (_atagger->sarfTagTypeVector->count()); i++) {
 
         QString _tag = _atagger->sarfTagTypeVector->at(i).tag;
-        bool belong = true;
+        bool belong = false;
         const SarfTagType * tagtype = &(_atagger->sarfTagTypeVector->at(i));
         for(int j=0; j < (tagtype->tags.count()); j++) {
 
@@ -48,8 +48,8 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(!contain) {
-                    belong = false;
+                if(contain) {
+                    belong = true;
                     break;
                 }
                 else {
@@ -60,12 +60,11 @@ bool SarfTag::on_match() {
 
                 minimal_item_info & stem = *stem_info;
                 if(stem.raw_data == tag->second) {
-                    contain = true;
-                    continue;
+                    belong = true;
+                    break;
                 }
                 else {
-                    belong = false;
-                    break;
+                    continue;
                 }
             }
             else if(tag->first == "Suffix") {
@@ -80,24 +79,65 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(!contain) {
-                    belong = false;
+                if(contain) {
+                    belong = true;
                     break;
                 }
                 else {
                     continue;
                 }
             }
-            else if(tag->first == "POS") {
+            else if(tag->first == "Stem-POS") {
 
                 minimal_item_info & stem = *stem_info;
                 if(stem.POS.contains(tag->second,Qt::CaseSensitive)) {
-                    contain = true;
-                    continue;
+                    belong = true;
+                    break;
                 }
                 else {
-                    belong = false;
+                    continue;
+                }
+            }
+            else if(tag->first == "Prefix-POS") {
+
+                for(int k=0;k<prefix_infos->size();k++) {
+
+                    minimal_item_info & pre = (*prefix_infos)[k];
+                    if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
+                            continue;
+
+                    if(pre.POS == tag->second) {
+                        contain = true;
+                        break;
+                    }
+                }
+                if(contain) {
+                    belong = true;
                     break;
+                }
+                else {
+                    continue;
+                }
+            }
+            else if(tag->first == "Suffix-POS") {
+
+                for(int k=0;k<suffix_infos->size();k++) {
+
+                    minimal_item_info & suff = (*suffix_infos)[k];
+                    if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+                            continue;
+
+                    if(suff.POS == tag->second) {
+                        contain = true;
+                        break;
+                    }
+                }
+                if(contain) {
+                    belong = true;
+                    break;
+                }
+                else {
+                    continue;
                 }
             }
             else if(tag->first == "Gloss") {
@@ -115,13 +155,14 @@ bool SarfTag::on_match() {
                 }
 
                 if(contain) {
-                   continue;
+                   belong = true;
+                   break;
                 }
 
                 minimal_item_info & stem = *stem_info;
                 if(stem.description().split('/').contains(tag->second)) {
-                    contain = true;
-                    continue;
+                    belong = true;
+                    break;
                 }
 
                 for(int k=0;k<suffix_infos->size();k++) {
@@ -136,11 +177,11 @@ bool SarfTag::on_match() {
                     }
                 }
                 if(contain) {
-                    continue;
+                    belong = true;
+                    break;
                 }
                 else {
-                    belong = false;
-                    break;
+                    continue;
                 }
             }
         }

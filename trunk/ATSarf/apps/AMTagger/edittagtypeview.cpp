@@ -58,8 +58,10 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     grid->addWidget(lineEditDescription,1,4);
 
     colorfgcolor = new ColorListEditor(this);
+    colorfgcolor->setColor("Red");
     colorfgcolor->setEnabled(false);
     colorbgcolor = new ColorListEditor(this);
+    colorbgcolor->setColor("Yellow");
     colorbgcolor->setEnabled(false);
 
     grid->addWidget(colorfgcolor,2,4);

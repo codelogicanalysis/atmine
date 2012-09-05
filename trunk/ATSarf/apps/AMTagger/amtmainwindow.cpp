@@ -130,9 +130,11 @@ void AMTMainWindow::open() {
 
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Open Tagged Text File"), "",
-             tr("Tag Types (*.tags);;All Files (*)"));
+             tr("Tag Types (*.tags *.txt);;All Files (*)"));
 
-    _atagger->tagFile = fileName;
+    if(fileName.isEmpty()) {
+        return;
+    }
 
     QFile ITfile(fileName);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -140,6 +142,22 @@ void AMTMainWindow::open() {
                      tr("The <b>File</b> can't be opened!"));
         return;
     }
+
+    if(fileName.endsWith(".txt")) {
+        QString text = ITfile.readAll();
+        _atagger->textFile = fileName;
+        _atagger->text = text;
+        /*
+        QString sarftagsfile = _atagger->textFile.replace(".txt",".sarftags");
+        _atagger->tagFile = sarftagsfile;
+        QString sarftagtypesfile = _atagger->textFile.replace(".txt", ".sarftagtypes");
+        _atagger->sarftagtypeFile = sarftagtypesfile;
+        */
+        txtBrwsr->setText(text);
+        return;
+    }
+
+    _atagger->tagFile = fileName;
 
     QByteArray Tags = ITfile.readAll();
     ITfile.close();
