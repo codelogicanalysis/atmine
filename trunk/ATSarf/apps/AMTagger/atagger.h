@@ -20,13 +20,13 @@ public:
     QByteArray dataInJsonFormat(Data _data);
 //private:
     QVector<Tag> *tagVector;
-    QVector<Tag> *sarfTagVector;
+    //QVector<Tag> *sarfTagVector;
     QVector<TagType> *tagTypeVector;
     QVector<SarfTagType> *sarfTagTypeVector;
     QString text;
     QString textFile;
     QString tagFile;
-    QString sarftagFile;
+    //QString sarftagFile;
     QString tagtypeFile;
     QString sarftagtypeFile;
     bool isSarf;

@@ -7,7 +7,7 @@ ATagger * _atagger = NULL;
 ATagger::ATagger() {
 
     tagVector = new QVector<Tag>();
-    sarfTagVector = new QVector<Tag>();
+    //sarfTagVector = new QVector<Tag>();
     tagTypeVector = new QVector<TagType>();
     sarfTagTypeVector = new QVector<SarfTagType>();
 }
@@ -19,12 +19,14 @@ bool ATagger::insertTag(QString type, int pos, int length, Source source) {
     return true;
 }
 
+/*
 bool ATagger::insertSarfTag(QString type, int pos, int length, Source source) {
 
     Tag tag(type,pos,length,source);
     sarfTagVector->append(tag);
     return true;
 }
+*/
 
 bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic) {
 
@@ -64,7 +66,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
                 tagsdata.insert(pair->first,pair->second);
                 tagsarray << tagsdata;
             }
-            data.insert("Tags",tagsarray);
+            data.insert("Features",tagsarray);
 
             sarftagtypeset << data;
         }
@@ -95,13 +97,19 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(tagtypedata);
     }
-    else if(_data == tagV) {
+    else if(_data == tagV || _data == sarfTV) {
 
         /** Convert Tag to JSON **/
 
         QVariantMap tagdata;
         tagdata.insert("file",_atagger->textFile);
-        tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
+        if(_atagger->isSarf) {
+            tagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
+        }
+        else {
+            tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
+        }
+        tagdata.insert("textchecksum", _atagger->text.count());
         QVariantList tagset;
         for(int i=0; i<_atagger->tagVector->count(); i++) {
             QVariantMap data;
@@ -115,13 +123,15 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(tagdata);
     }
+    /*
     else if(_data == sarfTV) {
 
-        /** Convert Tag to JSON **/
+        /** Convert Tag to JSON
 
         QVariantMap sarftagdata;
         sarftagdata.insert("file",_atagger->textFile);
         sarftagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
+        sarftagdata.insert("textchecksum", _atagger->text.count());
         QVariantList sarftagset;
         for(int i=0; i<_atagger->sarfTagVector->count(); i++) {
             QVariantMap data;
@@ -135,6 +145,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(sarftagdata);
     }
+    */
 
     return json;
 }

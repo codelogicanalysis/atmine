@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QTextEdit>
 #include <QLabel>
 #include <QCheckBox>
 #include <QComboBox>
@@ -11,6 +12,7 @@
 #include <QRadioButton>
 #include <QTreeWidget>
 #include "colorlisteditor.h"
+#include "sarftagtype.h"
 
 class QGroupBox;
 
@@ -19,6 +21,7 @@ class CustomSTTView : public QMainWindow
     Q_OBJECT
 public:
     explicit CustomSTTView(QWidget *parent = 0);
+    //bool showWindow;
 
 signals:
 
@@ -26,8 +29,11 @@ private slots:
     void btnSelectAll_clicked();
     void btnUnselectAll_clicked();
     void btnAdd_clicked();
+    void btnRemove_clicked();
     void btnSave_clicked();
     void btnLoad_clicked();
+    void btnCancel_clicked();
+    void btnSaveChanges_clicked();
     void btnSelect_clicked();
     void btnUnselect_clicked();
     void editPattern_changed(QString text);
@@ -41,6 +47,7 @@ private slots:
     void bold_clicked(bool bold);
     void italic_clicked(bool italic);
     void desc_edited();
+    void closeEvent(QCloseEvent *event);
 
 private:
     QPushButton *btnSelectAll;
@@ -48,10 +55,14 @@ private:
     QPushButton *btnAdd;
     QPushButton *btnSave;
     QPushButton *btnLoad;
+    QPushButton *btnCancel;
+    QPushButton *btnSaveChanges;
     QPushButton *btnSelect;
     QPushButton *btnUnselect;
+    QPushButton *btnRemove;
 
     QLabel *lblPattern;
+    QLabel *lblFeatures;
     QLabel *lblTagName;
     QLabel *lblDescription;
     QLabel *lblFGColor;
@@ -62,7 +73,7 @@ private:
     QLabel *lblUnderline;
 
     QLineEdit *editPattern;
-    QLineEdit *editDescription;
+    QTextEdit *editDescription;
 
     ColorListEditor * colorfgcolor;
     ColorListEditor * colorbgcolor;
@@ -86,7 +97,9 @@ private:
     QStringList listSuffix;
     QStringList listSuffixPOS;
 
+    QVector<SarfTagType> *sttVector;
     QString field;
+    bool dirty;
 };
 
 #endif // CUSTOMSTTVIEW_H
