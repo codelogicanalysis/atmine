@@ -14,6 +14,25 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
     //resize(700,500);
+    /*
+    showWindow = false;
+    if(_atagger->tagtypeFile.isEmpty()) {
+        QString ttFileName = QInputDialog::getText(this,"TagType File Name", "Please insert a TagType File Name:");
+        if(ttFileName.isEmpty()) {
+            close();
+            return;
+        }
+        else {
+            _atagger->tagtypeFile = ttFileName + ".tt.json";
+            setWindowTitle("Tag Types: " + ttFileName);
+        }
+    }
+    else {
+        setWindowTitle("Tag Types: " + _atagger->tagtypeFile);
+    }
+    showWindow = true;
+    */
+    setWindowTitle("Tag Types: " + _atagger->tagtypeFile);
 
     /** Create Menu **/
     //createMenus();
@@ -197,6 +216,12 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     /** Fill Data in View **/
 
     tagTypeVector = new QVector<TagType>();
+
+    if(_atagger->tagTypeVector->count() == 0) {
+        btnEdit->setEnabled(false);
+        return;
+    }
+
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         tagTypeVector->append(_atagger->tagTypeVector->at(i));
     }
@@ -247,8 +272,7 @@ void EditTagTypeView::update_TagTypes() {
     edit = false;
 }
 
-void EditTagTypeView::createMenus()
-{
+void EditTagTypeView::createMenus() {
     viewMenu = menuBar()->addMenu(tr("&View"));
 
     /*
@@ -263,7 +287,7 @@ void EditTagTypeView::add_clicked() {
     QString text = QInputDialog::getText(this, tr("Add New Tag"),
                                              tr("Tag Name:"), QLineEdit::Normal,
                                              QString(), &ok);
-    if (!ok || text.isEmpty())
+    if(!ok || text.isEmpty())
         return;
 
     for(int i=0; i< tagTypeVector->count(); i++) {
@@ -292,9 +316,9 @@ void EditTagTypeView::add_clicked() {
     cbItalic->setEnabled(true);
     cbItalic->setChecked(false);
 
-    //parentCheck = true;
-    //AddTagTypeView * attv = new AddTagTypeView(this);
-    //attv->show();
+    if(_atagger->tagTypeVector->count() == 0) {
+        btnEdit->setEnabled(true);
+    }
 }
 
 void EditTagTypeView::rmv_clicked() {
@@ -320,6 +344,7 @@ void EditTagTypeView::edit_clicked() {
         cbItalic->setEnabled(true);
     }
     else {
+
         btnEdit->setText("...");
         edit = false;
         lineEditTag->setEnabled(false);
@@ -380,7 +405,7 @@ void EditTagTypeView::load_clicked() {
 
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Open Tag Types"), "",
-             tr("Tag Types (*.tagtypes);;All Files (*)"));
+             tr("Tag Types (*.tt.json);;All Files (*)"));
 
          if (fileName.isEmpty())
              return;

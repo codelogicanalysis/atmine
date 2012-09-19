@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSignalMapper>
+#include <QLabel>
 #include "ATMProgressIFC.h"
 #include "commonS.h"
 
@@ -28,6 +29,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void itemSelectionChanged(QTreeWidgetItem*,int);
 
      private slots:
+         void _new();
          void open();
          bool saveas();
          void tagadd();
@@ -41,6 +43,8 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void aboutQt();
          void sarfTagging();
          void customizeSarfTags();
+         void loadText_clicked();
+         void loadTagTypes_clicked();
 
 public:
          virtual void report(int value);
@@ -61,6 +65,7 @@ private:
          void createDockWindows();
          void startTaggingText(QString & text);
          bool saveFile(const QString &fileName, QByteArray &tagD);
+         void process_TagTypes(QByteArray &tagtypedata);
 
          QMenu *fileMenu;
          QMenu *tagMenu;
@@ -71,6 +76,7 @@ private:
          QMenu * mTags;
          QMenu *sarfMenu;
 
+         QAction *newAct;
          QAction *openAct;
          QAction *saveAct;
          QAction *saveasAct;
@@ -89,10 +95,17 @@ private:
          QAction *sarfAct;
 
          QTextBrowser * txtBrwsr;
-         //QTextEdit * txtBrwsr;
          QTreeWidget * tagDescription;
          QTreeWidget * descBrwsr;
 
+         QLabel *lblTFName;
+         QLabel *lblTTFName;
+
+         QPushButton *btnTFName;
+         QPushButton *btnTTFName;
+
+         QLineEdit *lineEditTFName;
+         QLineEdit *lineEditTTFName;
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
          ~AMTMainWindow();

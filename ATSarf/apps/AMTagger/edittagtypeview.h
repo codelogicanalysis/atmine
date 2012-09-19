@@ -24,6 +24,7 @@ class EditTagTypeView : public QMainWindow
     Q_OBJECT
 public:
     explicit EditTagTypeView(QWidget *parent = 0);
+    //bool showWindow;
 
 private:
     void createMenus();

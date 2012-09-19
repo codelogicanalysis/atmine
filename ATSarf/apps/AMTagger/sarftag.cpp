@@ -189,15 +189,15 @@ bool SarfTag::on_match() {
         if(belong) {
             // Add tag with this tagtype
             bool add = true;
-            for( int z=0; z<(_atagger->sarfTagVector->count()); z++) {
-                const Tag * tag2 = &(_atagger->sarfTagVector->at(z));
+            for( int z=0; z<(_atagger->tagVector->count()); z++) {
+                const Tag * tag2 = &(_atagger->tagVector->at(z));
                 if((tag2->pos == start) && (tag2->length == length) && (tag2->type == _tag)) {
                     add = false;
                     break;
                 }
             }
             if(add) {
-                _atagger->insertSarfTag(_tag,start,length,sarf);
+                _atagger->insertTag(_tag,start,length,sarf);
             }
         }
     }

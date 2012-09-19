@@ -7,6 +7,8 @@
 #include <QTextStream>
 #include<QDockWidget>
 #include<QList>
+#include <QMessageBox>
+#include <QInputDialog>
 
 #include "commonS.h"
 #include <addtagview.h>
@@ -17,7 +19,6 @@
 #include "customsttview.h"
 #include "sarftag.h"
 #include "textParsing.h"
-#include <QMessageBox>
 
 bool parentCheck;
 class SarfTag;
@@ -30,14 +31,6 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 
     // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
     parentCheck = false;
-
-    QDockWidget *dock = new QDockWidget(tr("Text View"), this);
-    txtBrwsr = new QTextBrowser(dock);
-    dock->setWidget(txtBrwsr);
-    txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
-    setCentralWidget(txtBrwsr);
-    //addDockWidget(Qt::LeftDockWidgetArea, dock);
 
     createActions();
     createMenus();
@@ -68,7 +61,52 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 
 void AMTMainWindow::createDockWindows() {
 
-    QDockWidget *dock = new QDockWidget(tr("Tag View"), this);
+    QDockWidget *dock = new QDockWidget(tr("Text File"), this);
+    QHBoxLayout *hbox = new QHBoxLayout();
+    lblTFName = new QLabel("Text File:",dock);
+    lineEditTFName = new QLineEdit(dock);
+    btnTFName = new QPushButton("...",dock);
+    connect(btnTFName, SIGNAL(clicked()), this, SLOT(loadText_clicked()));
+    hbox->addWidget(lblTFName);
+    hbox->addWidget(lineEditTFName);
+    hbox->addWidget(btnTFName);
+
+    QScrollArea *sa = new QScrollArea(dock);
+    sa->setLayout(hbox);
+
+    dock->setWidget(sa);
+    dock->setMaximumHeight(100);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Tag Type File"), this);
+    hbox = new QHBoxLayout();
+    lblTTFName = new QLabel("Tag Type File:",dock);
+    lineEditTTFName = new QLineEdit(dock);
+    btnTTFName = new QPushButton("...",dock);
+    connect(btnTTFName, SIGNAL(clicked()), this, SLOT(loadTagTypes_clicked()));
+    hbox->addWidget(lblTTFName);
+    hbox->addWidget(lineEditTTFName);
+    hbox->addWidget(btnTTFName);
+
+    sa = new QScrollArea(dock);
+    sa->setLayout(hbox);
+
+    dock->setWidget(sa);
+    dock->setMaximumHeight(100);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Text View"), this);
+    txtBrwsr = new QTextBrowser(dock);
+    dock->setWidget(txtBrwsr);
+    txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
+    //setCentralWidget(txtBrwsr);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    dock = new QDockWidget(tr("Tag View"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     tagDescription = new QTreeWidget(dock);
     tagDescription->setColumnCount(5);
@@ -125,12 +163,17 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 }
 
 void AMTMainWindow::open() {
+
+    /** Initialize Tagger instance again **/
+
     _atagger = NULL;
     _atagger = new ATagger();
 
+    /** Get and open tags file **/
+
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Open Tagged Text File"), "",
-             tr("Tag Types (*.tags *.txt);;All Files (*)"));
+             tr("Tag Types (*.tags.json);;All Files (*)"));
 
     if(fileName.isEmpty()) {
         return;
@@ -143,21 +186,8 @@ void AMTMainWindow::open() {
         return;
     }
 
-    if(fileName.endsWith(".txt")) {
-        QString text = ITfile.readAll();
-        _atagger->textFile = fileName;
-        _atagger->text = text;
-        /*
-        QString sarftagsfile = _atagger->textFile.replace(".txt",".sarftags");
-        _atagger->tagFile = sarftagsfile;
-        QString sarftagtypesfile = _atagger->textFile.replace(".txt", ".sarftagtypes");
-        _atagger->sarftagtypeFile = sarftagtypesfile;
-        */
-        txtBrwsr->setText(text);
-        return;
-    }
-
     _atagger->tagFile = fileName;
+    //_atagger->sarftagFile = fileName;
 
     QByteArray Tags = ITfile.readAll();
     ITfile.close();
@@ -173,6 +203,7 @@ void AMTMainWindow::open() {
         return;
     }
 
+    /** Read text file path **/
 
     _atagger->textFile = result["file"].toString();
 
@@ -183,25 +214,33 @@ void AMTMainWindow::open() {
         return;
     }
 
+    /** Get text and check if compatible with tag file through text check sum **/
+
     QString text = Ifile.readAll();
     int textchecksum = result["textchecksum"].toInt();
     if(textchecksum != text.count()) {
         QMessageBox::warning(this,"Warning","The input text file is Inconsistent with Tag Information!");
+        _atagger->tagFile.clear();
+        _atagger->textFile.clear();
         return;
     }
+    lineEditTFName->setText(_atagger->textFile);
     _atagger->text = text;
     Ifile.close();
 
     startTaggingText(text);
     process(Tags);
     finishTaggingText();
+
+    if(!_atagger->text.isEmpty()) {
+        sarfAct->setEnabled(true);
+    }
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
     if (this==NULL)
         return;
     QTextBrowser * taggedBox=txtBrwsr;
-    //QTextEdit * taggedBox = txtBrwsr;
     taggedBox->clear();
     taggedBox->setLayoutDirection(Qt::RightToLeft);
     QTextCursor c=taggedBox->textCursor();
@@ -220,7 +259,13 @@ void AMTMainWindow::process(QByteArray & json) {
 
     QVariantMap result = parser.parse (json,&ok).toMap();
 
-    _atagger->tagtypeFile = result["TagTypeFile"].toString();
+    QString tagtypeFile = result.value("TagTypeFile").toString();
+    if(tagtypeFile.isEmpty()) {
+        QMessageBox::warning(this,"Warning","The Tag Type File is not specified!");
+        txtBrwsr->clear();
+        _atagger = new ATagger();
+        return;
+    }
 
     /** Read Tags **/
 
@@ -230,14 +275,9 @@ void AMTMainWindow::process(QByteArray & json) {
         int start = tagElements["pos"].toInt();
         int length = tagElements["length"].toInt();
         QString tagtype = tagElements["type"].toString();
-        QString source = tagElements["source"].toString();
+        Source source = (Source)(tagElements["source"].toInt());
         bool check;
-        if(source == "sarf") {
-            check = _atagger->insertTag(tagtype,start,length,sarf);
-        }
-        else {
-            check = _atagger->insertTag(tagtype,start,length,user);
-        }
+        check = _atagger->insertTag(tagtype,start,length,source);
     }
 
     if(_atagger->tagVector->at(0).source == user) {
@@ -247,18 +287,60 @@ void AMTMainWindow::process(QByteArray & json) {
         _atagger->isSarf = true;
     }
 
+    if(_atagger->isSarf) {
+        _atagger->sarftagtypeFile = tagtypeFile;
+    }
+    else {
+        _atagger->tagtypeFile = tagtypeFile;
+    }
+    lineEditTTFName->setText(_atagger->tagtypeFile);
+
     /** Read the TagType file and store it **/
 
-    QFile ITfile(_atagger->tagtypeFile);
+    QString ttFName;
+    if(_atagger->isSarf) {
+        ttFName = _atagger->sarftagtypeFile;
+    }
+    else {
+        ttFName = _atagger->tagtypeFile;
+    }
+
+    QFile ITfile(ttFName);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::about(this, tr("Input Tag File"),
                      tr("The <b>Tag Type File</b> can't be opened!"));
+        txtBrwsr->clear();
+        _atagger = new ATagger();
+        lineEditTFName->clear();
+        lineEditTTFName->clear();
+        return;
     }
 
     QByteArray tagtypedata = ITfile.readAll();
     ITfile.close();
 
-    result = parser.parse (tagtypedata,&ok).toMap();
+    btnTFName->setEnabled(false);
+    btnTTFName->setEnabled(false);
+    lineEditTTFName->setText(ttFName);
+    process_TagTypes(tagtypedata);
+
+
+    setWindowTitle("AM Tagger: " + _atagger->tagFile);
+    /** Apply Tags on Input Text **/
+
+    applyTags();
+
+    /** Add Tags to tagDescription Tree **/
+
+    fillTreeWidget(user);
+    createTagMenu();
+}
+
+void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
+    QJson::Parser parser;
+    bool ok;
+
+    QVariantMap result = parser.parse (tagtypedata,&ok).toMap();
 
     if (!ok) {
         QMessageBox::about(this, tr("Input Tag File"),
@@ -287,38 +369,101 @@ void AMTMainWindow::process(QByteArray & json) {
         underline = typeElements["underline"].toBool();
         bold = typeElements["bold"].toBool();
         italic = typeElements["italic"].toBool();
-        _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic);
+
+        if(!typeElements.value("Features").isNull()) {
+
+            QVector < QPair < QString, QString> > tags;
+            foreach(QVariant sarfTags, typeElements["Features"].toList()) {
+                QVariantMap st = sarfTags.toMap();
+                QPair<QString, QString> pair;
+                if(!(st.value("Prefix").isNull())) {
+                    pair.first = "Prefix";
+                    pair.second = st.value("Prefix").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Stem").isNull())) {
+                    pair.first = "Stem";
+                    pair.second = st.value("Stem").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Suffix").isNull())) {
+                    pair.first = "Suffix";
+                    pair.second = st.value("Suffix").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Prefix-POS").isNull())) {
+                    pair.first = "Prefix-POS";
+                    pair.second = st.value("Prefix-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Stem-POS").isNull())) {
+                    pair.first = "Stem-POS";
+                    pair.second = st.value("Stem-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Suffix-POS").isNull())) {
+                    pair.first = "Suffix-POS";
+                    pair.second = st.value("Suffix-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Gloss").isNull())) {
+                    pair.first = "Gloss";
+                    pair.second = st.value("Gloss").toString();
+                    tags.append(pair);
+                }
+            }
+
+            _atagger->isSarf = true;
+            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic);
+        }
+        else {
+            _atagger->isSarf = false;
+            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic);
+        }
     }
-
-    /** Apply Tags on Input Text **/
-
-    applyTags();
-
-    /** Add Tags to tagDescription Tree **/
-
-    fillTreeWidget(user);
-    createTagMenu();
 }
 
 void AMTMainWindow::applyTags() {
 
-    for(int i =0; i< _atagger->tagVector->count(); i++) {
-        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j)).tag) {
-                int start = (_atagger->tagVector->at(i)).pos;
-                int length = (_atagger->tagVector->at(i)).length;
-                QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
-                QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
-                int font = (_atagger->tagTypeVector->at(j)).font;
-                bool underline = (_atagger->tagTypeVector->at(j)).underline;
-                bool bold = (_atagger->tagTypeVector->at(j)).bold;
-                bool italic = (_atagger->tagTypeVector->at(j)).italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                break;
+    if(_atagger->isSarf) {
+        for(int i=0; i<_atagger->tagVector->count(); i++) {
+            for(int j=0; j<_atagger->sarfTagTypeVector->count(); j++) {
+                QString type = (_atagger->tagVector->at(i)).type;
+                QString tag = (_atagger->sarfTagTypeVector->at(j)).tag;
+                if(type == tag) {
+                    int start = (_atagger->tagVector->at(i)).pos;
+                    int length = (_atagger->tagVector->at(i)).length;
+                    QColor fgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).fgcolor);
+                    QColor bgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).bgcolor);
+                    int font = (_atagger->sarfTagTypeVector->at(j)).font;
+                    bool underline = (_atagger->sarfTagTypeVector->at(j)).underline;
+                    bool bold = (_atagger->sarfTagTypeVector->at(j)).underline;
+                    bool italic = (_atagger->sarfTagTypeVector->at(j)).italic;
+                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                }
             }
         }
+        fillTreeWidget(sarf);
     }
-    fillTreeWidget(user);
+    else {
+        for(int i =0; i< _atagger->tagVector->count(); i++) {
+            for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+                if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j)).tag) {
+                    int start = (_atagger->tagVector->at(i)).pos;
+                    int length = (_atagger->tagVector->at(i)).length;
+                    QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
+                    QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
+                    int font = (_atagger->tagTypeVector->at(j)).font;
+                    bool underline = (_atagger->tagTypeVector->at(j)).underline;
+                    bool bold = (_atagger->tagTypeVector->at(j)).bold;
+                    bool italic = (_atagger->tagTypeVector->at(j)).italic;
+                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                    break;
+                }
+            }
+        }
+        fillTreeWidget(user);
+    }
     createTagMenu();
 }
 
@@ -383,12 +528,26 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
  }
 
 void AMTMainWindow::save() {
+    QString fileName = _atagger->tagFile;
+
+    if(fileName.isEmpty()) {
+        fileName = QInputDialog::getText(this,"Set Tag File Name","Please enter the tag file name:");
+        if(fileName.isEmpty()) {
+            return;
+        }
+        _atagger->tagFile = fileName;
+    }
+
+    if(_atagger->textFile.isEmpty() || _atagger->tagtypeFile.isEmpty()) {
+        QMessageBox::warning(this,"Warning","Couldn't save since text file or tag type file is not specified!");
+        return;
+    }
 
     /** Save to Default Destination **/
 
     QByteArray tagData = _atagger->dataInJsonFormat(tagV);
 
-    saveFile(_atagger->tagFile,tagData);
+    saveFile(fileName,tagData);
 }
 
 bool AMTMainWindow::saveas() {
@@ -396,14 +555,19 @@ bool AMTMainWindow::saveas() {
     /** Save to specified Destination with .tag extension **/
 
     QString fileName = QFileDialog::getSaveFileName(this,
-             tr("Save Tags File"), "",
-             tr("Text (*.tags);;All Files (*)"));
+                                                    tr("Save Tags File"), "",
+                                                    tr("tags (*.tags.json);;All Files (*)"));
 
     if (fileName.isEmpty())
         return false;
 
-    /** Simple Swap then return to riginal value to avoid copying _atagger **/
-    QByteArray tagData = _atagger->dataInJsonFormat(tagV);
+    QByteArray tagData;
+    if(_atagger->isSarf) {
+        tagData = _atagger->dataInJsonFormat(sarfTV);
+    }
+    else {
+        tagData = _atagger->dataInJsonFormat(tagV);
+    }
     return saveFile(fileName,tagData);
 }
 
@@ -437,8 +601,23 @@ void AMTMainWindow::tagremove() {
 }
 
 void AMTMainWindow::edittagtypes() {
+
+    if(_atagger->tagtypeFile.isEmpty()) {
+        QString ttFileName = QInputDialog::getText(this,"TagType File Name", "Please insert a TagType File Name:");
+        if(ttFileName.isEmpty()) {
+            return;
+        }
+        else {
+            _atagger->tagtypeFile = ttFileName + ".tt.json";
+            lineEditTTFName->setText(_atagger->tagtypeFile);
+            btnTTFName->setEnabled(false);
+        }
+    }
+
     EditTagTypeView * ettv = new EditTagTypeView(this);
+    //if(ettv->showWindow) {
     ettv->show();
+    //}
 }
 
 void AMTMainWindow::tagtypeadd() {
@@ -454,6 +633,19 @@ void AMTMainWindow::tagtyperemove() {
 
 void AMTMainWindow::tag(QString tagValue) {
     if(txtBrwsr->textCursor().selectedText() != "") {
+        if(_atagger->tagFile.isEmpty()) {
+            QString fileName = QFileDialog::getSaveFileName(this,
+                                                            tr("Tags File"), "",
+                                                            tr("Tags (*.tags.json);;All Files (*)"));
+            if(fileName.isEmpty()) {
+                QMessageBox::warning(this,"Warning","You have to add a tag file name before tagging the text!");
+                return;
+            }
+            else {
+                _atagger->tagFile = fileName;
+                setWindowTitle("AMTagger: " + _atagger->tagFile);
+            }
+        }
         QTextCursor cursor = txtBrwsr->textCursor();
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -512,6 +704,11 @@ void AMTMainWindow::aboutQt() {
 
 void AMTMainWindow::createActions()
 {
+    newAct = new QAction(tr("&New"), this);
+    newAct->setShortcuts(QKeySequence::New);
+    newAct->setStatusTip(tr("Start a new Tag Project"));
+    connect(newAct, SIGNAL(triggered()), this, SLOT(_new()));
+
     openAct = new QAction(tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
@@ -541,7 +738,7 @@ void AMTMainWindow::createActions()
     tagremoveAct->setStatusTip(tr("Remove a Tag"));
     connect(tagremoveAct, SIGNAL(triggered()), this, SLOT(tagremove()));
 
-    edittagtypesAct = new QAction(tr("EditTagTypes..."),this);
+    edittagtypesAct = new QAction(tr("Edit TagTypes..."),this);
     edittagtypesAct->setStatusTip(tr("Edit Tag Types"));
     connect(edittagtypesAct, SIGNAL(triggered()), this, SLOT(edittagtypes()));
 
@@ -553,7 +750,7 @@ void AMTMainWindow::createActions()
     tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
-    sarftagsAct = new QAction(tr("Customize Tags"), this);
+    sarftagsAct = new QAction(tr("Edit Sarf TagTypes..."), this);
     connect(sarftagsAct, SIGNAL(triggered()), this, SLOT(customizeSarfTags()));
 
     sarfAct = new QAction(tr("Run Sarf"), this);
@@ -585,6 +782,7 @@ void AMTMainWindow::createActions()
 void AMTMainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(newAct);
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveasAct);
@@ -633,13 +831,7 @@ void AMTMainWindow::createTagMenu() {
 void AMTMainWindow::fillTreeWidget(Source Data) {
     tagDescription->clear();
      QList<QTreeWidgetItem *> items;
-     QVector<Tag> *temp;
-     if(Data == user) {
-        temp = new QVector<Tag>(*(_atagger->tagVector));
-    }
-     else {
-         temp = new QVector<Tag>(*(_atagger->sarfTagVector));
-     }
+     QVector<Tag> *temp = new QVector<Tag>(*(_atagger->tagVector));
      for(int i=0; i < temp->count(); i++) {
          QStringList entry;
          QTextCursor cursor = txtBrwsr->textCursor();
@@ -736,8 +928,6 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     entry << "Italic" << "False";
 
                 descBrwsr->insertTopLevelItems(0, items);
-                //descBrwsr->itemAt(6,1)->setBackgroundColor(1,bgcolor);
-                //descBrwsr->itemAt(7,1)->setBackgroundColor(1,fgcolor);
                 break;
             }
         }
@@ -807,8 +997,6 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     entry << "Italic" << "False";
 
                 descBrwsr->insertTopLevelItems(0, items);
-                //descBrwsr->itemAt(6,1)->setBackgroundColor(1,bgcolor);
-                //descBrwsr->itemAt(7,1)->setBackgroundColor(1,fgcolor);
                 break;
             }
         }
@@ -816,9 +1004,28 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
 }
 
 void AMTMainWindow::sarfTagging() {
+    if(_atagger->text.isEmpty()) {
+        QMessageBox::warning(this,"Warning","Add a text file before initializing the Sarf Analyzer!");
+        return;
+    }
+
+    if(_atagger->tagFile.isEmpty()) {
+        QString fileName = QFileDialog::getSaveFileName(this,
+                                                        tr("Tags File"), "",
+                                                        tr("Tags (*.tags.json);;All Files (*)"));
+        if(fileName.isEmpty()) {
+            QMessageBox::warning(this,"Warning","You have to add a tag file name before tagging the text!");
+            return;
+        }
+        else {
+            _atagger->tagFile = fileName;
+            setWindowTitle("AMTagger: " + _atagger->tagFile);
+        }
+    }
+
     _atagger->isSarf = true;
     startTaggingText(_atagger->text);
-    _atagger->sarfTagVector->clear();
+    _atagger->tagVector->clear();
 
     error_str = "";
     output_str = "";
@@ -836,13 +1043,13 @@ void AMTMainWindow::sarfTagging() {
         }
     }
 
-    for(int i=0; i<_atagger->sarfTagVector->count(); i++) {
+    for(int i=0; i<_atagger->tagVector->count(); i++) {
         for(int j=0; j<_atagger->sarfTagTypeVector->count(); j++) {
-            QString type = (_atagger->sarfTagVector->at(i)).type;
+            QString type = (_atagger->tagVector->at(i)).type;
             QString tag = (_atagger->sarfTagTypeVector->at(j)).tag;
             if(type == tag) {
-                int start = (_atagger->sarfTagVector->at(i)).pos;
-                int length = (_atagger->sarfTagVector->at(i)).length;
+                int start = (_atagger->tagVector->at(i)).pos;
+                int length = (_atagger->tagVector->at(i)).length;
                 QColor fgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).fgcolor);
                 QColor bgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).bgcolor);
                 int font = (_atagger->sarfTagTypeVector->at(j)).font;
@@ -859,9 +1066,139 @@ void AMTMainWindow::sarfTagging() {
 }
 
 void AMTMainWindow::customizeSarfTags() {
-    sarfAct->setEnabled(true);
+    if(!_atagger->textFile.isEmpty()) {
+        sarfAct->setEnabled(true);
+    }
+
+    if(_atagger->sarftagtypeFile.isEmpty()) {
+        QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
+        if(ttFileName.isEmpty()) {
+            return;
+        }
+        else {
+            _atagger->sarftagtypeFile = ttFileName + ".stt.json";
+            lineEditTTFName->setText(_atagger->sarftagtypeFile);
+            btnTTFName->setEnabled(false);
+        }
+    }
+
     CustomSTTView * cttv = new CustomSTTView(this);
+    //if(cttv->showWindow) {
     cttv->show();
+    //}
+}
+
+void AMTMainWindow::loadText_clicked() {
+    QString fileName = QFileDialog::getOpenFileName(this,
+             tr("Text File"), "",
+             tr("Text File (*.txt);;All Files (*)"));
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+    else {
+        QFile file(fileName);
+         if (!file.open(QIODevice::ReadOnly)) {
+             QMessageBox::information(this, tr("Unable to open file"),file.errorString());
+             return;
+         }
+
+         lineEditTFName->setText(fileName);
+         sarfAct->setEnabled(true);
+         btnTFName->setEnabled(false);
+         QString text = file.readAll();
+         _atagger->textFile = fileName;
+         _atagger->text = text;
+         txtBrwsr->setText(text);
+    }
+}
+
+void AMTMainWindow::loadTagTypes_clicked() {
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+             tr("Tag Type File"), "",
+             tr("Tag Type File (*.tt.json *.stt.json);;All Files (*)"));
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+    else {
+        QFile file(fileName);
+         if (!file.open(QIODevice::ReadOnly)) {
+             QMessageBox::information(this, tr("Unable to open file"),file.errorString());
+             return;
+         }
+
+         if(fileName.endsWith(".tt.json")) {
+             _atagger->tagtypeFile = fileName;
+         }
+         else if(fileName.endsWith(".stt.json")) {
+             _atagger->sarftagtypeFile = fileName;
+             sarfAct->setEnabled(true);
+         }
+         else {
+             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
+             return;
+         }
+         btnTTFName->setEnabled(false);
+         lineEditTTFName->setText(fileName);
+         QByteArray tagtypes = file.readAll();
+         process_TagTypes(tagtypes);
+         btnTTFName->setEnabled(false);
+     }
+}
+
+void AMTMainWindow::_new() {
+    _atagger = new ATagger();
+    txtBrwsr->clear();
+    tagDescription->clear();
+    descBrwsr->clear();
+    lineEditTFName->clear();
+    lineEditTTFName->clear();
+
+    setWindowTitle("Arabic Morphological Tagger");
+
+    QString tagFileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Tags File"), "",
+                                                    tr("tags (*.tags.json);;All Files (*)"));
+    if(tagFileName.isEmpty()) {
+        btnTFName->setEnabled(true);
+        btnTTFName->setEnabled(true);
+        return;
+    }
+    if(tagFileName.endsWith(".tags.json")) {
+        _atagger->tagFile = tagFileName;
+    }
+    else {
+        _atagger->tagFile = tagFileName + ".tags.json";
+    }
+    setWindowTitle("AMTagger: " + _atagger->tagFile);
+
+    /** Get text file **/
+
+    QString textFileName = QFileDialog::getOpenFileName(this,
+             tr("Text File"), "",
+             tr("Text File (*.txt);;All Files (*)"));
+
+    if (textFileName.isEmpty()) {
+        return;
+    }
+    else {
+        QFile file(textFileName);
+         if (!file.open(QIODevice::ReadOnly)) {
+             QMessageBox::information(this, tr("Unable to open file"),file.errorString());
+             return;
+         }
+
+         btnTFName->setEnabled(false);
+         btnTTFName->setEnabled(true);
+         lineEditTFName->setText(textFileName);
+
+         QString text = file.readAll();
+         _atagger->text = text;
+         _atagger->textFile = textFileName;
+         txtBrwsr->setText(text);
+    }
 }
 
 void AMTMainWindow::resetActionDisplay() {
@@ -898,8 +1235,6 @@ int main(int argc, char *argv[])
     //QString *test = new QString("ياكل  الولد التفاحة ويلعب استنشق الرجل الوردة أنف");
     //PunctuationInfo punc;
     //long result = next_positon(test,1,punc);
-    //Stemmer stemmer = new Stemmer("Ameen",0);
-    //stemmer();
 
     QApplication a(argc, argv);
     AMTMainWindow w;

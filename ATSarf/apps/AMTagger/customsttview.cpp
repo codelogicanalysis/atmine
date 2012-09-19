@@ -12,70 +12,103 @@
 CustomSTTView::CustomSTTView(QWidget *parent) :
     QMainWindow(parent)
 {
+    dirty = false;
+
+    /*
+    showWindow = false;
+
+    if(_atagger->sarftagtypeFile.isEmpty()) {
+        QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
+        if(ttFileName.isEmpty()) {
+            close();
+            return;
+        }
+        else {
+            _atagger->sarftagtypeFile = ttFileName + ".stt.json";
+            setWindowTitle("Tag Types: " + ttFileName);
+        }
+    }
+    else {
+        setWindowTitle("Sarf Tag Types: " + _atagger->sarftagtypeFile);
+    }
+    showWindow = true;
+    */
+
     QGridLayout *grid = new QGridLayout();
 
     btnSelectAll = new QPushButton(tr("Select All"), this);
     btnUnselectAll = new QPushButton(tr("Unselect All"), this);
     btnSelect = new QPushButton(tr(">"), this);
     btnUnselect = new QPushButton(tr("<"), this);
-    btnAdd = new QPushButton(tr("Add\nTag"), this);
+    btnAdd = new QPushButton(tr("Add\nType"), this);
     btnLoad = new QPushButton(tr("Load"), this);
-    btnSave = new QPushButton(tr("Save"), this);
+    btnSave = new QPushButton(tr("Save File"), this);
+    btnCancel = new QPushButton(tr("Cancel"), this);
+    btnSaveChanges = new QPushButton(tr("Save Changes"), this);
+    btnRemove = new QPushButton(tr("Remove\nType"), this);
+
+    btnRemove->setEnabled(false);
+    btnSave->setEnabled(false);
+    btnSaveChanges->setEnabled(false);
+    btnSelect->setEnabled(false);
+    btnUnselect->setEnabled(false);
 
     connect(btnSelectAll,SIGNAL(clicked()),this,SLOT(btnSelectAll_clicked()));
     connect(btnUnselectAll,SIGNAL(clicked()),this,SLOT(btnUnselectAll_clicked()));
-    connect(btnSelect,SIGNAL(clicked()),this,SLOT(btnSelect_clicked()));
-    connect(btnUnselect,SIGNAL(clicked()),this,SLOT(btnUnselect_clicked()));
     connect(btnAdd,SIGNAL(clicked()),this,SLOT(btnAdd_clicked()));
+    connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(btnLoad_clicked()));
     connect(btnSave, SIGNAL(clicked()), this, SLOT(btnSave_clicked()));
+    connect(btnCancel,SIGNAL(clicked()), this, SLOT(btnCancel_clicked()));
+    connect(btnSaveChanges, SIGNAL(clicked()), this, SLOT(btnSaveChanges_clicked()));
 
-    grid->addWidget(btnSave,10,5);
+    grid->addWidget(btnSave,14,5);
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
-    grid->addWidget(btnAdd,6,2);
-    grid->addWidget(btnLoad,10,6);
+    grid->addWidget(btnAdd,0,2,2,1);
+    grid->addWidget(btnRemove,2,2,2,1);
+    grid->addWidget(btnLoad,14,6);
+    grid->addWidget(btnCancel,13,6);
+    grid->addWidget(btnSaveChanges,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
 
-    lblPattern = new QLabel(tr("Pattern"),this);
-    lblTagName = new QLabel(tr("TagName"), this);
-    lblDescription = new QLabel(tr("Description"), this);
-    lblFGColor = new QLabel(tr("Foregroud Color"), this);
-    lblBGColor = new QLabel(tr("Background Color"), this);
-    lblFont = new QLabel(tr("Font"), this);
-    lblBold = new QLabel(tr("Bold"), this);
-    lblItalic = new QLabel(tr("Italic"), this);
-    lblUnderline = new QLabel(tr("Underline"), this);
+    lblPattern = new QLabel(tr("Pattern:"),this);
+    lblFeatures = new QLabel(tr("Features:"), this);
+    lblTagName = new QLabel(tr("TagName:"), this);
+    lblDescription = new QLabel(tr("Description:"), this);
+    lblFGColor = new QLabel(tr("Foregroud Color:"), this);
+    lblBGColor = new QLabel(tr("Background Color:"), this);
+    lblFont = new QLabel(tr("Font:"), this);
+    lblBold = new QLabel(tr("Bold:"), this);
+    lblItalic = new QLabel(tr("Italic:"), this);
+    lblUnderline = new QLabel(tr("Underline:"), this);
 
     grid->addWidget(lblPattern,1,0);
-    grid->addWidget(lblTagName,1,3);
-    grid->addWidget(lblDescription,1,5);//7,3
-    grid->addWidget(lblFGColor,2,5);
-    grid->addWidget(lblBGColor,3,5);
-    grid->addWidget(lblFont,4,5);
-    grid->addWidget(lblBold,5,5);
-    grid->addWidget(lblItalic,6,5);
-    grid->addWidget(lblUnderline,7,5);
+    grid->addWidget(lblFeatures,0,0);
+    grid->addWidget(lblTagName,0,3);
+    grid->addWidget(lblDescription,0,5);//7,3
+    grid->addWidget(lblFGColor,3,5);
+    grid->addWidget(lblBGColor,4,5);
+    grid->addWidget(lblFont,5,5);
+    grid->addWidget(lblBold,6,5);
+    grid->addWidget(lblItalic,7,5);
+    grid->addWidget(lblUnderline,8,5);
 
     editPattern = new QLineEdit(this);
     connect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
-    editDescription = new QLineEdit(this);
-    connect(editDescription, SIGNAL(editingFinished()), this, SLOT(desc_edited()));
+    editDescription = new QTextEdit(this);
 
     grid->addWidget(editPattern,1,1);
-    grid->addWidget(editDescription,1,6);
+    grid->addWidget(editDescription,1,5,2,2);
 
     colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setColor("Red");
     colorbgcolor = new ColorListEditor(this);
     colorbgcolor->setColor("Yellow");
 
-    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
-    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
-
-    grid->addWidget(colorfgcolor,2,6);
-    grid->addWidget(colorbgcolor,3,6);
+    grid->addWidget(colorfgcolor,3,6);
+    grid->addWidget(colorbgcolor,4,6);
 
     cbfont = new QComboBox(this);
     for(int i=5; i<20; i++) {
@@ -84,8 +117,6 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         std::string str = out.str();
         cbfont->addItem(QString::fromStdString(str));
     }
-
-    connect(cbfont, SIGNAL(currentIndexChanged(QString)), this, SLOT(font_changed(QString)));
 
     cbTagName = new QComboBox(this);
     for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
@@ -97,17 +128,16 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
     cbTagType = new QComboBox(this);
     cbTagType->addItem("Prefix");
-    cbTagType->addItem("Prefix-POS");
     cbTagType->addItem("Stem");
-    cbTagType->addItem("Stem-POS");
     cbTagType->addItem("Suffix");
+    cbTagType->addItem("Prefix-POS");
+    cbTagType->addItem("Stem-POS");
     cbTagType->addItem("Suffix-POS");
     cbTagType->addItem("Gloss");
-    connect(cbTagType,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbTagType_changed(QString)));
 
-    grid->addWidget(cbfont,4,6);
-    grid->addWidget(cbTagName,1,4);
-    grid->addWidget(cbTagType,0,0,1,2);
+    grid->addWidget(cbfont,5,6);
+    grid->addWidget(cbTagName,0,4);
+    grid->addWidget(cbTagType,0,1);
 
     cbunderline = new QCheckBox(this);
     cbBold = new QCheckBox(this);
@@ -117,9 +147,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
 
-    grid->addWidget(cbBold,5,6);
-    grid->addWidget(cbItalic,6,6);
-    grid->addWidget(cbunderline,7,6);
+    grid->addWidget(cbBold,6,6);
+    grid->addWidget(cbItalic,7,6);
+    grid->addWidget(cbunderline,8,6);
 
     listPossibleTags = new QListWidget(this);
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -132,7 +162,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
 
     grid->addWidget(listPossibleTags,2,0,12,2);
-    grid->addWidget(listSelectedTags,2,3,12,2);
+    grid->addWidget(listSelectedTags,1,3,13,2);
 
     QWidget *widget = new QWidget(this);
 
@@ -216,6 +246,25 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
             list << stt->tags.at(i).first << stt->tags.at(i).second;
             listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
         }
+
+        btnRemove->setEnabled(true);
+        btnSave->setEnabled(true);
+        btnSaveChanges->setEnabled(true);
+        btnSelect->setEnabled(true);
+        btnUnselect->setEnabled(true);
+    }
+
+    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    connect(cbTagType,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbTagType_changed(QString)));
+    connect(cbfont, SIGNAL(currentIndexChanged(QString)), this, SLOT(font_changed(QString)));
+    connect(editDescription, SIGNAL(editingFinished()), this, SLOT(desc_edited()));
+    connect(btnSelect,SIGNAL(clicked()),this,SLOT(btnSelect_clicked()));
+    connect(btnUnselect,SIGNAL(clicked()),this,SLOT(btnUnselect_clicked()));
+
+    sttVector = new QVector<SarfTagType>();
+    for(int i=0; i< _atagger->sarfTagTypeVector->count(); i++) {
+        sttVector->append(_atagger->sarfTagTypeVector->at(i));
     }
 }
 
@@ -253,8 +302,8 @@ void CustomSTTView::btnAdd_clicked() {
         return;
     }
 
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        const SarfTagType * stt = &(_atagger->sarfTagTypeVector->at(i));
+    for(int i=0; i<sttVector->count(); i++) {
+        const SarfTagType * stt = &(sttVector->at(i));
         if(stt->tag == tagName) {
             QMessageBox::warning(this, "Warning", "This Tag Name already exists!");
             return;
@@ -265,6 +314,17 @@ void CustomSTTView::btnAdd_clicked() {
     if(tagDescription.isEmpty()) {
         QMessageBox::warning(this, "Warning", "Empty TagType Description!");
         return;
+    }
+
+    dirty = true;
+
+    btnRemove->setEnabled(true);
+    btnSave->setEnabled(true);
+    btnSaveChanges->setEnabled(true);
+
+    if(!btnSelect->isEnabled()) {
+        btnSelect->setEnabled(true);
+        btnUnselect->setEnabled(true);
     }
 
     listSelectedTags->clear();
@@ -278,7 +338,7 @@ void CustomSTTView::btnAdd_clicked() {
     editDescription->setText(tagDescription);
 
     QVector < QPair< QString, QString > > tags;
-    int id = _atagger->sarfTagTypeVector->count();
+    int id = sttVector->count();
     QString fgcolor = colorfgcolor->color().name();
     QString bgcolor = colorbgcolor->color().name();
     int font = cbfont->currentText().toInt();
@@ -286,27 +346,6 @@ void CustomSTTView::btnAdd_clicked() {
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
     _atagger->insertSarfTagType(tagName,tags,tagDescription,id,fgcolor,bgcolor,font,underline,bold,italic);
-    //cbTagName->setCurrentIndex(cbTagName->findText(tagName));
-
-    /*
-    for(int i=0; i< listSelectedTags->topLevelItemCount(); i++) {
-        QStringList items = listSelectedTags->item(i)->text().split(" -> ");
-        QPair<QString,QString> pair(items[0],items[1]);
-        tags.append(pair);
-    }
-
-    if(!tag.isEmpty() && !tags.isEmpty() && !desc.isEmpty()) {
-        _atagger->insertSarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic);
-        QMessageBox::information(this,"TagType Add",tag + " added successfully!");
-        editTagName->clear();
-        editPattern->clear();
-        listSelectedTags->clear();
-        editDescription->clear();
-    }
-    else {
-        QMessageBox::warning(this,"Warning","One of the fields is Empty!!");
-    }
-    */
 }
 
 void CustomSTTView::btnSelectAll_clicked() {
@@ -314,11 +353,12 @@ void CustomSTTView::btnSelectAll_clicked() {
 }
 
 void CustomSTTView::btnSelect_clicked() {
+    dirty = true;
 
     SarfTagType * stt;
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        if(_atagger->sarfTagTypeVector->at(i).tag == cbTagName->currentText()) {
-            stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        if(sttVector->at(i).tag == cbTagName->currentText()) {
+            stt = &((*(sttVector))[i]);
             break;
         }
     }
@@ -340,12 +380,14 @@ void CustomSTTView::btnUnselectAll_clicked() {
 }
 
 void CustomSTTView::btnUnselect_clicked() {
+    dirty = true;
+
     qDeleteAll(listSelectedTags->selectedItems());
 
     SarfTagType * stt;
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        if(_atagger->sarfTagTypeVector->at(i).tag == cbTagName->currentText()) {
-            stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        if(sttVector->at(i).tag == cbTagName->currentText()) {
+            stt = &((*(sttVector))[i]);
             break;
         }
     }
@@ -397,7 +439,7 @@ void CustomSTTView::editPattern_changed(QString text) {
 void CustomSTTView::btnLoad_clicked() {
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Open Sarf Tag Types"), "",
-             tr("Tag Types (*.sarftagtypes);;All Files (*)"));
+             tr("Sarf Tag Types (*.stt.json);;All Files (*)"));
 
     if (fileName.isEmpty()) {
         return;
@@ -408,6 +450,9 @@ void CustomSTTView::btnLoad_clicked() {
              QMessageBox::information(this, tr("Unable to open file"),file.errorString());
              return;
          }
+
+         sttVector->clear();
+         _atagger->sarftagtypeFile = fileName;
 
          QByteArray sarfTT = file.readAll();
          file.close();
@@ -430,7 +475,7 @@ void CustomSTTView::btnLoad_clicked() {
              bool italic = typeElements["italic"].toBool();
 
              QVector < QPair < QString, QString> > tags;
-             foreach(QVariant sarfTags, typeElements["Tags"].toList()) {
+             foreach(QVariant sarfTags, typeElements["Features"].toList()) {
                  QVariantMap st = sarfTags.toMap();
                  QPair<QString, QString> pair;
                  if(!(st.value("Prefix").isNull())) {
@@ -475,7 +520,6 @@ void CustomSTTView::btnLoad_clicked() {
 
          cbTagName->clear();
          listSelectedTags->clear();
-         _atagger->sarfTagTypeVector->clear();
 
          for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
              const SarfTagType * stt = &(_atagger->sarfTagTypeVector->at(i));
@@ -483,6 +527,10 @@ void CustomSTTView::btnLoad_clicked() {
          }
 
          cbTagName->setCurrentIndex(0);
+         btnRemove->setEnabled(true);
+         btnSave->setEnabled(true);
+         btnSaveChanges->setEnabled(true);
+         dirty = false;
      }
 }
 
@@ -494,7 +542,7 @@ void CustomSTTView::btnSave_clicked() {
         fileName = QFileDialog::getSaveFileName(
                 this,
                 tr("Save Sarf Tag Types"), "",
-                tr("Text (*.sarftagtypes);;All Files (*)"));
+                tr("Text (*.stt.json);;All Files (*)"));
     }
     else {
         fileName = _atagger->sarftagtypeFile;
@@ -521,15 +569,17 @@ void CustomSTTView::btnSave_clicked() {
     QTextStream outtags(&tfile);
     outtags << sarftagtypeData;
     tfile.close();
+    dirty = false;
 }
 
 void CustomSTTView::fgcolor_changed(QString color) {
     if(color.isNull() || color.isEmpty()) {
         return;
     }
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->fgcolor = color;
         }
@@ -540,9 +590,10 @@ void CustomSTTView::bgcolor_changed(QString color) {
     if(color.isNull() || color.isEmpty()) {
         return;
     }
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->bgcolor = color;
         }
@@ -553,9 +604,10 @@ void CustomSTTView::font_changed(QString fontSize) {
     if(fontSize.isNull() || fontSize.isEmpty()) {
         return;
     }
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->font = fontSize.toInt();
         }
@@ -567,8 +619,8 @@ void CustomSTTView::tagName_changed(QString name) {
     if(name.isEmpty() || name.isNull()) {
         return;
     }
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == name) {
             editDescription->setText(stt->description);
             int index = cbfont->findText(QString::number(stt->font));
@@ -594,9 +646,10 @@ void CustomSTTView::tagName_Edited(QString name) {
 }
 
 void CustomSTTView::underline_clicked(bool underline) {
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->underline = underline;
         }
@@ -604,9 +657,10 @@ void CustomSTTView::underline_clicked(bool underline) {
 }
 
 void CustomSTTView::bold_clicked(bool bold) {
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->bold = bold;
         }
@@ -614,9 +668,10 @@ void CustomSTTView::bold_clicked(bool bold) {
 }
 
 void CustomSTTView::italic_clicked(bool italic) {
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->italic = italic;
         }
@@ -624,11 +679,61 @@ void CustomSTTView::italic_clicked(bool italic) {
 }
 
 void CustomSTTView::desc_edited() {
+    dirty = true;
     QString tag = cbTagName->currentText();
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        SarfTagType * stt = &((*(_atagger->sarfTagTypeVector))[i]);
+    for(int i=0; i<sttVector->count(); i++) {
+        SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == tag) {
-            stt->description = editDescription->text();
+            stt->description = editDescription->toPlainText();
         }
     }
+}
+
+void CustomSTTView::btnRemove_clicked() {
+    dirty = true;
+    QString tagRemoved = cbTagName->currentText();
+    for(int i=0; i<sttVector->count(); i++) {
+        const SarfTagType * stt = &(sttVector->at(i));
+        if(stt->tag == tagRemoved) {
+            sttVector->remove(i);
+            break;
+        }
+    }
+    cbTagName->removeItem(cbTagName->currentIndex());
+}
+
+void CustomSTTView::btnCancel_clicked() {
+    dirty = false;
+    this->close();
+}
+
+void CustomSTTView::btnSaveChanges_clicked() {
+    _atagger->sarfTagTypeVector->clear();
+    for(int i=0; i< sttVector->count(); i++) {
+        _atagger->sarfTagTypeVector->append(sttVector->at(i));
+    }
+
+    QMessageBox::information(this,"Save","Changes Saved!");
+}
+
+void CustomSTTView::closeEvent(QCloseEvent *event) {
+
+    if(dirty) {
+        QMessageBox msgBox;
+         msgBox.setText("The document has been modified.");
+         msgBox.setInformativeText("Do you want to save your changes?");
+         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+         msgBox.setDefaultButton(QMessageBox::Save);
+         int ret = msgBox.exec();
+
+         switch (ret) {
+         case QMessageBox::Save:
+             this->btnSaveChanges_clicked();
+             break;
+         case QMessageBox::Discard:
+             break;
+         default:
+             break;
+         }
+     }
 }
