@@ -310,11 +310,13 @@ void CustomSTTView::btnAdd_clicked() {
         }
     }
 
+    /*
     QString tagDescription = QInputDialog::getText(this, "Tag Description", "Please insert a Tag Type Description");
     if(tagDescription.isEmpty()) {
         QMessageBox::warning(this, "Warning", "Empty TagType Description!");
         return;
     }
+    */
 
     dirty = true;
 
@@ -335,7 +337,7 @@ void CustomSTTView::btnAdd_clicked() {
     cbBold->setChecked(false);
     cbItalic->setChecked(false);
     //cbTagName->setEditable(true);
-    editDescription->setText(tagDescription);
+    //editDescription->setText(tagDescription);
 
     QVector < QPair< QString, QString > > tags;
     int id = sttVector->count();
@@ -345,7 +347,8 @@ void CustomSTTView::btnAdd_clicked() {
     bool underline = cbunderline->isChecked();
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
-    _atagger->insertSarfTagType(tagName,tags,tagDescription,id,fgcolor,bgcolor,font,underline,bold,italic);
+    SarfTagType sarftagtype(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic);
+    sttVector->append(sarftagtype);
 }
 
 void CustomSTTView::btnSelectAll_clicked() {
@@ -708,6 +711,7 @@ void CustomSTTView::btnCancel_clicked() {
 }
 
 void CustomSTTView::btnSaveChanges_clicked() {
+    dirty = false;
     _atagger->sarfTagTypeVector->clear();
     for(int i=0; i< sttVector->count(); i++) {
         _atagger->sarfTagTypeVector->append(sttVector->at(i));
