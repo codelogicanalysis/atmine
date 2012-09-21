@@ -608,8 +608,11 @@ void AMTMainWindow::tagremove() {
 void AMTMainWindow::edittagtypes() {
 
     if(_atagger->tagtypeFile.isEmpty()) {
-        QString ttFileName = QInputDialog::getText(this,"TagType File Name", "Please insert a TagType File Name:");
-        if(ttFileName.isEmpty()) {
+        QString ttFileName = QFileDialog::getSaveFileName(this,
+                                                          tr("TagType File Name"), "",
+                                                          tr("tag types (*.tt.json);;All Files (*)"));
+        if(ttFileName.isEmpty())
+        {
             return;
         }
         else {
@@ -620,9 +623,7 @@ void AMTMainWindow::edittagtypes() {
     }
 
     EditTagTypeView * ettv = new EditTagTypeView(this);
-    //if(ettv->showWindow) {
     ettv->show();
-    //}
 }
 
 void AMTMainWindow::tagtypeadd() {
