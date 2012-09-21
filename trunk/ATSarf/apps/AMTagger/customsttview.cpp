@@ -14,28 +14,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 {
     dirty = false;
 
-    /*
-    showWindow = false;
-
-    if(_atagger->sarftagtypeFile.isEmpty()) {
-        QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
-        if(ttFileName.isEmpty()) {
-            close();
-            return;
-        }
-        else {
-            _atagger->sarftagtypeFile = ttFileName + ".stt.json";
-            setWindowTitle("Tag Types: " + ttFileName);
-        }
-    }
-    else {
-        setWindowTitle("Sarf Tag Types: " + _atagger->sarftagtypeFile);
-    }
-    showWindow = true;
-    */
-
     QGridLayout *grid = new QGridLayout();
-
     btnSelectAll = new QPushButton(tr("Select All"), this);
     btnUnselectAll = new QPushButton(tr("Unselect All"), this);
     btnSelect = new QPushButton(tr(">"), this);
@@ -134,6 +113,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbTagType->addItem("Stem-POS");
     cbTagType->addItem("Suffix-POS");
     cbTagType->addItem("Gloss");
+    //cbTagType->addItem("Category");
 
     grid->addWidget(cbfont,5,6);
     grid->addWidget(cbTagName,0,4);
@@ -224,6 +204,14 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         }
     }
 
+    theSarf->query.exec("SELECT name FROM category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty())) {
+            listCategory << theSarf->query.value(0).toString();
+            listCategory.removeDuplicates();
+        }
+    }
+
     if(_atagger->sarfTagTypeVector->count() != 0) {
         //cbTagName->setEditable(true);
         const SarfTagType * stt = &(_atagger->sarfTagTypeVector->at(0));
@@ -291,6 +279,9 @@ void CustomSTTView::cbTagType_changed(QString text) {
     }
     else if(field == "Gloss") {
         listPossibleTags->addItems(listGloss);
+    }
+    else if(field == "Category") {
+        listPossibleTags->addItems(listCategory);
     }
 }
 
@@ -428,6 +419,9 @@ void CustomSTTView::editPattern_changed(QString text) {
     else if(cbTagType->currentText() == "Suffix-POS") {
         list = &listSuffixPOS;
     }
+    else if(cbTagType->currentText() == "Category") {
+        list = &listCategory;
+    }
 
     QRegExp regExp(text);
     listPossibleTags->clear();
@@ -514,6 +508,11 @@ void CustomSTTView::btnLoad_clicked() {
                  else if(!(st.value("Gloss").isNull())) {
                      pair.first = "Gloss";
                      pair.second = st.value("Gloss").toString();
+                     tags.append(pair);
+                 }
+                 else if(!(st.value("Category").isNull())) {
+                     pair.first = "Category";
+                     pair.second = st.value("Category").toString();
                      tags.append(pair);
                  }
              }
