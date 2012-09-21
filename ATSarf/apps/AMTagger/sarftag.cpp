@@ -13,20 +13,6 @@ SarfTag::SarfTag(int start, int length, QString *text, QWidget *parent): Stemmer
 
 bool SarfTag::on_match() {
 
-    /*
-    for( int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(stem_info->POS.contains((_atagger->tagTypeVector->at(i)).tag, Qt::CaseInsensitive) )
-        {
-            if (!(RelatedW.contains(this->text,Qt::CaseInsensitive)))
-            {
-                QString tag = (_atagger->tagTypeVector->at(i)).tag;
-                RelatedW += this->text;
-                _atagger->insertSarfTag(tag,start,length,sarf);
-            }
-            break;
-        }
-    }
-    */
     for( int i=0; i< (_atagger->sarfTagTypeVector->count()); i++) {
 
         QString _tag = _atagger->sarfTagTypeVector->at(i).tag;
@@ -66,6 +52,9 @@ bool SarfTag::on_match() {
                 else {
                     continue;
                 }
+            }
+            else if(tag->first == "Category") {
+                // code should go here
             }
             else if(tag->first == "Suffix") {
                 for(int k=0;k<suffix_infos->size();k++) {

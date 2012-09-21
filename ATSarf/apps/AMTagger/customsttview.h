@@ -96,6 +96,7 @@ private:
     QStringList listPrefixPOS;
     QStringList listSuffix;
     QStringList listSuffixPOS;
+    QStringList listCategory;
 
     QVector<SarfTagType> *sttVector;
     QString field;

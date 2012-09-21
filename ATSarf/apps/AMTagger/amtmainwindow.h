@@ -62,7 +62,7 @@ private:
          void createActions();
          void createMenus();
          void createTagMenu();
-         void createDockWindows();
+         void createDockWindows(bool open);
          void startTaggingText(QString & text);
          bool saveFile(const QString &fileName, QByteArray &tagD);
          void process_TagTypes(QByteArray &tagtypedata);

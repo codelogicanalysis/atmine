@@ -8,12 +8,6 @@
 AddTagTypeView::AddTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
-    /*
-    QItemEditorFactory *factory = new QItemEditorFactory;
-    QItemEditorCreatorBase *colorListCreator = new QStandardItemEditorCreator<ColorListEditor>();
-    factory->registerEditor(QVariant::Color, colorListCreator);
-    QItemEditorFactory::setDefaultFactory(factory);
-    */
     lblTag = new QLabel(this);
     lblDescription = new QLabel(this);
     lblfgcolor = new QLabel(this);

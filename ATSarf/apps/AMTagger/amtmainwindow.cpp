@@ -34,14 +34,14 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 
     createActions();
     createMenus();
-    createDockWindows();
+    //createDockWindows();
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
 
     /** clear all views **/
-    descBrwsr->clear();
-    tagDescription->clear();
-    txtBrwsr->clear();
+    //descBrwsr->clear();
+    //tagDescription->clear();
+    //txtBrwsr->clear();
 
     /** Initialize Sarf **/
     theSarf = new Sarf();
@@ -59,7 +59,22 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     theSarf->displayed_error.setCodec("utf-8");
 }
 
-void AMTMainWindow::createDockWindows() {
+void clearLayout(QLayout *layout) {
+    QLayoutItem *item;
+    while((item = layout->takeAt(0))) {
+        if (item->layout()) {
+            clearLayout(item->layout());
+            delete item->layout();
+        }
+        if (item->widget()) {
+            delete item->widget();
+        }
+        delete item;
+    }
+}
+
+void AMTMainWindow::createDockWindows(bool open) {
+    clearLayout(this->layout());
 
     QDockWidget *dock = new QDockWidget(tr("Text File"), this);
     QHBoxLayout *hbox = new QHBoxLayout();
@@ -79,6 +94,11 @@ void AMTMainWindow::createDockWindows() {
     dock->setMaximumHeight(100);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
+    dock->setMinimumWidth(300);
+
+    if(open) {
+        lineEditTFName->setText(_atagger->textFile);
+    }
 
     dock = new QDockWidget(tr("Tag Type File"), this);
     hbox = new QHBoxLayout();
@@ -98,6 +118,11 @@ void AMTMainWindow::createDockWindows() {
     dock->setMaximumHeight(100);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
+    dock->setMinimumWidth(300);
+
+    if(open) {
+        lineEditTFName->setText(_atagger->tagtypeFile);
+    }
 
     dock = new QDockWidget(tr("Text View"), this);
     txtBrwsr = new QTextBrowser(dock);
@@ -117,8 +142,8 @@ void AMTMainWindow::createDockWindows() {
     QTreeWidgetItem* item=new QTreeWidgetItem(columns);
     connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
     tagDescription->setHeaderItem(item);
-
     dock->setWidget(tagDescription);
+    dock->setMinimumWidth(300);
 
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
@@ -229,6 +254,9 @@ void AMTMainWindow::open() {
         _atagger->textFile.clear();
         return;
     }
+
+    createDockWindows(true);
+
     lineEditTFName->setText(_atagger->textFile);
     _atagger->text = text;
     Ifile.close();
@@ -240,6 +268,10 @@ void AMTMainWindow::open() {
     if(!_atagger->text.isEmpty()) {
         sarfAct->setEnabled(true);
     }
+    edittagtypesAct->setEnabled(true);
+    sarftagsAct->setEnabled(true);
+    tagremoveAct->setEnabled(true);
+    mTags->setEnabled(true);
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
@@ -530,17 +562,22 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
     tfile.close();
 
     return true;
- }
+}
 
 void AMTMainWindow::save() {
     QString fileName = _atagger->tagFile;
 
-    if(fileName.isEmpty()) {
-        fileName = QInputDialog::getText(this,"Set Tag File Name","Please enter the tag file name:");
+    if(_atagger->tagFile.isEmpty()) {
+        QString fileName = QFileDialog::getSaveFileName(this,
+                                                        tr("Save Tags File Name"), "",
+                                                        tr("Tags (*.tags.json);;All Files (*)"));
         if(fileName.isEmpty()) {
             return;
         }
-        _atagger->tagFile = fileName;
+        else {
+            _atagger->tagFile = fileName;
+            setWindowTitle("AMTagger: " + _atagger->tagFile);
+        }
     }
 
     if(_atagger->textFile.isEmpty() || _atagger->tagtypeFile.isEmpty()) {
@@ -548,10 +585,13 @@ void AMTMainWindow::save() {
         return;
     }
 
+    if(_atagger->tagVector->isEmpty()) {
+        QMessageBox::warning(this,"Warning","No tags to save!");
+        return;
+    }
+
     /** Save to Default Destination **/
-
     QByteArray tagData = _atagger->dataInJsonFormat(tagV);
-
     saveFile(fileName,tagData);
 }
 
@@ -741,10 +781,12 @@ void AMTMainWindow::createActions()
     connect(tagaddAct, SIGNAL(triggered()), this, SLOT(tagadd()));
 
     tagremoveAct = new QAction(tr("&Untag"), this);
+    tagremoveAct->setEnabled(false);
     tagremoveAct->setStatusTip(tr("Remove a Tag"));
     connect(tagremoveAct, SIGNAL(triggered()), this, SLOT(tagremove()));
 
     edittagtypesAct = new QAction(tr("Edit TagTypes..."),this);
+    edittagtypesAct->setEnabled(false);
     edittagtypesAct->setStatusTip(tr("Edit Tag Types"));
     connect(edittagtypesAct, SIGNAL(triggered()), this, SLOT(edittagtypes()));
 
@@ -757,6 +799,7 @@ void AMTMainWindow::createActions()
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
     sarftagsAct = new QAction(tr("Edit Sarf TagTypes..."), this);
+    sarftagsAct->setEnabled(false);
     connect(sarftagsAct, SIGNAL(triggered()), this, SLOT(customizeSarfTags()));
 
     sarfAct = new QAction(tr("Run Sarf"), this);
@@ -797,6 +840,7 @@ void AMTMainWindow::createMenus()
 
     tagMenu = menuBar()->addMenu(tr("&Tags"));
     mTags = tagMenu->addMenu(tr("&Tag"));
+    mTags->setEnabled(false);
     createTagMenu();
 
     tagMenu->addAction(tagremoveAct);
@@ -1159,10 +1203,13 @@ void AMTMainWindow::loadTagTypes_clicked() {
 }
 
 void AMTMainWindow::_new() {
+    clearLayout(this->layout());
+    createDockWindows(false);
+
     _atagger = new ATagger();
-    txtBrwsr->clear();
-    tagDescription->clear();
-    descBrwsr->clear();
+    //txtBrwsr->clear();
+    //tagDescription->clear();
+    //descBrwsr->clear();
     lineEditTFName->clear();
     lineEditTTFName->clear();
 
@@ -1208,6 +1255,10 @@ void AMTMainWindow::_new() {
          _atagger->text = text;
          _atagger->textFile = textFileName;
          txtBrwsr->setText(text);
+         sarftagsAct->setEnabled(true);
+         edittagtypesAct->setEnabled(true);
+         tagremoveAct->setEnabled(true);
+         mTags->setEnabled(true);
     }
 }
 
