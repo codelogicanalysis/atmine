@@ -303,7 +303,7 @@ void EditTagTypeView::add_clicked() {
     edit= true;
     btnEdit->setText("lock");
     lineEditTag->setEnabled(true);
-    lineEditTag->setText(QString());
+    lineEditTag->setText(text);
     lineEditDescription->setEnabled(true);
     lineEditDescription->setText(QString());
     colorfgcolor->setEnabled(true);

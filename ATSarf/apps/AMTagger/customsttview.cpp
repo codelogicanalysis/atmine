@@ -258,7 +258,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
     connect(cbTagType,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbTagType_changed(QString)));
     connect(cbfont, SIGNAL(currentIndexChanged(QString)), this, SLOT(font_changed(QString)));
-    connect(editDescription, SIGNAL(editingFinished()), this, SLOT(desc_edited()));
+    connect(editDescription, SIGNAL(textChanged()), this, SLOT(desc_edited()));
     connect(btnSelect,SIGNAL(clicked()),this,SLOT(btnSelect_clicked()));
     connect(btnUnselect,SIGNAL(clicked()),this,SLOT(btnUnselect_clicked()));
 
