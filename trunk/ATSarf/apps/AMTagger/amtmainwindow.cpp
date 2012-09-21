@@ -65,6 +65,7 @@ void AMTMainWindow::createDockWindows() {
     QHBoxLayout *hbox = new QHBoxLayout();
     lblTFName = new QLabel("Text File:",dock);
     lineEditTFName = new QLineEdit(dock);
+    lineEditTFName->setReadOnly(true);
     btnTFName = new QPushButton("...",dock);
     connect(btnTFName, SIGNAL(clicked()), this, SLOT(loadText_clicked()));
     hbox->addWidget(lblTFName);
@@ -83,6 +84,7 @@ void AMTMainWindow::createDockWindows() {
     hbox = new QHBoxLayout();
     lblTTFName = new QLabel("Tag Type File:",dock);
     lineEditTTFName = new QLineEdit(dock);
+    lineEditTTFName->setReadOnly(true);
     btnTTFName = new QPushButton("...",dock);
     connect(btnTTFName, SIGNAL(clicked()), this, SLOT(loadTagTypes_clicked()));
     hbox->addWidget(lblTTFName);
@@ -152,6 +154,9 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     menu->addSeparator();
     menu->addAction(addtagAct);
     if(txtBrwsr->textCursor().selectedText().isEmpty()) {
+        //QTextCursor tc = txtBrwsr->textCursor();
+        //tc.select(QTextCursor::WordUnderCursor);
+        //QString test = tc.selectedText();
         mTags->setEnabled(false);
         untagMAct->setEnabled(false);
     }
@@ -1071,8 +1076,12 @@ void AMTMainWindow::customizeSarfTags() {
     }
 
     if(_atagger->sarftagtypeFile.isEmpty()) {
-        QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
-        if(ttFileName.isEmpty()) {
+        QString ttFileName = QFileDialog::getSaveFileName(this,
+                                                          tr("Sarf TagType File Name"), "",
+                                                          tr("tags (*.stt.json);;All Files (*)"));
+        //QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
+        if(ttFileName.isEmpty())
+        {
             return;
         }
         else {
