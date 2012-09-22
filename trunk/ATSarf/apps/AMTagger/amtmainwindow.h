@@ -57,6 +57,7 @@ public:
          void finishTaggingText();
          void process(QByteArray & json);
          void applyTags();
+         void process_TagTypes(QByteArray &tagtypedata);
 
 private:
          void createActions();
@@ -65,7 +66,6 @@ private:
          void createDockWindows(bool open);
          void startTaggingText(QString & text);
          bool saveFile(const QString &fileName, QByteArray &tagD);
-         void process_TagTypes(QByteArray &tagtypedata);
 
          QMenu *fileMenu;
          QMenu *tagMenu;
@@ -90,7 +90,6 @@ private:
          QAction *untagMAct;
          QAction *addtagAct;
          QAction *aboutAct;
-         QAction *aboutQtAct;
          QAction *sarftagsAct;
          QAction *sarfAct;
 
@@ -116,6 +115,7 @@ private:
          QSignalMapper *signalMapperM;
          QString error_str;
          QString output_str;
+         QTextCursor myTC;
 };
 
 #endif // AMTMAINWINDOW_H
