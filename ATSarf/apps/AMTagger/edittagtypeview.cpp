@@ -14,24 +14,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     QMainWindow(parent)
 {
     //resize(700,500);
-    /*
-    showWindow = false;
-    if(_atagger->tagtypeFile.isEmpty()) {
-        QString ttFileName = QInputDialog::getText(this,"TagType File Name", "Please insert a TagType File Name:");
-        if(ttFileName.isEmpty()) {
-            close();
-            return;
-        }
-        else {
-            _atagger->tagtypeFile = ttFileName + ".tt.json";
-            setWindowTitle("Tag Types: " + ttFileName);
-        }
-    }
-    else {
-        setWindowTitle("Tag Types: " + _atagger->tagtypeFile);
-    }
-    showWindow = true;
-    */
+
     setWindowTitle("Tag Types: " + _atagger->tagtypeFile);
 
     /** Create Menu **/
@@ -153,65 +136,6 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     widget->setLayout(grid);
     setCentralWidget(widget);
-
-    /** Create Dock Windows **/
-
-    /*
-    QDockWidget *dock = new QDockWidget(tr("Tag Types"), this);
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    //setCentralWidget(lvTypes);
-    dock->setWidget(lvTypes);
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-
-    dock = new QDockWidget(tr("Tag Add/Rmv/Edit"), this);
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    scroll1 = new QScrollArea(dock);
-    gButtons1 = new QGridLayout(scroll1);
-    gButtons1->addWidget(btnAdd,0,0);
-    gButtons1->addWidget(btnRmv,0,1);
-    gButtons1->addWidget(btnEdit,0,2);
-
-    dock->setWidget(scroll1);
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-
-    dock = new QDockWidget(tr("TagType Details"), this);
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    scroll3 = new QScrollArea(dock);
-    grid=new QGridLayout(scroll3);
-    grid->addWidget(lblTag,0,0);
-    grid->addWidget(lineEditTag,0,1);
-    grid->addWidget(lblDescription,1,0);
-    grid->addWidget(lineEditDescription,1,1);
-    grid->addWidget(lblfgcolor,2,0);
-    grid->addWidget(colorfgcolor,2,1);
-    grid->addWidget(lblbgcolor,3,0);
-    grid->addWidget(colorbgcolor,3,1);
-    grid->addWidget(lblfont,4,0);
-    grid->addWidget(cbfont,4,1);
-    grid->addWidget(lblunderline,5,0);
-    grid->addWidget(cbunderline,5,1);
-    grid->addWidget(lblbold,6,0);
-    grid->addWidget(cbBold,6,1);
-    grid->addWidget(lblitalic,7,0);
-    grid->addWidget(cbItalic,7,1);
-
-    dock->setWidget(scroll3);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-
-    dock = new QDockWidget(tr("Tag Save/Load"), this);
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    scroll2 = new QScrollArea(dock);
-    gButtons2 = new QGridLayout(scroll2);
-    gButtons2->addWidget(btnSave,0,0);
-    gButtons2->addWidget(btnLoad,0,1);
-
-    dock->setWidget(scroll2);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-    */
 
     /** Fill Data in View **/
 
@@ -416,10 +340,10 @@ void EditTagTypeView::load_clicked() {
                  return;
              }
 
-             QByteArray Tags = file.readAll();
+             QByteArray TagTypes = file.readAll();
              file.close();
-             ((AMTMainWindow*)parentWidget())->process(Tags);
-             ((AMTMainWindow*)parentWidget())->finishTaggingText();
+             ((AMTMainWindow*)parentWidget())->process_TagTypes(TagTypes);
+             //((AMTMainWindow*)parentWidget())->finishTaggingText();
 
              tagTypeVector = new QVector<TagType>();
              for(int i=0; i<_atagger->tagTypeVector->count(); i++) {

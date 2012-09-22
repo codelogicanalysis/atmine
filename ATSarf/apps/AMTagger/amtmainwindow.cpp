@@ -178,14 +178,22 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     menu->addAction(untagMAct);
     menu->addSeparator();
     menu->addAction(addtagAct);
+
     if(txtBrwsr->textCursor().selectedText().isEmpty()) {
-        //QTextCursor tc = txtBrwsr->textCursor();
-        //tc.select(QTextCursor::WordUnderCursor);
-        //QString test = tc.selectedText();
-        mTags->setEnabled(false);
-        untagMAct->setEnabled(false);
+        myTC = txtBrwsr->cursorForPosition(pt);
+        myTC.select(QTextCursor::WordUnderCursor);
+        QString word = myTC.selectedText();
+
+        if(word.isEmpty()) {
+            mTags->setEnabled(false);
+            untagMAct->setEnabled(false);
+        }
+        else {
+            untagMAct->setEnabled(true);
+        }
     }
     else {
+        myTC = txtBrwsr->textCursor();
         untagMAct->setEnabled(true);
     }
     menu->exec(txtBrwsr->mapToGlobal(pt));
@@ -272,6 +280,8 @@ void AMTMainWindow::open() {
     sarftagsAct->setEnabled(true);
     tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
+    saveAct->setEnabled(true);
+    saveasAct->setEnabled(true);
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
@@ -382,6 +392,26 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
     if (!ok) {
         QMessageBox::about(this, tr("Input Tag File"),
                      tr("The <b>Tag File</b> has a wrong format"));
+    }
+
+    if(result.value("TagSet").toList().at(0).toMap().value("Features").isNull()) {
+        for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+            const TagType & tt = (_atagger->tagTypeVector->at(i));
+            for(int j=0; j<_atagger->tagVector->count(); j++) {
+                const Tag & tag = (_atagger->tagVector->at(j));
+                if(tt.tag == tag.type) {
+                    int start = tag.pos;
+                    int length = tag.length;
+                    tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
+                    _atagger->tagVector->remove(i);
+                }
+            }
+        }
+        _atagger->tagTypeVector->clear();
+        fillTreeWidget(user);
+    }
+    else {
+        _atagger->sarfTagTypeVector->clear();
     }
 
     foreach(QVariant type, result["TagSet"].toList()) {
@@ -678,7 +708,8 @@ void AMTMainWindow::tagtyperemove() {
 }
 
 void AMTMainWindow::tag(QString tagValue) {
-    if(txtBrwsr->textCursor().selectedText() != "") {
+
+    if(!(myTC.selectedText().isEmpty())) {
         if(_atagger->tagFile.isEmpty()) {
             QString fileName = QFileDialog::getSaveFileName(this,
                                                             tr("Tags File"), "",
@@ -692,7 +723,7 @@ void AMTMainWindow::tag(QString tagValue) {
                 setWindowTitle("AMTagger: " + _atagger->tagFile);
             }
         }
-        QTextCursor cursor = txtBrwsr->textCursor();
+        QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
         _atagger->insertTag(tagValue, start, length, user);
@@ -721,7 +752,7 @@ void AMTMainWindow::tag(QString tagValue) {
 
 void AMTMainWindow::untag() {
 
-    QTextCursor cursor = txtBrwsr->textCursor();
+    QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
     for(int i=0; i < _atagger->tagVector->count(); i++) {
@@ -761,11 +792,13 @@ void AMTMainWindow::createActions()
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
     saveAct = new QAction(tr("&Save"), this);
+    saveAct->setEnabled(false);
     saveAct->setShortcuts(QKeySequence::Save);
     saveAct->setStatusTip(tr("Save the document to disk"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
     saveasAct = new QAction(tr("&SaveAs"), this);
+    saveasAct->setEnabled(false);
     saveasAct->setShortcuts(QKeySequence::SaveAs);
     saveasAct->setStatusTip(tr("Print the document"));
     connect(saveasAct, SIGNAL(triggered()), this, SLOT(saveas()));
@@ -821,11 +854,6 @@ void AMTMainWindow::createActions()
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-
-    aboutQtAct = new QAction(tr("About &Qt"), this);
-    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(aboutQtAct, SIGNAL(triggered()), this, SLOT(aboutQt()));
 }
 
 void AMTMainWindow::createMenus()
@@ -862,7 +890,6 @@ void AMTMainWindow::createMenus()
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
-    helpMenu->addAction(aboutQtAct);
 }
 
 void AMTMainWindow::createTagMenu() {
@@ -1259,6 +1286,8 @@ void AMTMainWindow::_new() {
          edittagtypesAct->setEnabled(true);
          tagremoveAct->setEnabled(true);
          mTags->setEnabled(true);
+         saveAct->setEnabled(true);
+         saveasAct->setEnabled(true);
     }
 }
 
