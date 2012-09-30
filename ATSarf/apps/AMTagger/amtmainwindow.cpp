@@ -8,7 +8,6 @@
 #include<QDockWidget>
 #include<QList>
 #include <QMessageBox>
-#include <QInputDialog>
 
 #include "commonS.h"
 #include <addtagview.h>
@@ -1151,7 +1150,6 @@ void AMTMainWindow::customizeSarfTags() {
         QString ttFileName = QFileDialog::getSaveFileName(this,
                                                           tr("Sarf TagType File Name"), "",
                                                           tr("tags (*.stt.json);;All Files (*)"));
-        //QString ttFileName = QInputDialog::getText(this,"Sarf TagType File Name", "Please insert a TagType File Name:");
         if(ttFileName.isEmpty())
         {
             return;
@@ -1231,14 +1229,13 @@ void AMTMainWindow::loadTagTypes_clicked() {
 
 void AMTMainWindow::_new() {
     clearLayout(this->layout());
-    createDockWindows(false);
 
     _atagger = new ATagger();
     //txtBrwsr->clear();
     //tagDescription->clear();
     //descBrwsr->clear();
-    lineEditTFName->clear();
-    lineEditTTFName->clear();
+    //lineEditTFName->clear();
+    //lineEditTTFName->clear();
 
     setWindowTitle("Arabic Morphological Tagger");
 
@@ -1246,8 +1243,8 @@ void AMTMainWindow::_new() {
                                                     tr("Tags File"), "",
                                                     tr("tags (*.tags.json);;All Files (*)"));
     if(tagFileName.isEmpty()) {
-        btnTFName->setEnabled(true);
-        btnTTFName->setEnabled(true);
+        //btnTFName->setEnabled(true);
+        //btnTTFName->setEnabled(true);
         return;
     }
     if(tagFileName.endsWith(".tags.json")) {
@@ -1273,6 +1270,8 @@ void AMTMainWindow::_new() {
              QMessageBox::information(this, tr("Unable to open file"),file.errorString());
              return;
          }
+
+         createDockWindows(false);
 
          btnTFName->setEnabled(false);
          btnTTFName->setEnabled(true);

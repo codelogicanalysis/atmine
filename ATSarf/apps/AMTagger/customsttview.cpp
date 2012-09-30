@@ -23,12 +23,11 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     btnLoad = new QPushButton(tr("Load"), this);
     btnSave = new QPushButton(tr("Save File"), this);
     btnCancel = new QPushButton(tr("Cancel"), this);
-    btnSaveChanges = new QPushButton(tr("Save Changes"), this);
+    btnClose = new QPushButton(tr("Close"), this);
     btnRemove = new QPushButton(tr("Remove\nType"), this);
 
     btnRemove->setEnabled(false);
     btnSave->setEnabled(false);
-    btnSaveChanges->setEnabled(false);
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
 
@@ -39,7 +38,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(btnLoad_clicked()));
     connect(btnSave, SIGNAL(clicked()), this, SLOT(btnSave_clicked()));
     connect(btnCancel,SIGNAL(clicked()), this, SLOT(btnCancel_clicked()));
-    connect(btnSaveChanges, SIGNAL(clicked()), this, SLOT(btnSaveChanges_clicked()));
+    connect(btnClose, SIGNAL(clicked()), this, SLOT(btnClose_clicked()));
 
     grid->addWidget(btnSave,14,5);
     grid->addWidget(btnSelect,4,2);
@@ -47,8 +46,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnAdd,0,2,2,1);
     grid->addWidget(btnRemove,2,2,2,1);
     grid->addWidget(btnLoad,14,6);
-    grid->addWidget(btnCancel,13,6);
-    grid->addWidget(btnSaveChanges,13,5);
+    grid->addWidget(btnClose,13,6);
+    grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
 
@@ -81,10 +80,22 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(editPattern,1,1);
     grid->addWidget(editDescription,1,5,2,2);
 
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int index = size * randomNumber;
+    QColor initColor = colorNames[index];
     colorfgcolor = new ColorListEditor(this);
-    colorfgcolor->setColor("Red");
+    colorfgcolor->setColor(initColor);
+
+    int r;
+    int g;
+    int b;
+    initColor.getRgb(&r,&g,&b);
+    QColor contrastColor(255-r,255-g,255-b);
+
     colorbgcolor = new ColorListEditor(this);
-    colorbgcolor->setColor("Yellow");
+    colorbgcolor->setColor(contrastColor);
 
     grid->addWidget(colorfgcolor,3,6);
     grid->addWidget(colorbgcolor,4,6);
@@ -237,7 +248,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
         btnRemove->setEnabled(true);
         btnSave->setEnabled(true);
-        btnSaveChanges->setEnabled(true);
+        //btnSaveChanges->setEnabled(true);
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
     }
@@ -259,6 +270,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 void CustomSTTView::cbTagType_changed(QString text) {
     field = text;
     listPossibleTags->clear();
+    editPattern->clear();
     if(field == "Prefix") {
         listPossibleTags->addItems(listPrefix);
     }
@@ -285,6 +297,34 @@ void CustomSTTView::cbTagType_changed(QString text) {
     }
 }
 
+void CustomSTTView::disconnect_Signals() {
+    disconnect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
+    disconnect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
+    disconnect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
+    disconnect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
+    disconnect(cbTagName, SIGNAL(currentIndexChanged(QString)), this, SLOT(tagName_changed(QString)));
+    disconnect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
+    disconnect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    disconnect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    disconnect(cbTagType,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbTagType_changed(QString)));
+    disconnect(cbfont, SIGNAL(currentIndexChanged(QString)), this, SLOT(font_changed(QString)));
+    disconnect(editDescription, SIGNAL(textChanged()), this, SLOT(desc_edited()));
+}
+
+void CustomSTTView::connect_Signals() {
+    connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
+    connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
+    connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
+    connect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
+    connect(cbTagName, SIGNAL(currentIndexChanged(QString)), this, SLOT(tagName_changed(QString)));
+    connect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
+    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    connect(cbTagType,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbTagType_changed(QString)));
+    connect(cbfont, SIGNAL(currentIndexChanged(QString)), this, SLOT(font_changed(QString)));
+    connect(editDescription, SIGNAL(textChanged()), this, SLOT(desc_edited()));
+}
+
 void CustomSTTView::btnAdd_clicked() {
 
     QString tagName = QInputDialog::getText(this,"Tag Name","Please insert a Tag Type Name");
@@ -300,20 +340,12 @@ void CustomSTTView::btnAdd_clicked() {
             return;
         }
     }
-
-    /*
-    QString tagDescription = QInputDialog::getText(this, "Tag Description", "Please insert a Tag Type Description");
-    if(tagDescription.isEmpty()) {
-        QMessageBox::warning(this, "Warning", "Empty TagType Description!");
-        return;
-    }
-    */
+    disconnect_Signals();
 
     dirty = true;
 
     btnRemove->setEnabled(true);
     btnSave->setEnabled(true);
-    btnSaveChanges->setEnabled(true);
 
     if(!btnSelect->isEnabled()) {
         btnSelect->setEnabled(true);
@@ -330,6 +362,30 @@ void CustomSTTView::btnAdd_clicked() {
     //cbTagName->setEditable(true);
     //editDescription->setText(tagDescription);
 
+    /*
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int index = size * randomNumber;
+    QColor initColor = colorNames[index];
+    QString fgname = initColor.name();
+    colorfgcolor = new ColorListEditor(this);
+
+    colorfgcolor->setColor(QColor(fgname));
+    */
+    colorfgcolor->setColor(QColor("Red"));
+    /*
+    QString colorname1 = colorfgcolor->currentText();
+
+    int r;
+    int g;
+    int b;
+    initColor.getRgb(&r,&g,&b);
+    QColor contrastColor(255-r,255-g,255-b);
+    colorbgcolor = new ColorListEditor(this);
+    */
+    colorbgcolor->setColor(QColor("Yellow"));
+
     QVector < QPair< QString, QString > > tags;
     int id = sttVector->count();
     QString fgcolor = colorfgcolor->color().name();
@@ -340,6 +396,8 @@ void CustomSTTView::btnAdd_clicked() {
     bool italic = cbItalic->isChecked();
     SarfTagType sarftagtype(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic);
     sttVector->append(sarftagtype);
+
+    connect_Signals();
 }
 
 void CustomSTTView::btnSelectAll_clicked() {
@@ -423,7 +481,7 @@ void CustomSTTView::editPattern_changed(QString text) {
         list = &listCategory;
     }
 
-    QRegExp regExp(text);
+    QRegExp regExp(text,Qt::CaseInsensitive);
     listPossibleTags->clear();
     if(editPattern->text().isEmpty()) {
         listPossibleTags->addItems(*list);
@@ -531,7 +589,6 @@ void CustomSTTView::btnLoad_clicked() {
          cbTagName->setCurrentIndex(0);
          btnRemove->setEnabled(true);
          btnSave->setEnabled(true);
-         btnSaveChanges->setEnabled(true);
          dirty = false;
      }
 }
@@ -621,6 +678,8 @@ void CustomSTTView::tagName_changed(QString name) {
     if(name.isEmpty() || name.isNull()) {
         return;
     }
+
+    disconnect_Signals();
     for(int i=0; i<sttVector->count(); i++) {
         SarfTagType * stt = &((*(sttVector))[i]);
         if(stt->tag == name) {
@@ -641,6 +700,8 @@ void CustomSTTView::tagName_changed(QString name) {
             }
         }
     }
+
+    connect_Signals();
 }
 
 void CustomSTTView::tagName_Edited(QString name) {
@@ -709,14 +770,8 @@ void CustomSTTView::btnCancel_clicked() {
     this->close();
 }
 
-void CustomSTTView::btnSaveChanges_clicked() {
-    dirty = false;
-    _atagger->sarfTagTypeVector->clear();
-    for(int i=0; i< sttVector->count(); i++) {
-        _atagger->sarfTagTypeVector->append(sttVector->at(i));
-    }
-
-    QMessageBox::information(this,"Save","Changes Saved!");
+void CustomSTTView::btnClose_clicked() {
+    this->close();
 }
 
 void CustomSTTView::closeEvent(QCloseEvent *event) {
@@ -731,7 +786,10 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
 
          switch (ret) {
          case QMessageBox::Save:
-             this->btnSaveChanges_clicked();
+             _atagger->sarfTagTypeVector->clear();
+             for(int i=0; i< sttVector->count(); i++) {
+                 _atagger->sarfTagTypeVector->append(sttVector->at(i));
+             }
              break;
          case QMessageBox::Discard:
              break;

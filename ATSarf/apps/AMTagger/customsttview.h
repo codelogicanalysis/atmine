@@ -33,7 +33,7 @@ private slots:
     void btnSave_clicked();
     void btnLoad_clicked();
     void btnCancel_clicked();
-    void btnSaveChanges_clicked();
+    void btnClose_clicked();
     void btnSelect_clicked();
     void btnUnselect_clicked();
     void editPattern_changed(QString text);
@@ -56,7 +56,7 @@ private:
     QPushButton *btnSave;
     QPushButton *btnLoad;
     QPushButton *btnCancel;
-    QPushButton *btnSaveChanges;
+    QPushButton *btnClose;
     QPushButton *btnSelect;
     QPushButton *btnUnselect;
     QPushButton *btnRemove;
@@ -101,6 +101,8 @@ private:
     QVector<SarfTagType> *sttVector;
     QString field;
     bool dirty;
+    void disconnect_Signals();
+    void connect_Signals();
 };
 
 #endif // CUSTOMSTTVIEW_H
