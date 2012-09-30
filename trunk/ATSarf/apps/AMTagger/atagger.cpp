@@ -126,8 +126,6 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
     /*
     else if(_data == sarfTV) {
 
-        /** Convert Tag to JSON
-
         QVariantMap sarftagdata;
         sarftagdata.insert("file",_atagger->textFile);
         sarftagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
