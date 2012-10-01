@@ -59,12 +59,34 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     grid->addWidget(lineEditTag,0,4);
     grid->addWidget(lineEditDescription,1,4);
 
+    /** Random Color Routine **/
+
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int indexC = size * randomNumber;
+    QColor initColor = colorNames[indexC];
+    colorfgcolor = new ColorListEditor(this);
+    colorfgcolor->setColor(initColor);
+    colorfgcolor->setEnabled(false);
+
+    int contrastIndex = 147 - indexC;
+    QColor contrastColor = colorNames[contrastIndex];
+
+    colorbgcolor = new ColorListEditor(this);
+    colorbgcolor->setColor(contrastColor);
+    colorbgcolor->setEnabled(false);
+
+    /** routine End **/
+
+#if 0
     colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setColor("Red");
     colorfgcolor->setEnabled(false);
     colorbgcolor = new ColorListEditor(this);
     colorbgcolor->setColor("Yellow");
     colorbgcolor->setEnabled(false);
+#endif
 
     grid->addWidget(colorfgcolor,2,4);
     grid->addWidget(colorbgcolor,3,4);
@@ -230,6 +252,23 @@ void EditTagTypeView::add_clicked() {
     lineEditTag->setText(text);
     lineEditDescription->setEnabled(true);
     lineEditDescription->setText(QString());
+
+    /** Random Color Routine **/
+
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int indexC = size * randomNumber;
+    QColor initColor = colorNames[indexC];
+    colorfgcolor->setColor(initColor);
+
+    int contrastIndex = 147 - indexC;
+    QColor contrastColor = colorNames[contrastIndex];
+
+    colorbgcolor->setColor(contrastColor);
+
+    /** routine End **/
+
     colorfgcolor->setEnabled(true);
     colorbgcolor->setEnabled(true);
     cbfont->setEnabled(true);

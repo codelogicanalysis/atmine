@@ -8,6 +8,7 @@
 #include<QDockWidget>
 #include<QList>
 #include <QMessageBox>
+#include <QTextBlock>
 
 #include "commonS.h"
 #include <addtagview.h>
@@ -25,7 +26,7 @@ class SarfTag;
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
     browseFileDlg(NULL)
-{
+{   
     resize(800,600);
 
     // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
@@ -296,6 +297,7 @@ void AMTMainWindow::startTaggingText(QString & text) {
     taggedBox->setTextBackgroundColor(Qt::white);
     taggedBox->setTextColor(Qt::black);
     taggedBox->setText(text);
+    setLineSpacing(10);
 }
 
 void AMTMainWindow::process(QByteArray & json) {
@@ -1189,6 +1191,7 @@ void AMTMainWindow::loadText_clicked() {
          _atagger->textFile = fileName;
          _atagger->text = text;
          txtBrwsr->setText(text);
+         setLineSpacing(10);
     }
 }
 
@@ -1281,12 +1284,28 @@ void AMTMainWindow::_new() {
          _atagger->text = text;
          _atagger->textFile = textFileName;
          txtBrwsr->setText(text);
+         setLineSpacing(10);
          sarftagsAct->setEnabled(true);
          edittagtypesAct->setEnabled(true);
          tagremoveAct->setEnabled(true);
          mTags->setEnabled(true);
          saveAct->setEnabled(true);
          saveasAct->setEnabled(true);
+    }
+}
+
+void AMTMainWindow::setLineSpacing(int lineSpacing) {
+    int lineCount = 0;
+    for (QTextBlock block = txtBrwsr->document()->begin(); block.isValid();
+            block = block.next(), ++lineCount) {
+        QTextCursor tc = QTextCursor(block);
+        QTextBlockFormat fmt = block.blockFormat();
+        if (fmt.topMargin() != lineSpacing
+                || fmt.bottomMargin() != lineSpacing) {
+            fmt.setTopMargin(lineSpacing);
+            //fmt.setBottomMargin(lineSpacing);
+            tc.setBlockFormat(fmt);
+        }
     }
 }
 
