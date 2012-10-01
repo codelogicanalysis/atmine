@@ -66,6 +66,7 @@ private:
          void createDockWindows(bool open);
          void startTaggingText(QString & text);
          bool saveFile(const QString &fileName, QByteArray &tagD);
+         void setLineSpacing(int lineSpacing);
 
          QMenu *fileMenu;
          QMenu *tagMenu;

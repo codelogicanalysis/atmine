@@ -80,6 +80,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(editPattern,1,1);
     grid->addWidget(editDescription,1,5,2,2);
 
+    /** random color routine **/
+
     QStringList colorNames = QColor::colorNames();
     int size = colorNames.size();
     double randomNumber = ((double) rand() / (RAND_MAX));
@@ -88,14 +90,20 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setColor(initColor);
 
+    /*
     int r;
     int g;
     int b;
     initColor.getRgb(&r,&g,&b);
     QColor contrastColor(255-r,255-g,255-b);
+    */
+    int contrastIndex = 147 - index;
+    QColor contrastColor = colorNames[contrastIndex];
 
     colorbgcolor = new ColorListEditor(this);
     colorbgcolor->setColor(contrastColor);
+
+    /** end of routine **/
 
     grid->addWidget(colorfgcolor,3,6);
     grid->addWidget(colorbgcolor,4,6);
@@ -353,6 +361,7 @@ void CustomSTTView::btnAdd_clicked() {
     }
 
     listSelectedTags->clear();
+    editDescription->clear();
     cbTagName->addItem(tagName);
     cbTagName->setCurrentIndex(cbTagName->findText(tagName));
     cbfont->setCurrentIndex(cbfont->findText("12"));
@@ -362,29 +371,31 @@ void CustomSTTView::btnAdd_clicked() {
     //cbTagName->setEditable(true);
     //editDescription->setText(tagDescription);
 
-    /*
+    /** Random Color Routine **/
+
     QStringList colorNames = QColor::colorNames();
     int size = colorNames.size();
     double randomNumber = ((double) rand() / (RAND_MAX));
     int index = size * randomNumber;
     QColor initColor = colorNames[index];
-    QString fgname = initColor.name();
+    //colorfgcolor = new ColorListEditor(this);
+    colorfgcolor->setColor(initColor);
+
+    int contrastIndex = 147 - index;
+    QColor contrastColor = colorNames[contrastIndex];
+
+    //colorbgcolor = new ColorListEditor(this);
+    colorbgcolor->setColor(contrastColor);
+
+    /** routine End **/
+
+#if 0
     colorfgcolor = new ColorListEditor(this);
-
-    colorfgcolor->setColor(QColor(fgname));
-    */
     colorfgcolor->setColor(QColor("Red"));
-    /*
-    QString colorname1 = colorfgcolor->currentText();
 
-    int r;
-    int g;
-    int b;
-    initColor.getRgb(&r,&g,&b);
-    QColor contrastColor(255-r,255-g,255-b);
     colorbgcolor = new ColorListEditor(this);
-    */
     colorbgcolor->setColor(QColor("Yellow"));
+#endif
 
     QVector < QPair< QString, QString > > tags;
     int id = sttVector->count();
