@@ -41,10 +41,10 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnClose, SIGNAL(clicked()), this, SLOT(btnClose_clicked()));
 
     grid->addWidget(btnSave,14,5);
-    grid->addWidget(btnSelect,4,2);
-    grid->addWidget(btnUnselect,5,2);
-    grid->addWidget(btnAdd,0,2,2,1);
-    grid->addWidget(btnRemove,2,2,2,1);
+    grid->addWidget(btnSelect,5,2);
+    grid->addWidget(btnUnselect,6,2);
+    grid->addWidget(btnAdd,2,2);
+    grid->addWidget(btnRemove,3,2);
     grid->addWidget(btnLoad,14,6);
     grid->addWidget(btnClose,13,6);
     grid->addWidget(btnCancel,13,5);
@@ -90,13 +90,6 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setColor(initColor);
 
-    /*
-    int r;
-    int g;
-    int b;
-    initColor.getRgb(&r,&g,&b);
-    QColor contrastColor(255-r,255-g,255-b);
-    */
     int contrastIndex = 147 - index;
     QColor contrastColor = colorNames[contrastIndex];
 
@@ -141,6 +134,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbunderline = new QCheckBox(this);
     cbBold = new QCheckBox(this);
     cbItalic = new QCheckBox(this);
+    cbCaseSensetive = new QCheckBox(this);
+    cbCaseSensetive->setText("Case Sensetive");
 
     connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
@@ -149,6 +144,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(cbBold,6,6);
     grid->addWidget(cbItalic,7,6);
     grid->addWidget(cbunderline,8,6);
+    grid->addWidget(cbCaseSensetive,1,2);
 
     listPossibleTags = new QListWidget(this);
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -256,7 +252,6 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
         btnRemove->setEnabled(true);
         btnSave->setEnabled(true);
-        //btnSaveChanges->setEnabled(true);
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
     }
@@ -358,6 +353,7 @@ void CustomSTTView::btnAdd_clicked() {
     if(!btnSelect->isEnabled()) {
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
+        btnRemove->setEnabled(true);
     }
 
     listSelectedTags->clear();
@@ -416,6 +412,10 @@ void CustomSTTView::btnSelectAll_clicked() {
 }
 
 void CustomSTTView::btnSelect_clicked() {
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
 
     SarfTagType * stt;
@@ -492,7 +492,17 @@ void CustomSTTView::editPattern_changed(QString text) {
         list = &listCategory;
     }
 
-    QRegExp regExp(text,Qt::CaseInsensitive);
+    Qt::CaseSensitivity sensetive;
+
+    if(cbCaseSensetive->isChecked()) {
+        sensetive = Qt::CaseSensitive;
+    }
+    else {
+        sensetive = Qt::CaseInsensitive;
+    }
+
+    QRegExp regExp(text, sensetive);
+
     listPossibleTags->clear();
     if(editPattern->text().isEmpty()) {
         listPossibleTags->addItems(*list);
@@ -646,6 +656,10 @@ void CustomSTTView::fgcolor_changed(QString color) {
     if(color.isNull() || color.isEmpty()) {
         return;
     }
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -660,6 +674,10 @@ void CustomSTTView::bgcolor_changed(QString color) {
     if(color.isNull() || color.isEmpty()) {
         return;
     }
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -674,6 +692,10 @@ void CustomSTTView::font_changed(QString fontSize) {
     if(fontSize.isNull() || fontSize.isEmpty()) {
         return;
     }
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -720,6 +742,10 @@ void CustomSTTView::tagName_Edited(QString name) {
 }
 
 void CustomSTTView::underline_clicked(bool underline) {
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -731,6 +757,10 @@ void CustomSTTView::underline_clicked(bool underline) {
 }
 
 void CustomSTTView::bold_clicked(bool bold) {
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -742,6 +772,10 @@ void CustomSTTView::bold_clicked(bool bold) {
 }
 
 void CustomSTTView::italic_clicked(bool italic) {
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -753,6 +787,10 @@ void CustomSTTView::italic_clicked(bool italic) {
 }
 
 void CustomSTTView::desc_edited() {
+    if(sttVector->count() == 0) {
+        return;
+    }
+
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -764,6 +802,9 @@ void CustomSTTView::desc_edited() {
 }
 
 void CustomSTTView::btnRemove_clicked() {
+    if(sttVector->count() == 0) {
+        return;
+    }
     dirty = true;
     QString tagRemoved = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
@@ -774,6 +815,10 @@ void CustomSTTView::btnRemove_clicked() {
         }
     }
     cbTagName->removeItem(cbTagName->currentIndex());
+    if(sttVector->count() == 0) {
+        btnSelect->setEnabled(false);
+        btnRemove->setEnabled(false);
+    }
 }
 
 void CustomSTTView::btnCancel_clicked() {
