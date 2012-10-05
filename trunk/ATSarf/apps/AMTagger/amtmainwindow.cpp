@@ -38,11 +38,6 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
 
-    /** clear all views **/
-    //descBrwsr->clear();
-    //tagDescription->clear();
-    //txtBrwsr->clear();
-
     /** Initialize Sarf **/
     theSarf = new Sarf();
     bool all_set = theSarf->start(&output_str, &error_str, this);
@@ -367,8 +362,6 @@ void AMTMainWindow::process(QByteArray & json) {
     QByteArray tagtypedata = ITfile.readAll();
     ITfile.close();
 
-    btnTFName->setEnabled(false);
-    btnTTFName->setEnabled(false);
     lineEditTTFName->setText(ttFName);
     process_TagTypes(tagtypedata);
 
@@ -1170,6 +1163,26 @@ void AMTMainWindow::customizeSarfTags() {
 }
 
 void AMTMainWindow::loadText_clicked() {
+    if(!(_atagger->textFile.isEmpty())) {
+        QMessageBox msgBox;
+        msgBox.setText("Loading a new text file will remove all previous tags");
+        msgBox.setInformativeText("Do you want to proceed?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+           case QMessageBox::Yes:
+               break;
+           case QMessageBox::Discard:
+               return;
+               break;
+           default:
+               // should never be reached
+               break;
+         }
+    }
+
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Text File"), "",
              tr("Text File (*.txt);;All Files (*)"));
@@ -1184,9 +1197,13 @@ void AMTMainWindow::loadText_clicked() {
              return;
          }
 
+         _atagger->tagVector->clear();
+         tagDescription->clear();
+         descBrwsr->clear();
+
          lineEditTFName->setText(fileName);
          sarfAct->setEnabled(true);
-         btnTFName->setEnabled(false);
+         //btnTFName->setEnabled(false);
          QString text = file.readAll();
          _atagger->textFile = fileName;
          _atagger->text = text;
@@ -1196,6 +1213,25 @@ void AMTMainWindow::loadText_clicked() {
 }
 
 void AMTMainWindow::loadTagTypes_clicked() {
+    if(!(_atagger->tagTypeVector->isEmpty()) || !(_atagger->sarfTagTypeVector->isEmpty())) {
+        QMessageBox msgBox;
+        msgBox.setText("Loading a new tag type file will remove all previous tags");
+        msgBox.setInformativeText("Do you want to proceed?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::Yes);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+           case QMessageBox::Yes:
+               break;
+           case QMessageBox::No:
+               return;
+               break;
+           default:
+               // should never be reached
+               break;
+         }
+    }
 
     QString fileName = QFileDialog::getOpenFileName(this,
              tr("Tag Type File"), "",
@@ -1211,6 +1247,18 @@ void AMTMainWindow::loadTagTypes_clicked() {
              return;
          }
 
+         _atagger->tagVector->clear();
+         _atagger->tagTypeVector->clear();
+         _atagger->sarfTagTypeVector->clear();
+         _atagger->tagtypeFile.clear();
+         _atagger->sarftagtypeFile.clear();
+         tagDescription->clear();
+         descBrwsr->clear();
+         txtBrwsr->clear();
+         txtBrwsr->setText(_atagger->text);
+         applyTags();
+         createTagMenu();
+
          if(fileName.endsWith(".tt.json")) {
              _atagger->tagtypeFile = fileName;
          }
@@ -1222,76 +1270,42 @@ void AMTMainWindow::loadTagTypes_clicked() {
              QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
              return;
          }
-         btnTTFName->setEnabled(false);
          lineEditTTFName->setText(fileName);
          QByteArray tagtypes = file.readAll();
          process_TagTypes(tagtypes);
-         btnTTFName->setEnabled(false);
      }
 }
 
 void AMTMainWindow::_new() {
-    clearLayout(this->layout());
+	clearLayout(this->layout());
 
-    _atagger = new ATagger();
-    //txtBrwsr->clear();
-    //tagDescription->clear();
-    //descBrwsr->clear();
-    //lineEditTFName->clear();
-    //lineEditTTFName->clear();
+        _atagger = new ATagger();
 
-    setWindowTitle("Arabic Morphological Tagger");
+	setWindowTitle("Arabic Morphological Tagger");
 
-    QString tagFileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Tags File"), "",
-                                                    tr("tags (*.tags.json);;All Files (*)"));
-    if(tagFileName.isEmpty()) {
-        //btnTFName->setEnabled(true);
-        //btnTTFName->setEnabled(true);
-        return;
-    }
-    if(tagFileName.endsWith(".tags.json")) {
-        _atagger->tagFile = tagFileName;
-    }
-    else {
-        _atagger->tagFile = tagFileName + ".tags.json";
-    }
-    setWindowTitle("AMTagger: " + _atagger->tagFile);
+	QString tagFileName = QFileDialog::getSaveFileName(this,
+			tr("Tags File"), "",
+			tr("tags (*.tags.json);;All Files (*)"));
+        if(tagFileName.isEmpty()) {
+		return;
+	}
+	if(tagFileName.endsWith(".tags.json")) {
+		_atagger->tagFile = tagFileName;
+	}
+	else {
+		_atagger->tagFile = tagFileName + ".tags.json";
+	}
+	setWindowTitle("AMTagger: " + _atagger->tagFile);
 
-    /** Get text file **/
 
-    QString textFileName = QFileDialog::getOpenFileName(this,
-             tr("Text File"), "",
-             tr("Text File (*.txt);;All Files (*)"));
+	createDockWindows(false);
 
-    if (textFileName.isEmpty()) {
-        return;
-    }
-    else {
-        QFile file(textFileName);
-         if (!file.open(QIODevice::ReadOnly)) {
-             QMessageBox::information(this, tr("Unable to open file"),file.errorString());
-             return;
-         }
-
-         createDockWindows(false);
-
-         btnTFName->setEnabled(false);
-         btnTTFName->setEnabled(true);
-         lineEditTFName->setText(textFileName);
-
-         QString text = file.readAll();
-         _atagger->text = text;
-         _atagger->textFile = textFileName;
-         txtBrwsr->setText(text);
-         setLineSpacing(10);
-         sarftagsAct->setEnabled(true);
-         edittagtypesAct->setEnabled(true);
-         tagremoveAct->setEnabled(true);
-         mTags->setEnabled(true);
-         saveAct->setEnabled(true);
-         saveasAct->setEnabled(true);
-    }
+	sarftagsAct->setEnabled(true);
+	edittagtypesAct->setEnabled(true);
+	tagremoveAct->setEnabled(true);
+	mTags->setEnabled(true);
+	saveAct->setEnabled(true);
+	saveasAct->setEnabled(true);
 }
 
 void AMTMainWindow::setLineSpacing(int lineSpacing) {
@@ -1303,7 +1317,6 @@ void AMTMainWindow::setLineSpacing(int lineSpacing) {
         if (fmt.topMargin() != lineSpacing
                 || fmt.bottomMargin() != lineSpacing) {
             fmt.setTopMargin(lineSpacing);
-            //fmt.setBottomMargin(lineSpacing);
             tc.setBlockFormat(fmt);
         }
     }
