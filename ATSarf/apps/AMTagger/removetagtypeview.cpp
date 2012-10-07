@@ -15,7 +15,7 @@ RemoveTagTypeView::RemoveTagTypeView(QTextBrowser *txtBrwsr,QTreeWidget * tagDes
     lblType->setText("Tag Type: ");
     btnRemoveTagType->setText("Remove TagType");
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        cbType->addItem((_atagger->tagTypeVector->at(i)).tag);
+        cbType->addItem((_atagger->tagTypeVector->at(i))->tag);
     }
 
     scrollArea=new QScrollArea(this);
@@ -23,13 +23,7 @@ RemoveTagTypeView::RemoveTagTypeView(QTextBrowser *txtBrwsr,QTreeWidget * tagDes
     grid->addWidget(lblType,0,0);
     grid->addWidget(cbType,0,1);
     grid->addWidget(btnRemoveTagType,1,0,1,2,Qt::AlignCenter);
-    /*
-    connect(this,
-            SLOT(tagWordS(int, int, QColor, QColor, int, bool, bool, bool)),
-            parent,
-            SLOT(tagWord(int, int, QColor, QColor, int, bool, bool, bool)));
-    connect(this, SLOT(fillTreeWidgetS()),parent ,SLOT(fillTreeWidget()));
-    */
+
     setCentralWidget(scrollArea);
     connect(btnRemoveTagType,SIGNAL(clicked()),this,SLOT(removeTagType_clicked()));
     setWindowTitle(tr("Add Tag"));
@@ -38,7 +32,7 @@ RemoveTagTypeView::RemoveTagTypeView(QTextBrowser *txtBrwsr,QTreeWidget * tagDes
 void RemoveTagTypeView::removeTagType_clicked() {
     QString tag = cbType->currentText();
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        if((_atagger->tagTypeVector->at(i)).tag == tag) {
+        if((_atagger->tagTypeVector->at(i))->tag == tag) {
             for(int j=0; j < _atagger->tagVector->count(); j++) {
                 if((_atagger->tagVector->at(j)).type == tag) {
                     int start = (_atagger->tagVector->at(j)).pos;
@@ -54,12 +48,3 @@ void RemoveTagTypeView::removeTagType_clicked() {
     }
     this->close();
 }
-/*
-void RemoveTagTypeView::tagWordS(int start, int length, QColor bgcolor, QColor fgcolor, int font, bool underline, bool bold, bool italic) {
-
-}
-
-void RemoveTagTypeView::fillTreeWidgetS() {
-
-}
-*/

@@ -161,59 +161,87 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     /** Fill Data in View **/
 
-    tagTypeVector = new QVector<TagType>();
+    //tagTypeVector = new QVector<TagType*>(*(_atagger->tagTypeVector));
+    tagTypeVector = new QVector<TagType*>();
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        TagType* tt = _atagger->tagTypeVector->at(i);
+        QString tag = tt->tag;
+        QString desc = tt->description;
+        QString fgcolor = tt->fgcolor;
+        QString bgcolor = tt->bgcolor;
+        int font = tt->font;
+        bool underline = tt->underline;
+        bool italic = tt->italic;
+        bool bold = tt->bold;
+        int id = tt->id;
+        Source source = tt->source;
+
+        if(_atagger->tagTypeVector->at(i)->source == sarf) {
+            SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+            QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+            SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            tagTypeVector->append(stt);
+
+        }
+        else {
+            TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            tagTypeVector->append(stt);
+        }
+    }
 
     if(_atagger->tagTypeVector->count() == 0) {
         btnEdit->setEnabled(false);
         return;
     }
 
+    /*
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         tagTypeVector->append(_atagger->tagTypeVector->at(i));
     }
+    */
 
     int tagtypeCount = tagTypeVector->count();
     for( int i=0; i< tagtypeCount; i++) {
-        lvTypes->addItem((tagTypeVector->at(i)).tag);
+        lvTypes->addItem((tagTypeVector->at(i))->tag);
     }
 
+    setWindowTitle(tr("Edit Tag Type DialogBox"));
+    edit = false;
+
     lvTypes->item(0)->setSelected(true);
-    lineEditTag->setText((tagTypeVector->at(0)).tag);
-    lineEditDescription->setText((tagTypeVector->at(0)).description);
-    colorfgcolor->setColor(QColor((tagTypeVector->at(0)).fgcolor));
-    colorbgcolor->setColor(QColor((tagTypeVector->at(0)).bgcolor));
-    int index = cbfont->findText(QString::number((tagTypeVector->at(0)).font));
+    lineEditTag->setText((tagTypeVector->at(0))->tag);
+    lineEditDescription->setText((tagTypeVector->at(0))->description);
+    colorfgcolor->setColor(QColor((tagTypeVector->at(0))->fgcolor));
+    colorbgcolor->setColor(QColor((tagTypeVector->at(0))->bgcolor));
+    int index = cbfont->findText(QString::number((tagTypeVector->at(0))->font));
     if(index != -1) {
         cbfont->setCurrentIndex(index);
     }
-    cbunderline->setChecked((tagTypeVector->at(0)).underline);
-    cbBold->setChecked((tagTypeVector->at(0)).bold);
-    cbItalic->setChecked((tagTypeVector->at(0)).italic);
-
-    edit = false;
-
-    setWindowTitle(tr("Edit Tag Type DialogBox"));
+    cbunderline->setChecked((tagTypeVector->at(0))->underline);
+    cbBold->setChecked((tagTypeVector->at(0))->bold);
+    cbItalic->setChecked((tagTypeVector->at(0))->italic);
 }
 
 void EditTagTypeView::update_TagTypes() {
     lvTypes->clear();
     int tagtypeCount = tagTypeVector->count();
     for( int i=0; i< tagtypeCount; i++) {
-        lvTypes->addItem((tagTypeVector->at(i)).tag);
+        lvTypes->addItem((tagTypeVector->at(i))->tag);
     }
 
     lvTypes->item(0)->setSelected(true);
-    lineEditTag->setText((tagTypeVector->at(0)).tag);
-    lineEditDescription->setText((tagTypeVector->at(0)).description);
-    colorfgcolor->setColor(QColor((tagTypeVector->at(0)).fgcolor));
-    colorbgcolor->setColor(QColor((tagTypeVector->at(0)).bgcolor));
-    int index = cbfont->findText(QString::number((tagTypeVector->at(0)).font));
+    lineEditTag->setText((tagTypeVector->at(0))->tag);
+    lineEditDescription->setText((tagTypeVector->at(0))->description);
+    colorfgcolor->setColor(QColor((tagTypeVector->at(0))->fgcolor));
+    colorbgcolor->setColor(QColor((tagTypeVector->at(0))->bgcolor));
+    int index = cbfont->findText(QString::number((tagTypeVector->at(0))->font));
     if(index != -1) {
         cbfont->setCurrentIndex(index);
     }
-    cbunderline->setChecked((tagTypeVector->at(0)).underline);
-    cbBold->setChecked((tagTypeVector->at(0)).bold);
-    cbItalic->setChecked((tagTypeVector->at(0)).italic);
+    cbunderline->setChecked((tagTypeVector->at(0))->underline);
+    cbBold->setChecked((tagTypeVector->at(0))->bold);
+    cbItalic->setChecked((tagTypeVector->at(0))->italic);
 
     edit = false;
 }
@@ -237,7 +265,7 @@ void EditTagTypeView::add_clicked() {
         return;
 
     for(int i=0; i< tagTypeVector->count(); i++) {
-        if((tagTypeVector->at(i)).tag == text) {
+        if((tagTypeVector->at(i))->tag == text) {
             QMessageBox::warning(this,"Warning","Tag Type Name already Present!");
             return;
         }
@@ -329,18 +357,18 @@ void EditTagTypeView::edit_clicked() {
         bool bold = cbBold->isChecked();
         bool italic = cbItalic->isChecked();
         if(index >= tagTypeVector->count()) {
-            TagType t(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic);
-            tagTypeVector->append(t);
+            TagType t(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic,user);
+            tagTypeVector->append(&t);
         }
         else {
-            (*tagTypeVector)[index].tag = tag;
-            (*tagTypeVector)[index].description = description;
-            (*tagTypeVector)[index].fgcolor = fgcolor;
-            (*tagTypeVector)[index].bgcolor = bgcolor;
-            (*tagTypeVector)[index].font = font;
-            (*tagTypeVector)[index].underline = underline;
-            (*tagTypeVector)[index].bold = bold;
-            (*tagTypeVector)[index].italic = italic;
+            (*tagTypeVector)[index]->tag = tag;
+            (*tagTypeVector)[index]->description = description;
+            (*tagTypeVector)[index]->fgcolor = fgcolor;
+            (*tagTypeVector)[index]->bgcolor = bgcolor;
+            (*tagTypeVector)[index]->font = font;
+            (*tagTypeVector)[index]->underline = underline;
+            (*tagTypeVector)[index]->bold = bold;
+            (*tagTypeVector)[index]->italic = italic;
         }
         update_TagTypes();
     }
@@ -384,9 +412,30 @@ void EditTagTypeView::load_clicked() {
              ((AMTMainWindow*)parentWidget())->process_TagTypes(TagTypes);
              //((AMTMainWindow*)parentWidget())->finishTaggingText();
 
-             tagTypeVector = new QVector<TagType>();
              for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-                 tagTypeVector->append(_atagger->tagTypeVector->at(i));
+                 TagType* tt = _atagger->tagTypeVector->at(i);
+                 QString tag = tt->tag;
+                 QString desc = tt->description;
+                 QString fgcolor = tt->fgcolor;
+                 QString bgcolor = tt->bgcolor;
+                 int font = tt->font;
+                 bool underline = tt->underline;
+                 bool italic = tt->italic;
+                 bool bold = tt->bold;
+                 int id = tt->id;
+                 Source source = tt->source;
+
+                 if(_atagger->tagTypeVector->at(i)->source == sarf) {
+                     SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+                     QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+                     SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     tagTypeVector->append(stt);
+
+                 }
+                 else {
+                     TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     tagTypeVector->append(stt);
+                 }
              }
 
              update_TagTypes();
@@ -401,15 +450,15 @@ void EditTagTypeView::item_clicked() {
     colorbgcolor->setEnabled(false);
     cbfont->setEnabled(false);
     int index = lvTypes->currentRow();
-    lineEditTag->setText((tagTypeVector->at(index)).tag);
-    lineEditDescription->setText((tagTypeVector->at(index)).description);
-    colorfgcolor->setColor(QColor((tagTypeVector->at(index)).fgcolor));
-    colorbgcolor->setColor(QColor((tagTypeVector->at(index)).bgcolor));
-    int fontindex = cbfont->findText(QString::number((tagTypeVector->at(index)).font));
+    lineEditTag->setText((tagTypeVector->at(index))->tag);
+    lineEditDescription->setText((tagTypeVector->at(index))->description);
+    colorfgcolor->setColor(QColor((tagTypeVector->at(index))->fgcolor));
+    colorbgcolor->setColor(QColor((tagTypeVector->at(index))->bgcolor));
+    int fontindex = cbfont->findText(QString::number((tagTypeVector->at(index))->font));
     if(fontindex != -1) {
         cbfont->setCurrentIndex(fontindex);
     }
-    cbunderline->setChecked((tagTypeVector->at(index)).underline);
-    cbBold->setChecked((tagTypeVector->at(index)).bold);
-    cbItalic->setChecked((tagTypeVector->at(index)).italic);
+    cbunderline->setChecked((tagTypeVector->at(index))->underline);
+    cbBold->setChecked((tagTypeVector->at(index))->bold);
+    cbItalic->setChecked((tagTypeVector->at(index))->italic);
 }

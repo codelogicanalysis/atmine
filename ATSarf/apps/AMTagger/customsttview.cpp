@@ -110,8 +110,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     }
 
     cbTagName = new QComboBox(this);
-    for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-        cbTagName->addItem(_atagger->sarfTagTypeVector->at(i).tag);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        cbTagName->addItem(_atagger->tagTypeVector->at(i)->tag);
     }
 
     connect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
@@ -227,9 +227,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         }
     }
 
-    if(_atagger->sarfTagTypeVector->count() != 0) {
+    if(_atagger->tagTypeVector->count() != 0) {
         //cbTagName->setEditable(true);
-        const SarfTagType * stt = &(_atagger->sarfTagTypeVector->at(0));
+        const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(0));
 
         cbTagName->setCurrentIndex(0);
         cbunderline->setChecked(stt->underline);
@@ -264,9 +264,33 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnSelect,SIGNAL(clicked()),this,SLOT(btnSelect_clicked()));
     connect(btnUnselect,SIGNAL(clicked()),this,SLOT(btnUnselect_clicked()));
 
-    sttVector = new QVector<SarfTagType>();
-    for(int i=0; i< _atagger->sarfTagTypeVector->count(); i++) {
-        sttVector->append(_atagger->sarfTagTypeVector->at(i));
+    //sttVector = new QVector<TagType*>(*(_atagger->tagTypeVector));
+    sttVector = new QVector<TagType*>();
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        TagType* tt = _atagger->tagTypeVector->at(i);
+        QString tag = tt->tag;
+        QString desc = tt->description;
+        QString fgcolor = tt->fgcolor;
+        QString bgcolor = tt->bgcolor;
+        int font = tt->font;
+        bool underline = tt->underline;
+        bool italic = tt->italic;
+        bool bold = tt->bold;
+        int id = tt->id;
+        Source source = tt->source;
+
+        if(_atagger->tagTypeVector->at(i)->source == sarf) {
+            SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+            QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+            SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            sttVector->append(stt);
+
+        }
+        else {
+            TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            sttVector->append(stt);
+        }
     }
 }
 
@@ -337,7 +361,7 @@ void CustomSTTView::btnAdd_clicked() {
     }
 
     for(int i=0; i<sttVector->count(); i++) {
-        const SarfTagType * stt = &(sttVector->at(i));
+        const SarfTagType * stt = (SarfTagType*)(sttVector->at(i));
         if(stt->tag == tagName) {
             QMessageBox::warning(this, "Warning", "This Tag Name already exists!");
             return;
@@ -401,8 +425,8 @@ void CustomSTTView::btnAdd_clicked() {
     bool underline = cbunderline->isChecked();
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
-    SarfTagType sarftagtype(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic);
-    sttVector->append(sarftagtype);
+    SarfTagType sarftagtype(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic,sarf);
+    sttVector->append(&sarftagtype);
 
     connect_Signals();
 }
@@ -420,8 +444,8 @@ void CustomSTTView::btnSelect_clicked() {
 
     SarfTagType * stt;
     for(int i=0; i<sttVector->count(); i++) {
-        if(sttVector->at(i).tag == cbTagName->currentText()) {
-            stt = &((*(sttVector))[i]);
+        if(sttVector->at(i)->tag == cbTagName->currentText()) {
+            stt = (SarfTagType*)((*(sttVector))[i]);
             break;
         }
     }
@@ -449,8 +473,8 @@ void CustomSTTView::btnUnselect_clicked() {
 
     SarfTagType * stt;
     for(int i=0; i<sttVector->count(); i++) {
-        if(sttVector->at(i).tag == cbTagName->currentText()) {
-            stt = &((*(sttVector))[i]);
+        if(sttVector->at(i)->tag == cbTagName->currentText()) {
+            stt = (SarfTagType*)((*(sttVector))[i]);
             break;
         }
     }
@@ -596,14 +620,14 @@ void CustomSTTView::btnLoad_clicked() {
                  }
              }
 
-             _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic);
+             _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf);
          }
 
          cbTagName->clear();
          listSelectedTags->clear();
 
-         for(int i=0; i<_atagger->sarfTagTypeVector->count(); i++) {
-             const SarfTagType * stt = &(_atagger->sarfTagTypeVector->at(i));
+         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+             const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
              cbTagName->addItem(stt->tag);
          }
 
@@ -623,15 +647,25 @@ void CustomSTTView::btnSave_clicked() {
                 this,
                 tr("Save Sarf Tag Types"), "",
                 tr("Text (*.stt.json);;All Files (*)"));
+        if(fileName.isEmpty()) {
+            QMessageBox::warning(this, "Warning", "The Sarf Tag Types file wasn't saved");
+            return;
+        }
+        else {
+            fileName += ".stt.json";
+            _atagger->sarftagtypeFile = fileName;
+        }
     }
     else {
         fileName = _atagger->sarftagtypeFile;
     }
 
+    /*
     if(fileName.isEmpty()) {
         QMessageBox::warning(this, "Warning", "The Sarf Tag Types file wasn't saved");
         return;
     }
+    */
 
     QFile tfile(fileName);
     /*
@@ -663,7 +697,7 @@ void CustomSTTView::fgcolor_changed(QString color) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->fgcolor = color;
         }
@@ -681,7 +715,7 @@ void CustomSTTView::bgcolor_changed(QString color) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->bgcolor = color;
         }
@@ -699,7 +733,7 @@ void CustomSTTView::font_changed(QString fontSize) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->font = fontSize.toInt();
         }
@@ -714,7 +748,7 @@ void CustomSTTView::tagName_changed(QString name) {
 
     disconnect_Signals();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == name) {
             editDescription->setText(stt->description);
             int index = cbfont->findText(QString::number(stt->font));
@@ -749,7 +783,7 @@ void CustomSTTView::underline_clicked(bool underline) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->underline = underline;
         }
@@ -764,7 +798,7 @@ void CustomSTTView::bold_clicked(bool bold) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->bold = bold;
         }
@@ -779,7 +813,7 @@ void CustomSTTView::italic_clicked(bool italic) {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->italic = italic;
         }
@@ -794,7 +828,7 @@ void CustomSTTView::desc_edited() {
     dirty = true;
     QString tag = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        SarfTagType * stt = &((*(sttVector))[i]);
+        SarfTagType * stt = (SarfTagType*)((*(sttVector))[i]);
         if(stt->tag == tag) {
             stt->description = editDescription->toPlainText();
         }
@@ -808,7 +842,7 @@ void CustomSTTView::btnRemove_clicked() {
     dirty = true;
     QString tagRemoved = cbTagName->currentText();
     for(int i=0; i<sttVector->count(); i++) {
-        const SarfTagType * stt = &(sttVector->at(i));
+        const SarfTagType * stt = (SarfTagType*)(sttVector->at(i));
         if(stt->tag == tagRemoved) {
             sttVector->remove(i);
             break;
@@ -842,9 +876,38 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
 
          switch (ret) {
          case QMessageBox::Save:
+             /*
              _atagger->sarfTagTypeVector->clear();
              for(int i=0; i< sttVector->count(); i++) {
                  _atagger->sarfTagTypeVector->append(sttVector->at(i));
+             }
+             */
+             //_atagger->tagTypeVector = new QVector<TagType*>(*(sttVector));
+             _atagger->tagTypeVector->clear();
+             for(int i=0; i<sttVector->count(); i++) {
+                 const TagType* tt = sttVector->at(i);
+                 QString tag = tt->tag;
+                 QString desc = tt->description;
+                 QString fgcolor = tt->fgcolor;
+                 QString bgcolor = tt->bgcolor;
+                 int font = tt->font;
+                 bool underline = tt->underline;
+                 bool italic = tt->italic;
+                 bool bold = tt->bold;
+                 int id = tt->id;
+                 Source source = tt->source;
+
+                 if(sttVector->at(i)->source == sarf) {
+                     SarfTagType* _stt = (SarfTagType*)(sttVector->at(i));
+                     QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+                     SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     _atagger->tagTypeVector->append(stt);
+
+                 }
+                 else {
+                     TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     _atagger->tagTypeVector->append(stt);
+                 }
              }
              break;
          case QMessageBox::Discard:

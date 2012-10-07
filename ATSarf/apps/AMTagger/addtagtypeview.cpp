@@ -77,7 +77,7 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
 void AddTagTypeView::addTagType_clicked() {
     QString tag = lineEditTag->text();
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        if((_atagger->tagTypeVector->at(i)).tag == tag) {
+        if((_atagger->tagTypeVector->at(i))->tag == tag) {
 
             switch( QMessageBox::information( this, "Tag Type","The <b>TagType</b> is duplicate!","&Ok",0,0) ) {
                 return;
@@ -92,7 +92,7 @@ void AddTagTypeView::addTagType_clicked() {
     bool underline = cbunderline->isChecked();
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
-    _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic);
+    _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic,user);
     if(parentCheck) {
         parentCheck = false;
         ((EditTagTypeView*)parentWidget())->update_TagTypes();
