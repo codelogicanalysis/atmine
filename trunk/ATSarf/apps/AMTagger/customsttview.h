@@ -99,7 +99,7 @@ private:
     QStringList listSuffixPOS;
     QStringList listCategory;
 
-    QVector<SarfTagType> *sttVector;
+    QVector<TagType*> *sttVector;
     QString field;
     bool dirty;
     void disconnect_Signals();

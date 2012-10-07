@@ -71,7 +71,7 @@ void clearLayout(QLayout *layout) {
 void AMTMainWindow::createDockWindows(bool open) {
     clearLayout(this->layout());
 
-    QDockWidget *dock = new QDockWidget(tr("Text File"), this);
+    QDockWidget *dock = new QDockWidget(tr("Text"), this);
     QHBoxLayout *hbox = new QHBoxLayout();
     lblTFName = new QLabel("Text File:",dock);
     lineEditTFName = new QLineEdit(dock);
@@ -82,11 +82,23 @@ void AMTMainWindow::createDockWindows(bool open) {
     hbox->addWidget(lineEditTFName);
     hbox->addWidget(btnTFName);
 
+    QScrollArea *sa1 = new QScrollArea(dock);
+    sa1->setLayout(hbox);
+    sa1->setMaximumHeight(50);
+
+    txtBrwsr = new QTextBrowser(dock);
+    hbox->addWidget(txtBrwsr);
+    txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
+
+    QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->addWidget(sa1);
+    vbox->addWidget(txtBrwsr);
+
     QScrollArea *sa = new QScrollArea(dock);
-    sa->setLayout(hbox);
+    sa->setLayout(vbox);
 
     dock->setWidget(sa);
-    dock->setMaximumHeight(100);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
     dock->setMinimumWidth(300);
@@ -95,7 +107,7 @@ void AMTMainWindow::createDockWindows(bool open) {
         lineEditTFName->setText(_atagger->textFile);
     }
 
-    dock = new QDockWidget(tr("Tag Type File"), this);
+    dock = new QDockWidget(tr("Tags/TagTypes"), this);
     hbox = new QHBoxLayout();
     lblTTFName = new QLabel("Tag Type File:",dock);
     lineEditTTFName = new QLineEdit(dock);
@@ -108,9 +120,33 @@ void AMTMainWindow::createDockWindows(bool open) {
 
     sa = new QScrollArea(dock);
     sa->setLayout(hbox);
+    sa->setMaximumHeight(50);
+
+    vbox = new QVBoxLayout();
+    vbox->addWidget(sa);
+
+    tagDescription = new QTreeWidget(dock);
+    tagDescription->setColumnCount(5);
+    QStringList columns;
+    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
+    QTreeWidgetItem* item=new QTreeWidgetItem(columns);
+    connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
+    tagDescription->setHeaderItem(item);
+    vbox->addWidget(tagDescription);
+
+    descBrwsr = new QTreeWidget(dock);
+    descBrwsr->setColumnCount(2);
+    QStringList columnsD;
+    columnsD << "Field" << "Value";
+    QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
+    descBrwsr->setHeaderItem(itemD);
+
+    vbox->addWidget(descBrwsr);
+
+    sa = new QScrollArea(dock);
+    sa->setLayout(vbox);
 
     dock->setWidget(sa);
-    dock->setMaximumHeight(100);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
     dock->setMinimumWidth(300);
@@ -119,6 +155,7 @@ void AMTMainWindow::createDockWindows(bool open) {
         lineEditTFName->setText(_atagger->tagtypeFile);
     }
 
+    /*
     dock = new QDockWidget(tr("Text View"), this);
     txtBrwsr = new QTextBrowser(dock);
     dock->setWidget(txtBrwsr);
@@ -127,7 +164,9 @@ void AMTMainWindow::createDockWindows(bool open) {
     //setCentralWidget(txtBrwsr);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
+    */
 
+    /*
     dock = new QDockWidget(tr("Tag View"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     tagDescription = new QTreeWidget(dock);
@@ -154,6 +193,7 @@ void AMTMainWindow::createDockWindows(bool open) {
     dock->setWidget(descBrwsr);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     viewMenu->addAction(dock->toggleViewAction());
+    */
 }
 
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
@@ -164,8 +204,8 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     mTags = menu->addMenu(tr("&Tag"));
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i)).tag,this);
-        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i)).tag);
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
         connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
         mTags->addAction(taginstance);
     }
@@ -390,7 +430,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
 
     if(result.value("TagSet").toList().at(0).toMap().value("Features").isNull()) {
         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-            const TagType & tt = (_atagger->tagTypeVector->at(i));
+            const TagType& tt = *(_atagger->tagTypeVector->at(i));
             for(int j=0; j<_atagger->tagVector->count(); j++) {
                 const Tag & tag = (_atagger->tagVector->at(j));
                 if(tt.tag == tag.type) {
@@ -403,9 +443,6 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
         }
         _atagger->tagTypeVector->clear();
         fillTreeWidget(user);
-    }
-    else {
-        _atagger->sarfTagTypeVector->clear();
     }
 
     foreach(QVariant type, result["TagSet"].toList()) {
@@ -475,17 +512,18 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             }
 
             _atagger->isSarf = true;
-            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic);
+            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf);
         }
         else {
             _atagger->isSarf = false;
-            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic);
+            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user);
         }
     }
 }
 
 void AMTMainWindow::applyTags() {
 
+    /*
     if(_atagger->isSarf) {
         for(int i=0; i<_atagger->tagVector->count(); i++) {
             for(int j=0; j<_atagger->sarfTagTypeVector->count(); j++) {
@@ -506,25 +544,26 @@ void AMTMainWindow::applyTags() {
         }
         fillTreeWidget(sarf);
     }
-    else {
+    */
+    //else {
         for(int i =0; i< _atagger->tagVector->count(); i++) {
             for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j)).tag) {
+                if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j))->tag) {
                     int start = (_atagger->tagVector->at(i)).pos;
                     int length = (_atagger->tagVector->at(i)).length;
-                    QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
-                    QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
-                    int font = (_atagger->tagTypeVector->at(j)).font;
-                    bool underline = (_atagger->tagTypeVector->at(j)).underline;
-                    bool bold = (_atagger->tagTypeVector->at(j)).bold;
-                    bool italic = (_atagger->tagTypeVector->at(j)).italic;
+                    QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
+                    QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
+                    int font = (_atagger->tagTypeVector->at(j))->font;
+                    bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                    bool bold = (_atagger->tagTypeVector->at(j))->bold;
+                    bool italic = (_atagger->tagTypeVector->at(j))->italic;
                     tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
                     break;
                 }
             }
         }
         fillTreeWidget(user);
-    }
+    //}
     createTagMenu();
 }
 
@@ -599,7 +638,7 @@ void AMTMainWindow::save() {
             return;
         }
         else {
-            _atagger->tagFile = fileName;
+            _atagger->tagFile = fileName + ".tags.json";
             setWindowTitle("AMTagger: " + _atagger->tagFile);
         }
     }
@@ -629,6 +668,8 @@ bool AMTMainWindow::saveas() {
 
     if (fileName.isEmpty())
         return false;
+
+    fileName += ".tags.json";
 
     QByteArray tagData;
     if(_atagger->isSarf) {
@@ -713,7 +754,7 @@ void AMTMainWindow::tag(QString tagValue) {
                 return;
             }
             else {
-                _atagger->tagFile = fileName;
+                _atagger->tagFile = fileName + ".tags.json";
                 setWindowTitle("AMTagger: " + _atagger->tagFile);
             }
         }
@@ -723,13 +764,13 @@ void AMTMainWindow::tag(QString tagValue) {
         _atagger->insertTag(tagValue, start, length, user);
 
         for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
-            if((_atagger->tagTypeVector->at(i)).tag == tagValue) {
-                QColor bgcolor((_atagger->tagTypeVector->at(i)).bgcolor);
-                QColor fgcolor((_atagger->tagTypeVector->at(i)).fgcolor);
-                int font = (_atagger->tagTypeVector->at(i)).font;
-                bool underline = (_atagger->tagTypeVector->at(i)).underline;
-                bool bold = (_atagger->tagTypeVector->at(i)).bold;
-                bool italic = (_atagger->tagTypeVector->at(i)).italic;
+            if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
+                QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
+                int font = (_atagger->tagTypeVector->at(i))->font;
+                bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                bool bold = (_atagger->tagTypeVector->at(i))->bold;
+                bool italic = (_atagger->tagTypeVector->at(i))->italic;
 
                 tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold);
             }
@@ -891,8 +932,8 @@ void AMTMainWindow::createTagMenu() {
     signalMapperM = new QSignalMapper(this);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i)).tag,this);
-        signalMapperM->setMapping(taginstance, (_atagger->tagTypeVector->at(i)).tag);
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+        signalMapperM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
         connect(taginstance, SIGNAL(triggered()), signalMapperM, SLOT(map()));
         mTags->addAction(taginstance);
     }
@@ -933,7 +974,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     txtBrwsr->textCursor().clearSelection();
     QList<QTreeWidgetItem *> items;
     QString type = item->text(1);
-
+/*
     if(_atagger->isSarf) {
 
         for(int j=0; j < _atagger->sarfTagTypeVector->count(); j++) {
@@ -1003,17 +1044,18 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             }
         }
     }
-    else {
+    */
+    //else {
 
         for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
-            if((_atagger->tagTypeVector->at(j)).tag == type) {
-                QString desc = (_atagger->tagTypeVector->at(j)).description;
-                QColor bgcolor((_atagger->tagTypeVector->at(j)).bgcolor);
-                QColor fgcolor((_atagger->tagTypeVector->at(j)).fgcolor);
-                int font = (_atagger->tagTypeVector->at(j)).font;
-                bool underline = (_atagger->tagTypeVector->at(j)).underline;
-                bool bold = (_atagger->tagTypeVector->at(j)).bold;
-                bool italic = (_atagger->tagTypeVector->at(j)).italic;
+            if((_atagger->tagTypeVector->at(j))->tag == type) {
+                QString desc = (_atagger->tagTypeVector->at(j))->description;
+                QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
+                int font = (_atagger->tagTypeVector->at(j))->font;
+                bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool bold = (_atagger->tagTypeVector->at(j))->bold;
+                bool italic = (_atagger->tagTypeVector->at(j))->italic;
 
                 QTextCursor c = txtBrwsr->textCursor();
                 c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
@@ -1071,7 +1113,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                 break;
             }
         }
-    }
+   //}
 }
 
 void AMTMainWindow::sarfTagging() {
@@ -1089,7 +1131,7 @@ void AMTMainWindow::sarfTagging() {
             return;
         }
         else {
-            _atagger->tagFile = fileName;
+            _atagger->tagFile = fileName + ".tags.json";
             setWindowTitle("AMTagger: " + _atagger->tagFile);
         }
     }
@@ -1115,18 +1157,18 @@ void AMTMainWindow::sarfTagging() {
     }
 
     for(int i=0; i<_atagger->tagVector->count(); i++) {
-        for(int j=0; j<_atagger->sarfTagTypeVector->count(); j++) {
+        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
             QString type = (_atagger->tagVector->at(i)).type;
-            QString tag = (_atagger->sarfTagTypeVector->at(j)).tag;
+            QString tag = (_atagger->tagTypeVector->at(j))->tag;
             if(type == tag) {
                 int start = (_atagger->tagVector->at(i)).pos;
                 int length = (_atagger->tagVector->at(i)).length;
-                QColor fgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).fgcolor);
-                QColor bgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).bgcolor);
-                int font = (_atagger->sarfTagTypeVector->at(j)).font;
-                bool underline = (_atagger->sarfTagTypeVector->at(j)).underline;
-                bool bold = (_atagger->sarfTagTypeVector->at(j)).underline;
-                bool italic = (_atagger->sarfTagTypeVector->at(j)).italic;
+                QColor fgcolor = QColor((_atagger->tagTypeVector->at(j))->fgcolor);
+                QColor bgcolor = QColor((_atagger->tagTypeVector->at(j))->bgcolor);
+                int font = (_atagger->tagTypeVector->at(j))->font;
+                bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool bold = (_atagger->tagTypeVector->at(j))->bold;
+                bool italic = (_atagger->tagTypeVector->at(j))->italic;
                 tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
             }
         }
@@ -1213,7 +1255,7 @@ void AMTMainWindow::loadText_clicked() {
 }
 
 void AMTMainWindow::loadTagTypes_clicked() {
-    if(!(_atagger->tagTypeVector->isEmpty()) || !(_atagger->sarfTagTypeVector->isEmpty())) {
+    if(!(_atagger->tagTypeVector->isEmpty())) {
         QMessageBox msgBox;
         msgBox.setText("Loading a new tag type file will remove all previous tags");
         msgBox.setInformativeText("Do you want to proceed?");
@@ -1249,7 +1291,6 @@ void AMTMainWindow::loadTagTypes_clicked() {
 
          _atagger->tagVector->clear();
          _atagger->tagTypeVector->clear();
-         _atagger->sarfTagTypeVector->clear();
          _atagger->tagtypeFile.clear();
          _atagger->sarftagtypeFile.clear();
          tagDescription->clear();
@@ -1288,13 +1329,9 @@ void AMTMainWindow::_new() {
 			tr("tags (*.tags.json);;All Files (*)"));
         if(tagFileName.isEmpty()) {
 		return;
-	}
-	if(tagFileName.endsWith(".tags.json")) {
-		_atagger->tagFile = tagFileName;
-	}
-	else {
-		_atagger->tagFile = tagFileName + ".tags.json";
-	}
+        }
+
+        _atagger->tagFile = tagFileName + ".tags.json";
 	setWindowTitle("AMTagger: " + _atagger->tagFile);
 
 

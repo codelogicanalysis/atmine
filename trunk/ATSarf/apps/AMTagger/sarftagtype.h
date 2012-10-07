@@ -3,14 +3,17 @@
 #include <QString>
 #include <QVector>
 #include <QPair>
-class SarfTagType
-{
+#include "tagtype.h"
+
+class SarfTagType : public TagType {
+
 public:
     SarfTagType();
-    SarfTagType( QString, QVector< QPair< QString , QString > >, QString, int, QString, QString, int, bool, bool, bool);
+    SarfTagType( QString, QVector< QPair< QString , QString > >, QString, int, QString, QString, int, bool, bool, bool, Source);
 //private:
-    QString tag;
+    //QString tag;
     QVector< QPair< QString , QString > > tags;
+    /*
     QString description;
     int id;
     QString fgcolor;
@@ -19,6 +22,7 @@ public:
     bool underline;
     bool bold;
     bool italic;
+    */
 };
 
 #endif // SARFTAGTYPE_H

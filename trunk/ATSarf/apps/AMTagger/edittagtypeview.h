@@ -73,7 +73,7 @@ private:
     QScrollArea *scroll2;
     QScrollArea *scroll3;
     bool edit;
-    QVector<TagType> *tagTypeVector;
+    QVector<TagType*> *tagTypeVector;
     QMenu *viewMenu;
 };
 #endif // EDITTAGTYPEVIEW_H

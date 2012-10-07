@@ -13,11 +13,17 @@ SarfTag::SarfTag(int start, int length, QString *text, QWidget *parent): Stemmer
 
 bool SarfTag::on_match() {
 
-    for( int i=0; i< (_atagger->sarfTagTypeVector->count()); i++) {
+    for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
 
-        QString _tag = _atagger->sarfTagTypeVector->at(i).tag;
+        QString _tag = _atagger->tagTypeVector->at(i)->tag;
         bool belong = false;
-        const SarfTagType * tagtype = &(_atagger->sarfTagTypeVector->at(i));
+
+        /** Check if tag source is sarf tag types **/
+        if(_atagger->tagTypeVector->at(i)->source != sarf) {
+            continue;
+        }
+
+        const SarfTagType * tagtype = (SarfTagType*)(_atagger->tagTypeVector->at(i));
         for(int j=0; j < (tagtype->tags.count()); j++) {
 
             bool contain = false;

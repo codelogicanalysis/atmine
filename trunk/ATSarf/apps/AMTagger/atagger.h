@@ -15,14 +15,14 @@ public:
     ATagger();
     bool insertTag(QString, int, int, Source);
     bool insertSarfTag(QString, int, int, Source);
-    bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool);
-    bool insertSarfTagType(QString, QVector < QPair <QString , QString> > , QString, int, QString, QString, int, bool, bool, bool);
+    bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool, Source);
+    bool insertSarfTagType(QString, QVector < QPair <QString , QString> > , QString, int, QString, QString, int, bool, bool, bool, Source);
     QByteArray dataInJsonFormat(Data _data);
 //private:
     QVector<Tag> *tagVector;
     //QVector<Tag> *sarfTagVector;
-    QVector<TagType> *tagTypeVector;
-    QVector<SarfTagType> *sarfTagTypeVector;
+    QVector<TagType*> *tagTypeVector;
+    //QVector<SarfTagType> *sarfTagTypeVector;
     QString text;
     QString textFile;
     QString tagFile;
