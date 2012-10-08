@@ -125,7 +125,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbTagType->addItem("Stem-POS");
     cbTagType->addItem("Suffix-POS");
     cbTagType->addItem("Gloss");
-    //cbTagType->addItem("Category");
+    cbTagType->addItem("Category");
 
     grid->addWidget(cbfont,5,6);
     grid->addWidget(cbTagName,0,4);
@@ -219,7 +219,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         }
     }
 
-    theSarf->query.exec("SELECT name FROM category");
+    theSarf->query.exec("SELECT name FROM category order by id");
     while(theSarf->query.next()) {
         if(!(theSarf->query.value(0).toString().isEmpty())) {
             listCategory << theSarf->query.value(0).toString();
@@ -425,8 +425,8 @@ void CustomSTTView::btnAdd_clicked() {
     bool underline = cbunderline->isChecked();
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
-    SarfTagType sarftagtype(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic,sarf);
-    sttVector->append(&sarftagtype);
+    SarfTagType* sarftagtype = new SarfTagType(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic,sarf);
+    sttVector->append(sarftagtype);
 
     connect_Signals();
 }
@@ -552,7 +552,7 @@ void CustomSTTView::btnLoad_clicked() {
          }
 
          sttVector->clear();
-         _atagger->sarftagtypeFile = fileName;
+         _atagger->tagtypeFile = fileName;
 
          QByteArray sarfTT = file.readAll();
          file.close();
@@ -642,7 +642,7 @@ void CustomSTTView::btnSave_clicked() {
     QByteArray sarftagtypeData = _atagger->dataInJsonFormat(sarfTTV);
 
     QString fileName;
-    if(_atagger->sarftagtypeFile.isEmpty()) {
+    if(_atagger->tagtypeFile.isEmpty()) {
         fileName = QFileDialog::getSaveFileName(
                 this,
                 tr("Save Sarf Tag Types"), "",
@@ -653,11 +653,11 @@ void CustomSTTView::btnSave_clicked() {
         }
         else {
             fileName += ".stt.json";
-            _atagger->sarftagtypeFile = fileName;
+            _atagger->tagtypeFile = fileName;
         }
     }
     else {
-        fileName = _atagger->sarftagtypeFile;
+        fileName = _atagger->tagtypeFile;
     }
 
     /*
@@ -678,7 +678,7 @@ void CustomSTTView::btnSave_clicked() {
         QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
         return;
     }
-    _atagger->sarftagtypeFile = fileName;
+    _atagger->tagtypeFile = fileName;
 
     QTextStream outtags(&tfile);
     outtags << sarftagtypeData;

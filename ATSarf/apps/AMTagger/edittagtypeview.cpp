@@ -357,8 +357,8 @@ void EditTagTypeView::edit_clicked() {
         bool bold = cbBold->isChecked();
         bool italic = cbItalic->isChecked();
         if(index >= tagTypeVector->count()) {
-            TagType t(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic,user);
-            tagTypeVector->append(&t);
+            TagType* t = new TagType(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic,user);
+            tagTypeVector->append(t);
         }
         else {
             (*tagTypeVector)[index]->tag = tag;

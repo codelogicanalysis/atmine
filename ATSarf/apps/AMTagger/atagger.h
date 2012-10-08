@@ -13,6 +13,7 @@ class ATagger;
 class ATagger {
 public:
     ATagger();
+    ~ATagger();
     bool insertTag(QString, int, int, Source);
     bool insertSarfTag(QString, int, int, Source);
     bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool, Source);
@@ -28,7 +29,7 @@ public:
     QString tagFile;
     //QString sarftagFile;
     QString tagtypeFile;
-    QString sarftagtypeFile;
+    //QString sarftagtypeFile;
     bool isSarf;
 };
 
