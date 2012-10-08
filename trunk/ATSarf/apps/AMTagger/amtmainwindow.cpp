@@ -370,23 +370,23 @@ void AMTMainWindow::process(QByteArray & json) {
         _atagger->isSarf = true;
     }
 
-    if(_atagger->isSarf) {
-        _atagger->sarftagtypeFile = tagtypeFile;
-    }
-    else {
-        _atagger->tagtypeFile = tagtypeFile;
-    }
+    //if(_atagger->isSarf) {
+        //_atagger->sarftagtypeFile = tagtypeFile;
+    //}
+    //else {
+    _atagger->tagtypeFile = tagtypeFile;
+    //}
     lineEditTTFName->setText(_atagger->tagtypeFile);
 
     /** Read the TagType file and store it **/
 
     QString ttFName;
-    if(_atagger->isSarf) {
-        ttFName = _atagger->sarftagtypeFile;
-    }
-    else {
-        ttFName = _atagger->tagtypeFile;
-    }
+    //if(_atagger->isSarf) {
+        //ttFName = _atagger->sarftagtypeFile;
+    //}
+    //else {
+    ttFName = _atagger->tagtypeFile;
+    //}
 
     QFile ITfile(ttFName);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -1183,7 +1183,7 @@ void AMTMainWindow::customizeSarfTags() {
         sarfAct->setEnabled(true);
     }
 
-    if(_atagger->sarftagtypeFile.isEmpty()) {
+    if(_atagger->tagtypeFile.isEmpty()) {
         QString ttFileName = QFileDialog::getSaveFileName(this,
                                                           tr("Sarf TagType File Name"), "",
                                                           tr("tags (*.stt.json);;All Files (*)"));
@@ -1192,8 +1192,8 @@ void AMTMainWindow::customizeSarfTags() {
             return;
         }
         else {
-            _atagger->sarftagtypeFile = ttFileName + ".stt.json";
-            lineEditTTFName->setText(_atagger->sarftagtypeFile);
+            _atagger->tagtypeFile = ttFileName + ".stt.json";
+            lineEditTTFName->setText(_atagger->tagtypeFile);
             btnTTFName->setEnabled(false);
         }
     }
@@ -1289,10 +1289,22 @@ void AMTMainWindow::loadTagTypes_clicked() {
              return;
          }
 
+         if(fileName.endsWith(".tt.json")) {
+             _atagger->tagtypeFile = fileName;
+         }
+         else if(fileName.endsWith(".stt.json")) {
+             _atagger->tagtypeFile = fileName;
+             sarfAct->setEnabled(true);
+         }
+         else {
+             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
+             return;
+         }
+
          _atagger->tagVector->clear();
          _atagger->tagTypeVector->clear();
          _atagger->tagtypeFile.clear();
-         _atagger->sarftagtypeFile.clear();
+         //_atagger->sarftagtypeFile.clear();
          tagDescription->clear();
          descBrwsr->clear();
          txtBrwsr->clear();
@@ -1300,17 +1312,6 @@ void AMTMainWindow::loadTagTypes_clicked() {
          applyTags();
          createTagMenu();
 
-         if(fileName.endsWith(".tt.json")) {
-             _atagger->tagtypeFile = fileName;
-         }
-         else if(fileName.endsWith(".stt.json")) {
-             _atagger->sarftagtypeFile = fileName;
-             sarfAct->setEnabled(true);
-         }
-         else {
-             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
-             return;
-         }
          lineEditTTFName->setText(fileName);
          QByteArray tagtypes = file.readAll();
          process_TagTypes(tagtypes);
@@ -1399,6 +1400,11 @@ int main(int argc, char *argv[])
     w.show();
 
     int r = a.exec();
+
+    if(_atagger != NULL) {
+        delete _atagger;
+    }
+
     if (theSarf != NULL) {
         theSarf->exit();
         delete theSarf;

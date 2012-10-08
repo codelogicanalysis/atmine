@@ -12,6 +12,16 @@ ATagger::ATagger() {
     //sarfTagTypeVector = new QVector<SarfTagType>();
 }
 
+ATagger::~ATagger() {
+
+    delete tagVector;
+
+    for(int i=0; i<tagTypeVector->size(); i++) {
+        delete (*tagTypeVector)[i];
+    }
+    delete tagTypeVector;
+}
+
 bool ATagger::insertTag(QString type, int pos, int length, Source source) {
 
     Tag tag(type,pos,length,source);
@@ -95,12 +105,12 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
 
         QVariantMap tagdata;
         tagdata.insert("file",_atagger->textFile);
-        if(_atagger->isSarf) {
-            tagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
-        }
-        else {
-            tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
-        }
+        //if(_atagger->isSarf) {
+            //tagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
+        //}
+        //else {
+        tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
+        //}
         tagdata.insert("textchecksum", _atagger->text.count());
         QVariantList tagset;
         for(int i=0; i<_atagger->tagVector->count(); i++) {
