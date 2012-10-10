@@ -1186,7 +1186,7 @@ void AMTMainWindow::customizeSarfTags() {
     if(_atagger->tagtypeFile.isEmpty()) {
         QString ttFileName = QFileDialog::getSaveFileName(this,
                                                           tr("Sarf TagType File Name"), "",
-                                                          tr("tags (*.stt.json);;All Files (*)"));
+                                                          tr("tag types (*.stt.json);;All Files (*)"));
         if(ttFileName.isEmpty())
         {
             return;

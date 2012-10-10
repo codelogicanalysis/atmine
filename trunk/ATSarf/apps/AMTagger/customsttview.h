@@ -98,6 +98,7 @@ private:
     QStringList listSuffix;
     QStringList listSuffixPOS;
     QStringList listCategory;
+    QStringList listCategoryId;
 
     QVector<TagType*> *sttVector;
     QString field;

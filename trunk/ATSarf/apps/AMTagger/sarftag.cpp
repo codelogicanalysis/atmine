@@ -60,7 +60,23 @@ bool SarfTag::on_match() {
                 }
             }
             else if(tag->first == "Category") {
-                // code should go here
+
+                minimal_item_info & stem = *stem_info;
+                int id = tag->second.toInt();
+
+                for(unsigned int i=0; i< stem.abstract_categories.length(); i++) {
+                    if (stem.abstract_categories[i]) {
+                        int abstract_id=database_info.comp_rules->getAbstractCategoryID(i);
+                        if(abstract_id == id) {
+                            contain = true;
+                            break;
+                        }
+                    }
+                }
+                if(contain) {
+                    belong = true;
+                    break;
+                }
             }
             else if(tag->first == "Suffix") {
                 for(int k=0;k<suffix_infos->size();k++) {

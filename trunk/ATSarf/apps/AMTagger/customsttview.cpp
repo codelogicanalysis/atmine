@@ -219,10 +219,11 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         }
     }
 
-    theSarf->query.exec("SELECT name FROM category order by id");
+    theSarf->query.exec("SELECT id,name FROM category where abstract=1");
     while(theSarf->query.next()) {
         if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listCategory << theSarf->query.value(0).toString();
+            listCategoryId << theSarf->query.value(0).toString();
+            listCategory << theSarf->query.value(1).toString();
             listCategory.removeDuplicates();
         }
     }
@@ -455,7 +456,20 @@ void CustomSTTView::btnSelect_clicked() {
         QStringList list;
         list << field << item->text();
         listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
-        QPair <QString, QString> pair(field, item->text());
+        QString value = item->text();
+        if(field == "Category") {
+            int index = -1;//listCategory.indexOf('^' + value + '$');
+            for(int i=0; i<listCategory.size(); i++) {
+                if(listCategory[i] == value) {
+                    index = i;
+                    break;
+                }
+            }
+            if(index != -1) {
+                value = listCategoryId[index];
+            }
+        }
+        QPair <QString, QString> pair(field, value);
         stt->tags.append(pair);
     }
     listSelectedTags->sortItems(0,Qt::AscendingOrder);
