@@ -48,7 +48,7 @@ $(APPLICATION): $(ATSarfGui_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-all: $(APPLICATION) ex0 ex1 ex2 mtest tagger
+all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn
 
 EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
 EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
@@ -85,6 +85,13 @@ tagger: $(TAGGER_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS) \
 		$(QJSON_LIB_LDDFLAGS)
+
+SYN_LIBDIR = $(TOP)/lib/libsyn.a $(ATSarf_LIBS)
+SYN_LIBS_LINKFLAGS=-L$(TOP)/lib -lsyn $(ATSarf_LIBS_LINKFLAGS4)
+
+syn: $(SYN_LIBDIR)
+	$(CXX) -o $@ $(LDDFLAGS) $(SYN_LIBS_LINKFLAGS) \
+		$(THIRD_LIBS_LINKFLAGS)
 
 #clean: 
 #	@rm -rf ATSarfGui ex0 ex1 ex2 case tagger
