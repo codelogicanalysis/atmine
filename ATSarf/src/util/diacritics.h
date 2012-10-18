@@ -208,7 +208,7 @@ inline QStringRef addlastDiacritics(int start, int position, QString * diacritic
 }
 inline QStringRef getDiacriticsBeforePosition(int pos,QString * text) {
 	static const QString empty="";
-	if (pos<1 && pos>text->size())
+	if (pos<1 || pos>text->size())
 		return QStringRef(&empty);
 	if (!isDiacritic(text->at(pos-1)))
 		return QStringRef(&empty);
