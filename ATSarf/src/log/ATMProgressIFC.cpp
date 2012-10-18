@@ -1,6 +1,6 @@
 #include "ATMProgressIFC.h"
 #include <QString>
-#include <QColor>
+#include <QtGui/QColor>
 
 void EmptyProgressIFC::report(int ) {}
 void EmptyProgressIFC::startTaggingText(QString & ) {}

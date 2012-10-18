@@ -23,7 +23,8 @@ bool GER::operator ()() {
 
     for(int i=0; i<stems->count(); i++) {
 
-        Alpha alpha(&((*stems)[i]));
+        QString stem = (*stems)[i];
+        Alpha alpha(&stem);
         alpha();
 
         QStringList * glosses = alpha.getGlosses();
