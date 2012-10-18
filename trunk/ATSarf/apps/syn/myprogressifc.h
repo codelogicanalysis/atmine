@@ -1,6 +1,6 @@
 #ifndef MYPROGRESSIFC_H
 #define MYPROGRESSIFC_H
-#include <QColor>
+#include<QtGui/QColor>
 /**
   * @class MyProgressIFC
   * @brief This class inherets from EmptyProgressIFC and implements the different functions present in it. Those functions
@@ -11,7 +11,6 @@ class MyProgressIFC : public ATMProgressIFC {
 
 public:
     virtual void report(int value) {
-        cout<<"Progress is "<<value<<'.'<<endl;
     }
 
     virtual void startTaggingText(QString & text) {
