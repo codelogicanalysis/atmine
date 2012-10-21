@@ -16,12 +16,21 @@ int main(int argc, char *argv[]) {
 
     /** Read input word from command line **/
 
-    if(argc != 2) {
+    if(argc != 3) {
         cout<<"Pass an arabic word as argument to process\n";
         return 0;
     }
 
     QString word(argv[1]);
+
+    QString order_string(argv[2]);
+
+    bool ok;
+    int order = order_string.toInt(&ok);
+    if(!ok) {
+        cout<<"Wrong order input value\n";
+        return 0;
+    }
 
     /** Initialize Sarf Instance use by tool **/
     QFile Ofile("output.txt");
@@ -44,7 +53,7 @@ int main(int argc, char *argv[]) {
     Sarf::use(&srf);
 
     /** Run Synonymity analysis **/
-    GER ger(word, infinity);
+    GER ger(word, order);
     ger();
 
     /** Close Sarf instance and exit **/

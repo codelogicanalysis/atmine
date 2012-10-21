@@ -17,22 +17,20 @@ bool GER::operator ()() {
 
     for(int i=0; i< stems->count(); i++) {
         this->wStem << stems->at(i);
-        theSarf->out<<stems->at(i)<<'\n';
+        //theSarf->out<<stems->at(i)<<'\n';
     }
     /** Get all glosses and dictionary entries for "word" stems **/
 
     for(int i=0; i<stems->count(); i++) {
 
         QString stem = (*stems)[i];
-        Alpha alpha(&stem);
-        alpha();
+        QStringList glosses = getGlosses(&stem);
 
-        QStringList * glosses = alpha.getGlosses();
 
-        for(int j=0; j<glosses->count(); j++) {
+        for(int j=0; j<glosses.count(); j++) {
 
-            if(!(wGloss.contains(glosses->at(j)))) {
-                wGloss << glosses->at(j);
+            if(!(wGloss.contains(glosses[j]))) {
+                wGloss << glosses[j];
             }
         }
     }
@@ -44,36 +42,36 @@ bool GER::operator ()() {
     bool stop = false;
 
     /// This variable counts the number of iterations referring to the synonimity order
-    int iteration = 1;
+    int iteration = 0;
 
-    while(!stop && iteration != order) {
+    QStringList listStems;
 
-        int stemID = 1;
-        QStringList listStems;
-        stop = true;
-
-        theSarf->query.exec("SELECT raw_data FROM category where id=" + stemID);
-        while(theSarf->query.next()) {
-            if(!(theSarf->query.value(0).toString().isEmpty())) {
-                listStems << theSarf->query.value(0).toString();
-            }
+    theSarf->query.exec("SELECT raw_data FROM stem_category");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty())) {
+            listStems << theSarf->query.value(0).toString();
         }
+    }
 
+    while(!stop && (iteration != order)) {
+
+        stop = true;
         for(int i=0; i< listStems.count(); i++) {
 
             if(wStem.contains(listStems[i])) {
                 continue;
             }
 
-            Alpha alpha(&(listStems[i]));
-            alpha();
+            //Alpha alpha(&(listStems[i]));
+            //alpha();
 
-            QStringList* tempGloss = alpha.getGlosses();
+            //QStringList* tempGloss = alpha.getGlosses();
+            QStringList tempGloss = getGlosses(&(listStems[i]));
 
             bool include = false;
-            for(int j=0; j<tempGloss->count(); j++) {
+            for(int j=0; j<tempGloss.count(); j++) {
 
-                if(wGloss.contains(tempGloss->at(j))) {
+                if(wGloss.contains(tempGloss[j])) {
                     wStem << listStems[i];
                     theSarf->out<< listStems[i]<<'\n';
                     include = true;
@@ -83,19 +81,21 @@ bool GER::operator ()() {
             }
 
             if(include) {
-                for(int j=0; j<tempGloss->count(); j++) {
+                for(int j=0; j<tempGloss.count(); j++) {
 
-                    if(!(wGloss.contains(tempGloss->at(j)))) {
-                        wGloss << (*tempGloss)[j];
+                    if(!(wGloss.contains(tempGloss[j]))) {
+                        wGloss << tempGloss[j];
                     }
                 }
             }
-
-
         }
 
         iteration++;
     }
 
+    theSarf->out<<"\nThe list of related words for order "<<order<<" are:\n";
+    for(int i=0; i<wStem.count(); i++) {
+        theSarf->out<<wStem[i]<<'\n';
+    }
     return true;
 };

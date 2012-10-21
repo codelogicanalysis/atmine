@@ -28,7 +28,7 @@ QJSON=third/qjson
 
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build 
-INCLUDEDIRS+= apps/gui apps/case
+INCLUDEDIRS+= apps/gui
 INCLUDEDIRS+= include
 INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
 INCLUDEDIRS+= $(QJSON)
