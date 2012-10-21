@@ -1,8 +1,9 @@
 #ifndef ALPHA_H
 #define ALPHA_H
-#include "stemmer.h"
+//#include "stemmer.h"
 #include <QStringList>
 
+/*
 class Alpha : public Stemmer
 {
 private:
@@ -14,5 +15,7 @@ public:
     bool on_match();
     QStringList * getGlosses();
 };
+*/
 
+QStringList getGlosses(QString * text);
 #endif // ALPHA_H
