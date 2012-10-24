@@ -21,13 +21,13 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     btnUnselect = new QPushButton(tr("<"), this);
     btnAdd = new QPushButton(tr("Add\nType"), this);
     btnLoad = new QPushButton(tr("Load"), this);
-    btnSave = new QPushButton(tr("Save File"), this);
-    btnCancel = new QPushButton(tr("Cancel"), this);
+    //btnSave = new QPushButton(tr("Save File"), this);
+    //btnCancel = new QPushButton(tr("Cancel"), this);
     btnClose = new QPushButton(tr("Close"), this);
     btnRemove = new QPushButton(tr("Remove\nType"), this);
 
     btnRemove->setEnabled(false);
-    btnSave->setEnabled(false);
+    //btnSave->setEnabled(false);
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
 
@@ -36,18 +36,18 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnAdd,SIGNAL(clicked()),this,SLOT(btnAdd_clicked()));
     connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
     connect(btnLoad,SIGNAL(clicked()),this,SLOT(btnLoad_clicked()));
-    connect(btnSave, SIGNAL(clicked()), this, SLOT(btnSave_clicked()));
-    connect(btnCancel,SIGNAL(clicked()), this, SLOT(btnCancel_clicked()));
+    //connect(btnSave, SIGNAL(clicked()), this, SLOT(btnSave_clicked()));
+    //connect(btnCancel,SIGNAL(clicked()), this, SLOT(btnCancel_clicked()));
     connect(btnClose, SIGNAL(clicked()), this, SLOT(btnClose_clicked()));
 
-    grid->addWidget(btnSave,14,5);
+    //grid->addWidget(btnSave,14,5);
     grid->addWidget(btnSelect,5,2);
     grid->addWidget(btnUnselect,6,2);
     grid->addWidget(btnAdd,2,2);
     grid->addWidget(btnRemove,3,2);
     grid->addWidget(btnLoad,14,6);
     grid->addWidget(btnClose,13,6);
-    grid->addWidget(btnCancel,13,5);
+    //grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
 
@@ -167,66 +167,16 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     //resize(480, 320);
 
     /** Do queries and Fill Tables**/
-    theSarf->query.exec("SELECT raw_data FROM stem_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty()))
-            listStems << theSarf->query.value(0).toString();
-    }
-
     theSarf->query.exec("SELECT raw_data FROM prefix_category");
     while(theSarf->query.next()) {
         if(!(theSarf->query.value(0).toString().isEmpty()))
             listPrefix << theSarf->query.value(0).toString();
     }
+    listPrefix.removeDuplicates();
 
     field = "Prefix";
     listPossibleTags->clear();
     listPossibleTags->addItems(listPrefix);
-
-    theSarf->query.exec("SELECT raw_data FROM suffix_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty()))
-            listSuffix << theSarf->query.value(0).toString();
-    }
-
-    theSarf->query.exec("SELECT name FROM description");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty()))
-            listGloss << theSarf->query.value(0).toString();
-    }
-
-    theSarf->query.exec("SELECT POS FROM stem_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listStemPOS << theSarf->query.value(0).toString().split('/').at(1);
-            listStemPOS.removeDuplicates();
-        }
-    }
-
-    theSarf->query.exec("SELECT POS FROM prefix_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listPrefixPOS << theSarf->query.value(0).toString().split('/').at(1);
-            listPrefixPOS.removeDuplicates();
-        }
-    }
-
-    theSarf->query.exec("SELECT POS FROM suffix_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listSuffixPOS << theSarf->query.value(0).toString().split('/').at(1);
-            listSuffixPOS.removeDuplicates();
-        }
-    }
-
-    theSarf->query.exec("SELECT id,name FROM category where abstract=1");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listCategoryId << theSarf->query.value(0).toString();
-            listCategory << theSarf->query.value(1).toString();
-            listCategory.removeDuplicates();
-        }
-    }
 
     if(_atagger->tagTypeVector->count() != 0) {
         //cbTagName->setEditable(true);
@@ -252,7 +202,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         }
 
         btnRemove->setEnabled(true);
-        btnSave->setEnabled(true);
+        //btnSave->setEnabled(true);
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
     }
@@ -303,24 +253,91 @@ void CustomSTTView::cbTagType_changed(QString text) {
         listPossibleTags->addItems(listPrefix);
     }
     else if(field == "Prefix-POS") {
+        if(listPrefixPOS.isEmpty()) {
+
+            theSarf->query.exec("SELECT POS FROM prefix_category");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty())) {
+                    listPrefixPOS << theSarf->query.value(0).toString().split('/').at(1);
+                }
+            }
+            listPrefixPOS.removeDuplicates();
+        }
         listPossibleTags->addItems(listPrefixPOS);
     }
     else if(field == "Stem") {
+        if(listStems.isEmpty()) {
+
+            theSarf->query.exec("SELECT raw_data FROM stem_category");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty()))
+                    listStems << theSarf->query.value(0).toString();
+            }
+            listStems.removeDuplicates();
+        }
         listPossibleTags->addItems(listStems);
     }
     else if(field == "Stem-POS") {
+        if(listStemPOS.isEmpty()) {
+
+            theSarf->query.exec("SELECT POS FROM stem_category");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty())) {
+                    listStemPOS << theSarf->query.value(0).toString().split('/').at(1);
+                }
+            }
+            listStemPOS.removeDuplicates();
+        }
         listPossibleTags->addItems(listStemPOS);
     }
     else if(field == "Suffix") {
-        listPossibleTags->addItems(listSuffixPOS);
+        if(listSuffixPOS.isEmpty()) {
+
+            theSarf->query.exec("SELECT raw_data FROM suffix_category");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty()))
+                    listSuffix << theSarf->query.value(0).toString();
+            }
+            listSuffix.removeDuplicates();
+        }
+        listPossibleTags->addItems(listSuffix);
     }
     else if(field == "Suffix-POS") {
+        if(listSuffixPOS.isEmpty()) {
+
+            theSarf->query.exec("SELECT POS FROM suffix_category");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty())) {
+                    listSuffixPOS << theSarf->query.value(0).toString().split('/').at(1);
+                    listSuffixPOS.removeDuplicates();
+                }
+            }
+        }
         listPossibleTags->addItems(listSuffixPOS);
     }
     else if(field == "Gloss") {
+        if(listGloss.isEmpty()) {
+
+            theSarf->query.exec("SELECT name FROM description");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty()))
+                    listGloss << theSarf->query.value(0).toString();
+            }
+        }
         listPossibleTags->addItems(listGloss);
     }
     else if(field == "Category") {
+        if(listCategory.isEmpty()) {
+
+            theSarf->query.exec("SELECT id,name FROM category where abstract=1");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty())) {
+                    listCategoryId << theSarf->query.value(0).toString();
+                    listCategory << theSarf->query.value(1).toString();
+                }
+            }
+            listCategory.removeDuplicates();
+        }
         listPossibleTags->addItems(listCategory);
     }
 }
@@ -373,7 +390,7 @@ void CustomSTTView::btnAdd_clicked() {
     dirty = true;
 
     btnRemove->setEnabled(true);
-    btnSave->setEnabled(true);
+    //btnSave->setEnabled(true);
 
     if(!btnSelect->isEnabled()) {
         btnSelect->setEnabled(true);
@@ -647,7 +664,7 @@ void CustomSTTView::btnLoad_clicked() {
 
          cbTagName->setCurrentIndex(0);
          btnRemove->setEnabled(true);
-         btnSave->setEnabled(true);
+         //btnSave->setEnabled(true);
          dirty = false;
      }
 }
@@ -674,20 +691,7 @@ void CustomSTTView::btnSave_clicked() {
         fileName = _atagger->tagtypeFile;
     }
 
-    /*
-    if(fileName.isEmpty()) {
-        QMessageBox::warning(this, "Warning", "The Sarf Tag Types file wasn't saved");
-        return;
-    }
-    */
-
     QFile tfile(fileName);
-    /*
-    if(_atagger->sarftagtypeFile.isEmpty() && tfile.exists()) {
-        QMessageBox::warning(this,"Warning", "File already exists, please try another name");
-        return;
-    }
-    */
     if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
         return;
@@ -869,10 +873,12 @@ void CustomSTTView::btnRemove_clicked() {
     }
 }
 
+/*
 void CustomSTTView::btnCancel_clicked() {
     dirty = false;
     this->close();
 }
+*/
 
 void CustomSTTView::btnClose_clicked() {
     this->close();
@@ -923,6 +929,8 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
                      _atagger->tagTypeVector->append(stt);
                  }
              }
+
+             btnSave_clicked();
              break;
          case QMessageBox::Discard:
              break;
