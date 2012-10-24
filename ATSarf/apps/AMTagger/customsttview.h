@@ -32,7 +32,7 @@ private slots:
     void btnRemove_clicked();
     void btnSave_clicked();
     void btnLoad_clicked();
-    void btnCancel_clicked();
+    //void btnCancel_clicked();
     void btnClose_clicked();
     void btnSelect_clicked();
     void btnUnselect_clicked();
