@@ -44,48 +44,49 @@ bool GER::operator ()() {
     /// This variable counts the number of iterations referring to the synonimity order
     int iteration = 0;
 
-    QStringList listStems;
-
-    theSarf->query.exec("SELECT raw_data FROM stem_category");
-    while(theSarf->query.next()) {
-        if(!(theSarf->query.value(0).toString().isEmpty())) {
-            listStems << theSarf->query.value(0).toString();
-        }
-    }
-
     while(!stop && (iteration != order)) {
 
         stop = true;
-        for(int i=0; i< listStems.count(); i++) {
+        QStringList gloss_id;
 
-            if(wStem.contains(listStems[i])) {
-                continue;
+        QString desc_query = "SELECT id, name FROM description where ";
+        for(int i=0; i< wGloss.size(); i++) {
+            desc_query.append("name like '%/" + wGloss[i] + "/%' OR name like '" + wGloss[i] + "/%' OR name like '%/" + wGloss[i] + "' OR ");
+        }
+        desc_query = desc_query.mid(0,desc_query.length()-4);
+        theSarf->query.exec(desc_query);
+
+        while(theSarf->query.next()) {
+
+            if(!(theSarf->query.value(0).toString().isEmpty())) {
+                gloss_id << theSarf->query.value(0).toString();
             }
 
-            //Alpha alpha(&(listStems[i]));
-            //alpha();
+            if(!(theSarf->query.value(1).toString().isEmpty())) {
+                QStringList desc_entry = theSarf->query.value(1).toString().split('/');
 
-            //QStringList* tempGloss = alpha.getGlosses();
-            QStringList tempGloss = getGlosses(&(listStems[i]));
-
-            bool include = false;
-            for(int j=0; j<tempGloss.count(); j++) {
-
-                if(wGloss.contains(tempGloss[j])) {
-                    wStem << listStems[i];
-                    theSarf->out<< listStems[i]<<'\n';
-                    include = true;
-                    stop = false;
-                    break;
+                for(int i=0; i<desc_entry.size(); i++) {
+                    if(!(wGloss.contains(desc_entry[i]))) {
+                        wGloss << desc_entry[i];
+                    }
                 }
             }
+        }
 
-            if(include) {
-                for(int j=0; j<tempGloss.count(); j++) {
+        QString stem_query = "SELECT raw_data from stem_category where";
+        for(int i=0; i<gloss_id.size(); i++) {
+            stem_query.append(" description_id=" + gloss_id[i] + " or ");
+        }
+        stem_query = stem_query.mid(0,stem_query.length()-4);
+        theSarf->query.exec(stem_query);
 
-                    if(!(wGloss.contains(tempGloss[j]))) {
-                        wGloss << tempGloss[j];
-                    }
+        while(theSarf->query.next()) {
+
+            if(!(theSarf->query.value(0).toString().isEmpty())) {
+                QString stem = theSarf->query.value(0).toString();
+                if(!(wStem.contains(stem))) {
+                    wStem << stem;
+                    stop = false;
                 }
             }
         }
