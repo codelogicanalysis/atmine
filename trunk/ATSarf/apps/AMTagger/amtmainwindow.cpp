@@ -23,6 +23,39 @@
 bool parentCheck;
 class SarfTag;
 
+class Word {
+public:
+    QString word;
+    int start;
+    int end;
+};
+
+Word nextWord(QString & text, int pos) {
+    Word word;
+    word.word = "";
+    if(pos == text.count()) {
+        return word;
+    }
+    int next = pos;
+    while((next != text.count()) && !(text.at(next).isLetter())) {
+        next++;
+    }
+
+    if(next == text.count()) {
+        return word;
+    }
+
+    int end = next+1;
+    while((end != text.count()) && text.at(end).isLetter()) {
+        end++;
+    }
+    end = end -1;
+    word.start = next;
+    word.end = end;
+    word.word = text.mid(next,end-next+1);
+    return word;
+}
+
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
     browseFileDlg(NULL)
@@ -1144,6 +1177,7 @@ void AMTMainWindow::sarfTagging() {
     output_str = "";
 
     QString text = _atagger->text;
+    /*
     QStringList textList = _atagger->text.split(' ',QString::SkipEmptyParts);
     int start = 0;
     int length = (textList[0]).count();
@@ -1154,6 +1188,18 @@ void AMTMainWindow::sarfTagging() {
             start = text.indexOf(textList[i+1],start + length);
             length = (textList[i+1]).count();
         }
+    }
+    */
+    int start = 0;
+    while(start != text.count()) {
+        Word word = nextWord(text, start);
+        if(word.word.isEmpty()) {
+            break;
+        }
+        int length = word.end - word.start + 1;
+        SarfTag sarftag(word.start, length, &(word.word), this);
+        sarftag();
+        start = word.end + 1;
     }
 
     for(int i=0; i<_atagger->tagVector->count(); i++) {
@@ -1299,8 +1345,6 @@ void AMTMainWindow::loadTagTypes_clicked() {
 
         _atagger->tagVector->clear();
         _atagger->tagTypeVector->clear();
-        //_atagger->tagtypeFile.clear();
-        //_atagger->sarftagtypeFile.clear();
         tagDescription->clear();
         descBrwsr->clear();
         txtBrwsr->clear();
@@ -1387,10 +1431,6 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 
     _atagger=new ATagger();
-
-    //QString *test = new QString("ياكل  الولد التفاحة ويلعب استنشق الرجل الوردة أنف");
-    //PunctuationInfo punc;
-    //long result = next_positon(test,1,punc);
 
     QApplication a(argc, argv);
     AMTMainWindow w;

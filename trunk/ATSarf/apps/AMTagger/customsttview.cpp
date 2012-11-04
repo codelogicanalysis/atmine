@@ -45,8 +45,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnUnselect,6,2);
     grid->addWidget(btnAdd,2,2);
     grid->addWidget(btnRemove,3,2);
-    grid->addWidget(btnLoad,14,6);
-    grid->addWidget(btnClose,13,6);
+    grid->addWidget(btnLoad,14,5);
+    grid->addWidget(btnClose,14,6);
     //grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
@@ -180,31 +180,38 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
     if(_atagger->tagTypeVector->count() != 0) {
         //cbTagName->setEditable(true);
-        const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(0));
 
-        cbTagName->setCurrentIndex(0);
-        cbunderline->setChecked(stt->underline);
-        cbBold->setChecked(stt->bold);
-        cbItalic->setChecked(stt->italic);
-        colorfgcolor->setColor(QColor(stt->fgcolor));
-        colorbgcolor->setColor(QColor(stt->bgcolor));
-        editDescription->setText(stt->description);
-        int index = cbfont->findText(QString::number(stt->font));
-        if(index != -1) {
-            cbfont->setCurrentIndex(index);
-        }
+            const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(0));
 
-        listSelectedTags->clear();
-        for(int i=0; i<stt->tags.count(); i++) {
-            QStringList list;
-            list << stt->tags.at(i).first << stt->tags.at(i).second;
-            listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
-        }
+            cbTagName->setCurrentIndex(0);
+            cbunderline->setChecked(stt->underline);
+            cbBold->setChecked(stt->bold);
+            cbItalic->setChecked(stt->italic);
+            colorfgcolor->setColor(QColor(stt->fgcolor));
+            colorbgcolor->setColor(QColor(stt->bgcolor));
+            editDescription->setText(stt->description);
+            int index = cbfont->findText(QString::number(stt->font));
+            if(index != -1) {
+                cbfont->setCurrentIndex(index);
+            }
 
-        btnRemove->setEnabled(true);
-        //btnSave->setEnabled(true);
-        btnSelect->setEnabled(true);
-        btnUnselect->setEnabled(true);
+            listSelectedTags->clear();
+            if(stt->source == sarf) {
+                for(int i=0; i<stt->tags.count(); i++) {
+                    QStringList list;
+                    list << stt->tags.at(i).first << stt->tags.at(i).second;
+                    listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+                }
+                btnSelect->setEnabled(true);
+                btnUnselect->setEnabled(true);
+            }
+            else {
+                btnSelect->setEnabled(false);
+                btnUnselect->setEnabled(false);
+            }
+
+            btnRemove->setEnabled(true);
+            //btnSave->setEnabled(true);
     }
 
     connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
@@ -778,10 +785,18 @@ void CustomSTTView::tagName_changed(QString name) {
             cbunderline->setChecked(stt->underline);
             cbBold->setChecked(stt->bold);
             cbItalic->setChecked(stt->italic);
-            for(int j=0; j<stt->tags.count(); j++) {
-                QStringList list;
-                list << stt->tags.at(j).first << stt->tags.at(j).second;
-                listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+            if(stt->source == sarf) {
+                for(int j=0; j<stt->tags.count(); j++) {
+                    QStringList list;
+                    list << stt->tags.at(j).first << stt->tags.at(j).second;
+                    listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+                }
+                btnSelect->setEnabled(true);
+                btnUnselect->setEnabled(true);
+            }
+            else {
+                btnSelect->setEnabled(false);
+                btnUnselect->setEnabled(false);
             }
         }
     }
