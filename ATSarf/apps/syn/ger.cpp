@@ -55,11 +55,11 @@ bool GER::operator ()() {
     QStringList * stems = gamma.getStems();
 
     for(int i=0; i< stems->count(); i++) {
-        this->wStem << stems->at(i);
+        this->wStem[stems->at(i)] = stems->at(i);
         //theSarf->out<<stems->at(i)<<'\n';
     }
     /** Get all glosses and dictionary entries for "word" stems **/
-    QStringList wGloss;
+    QHash<QString, QString> wGloss;
 
     for(int i=0; i<stems->count(); i++) {
 
@@ -70,7 +70,7 @@ bool GER::operator ()() {
         for(int j=0; j<glosses.count(); j++) {
 
             if(!(wGloss.contains(glosses[j]))) {
-                wGloss << glosses[j];
+                wGloss[glosses[j]] = glosses[j];
             }
         }
     }
@@ -85,13 +85,19 @@ bool GER::operator ()() {
     int iteration = 0;
 
     /// List saving the new glosses extracted for each iteration
-    QStringList newG(wGloss);
+    QStringList newG;
+
+    QHashIterator<QString, QString> gIterator(wGloss);
+     while (gIterator.hasNext()) {
+         gIterator.next();
+         newG << gIterator.key();
+     }
 
     while(!stop && (iteration != order)) {
 
         stop = true;
         QStringList gloss_id;
-        QStringList srcGloss;
+        QHash<QString, QString> idHash;
         QStringList tempG;
 
         /*
@@ -125,14 +131,16 @@ bool GER::operator ()() {
             for(int j=0; j<tempIds.count(); j++) {
                 if(!(gloss_id.contains(tempIds[j]))) {
                     gloss_id << tempIds[j];
+                    idHash[tempIds[j]] = newG[i];
                 }
+
                 theSarf->query.exec("SELECT name from description where id=" + tempIds[j]);
                 if(theSarf->query.first() && !(theSarf->query.value(0).toString().isEmpty())) {
                     QStringList glosses = theSarf->query.value(0).toString().split('/',QString::SkipEmptyParts);
                     for(int k=0; k<glosses.count(); k++) {
                         if(!(wGloss.contains(glosses[k]))) {
                             tempG << glosses[k];
-                            wGloss << glosses[k];
+                            wGloss[glosses[k]] = glosses[k];
                         }
                     }
                 }
@@ -169,18 +177,36 @@ bool GER::operator ()() {
             QStringList tempStems = stemMap[gloss_id[i]].split('/',QString::SkipEmptyParts);
             for(int j=0; j<tempStems.count(); j++) {
                 if(!(wStem.contains(tempStems[j]))) {
-                    wStem << tempStems[j];
+                    wStem[tempStems[j]] = tempStems[j];
+                    QString id = gloss_id[i];
+                    QString gloss = idHash[id];
+                    IGS igs(id,gloss,tempStems[j]);
+                    descT.push_back(igs);
                     stop = false;
                 }
             }
         }
 
-        iteration++;
+        iteration++;;
     }
 
-    theSarf->out<<"\nThe list of related words for order "<<order<<" are:\n";
+    theSarf->out << "\nThe list of related words for order " << order << " at iteration " << iteration << " are:\n";
+    theSarf->out << "Stem" << '\t' << "Source Gloss" << '\t' << "Source desc_id" << '\n';
+    /*
     for(int i=0; i<wStem.count(); i++) {
         theSarf->out<<wStem[i]<<'\n';
     }
+    */
+    /*
+    QHashIterator<QString, QString> stem_Iterator(wStem);
+     while (stem_Iterator.hasNext()) {
+         stem_Iterator.next();
+         theSarf->out<< stem_Iterator.key()<<'\n';
+     }
+     */
+    for(int i=0; i<descT.count(); i++) {
+        theSarf->out<< descT[i].getStem() << '\t' << descT[i].getGloss() << '\t' << descT[i].getId() << '\n';
+    }
+
     return true;
 };

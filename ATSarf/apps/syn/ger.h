@@ -48,6 +48,7 @@ class GER
 	int order;
         /// List to store triplet desc_id, source gloss, source stem
         QVector<IGS> descT;
-	QStringList wStem;
+        //QStringList wStem;
+        QHash<QString, QString> wStem;
 };
 #endif // GER_H

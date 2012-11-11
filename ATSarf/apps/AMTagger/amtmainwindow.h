@@ -45,6 +45,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void customizeSarfTags();
          void loadText_clicked();
          void loadTagTypes_clicked();
+         void closeEvent(QCloseEvent *event);
 
 public:
          virtual void report(int value);
@@ -117,6 +118,7 @@ private:
          QString error_str;
          QString output_str;
          QTextCursor myTC;
+         bool dirty;
 };
 
 #endif // AMTMAINWINDOW_H
