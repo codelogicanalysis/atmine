@@ -589,8 +589,8 @@ void CustomSTTView::btnLoad_clicked() {
              return;
          }
 
+         disconnect_Signals();
          sttVector->clear();
-         _atagger->tagtypeFile = fileName;
 
          QByteArray sarfTT = file.readAll();
          file.close();
@@ -658,21 +658,50 @@ void CustomSTTView::btnLoad_clicked() {
                  }
              }
 
-             _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf);
+             SarfTagType* stt = new SarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf);
+             sttVector->append(stt);
          }
 
          cbTagName->clear();
          listSelectedTags->clear();
 
-         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-             const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+         for(int i=0; i<sttVector->count(); i++) {
+             const SarfTagType * stt = (SarfTagType*)(sttVector->at(i));
              cbTagName->addItem(stt->tag);
          }
 
+         const SarfTagType * stt = (SarfTagType*)(sttVector->at(0));
+
          cbTagName->setCurrentIndex(0);
+         cbunderline->setChecked(stt->underline);
+         cbBold->setChecked(stt->bold);
+         cbItalic->setChecked(stt->italic);
+         colorfgcolor->setColor(QColor(stt->fgcolor));
+         colorbgcolor->setColor(QColor(stt->bgcolor));
+         editDescription->setText(stt->description);
+         int index = cbfont->findText(QString::number(stt->font));
+         if(index != -1) {
+             cbfont->setCurrentIndex(index);
+         }
+
+         listSelectedTags->clear();
+         if(stt->source == sarf) {
+             for(int i=0; i<stt->tags.count(); i++) {
+                 QStringList list;
+                 list << stt->tags.at(i).first << stt->tags.at(i).second;
+                 listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+             }
+             btnSelect->setEnabled(true);
+             btnUnselect->setEnabled(true);
+         }
+         else {
+             btnSelect->setEnabled(false);
+             btnUnselect->setEnabled(false);
+         }
+
          btnRemove->setEnabled(true);
-         //btnSave->setEnabled(true);
-         dirty = false;
+         dirty = true;
+         connect_Signals();
      }
 }
 

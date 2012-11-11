@@ -18,7 +18,6 @@
 #include "edittagtypeview.h"
 #include "customsttview.h"
 #include "sarftag.h"
-#include "textParsing.h"
 
 bool parentCheck;
 class SarfTag;
@@ -64,6 +63,9 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 
     // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
     parentCheck = false;
+
+    // Boolean to check any change in tags
+    dirty = false;
 
     createActions();
     createMenus();
@@ -716,8 +718,6 @@ bool AMTMainWindow::saveas() {
 
 /** Not needed Anymore**/
 void AMTMainWindow::tagadd() {
-    //QTextCursor cursor = txtBrwsr->textCursor();
-    //AddTagView * atv = new AddTagView(cursor.selectionStart(), cursor.selectionEnd(), this);
     if(txtBrwsr->textCursor().selectedText() != "") {
         AddTagView * atv = new AddTagView(txtBrwsr, this);
         atv->show();
@@ -730,6 +730,7 @@ void AMTMainWindow::tagadd() {
 }
 
 void AMTMainWindow::tagremove() {
+    dirty = true;
     QTextCursor cursor = txtBrwsr->textCursor();
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -791,6 +792,7 @@ void AMTMainWindow::tag(QString tagValue) {
                 setWindowTitle("AMTagger: " + _atagger->tagFile);
             }
         }
+        dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -823,6 +825,10 @@ void AMTMainWindow::untag() {
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
+    if(length <= 0) {
+        return;
+    }
+    dirty = true;
     for(int i=0; i < _atagger->tagVector->count(); i++) {
         if((_atagger->tagVector->at(i)).pos == start) {
             tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
@@ -1175,6 +1181,7 @@ void AMTMainWindow::sarfTagging() {
 
     error_str = "";
     output_str = "";
+    dirty = true;
 
     QString text = _atagger->text;
     /*
@@ -1423,6 +1430,28 @@ void AMTMainWindow::report(int value) {
 
 AMTMainWindow::~AMTMainWindow() {
 
+}
+
+void AMTMainWindow::closeEvent(QCloseEvent *event) {
+
+    if(dirty) {
+        QMessageBox msgBox;
+         msgBox.setText("The document has been modified.");
+         msgBox.setInformativeText("Do you want to save your changes?");
+         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+         msgBox.setDefaultButton(QMessageBox::Save);
+         int ret = msgBox.exec();
+
+         switch (ret) {
+         case QMessageBox::Save:
+             save();
+             break;
+         case QMessageBox::Discard:
+             break;
+         default:
+             break;
+         }
+     }
 }
 
 int main(int argc, char *argv[])
