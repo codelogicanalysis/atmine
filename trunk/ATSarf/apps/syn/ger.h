@@ -9,31 +9,37 @@
 
 class IGS {
 private:
-    QString desc_id;
-    QString gloss;
-    QString stem;
+    QString sStem;
+    QString sDesc_id;
+    QString sGloss;
+    QString cStem;
 
 public:
     IGS() {
-        desc_id = "";
-        gloss = "";
-        stem = "";
+        sDesc_id = "";
+        sGloss = "";
+        cStem = "";
+        sStem = "";
     }
 
-    IGS(QString desc_id, QString gloss, QString stem) {
-        this->desc_id = desc_id;
-        this->gloss = gloss;
-        this->stem = stem;
+    IGS(QString desc_id, QString gloss, QString stem, QString sstem) {
+        this->sDesc_id = desc_id;
+        this->sGloss = gloss;
+        this->cStem = stem;
+        this->sStem = sstem;
     }
 
     QString getId() {
-        return desc_id;
+        return sDesc_id;
     }
     QString getGloss() {
-        return gloss;
+        return sGloss;
     }
     QString getStem() {
-        return stem;
+        return cStem;
+    }
+    QString getsStem() {
+        return sStem;
     }
 };
 
