@@ -1,21 +1,14 @@
 #ifndef ALPHA_H
 #define ALPHA_H
-//#include "stemmer.h"
 #include <QStringList>
 
-/*
-class Alpha : public Stemmer
-{
-private:
-    QString text;
-    QStringList wGlosses;
-
+class DescIdGloss {
 public:
-    Alpha(QString * text);
-    bool on_match();
-    QStringList * getGlosses();
+    QString gloss;
+    QString desc_Id;
+    DescIdGloss(){}
+    DescIdGloss(QString g, QString d):gloss(g), desc_Id(d) {}
 };
-*/
 
-QStringList getGlosses(QString * text);
+QVector<DescIdGloss> getGlosses(QString * text);
 #endif // ALPHA_H
