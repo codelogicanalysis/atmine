@@ -92,7 +92,7 @@ void AddTagTypeView::addTagType_clicked() {
     bool underline = cbunderline->isChecked();
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
-    _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic,user);
+    _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic,user,original);
     if(parentCheck) {
         parentCheck = false;
         ((EditTagTypeView*)parentWidget())->update_TagTypes();

@@ -9,7 +9,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QListWidget>
-#include <QRadioButton>
+//#include <QRadioButton>
 #include <QTreeWidget>
 #include "colorlisteditor.h"
 #include "sarftagtype.h"

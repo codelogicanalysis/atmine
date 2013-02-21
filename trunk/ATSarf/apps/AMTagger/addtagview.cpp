@@ -55,7 +55,7 @@ AddTagView::AddTagView(QTextBrowser *txtBrwsr, QWidget *parent) :
 void AddTagView::addTag_clicked() {
     QTextCursor cursor = txtBrwsr->textCursor();
     QString tag = cbType->currentText();
-    _atagger->insertTag(tag,cursor.selectionStart(), cursor.selectionEnd(), user);
+    _atagger->insertTag(tag,cursor.selectionStart(), cursor.selectionEnd(), user,original);
 
     for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
         if((_atagger->tagTypeVector->at(i))->tag == tag) {

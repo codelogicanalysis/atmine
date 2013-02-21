@@ -46,6 +46,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void loadText_clicked();
          void loadTagTypes_clicked();
          void closeEvent(QCloseEvent *event);
+         void difference();
 
 public:
          virtual void report(int value);
@@ -77,6 +78,7 @@ private:
          QMenu *helpMenu;
          QMenu * mTags;
          QMenu *sarfMenu;
+         QMenu *analyseMenu;
 
          QAction *newAct;
          QAction *openAct;
@@ -94,6 +96,7 @@ private:
          QAction *aboutAct;
          QAction *sarftagsAct;
          QAction *sarfAct;
+         QAction *diffAct;
 
          QTextBrowser * txtBrwsr;
          QTreeWidget * tagDescription;

@@ -1,4 +1,5 @@
 #include "ger.h"
+#include "getGloss.h"
 #include <QStringList>
 #include <QHash>
 
@@ -26,7 +27,9 @@ bool GER::operator ()() {
     theSarf->query.exec(query);
     while(theSarf->query.next()) {
         if(!(theSarf->query.value(0).toString().isEmpty() || theSarf->query.value(1).toString().isEmpty())) {
-            QStringList tempG = theSarf->query.value(1).toString().split('/', QString::SkipEmptyParts);
+            /// HERE
+            QStringList tempG = getGloss(theSarf->query.value(1).toString());
+            //QStringList tempG = theSarf->query.value(1).toString().split('/', QString::SkipEmptyParts);
             QString tempId = theSarf->query.value(0).toString();
             for(int i=0; i<tempG.count(); i++) {
                 if((descMap.find(tempG[i])) == descMap.end()) {
@@ -139,7 +142,9 @@ bool GER::operator ()() {
 
                 theSarf->query.exec("SELECT name from description where id=" + tempIds[j]);
                 if(theSarf->query.first() && !(theSarf->query.value(0).toString().isEmpty())) {
-                    QStringList glosses = theSarf->query.value(0).toString().split('/',QString::SkipEmptyParts);
+                    // HERE
+                    QStringList glosses = getGloss(theSarf->query.value(0).toString());
+                    //QStringList glosses = theSarf->query.value(0).toString().split('/',QString::SkipEmptyParts);
                     for(int k=0; k<glosses.count(); k++) {
                         if(!(wGloss.contains(glosses[k]))) {
                             tempG << glosses[k];

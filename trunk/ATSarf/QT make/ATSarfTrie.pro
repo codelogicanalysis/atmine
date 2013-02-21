@@ -5,7 +5,7 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../src/util \
     ../apps/gui \
     ../src/sarf \
-    ../apps/case \
+    ../src/case \
     ../src/log \
     ../src/cache \
     ../src/sql \
@@ -58,43 +58,43 @@ HEADERS += ../src/util/diacritics.h \
     ../src/util/morphemes.h \
     ../src/util/combinations.h \
     ../src/common/sarf.h \
-    ../apps/case/twoLevelTaggerSelection.h \
-    ../apps/case/timeRecognizer.h \
-    ../apps/case/timeManualTagger.h \
-    ../apps/case/split_affixes.h \
-    ../apps/case/OneLevelAgreement.h \
-    ../apps/case/narratorHash.h \
-    ../apps/case/narratorEqualityModel.h \
-    ../apps/case/narratordetector.h \
-    ../apps/case/narrator_abstraction.h \
-    ../apps/case/localizeddisplay.h \
-    ../apps/case/hadith_utilities.h \
-    ../apps/case/hadithManualTagger.h \
-    ../apps/case/hadithInterAnnotatorAgreement.h \
-    ../apps/case/hadithDagItemModel.h \
-    ../apps/case/hadithDagGraph.h \
-    ../apps/case/hadithCommon.h \
-    ../apps/case/hadithChainItemModel.h \
-    ../apps/case/hadithChainGraph.h \
-    ../apps/case/hadith.h \
-    ../apps/case/graph_nodes.h \
-    ../apps/case/graph.h \
-    ../apps/case/geneMainwindow.h \
-    ../apps/case/genealogyItem.h \
-    ../apps/case/genealogyInterAnnotatorAgreement.h \
-    ../apps/case/diacriticsPostProcessing.h \
-    ../apps/case/diacriticDisambiguation.h \
-    ../apps/case/biographyGraphUtilities.h \
-    ../apps/case/biographies.h \
-    ../apps/case/bibleManualTagger.h \
-    ../apps/case/bibleGeneology.h \
-    ../apps/case/atbExperiment.h \
-    ../apps/case/atbDiacriticExperiment.h \
-    ../apps/case/affixTreeTraversal.h \
-    ../apps/case/abstractTwoLevelAnnotator.h \
-    ../apps/case/AbstractTwoLevelAgreement.h \
-    ../apps/case/abstractGraph.h \
-    ../apps/case/abstractAnnotator.h \
+    ../src/case/twoLevelTaggerSelection.h \
+    ../src/case/timeRecognizer.h \
+    ../src/case/timeManualTagger.h \
+    ../src/case/split_affixes.h \
+    ../src/case/OneLevelAgreement.h \
+    ../src/case/narratorHash.h \
+    ../src/case/narratorEqualityModel.h \
+    ../src/case/narratordetector.h \
+    ../src/case/narrator_abstraction.h \
+    ../src/case/localizeddisplay.h \
+    ../src/case/hadith_utilities.h \
+    ../src/case/hadithManualTagger.h \
+    ../src/case/hadithInterAnnotatorAgreement.h \
+    ../src/case/hadithDagItemModel.h \
+    ../src/case/hadithDagGraph.h \
+    ../src/case/hadithCommon.h \
+    ../src/case/hadithChainItemModel.h \
+    ../src/case/hadithChainGraph.h \
+    ../src/case/hadith.h \
+    ../src/case/graph_nodes.h \
+    ../src/case/graph.h \
+    ../src/case/geneMainwindow.h \
+    ../src/case/genealogyItem.h \
+    ../src/case/genealogyInterAnnotatorAgreement.h \
+    ../src/case/diacriticsPostProcessing.h \
+    ../src/case/diacriticDisambiguation.h \
+    ../src/case/biographyGraphUtilities.h \
+    ../src/case/biographies.h \
+    ../src/case/bibleManualTagger.h \
+    ../src/case/bibleGeneology.h \
+    ../src/case/atbExperiment.h \
+    ../src/case/atbDiacriticExperiment.h \
+    ../src/case/affixTreeTraversal.h \
+    ../src/case/abstractTwoLevelAnnotator.h \
+    ../src/case/AbstractTwoLevelAgreement.h \
+    ../src/case/abstractGraph.h \
+    ../src/case/abstractAnnotator.h \
     ../apps/gui/test.h \
     ../apps/gui/mainwindow.h \
     ../src/common/TreeVisitor.h \
@@ -143,44 +143,44 @@ SOURCES += ../src/util/text_handling.cpp \
     ../src/util/ambiguity.cpp \
     ../src/util/combinations.cpp \
     ../src/common/sarf.cpp \
-    ../apps/case/twoLevelTaggerSelection.cpp \
-    ../apps/case/timeRecognizer.cpp \
-    ../apps/case/timeManualTagger.cpp \
-    ../apps/case/split_affixes.cpp \
-    ../apps/case/regressionDiacriticsTest.cpp \
-    ../apps/case/OneLevelAgreement.cpp \
-    ../apps/case/narratorHash.cpp \
-    ../apps/case/narratorEqualityModel.cpp \
-    ../apps/case/narratorEqualityComparision.cpp \
-    ../apps/case/narratordetector.cpp \
-    ../apps/case/narrator_abstraction.cpp \
-    ../apps/case/madaExperiment.cpp \
-    ../apps/case/localizeddisplay.cpp \
-    ../apps/case/hadithRefactored.cpp \
-    ../apps/case/hadithManualTagger.cpp \
-    ../apps/case/hadithInterAnnotatorAgreement.cpp \
-    ../apps/case/hadithDagItemModel.cpp \
-    ../apps/case/hadithDagGraph.cpp \
-    ../apps/case/hadithCommon.cpp \
-    ../apps/case/hadithChainItemModel.cpp \
-    ../apps/case/hadithChainGraph.cpp \
-    ../apps/case/graph_nodes.cpp \
-    ../apps/case/graph.cpp \
-    ../apps/case/geneMainwindow.cpp \
-    ../apps/case/genealogyItem.cpp \
-    ../apps/case/genealogyInterAnnotatorAgreement.cpp \
-    ../apps/case/diacriticsPostProcessing.cpp \
-    ../apps/case/diacriticDisambiguation.cpp \
-    ../apps/case/biographyGraphUtilities.cpp \
-    ../apps/case/biographies.cpp \
-    ../apps/case/bibleManualTagger.cpp \
-    ../apps/case/bibleGeneology.cpp \
-    ../apps/case/atbExperiment.cpp \
-    ../apps/case/atbDiacriticExperiment.cpp \
-    ../apps/case/affix_verification.cpp \
-    ../apps/case/abstractTwoLevelAnnotator.cpp \
-    ../apps/case/AbstractTwoLevelAgreement.cpp \
-    ../apps/case/abstractAnnotator.cpp \
+    ../src/case/twoLevelTaggerSelection.cpp \
+    ../src/case/timeRecognizer.cpp \
+    ../src/case/timeManualTagger.cpp \
+    ../src/case/split_affixes.cpp \
+    ../src/case/regressionDiacriticsTest.cpp \
+    ../src/case/OneLevelAgreement.cpp \
+    ../src/case/narratorHash.cpp \
+    ../src/case/narratorEqualityModel.cpp \
+    ../src/case/narratorEqualityComparision.cpp \
+    ../src/case/narratordetector.cpp \
+    ../src/case/narrator_abstraction.cpp \
+    ../src/case/madaExperiment.cpp \
+    ../src/case/localizeddisplay.cpp \
+    ../src/case/hadithRefactored.cpp \
+    ../src/case/hadithManualTagger.cpp \
+    ../src/case/hadithInterAnnotatorAgreement.cpp \
+    ../src/case/hadithDagItemModel.cpp \
+    ../src/case/hadithDagGraph.cpp \
+    ../src/case/hadithCommon.cpp \
+    ../src/case/hadithChainItemModel.cpp \
+    ../src/case/hadithChainGraph.cpp \
+    ../src/case/graph_nodes.cpp \
+    ../src/case/graph.cpp \
+    ../src/case/geneMainwindow.cpp \
+    ../src/case/genealogyItem.cpp \
+    ../src/case/genealogyInterAnnotatorAgreement.cpp \
+    ../src/case/diacriticsPostProcessing.cpp \
+    ../src/case/diacriticDisambiguation.cpp \
+    ../src/case/biographyGraphUtilities.cpp \
+    ../src/case/biographies.cpp \
+    ../src/case/bibleManualTagger.cpp \
+    ../src/case/bibleGeneology.cpp \
+    ../src/case/atbExperiment.cpp \
+    ../src/case/atbDiacriticExperiment.cpp \
+    ../src/case/affix_verification.cpp \
+    ../src/case/abstractTwoLevelAnnotator.cpp \
+    ../src/case/AbstractTwoLevelAgreement.cpp \
+    ../src/case/abstractAnnotator.cpp \
     ../apps/gui/test.cpp \
     ../apps/gui/mainwindow.cpp \
     ../src/util/decisionTreeRegression.cpp \

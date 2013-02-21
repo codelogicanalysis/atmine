@@ -92,7 +92,8 @@ HEADERS += \
     ../edittagtypeview.h \
     ../sarftag.h \
     ../customsttview.h \
-    ../sarftagtype.h
+    ../sarftagtype.h \
+    ../diffview.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -146,7 +147,8 @@ SOURCES += \
     ../../../src/common/global_variables.cpp \
     ../sarftag.cpp \
     ../customsttview.cpp \
-    ../sarftagtype.cpp
+    ../sarftagtype.cpp \
+    ../diffview.cpp
 
 FORMS    +=
 

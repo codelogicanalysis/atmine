@@ -7,9 +7,9 @@ ATagger * _atagger = NULL;
 ATagger::ATagger() {
 
     tagVector = new QVector<Tag>();
-    //sarfTagVector = new QVector<Tag>();
+    compareToTagVector = new QVector<Tag>();
     tagTypeVector = new QVector<TagType*>();
-    //sarfTagTypeVector = new QVector<SarfTagType>();
+    compareToTagTypeVector = new QVector<TagType*>();
 }
 
 ATagger::~ATagger() {
@@ -22,23 +22,38 @@ ATagger::~ATagger() {
     delete tagTypeVector;
 }
 
-bool ATagger::insertTag(QString type, int pos, int length, Source source) {
+bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest dest) {
 
     Tag tag(type,pos,length,source);
-    tagVector->append(tag);
+    if(dest == original) {
+        tagVector->append(tag);
+    }
+    else {
+        compareToTagVector->append(tag);
+    }
     return true;
 }
 
-bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source) {
+bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
 
     TagType* tt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
-    tagTypeVector->append(tt);
+    if(dest == original) {
+        tagTypeVector->append(tt);
+    }
+    else {
+        compareToTagTypeVector->append(tt);
+    }
     return true;
 }
 
-bool ATagger::insertSarfTagType(QString tag, QVector<QPair<QString, QString> > tags, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source) {
+bool ATagger::insertSarfTagType(QString tag, QVector<QPair<QString, QString> > tags, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
     SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
-    tagTypeVector->append(stt);
+    if(dest == original) {
+        tagTypeVector->append(stt);
+    }
+    else {
+        compareToTagTypeVector->append(stt);
+    }
     return true;
 }
 
