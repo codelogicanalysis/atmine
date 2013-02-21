@@ -208,7 +208,7 @@ bool SarfTag::on_match() {
                 }
             }
             if(add) {
-                _atagger->insertTag(_tag,start,length,sarf);
+                _atagger->insertTag(_tag,start,length,sarf,original);
             }
         }
     }

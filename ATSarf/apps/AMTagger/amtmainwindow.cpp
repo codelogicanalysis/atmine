@@ -18,6 +18,7 @@
 #include "edittagtypeview.h"
 #include "customsttview.h"
 #include "sarftag.h"
+#include "diffview.h"
 
 bool parentCheck;
 class SarfTag;
@@ -352,6 +353,7 @@ void AMTMainWindow::open() {
     mTags->setEnabled(true);
     saveAct->setEnabled(true);
     saveasAct->setEnabled(true);
+    diffAct->setEnabled(true);
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
@@ -395,7 +397,7 @@ void AMTMainWindow::process(QByteArray & json) {
         QString tagtype = tagElements["type"].toString();
         Source source = (Source)(tagElements["source"].toInt());
         bool check;
-        check = _atagger->insertTag(tagtype,start,length,source);
+        check = _atagger->insertTag(tagtype,start,length,source,original);
     }
 
     if(_atagger->tagVector->at(0).source == user) {
@@ -404,13 +406,7 @@ void AMTMainWindow::process(QByteArray & json) {
     else {
         _atagger->isSarf = true;
     }
-
-    //if(_atagger->isSarf) {
-        //_atagger->sarftagtypeFile = tagtypeFile;
-    //}
-    //else {
     _atagger->tagtypeFile = tagtypeFile;
-    //}
     lineEditTTFName->setText(_atagger->tagtypeFile);
 
     /** Read the TagType file and store it **/
@@ -547,11 +543,11 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             }
 
             _atagger->isSarf = true;
-            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf);
+            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf,original);
         }
         else {
             _atagger->isSarf = false;
-            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user);
+            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user,original);
         }
     }
 }
@@ -796,7 +792,7 @@ void AMTMainWindow::tag(QString tagValue) {
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
-        _atagger->insertTag(tagValue, start, length, user);
+        _atagger->insertTag(tagValue, start, length, user, original);
 
         for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
             if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
@@ -915,6 +911,10 @@ void AMTMainWindow::createActions()
     //tagAct->setStatusTip(tr("Tag selected word"));
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
 
+    diffAct = new QAction(tr("diff..."),this);
+    diffAct->setEnabled(false);
+    connect(diffAct, SIGNAL(triggered()), this, SLOT(difference()));
+
     untagMAct = new QAction(tr("Untag"), this);
     //untagAct->setShortcuts(QKeySequence::Copy);
     untagMAct->setStatusTip(tr("Untag selected word"));
@@ -959,6 +959,9 @@ void AMTMainWindow::createMenus()
     sarfMenu = menuBar()->addMenu(tr("Sarf"));
     sarfMenu->addAction(sarftagsAct);
     sarfMenu->addAction(sarfAct);
+
+    analyseMenu = menuBar()->addMenu(tr("Analyse"));
+    analyseMenu->addAction(diffAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
 
@@ -1257,6 +1260,213 @@ void AMTMainWindow::customizeSarfTags() {
     //}
 }
 
+void AMTMainWindow::difference() {
+
+#if 0
+    if(!(_atagger->tagVector->isEmpty())) {
+        QMessageBox msgBox;
+        msgBox.setText("There are no tags present to compare to");
+        return;
+    }
+
+    /** Get and open tags file **/
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+             tr("Open tag file to compare tto"), "",
+             tr("Tag Types (*.tags.json);;All Files (*)"));
+
+    if(fileName.isEmpty()) {
+        return;
+    }
+
+    QFile ITfile(fileName);
+    if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input File"),
+                     tr("The <b>Tag File</b> can't be opened!"));
+        return;
+    }
+
+    _atagger->compareToTagFile = fileName;
+
+    QByteArray Tags = ITfile.readAll();
+    ITfile.close();
+
+    QJson::Parser parser;
+    bool ok;
+
+    QVariantMap result = parser.parse (Tags,&ok).toMap();
+
+    if (!ok) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag File</b> has a wrong format"));
+        return;
+    }
+
+    /** Read text file path **/
+
+    QString textFile = result["file"].toString();
+
+    QFile Ifile(textFile);
+    if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input text File"),
+                     tr("The <b>Input Text File</b> can't be opened!"));
+        return;
+    }
+
+    /** Get text and check if compatible with tag file through text check sum **/
+
+    QString text = Ifile.readAll();
+    int textchecksum = result["textchecksum"].toInt();
+    if(textchecksum != text.count()) {
+        QMessageBox::warning(this,"Warning","The input text file is Inconsistent with Tag Information!");
+        _atagger->compareToTagFile.clear();
+        return;
+    }
+
+    if(text.compare(_atagger->text,Qt::CaseSensitive) !=0 ) {
+        QMessageBox::warning(this,"Warning","The input text file is different than the original one!");
+        _atagger->compareToTagFile.clear();
+        return;
+    }
+    Ifile.close();
+
+    /** process difference tags **/
+
+    QString tagtypeFile = result.value("TagTypeFile").toString();
+    if(tagtypeFile.isEmpty()) {
+        QMessageBox::warning(this,"Warning","The Tag Type File is not specified!");
+        _atagger->compareToTagFile.clear();
+        return;
+    }
+
+    /** Read Tags **/
+
+    foreach(QVariant tag, result["TagArray"].toList()) {
+
+        QVariantMap tagElements = tag.toMap();
+        int start = tagElements["pos"].toInt();
+        int length = tagElements["length"].toInt();
+        QString tagtype = tagElements["type"].toString();
+        Source source = (Source)(tagElements["source"].toInt());
+        bool check;
+        check = _atagger->insertTag(tagtype,start,length,source,compareTo);
+    }
+
+    if(_atagger->tagVector->at(0).source == user) {
+        _atagger->compareToIsSarf = false;
+    }
+    else {
+        _atagger->compareToIsSarf = true;
+    }
+    _atagger->compareToTagTypeFile = tagtypeFile;
+
+    /** Read the TagType file and store it **/
+
+    QFile ITTfile(tagtypeFile);
+    if (!ITTfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag Type File</b> can't be opened!"));
+        _atagger->compareToTagFile.clear();
+        _atagger->compareToTagTypeFile.clear();
+        _atagger->compareToTagVector->clear();
+        return;
+    }
+
+    QByteArray tagtypedata = ITTfile.readAll();
+    ITTfile.close();
+
+    /** Process Tag Types **/
+
+    QJson::Parser parsertt;
+
+    QVariantMap resulttt = parsertt.parse(tagtypedata,&ok).toMap();
+
+    if (!ok) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag Types File</b> has a wrong format"));
+    }
+
+    foreach(QVariant type, resulttt["TagSet"].toList()) {
+        QString tag;
+        QString desc;
+        int id;
+        QString foreground_color;
+        QString background_color;
+        int font;
+        bool underline;
+        bool bold;
+        bool italic;
+
+        QVariantMap typeElements = type.toMap();
+
+        tag = typeElements["Tag"].toString();
+        desc = typeElements["Description"].toString();
+        id = typeElements["Legend"].toInt();
+        foreground_color = typeElements["foreground_color"].toString();
+        background_color = typeElements["background_color"].toString();
+        font = typeElements["font"].toInt();
+        underline = typeElements["underline"].toBool();
+        bold = typeElements["bold"].toBool();
+        italic = typeElements["italic"].toBool();
+
+        if(!typeElements.value("Features").isNull()) {
+
+            QVector < QPair < QString, QString> > tags;
+            foreach(QVariant sarfTags, typeElements["Features"].toList()) {
+                QVariantMap st = sarfTags.toMap();
+                QPair<QString, QString> pair;
+                if(!(st.value("Prefix").isNull())) {
+                    pair.first = "Prefix";
+                    pair.second = st.value("Prefix").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Stem").isNull())) {
+                    pair.first = "Stem";
+                    pair.second = st.value("Stem").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Suffix").isNull())) {
+                    pair.first = "Suffix";
+                    pair.second = st.value("Suffix").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Prefix-POS").isNull())) {
+                    pair.first = "Prefix-POS";
+                    pair.second = st.value("Prefix-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Stem-POS").isNull())) {
+                    pair.first = "Stem-POS";
+                    pair.second = st.value("Stem-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Suffix-POS").isNull())) {
+                    pair.first = "Suffix-POS";
+                    pair.second = st.value("Suffix-POS").toString();
+                    tags.append(pair);
+                }
+                else if(!(st.value("Gloss").isNull())) {
+                    pair.first = "Gloss";
+                    pair.second = st.value("Gloss").toString();
+                    tags.append(pair);
+                }
+            }
+
+            _atagger->isSarf = true;
+            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf,compareTo);
+        }
+        else {
+            _atagger->isSarf = false;
+            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user,compareTo);
+        }
+    }
+#endif
+    /** Show the difference view **/
+
+    DiffView * diff = new DiffView(this);
+    diff->show();
+}
+
 void AMTMainWindow::loadText_clicked() {
     if(!(_atagger->textFile.isEmpty())) {
         QMessageBox msgBox;
@@ -1392,6 +1602,7 @@ void AMTMainWindow::_new() {
 	mTags->setEnabled(true);
 	saveAct->setEnabled(true);
 	saveasAct->setEnabled(true);
+        diffAct->setEnabled(true);
 }
 
 void AMTMainWindow::setLineSpacing(int lineSpacing) {
