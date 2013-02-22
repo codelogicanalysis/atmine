@@ -33,12 +33,12 @@ void RemoveTagTypeView::removeTagType_clicked() {
     QString tag = cbType->currentText();
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
         if((_atagger->tagTypeVector->at(i))->tag == tag) {
-            for(int j=0; j < _atagger->tagVector->count(); j++) {
-                if((_atagger->tagVector->at(j)).type == tag) {
-                    int start = (_atagger->tagVector->at(j)).pos;
-                    int length = (_atagger->tagVector->at(j)).length;
+            for(int j=0; j < _atagger->tagVector.count(); j++) {
+                if((_atagger->tagVector.at(j)).type == tag) {
+                    int start = (_atagger->tagVector.at(j)).pos;
+                    int length = (_atagger->tagVector.at(j)).length;
                     ((AMTMainWindow*)parentWidget())->tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
-                    _atagger->tagVector->remove(j);
+                    _atagger->tagVector.remove(j);
                 }
             }
             _atagger->tagTypeVector->remove(i);

@@ -20,8 +20,8 @@ public:
     bool insertSarfTagType(QString, QVector < QPair <QString , QString> > , QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
     QByteArray dataInJsonFormat(Data _data);
 //private:
-    QVector<Tag> *tagVector;
-    QVector<Tag> *compareToTagVector;
+    QVector<Tag> tagVector;
+    QVector<Tag> compareToTagVector;
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
     //QVector<SarfTagType> *sarfTagTypeVector;

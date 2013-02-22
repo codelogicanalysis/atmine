@@ -400,7 +400,7 @@ void AMTMainWindow::process(QByteArray & json) {
         check = _atagger->insertTag(tagtype,start,length,source,original);
     }
 
-    if(_atagger->tagVector->at(0).source == user) {
+    if(_atagger->tagVector.at(0).source == user) {
         _atagger->isSarf = false;
     }
     else {
@@ -462,13 +462,13 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
     if(result.value("TagSet").toList().at(0).toMap().value("Features").isNull()) {
         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
             const TagType& tt = *(_atagger->tagTypeVector->at(i));
-            for(int j=0; j<_atagger->tagVector->count(); j++) {
-                const Tag & tag = (_atagger->tagVector->at(j));
+            for(int j=0; j<_atagger->tagVector.count(); j++) {
+                const Tag & tag = (_atagger->tagVector.at(j));
                 if(tt.tag == tag.type) {
                     int start = tag.pos;
                     int length = tag.length;
                     tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
-                    _atagger->tagVector->remove(i);
+                    _atagger->tagVector.remove(i);
                 }
             }
         }
@@ -540,6 +540,11 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
                     pair.second = st.value("Gloss").toString();
                     tags.append(pair);
                 }
+                else if(!(st.value("Category").isNull())) {
+                    pair.first = "Category";
+                    pair.second = st.value("Category").toString();
+                    tags.append(pair);
+                }
             }
 
             _atagger->isSarf = true;
@@ -577,11 +582,11 @@ void AMTMainWindow::applyTags() {
     }
     */
     //else {
-        for(int i =0; i< _atagger->tagVector->count(); i++) {
+        for(int i =0; i< _atagger->tagVector.count(); i++) {
             for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                if((_atagger->tagVector->at(i)).type == (_atagger->tagTypeVector->at(j))->tag) {
-                    int start = (_atagger->tagVector->at(i)).pos;
-                    int length = (_atagger->tagVector->at(i)).length;
+                if((_atagger->tagVector.at(i)).type == (_atagger->tagTypeVector->at(j))->tag) {
+                    int start = (_atagger->tagVector.at(i)).pos;
+                    int length = (_atagger->tagVector.at(i)).length;
                     QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
                     QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
                     int font = (_atagger->tagTypeVector->at(j))->font;
@@ -679,7 +684,7 @@ void AMTMainWindow::save() {
         return;
     }
 
-    if(_atagger->tagVector->isEmpty()) {
+    if(_atagger->tagVector.isEmpty()) {
         QMessageBox::warning(this,"Warning","No tags to save!");
         return;
     }
@@ -730,10 +735,10 @@ void AMTMainWindow::tagremove() {
     QTextCursor cursor = txtBrwsr->textCursor();
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
-    for(int i=0; i < _atagger->tagVector->count(); i++) {
-        if((_atagger->tagVector->at(i)).pos == start) {
+    for(int i=0; i < _atagger->tagVector.count(); i++) {
+        if((_atagger->tagVector.at(i)).pos == start) {
             tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
-            _atagger->tagVector->remove(i);
+            _atagger->tagVector.remove(i);
             cursor.clearSelection();
             fillTreeWidget(user);
         }
@@ -825,10 +830,10 @@ void AMTMainWindow::untag() {
         return;
     }
     dirty = true;
-    for(int i=0; i < _atagger->tagVector->count(); i++) {
-        if((_atagger->tagVector->at(i)).pos == start) {
+    for(int i=0; i < _atagger->tagVector.count(); i++) {
+        if((_atagger->tagVector.at(i)).pos == start) {
             tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
-            _atagger->tagVector->remove(i);
+            _atagger->tagVector.remove(i);
             cursor.clearSelection();
             fillTreeWidget(user);
         }
@@ -985,7 +990,7 @@ void AMTMainWindow::createTagMenu() {
 void AMTMainWindow::fillTreeWidget(Source Data) {
     tagDescription->clear();
      QList<QTreeWidgetItem *> items;
-     QVector<Tag> *temp = new QVector<Tag>(*(_atagger->tagVector));
+     QVector<Tag> *temp = new QVector<Tag>(_atagger->tagVector);
      for(int i=0; i < temp->count(); i++) {
          QStringList entry;
          QTextCursor cursor = txtBrwsr->textCursor();
@@ -1180,7 +1185,7 @@ void AMTMainWindow::sarfTagging() {
 
     _atagger->isSarf = true;
     startTaggingText(_atagger->text);
-    _atagger->tagVector->clear();
+    _atagger->tagVector.clear();
 
     error_str = "";
     output_str = "";
@@ -1212,13 +1217,13 @@ void AMTMainWindow::sarfTagging() {
         start = word.end + 1;
     }
 
-    for(int i=0; i<_atagger->tagVector->count(); i++) {
+    for(int i=0; i<_atagger->tagVector.count(); i++) {
         for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            QString type = (_atagger->tagVector->at(i)).type;
+            QString type = (_atagger->tagVector.at(i)).type;
             QString tag = (_atagger->tagTypeVector->at(j))->tag;
             if(type == tag) {
-                int start = (_atagger->tagVector->at(i)).pos;
-                int length = (_atagger->tagVector->at(i)).length;
+                int start = (_atagger->tagVector.at(i)).pos;
+                int length = (_atagger->tagVector.at(i)).length;
                 QColor fgcolor = QColor((_atagger->tagTypeVector->at(j))->fgcolor);
                 QColor bgcolor = QColor((_atagger->tagTypeVector->at(j))->bgcolor);
                 int font = (_atagger->tagTypeVector->at(j))->font;
@@ -1262,8 +1267,12 @@ void AMTMainWindow::customizeSarfTags() {
 
 void AMTMainWindow::difference() {
 
-#if 0
-    if(!(_atagger->tagVector->isEmpty())) {
+#if 1
+    _atagger->compareToTagFile.clear();
+    _atagger->compareToTagTypeFile.clear();
+    _atagger->compareToTagTypeVector->clear();
+    _atagger->compareToTagVector.clear();
+    if(_atagger->tagVector.isEmpty()) {
         QMessageBox msgBox;
         msgBox.setText("There are no tags present to compare to");
         return;
@@ -1352,7 +1361,7 @@ void AMTMainWindow::difference() {
         check = _atagger->insertTag(tagtype,start,length,source,compareTo);
     }
 
-    if(_atagger->tagVector->at(0).source == user) {
+    if(_atagger->tagVector.at(0).source == user) {
         _atagger->compareToIsSarf = false;
     }
     else {
@@ -1368,7 +1377,7 @@ void AMTMainWindow::difference() {
                      tr("The <b>Tag Type File</b> can't be opened!"));
         _atagger->compareToTagFile.clear();
         _atagger->compareToTagTypeFile.clear();
-        _atagger->compareToTagVector->clear();
+        _atagger->compareToTagVector.clear();
         return;
     }
 
@@ -1500,7 +1509,7 @@ void AMTMainWindow::loadText_clicked() {
              return;
          }
 
-         _atagger->tagVector->clear();
+         _atagger->tagVector.clear();
          tagDescription->clear();
          descBrwsr->clear();
 
@@ -1560,7 +1569,7 @@ void AMTMainWindow::loadTagTypes_clicked() {
             return;
         }
 
-        _atagger->tagVector->clear();
+        _atagger->tagVector.clear();
         _atagger->tagTypeVector->clear();
         tagDescription->clear();
         descBrwsr->clear();

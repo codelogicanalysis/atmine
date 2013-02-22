@@ -5,6 +5,15 @@
 #include <QDockWidget>
 #include <QScrollArea>
 #include <QSplitter>
+#include <QtAlgorithms>
+
+bool compareTags(const Tag &tag1, const Tag &tag2) {
+    return (tag1.pos < tag2.pos);
+}
+
+bool compareTagTypes(const TagType *tt1, const TagType *tt2) {
+    return (tt1->tag < tt2->tag);
+}
 
 DiffView::DiffView(QWidget *parent) :
     QMainWindow(parent)
@@ -45,7 +54,7 @@ DiffView::DiffView(QWidget *parent) :
     dock = new QDockWidget(tr("Options"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea);
     QHBoxLayout *vboxmain = new QHBoxLayout;
-    QGroupBox *gb1 = new QGroupBox(tr("Difference"));
+    gb1 = new QGroupBox(tr("Difference"));
     rbTTDiff = new QRadioButton(tr("TagType"));
     connect(rbTTDiff,SIGNAL(clicked()),this,SLOT(rbTagTypes_clicked()));
     rbTDiff = new QRadioButton(tr("Tag"));
@@ -56,7 +65,7 @@ DiffView::DiffView(QWidget *parent) :
     vbox1->addWidget(rbTDiff);
     gb1->setLayout(vbox1);
     vboxmain->addWidget(gb1);
-    QGroupBox *gb2 = new QGroupBox(tr("Criteria"));
+    gb2 = new QGroupBox(tr("Criteria"));
     rbExact = new QRadioButton(tr("Exact"));
     connect(rbExact,SIGNAL(clicked()),this,SLOT(rbExact_clicked()));
     rbIntersect = new QRadioButton(tr("Intersect"));
@@ -66,6 +75,7 @@ DiffView::DiffView(QWidget *parent) :
     rbBContainA = new QRadioButton(tr("B include A"));
     connect(rbBContainA,SIGNAL(clicked()),this,SLOT(rbBContainA_clicked()));
     rbIntersect->setChecked(true);
+    gb2->setEnabled(false);
     QVBoxLayout *vbox2 = new QVBoxLayout;
     vbox2->addWidget(rbIntersect);
     vbox2->addWidget(rbExact);
@@ -87,28 +97,151 @@ DiffView::DiffView(QWidget *parent) :
 
     setWindowTitle(tr("Difference Analysis Statistics"));
     resize(800,600);
+
+    /** Sort the Tags in both Tag Vectors **/
+    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compareTags);
+    qSort(_atagger->compareToTagVector.begin(), _atagger->compareToTagVector.end(), compareTags);
+
+    /** Analyze tagtype difference **/
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(i));
+        bool found = false;
+        for(int j=0; j<_atagger->compareToTagTypeVector->count();j++) {
+            const TagType * ctt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
+            if(stt->tag == ctt->tag) {
+                found = true;
+                commonTT.append(stt->tag);
+            }
+        }
+        if(!found) {
+            forwardTT.append(stt->tag);
+        }
+    }
+
+    for(int i=0; i<_atagger->compareToTagTypeVector->count();i++) {
+        const TagType * ctt = (TagType*)(_atagger->tagTypeVector->at(i));
+        if(!(commonTT.contains(ctt->tag))){
+            reverseTT.append(ctt->tag);
+        }
+    }
+
+    QString text;
+    for(int i=0; i<commonTT.count(); i++) {
+        text += commonTT[i] + '\n';
+    }
+    txtCommon->setText(text);
+
+    text.clear();
+    for(int i=0; i<forwardTT.count(); i++) {
+        text += forwardTT[i] + '\n';
+    }
+    txtForwardDiff->setText(text);
+
+    text.clear();
+    for(int i=0; i<reverseTT.count(); i++) {
+        text += reverseTT[i] + '\n';
+    }
+    txtReverseDiff->setText(text);
 }
 
 void DiffView::rbTagTypes_clicked() {
+    gb2->setEnabled(false);
+    rbIntersect->setChecked(true);
 
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
+
+    /** Analyze tagtype difference **/
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(i));
+        bool found = false;
+        for(int j=0; j<_atagger->compareToTagTypeVector->count();j++) {
+            const TagType * ctt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
+            if(stt->tag == ctt->tag) {
+                found = true;
+                commonTT.append(stt->tag);
+            }
+        }
+        if(!found) {
+            forwardTT.append(stt->tag);
+        }
+    }
+
+    for(int i=0; i<_atagger->compareToTagTypeVector->count();i++) {
+        const TagType * ctt = (TagType*)(_atagger->tagTypeVector->at(i));
+        if(!(commonTT.contains(ctt->tag))){
+            reverseTT.append(ctt->tag);
+        }
+    }
+
+    QString text;
+    for(int i=0; i<commonTT.count(); i++) {
+        text += commonTT[i] + '\n';
+    }
+    txtCommon->setText(text);
+
+    text.clear();
+    for(int i=0; i<forwardTT.count(); i++) {
+        text += forwardTT[i] + '\n';
+    }
+    txtForwardDiff->setText(text);
+
+    text.clear();
+    for(int i=0; i<reverseTT.count(); i++) {
+        text += reverseTT[i] + '\n';
+    }
+    txtReverseDiff->setText(text);
 }
 
 void DiffView::rbTags_clicked() {
+    gb2->setEnabled(true);
+
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
+
+    /** Analyze Tags Difference **/
+
 
 }
 
 void DiffView::rbExact_clicked() {
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
 
+    /** Analyze Tags based on Exact Match **/
+
+    QVector<Tag*> common;
+    QVector<Tag*> forward;
+    QVector<Tag*> reverse;
+
+    // apply an algorithm similar to mergesort
 }
 
 void DiffView::rbIntersect_clicked() {
-
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
 }
 
 void DiffView::rbAContainB_clicked() {
-
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
 }
 
 void DiffView::rbBContainA_clicked() {
-
+    txtCommon->clear();
+    txtForwardDiff->clear();
+    txtReverseDiff->clear();
+    txtStats->clear();
 }

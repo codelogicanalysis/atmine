@@ -6,15 +6,16 @@ ATagger * _atagger = NULL;
 
 ATagger::ATagger() {
 
-    tagVector = new QVector<Tag>();
-    compareToTagVector = new QVector<Tag>();
+    //tagVector = new QVector<Tag>();
+    //compareToTagVector = new QVector<Tag>();
     tagTypeVector = new QVector<TagType*>();
     compareToTagTypeVector = new QVector<TagType*>();
 }
 
 ATagger::~ATagger() {
 
-    delete tagVector;
+    //delete tagVector;
+    tagVector.clear();
 
     for(int i=0; i<tagTypeVector->size(); i++) {
         delete (*tagTypeVector)[i];
@@ -26,10 +27,10 @@ bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest d
 
     Tag tag(type,pos,length,source);
     if(dest == original) {
-        tagVector->append(tag);
+        tagVector.append(tag);
     }
     else {
-        compareToTagVector->append(tag);
+        compareToTagVector.append(tag);
     }
     return true;
 }
@@ -128,12 +129,12 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         //}
         tagdata.insert("textchecksum", _atagger->text.count());
         QVariantList tagset;
-        for(int i=0; i<_atagger->tagVector->count(); i++) {
+        for(int i=0; i<_atagger->tagVector.count(); i++) {
             QVariantMap data;
-            data.insert("type",(_atagger->tagVector->at(i)).type);
-            data.insert("pos",(_atagger->tagVector->at(i)).pos);
-            data.insert("length",(_atagger->tagVector->at(i)).length);
-            data.insert("source",(_atagger->tagVector->at(i)).source);
+            data.insert("type",(_atagger->tagVector.at(i)).type);
+            data.insert("pos",(_atagger->tagVector.at(i)).pos);
+            data.insert("length",(_atagger->tagVector.at(i)).length);
+            data.insert("source",(_atagger->tagVector.at(i)).source);
             tagset << data;
         }
         tagdata.insert("TagArray",tagset);
