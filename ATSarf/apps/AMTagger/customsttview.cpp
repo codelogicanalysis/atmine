@@ -174,6 +174,14 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     }
     listPrefix.removeDuplicates();
 
+    theSarf->query.exec("SELECT id,name FROM category where abstract=1");
+    while(theSarf->query.next()) {
+        if(!(theSarf->query.value(0).toString().isEmpty())) {
+            listCategoryId << theSarf->query.value(0).toString();
+            listCategory << theSarf->query.value(1).toString();
+        }
+    }
+
     field = "Prefix";
     listPossibleTags->clear();
     listPossibleTags->addItems(listPrefix);
@@ -199,7 +207,16 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
             if(stt->source == sarf) {
                 for(int i=0; i<stt->tags.count(); i++) {
                     QStringList list;
-                    list << stt->tags.at(i).first << stt->tags.at(i).second;
+                    if(stt->tags.at(i).first != "Category") {
+                        list << stt->tags.at(i).first << stt->tags.at(i).second;
+                    }
+                    else {
+                        for(int j=0; j< listCategoryId.count();j++) {
+                            if(listCategoryId[j] == stt->tags.at(i).second) {
+                                list << stt->tags.at(i).first << listCategory[j];
+                            }
+                        }
+                    }
                     listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
                 }
                 btnSelect->setEnabled(true);
@@ -334,17 +351,6 @@ void CustomSTTView::cbTagType_changed(QString text) {
         listPossibleTags->addItems(listGloss);
     }
     else if(field == "Category") {
-        if(listCategory.isEmpty()) {
-
-            theSarf->query.exec("SELECT id,name FROM category where abstract=1");
-            while(theSarf->query.next()) {
-                if(!(theSarf->query.value(0).toString().isEmpty())) {
-                    listCategoryId << theSarf->query.value(0).toString();
-                    listCategory << theSarf->query.value(1).toString();
-                }
-            }
-            listCategory.removeDuplicates();
-        }
         listPossibleTags->addItems(listCategory);
     }
 }
@@ -688,7 +694,16 @@ void CustomSTTView::btnLoad_clicked() {
          if(stt->source == sarf) {
              for(int i=0; i<stt->tags.count(); i++) {
                  QStringList list;
-                 list << stt->tags.at(i).first << stt->tags.at(i).second;
+                 if(stt->tags.at(i).first != "Category") {
+                     list << stt->tags.at(i).first << stt->tags.at(i).second;
+                 }
+                 else {
+                     for(int j=0; j< listCategoryId.count();j++) {
+                         if(listCategoryId[j] == stt->tags.at(i).second) {
+                             list << stt->tags.at(i).first << listCategory[j];
+                         }
+                     }
+                 }
                  listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
              }
              btnSelect->setEnabled(true);
@@ -817,7 +832,16 @@ void CustomSTTView::tagName_changed(QString name) {
             if(stt->source == sarf) {
                 for(int j=0; j<stt->tags.count(); j++) {
                     QStringList list;
-                    list << stt->tags.at(j).first << stt->tags.at(j).second;
+                    if(stt->tags.at(j).first != "Category") {
+                        list << stt->tags.at(j).first << stt->tags.at(j).second;
+                    }
+                    else {
+                        for(int k=0; k< listCategoryId.count();k++) {
+                            if(listCategoryId[k] == stt->tags.at(j).second) {
+                                list << stt->tags.at(j).first << listCategory[k];
+                            }
+                        }
+                    }
                     listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
                 }
                 btnSelect->setEnabled(true);

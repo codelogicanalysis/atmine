@@ -7,6 +7,9 @@
 #include <QGroupBox>
 #include <QLabel>
 
+#include "tag.h"
+#include "tagtype.h"
+
 class DiffView : public QMainWindow
 {
     Q_OBJECT
@@ -39,6 +42,13 @@ private:
     QRadioButton *rbIntersect;
     QRadioButton *rbAContainB;
     QRadioButton *rbBContainA;
+
+    QGroupBox *gb1;
+    QGroupBox *gb2;
+
+    QStringList commonTT;
+    QStringList forwardTT;
+    QStringList reverseTT;
 
     //QRadioButton
 
