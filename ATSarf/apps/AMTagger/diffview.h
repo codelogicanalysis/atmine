@@ -15,6 +15,9 @@ class DiffView : public QMainWindow
     Q_OBJECT
 public:
     explicit DiffView(QWidget *parent = 0);
+    void startTaggingText(QString &);
+    void tagWord(int, int, QColor, QColor ,int, bool, bool, bool, DestText);
+    void finishTaggingText();
 
 signals:
 
