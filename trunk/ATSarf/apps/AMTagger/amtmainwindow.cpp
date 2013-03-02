@@ -1281,7 +1281,7 @@ void AMTMainWindow::difference() {
     /** Get and open tags file **/
 
     QString fileName = QFileDialog::getOpenFileName(this,
-             tr("Open tag file to compare tto"), "",
+             tr("Open tag file B to compare to"), "",
              tr("Tag Types (*.tags.json);;All Files (*)"));
 
     if(fileName.isEmpty()) {

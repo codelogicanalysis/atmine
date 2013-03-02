@@ -136,6 +136,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbItalic = new QCheckBox(this);
     cbCaseSensetive = new QCheckBox(this);
     cbCaseSensetive->setText("Case Sensetive");
+    //cbContain = new QCheckBox(this);
+    //cbContain->setText("Contain");
 
     connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
@@ -145,6 +147,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(cbItalic,7,6);
     grid->addWidget(cbunderline,8,6);
     grid->addWidget(cbCaseSensetive,1,2);
+    //grid->addWidget(cbContain,0,2);
+    //cbContain->setEnabled(false);
 
     listPossibleTags = new QListWidget(this);
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -273,6 +277,8 @@ void CustomSTTView::cbTagType_changed(QString text) {
     field = text;
     listPossibleTags->clear();
     editPattern->clear();
+    //cbContain->setChecked(false);
+    //cbContain->setEnabled(false);
     if(field == "Prefix") {
         listPossibleTags->addItems(listPrefix);
     }
@@ -300,6 +306,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
             listStems.removeDuplicates();
         }
         listPossibleTags->addItems(listStems);
+        //cbContain->setEnabled(true);
     }
     else if(field == "Stem-POS") {
         if(listStemPOS.isEmpty()) {
@@ -349,6 +356,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
             }
         }
         listPossibleTags->addItems(listGloss);
+        //cbContain->setEnabled(true);
     }
     else if(field == "Category") {
         listPossibleTags->addItems(listCategory);

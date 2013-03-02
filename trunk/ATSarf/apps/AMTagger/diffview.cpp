@@ -24,7 +24,7 @@ bool compareTagTypes(const TagType *tt1, const TagType *tt2) {
 DiffView::DiffView(QWidget *parent) :
     QMainWindow(parent)
 {
-    QDockWidget *dock = new QDockWidget(tr("Difference"), this);
+    QDockWidget *dock = new QDockWidget();
     dock->setAllowedAreas(Qt::LeftDockWidgetArea);
     lblCommon = new QLabel(tr("Common"));
     txtCommon = new QTextBrowser();
@@ -34,7 +34,14 @@ DiffView::DiffView(QWidget *parent) :
     vb1->addWidget(txtCommon);
     QScrollArea *sac = new QScrollArea;
     sac->setLayout(vb1);
-    lblForwardDiff = new QLabel(tr("A-B"));
+    QString first = _atagger->tagtypeFile.split('/').last();
+    first = first.remove(QRegExp("(.stt.json|.tt.json)"));
+    QString second = _atagger->compareToTagTypeFile.split('/').last();
+    second = second.remove(QRegExp("(.stt.json|.tt.json)"));
+    QString AB = first;
+    AB.append(" - ");
+    AB.append(second);
+    lblForwardDiff = new QLabel(AB);
     txtForwardDiff = new QTextBrowser();
     QVBoxLayout *vb2 = new QVBoxLayout;
     vb2->setAlignment(Qt::AlignCenter);
@@ -42,7 +49,10 @@ DiffView::DiffView(QWidget *parent) :
     vb2->addWidget(txtForwardDiff);
     QScrollArea *saf = new QScrollArea;
     saf->setLayout(vb2);
-    lblReverseDiff = new QLabel(tr("B-A"));
+    QString BA = second;
+    BA.append(" - ");
+    BA.append(first);
+    lblReverseDiff = new QLabel(BA);
     txtReverseDiff = new QTextBrowser();
     QVBoxLayout *vb3 = new QVBoxLayout;
     vb3->setAlignment(Qt::AlignCenter);
@@ -101,7 +111,7 @@ DiffView::DiffView(QWidget *parent) :
     dock->setWidget(txtStats);
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
-    setWindowTitle(tr("Difference Analysis Statistics"));
+    setWindowTitle(tr("Analysis"));
     resize(800,600);
 
     /** Sort the Tags in both Tag Vectors **/
@@ -247,6 +257,20 @@ void DiffView::rbTagTypes_clicked() {
     forwardTT.clear();
     reverseTT.clear();
 
+    QString first = _atagger->tagtypeFile.split('/').last();
+    first = first.remove(QRegExp("(.stt.json|.tt.json)"));
+    QString second = _atagger->compareToTagTypeFile.split('/').last();
+    second = second.remove(QRegExp("(.stt.json|.tt.json)"));
+    QString AB = first;
+    AB.append(" - ");
+    AB.append(second);
+    lblForwardDiff->setText(AB);
+
+    QString BA = second;
+    BA.append(" - ");
+    BA.append(first);
+    lblReverseDiff->setText(BA);
+
     /** Analyze tagtype difference **/
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
@@ -294,6 +318,19 @@ void DiffView::rbTags_clicked() {
     gb2->setEnabled(true);
     this->rbIntersect_clicked();
 
+    QString first = _atagger->tagFile.split('/').last();
+    first = first.remove(".tags.json");
+    QString second = _atagger->compareToTagFile.split('/').last();
+    second = second.remove(".tags.json");
+    QString AB = first;
+    AB.append(" - ");
+    AB.append(second);
+    lblForwardDiff->setText(AB);
+
+    QString BA = second;
+    BA.append(" - ");
+    BA.append(first);
+    lblReverseDiff->setText(BA);
 }
 
 void DiffView::rbExact_clicked() {
@@ -420,11 +457,16 @@ void DiffView::rbExact_clicked() {
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
-    text.append("Precision as A is reference: ");
+    text.append("Precision, Recall, and F-Measure are done with ");
+    QString first = _atagger->tagFile.split('/').last();
+    first = first.remove(QRegExp(".tags.json"));
+    text.append(first);
+    text.append((" as reference:\n"));
+    text.append("\nPrecision: ");
     text.append(QString::number(precision));
-    text.append("\n\nRecall as A is reference: ");
+    text.append("\n\nRecall: ");
     text.append(QString::number(recall));
-    text.append("\n\nF-Measure as A is reference: ");
+    text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
     txtStats->setText(text);
@@ -554,11 +596,16 @@ void DiffView::rbIntersect_clicked() {
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
-    text.append("Precision as A is reference: ");
+    text.append("Precision, Recall, and F-Measure are done with ");
+    QString first = _atagger->tagFile.split('/').last();
+    first = first.remove(QRegExp(".tags.json"));
+    text.append(first);
+    text.append((" as reference:\n"));
+    text.append("\nPrecision: ");
     text.append(QString::number(precision));
-    text.append("\n\nRecall as A is reference: ");
+    text.append("\n\nRecall: ");
     text.append(QString::number(recall));
-    text.append("\n\nF-Measure as A is reference: ");
+    text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
     txtStats->setText(text);
@@ -688,11 +735,16 @@ void DiffView::rbAContainB_clicked() {
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
-    text.append("Precision as A is reference: ");
+    text.append("Precision, Recall, and F-Measure are done with ");
+    QString first = _atagger->tagFile.split('/').last();
+    first = first.remove(QRegExp(".tags.json"));
+    text.append(first);
+    text.append((" as reference:\n"));
+    text.append("\nPrecision: ");
     text.append(QString::number(precision));
-    text.append("\n\nRecall as A is reference: ");
+    text.append("\n\nRecall: ");
     text.append(QString::number(recall));
-    text.append("\n\nF-Measure as A is reference: ");
+    text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
     txtStats->setText(text);
@@ -822,11 +874,16 @@ void DiffView::rbBContainA_clicked() {
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
-    text.append("Precision as A is reference: ");
+    text.append("Precision, Recall, and F-Measure are done with ");
+    QString first = _atagger->tagFile.split('/').last();
+    first = first.remove(QRegExp(".tags.json"));
+    text.append(first);
+    text.append((" as reference:\n"));
+    text.append("\nPrecision: ");
     text.append(QString::number(precision));
-    text.append("\n\nRecall as A is reference: ");
+    text.append("\n\nRecall: ");
     text.append(QString::number(recall));
-    text.append("\n\nF-Measure as A is reference: ");
+    text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
     txtStats->setText(text);
