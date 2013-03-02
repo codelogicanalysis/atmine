@@ -86,6 +86,7 @@ private:
     QCheckBox *cbBold;
     QCheckBox *cbItalic;
     QCheckBox *cbCaseSensetive;
+    //QCheckBox *cbContain;
 
     QListWidget *listPossibleTags;
     QTreeWidget *listSelectedTags;
