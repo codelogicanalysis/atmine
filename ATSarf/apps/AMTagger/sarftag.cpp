@@ -27,7 +27,7 @@ bool SarfTag::on_match() {
         for(int j=0; j < (tagtype->tags.count()); j++) {
 
             bool contain = false;
-            const QPair<QString, QString> * tag = &(tagtype->tags.at(j));
+            const Quadruple< QString , QString , QString , QString > * tag = &(tagtype->tags.at(j));
             if(tag->first == "Prefix") {
                 for(int k=0;k<prefix_infos->size();k++) {
 

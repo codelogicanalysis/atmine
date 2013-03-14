@@ -47,7 +47,7 @@ bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, 
     return true;
 }
 
-bool ATagger::insertSarfTagType(QString tag, QVector<QPair<QString, QString> > tags, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
+bool ATagger::insertSarfTagType(QString tag, QVector<Quadruple< QString , QString , QString , QString > > tags, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
     SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
     if(dest == original) {
         tagTypeVector->append(stt);
@@ -80,15 +80,17 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
             QVariantList tagsarray;
             for(int j=0; j < tagtype->tags.count(); j++) {
                 QVariantMap tagsdata;
-                const QPair< QString, QString> * pair = &(tagtype->tags.at(j));
-                tagsdata.insert(pair->first,pair->second);
+                const Quadruple< QString , QString , QString , QString > * quad = &(tagtype->tags.at(j));
+                tagsdata.insert(quad->first,quad->second);
+                tagsdata.insert("Negation",quad->third);
+                tagsdata.insert("Relation",quad->fourth);
                 tagsarray << tagsdata;
             }
             data.insert("Features",tagsarray);
 
             sarftagtypeset << data;
         }
-        sarftagtypedata.insert("TagSet",sarftagtypeset);
+        sarftagtypedata.insert("TagTypeSet",sarftagtypeset);
         QJson::Serializer serializer;
         json = serializer.serialize(sarftagtypedata);
     }
@@ -111,7 +113,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
 
             tagtypeset << data;
         }
-        tagtypedata.insert("TagSet",tagtypeset);
+        tagtypedata.insert("TagTypeSet",tagtypeset);
         QJson::Serializer serializer;
         json = serializer.serialize(tagtypedata);
     }
