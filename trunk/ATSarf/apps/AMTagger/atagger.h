@@ -17,7 +17,7 @@ public:
     bool insertTag(QString, int, int, Source, Dest);
     //bool insertSarfTag(QString, int, int, Source, Dest);
     bool insertTagType(QString, QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
-    bool insertSarfTagType(QString, QVector < QPair <QString , QString> > , QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
+    bool insertSarfTagType(QString, QVector < Quadruple< QString , QString , QString , QString > > , QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
     QByteArray dataInJsonFormat(Data _data);
 //private:
     QVector<Tag> tagVector;

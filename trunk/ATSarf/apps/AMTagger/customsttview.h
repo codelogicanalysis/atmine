@@ -9,7 +9,9 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QListWidget>
-//#include <QRadioButton>
+#include <QSpinBox>
+#include <QCheckBox>
+#include <QGroupBox>
 #include <QTreeWidget>
 #include "colorlisteditor.h"
 #include "sarftagtype.h"
@@ -36,6 +38,7 @@ private slots:
     void btnClose_clicked();
     void btnSelect_clicked();
     void btnUnselect_clicked();
+    void cbSynEnable_checked(bool isChecked);
     void editPattern_changed(QString text);
     void cbTagType_changed(QString text);
     void fgcolor_changed(QString color);
@@ -47,6 +50,7 @@ private slots:
     void bold_clicked(bool bold);
     void italic_clicked(bool italic);
     void desc_edited();
+    void selectedTags_doubleclicked(QTreeWidgetItem* item,int i);
     void closeEvent(QCloseEvent *event);
 
 private:
@@ -72,6 +76,10 @@ private:
     QLabel *lblBold;
     QLabel *lblUnderline;
 
+    QGroupBox * gbSyn;
+    QSpinBox * sbSynStep;
+    QCheckBox * cbSyn;
+
     QLineEdit *editPattern;
     QTextEdit *editDescription;
 
@@ -86,7 +94,7 @@ private:
     QCheckBox *cbBold;
     QCheckBox *cbItalic;
     QCheckBox *cbCaseSensetive;
-    //QCheckBox *cbContain;
+    QCheckBox *cbContain;
 
     QListWidget *listPossibleTags;
     QTreeWidget *listSelectedTags;

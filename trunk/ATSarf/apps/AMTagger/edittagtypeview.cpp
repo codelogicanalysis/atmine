@@ -179,7 +179,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
         if(_atagger->tagTypeVector->at(i)->source == sarf) {
             SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
-            QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+            QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
             SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
             tagTypeVector->append(stt);
 
@@ -427,7 +427,7 @@ void EditTagTypeView::load_clicked() {
 
                  if(_atagger->tagTypeVector->at(i)->source == sarf) {
                      SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
-                     QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+                     QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
                      SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
                      tagTypeVector->append(stt);
 

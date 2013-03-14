@@ -437,7 +437,7 @@ void AMTMainWindow::process(QByteArray & json) {
     process_TagTypes(tagtypedata);
 
 
-    setWindowTitle("AM Tagger: " + _atagger->tagFile);
+    setWindowTitle("MATAr: " + _atagger->tagFile);
     /** Apply Tags on Input Text **/
 
     applyTags();
@@ -459,7 +459,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
                      tr("The <b>Tag File</b> has a wrong format"));
     }
 
-    if(result.value("TagSet").toList().at(0).toMap().value("Features").isNull()) {
+    if(result.value("TagTypeSet").toList().at(0).toMap().value("Features").isNull()) {
         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
             const TagType& tt = *(_atagger->tagTypeVector->at(i));
             for(int j=0; j<_atagger->tagVector.count(); j++) {
@@ -476,7 +476,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
         fillTreeWidget(user);
     }
 
-    foreach(QVariant type, result["TagSet"].toList()) {
+    foreach(QVariant type, result["TagTypeSet"].toList()) {
         QString tag;
         QString desc;
         int id;
@@ -501,49 +501,97 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
 
         if(!typeElements.value("Features").isNull()) {
 
-            QVector < QPair < QString, QString> > tags;
+            QVector < Quadruple< QString , QString , QString , QString > > tags;
             foreach(QVariant sarfTags, typeElements["Features"].toList()) {
                 QVariantMap st = sarfTags.toMap();
-                QPair<QString, QString> pair;
+                Quadruple< QString , QString , QString , QString > quad;
                 if(!(st.value("Prefix").isNull())) {
-                    pair.first = "Prefix";
-                    pair.second = st.value("Prefix").toString();
-                    tags.append(pair);
+                    quad.first = "Prefix";
+                    quad.second = st.value("Prefix").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Stem").isNull())) {
-                    pair.first = "Stem";
-                    pair.second = st.value("Stem").toString();
-                    tags.append(pair);
+                    quad.first = "Stem";
+                    quad.second = st.value("Stem").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Suffix").isNull())) {
-                    pair.first = "Suffix";
-                    pair.second = st.value("Suffix").toString();
-                    tags.append(pair);
+                    quad.first = "Suffix";
+                    quad.second = st.value("Suffix").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Prefix-POS").isNull())) {
-                    pair.first = "Prefix-POS";
-                    pair.second = st.value("Prefix-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Prefix-POS";
+                    quad.second = st.value("Prefix-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Stem-POS").isNull())) {
-                    pair.first = "Stem-POS";
-                    pair.second = st.value("Stem-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Stem-POS";
+                    quad.second = st.value("Stem-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Suffix-POS").isNull())) {
-                    pair.first = "Suffix-POS";
-                    pair.second = st.value("Suffix-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Suffix-POS";
+                    quad.second = st.value("Suffix-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Gloss").isNull())) {
-                    pair.first = "Gloss";
-                    pair.second = st.value("Gloss").toString();
-                    tags.append(pair);
+                    quad.first = "Gloss";
+                    quad.second = st.value("Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Category").isNull())) {
-                    pair.first = "Category";
-                    pair.second = st.value("Category").toString();
-                    tags.append(pair);
+                    quad.first = "Category";
+                    quad.second = st.value("Category").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
             }
 
@@ -1395,7 +1443,7 @@ void AMTMainWindow::difference() {
                      tr("The <b>Tag Types File</b> has a wrong format"));
     }
 
-    foreach(QVariant type, resulttt["TagSet"].toList()) {
+    foreach(QVariant type, resulttt["TagTypeSet"].toList()) {
         QString tag;
         QString desc;
         int id;
@@ -1420,44 +1468,86 @@ void AMTMainWindow::difference() {
 
         if(!typeElements.value("Features").isNull()) {
 
-            QVector < QPair < QString, QString> > tags;
+            QVector < Quadruple< QString , QString , QString , QString > > tags;
             foreach(QVariant sarfTags, typeElements["Features"].toList()) {
                 QVariantMap st = sarfTags.toMap();
-                QPair<QString, QString> pair;
+                Quadruple< QString , QString , QString , QString > quad;
                 if(!(st.value("Prefix").isNull())) {
-                    pair.first = "Prefix";
-                    pair.second = st.value("Prefix").toString();
-                    tags.append(pair);
+                    quad.first = "Prefix";
+                    quad.second = st.value("Prefix").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Stem").isNull())) {
-                    pair.first = "Stem";
-                    pair.second = st.value("Stem").toString();
-                    tags.append(pair);
+                    quad.first = "Stem";
+                    quad.second = st.value("Stem").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Suffix").isNull())) {
-                    pair.first = "Suffix";
-                    pair.second = st.value("Suffix").toString();
-                    tags.append(pair);
+                    quad.first = "Suffix";
+                    quad.second = st.value("Suffix").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Prefix-POS").isNull())) {
-                    pair.first = "Prefix-POS";
-                    pair.second = st.value("Prefix-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Prefix-POS";
+                    quad.second = st.value("Prefix-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Stem-POS").isNull())) {
-                    pair.first = "Stem-POS";
-                    pair.second = st.value("Stem-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Stem-POS";
+                    quad.second = st.value("Stem-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Suffix-POS").isNull())) {
-                    pair.first = "Suffix-POS";
-                    pair.second = st.value("Suffix-POS").toString();
-                    tags.append(pair);
+                    quad.first = "Suffix-POS";
+                    quad.second = st.value("Suffix-POS").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
                 else if(!(st.value("Gloss").isNull())) {
-                    pair.first = "Gloss";
-                    pair.second = st.value("Gloss").toString();
-                    tags.append(pair);
+                    quad.first = "Gloss";
+                    quad.second = st.value("Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
                 }
             }
 

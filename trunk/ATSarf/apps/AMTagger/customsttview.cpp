@@ -41,12 +41,12 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     connect(btnClose, SIGNAL(clicked()), this, SLOT(btnClose_clicked()));
 
     //grid->addWidget(btnSave,14,5);
-    grid->addWidget(btnSelect,5,2);
-    grid->addWidget(btnUnselect,6,2);
-    grid->addWidget(btnAdd,2,2);
-    grid->addWidget(btnRemove,3,2);
-    grid->addWidget(btnLoad,14,5);
-    grid->addWidget(btnClose,14,6);
+    grid->addWidget(btnSelect,6,2);
+    grid->addWidget(btnUnselect,7,2);
+    grid->addWidget(btnAdd,3,2);
+    grid->addWidget(btnRemove,4,2);
+    grid->addWidget(btnLoad,14,7);
+    grid->addWidget(btnClose,14,8);
     //grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
@@ -61,24 +61,47 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     lblBold = new QLabel(tr("Bold:"), this);
     lblItalic = new QLabel(tr("Italic:"), this);
     lblUnderline = new QLabel(tr("Underline:"), this);
+    //lblSynStep = new QLabel(tr("Synonym within\nSteps"), this);
 
     grid->addWidget(lblPattern,1,0);
     grid->addWidget(lblFeatures,0,0);
     grid->addWidget(lblTagName,0,3);
-    grid->addWidget(lblDescription,0,5);//7,3
-    grid->addWidget(lblFGColor,3,5);
-    grid->addWidget(lblBGColor,4,5);
-    grid->addWidget(lblFont,5,5);
-    grid->addWidget(lblBold,6,5);
-    grid->addWidget(lblItalic,7,5);
-    grid->addWidget(lblUnderline,8,5);
+    grid->addWidget(lblDescription,0,7);//7,3
+    grid->addWidget(lblFGColor,3,7);
+    grid->addWidget(lblBGColor,4,7);
+    grid->addWidget(lblFont,5,7);
+    grid->addWidget(lblBold,6,7);
+    grid->addWidget(lblItalic,7,7);
+    grid->addWidget(lblUnderline,8,7);
 
     editPattern = new QLineEdit(this);
     connect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
     editDescription = new QTextEdit(this);
 
     grid->addWidget(editPattern,1,1);
-    grid->addWidget(editDescription,1,5,2,2);
+    grid->addWidget(editDescription,1,7,2,2);
+
+    /** Syn GroupBox **/
+
+    cbSyn = new QCheckBox(tr("Synonym within \nSteps"), this);
+    sbSynStep = new QSpinBox(this);
+    gbSyn = new QGroupBox(tr("SynSet"),this);
+
+    cbSyn->setChecked(false);
+    connect(cbSyn,SIGNAL(clicked(bool)),this,SLOT(cbSynEnable_checked(bool)));
+    sbSynStep->setMinimum(1);
+    sbSynStep->setMaximum(7);
+    sbSynStep->setValue(1);
+    sbSynStep->setEnabled(false);
+    QHBoxLayout *hbox = new QHBoxLayout;
+    hbox->addWidget(cbSyn);
+    hbox->addWidget(sbSynStep);
+    gbSyn->setLayout(hbox);
+    gbSyn->setEnabled(false);
+
+    grid->addWidget(gbSyn,15,0,2,2);
+
+    /** End **/
 
     /** random color routine **/
 
@@ -98,8 +121,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
     /** end of routine **/
 
-    grid->addWidget(colorfgcolor,3,6);
-    grid->addWidget(colorbgcolor,4,6);
+    grid->addWidget(colorfgcolor,3,8);
+    grid->addWidget(colorbgcolor,4,8);
 
     cbfont = new QComboBox(this);
     for(int i=5; i<20; i++) {
@@ -127,7 +150,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbTagType->addItem("Gloss");
     cbTagType->addItem("Category");
 
-    grid->addWidget(cbfont,5,6);
+    grid->addWidget(cbfont,5,8);
     grid->addWidget(cbTagName,0,4);
     grid->addWidget(cbTagType,0,1);
 
@@ -136,32 +159,33 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbItalic = new QCheckBox(this);
     cbCaseSensetive = new QCheckBox(this);
     cbCaseSensetive->setText("Case Sensetive");
-    //cbContain = new QCheckBox(this);
-    //cbContain->setText("Contain");
+    cbContain = new QCheckBox(this);
+    cbContain->setText("? Contain : isA");
 
     connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
 
-    grid->addWidget(cbBold,6,6);
-    grid->addWidget(cbItalic,7,6);
-    grid->addWidget(cbunderline,8,6);
-    grid->addWidget(cbCaseSensetive,1,2);
-    //grid->addWidget(cbContain,0,2);
-    //cbContain->setEnabled(false);
+    grid->addWidget(cbBold,6,8);
+    grid->addWidget(cbItalic,7,8);
+    grid->addWidget(cbunderline,8,8);
+    grid->addWidget(cbCaseSensetive,2,2);
+    grid->addWidget(cbContain,1,2);
+    cbContain->setEnabled(false);
 
     listPossibleTags = new QListWidget(this);
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
     listSelectedTags = new QTreeWidget(this);
-    listSelectedTags->setColumnCount(2);
+    listSelectedTags->setColumnCount(4);
     QStringList columnsD;
-    columnsD << "Feature" << "Value";
+    columnsD << "Negation" << "Feature" << "Relation" << "Value";
     QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
     listSelectedTags->setHeaderItem(itemD);
     listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
+    connect(listSelectedTags,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_doubleclicked(QTreeWidgetItem*,int)));
 
     grid->addWidget(listPossibleTags,2,0,12,2);
-    grid->addWidget(listSelectedTags,1,3,13,2);
+    grid->addWidget(listSelectedTags,1,3,13,4);
 
     QWidget *widget = new QWidget(this);
 
@@ -212,12 +236,12 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
                 for(int i=0; i<stt->tags.count(); i++) {
                     QStringList list;
                     if(stt->tags.at(i).first != "Category") {
-                        list << stt->tags.at(i).first << stt->tags.at(i).second;
+                        list << stt->tags.at(i).third <<stt->tags.at(i).first << stt->tags.at(i).fourth <<stt->tags.at(i).second;
                     }
                     else {
                         for(int j=0; j< listCategoryId.count();j++) {
                             if(listCategoryId[j] == stt->tags.at(i).second) {
-                                list << stt->tags.at(i).first << listCategory[j];
+                                list << stt->tags.at(i).third << stt->tags.at(i).first << stt->tags.at(i).fourth << listCategory[j];
                             }
                         }
                     }
@@ -261,7 +285,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
         if(_atagger->tagTypeVector->at(i)->source == sarf) {
             SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
-            QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+            QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
             SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
             sttVector->append(stt);
 
@@ -273,12 +297,74 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     }
 }
 
+void CustomSTTView::selectedTags_doubleclicked(QTreeWidgetItem *item, int i) {
+    if((item == NULL) || (i != 0)) {
+        return;
+    }
+    SarfTagType * stt;
+    for(int j=0; j<sttVector->count(); j++) {
+        if(sttVector->at(j)->tag == cbTagName->currentText()) {
+            stt = (SarfTagType*)((*(sttVector))[j]);
+            break;
+        }
+    }
+
+    QString text = item->text(0);
+    if(text.compare("NOT") == 0) {
+        item->setText(0,QString());
+        for(int j=0; j < stt->tags.count(); j++) {
+            if((stt->tags.at(j).first == item->text(1)) && (stt->tags.at(j).second == item->text(3)) ) {
+                stt->tags[j].third = "";
+            }
+        }
+    }
+    else {
+        item->setText(0,"NOT");
+        for(int j=0; j < stt->tags.count(); j++) {
+            if(stt->tags.at(j).first.compare("Category") == 0) {
+                int index = -1;
+                QString value;
+                for(int k=0; k<listCategory.size(); k++) {
+                    if(listCategory[k] == item->text(3)) {
+                        index = k;
+                        break;
+                    }
+                }
+                if(index != -1) {
+                    value = listCategoryId[index];
+                }
+                if(stt->tags.at(j).second.compare(value) == 0) {
+                    stt->tags[j].third = "NOT";
+                }
+            }
+            else if((stt->tags.at(j).first == item->text(1)) && (stt->tags.at(j).second == item->text(3)) ) {
+                stt->tags[j].third = "NOT";
+            }
+        }
+    }
+    listSelectedTags->clearSelection();
+    dirty = true;
+}
+
+void CustomSTTView::cbSynEnable_checked(bool isChecked) {
+    if(isChecked) {
+        sbSynStep->setEnabled(true);
+        cbContain->setEnabled(false);
+    }
+    else {
+        sbSynStep->setEnabled(false);
+        cbContain->setEnabled(true);
+    }
+}
+
 void CustomSTTView::cbTagType_changed(QString text) {
     field = text;
     listPossibleTags->clear();
     editPattern->clear();
-    //cbContain->setChecked(false);
-    //cbContain->setEnabled(false);
+    gbSyn->setEnabled(false);
+    cbSyn->setChecked(false);
+    cbContain->setChecked(false);
+    cbContain->setEnabled(false);
     if(field == "Prefix") {
         listPossibleTags->addItems(listPrefix);
     }
@@ -306,7 +392,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
             listStems.removeDuplicates();
         }
         listPossibleTags->addItems(listStems);
-        //cbContain->setEnabled(true);
+        cbContain->setEnabled(true);
     }
     else if(field == "Stem-POS") {
         if(listStemPOS.isEmpty()) {
@@ -356,7 +442,8 @@ void CustomSTTView::cbTagType_changed(QString text) {
             }
         }
         listPossibleTags->addItems(listGloss);
-        //cbContain->setEnabled(true);
+        gbSyn->setEnabled(true);
+        cbContain->setEnabled(true);
     }
     else if(field == "Category") {
         listPossibleTags->addItems(listCategory);
@@ -456,7 +543,7 @@ void CustomSTTView::btnAdd_clicked() {
     colorbgcolor->setColor(QColor("Yellow"));
 #endif
 
-    QVector < QPair< QString, QString > > tags;
+    QVector < Quadruple< QString , QString , QString , QString > > tags;
     int id = sttVector->count();
     QString fgcolor = colorfgcolor->color().name();
     QString bgcolor = colorbgcolor->color().name();
@@ -492,7 +579,28 @@ void CustomSTTView::btnSelect_clicked() {
     foreach(QListWidgetItem* item, listPossibleTags->selectedItems()) {
 
         QStringList list;
-        list << field << item->text();
+        QString relation = "isA";
+        list << "  " << field;
+        if((field.compare("Gloss") == 0) || (field.compare("Stem") == 0)) {
+            if(cbContain->isEnabled() && cbContain->isChecked()) {
+                list << "contains" << item->text();
+                relation = "contains";
+            }
+            else if(gbSyn->isEnabled() && cbSyn->isChecked()) {
+                QString synStep = "Syn ";
+                synStep.append(sbSynStep->text());
+                synStep.append(" of");
+                list << synStep << item->text();
+                relation = "Syn";
+                relation.append(sbSynStep->text());
+            }
+            else {
+                list << relation << item->text();
+            }
+        }
+        else {
+            list << relation << item->text();
+        }
         listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
         QString value = item->text();
         if(field == "Category") {
@@ -507,7 +615,7 @@ void CustomSTTView::btnSelect_clicked() {
                 value = listCategoryId[index];
             }
         }
-        QPair <QString, QString> pair(field, value);
+        Quadruple< QString , QString , QString , QString > pair(field, value, QString() , relation);
         stt->tags.append(pair);
     }
     listSelectedTags->sortItems(0,Qt::AscendingOrder);
@@ -536,8 +644,10 @@ void CustomSTTView::btnUnselect_clicked() {
     for(int i=0; i<listSelectedTags->topLevelItemCount(); i++) {
         QString data1 = listSelectedTags->topLevelItem(i)->text(0);
         QString data2 = listSelectedTags->topLevelItem(i)->text(1);
-        QPair <QString, QString> pair(data1, data2);
-        stt->tags.append(pair);
+        QString data3 = listSelectedTags->topLevelItem(i)->text(2);
+        QString data4 = listSelectedTags->topLevelItem(i)->text(3);
+        Quadruple< QString , QString , QString , QString > quad(data2, data4, data1, data3);
+        stt->tags.append(quad);
     }
 }
 
@@ -613,7 +723,7 @@ void CustomSTTView::btnLoad_clicked() {
          bool ok;
 
          QVariantMap result = parser.parse(sarfTT,&ok).toMap();
-         foreach(QVariant type, result["TagSet"].toList()) {
+         foreach(QVariant type, result["TagTypeSet"].toList()) {
              QVariantMap typeElements = type.toMap();
 
              QString tag = typeElements["Tag"].toString();
@@ -626,49 +736,97 @@ void CustomSTTView::btnLoad_clicked() {
              bool bold = typeElements["bold"].toBool();
              bool italic = typeElements["italic"].toBool();
 
-             QVector < QPair < QString, QString> > tags;
+             QVector < Quadruple< QString , QString , QString , QString > > tags;
              foreach(QVariant sarfTags, typeElements["Features"].toList()) {
                  QVariantMap st = sarfTags.toMap();
-                 QPair<QString, QString> pair;
+                 Quadruple< QString , QString , QString , QString > quad;
                  if(!(st.value("Prefix").isNull())) {
-                     pair.first = "Prefix";
-                     pair.second = st.value("Prefix").toString();
-                     tags.append(pair);
+                     quad.first = "Prefix";
+                     quad.second = st.value("Prefix").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Stem").isNull())) {
-                     pair.first = "Stem";
-                     pair.second = st.value("Stem").toString();
-                     tags.append(pair);
+                     quad.first = "Stem";
+                     quad.second = st.value("Stem").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Suffix").isNull())) {
-                     pair.first = "Suffix";
-                     pair.second = st.value("Suffix").toString();
-                     tags.append(pair);
+                     quad.first = "Suffix";
+                     quad.second = st.value("Suffix").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Prefix-POS").isNull())) {
-                     pair.first = "Prefix-POS";
-                     pair.second = st.value("Prefix-POS").toString();
-                     tags.append(pair);
+                     quad.first = "Prefix-POS";
+                     quad.second = st.value("Prefix-POS").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Stem-POS").isNull())) {
-                     pair.first = "Stem-POS";
-                     pair.second = st.value("Stem-POS").toString();
-                     tags.append(pair);
+                     quad.first = "Stem-POS";
+                     quad.second = st.value("Stem-POS").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Suffix-POS").isNull())) {
-                     pair.first = "Suffix-POS";
-                     pair.second = st.value("Suffix-POS").toString();
-                     tags.append(pair);
+                     quad.first = "Suffix-POS";
+                     quad.second = st.value("Suffix-POS").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Gloss").isNull())) {
-                     pair.first = "Gloss";
-                     pair.second = st.value("Gloss").toString();
-                     tags.append(pair);
+                     quad.first = "Gloss";
+                     quad.second = st.value("Gloss").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.third = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
                  else if(!(st.value("Category").isNull())) {
-                     pair.first = "Category";
-                     pair.second = st.value("Category").toString();
-                     tags.append(pair);
+                     quad.first = "Category";
+                     quad.second = st.value("Category").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.fourth = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
                  }
              }
 
@@ -703,12 +861,12 @@ void CustomSTTView::btnLoad_clicked() {
              for(int i=0; i<stt->tags.count(); i++) {
                  QStringList list;
                  if(stt->tags.at(i).first != "Category") {
-                     list << stt->tags.at(i).first << stt->tags.at(i).second;
+                     list << stt->tags.at(i).third << stt->tags.at(i).first << stt->tags.at(i).fourth << stt->tags.at(i).second;
                  }
                  else {
                      for(int j=0; j< listCategoryId.count();j++) {
                          if(listCategoryId[j] == stt->tags.at(i).second) {
-                             list << stt->tags.at(i).first << listCategory[j];
+                             list << stt->tags.at(i).third << stt->tags.at(i).first << stt->tags.at(i).fourth << listCategory[j];
                          }
                      }
                  }
@@ -841,12 +999,12 @@ void CustomSTTView::tagName_changed(QString name) {
                 for(int j=0; j<stt->tags.count(); j++) {
                     QStringList list;
                     if(stt->tags.at(j).first != "Category") {
-                        list << stt->tags.at(j).first << stt->tags.at(j).second;
+                        list << stt->tags.at(i).third << stt->tags.at(j).first << stt->tags.at(i).fourth << stt->tags.at(j).second;
                     }
                     else {
                         for(int k=0; k< listCategoryId.count();k++) {
                             if(listCategoryId[k] == stt->tags.at(j).second) {
-                                list << stt->tags.at(j).first << listCategory[k];
+                                list << stt->tags.at(i).third << stt->tags.at(j).first << stt->tags.at(i).fourth << listCategory[k];
                             }
                         }
                     }
@@ -995,7 +1153,7 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
 
                  if(sttVector->at(i)->source == sarf) {
                      SarfTagType* _stt = (SarfTagType*)(sttVector->at(i));
-                     QVector< QPair< QString , QString > > tags = QVector< QPair<QString,QString> >(_stt->tags);
+                     QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
                      SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
                      _atagger->tagTypeVector->append(stt);
 
