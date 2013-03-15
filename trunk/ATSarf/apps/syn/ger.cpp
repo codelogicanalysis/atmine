@@ -3,9 +3,10 @@
 #include <QStringList>
 #include <QHash>
 
-GER::GER(QString word, int order) {
+GER::GER(QString word, int input, int order) {
 
     this->word = word;
+    this->input = input;
     this->order = order;
 };
 
@@ -60,37 +61,51 @@ bool GER::operator ()() {
         }
     }
 
-    /** Get all stems of the input word **/
-    Gamma gamma(&word);
-    gamma();
-
-    QStringList * stems = gamma.getStems();
-
-    for(int i=0; i< stems->count(); i++) {
-        this->wStem.insert(stems->at(i), stems->at(i));
-    }
     /** Get all glosses and dictionary entries for "word" stems **/
     QHash<QString, QString> wGloss;
 
     /** This structure holds gloss -> source stem/desc_id/glosses */
     QHash<QString, SDG> sdgHash;
 
-    for(int i=0; i<stems->count(); i++) {
+    if(input == 0) {
+        /** Get all stems of the input word **/
+        Gamma gamma(&word);
+        gamma();
 
-        QString stem = (*stems)[i];
-        QVector<DescIdGloss> glosses = getGlosses(&stem);
+        QStringList * stems = gamma.getStems();
+
+        for(int i=0; i< stems->count(); i++) {
+            this->wStem.insert(stems->at(i), stems->at(i));
+        }
+
+        for(int i=0; i<stems->count(); i++) {
+
+            QString stem = (*stems)[i];
+            QVector<DescIdGloss> glosses = getGlosses(&stem);
 
 
-        for(int j=0; j<glosses.count(); j++) {
+            for(int j=0; j<glosses.count(); j++) {
 
-            if(!(wGloss.contains(glosses[j].gloss))) {
-                wGloss.insert(glosses[j].gloss, stem);
+                if(!(wGloss.contains(glosses[j].gloss))) {
+                    wGloss.insert(glosses[j].gloss, stem);
 
-                SDG sdg(stem,glosses[j].desc_Id, "BLANK");
-                sdgHash.insert(glosses[j].gloss, sdg);
+                    SDG sdg(stem,glosses[j].desc_Id, "BLANK");
+                    sdgHash.insert(glosses[j].gloss, sdg);
+                }
             }
         }
     }
+    else {
+        QStringList initgloss = word.split('/', QString::SkipEmptyParts);
+        for(int i=0; i< initgloss.count(); i++) {
+            if(!(wGloss.contains(initgloss[i]))) {
+                wGloss.insert(initgloss[i], "BLANK");
+                SDG sdg("BLANK","BLANK", "BLANK");
+                sdgHash.insert(initgloss[i], sdg);
+            }
+        }
+    }
+
     /** Find Synonymity of entered order
       * If entered order us infinity, get all possible matches for undefined order
       **/
@@ -187,6 +202,7 @@ bool GER::operator ()() {
                     QString sStem = newGS.value(gloss);
                     IGS igs(id,gloss,tempStems[j], sStem);
                     descT.push_back(igs);
+                    //descT.insert(gloss,igs);
                     stop = false;
                 }
 
@@ -216,14 +232,28 @@ bool GER::operator ()() {
         iteration++;;
     }
 
-    theSarf->out << "\nThe list of related words for order " << order << " at iteration " << iteration << " are:\n";
-    theSarf->out << "\"Stem\"" << '\t' << "\"Source desc_id\"" << '\t' << "\"Source Gloss\"" << '\t' << "\"Gloss Source desc_id\"" << '\t' << "\"Source Gloss of Gloss\"" << '\t' << "\"Source Stem\"" << '\n';
+    if(input == 0) {
+        theSarf->out << "\nThe list of related words for order " << order << " at iteration " << iteration << " are:\n";
+        theSarf->out << "\"Stem\"" << '\t' << "\"Source desc_id\"" << '\t' << "\"Source Gloss\"" << '\t' << "\"Gloss Source desc_id\"" << '\t' << "\"Source Gloss of Gloss\"" << '\t' << "\"Source Stem\"" << '\n';
 
-    for(int i=0; i<descT.count(); i++) {
-        theSarf->out << descT[i].getStem() << '\t' << descT[i].getId() << '\t' << descT[i].getGloss() << '\t';
-        theSarf->out << sdgHash[descT[i].getGloss()].desc_id << '\t';
-        theSarf->out << sdgHash[descT[i].getGloss()].gloss << '\t';
-        theSarf->out << descT[i].getsStem() << '\n';
+        /*
+        QHashIterator<QString, IGS> igsIterator(descT);
+        while (igsIterator.hasNext()) {
+            igsIterator.next();
+            const IGS & igs = igsIterator.value();
+            theSarf->out << igs.getStem() << '\t' << igs.getId() << '\t' << igs.getGloss() << '\t';
+            theSarf->out << sdgHash[igs.getGloss()].desc_id << '\t';
+            theSarf->out << sdgHash[igs.getGloss()].gloss << '\t';
+            theSarf->out << igs.getsStem() << '\n';
+        }
+        */
+        for(int i=0; i<descT.count(); i++) {
+            const IGS & igs = descT[i];
+            theSarf->out << igs.getStem() << '\t' << igs.getId() << '\t' << igs.getGloss() << '\t';
+            theSarf->out << sdgHash[igs.getGloss()].desc_id << '\t';
+            theSarf->out << sdgHash[igs.getGloss()].gloss << '\t';
+            theSarf->out << igs.getsStem() << '\n';
+        }
     }
 
     return true;

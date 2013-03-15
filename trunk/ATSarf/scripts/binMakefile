@@ -78,16 +78,16 @@ mtest: $(MTEST_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(MTEST_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(ATSarf_LIBS) $(QJSON_LIBS)
-TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger $(ATSarf_LIBS_LINKFLAGS4)
+TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(TOP)/lib/libsyn.a $(ATSarf_LIBS) $(QJSON_LIBS)
+TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger -lsyn $(ATSarf_LIBS_LINKFLAGS4)
 
 tagger: $(TAGGER_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS) \
 		$(QJSON_LIB_LDDFLAGS)
 
-SYN_LIBDIR = $(TOP)/lib/libsyn.a $(ATSarf_LIBS)
-SYN_LIBS_LINKFLAGS=-L$(TOP)/lib -lsyn $(ATSarf_LIBS_LINKFLAGS4)
+SYN_LIBDIR = $(TOP)/lib/libsyntest.a $(TOP)/lib/libsyn.a $(ATSarf_LIBS)
+SYN_LIBS_LINKFLAGS=-L$(TOP)/lib -lsyntest -lsyn $(ATSarf_LIBS_LINKFLAGS4)
 
 syn: $(SYN_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(SYN_LIBS_LINKFLAGS) \

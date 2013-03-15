@@ -18,7 +18,8 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../../../src/sql \
     ../../../src/util \
     ../../../src/case \
-    ../../../apps/gui
+    ../../../apps/gui \
+    ../../../apps/syn
 
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
@@ -93,7 +94,12 @@ HEADERS += \
     ../sarftag.h \
     ../customsttview.h \
     ../sarftagtype.h \
-    ../diffview.h
+    ../diffview.h \
+    ../../syn/myprogressifc.h \
+    ../../syn/getGloss.h \
+    ../../syn/ger.h \
+    ../../syn/gamma.h \
+    ../../syn/alpha.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -148,7 +154,11 @@ SOURCES += \
     ../sarftag.cpp \
     ../customsttview.cpp \
     ../sarftagtype.cpp \
-    ../diffview.cpp
+    ../diffview.cpp \
+    ../../syn/getGloss.cpp \
+    ../../syn/ger.cpp \
+    ../../syn/gamma.cpp \
+    ../../syn/alpha.cpp
 
 FORMS    +=
 

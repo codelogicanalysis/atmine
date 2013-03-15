@@ -1,6 +1,8 @@
 #include "sarftag.h"
 #include "global.h"
 #include "amtmainwindow.h"
+#include "ger.h"
+#include "getGloss.h"
 
 class AMTMainWindow;
 
@@ -9,6 +11,34 @@ SarfTag::SarfTag(int start, int length, QString *text, QWidget *parent): Stemmer
     this->text = *text;
     this->start = start;
     this->length = length;
+
+    for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
+
+        /** Check if tag source is sarf tag types **/
+        if(_atagger->tagTypeVector->at(i)->source != sarf) {
+            continue;
+        }
+
+        const SarfTagType * tagtype = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+        for(int j=0; j < (tagtype->tags.count()); j++) {
+            const Quadruple< QString , QString , QString , QString > * tag = &(tagtype->tags.at(j));
+            if(tag->fourth.contains("Syn")) {
+
+                int order = tag->fourth.mid(3).toInt();
+                GER ger(tag->second,1,order);
+                ger();
+
+                QString gloss_order = tag->second;
+                gloss_order.append(QString::number(order));
+                QHash<QString, QString> glossSynHash;
+                for(int i=0; i<ger.descT.count(); i++) {
+                    const IGS & igs = ger.descT[i];
+                    glossSynHash.insert(igs.getGloss(),igs.getGloss());
+                }
+                synSetHash.insert(gloss_order,QHash<QString,QString>(glossSynHash));
+            }
+        }
+    }
 }
 
 bool SarfTag::on_match() {
@@ -40,7 +70,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(contain) {
+                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
                     belong = true;
                     break;
                 }
@@ -51,12 +81,30 @@ bool SarfTag::on_match() {
             else if(tag->first == "Stem") {
 
                 minimal_item_info & stem = *stem_info;
-                if(stem.raw_data == tag->second) {
-                    belong = true;
-                    break;
+
+                // check if the relation is isA or contains
+                bool isA = true;
+                if(tag->fourth.compare("contains") == 0 ) {
+                    isA = false;
+                }
+
+                if((isA && stem.raw_data == tag->second) || ((!isA) && stem.raw_data.contains(tag->second))) {
+                    if(tag->third.compare("NOT") != 0) {
+                        belong = true;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
                 }
                 else {
-                    continue;
+                    if(tag->third.compare("NOT") == 0) {
+                        belong = true;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
                 }
             }
             else if(tag->first == "Category") {
@@ -73,9 +121,12 @@ bool SarfTag::on_match() {
                         }
                     }
                 }
-                if(contain) {
+                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
                     belong = true;
                     break;
+                }
+                else {
+                    continue;
                 }
             }
             else if(tag->first == "Suffix") {
@@ -90,7 +141,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(contain) {
+                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
                     belong = true;
                     break;
                 }
@@ -102,11 +153,23 @@ bool SarfTag::on_match() {
 
                 minimal_item_info & stem = *stem_info;
                 if(stem.POS.contains(tag->second,Qt::CaseSensitive)) {
-                    belong = true;
-                    break;
+
+                    if(tag->third.compare("NOT") != 0) {
+                        belong = true;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
                 }
                 else {
-                    continue;
+                    if(tag->third.compare("NOT") == 0) {
+                        belong = true;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
                 }
             }
             else if(tag->first == "Prefix-POS") {
@@ -122,7 +185,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(contain) {
+                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
                     belong = true;
                     break;
                 }
@@ -143,7 +206,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if(contain) {
+                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
                     belong = true;
                     break;
                 }
@@ -153,46 +216,142 @@ bool SarfTag::on_match() {
             }
             else if(tag->first == "Gloss") {
 
-                for(int k=0;k<prefix_infos->size();k++) {
+                if(tag->fourth.contains("Syn")) {
+                    int order = tag->fourth.mid(3).toInt();
+                    //GER ger(tag->first,1,order);
+                    //ger();
+                    QString gloss_order = tag->second;
+                    gloss_order.append(QString::number(order));
+                    const QHash<QString,QString> & glossSynHash = synSetHash.value(gloss_order);
 
-                    minimal_item_info & pre = (*prefix_infos)[k];
-                    if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
-                            continue;
+                    minimal_item_info & stem = *stem_info;
+                    QStringList stem_glosses = getGloss(stem.description());
+                    for(int k=0; k < stem_glosses.count(); k++) {
+                        if(glossSynHash.contains(stem_glosses[k])) {
+                            contain = true;
+                            break;
+                        }
+                    }
 
-                    if(pre.description().split('/').contains(tag->second)) {
-                        contain = true;
+                    if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                        belong = true;
                         break;
                     }
-                }
-
-                if(contain) {
-                   belong = true;
-                   break;
-                }
-
-                minimal_item_info & stem = *stem_info;
-                if(stem.description().split('/').contains(tag->second)) {
-                    belong = true;
-                    break;
-                }
-
-                for(int k=0;k<suffix_infos->size();k++) {
-
-                    minimal_item_info & suff = (*suffix_infos)[k];
-                    if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
-                            continue;
-
-                    if(suff.description().split('/').contains(tag->second)) {
-                        contain = true;
-                        break;
+                    else {
+                        continue;
                     }
-                }
-                if(contain) {
-                    belong = true;
-                    break;
                 }
                 else {
-                    continue;
+                    // Check for isA or contain relation
+                    bool isA = true;
+                    if(tag->fourth.compare("contains") == 0) {
+                        isA = false;
+                    }
+
+                    QStringList second_glosses = getGloss(tag->second);
+                    // check prefix glosses
+
+                    for(int k=0;k<prefix_infos->size();k++) {
+
+                        minimal_item_info & pre = (*prefix_infos)[k];
+                        if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
+                                continue;
+
+                        QStringList pre_glosses = getGloss(pre.description());
+                        for(int n=0; n<second_glosses.count(); n++) {
+                            if( isA && pre_glosses.contains(second_glosses[n])) {
+                                contain = true;
+                                break;
+                            }
+                            else if(!isA) {
+                                for(int m=0; m< pre_glosses.count(); m++) {
+                                    QString gloss = pre_glosses[m];
+                                    if(gloss.contains(second_glosses[n])) {
+                                        contain = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(contain) {
+                                break;
+                            }
+                        }
+                        if(contain) {
+                            break;
+                        }
+                    }
+
+                    if((contain && (tag->third.compare("NOT") != 0))) {
+                        belong = true;
+                        break;
+                    }
+
+                    // check stem glosses
+
+                    minimal_item_info & stem = *stem_info;
+                    QStringList stem_glosses = getGloss(stem.description());
+                    //QStringList second_glosses = getGloss(tag->second);
+                    for(int k=0; k<second_glosses.count(); k++) {
+                        if(isA && stem_glosses.contains(second_glosses[k])) {
+                            contain = true;
+                            break;
+                        }
+                        else if(!isA) {
+                            for(int m=0; m< stem_glosses.count(); m++) {
+                                QString gloss = stem_glosses[m];
+                                if(gloss.contains(second_glosses[k])) {
+                                    contain = true;
+                                    break;
+                                }
+                            }
+                            if(contain) {
+                                break;
+                            }
+                        }
+                    }
+                    if(contain && (tag->third.compare("NOT") != 0)) {
+                        belong = true;
+                        break;
+                    }
+
+                    // check suffix glosses
+
+                    for(int k=0;k<suffix_infos->size();k++) {
+
+                        minimal_item_info & suff = (*suffix_infos)[k];
+                        if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+                                continue;
+
+                        QStringList suff_glosses = getGloss(suff.description());
+                        for(int n=0; n<second_glosses.count(); n++) {
+                            if(isA && suff_glosses.contains(second_glosses[n])) {
+                                contain = true;
+                                break;
+                            }
+                            else if(!isA) {
+                                for(int m=0; m< suff_glosses.count(); m++) {
+                                    QString gloss = suff_glosses[m];
+                                    if(gloss.contains(second_glosses[n])) {
+                                        contain = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(contain) {
+                                break;
+                            }
+                        }
+                        if(contain) {
+                            break;
+                        }
+                    }
+                    if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                        belong = true;
+                        break;
+                    }
+                    else {
+                        continue;
+                    }
                 }
             }
         }

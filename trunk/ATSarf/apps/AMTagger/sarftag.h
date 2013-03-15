@@ -1,5 +1,6 @@
 #ifndef SARFTAG_H
 #define SARFTAG_H
+#include <QHash>
 #include "stemmer.h"
 #include "ATMProgressIFC.h"
 
@@ -15,6 +16,7 @@ private:
     QString RelatedW;
     int start;
     int length;
+    QHash< QString, QHash<QString, QString> > synSetHash;
 };
 
 #endif // SARFTAG_H

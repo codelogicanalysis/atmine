@@ -29,16 +29,16 @@ public:
         this->sStem = sstem;
     }
 
-    QString getId() {
+    QString getId() const {
         return sDesc_id;
     }
-    QString getGloss() {
+    QString getGloss() const {
         return sGloss;
     }
-    QString getStem() {
+    QString getStem() const {
         return cStem;
     }
-    QString getsStem() {
+    QString getsStem() const {
         return sStem;
     }
 };
@@ -46,14 +46,17 @@ public:
 class GER
 {
   public:
-	GER(QString word, int order = infinity);
+        GER(QString word, int input = 0 ,int order = infinity);
 	bool operator()();
+        /// List to store triplet desc_id, source gloss, source stem
+        QVector<IGS> descT;
+        /// Consider the key to be the source gloss
+        //QHash<QString,IGS> descT;
 
  private:
 	QString word;
+        int input;
 	int order;
-        /// List to store triplet desc_id, source gloss, source stem
-        QVector<IGS> descT;
         //QStringList wStem;
         QHash<QString, QString> wStem;
 };
