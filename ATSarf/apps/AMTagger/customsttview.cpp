@@ -45,8 +45,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnUnselect,7,2);
     grid->addWidget(btnAdd,3,2);
     grid->addWidget(btnRemove,4,2);
-    grid->addWidget(btnLoad,14,7);
-    grid->addWidget(btnClose,14,8);
+    grid->addWidget(btnLoad,14,4,1,2);
+    grid->addWidget(btnClose,14,6);
     //grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
@@ -58,34 +58,35 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     lblFGColor = new QLabel(tr("Foregroud Color:"), this);
     lblBGColor = new QLabel(tr("Background Color:"), this);
     lblFont = new QLabel(tr("Font:"), this);
-    lblBold = new QLabel(tr("Bold:"), this);
-    lblItalic = new QLabel(tr("Italic:"), this);
-    lblUnderline = new QLabel(tr("Underline:"), this);
+    lblStep = new QLabel(tr("Steps") , this);
+    //lblBold = new QLabel(tr("Bold:"), this);
+    //lblItalic = new QLabel(tr("Italic:"), this);
+    //lblUnderline = new QLabel(tr("Underline:"), this);
     //lblSynStep = new QLabel(tr("Synonym within\nSteps"), this);
 
     grid->addWidget(lblPattern,1,0);
     grid->addWidget(lblFeatures,0,0);
     grid->addWidget(lblTagName,0,3);
-    grid->addWidget(lblDescription,0,7);//7,3
-    grid->addWidget(lblFGColor,3,7);
-    grid->addWidget(lblBGColor,4,7);
-    grid->addWidget(lblFont,5,7);
-    grid->addWidget(lblBold,6,7);
-    grid->addWidget(lblItalic,7,7);
-    grid->addWidget(lblUnderline,8,7);
+    grid->addWidget(lblDescription,1,6);//7,3
+    grid->addWidget(lblFGColor,4,6);
+    grid->addWidget(lblBGColor,6,6);
+    grid->addWidget(lblFont,8,6);
+    //grid->addWidget(lblBold,6,7);
+    //grid->addWidget(lblItalic,7,7);
+    //grid->addWidget(lblUnderline,8,7);
 
     editPattern = new QLineEdit(this);
     connect(editPattern,SIGNAL(textChanged(QString)),this,SLOT(editPattern_changed(QString)));
     editDescription = new QTextEdit(this);
 
     grid->addWidget(editPattern,1,1);
-    grid->addWidget(editDescription,1,7,2,2);
+    grid->addWidget(editDescription,2,6,2,1);
 
     /** Syn GroupBox **/
 
-    cbSyn = new QCheckBox(tr("Synonym within \nSteps"), this);
+    cbSyn = new QCheckBox(tr("Synonym within"), this);
     sbSynStep = new QSpinBox(this);
-    gbSyn = new QGroupBox(tr("SynSet"),this);
+    gbSyn = new QGroupBox(this);
 
     cbSyn->setChecked(false);
     connect(cbSyn,SIGNAL(clicked(bool)),this,SLOT(cbSynEnable_checked(bool)));
@@ -96,10 +97,11 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     QHBoxLayout *hbox = new QHBoxLayout;
     hbox->addWidget(cbSyn);
     hbox->addWidget(sbSynStep);
+    hbox->addWidget(lblStep);
     gbSyn->setLayout(hbox);
     gbSyn->setEnabled(false);
 
-    grid->addWidget(gbSyn,15,0,2,2);
+    grid->addWidget(gbSyn,15,0,1,2);
 
     /** End **/
 
@@ -121,8 +123,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
 
     /** end of routine **/
 
-    grid->addWidget(colorfgcolor,3,8);
-    grid->addWidget(colorbgcolor,4,8);
+    grid->addWidget(colorfgcolor,5,6);
+    grid->addWidget(colorbgcolor,7,6);
 
     cbfont = new QComboBox(this);
     for(int i=5; i<20; i++) {
@@ -137,6 +139,10 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         cbTagName->addItem(_atagger->tagTypeVector->at(i)->tag);
     }
 
+    cbContain = new QComboBox(this);
+    cbContain->addItem("isA");
+    cbContain->addItem("contains");
+
     connect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
     connect(cbTagName, SIGNAL(currentIndexChanged(QString)), this, SLOT(tagName_changed(QString)));
 
@@ -150,42 +156,39 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbTagType->addItem("Gloss");
     cbTagType->addItem("Category");
 
-    grid->addWidget(cbfont,5,8);
+    grid->addWidget(cbfont,9,6);
     grid->addWidget(cbTagName,0,4);
     grid->addWidget(cbTagType,0,1);
+    grid->addWidget(cbContain,9,2);
 
-    cbunderline = new QCheckBox(this);
-    cbBold = new QCheckBox(this);
-    cbItalic = new QCheckBox(this);
+    cbunderline = new QCheckBox(tr("Underline"), this);
+    cbBold = new QCheckBox(tr("Bold"), this);
+    cbItalic = new QCheckBox(tr("Italic"), this);
     cbCaseSensetive = new QCheckBox(this);
     cbCaseSensetive->setText("Case Sensetive");
-    cbContain = new QCheckBox(this);
-    cbContain->setText("? Contain : isA");
 
     connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
 
-    grid->addWidget(cbBold,6,8);
-    grid->addWidget(cbItalic,7,8);
-    grid->addWidget(cbunderline,8,8);
-    grid->addWidget(cbCaseSensetive,2,2);
-    grid->addWidget(cbContain,1,2);
-    cbContain->setEnabled(false);
+    grid->addWidget(cbBold,10,6);
+    grid->addWidget(cbItalic,11,6);
+    grid->addWidget(cbunderline,12,6);
+    grid->addWidget(cbCaseSensetive,1,2);
 
     listPossibleTags = new QListWidget(this);
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
     listSelectedTags = new QTreeWidget(this);
     listSelectedTags->setColumnCount(4);
     QStringList columnsD;
-    columnsD << "Negation" << "Feature" << "Relation" << "Value";
+    columnsD << QString() << "Feature" << QString() << "Value";
     QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
     listSelectedTags->setHeaderItem(itemD);
     listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
     connect(listSelectedTags,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_doubleclicked(QTreeWidgetItem*,int)));
 
     grid->addWidget(listPossibleTags,2,0,12,2);
-    grid->addWidget(listSelectedTags,1,3,13,4);
+    grid->addWidget(listSelectedTags,1,3,13,3);
 
     QWidget *widget = new QWidget(this);
 
@@ -236,7 +239,11 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
                 for(int i=0; i<stt->tags.count(); i++) {
                     QStringList list;
                     if(stt->tags.at(i).first != "Category") {
-                        list << stt->tags.at(i).third <<stt->tags.at(i).first << stt->tags.at(i).fourth <<stt->tags.at(i).second;
+                        QString four = stt->tags[i].fourth;
+                        if(four.contains("Syn")) {
+                            four.append(" of");
+                        }
+                        list << stt->tags.at(i).third <<stt->tags.at(i).first << four <<stt->tags.at(i).second;
                     }
                     else {
                         for(int j=0; j< listCategoryId.count();j++) {
@@ -313,13 +320,31 @@ void CustomSTTView::selectedTags_doubleclicked(QTreeWidgetItem *item, int i) {
     if(text.compare("NOT") == 0) {
         item->setText(0,QString());
         for(int j=0; j < stt->tags.count(); j++) {
-            if((stt->tags.at(j).first == item->text(1)) && (stt->tags.at(j).second == item->text(3)) ) {
+            if(stt->tags.at(j).first.compare("Category") == 0) {
+                int index = -1;
+                QString value;
+                for(int k=0; k<listCategory.size(); k++) {
+                    if(listCategory[k] == item->text(3)) {
+                        index = k;
+                        break;
+                    }
+                }
+                if(index != -1) {
+                    value = listCategoryId[index];
+                }
+                if(stt->tags.at(j).second.compare(value) == 0) {
+                    stt->tags[j].third = "";
+                }
+            }
+            else if((stt->tags.at(j).first == item->text(1)) && (stt->tags.at(j).second == item->text(3)) ) {
                 stt->tags[j].third = "";
             }
         }
     }
     else {
         item->setText(0,"NOT");
+        QFont serifFont("Times", 8, QFont::Bold);
+        item->setFont(0,serifFont);
         for(int j=0; j < stt->tags.count(); j++) {
             if(stt->tags.at(j).first.compare("Category") == 0) {
                 int index = -1;
@@ -363,7 +388,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
     editPattern->clear();
     gbSyn->setEnabled(false);
     cbSyn->setChecked(false);
-    cbContain->setChecked(false);
+    cbContain->setCurrentIndex(cbContain->findText("isA"));
     cbContain->setEnabled(false);
     if(field == "Prefix") {
         listPossibleTags->addItems(listPrefix);
@@ -582,7 +607,7 @@ void CustomSTTView::btnSelect_clicked() {
         QString relation = "isA";
         list << "  " << field;
         if((field.compare("Gloss") == 0) || (field.compare("Stem") == 0)) {
-            if(cbContain->isEnabled() && cbContain->isChecked()) {
+            if(cbContain->isEnabled() && (cbContain->currentText().compare("contains") == 0)) {
                 list << "contains" << item->text();
                 relation = "contains";
             }
@@ -861,7 +886,11 @@ void CustomSTTView::btnLoad_clicked() {
              for(int i=0; i<stt->tags.count(); i++) {
                  QStringList list;
                  if(stt->tags.at(i).first != "Category") {
-                     list << stt->tags.at(i).third << stt->tags.at(i).first << stt->tags.at(i).fourth << stt->tags.at(i).second;
+                     QString four = stt->tags[i].fourth;
+                     if(four.contains("Syn")) {
+                         four.append(" of");
+                     }
+                     list << stt->tags.at(i).third << stt->tags.at(i).first << four << stt->tags.at(i).second;
                  }
                  else {
                      for(int j=0; j< listCategoryId.count();j++) {

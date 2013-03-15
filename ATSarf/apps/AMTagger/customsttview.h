@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QRadioButton>
 #include <QTreeWidget>
 #include "colorlisteditor.h"
 #include "sarftagtype.h"
@@ -72,9 +73,10 @@ private:
     QLabel *lblFGColor;
     QLabel *lblBGColor;
     QLabel *lblFont;
-    QLabel *lblItalic;
-    QLabel *lblBold;
-    QLabel *lblUnderline;
+    QLabel *lblStep;
+    //QLabel *lblItalic;
+    //QLabel *lblBold;
+    //QLabel *lblUnderline;
 
     QGroupBox * gbSyn;
     QSpinBox * sbSynStep;
@@ -89,12 +91,12 @@ private:
     QComboBox *cbTagType;
     QComboBox *cbTagName;
     QComboBox *cbfont;
+    QComboBox *cbContain;
 
     QCheckBox *cbunderline;
     QCheckBox *cbBold;
     QCheckBox *cbItalic;
     QCheckBox *cbCaseSensetive;
-    QCheckBox *cbContain;
 
     QListWidget *listPossibleTags;
     QTreeWidget *listSelectedTags;
