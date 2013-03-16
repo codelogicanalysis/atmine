@@ -12,6 +12,7 @@ public:
     int pos;
     int length;
     Source source;
+    bool operator == (const Tag& tag) const;
 };
 
 #endif // TAG_H

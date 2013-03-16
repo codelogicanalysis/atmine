@@ -27,10 +27,20 @@ bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest d
 
     Tag tag(type,pos,length,source);
     if(dest == original) {
-        tagVector.append(tag);
+        if(!(tagVector.contains(tag))) {
+            tagVector.append(tag);
+        }
+        else {
+            return false;
+        }
     }
     else {
-        compareToTagVector.append(tag);
+        if(!(compareToTagVector.contains(tag))) {
+            compareToTagVector.append(tag);
+        }
+        else {
+            return false;
+        }
     }
     return true;
 }
