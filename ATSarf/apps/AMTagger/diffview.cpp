@@ -6,7 +6,7 @@
 #include <QScrollArea>
 #include <QSplitter>
 #include <QtAlgorithms>
-#include <QStringBuilder>
+#include <QMessageBox>
 
 bool compareTags(const Tag &tag1, const Tag &tag2) {
     if(tag1.pos != tag2.pos) {
@@ -28,6 +28,8 @@ DiffView::DiffView(QWidget *parent) :
     dock->setAllowedAreas(Qt::LeftDockWidgetArea);
     lblCommon = new QLabel(tr("Common"));
     txtCommon = new QTextBrowser();
+    txtCommon->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtCommon,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenuCommon(const QPoint&)));
     QVBoxLayout *vb1 = new QVBoxLayout;
     vb1->setAlignment(Qt::AlignCenter);
     vb1->addWidget(lblCommon);
@@ -43,6 +45,8 @@ DiffView::DiffView(QWidget *parent) :
     AB.append(second);
     lblForwardDiff = new QLabel(AB);
     txtForwardDiff = new QTextBrowser();
+    txtForwardDiff->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtForwardDiff,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenuForward(const QPoint&)));
     QVBoxLayout *vb2 = new QVBoxLayout;
     vb2->setAlignment(Qt::AlignCenter);
     vb2->addWidget(lblForwardDiff);
@@ -54,6 +58,8 @@ DiffView::DiffView(QWidget *parent) :
     BA.append(first);
     lblReverseDiff = new QLabel(BA);
     txtReverseDiff = new QTextBrowser();
+    txtReverseDiff->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(txtReverseDiff,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenuReverse(const QPoint&)));
     QVBoxLayout *vb3 = new QVBoxLayout;
     vb3->setAlignment(Qt::AlignCenter);
     vb3->addWidget(lblReverseDiff);
@@ -111,6 +117,10 @@ DiffView::DiffView(QWidget *parent) :
     dock->setWidget(txtStats);
     addDockWidget(Qt::RightDockWidgetArea, dock);
 
+    /** Initialize Actions **/
+    createActions();
+    /** End **/
+
     setWindowTitle(tr("Analysis"));
     resize(800,600);
 
@@ -159,6 +169,11 @@ DiffView::DiffView(QWidget *parent) :
         text += reverseTT[i] + '\n';
     }
     txtReverseDiff->setText(text);
+
+    /** Copy two tag vectors **/
+    tVector = new QVector<Tag>(_atagger->tagVector);
+    cttVector = new QVector<Tag>(_atagger->compareToTagVector);
+    dirty = false;
 }
 
 void DiffView::startTaggingText(QString & text) {
@@ -887,4 +902,344 @@ void DiffView::rbBContainA_clicked() {
     text.append(QString::number(fmeasure));
 
     txtStats->setText(text);
+}
+
+void DiffView::createActions() {
+    untagCommonAct = new QAction(tr("Untag"), this);
+    untagCommonAct->setStatusTip(tr("Untag selected word"));
+    connect(untagCommonAct, SIGNAL(triggered()), this, SLOT(untagCommon()));
+
+    untagForwardAct = new QAction(tr("Untag"), this);
+    untagForwardAct->setStatusTip(tr("Untag selected word"));
+    connect(untagForwardAct, SIGNAL(triggered()), this, SLOT(untagForward()));
+
+    untagReverseAct = new QAction(tr("Untag"), this);
+    untagReverseAct->setStatusTip(tr("Untag selected word"));
+    connect(untagReverseAct, SIGNAL(triggered()), this, SLOT(untagReverse()));
+}
+
+void DiffView::showContextMenuCommon(const QPoint &pt) {
+
+    signalMapper = new QSignalMapper(this);
+    QMenu * menu = new QMenu();
+    QMenu * mTags;
+    mTags = menu->addMenu(tr("&Tag"));
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        QAction * taginstance;
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+        mTags->addAction(taginstance);
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagCommon(QString)));
+    menu->addAction(untagCommonAct);
+
+    if(txtCommon->textCursor().selectedText().isEmpty()) {
+        myTC = txtCommon->cursorForPosition(pt);
+        myTC.select(QTextCursor::WordUnderCursor);
+        QString word = myTC.selectedText();
+
+        if(word.isEmpty()) {
+            mTags->setEnabled(false);
+            untagCommonAct->setEnabled(false);
+        }
+        else {
+            untagCommonAct->setEnabled(true);
+        }
+    }
+    else {
+        myTC = txtCommon->textCursor();
+        untagCommonAct->setEnabled(true);
+    }
+    menu->exec(txtCommon->mapToGlobal(pt));
+    delete menu;
+}
+
+bool DiffView::insertTag(QString type, int pos, int length, Source source, Dest dest) {
+
+    Tag tag(type,pos,length,source);
+    if(dest == original) {
+        if(!(tVector->contains(tag))) {
+            tVector->append(tag);
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        if(!(cttVector->contains(tag))) {
+            cttVector->append(tag);
+        }
+        else {
+            return false;
+        }
+    }
+    return true;
+}
+
+void DiffView::tagCommon(QString tagValue) {
+    if(!(myTC.selectedText().isEmpty())) {
+
+        dirty = true;
+        QTextCursor cursor = myTC;
+        int start = cursor.selectionStart();
+        int length = cursor.selectionEnd() - cursor.selectionStart();
+        bool insertA = insertTag(tagValue, start, length, user, original);
+        if(!insertA) {
+            Tag tag(tagValue, start, length, user);
+            for(int i=0; i < tVector->count(); i++) {
+                if((tVector->at(i)) == tag) {
+                    tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,forward);
+                }
+            }
+        }
+        bool insertB = insertTag(tagValue, start, length, user, compareTo);
+        if(!insertB) {
+            Tag tag(tagValue, start, length, user);
+            for(int i=0; i < cttVector->count(); i++) {
+                if((cttVector->at(i)) == tag) {
+                    tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,reverse);
+                }
+            }
+        }
+
+        for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
+            if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
+                QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
+                int font = (_atagger->tagTypeVector->at(i))->font;
+                bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                bool bold = (_atagger->tagTypeVector->at(i))->bold;
+                bool italic = (_atagger->tagTypeVector->at(i))->italic;
+
+                tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold,common);
+            }
+        }
+
+        cursor.clearSelection();
+    }
+    else {
+        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
+            return;
+        }
+    }
+}
+
+void DiffView::untagCommon() {
+    QTextCursor cursor = myTC;
+    int start = cursor.selectionStart();
+    int length = cursor.selectionEnd() - cursor.selectionStart();
+    if(length <= 0) {
+        return;
+    }
+    dirty = true;
+    for(int i=0; i < tVector->count(); i++) {
+        if((tVector->at(i)).pos == start) {
+            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,common);
+            tVector->remove(i);
+            cursor.clearSelection();
+        }
+    }
+    for(int i=0; i < cttVector->count(); i++) {
+        if((cttVector->at(i)).pos == start) {
+            cttVector->remove(i);
+        }
+    }
+}
+
+void DiffView::showContextMenuForward(const QPoint &pt) {
+
+    signalMapper = new QSignalMapper(this);
+    QMenu * menu = new QMenu();
+    QMenu * mTags;
+    mTags = menu->addMenu(tr("&Tag"));
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        QAction * taginstance;
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+        mTags->addAction(taginstance);
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
+    menu->addAction(untagForwardAct);
+
+    if(txtForwardDiff->textCursor().selectedText().isEmpty()) {
+        myTC = txtForwardDiff->cursorForPosition(pt);
+        myTC.select(QTextCursor::WordUnderCursor);
+        QString word = myTC.selectedText();
+
+        if(word.isEmpty()) {
+            mTags->setEnabled(false);
+            untagForwardAct->setEnabled(false);
+        }
+        else {
+            untagForwardAct->setEnabled(true);
+        }
+    }
+    else {
+        myTC = txtForwardDiff->textCursor();
+        untagForwardAct->setEnabled(true);
+    }
+    menu->exec(txtForwardDiff->mapToGlobal(pt));
+    delete menu;
+}
+
+void DiffView::tagForward(QString tagValue) {
+    if(!(myTC.selectedText().isEmpty())) {
+
+        dirty = true;
+        QTextCursor cursor = myTC;
+        int start = cursor.selectionStart();
+        int length = cursor.selectionEnd() - cursor.selectionStart();
+        insertTag(tagValue, start, length, user, original);
+
+        for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
+            if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
+                QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
+                QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
+                int font = (_atagger->tagTypeVector->at(i))->font;
+                bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                bool bold = (_atagger->tagTypeVector->at(i))->bold;
+                bool italic = (_atagger->tagTypeVector->at(i))->italic;
+
+                tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold,forward);
+            }
+        }
+        cursor.clearSelection();
+    }
+    else {
+        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
+            return;
+        }
+    }
+}
+
+void DiffView::untagForward() {
+    QTextCursor cursor = myTC;
+    int start = cursor.selectionStart();
+    int length = cursor.selectionEnd() - cursor.selectionStart();
+    if(length <= 0) {
+        return;
+    }
+    dirty = true;
+    for(int i=0; i < tVector->count(); i++) {
+        if((tVector->at(i)).pos == start) {
+            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,forward);
+            tVector->remove(i);
+            cursor.clearSelection();
+        }
+    }
+}
+
+void DiffView::showContextMenuReverse(const QPoint &pt) {
+
+    signalMapper = new QSignalMapper(this);
+    QMenu * menu = new QMenu();
+    QMenu * mTags;
+    mTags = menu->addMenu(tr("&Tag"));
+    for(int i=0; i<_atagger->compareToTagTypeVector->count(); i++) {
+        QAction * taginstance;
+        taginstance = new QAction((_atagger->compareToTagTypeVector->at(i))->tag,this);
+        signalMapper->setMapping(taginstance, (_atagger->compareToTagTypeVector->at(i))->tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+        mTags->addAction(taginstance);
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
+    menu->addAction(untagReverseAct);
+
+    if(txtReverseDiff->textCursor().selectedText().isEmpty()) {
+        myTC = txtReverseDiff->cursorForPosition(pt);
+        myTC.select(QTextCursor::WordUnderCursor);
+        QString word = myTC.selectedText();
+
+        if(word.isEmpty()) {
+            mTags->setEnabled(false);
+            untagReverseAct->setEnabled(false);
+        }
+        else {
+            untagReverseAct->setEnabled(true);
+        }
+    }
+    else {
+        myTC = txtReverseDiff->textCursor();
+        untagReverseAct->setEnabled(true);
+    }
+    menu->exec(txtReverseDiff->mapToGlobal(pt));
+    delete menu;
+}
+
+void DiffView::tagReverse(QString tagValue) {
+    if(!(myTC.selectedText().isEmpty())) {
+
+        dirty = true;
+        QTextCursor cursor = myTC;
+        int start = cursor.selectionStart();
+        int length = cursor.selectionEnd() - cursor.selectionStart();
+        insertTag(tagValue, start, length, user, compareTo);
+
+        for(int i=0; i< _atagger->compareToTagTypeVector->count(); i++) {
+            if((_atagger->compareToTagTypeVector->at(i))->tag == tagValue) {
+                QColor bgcolor((_atagger->compareToTagTypeVector->at(i))->bgcolor);
+                QColor fgcolor((_atagger->compareToTagTypeVector->at(i))->fgcolor);
+                int font = (_atagger->compareToTagTypeVector->at(i))->font;
+                bool underline = (_atagger->compareToTagTypeVector->at(i))->underline;
+                bool bold = (_atagger->compareToTagTypeVector->at(i))->bold;
+                bool italic = (_atagger->compareToTagTypeVector->at(i))->italic;
+
+                tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold,reverse);
+            }
+        }
+        cursor.clearSelection();
+    }
+    else {
+        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
+            return;
+        }
+    }
+}
+
+void DiffView::untagReverse() {
+    QTextCursor cursor = myTC;
+    int start = cursor.selectionStart();
+    int length = cursor.selectionEnd() - cursor.selectionStart();
+    if(length <= 0) {
+        return;
+    }
+    dirty = true;
+    for(int i=0; i < cttVector->count(); i++) {
+        if((cttVector->at(i)).pos == start) {
+            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,reverse);
+            cttVector->remove(i);
+            cursor.clearSelection();
+        }
+    }
+}
+
+void DiffView::closeEvent(QCloseEvent *event) {
+
+    if(dirty) {
+        QMessageBox msgBox;
+         msgBox.setText("The document has been modified.");
+         msgBox.setInformativeText("Do you want to save your changes?");
+         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+         msgBox.setDefaultButton(QMessageBox::Save);
+         int ret = msgBox.exec();
+
+         switch (ret) {
+         case QMessageBox::Save:
+             _atagger->tagVector.clear();
+             for(int i=0; i<tVector->count(); i++) {
+                 _atagger->tagVector.append((*tVector)[i]);
+             }
+             _atagger->compareToTagVector.clear();
+             for(int i=0; i<cttVector->count(); i++) {
+                 _atagger->compareToTagVector.append((*cttVector)[i]);
+             }
+             break;
+         case QMessageBox::Discard:
+             break;
+         default:
+             break;
+         }
+     }
 }
