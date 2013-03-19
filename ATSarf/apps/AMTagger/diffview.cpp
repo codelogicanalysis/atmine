@@ -905,15 +905,15 @@ void DiffView::rbBContainA_clicked() {
 }
 
 void DiffView::createActions() {
-    untagCommonAct = new QAction(tr("Untag"), this);
+    untagCommonAct = new QAction(tr("Untag from Both"), this);
     untagCommonAct->setStatusTip(tr("Untag selected word"));
     connect(untagCommonAct, SIGNAL(triggered()), this, SLOT(untagCommon()));
 
-    untagForwardAct = new QAction(tr("Untag"), this);
+    untagForwardAct = new QAction(tr("Untag from A"), this);
     untagForwardAct->setStatusTip(tr("Untag selected word"));
     connect(untagForwardAct, SIGNAL(triggered()), this, SLOT(untagForward()));
 
-    untagReverseAct = new QAction(tr("Untag"), this);
+    untagReverseAct = new QAction(tr("Untag from B"), this);
     untagReverseAct->setStatusTip(tr("Untag selected word"));
     connect(untagReverseAct, SIGNAL(triggered()), this, SLOT(untagReverse()));
 }
@@ -923,7 +923,7 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
-    mTags = menu->addMenu(tr("&Tag"));
+    mTags = menu->addMenu(tr("&Tag in Both"));
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
         taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
@@ -1052,7 +1052,7 @@ void DiffView::showContextMenuForward(const QPoint &pt) {
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
-    mTags = menu->addMenu(tr("&Tag"));
+    mTags = menu->addMenu(tr("&Tag in A"));
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
         taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
@@ -1136,7 +1136,7 @@ void DiffView::showContextMenuReverse(const QPoint &pt) {
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
-    mTags = menu->addMenu(tr("&Tag"));
+    mTags = menu->addMenu(tr("&Tag in B"));
     for(int i=0; i<_atagger->compareToTagTypeVector->count(); i++) {
         QAction * taginstance;
         taginstance = new QAction((_atagger->compareToTagTypeVector->at(i))->tag,this);

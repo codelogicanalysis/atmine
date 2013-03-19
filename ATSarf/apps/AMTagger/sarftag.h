@@ -3,11 +3,12 @@
 #include <QHash>
 #include "stemmer.h"
 #include "ATMProgressIFC.h"
+#include "getGloss.h"
 
 class SarfTag : public Stemmer
 {
 public:
-    SarfTag(int start, int length, QString *text, QWidget *parent=0);
+    SarfTag(int start, int length, QString *text, QHash< QString, QHash<QString, QString> > * synSetHash , QWidget *parent=0);
     bool on_match();
 
 private:
@@ -16,7 +17,7 @@ private:
     QString RelatedW;
     int start;
     int length;
-    QHash< QString, QHash<QString, QString> > synSetHash;
+    QHash< QString, QHash<QString, QString> > * synSetHash;
 };
 
 #endif // SARFTAG_H

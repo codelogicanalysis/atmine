@@ -82,7 +82,7 @@ TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(TOP)/lib/libsyn.a $(ATSarf_LIBS) $(QJ
 TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger -lsyn $(ATSarf_LIBS_LINKFLAGS4)
 
 tagger: $(TAGGER_LIBDIR)
-	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
+	$(CXX) -pg -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS) \
 		$(QJSON_LIB_LDDFLAGS)
 
