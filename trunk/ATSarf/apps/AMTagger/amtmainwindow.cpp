@@ -19,6 +19,7 @@
 #include "customsttview.h"
 #include "sarftag.h"
 #include "diffview.h"
+#include "ger.h"
 
 bool parentCheck;
 class SarfTag;
@@ -1253,6 +1254,43 @@ void AMTMainWindow::sarfTagging() {
         }
     }
     */
+
+    /** Process Tag Type and Create Hash function for Synonymity Sets **/
+
+    QHash< QString, QHash<QString, QString> > synSetHash;
+
+    for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
+
+        /** Check if tag source is sarf tag types **/
+        if(_atagger->tagTypeVector->at(i)->source != sarf) {
+            continue;
+        }
+
+        const SarfTagType * tagtype = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+        for(int j=0; j < (tagtype->tags.count()); j++) {
+            const Quadruple< QString , QString , QString , QString > * tag = &(tagtype->tags.at(j));
+            if(tag->fourth.contains("Syn")) {
+
+                int order = tag->fourth.mid(3).toInt();
+                GER ger(tag->second,1,order);
+                ger();
+
+                QString gloss_order = tag->second;
+                gloss_order.append(QString::number(order));
+                QHash<QString, QString> glossSynHash;
+                for(int i=0; i<ger.descT.count(); i++) {
+                    const IGS & igs = ger.descT[i];
+                    glossSynHash.insert(igs.getGloss(),igs.getGloss());
+                }
+                synSetHash.insert(gloss_order,QHash<QString,QString>(glossSynHash));
+            }
+        }
+    }
+
+    /** Synonymity Sets Created **/
+
+    /** Process Text and analyse each work using sarf **/
+
     int start = 0;
     while(start != text.count()) {
         Word word = nextWord(text, start);
@@ -1260,10 +1298,12 @@ void AMTMainWindow::sarfTagging() {
             break;
         }
         int length = word.end - word.start + 1;
-        SarfTag sarftag(word.start, length, &(word.word), this);
+        SarfTag sarftag(word.start, length, &(word.word), &synSetHash , this);
         sarftag();
         start = word.end + 1;
     }
+
+    /** Analysis Done **/
 
     for(int i=0; i<_atagger->tagVector.count(); i++) {
         for(int j=0; j<_atagger->tagTypeVector->count(); j++) {

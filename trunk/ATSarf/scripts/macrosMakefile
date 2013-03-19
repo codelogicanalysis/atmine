@@ -32,7 +32,7 @@ INCLUDEDIRS+= apps/gui apps/syn apps/syntest
 INCLUDEDIRS+= include
 INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
 INCLUDEDIRS+= $(QJSON)
-INCLUDEFLAGS=-I.
+INCLUDEFLAGS= -I.
 INCLUDEFLAGS+=$(patsubst %,-I$(TOP)/%, $(INCLUDEDIRS))
 #echoinclude:
 #	@echo $(INCLUDEFLAGS)
@@ -86,9 +86,9 @@ SO_LIBS=$(patsubst %,$(TOP)/lib/lib%.so, $(SO_DIRS))
 #	@echo $(SO_DIRS)
 
 #Macros to control the C/C++ compiler flags
-CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
-CFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
-LDDFLAGS=-L$(TOP)/lib -fPIC -Wall
+CXXFLAGS= $(INCLUDEFLAGS) -pg -c -fPIC -Wall
+CFLAGS= $(INCLUDEFLAGS) -pg -c -fPIC -Wall
+LDDFLAGS=-L$(TOP)/lib -pg -fPIC -Wall
 
 ifneq ($(findstring opt,$(MAKECMDGOALS)),opt)
     OPT_DEBUG=-g

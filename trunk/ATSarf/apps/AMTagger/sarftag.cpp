@@ -1,44 +1,16 @@
 #include "sarftag.h"
 #include "global.h"
 #include "amtmainwindow.h"
-#include "ger.h"
-#include "getGloss.h"
 
 class AMTMainWindow;
 
-SarfTag::SarfTag(int start, int length, QString *text, QWidget *parent): Stemmer(text,0)
+SarfTag::SarfTag(int start, int length, QString *text, QHash< QString, QHash<QString, QString> > * synSetHash, QWidget *parent)
+    : Stemmer(text,0)
 {
     this->text = *text;
     this->start = start;
     this->length = length;
-
-    for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
-
-        /** Check if tag source is sarf tag types **/
-        if(_atagger->tagTypeVector->at(i)->source != sarf) {
-            continue;
-        }
-
-        const SarfTagType * tagtype = (SarfTagType*)(_atagger->tagTypeVector->at(i));
-        for(int j=0; j < (tagtype->tags.count()); j++) {
-            const Quadruple< QString , QString , QString , QString > * tag = &(tagtype->tags.at(j));
-            if(tag->fourth.contains("Syn")) {
-
-                int order = tag->fourth.mid(3).toInt();
-                GER ger(tag->second,1,order);
-                ger();
-
-                QString gloss_order = tag->second;
-                gloss_order.append(QString::number(order));
-                QHash<QString, QString> glossSynHash;
-                for(int i=0; i<ger.descT.count(); i++) {
-                    const IGS & igs = ger.descT[i];
-                    glossSynHash.insert(igs.getGloss(),igs.getGloss());
-                }
-                synSetHash.insert(gloss_order,QHash<QString,QString>(glossSynHash));
-            }
-        }
-    }
+    this->synSetHash = synSetHash;
 }
 
 bool SarfTag::on_match() {
@@ -112,9 +84,9 @@ bool SarfTag::on_match() {
                 minimal_item_info & stem = *stem_info;
                 int id = tag->second.toInt();
 
-                for(unsigned int i=0; i< stem.abstract_categories.length(); i++) {
-                    if (stem.abstract_categories[i]) {
-                        int abstract_id=database_info.comp_rules->getAbstractCategoryID(i);
+                for(unsigned int k=0; k< stem.abstract_categories.length(); k++) {
+                    if (stem.abstract_categories[k]) {
+                        int abstract_id=database_info.comp_rules->getAbstractCategoryID(k);
                         if(abstract_id == id) {
                             contain = true;
                             break;
@@ -222,7 +194,7 @@ bool SarfTag::on_match() {
                     //ger();
                     QString gloss_order = tag->second;
                     gloss_order.append(QString::number(order));
-                    const QHash<QString,QString> & glossSynHash = synSetHash.value(gloss_order);
+                    const QHash<QString,QString> & glossSynHash = synSetHash->value(gloss_order);
 
                     minimal_item_info & stem = *stem_info;
                     QStringList stem_glosses = getGloss(stem.description());
