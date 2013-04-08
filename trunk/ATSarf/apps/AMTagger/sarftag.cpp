@@ -190,8 +190,6 @@ bool SarfTag::on_match() {
 
                 if(tag->fourth.contains("Syn")) {
                     int order = tag->fourth.mid(3).toInt();
-                    //GER ger(tag->first,1,order);
-                    //ger();
                     QString gloss_order = tag->second;
                     gloss_order.append(QString::number(order));
                     const QHash<QString,QString> & glossSynHash = synSetHash->value(gloss_order);
