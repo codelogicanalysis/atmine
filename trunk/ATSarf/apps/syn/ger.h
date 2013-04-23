@@ -58,6 +58,6 @@ class GER
         int input;
 	int order;
         //QStringList wStem;
-        QHash<QString, QString> wStem;
+        QSet<QString> wStem;
 };
 #endif // GER_H

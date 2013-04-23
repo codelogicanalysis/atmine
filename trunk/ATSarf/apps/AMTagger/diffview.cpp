@@ -128,6 +128,11 @@ DiffView::DiffView(QWidget *parent) :
     qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compareTags);
     qSort(_atagger->compareToTagVector.begin(), _atagger->compareToTagVector.end(), compareTags);
 
+    /** Copy two tag vectors **/
+    tVector = new QVector<Tag>(_atagger->tagVector);
+    cttVector = new QVector<Tag>(_atagger->compareToTagVector);
+    dirty = false;
+
     /** Analyze tagtype difference **/
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
@@ -169,11 +174,6 @@ DiffView::DiffView(QWidget *parent) :
         text += reverseTT[i] + '\n';
     }
     txtReverseDiff->setText(text);
-
-    /** Copy two tag vectors **/
-    tVector = new QVector<Tag>(_atagger->tagVector);
-    cttVector = new QVector<Tag>(_atagger->compareToTagVector);
-    dirty = false;
 }
 
 void DiffView::startTaggingText(QString & text) {
@@ -356,21 +356,21 @@ void DiffView::rbExact_clicked() {
 
     /** Analyze Tags based on Exact Match **/
 
-    QVector<const Tag*> commonVector;
-    QVector<const Tag*> forwardVector;
-    QVector<const Tag*> reverseVector;
+    commonVector.clear();
+    forwardVector.clear();
+    reverseVector.clear();
 
     // apply an algorithm similar to mergesort
-    int otlength = _atagger->tagVector.count();
-    int ctlength = _atagger->compareToTagVector.count();
+    int otlength = tVector->count();
+    int ctlength = cttVector->count();
     //int count = otlength + ctlength;
 
     int c1=0;
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(_atagger->tagVector.at(c1)));
-        const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(c2)));
+        const Tag * ott = (Tag*)(&(tVector->at(c1)));
+        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos) == (ctt->pos)) && ((ott->length) == (ctt->length))) {
             if((ott->type) == (ctt->type))  {
                 commonVector.append(ott);
@@ -397,78 +397,24 @@ void DiffView::rbExact_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(_atagger->tagVector.at(i)));
+            const Tag * ott = (Tag*)(&(tVector->at(i)));
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(i)));
+            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
             reverseVector.append(ctt);
         }
     }
 
     /** Tag Words **/
     startTaggingText(_atagger->text);
-
-    for(int i=0; i<commonVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(commonVector.at(i)->type == stt->tag) {
-                int start = commonVector.at(i)->pos;
-                int length = commonVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<forwardVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(forwardVector.at(i)->type == stt->tag) {
-                int start = forwardVector.at(i)->pos;
-                int length = forwardVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<reverseVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(reverseVector.at(i)->type == stt->tag) {
-                int start = reverseVector.at(i)->pos;
-                int length = reverseVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
-                break;
-            }
-        }
-    }
-
+    addTags(commonVector, forwardVector, reverseVector);
     finishTaggingText();
 
-    double precision = (commonVector.count() * 1.0) / _atagger->compareToTagVector.count();
-    double recall = (commonVector.count() * 1.0) / _atagger->tagVector.count();
+    double precision = (commonVector.count() * 1.0) / cttVector->count();
+    double recall = (commonVector.count() * 1.0) / tVector->count();
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
@@ -496,19 +442,19 @@ void DiffView::rbIntersect_clicked() {
 
     /** Analyze Tags based on A intersect B Match **/
 
-    QVector<const Tag*> commonVector;
-    QVector<const Tag*> forwardVector;
-    QVector<const Tag*> reverseVector;
+    commonVector.clear();
+    forwardVector.clear();
+    reverseVector.clear();
 
-    int otlength = _atagger->tagVector.count();
-    int ctlength = _atagger->compareToTagVector.count();
+    int otlength = tVector->count();
+    int ctlength = cttVector->count();
 
     int c1=0;
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(_atagger->tagVector.at(c1)));
-        const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(c2)));
+        const Tag * ott = (Tag*)(&(tVector->at(c1)));
+        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos <= ctt->pos) && ((ott->pos + ott->length) > (ctt->pos))) ||
            ((ctt->pos <= ott->pos) && ((ctt->pos + ctt->length) > (ott->pos)))) {
             if((ott->type) == (ctt->type)) {
@@ -536,78 +482,24 @@ void DiffView::rbIntersect_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(_atagger->tagVector.at(i)));
+            const Tag * ott = (Tag*)(&(tVector->at(i)));
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(i)));
+            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
             reverseVector.append(ctt);
         }
     }
 
     /** Tag Words **/
     startTaggingText(_atagger->text);
-
-    for(int i=0; i<commonVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(commonVector.at(i)->type == stt->tag) {
-                int start = commonVector.at(i)->pos;
-                int length = commonVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<forwardVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(forwardVector.at(i)->type == stt->tag) {
-                int start = forwardVector.at(i)->pos;
-                int length = forwardVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<reverseVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(reverseVector.at(i)->type == stt->tag) {
-                int start = reverseVector.at(i)->pos;
-                int length = reverseVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
-                break;
-            }
-        }
-    }
-
+    addTags(commonVector, forwardVector, reverseVector);
     finishTaggingText();
 
-    double precision = (commonVector.count() * 1.0) / _atagger->compareToTagVector.count();
-    double recall = (commonVector.count() * 1.0) / _atagger->tagVector.count();
+    double precision = (commonVector.count() * 1.0) / cttVector->count();
+    double recall = (commonVector.count() * 1.0) / tVector->count();
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
@@ -634,21 +526,21 @@ void DiffView::rbAContainB_clicked() {
 
     /** Analyze Tags based on A contain B Match **/
 
-    QVector<const Tag*> commonVector;
-    QVector<const Tag*> forwardVector;
-    QVector<const Tag*> reverseVector;
+    commonVector.clear();
+    forwardVector.clear();
+    reverseVector.clear();
 
     // apply an algorithm similar to mergesort
-    int otlength = _atagger->tagVector.count();
-    int ctlength = _atagger->compareToTagVector.count();
+    int otlength = tVector->count();
+    int ctlength = cttVector->count();
     //int count = otlength + ctlength;
 
     int c1=0;
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(_atagger->tagVector.at(c1)));
-        const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(c2)));
+        const Tag * ott = (Tag*)(&(tVector->at(c1)));
+        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos) <= (ctt->pos)) && ((ott->pos + ott->length) >= (ctt->pos + ctt->length))) {
             if((ott->type) == (ctt->type)) {
                 commonVector.append(ott);
@@ -675,78 +567,24 @@ void DiffView::rbAContainB_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(_atagger->tagVector.at(i)));
+            const Tag * ott = (Tag*)(&(tVector->at(i)));
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(i)));
+            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
             reverseVector.append(ctt);
         }
     }
 
     /** Tag Words **/
     startTaggingText(_atagger->text);
-
-    for(int i=0; i<commonVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(commonVector.at(i)->type == stt->tag) {
-                int start = commonVector.at(i)->pos;
-                int length = commonVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<forwardVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(forwardVector.at(i)->type == stt->tag) {
-                int start = forwardVector.at(i)->pos;
-                int length = forwardVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<reverseVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(reverseVector.at(i)->type == stt->tag) {
-                int start = reverseVector.at(i)->pos;
-                int length = reverseVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
-                break;
-            }
-        }
-    }
-
+    addTags(commonVector, forwardVector, reverseVector);
     finishTaggingText();
 
-    double precision = (commonVector.count() * 1.0) / _atagger->compareToTagVector.count();
-    double recall = (commonVector.count() * 1.0) / _atagger->tagVector.count();
+    double precision = (commonVector.count() * 1.0) / cttVector->count();
+    double recall = (commonVector.count() * 1.0) / tVector->count();
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
@@ -774,20 +612,20 @@ void DiffView::rbBContainA_clicked() {
 
     /** Analyze Tags based on B contain A Match **/
 
-    QVector<const Tag*> commonVector;
-    QVector<const Tag*> forwardVector;
-    QVector<const Tag*> reverseVector;
+    commonVector.clear();
+    forwardVector.clear();
+    reverseVector.clear();
 
     // apply an algorithm similar to mergesort
-    int otlength = _atagger->tagVector.count();
-    int ctlength = _atagger->compareToTagVector.count();
+    int otlength = tVector->count();
+    int ctlength = cttVector->count();
 
     int c1=0;
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(_atagger->tagVector.at(c1)));
-        const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(c2)));
+        const Tag * ott = (Tag*)(&(tVector->at(c1)));
+        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ctt->pos) <= (ott->pos)) && ((ctt->pos + ctt->length) >= (ott->pos + ott->length))) {
             if((ctt->type) == (ott->type)) {
                 commonVector.append(ott);
@@ -814,78 +652,24 @@ void DiffView::rbBContainA_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ctt = (Tag*)(&(_atagger->tagVector.at(i)));
+            const Tag * ctt = (Tag*)(&(tVector->at(i)));
             forwardVector.append(ctt);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(_atagger->compareToTagVector.at(i)));
+            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
             reverseVector.append(ctt);
         }
     }
 
     /** Tag Words **/
     startTaggingText(_atagger->text);
-
-    for(int i=0; i<commonVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(commonVector.at(i)->type == stt->tag) {
-                int start = commonVector.at(i)->pos;
-                int length = commonVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<forwardVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->tagTypeVector->at(j));
-            if(forwardVector.at(i)->type == stt->tag) {
-                int start = forwardVector.at(i)->pos;
-                int length = forwardVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
-                break;
-            }
-        }
-    }
-
-    for(int i=0; i<reverseVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            const TagType * stt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(reverseVector.at(i)->type == stt->tag) {
-                int start = reverseVector.at(i)->pos;
-                int length = reverseVector.at(i)->length;
-                QColor bgcolor(stt->bgcolor);
-                QColor fgcolor(stt->fgcolor);
-                int font = stt->font;
-                bool underline = stt->underline;
-                bool bold = stt->bold;
-                bool italic = stt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
-                break;
-            }
-        }
-    }
-
+    addTags(commonVector, forwardVector, reverseVector);
     finishTaggingText();
 
-    double precision = (commonVector.count() * 1.0) / _atagger->compareToTagVector.count();
-    double recall = (commonVector.count() * 1.0) / _atagger->tagVector.count();
+    double precision = (commonVector.count() * 1.0) / cttVector->count();
+    double recall = (commonVector.count() * 1.0) / tVector->count();
     double fmeasure = 2 * (precision * recall) / (precision + recall);
 
     QString text;
@@ -904,7 +688,125 @@ void DiffView::rbBContainA_clicked() {
     txtStats->setText(text);
 }
 
+void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> & forwardVector, QVector<const Tag*> & reverseVector) {
+
+    /** Add common tags to common view **/
+    for(int i =0; i< commonVector.count(); i++) {
+        const Tag * pt = NULL;
+        if(i>0) {
+            pt = (Tag*)(commonVector.at(i-1));
+        }
+        const Tag * t = (Tag*)(commonVector.at(i));
+
+        if(pt != NULL && pt->pos == t->pos) {
+            continue;
+        }
+        const Tag * nt = NULL;
+        if(i<(commonVector.count()-1)) {
+            nt = (Tag*)(commonVector.at(i+1));
+        }
+
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+            if(t->type == tt->tag) {
+                int start = t->pos;
+                int length = t->length;
+                QColor bgcolor(tt->bgcolor);
+                QColor fgcolor(tt->fgcolor);
+                int font = tt->font;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
+                if(nt!=NULL && nt->pos == start) {
+                    underline = true;
+                }
+                bool bold = tt->bold;
+                bool italic = tt->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
+                break;
+            }
+        }
+    }
+
+    /** Add forward tags to A-B view **/
+    for(int i =0; i< forwardVector.count(); i++) {
+        const Tag * pt = NULL;
+        if(i>0) {
+            pt = (Tag*)(forwardVector.at(i-1));
+        }
+        const Tag * t = (Tag*)(forwardVector.at(i));
+
+        if(pt != NULL && pt->pos == t->pos) {
+            continue;
+        }
+        const Tag * nt = NULL;
+        if(i<(forwardVector.count()-1)) {
+            nt = (Tag*)(forwardVector.at(i+1));
+        }
+
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+            if(t->type == tt->tag) {
+                int start = t->pos;
+                int length = t->length;
+                QColor bgcolor(tt->bgcolor);
+                QColor fgcolor(tt->fgcolor);
+                int font = tt->font;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
+                if(nt!=NULL && nt->pos == start) {
+                    underline = true;
+                }
+                bool bold = tt->bold;
+                bool italic = tt->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
+                break;
+            }
+        }
+    }
+
+    /** Add reverse tags to B-A view **/
+    for(int i =0; i< reverseVector.count(); i++) {
+        const Tag * pt = NULL;
+        if(i>0) {
+            pt = (Tag*)(reverseVector.at(i-1));
+        }
+        const Tag * t = (Tag*)(reverseVector.at(i));
+
+        if(pt != NULL && pt->pos == t->pos) {
+            continue;
+        }
+        const Tag * nt = NULL;
+        if(i<(reverseVector.count()-1)) {
+            nt = (Tag*)(reverseVector.at(i+1));
+        }
+
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+            if(t->type == tt->tag) {
+                int start = t->pos;
+                int length = t->length;
+                QColor bgcolor(tt->bgcolor);
+                QColor fgcolor(tt->fgcolor);
+                int font = tt->font;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
+                if(nt!=NULL && nt->pos == start) {
+                    underline = true;
+                }
+                bool bold = tt->bold;
+                bool italic = tt->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
+                break;
+            }
+        }
+    }
+}
+
 void DiffView::createActions() {
+    /*
     untagCommonAct = new QAction(tr("Untag from Both"), this);
     untagCommonAct->setStatusTip(tr("Untag selected word"));
     connect(untagCommonAct, SIGNAL(triggered()), this, SLOT(untagCommon()));
@@ -916,23 +818,20 @@ void DiffView::createActions() {
     untagReverseAct = new QAction(tr("Untag from B"), this);
     untagReverseAct->setStatusTip(tr("Untag selected word"));
     connect(untagReverseAct, SIGNAL(triggered()), this, SLOT(untagReverse()));
+    */
 }
 
 void DiffView::showContextMenuCommon(const QPoint &pt) {
-
+    int pos;
+    int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
     mTags = menu->addMenu(tr("&Tag in Both"));
-    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
-        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
-        mTags->addAction(taginstance);
-    }
-    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagCommon(QString)));
-    menu->addAction(untagCommonAct);
+
+    signalMapperU = new QSignalMapper(this);
+    QMenu * muTags;
+    muTags = menu->addMenu(tr("&Untag in Both"));
 
     if(txtCommon->textCursor().selectedText().isEmpty()) {
         myTC = txtCommon->cursorForPosition(pt);
@@ -941,51 +840,136 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
 
         if(word.isEmpty()) {
             mTags->setEnabled(false);
-            untagCommonAct->setEnabled(false);
+            muTags->setEnabled(false);
+            //untagCommonAct->setEnabled(false);
         }
         else {
-            untagCommonAct->setEnabled(true);
+            muTags->setEnabled(true);
         }
     }
     else {
         myTC = txtCommon->textCursor();
-        untagCommonAct->setEnabled(true);
+        muTags->setEnabled(true);
     }
+    pos = myTC.selectionStart();
+    length = myTC.selectionEnd() - myTC.selectionStart();
+
+    QStringList tagtypes;
+    for(int i=0; i < commonVector.count(); i++) {
+        const Tag * t = (Tag*)(commonVector.at(i));
+        if(t->pos == pos) {
+            tagtypes << t->type;
+        }
+    }
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+            mTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagCommon(QString)));
+    //menu->addAction(untagCommonAct);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
+            muTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapperU, SIGNAL(mapped(const QString &)), this, SLOT(untagCommon(QString)));
     menu->exec(txtCommon->mapToGlobal(pt));
     delete menu;
 }
 
-bool DiffView::insertTag(QString type, int pos, int length, Source source, Dest dest) {
+int DiffView::insertTag(QString type, int pos, int length, Source source, Dest dest) {
 
     Tag tag(type,pos,length,source);
     if(dest == original) {
         if(!(tVector->contains(tag))) {
+            /*
+            int i;
+            for(i=0; i< tVector->count(); i++) {
+                if(((tVector->at(i).pos >= pos) && (tVector->at(i).type > type)) || (i == (tVector->count()-1))) {
+                    if((tVector->at(i).pos >= pos) && (tVector->at(i).type > type)) {
+                        tVector->insert(i-1,tag);
+                        return i-1;
+                    }
+                    else {
+                        tVector->append(tag);
+                        return tVector->count()-1;
+                    }
+                }
+            }
+            */
             tVector->append(tag);
+            qSort(tVector->begin(), tVector->end(), compareTags);
+            return 1;
         }
         else {
-            return false;
+            return -1;
         }
     }
     else {
         if(!(cttVector->contains(tag))) {
+            /*
+            int i;
+            for(i=0; i< cttVector->count(); i++) {
+                if(((cttVector->at(i).pos >= pos) && (cttVector->at(i).type > type)) || (i == (cttVector->count()-1))) {
+                    if((cttVector->at(i).pos >= pos) && (cttVector->at(i).type > type)) {
+                        cttVector->insert(i-1,tag);
+                        return i-1;
+                    }
+                    else {
+                        cttVector->append(tag);
+                        return cttVector->count()-1;
+                    }
+                }
+            }
+            */
             cttVector->append(tag);
+            qSort(cttVector->begin(), cttVector->end(), compareTags);
+            return 1;
         }
         else {
-            return false;
+            return -1;
         }
     }
-    return true;
+    return -1;
 }
 
 void DiffView::tagCommon(QString tagValue) {
     if(!(myTC.selectedText().isEmpty())) {
-
         dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
-        bool insertA = insertTag(tagValue, start, length, user, original);
-        if(!insertA) {
+        int insertA = insertTag(tagValue, start, length, user, original);
+        int insertB = insertTag(tagValue, start, length, user, compareTo);
+
+        if(insertA == -1 && insertB == -1) {
+            return;
+        }
+
+        if(rbExact->isChecked()) {
+            rbExact_clicked();
+        }
+        else if(rbIntersect->isChecked()) {
+            rbIntersect_clicked();
+        }
+        else if(rbAContainB->isChecked()) {
+            rbAContainB_clicked();
+        }
+        else {
+            rbBContainA_clicked();
+        }
+        /*
+        if(insertA == -1) {
             Tag tag(tagValue, start, length, user);
             for(int i=0; i < tVector->count(); i++) {
                 if((tVector->at(i)) == tag) {
@@ -993,8 +977,8 @@ void DiffView::tagCommon(QString tagValue) {
                 }
             }
         }
-        bool insertB = insertTag(tagValue, start, length, user, compareTo);
-        if(!insertB) {
+        int insertB = insertTag(tagValue, start, length, user, compareTo);
+        if(insertB == -1) {
             Tag tag(tagValue, start, length, user);
             for(int i=0; i < cttVector->count(); i++) {
                 if((cttVector->at(i)) == tag) {
@@ -1008,7 +992,8 @@ void DiffView::tagCommon(QString tagValue) {
                 QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
                 QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
                 int font = (_atagger->tagTypeVector->at(i))->font;
-                bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                //bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                bool underline = false;
                 bool bold = (_atagger->tagTypeVector->at(i))->bold;
                 bool italic = (_atagger->tagTypeVector->at(i))->italic;
 
@@ -1017,6 +1002,7 @@ void DiffView::tagCommon(QString tagValue) {
         }
 
         cursor.clearSelection();
+        */
     }
     else {
         switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
@@ -1025,7 +1011,7 @@ void DiffView::tagCommon(QString tagValue) {
     }
 }
 
-void DiffView::untagCommon() {
+void DiffView::untagCommon(QString tagValue) {
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -1033,6 +1019,46 @@ void DiffView::untagCommon() {
         return;
     }
     dirty = true;
+    for(int i=0; i < commonVector.count(); i++) {
+        const Tag * t = (Tag*)(commonVector.at(i));
+        QString t_type = t->type;
+        int t_pos = t->pos;
+        //int t_length = t->length;
+        Source t_source = t->source;
+
+        if(t->pos == start && t->type == tagValue) {
+
+            for(int j=0; j< tVector->count(); j++) {
+                if(t_pos == tVector->at(j).pos && t_type == tVector->at(j).type && t_source == tVector->at(j).source) {
+                    tVector->remove(j);
+                    break;
+                }
+            }
+
+            for(int j=0; j< cttVector->count(); j++) {
+                if(t_pos == cttVector->at(j).pos && t_type == cttVector->at(j).type && t_source == cttVector->at(j).source) {
+                    cttVector->remove(j);
+                    break;
+                }
+            }
+            cursor.clearSelection();
+            break;
+        }
+    }
+
+    if(rbExact->isChecked()) {
+        rbExact_clicked();
+    }
+    else if(rbIntersect->isChecked()) {
+        rbIntersect_clicked();
+    }
+    else if(rbAContainB->isChecked()) {
+        rbAContainB_clicked();
+    }
+    else {
+        rbBContainA_clicked();
+    }
+    /*
     for(int i=0; i < tVector->count(); i++) {
         if((tVector->at(i)).pos == start) {
             tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,common);
@@ -1045,23 +1071,21 @@ void DiffView::untagCommon() {
             cttVector->remove(i);
         }
     }
+    */
 }
 
 void DiffView::showContextMenuForward(const QPoint &pt) {
 
+    int pos;
+    int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
     mTags = menu->addMenu(tr("&Tag in A"));
-    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
-        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
-        mTags->addAction(taginstance);
-    }
-    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
-    menu->addAction(untagForwardAct);
+
+    signalMapperU = new QSignalMapper(this);
+    QMenu * muTags;
+    muTags = menu->addMenu(tr("&Untag in A"));
 
     if(txtForwardDiff->textCursor().selectedText().isEmpty()) {
         myTC = txtForwardDiff->cursorForPosition(pt);
@@ -1070,16 +1094,48 @@ void DiffView::showContextMenuForward(const QPoint &pt) {
 
         if(word.isEmpty()) {
             mTags->setEnabled(false);
-            untagForwardAct->setEnabled(false);
+            muTags->setEnabled(false);
         }
         else {
-            untagForwardAct->setEnabled(true);
+            muTags->setEnabled(true);
         }
     }
     else {
         myTC = txtForwardDiff->textCursor();
-        untagForwardAct->setEnabled(true);
+        muTags->setEnabled(true);
     }
+    pos = myTC.selectionStart();
+    length = myTC.selectionEnd() - myTC.selectionStart();
+
+    QStringList tagtypes;
+    for(int i=0; i < forwardVector.count(); i++) {
+        const Tag * t = (Tag*)(forwardVector.at(i));
+        if(t->pos == pos) {
+            tagtypes << t->type;
+        }
+    }
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+            mTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagForward(QString)));
+    //menu->addAction(untagCommonAct);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
+            muTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapperU, SIGNAL(mapped(const QString &)), this, SLOT(untagForward(QString)));
     menu->exec(txtForwardDiff->mapToGlobal(pt));
     delete menu;
 }
@@ -1093,12 +1149,26 @@ void DiffView::tagForward(QString tagValue) {
         int length = cursor.selectionEnd() - cursor.selectionStart();
         insertTag(tagValue, start, length, user, original);
 
+        if(rbExact->isChecked()) {
+            rbExact_clicked();
+        }
+        else if(rbIntersect->isChecked()) {
+            rbIntersect_clicked();
+        }
+        else if(rbAContainB->isChecked()) {
+            rbAContainB_clicked();
+        }
+        else {
+            rbBContainA_clicked();
+        }
+        /*
         for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
             if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
                 QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
                 QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
                 int font = (_atagger->tagTypeVector->at(i))->font;
-                bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                //bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                bool underline = false;
                 bool bold = (_atagger->tagTypeVector->at(i))->bold;
                 bool italic = (_atagger->tagTypeVector->at(i))->italic;
 
@@ -1106,6 +1176,7 @@ void DiffView::tagForward(QString tagValue) {
             }
         }
         cursor.clearSelection();
+        */
     }
     else {
         switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
@@ -1114,7 +1185,7 @@ void DiffView::tagForward(QString tagValue) {
     }
 }
 
-void DiffView::untagForward() {
+void DiffView::untagForward(QString tagValue) {
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -1122,30 +1193,48 @@ void DiffView::untagForward() {
         return;
     }
     dirty = true;
-    for(int i=0; i < tVector->count(); i++) {
-        if((tVector->at(i)).pos == start) {
-            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,forward);
-            tVector->remove(i);
-            cursor.clearSelection();
+
+    for(int i=0; i < forwardVector.count(); i++) {
+        const Tag * t = (Tag*)(forwardVector.at(i));
+
+        if(t->pos == start && t->type == tagValue) {
+            for(int j=0; j< tVector->count(); j++) {
+                if(t->pos == tVector->at(j).pos && t->type == tVector->at(j).type && t->source == tVector->at(j).source) {
+                    tVector->remove(j);
+                    cursor.clearSelection();
+                    break;
+                }
+            }
+            break;
         }
+    }
+
+    if(rbExact->isChecked()) {
+        rbExact_clicked();
+    }
+    else if(rbIntersect->isChecked()) {
+        rbIntersect_clicked();
+    }
+    else if(rbAContainB->isChecked()) {
+        rbAContainB_clicked();
+    }
+    else {
+        rbBContainA_clicked();
     }
 }
 
 void DiffView::showContextMenuReverse(const QPoint &pt) {
 
+    int pos;
+    int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
-    mTags = menu->addMenu(tr("&Tag in B"));
-    for(int i=0; i<_atagger->compareToTagTypeVector->count(); i++) {
-        QAction * taginstance;
-        taginstance = new QAction((_atagger->compareToTagTypeVector->at(i))->tag,this);
-        signalMapper->setMapping(taginstance, (_atagger->compareToTagTypeVector->at(i))->tag);
-        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
-        mTags->addAction(taginstance);
-    }
-    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
-    menu->addAction(untagReverseAct);
+    mTags = menu->addMenu(tr("&Tag in A"));
+
+    signalMapperU = new QSignalMapper(this);
+    QMenu * muTags;
+    muTags = menu->addMenu(tr("&Untag in A"));
 
     if(txtReverseDiff->textCursor().selectedText().isEmpty()) {
         myTC = txtReverseDiff->cursorForPosition(pt);
@@ -1154,16 +1243,48 @@ void DiffView::showContextMenuReverse(const QPoint &pt) {
 
         if(word.isEmpty()) {
             mTags->setEnabled(false);
-            untagReverseAct->setEnabled(false);
+            muTags->setEnabled(false);
         }
         else {
-            untagReverseAct->setEnabled(true);
+            muTags->setEnabled(true);
         }
     }
     else {
         myTC = txtReverseDiff->textCursor();
-        untagReverseAct->setEnabled(true);
+        muTags->setEnabled(true);
     }
+    pos = myTC.selectionStart();
+    length = myTC.selectionEnd() - myTC.selectionStart();
+
+    QStringList tagtypes;
+    for(int i=0; i < reverseVector.count(); i++) {
+        const Tag * t = (Tag*)(reverseVector.at(i));
+        if(t->pos == pos) {
+            tagtypes << t->type;
+        }
+    }
+
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+            mTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagReverse(QString)));
+    //menu->addAction(untagCommonAct);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
+            muTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapperU, SIGNAL(mapped(const QString &)), this, SLOT(untagReverse(QString)));
     menu->exec(txtReverseDiff->mapToGlobal(pt));
     delete menu;
 }
@@ -1177,12 +1298,26 @@ void DiffView::tagReverse(QString tagValue) {
         int length = cursor.selectionEnd() - cursor.selectionStart();
         insertTag(tagValue, start, length, user, compareTo);
 
+        if(rbExact->isChecked()) {
+            rbExact_clicked();
+        }
+        else if(rbIntersect->isChecked()) {
+            rbIntersect_clicked();
+        }
+        else if(rbAContainB->isChecked()) {
+            rbAContainB_clicked();
+        }
+        else {
+            rbBContainA_clicked();
+        }
+        /*
         for(int i=0; i< _atagger->compareToTagTypeVector->count(); i++) {
             if((_atagger->compareToTagTypeVector->at(i))->tag == tagValue) {
                 QColor bgcolor((_atagger->compareToTagTypeVector->at(i))->bgcolor);
                 QColor fgcolor((_atagger->compareToTagTypeVector->at(i))->fgcolor);
                 int font = (_atagger->compareToTagTypeVector->at(i))->font;
-                bool underline = (_atagger->compareToTagTypeVector->at(i))->underline;
+                //bool underline = (_atagger->compareToTagTypeVector->at(i))->underline;
+                bool underline = false;
                 bool bold = (_atagger->compareToTagTypeVector->at(i))->bold;
                 bool italic = (_atagger->compareToTagTypeVector->at(i))->italic;
 
@@ -1190,6 +1325,7 @@ void DiffView::tagReverse(QString tagValue) {
             }
         }
         cursor.clearSelection();
+        */
     }
     else {
         switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
@@ -1198,7 +1334,7 @@ void DiffView::tagReverse(QString tagValue) {
     }
 }
 
-void DiffView::untagReverse() {
+void DiffView::untagReverse(QString tagValue) {
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
@@ -1206,12 +1342,33 @@ void DiffView::untagReverse() {
         return;
     }
     dirty = true;
-    for(int i=0; i < cttVector->count(); i++) {
-        if((cttVector->at(i)).pos == start) {
-            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false,reverse);
-            cttVector->remove(i);
-            cursor.clearSelection();
+
+    for(int i=0; i < reverseVector.count(); i++) {
+        const Tag * t = (Tag*)(reverseVector.at(i));
+
+        if(t->pos == start && t->type == tagValue) {
+            for(int j=0; j< cttVector->count(); j++) {
+                if(t->pos == cttVector->at(j).pos && t->type == cttVector->at(j).type && t->source == cttVector->at(j).source) {
+                    cttVector->remove(j);
+                    cursor.clearSelection();
+                    break;
+                }
+            }
+            break;
         }
+    }
+
+    if(rbExact->isChecked()) {
+        rbExact_clicked();
+    }
+    else if(rbIntersect->isChecked()) {
+        rbIntersect_clicked();
+    }
+    else if(rbAContainB->isChecked()) {
+        rbAContainB_clicked();
+    }
+    else {
+        rbBContainA_clicked();
     }
 }
 

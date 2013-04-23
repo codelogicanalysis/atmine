@@ -161,19 +161,19 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(cbTagType,0,1);
     grid->addWidget(cbContain,9,2);
 
-    cbunderline = new QCheckBox(tr("Underline"), this);
+    //cbunderline = new QCheckBox(tr("Underline"), this);
     cbBold = new QCheckBox(tr("Bold"), this);
     cbItalic = new QCheckBox(tr("Italic"), this);
     cbCaseSensetive = new QCheckBox(this);
     cbCaseSensetive->setText("Case Sensetive");
 
-    connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
+    //connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
 
     grid->addWidget(cbBold,10,6);
     grid->addWidget(cbItalic,11,6);
-    grid->addWidget(cbunderline,12,6);
+    //grid->addWidget(cbunderline,12,6);
     grid->addWidget(cbCaseSensetive,1,2);
 
     listPossibleTags = new QListWidget(this);
@@ -223,7 +223,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
             const SarfTagType * stt = (SarfTagType*)(_atagger->tagTypeVector->at(0));
 
             cbTagName->setCurrentIndex(0);
-            cbunderline->setChecked(stt->underline);
+            //cbunderline->setChecked(stt->underline);
             cbBold->setChecked(stt->bold);
             cbItalic->setChecked(stt->italic);
             colorfgcolor->setColor(QColor(stt->fgcolor));
@@ -284,7 +284,8 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
         QString fgcolor = tt->fgcolor;
         QString bgcolor = tt->bgcolor;
         int font = tt->font;
-        bool underline = tt->underline;
+        //bool underline = tt->underline;
+        bool underline = false;
         bool italic = tt->italic;
         bool bold = tt->bold;
         int id = tt->id;
@@ -476,7 +477,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
 }
 
 void CustomSTTView::disconnect_Signals() {
-    disconnect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
+    //disconnect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     disconnect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     disconnect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
     disconnect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
@@ -490,7 +491,7 @@ void CustomSTTView::disconnect_Signals() {
 }
 
 void CustomSTTView::connect_Signals() {
-    connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
+    //connect(cbunderline, SIGNAL(clicked(bool)), this, SLOT(underline_clicked(bool)));
     connect(cbBold, SIGNAL(clicked(bool)), this, SLOT(bold_clicked(bool)));
     connect(cbItalic, SIGNAL(clicked(bool)), this, SLOT(italic_clicked(bool)));
     connect(cbTagName, SIGNAL(editTextChanged(QString)), this, SLOT(tagName_Edited(QString)));
@@ -536,7 +537,7 @@ void CustomSTTView::btnAdd_clicked() {
     cbTagName->addItem(tagName);
     cbTagName->setCurrentIndex(cbTagName->findText(tagName));
     cbfont->setCurrentIndex(cbfont->findText("12"));
-    cbunderline->setChecked(false);
+    //cbunderline->setChecked(false);
     cbBold->setChecked(false);
     cbItalic->setChecked(false);
     //cbTagName->setEditable(true);
@@ -573,7 +574,8 @@ void CustomSTTView::btnAdd_clicked() {
     QString fgcolor = colorfgcolor->color().name();
     QString bgcolor = colorbgcolor->color().name();
     int font = cbfont->currentText().toInt();
-    bool underline = cbunderline->isChecked();
+    //bool underline = cbunderline->isChecked();
+    bool underline = false;
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
     SarfTagType* sarftagtype = new SarfTagType(tagName,tags,QString(),id,fgcolor,bgcolor,font,underline,bold,italic,sarf);
@@ -757,7 +759,8 @@ void CustomSTTView::btnLoad_clicked() {
              QString foreground_color = typeElements["foreground_color"].toString();
              QString background_color = typeElements["background_color"].toString();
              int font = typeElements["font"].toInt();
-             bool underline = typeElements["underline"].toBool();
+             //bool underline = typeElements["underline"].toBool();
+             bool underline = false;
              bool bold = typeElements["bold"].toBool();
              bool italic = typeElements["italic"].toBool();
 
@@ -870,7 +873,7 @@ void CustomSTTView::btnLoad_clicked() {
          const SarfTagType * stt = (SarfTagType*)(sttVector->at(0));
 
          cbTagName->setCurrentIndex(0);
-         cbunderline->setChecked(stt->underline);
+         //cbunderline->setChecked(stt->underline);
          cbBold->setChecked(stt->bold);
          cbItalic->setChecked(stt->italic);
          colorfgcolor->setColor(QColor(stt->fgcolor));
@@ -1021,7 +1024,7 @@ void CustomSTTView::tagName_changed(QString name) {
             }
             colorfgcolor->setColor(QColor(stt->fgcolor));
             colorbgcolor->setColor(QColor(stt->bgcolor));
-            cbunderline->setChecked(stt->underline);
+            //cbunderline->setChecked(stt->underline);
             cbBold->setChecked(stt->bold);
             cbItalic->setChecked(stt->italic);
             if(stt->source == sarf) {
@@ -1056,6 +1059,7 @@ void CustomSTTView::tagName_Edited(QString name) {
 
 }
 
+/*
 void CustomSTTView::underline_clicked(bool underline) {
     if(sttVector->count() == 0) {
         return;
@@ -1070,6 +1074,7 @@ void CustomSTTView::underline_clicked(bool underline) {
         }
     }
 }
+*/
 
 void CustomSTTView::bold_clicked(bool bold) {
     if(sttVector->count() == 0) {
@@ -1174,7 +1179,8 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
                  QString fgcolor = tt->fgcolor;
                  QString bgcolor = tt->bgcolor;
                  int font = tt->font;
-                 bool underline = tt->underline;
+                 //bool underline = tt->underline;
+                 bool underline = false;
                  bool italic = tt->italic;
                  bool bold = tt->bold;
                  int id = tt->id;

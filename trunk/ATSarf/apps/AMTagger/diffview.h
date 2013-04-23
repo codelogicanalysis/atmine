@@ -20,6 +20,7 @@ public:
     explicit DiffView(QWidget *parent = 0);
     void startTaggingText(QString &);
     void tagWord(int, int, QColor, QColor ,int, bool, bool, bool, DestText);
+    void addTags(QVector<const Tag*> &, QVector<const Tag*> &, QVector<const Tag*> &);
     void finishTaggingText();
 
 private slots:
@@ -33,13 +34,13 @@ private slots:
     void showContextMenuCommon(const QPoint &pt);
     void showContextMenuForward(const QPoint &pt);
     void showContextMenuReverse(const QPoint &pt);
-    void untagCommon();
+    void untagCommon(QString tagValue);
     void tagCommon(QString tagValue);
-    void untagForward();
+    void untagForward(QString tagValue);
     void tagForward(QString tagValue);
-    void untagReverse();
+    void untagReverse(QString tagValue);
     void tagReverse(QString tagValue);
-    bool insertTag(QString type, int pos, int length, Source source, Dest dest);
+    int insertTag(QString type, int pos, int length, Source source, Dest dest);
     void closeEvent(QCloseEvent *event);
 
 private:
@@ -70,14 +71,20 @@ private:
     QAction *untagForwardAct;
     QAction *untagReverseAct;
     QAction *addtagAct;
+    QAction *adduntagAct;
 
     QTextCursor myTC;
     QSignalMapper * signalMapper;
+    QSignalMapper * signalMapperU;
 
     bool dirty;
 
     QVector<Tag> *tVector;
     QVector<Tag> *cttVector;
+
+    QVector<const Tag*> commonVector;
+    QVector<const Tag*> forwardVector;
+    QVector<const Tag*> reverseVector;
 };
 
 #endif // DIFF_H

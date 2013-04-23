@@ -4,7 +4,7 @@
 
 class AMTMainWindow;
 
-SarfTag::SarfTag(int start, int length, QString *text, QHash< QString, QHash<QString, QString> > * synSetHash, QWidget *parent)
+SarfTag::SarfTag(int start, int length, QString *text, QHash< QString, QSet<QString> > * synSetHash, QWidget *parent)
     : Stemmer(text,0)
 {
     this->text = *text;
@@ -192,12 +192,12 @@ bool SarfTag::on_match() {
                     int order = tag->fourth.mid(3).toInt();
                     QString gloss_order = tag->second;
                     gloss_order.append(QString::number(order));
-                    const QHash<QString,QString> & glossSynHash = synSetHash->value(gloss_order);
+                    const QSet<QString> & glossSynSet = synSetHash->value(gloss_order);
 
                     minimal_item_info & stem = *stem_info;
                     QStringList stem_glosses = getGloss(stem.description());
                     for(int k=0; k < stem_glosses.count(); k++) {
-                        if(glossSynHash.contains(stem_glosses[k])) {
+                        if(glossSynSet.contains(stem_glosses[k])) {
                             contain = true;
                             break;
                         }

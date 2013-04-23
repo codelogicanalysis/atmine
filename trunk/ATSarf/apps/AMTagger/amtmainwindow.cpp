@@ -9,6 +9,7 @@
 #include<QList>
 #include <QMessageBox>
 #include <QTextBlock>
+#include <QtAlgorithms>
 
 #include "commonS.h"
 #include <addtagview.h>
@@ -191,66 +192,12 @@ void AMTMainWindow::createDockWindows(bool open) {
     if(open) {
         lineEditTFName->setText(_atagger->tagtypeFile);
     }
-
-    /*
-    dock = new QDockWidget(tr("Text View"), this);
-    txtBrwsr = new QTextBrowser(dock);
-    dock->setWidget(txtBrwsr);
-    txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
-    //setCentralWidget(txtBrwsr);
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-    */
-
-    /*
-    dock = new QDockWidget(tr("Tag View"), this);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    tagDescription = new QTreeWidget(dock);
-    tagDescription->setColumnCount(5);
-    QStringList columns;
-    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
-    QTreeWidgetItem* item=new QTreeWidgetItem(columns);
-    connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
-    tagDescription->setHeaderItem(item);
-    dock->setWidget(tagDescription);
-    dock->setMinimumWidth(300);
-
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-
-    dock = new QDockWidget(tr("Description"), this);
-    descBrwsr = new QTreeWidget(dock);
-    descBrwsr->setColumnCount(2);
-    QStringList columnsD;
-    columnsD << "Field" << "Value";
-    QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
-    descBrwsr->setHeaderItem(itemD);
-
-    dock->setWidget(descBrwsr);
-    addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
-    */
 }
 
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
-    signalMapper = new QSignalMapper(this);
-    QMenu * menu = new QMenu();
-    QMenu * mTags;
-    mTags = menu->addMenu(tr("&Tag"));
-    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-        signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
-        connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
-        mTags->addAction(taginstance);
-    }
-    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
-    menu->addAction(untagMAct);
-    menu->addSeparator();
-    menu->addAction(addtagAct);
-
+    int pos;
+    int length;
     if(txtBrwsr->textCursor().selectedText().isEmpty()) {
         myTC = txtBrwsr->cursorForPosition(pt);
         myTC.select(QTextCursor::WordUnderCursor);
@@ -258,16 +205,58 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
         if(word.isEmpty()) {
             mTags->setEnabled(false);
-            untagMAct->setEnabled(false);
+            umTags->setEnabled(false);
         }
         else {
-            untagMAct->setEnabled(true);
+            umTags->setEnabled(true);
         }
     }
     else {
         myTC = txtBrwsr->textCursor();
-        untagMAct->setEnabled(true);
+        umTags->setEnabled(true);
     }
+    pos = myTC.selectionStart();
+    length = myTC.selectionEnd() - myTC.selectionStart();
+
+    QStringList tagtypes;
+    for(int i=0; i < _atagger->tagVector.count(); i++) {
+        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+        if(t->pos == pos) {
+            tagtypes << t->type;
+        }
+    }
+    signalMapper = new QSignalMapper(this);
+    QMenu * menu = new QMenu();
+    QMenu * mTags;
+    mTags = menu->addMenu(tr("Tag"));
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
+            mTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
+
+    signalMapperU = new QSignalMapper(this);
+    QMenu * muTags;
+    muTags = menu->addMenu(tr("Untag"));
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+            QAction * taginstance;
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
+            muTags->addAction(taginstance);
+        }
+    }
+    connect(signalMapperU, SIGNAL(mapped(const QString &)), this, SLOT(untag(QString)));
+    //menu->addAction(untagMAct);
+    menu->addSeparator();
+    menu->addAction(addtagAct);
+
     menu->exec(txtBrwsr->mapToGlobal(pt));
     delete menu;
 }
@@ -297,7 +286,6 @@ void AMTMainWindow::open() {
     }
 
     _atagger->tagFile = fileName;
-    //_atagger->sarftagFile = fileName;
 
     QByteArray Tags = ITfile.readAll();
     ITfile.close();
@@ -352,6 +340,7 @@ void AMTMainWindow::open() {
     sarftagsAct->setEnabled(true);
     tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
+    umTags->setEnabled(true);
     saveAct->setEnabled(true);
     saveasAct->setEnabled(true);
     diffAct->setEnabled(true);
@@ -413,12 +402,7 @@ void AMTMainWindow::process(QByteArray & json) {
     /** Read the TagType file and store it **/
 
     QString ttFName;
-    //if(_atagger->isSarf) {
-        //ttFName = _atagger->sarftagtypeFile;
-    //}
-    //else {
     ttFName = _atagger->tagtypeFile;
-    //}
 
     QFile ITfile(ttFName);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -447,6 +431,7 @@ void AMTMainWindow::process(QByteArray & json) {
 
     fillTreeWidget(user);
     createTagMenu();
+    createUntagMenu();
 }
 
 void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
@@ -484,7 +469,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
         QString foreground_color;
         QString background_color;
         int font;
-        bool underline;
+        bool underline = false;
         bool bold;
         bool italic;
 
@@ -496,7 +481,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
         foreground_color = typeElements["foreground_color"].toString();
         background_color = typeElements["background_color"].toString();
         font = typeElements["font"].toInt();
-        underline = typeElements["underline"].toBool();
+        //underline = typeElements["underline"].toBool();
         bold = typeElements["bold"].toBool();
         italic = typeElements["italic"].toBool();
 
@@ -606,57 +591,65 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
     }
 }
 
+bool compare(const Tag &tag1, const Tag &tag2) {
+    if(tag1.pos != tag2.pos) {
+        return tag1.pos < tag2.pos;
+    }
+    else {
+        return tag1.type < tag2.type;
+    }
+}
+
 void AMTMainWindow::applyTags() {
 
-    /*
-    if(_atagger->isSarf) {
-        for(int i=0; i<_atagger->tagVector->count(); i++) {
-            for(int j=0; j<_atagger->sarfTagTypeVector->count(); j++) {
-                QString type = (_atagger->tagVector->at(i)).type;
-                QString tag = (_atagger->sarfTagTypeVector->at(j)).tag;
-                if(type == tag) {
-                    int start = (_atagger->tagVector->at(i)).pos;
-                    int length = (_atagger->tagVector->at(i)).length;
-                    QColor fgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).fgcolor);
-                    QColor bgcolor = QColor((_atagger->sarfTagTypeVector->at(j)).bgcolor);
-                    int font = (_atagger->sarfTagTypeVector->at(j)).font;
-                    bool underline = (_atagger->sarfTagTypeVector->at(j)).underline;
-                    bool bold = (_atagger->sarfTagTypeVector->at(j)).underline;
-                    bool italic = (_atagger->sarfTagTypeVector->at(j)).italic;
-                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
+
+    for(int i =0; i< _atagger->tagVector.count(); i++) {
+        const Tag * pt = NULL;
+        if(i>0) {
+            pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
+        }
+        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+
+        if(pt != NULL && pt->pos == t->pos) {
+            continue;
+        }
+        const Tag * nt = NULL;
+        if(i<(_atagger->tagVector.count()-1)) {
+            nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
+        }
+
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+            if(t->type == tt->tag) {
+                int start = t->pos;
+                int length = t->length;
+                QColor bgcolor(tt->bgcolor);
+                QColor fgcolor(tt->fgcolor);
+                int font = tt->font;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
+                if(nt!=NULL && nt->pos == start) {
+                    underline = true;
                 }
+                bool bold = tt->bold;
+                bool italic = tt->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                break;
             }
         }
-        fillTreeWidget(sarf);
     }
-    */
-    //else {
-        for(int i =0; i< _atagger->tagVector.count(); i++) {
-            for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                if((_atagger->tagVector.at(i)).type == (_atagger->tagTypeVector->at(j))->tag) {
-                    int start = (_atagger->tagVector.at(i)).pos;
-                    int length = (_atagger->tagVector.at(i)).length;
-                    QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
-                    QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
-                    int font = (_atagger->tagTypeVector->at(j))->font;
-                    bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                    bool bold = (_atagger->tagTypeVector->at(j))->bold;
-                    bool italic = (_atagger->tagTypeVector->at(j))->italic;
-                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                    break;
-                }
-            }
-        }
-        fillTreeWidget(user);
-    //}
+
+    fillTreeWidget(user);
     createTagMenu();
+    createUntagMenu();
 }
 
 void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int font, bool underline, bool italic, bool bold){
     if (this==NULL)
         return;
     QTextBrowser * taggedBox= txtBrwsr;
-    //QTextEdit * taggedBox = txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
 #if 0
     int lastpos=c.position();
@@ -784,12 +777,46 @@ void AMTMainWindow::tagremove() {
     QTextCursor cursor = txtBrwsr->textCursor();
     int start = cursor.selectionStart();
     int length = cursor.selectionEnd() - cursor.selectionStart();
+
+    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
     for(int i=0; i < _atagger->tagVector.count(); i++) {
-        if((_atagger->tagVector.at(i)).pos == start) {
-            tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
+        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+        const Tag * nt = NULL;
+        if(i < (_atagger->tagVector.count()-1)) {
+            nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
+        }
+        if(t->pos == start) {
+            if(nt != NULL && nt->pos == start) {
+                for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+                    const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+                    if(nt->type == tt->tag) {
+                        QColor bgcolor(tt->bgcolor);
+                        QColor fgcolor(tt->fgcolor);
+                        int font = tt->font;
+                        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                        bool underline = false;
+                        const Tag* nnt = NULL;
+                        if(i < (_atagger->tagVector.count()-2)) {
+                            nnt = (Tag*)(&(_atagger->tagVector.at(i+2)));
+                        }
+                        if(nnt!=NULL && nnt->pos == start) {
+                            underline = true;
+                        }
+                        bool bold = tt->bold;
+                        bool italic = tt->italic;
+                        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                        break;
+                    }
+                }
+            }
+            else {
+                tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
+            }
             _atagger->tagVector.remove(i);
             cursor.clearSelection();
             fillTreeWidget(user);
+            break;
         }
     }
 }
@@ -842,26 +869,46 @@ void AMTMainWindow::tag(QString tagValue) {
                 setWindowTitle("AMTagger: " + _atagger->tagFile);
             }
         }
+
         dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
         int length = cursor.selectionEnd() - cursor.selectionStart();
         _atagger->insertTag(tagValue, start, length, user, original);
+        qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
 
-        for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
-            if((_atagger->tagTypeVector->at(i))->tag == tagValue) {
-                QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
-                QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
-                int font = (_atagger->tagTypeVector->at(i))->font;
-                bool underline = (_atagger->tagTypeVector->at(i))->underline;
-                bool bold = (_atagger->tagTypeVector->at(i))->bold;
-                bool italic = (_atagger->tagTypeVector->at(i))->italic;
-
-                tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold);
+        for(int i =0; i< _atagger->tagVector.count(); i++) {
+            const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+            if(t->pos != start) {
+                continue;
             }
+
+            const Tag * nt = NULL;
+            if(i<(_atagger->tagVector.count()-1)) {
+                nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
+            }
+
+            for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+                const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+                if(tt->tag == tagValue) {
+                    QColor bgcolor(tt->bgcolor);
+                    QColor fgcolor(tt->fgcolor);
+                    int font = tt->font;
+                    //bool underline = (_atagger->tagTypeVector->at(i))->underline;
+                    bool underline = false;
+                    if(nt!=NULL && nt->pos == start) {
+                        underline = true;
+                    }
+                    bool bold = tt->bold;
+                    bool italic = tt->italic;
+
+                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                }
+            }
+            cursor.clearSelection();
+            fillTreeWidget(user);
+            break;
         }
-        cursor.clearSelection();
-        fillTreeWidget(user);
     }
     else {
         switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
@@ -870,7 +917,7 @@ void AMTMainWindow::tag(QString tagValue) {
     }
 }
 
-void AMTMainWindow::untag() {
+void AMTMainWindow::untag(QString tagValue) {
 
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
@@ -878,13 +925,78 @@ void AMTMainWindow::untag() {
     if(length <= 0) {
         return;
     }
-    dirty = true;
+
+    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
     for(int i=0; i < _atagger->tagVector.count(); i++) {
-        if((_atagger->tagVector.at(i)).pos == start) {
-            tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
+        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+
+        if(t->pos == start && t->type == tagValue) {
+            int counter = 0;
+            bool previous = false;
+            const Tag* ppt = NULL;
+            if(i > 1) {
+                ppt = (Tag*)(&(_atagger->tagVector.at(i-2)));
+                if(ppt->pos == start) {
+                    counter++;
+                }
+            }
+            const Tag* pt = NULL;
+            if(i > 0) {
+                pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
+                if(pt->pos == start) {
+                    counter++;
+                    previous = true;
+                }
+            }
+            const Tag* nt = NULL;
+            if(i < (_atagger->tagVector.count()-1)) {
+                nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
+                if(nt->pos == start) {
+                    counter++;
+                }
+            }
+            const Tag* nnt = NULL;
+            if(i < (_atagger->tagVector.count()-2)) {
+                nnt = (Tag*)(&(_atagger->tagVector.at(i+2)));
+                if(nnt->pos == start) {
+                    counter++;
+                }
+            }
+            if(counter == 0) {
+                tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
+            }
+            else {
+                QString targetTag;
+                if(previous) {
+                    targetTag = pt->type;
+                }
+                else {
+                    targetTag = nt->type;
+                }
+                for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+                    const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+                    if(tt->tag == targetTag) {
+                        QColor bgcolor(tt->bgcolor);
+                        QColor fgcolor(tt->fgcolor);
+                        int font = tt->font;
+                        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                        bool underline = false;
+                        if(counter >= 2) {
+                            underline = true;
+                        }
+                        bool bold = tt->bold;
+                        bool italic = tt->italic;
+                        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                        break;
+                    }
+                }
+            }
             _atagger->tagVector.remove(i);
             cursor.clearSelection();
             fillTreeWidget(user);
+            dirty = true;
+            break;
         }
     }
 }
@@ -969,10 +1081,12 @@ void AMTMainWindow::createActions()
     diffAct->setEnabled(false);
     connect(diffAct, SIGNAL(triggered()), this, SLOT(difference()));
 
+    /*
     untagMAct = new QAction(tr("Untag"), this);
     //untagAct->setShortcuts(QKeySequence::Copy);
     untagMAct->setStatusTip(tr("Untag selected word"));
     connect(untagMAct, SIGNAL(triggered()), this, SLOT(untag()));
+    */
 
     addtagAct = new QAction(tr("&Add TagType"), this);
     //addtagAct->setShortcuts(QKeySequence::Paste);
@@ -999,7 +1113,11 @@ void AMTMainWindow::createMenus()
     mTags->setEnabled(false);
     createTagMenu();
 
-    tagMenu->addAction(tagremoveAct);
+    //tagMenu->addAction(tagremoveAct);
+    umTags = tagMenu->addMenu(tr("&Untag"));
+    umTags->setEnabled(false);
+    createUntagMenu();
+
     tagMenu->addSeparator();
     tagMenu->addAction(edittagtypesAct);
 
@@ -1036,6 +1154,19 @@ void AMTMainWindow::createTagMenu() {
     connect(signalMapperM, SIGNAL(mapped(const QString &)), this, SLOT(tag(QString)));
 }
 
+void AMTMainWindow::createUntagMenu() {
+    umTags->clear();
+    signalMapperUM = new QSignalMapper(this);
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        QAction * taginstance;
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
+        signalMapperUM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+        connect(taginstance, SIGNAL(triggered()), signalMapperUM, SLOT(map()));
+        umTags->addAction(taginstance);
+    }
+    connect(signalMapperUM, SIGNAL(mapped(const QString &)), this, SLOT(untag(QString)));
+}
+
 void AMTMainWindow::fillTreeWidget(Source Data) {
     tagDescription->clear();
      QList<QTreeWidgetItem *> items;
@@ -1070,146 +1201,74 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     txtBrwsr->textCursor().clearSelection();
     QList<QTreeWidgetItem *> items;
     QString type = item->text(1);
-/*
-    if(_atagger->isSarf) {
 
-        for(int j=0; j < _atagger->sarfTagTypeVector->count(); j++) {
-            if((_atagger->sarfTagTypeVector->at(j)).tag == type) {
-                QString desc = (_atagger->sarfTagTypeVector->at(j)).description;
-                QColor bgcolor((_atagger->sarfTagTypeVector->at(j)).bgcolor);
-                QColor fgcolor((_atagger->sarfTagTypeVector->at(j)).fgcolor);
-                int font = (_atagger->sarfTagTypeVector->at(j)).font;
-                bool underline = (_atagger->sarfTagTypeVector->at(j)).underline;
-                bool bold = (_atagger->sarfTagTypeVector->at(j)).bold;
-                bool italic = (_atagger->sarfTagTypeVector->at(j)).italic;
+    for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
+        if((_atagger->tagTypeVector->at(j))->tag == type) {
+            QString desc = (_atagger->tagTypeVector->at(j))->description;
+            QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
+            QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
+            int font = (_atagger->tagTypeVector->at(j))->font;
+            //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+            //bool underline = false;
+            bool bold = (_atagger->tagTypeVector->at(j))->bold;
+            bool italic = (_atagger->tagTypeVector->at(j))->italic;
 
-                QTextCursor c = txtBrwsr->textCursor();
-                c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
-                c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
-                txtBrwsr->setTextCursor(c);
+            QTextCursor c = txtBrwsr->textCursor();
+            c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
+            c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
+            txtBrwsr->setTextCursor(c);
 
-                QStringList entry;
-                entry << "Word" << item->text(0);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Description" <<desc;
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "TagType" << type;
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Source" << item->text(2);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Position" << item->text(3);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Length" << item->text(4);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Background Color" << QString();//bgcolor.name();
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                items.last()->setBackgroundColor(1,bgcolor);
-                entry.clear();
-                entry << "Foreground Color" << QString();//fgcolor.name();
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                items.last()->setBackgroundColor(1,fgcolor);
-                entry.clear();
-                entry << "Font Size" << QString::number(font);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(underline)
-                    entry << "Underline" << "True";
-                else
-                    entry << "Underline" <<  "False";
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(bold)
-                    entry << "Bold" << "True";
-                else
-                    entry << "Bold" << "False";
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(italic)
-                    entry << "Italic" << "True";
-                else
-                    entry << "Italic" << "False";
+            QStringList entry;
+            entry << "Word" << item->text(0);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Description" <<desc;
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "TagType" << type;
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Source" << item->text(2);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Position" << item->text(3);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Length" << item->text(4);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            entry << "Background Color" << QString();//bgcolor.name();
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            items.last()->setBackgroundColor(1,bgcolor);
+            entry.clear();
+            entry << "Foreground Color" << QString();//fgcolor.name();
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            items.last()->setBackgroundColor(1,fgcolor);
+            entry.clear();
+            entry << "Font Size" << QString::number(font);
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            //if(underline)
+            //    entry << "Underline" << "True";
+            //else
+            //    entry << "Underline" <<  "False";
+            //items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            //entry.clear();
+            if(bold)
+                entry << "Bold" << "True";
+            else
+                entry << "Bold" << "False";
+            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+            entry.clear();
+            if(italic)
+                entry << "Italic" << "True";
+            else
+                entry << "Italic" << "False";
 
-                descBrwsr->insertTopLevelItems(0, items);
-                break;
-            }
+            descBrwsr->insertTopLevelItems(0, items);
+            break;
         }
     }
-    */
-    //else {
-
-        for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
-            if((_atagger->tagTypeVector->at(j))->tag == type) {
-                QString desc = (_atagger->tagTypeVector->at(j))->description;
-                QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
-                QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
-                int font = (_atagger->tagTypeVector->at(j))->font;
-                bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool bold = (_atagger->tagTypeVector->at(j))->bold;
-                bool italic = (_atagger->tagTypeVector->at(j))->italic;
-
-                QTextCursor c = txtBrwsr->textCursor();
-                c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
-                c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
-                txtBrwsr->setTextCursor(c);
-
-                QStringList entry;
-                entry << "Word" << item->text(0);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Description" <<desc;
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "TagType" << type;
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Source" << item->text(2);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Position" << item->text(3);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Length" << item->text(4);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                entry << "Background Color" << QString();//bgcolor.name();
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                items.last()->setBackgroundColor(1,bgcolor);
-                entry.clear();
-                entry << "Foreground Color" << QString();//fgcolor.name();
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                items.last()->setBackgroundColor(1,fgcolor);
-                entry.clear();
-                entry << "Font Size" << QString::number(font);
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(underline)
-                    entry << "Underline" << "True";
-                else
-                    entry << "Underline" <<  "False";
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(bold)
-                    entry << "Bold" << "True";
-                else
-                    entry << "Bold" << "False";
-                items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
-                entry.clear();
-                if(italic)
-                    entry << "Italic" << "True";
-                else
-                    entry << "Italic" << "False";
-
-                descBrwsr->insertTopLevelItems(0, items);
-                break;
-            }
-        }
-   //}
 }
 
 void AMTMainWindow::sarfTagging() {
@@ -1241,23 +1300,10 @@ void AMTMainWindow::sarfTagging() {
     dirty = true;
 
     QString text = _atagger->text;
-    /*
-    QStringList textList = _atagger->text.split(' ',QString::SkipEmptyParts);
-    int start = 0;
-    int length = (textList[0]).count();
-    for(int i=0; i< textList.count(); i++) {
-        SarfTag sarftag(start, length, &(textList[i]), this);
-        sarftag();
-        if(i != (textList.count()-1)) {
-            start = text.indexOf(textList[i+1],start + length);
-            length = (textList[i+1]).count();
-        }
-    }
-    */
 
     /** Process Tag Type and Create Hash function for Synonymity Sets **/
 
-    QHash< QString, QHash<QString, QString> > synSetHash;
+    QHash< QString, QSet<QString> > synSetHash;
 
     for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
 
@@ -1277,12 +1323,12 @@ void AMTMainWindow::sarfTagging() {
 
                 QString gloss_order = tag->second;
                 gloss_order.append(QString::number(order));
-                QHash<QString, QString> glossSynHash;
+                QSet<QString> glossSynSet;
                 for(int i=0; i<ger.descT.count(); i++) {
                     const IGS & igs = ger.descT[i];
-                    glossSynHash.insert(igs.getGloss(),igs.getGloss());
+                    glossSynSet.insert(igs.getGloss());
                 }
-                synSetHash.insert(gloss_order,QHash<QString,QString>(glossSynHash));
+                synSetHash.insert(gloss_order,QSet<QString>(glossSynSet));
             }
         }
     }
@@ -1305,6 +1351,7 @@ void AMTMainWindow::sarfTagging() {
 
     /** Analysis Done **/
 
+    /*
     for(int i=0; i<_atagger->tagVector.count(); i++) {
         for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
             QString type = (_atagger->tagVector.at(i)).type;
@@ -1315,13 +1362,16 @@ void AMTMainWindow::sarfTagging() {
                 QColor fgcolor = QColor((_atagger->tagTypeVector->at(j))->fgcolor);
                 QColor bgcolor = QColor((_atagger->tagTypeVector->at(j))->bgcolor);
                 int font = (_atagger->tagTypeVector->at(j))->font;
-                bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
                 bool bold = (_atagger->tagTypeVector->at(j))->bold;
                 bool italic = (_atagger->tagTypeVector->at(j))->italic;
                 tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
             }
         }
     }
+    */
+    applyTags();
 
     fillTreeWidget(sarf);
     finishTaggingText();
@@ -1490,7 +1540,7 @@ void AMTMainWindow::difference() {
         QString foreground_color;
         QString background_color;
         int font;
-        bool underline;
+        bool underline = false;
         bool bold;
         bool italic;
 
@@ -1502,7 +1552,7 @@ void AMTMainWindow::difference() {
         foreground_color = typeElements["foreground_color"].toString();
         background_color = typeElements["background_color"].toString();
         font = typeElements["font"].toInt();
-        underline = typeElements["underline"].toBool();
+        //underline = typeElements["underline"].toBool();
         bold = typeElements["bold"].toBool();
         italic = typeElements["italic"].toBool();
 
@@ -1739,6 +1789,7 @@ void AMTMainWindow::_new() {
 	edittagtypesAct->setEnabled(true);
 	tagremoveAct->setEnabled(true);
 	mTags->setEnabled(true);
+        umTags->setEnabled(true);
 	saveAct->setEnabled(true);
 	saveasAct->setEnabled(true);
         diffAct->setEnabled(true);

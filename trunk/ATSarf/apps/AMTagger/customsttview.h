@@ -47,7 +47,7 @@ private slots:
     void font_changed(QString fontSize);
     void tagName_changed(QString name);
     void tagName_Edited(QString name);
-    void underline_clicked(bool underline);
+    //void underline_clicked(bool underline);
     void bold_clicked(bool bold);
     void italic_clicked(bool italic);
     void desc_edited();
@@ -93,7 +93,7 @@ private:
     QComboBox *cbfont;
     QComboBox *cbContain;
 
-    QCheckBox *cbunderline;
+    //QCheckBox *cbunderline;
     QCheckBox *cbBold;
     QCheckBox *cbItalic;
     QCheckBox *cbCaseSensetive;

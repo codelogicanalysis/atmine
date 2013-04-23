@@ -28,7 +28,7 @@ private:
     QLabel * lblfgcolor;
     QLabel * lblbgcolor;
     QLabel * lblfont;
-    QLabel * lblunderline;
+    //QLabel * lblunderline;
     QLabel * lblbold;
     QLabel * lblitalic;
     QLineEdit * lineEditTag;
@@ -36,7 +36,7 @@ private:
     ColorListEditor * colorfgcolor;
     ColorListEditor * colorbgcolor;
     QComboBox * cbfont;
-    QCheckBox * cbunderline;
+    //QCheckBox * cbunderline;
     QCheckBox * cbBold;
     QCheckBox * cbItalic;
     QPushButton * btnAddTagType;
