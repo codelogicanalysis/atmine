@@ -75,7 +75,7 @@ bool GER::operator ()() {
         QStringList * stems = gamma.getStems();
 
         for(int i=0; i< stems->count(); i++) {
-            this->wStem.insert(stems->at(i), stems->at(i));
+            this->wStem.insert(stems->at(i));
         }
 
         for(int i=0; i<stems->count(); i++) {
@@ -196,7 +196,7 @@ bool GER::operator ()() {
                 QString id = gloss_id[i];
                 if(!(wStem.contains(tempStems[j]))) {
 
-                    wStem.insert(tempStems[j], tempStems[j]);
+                    wStem.insert(tempStems[j]);
                     //QString id = gloss_id[i];
                     QString gloss = idHash.value(id);
                     QString sStem = newGS.value(gloss);

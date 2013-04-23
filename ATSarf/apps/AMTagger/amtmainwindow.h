@@ -26,6 +26,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void showContextMenu(const QPoint &pt);
          void tagWord(int start, int length, QColor fcolor, QColor bcolor,int font, bool underline, bool italic, bool bold);
          void tag(QString tagValue);
+         void untag(QString tagValue);
          void itemSelectionChanged(QTreeWidgetItem*,int);
 
      private slots:
@@ -37,7 +38,6 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void edittagtypes();
          void tagtypeadd();
          void tagtyperemove();
-         void untag();
          void addtagtype();
          void about();
          void aboutQt();
@@ -65,6 +65,7 @@ private:
          void createActions();
          void createMenus();
          void createTagMenu();
+         void createUntagMenu();
          void createDockWindows(bool open);
          void startTaggingText(QString & text);
          bool saveFile(const QString &fileName, QByteArray &tagD);
@@ -76,7 +77,8 @@ private:
          QMenu *editMenu;
          QMenu *viewMenu;
          QMenu *helpMenu;
-         QMenu * mTags;
+         QMenu *mTags;
+         QMenu *umTags;
          QMenu *sarfMenu;
          QMenu *analyseMenu;
 
@@ -118,6 +120,8 @@ private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;
          QSignalMapper *signalMapperM;
+         QSignalMapper *signalMapperU;
+         QSignalMapper *signalMapperUM;
          QString error_str;
          QString output_str;
          QTextCursor myTC;

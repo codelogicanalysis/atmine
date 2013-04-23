@@ -5,18 +5,12 @@
 ATagger * _atagger = NULL;
 
 ATagger::ATagger() {
-
-    //tagVector = new QVector<Tag>();
-    //compareToTagVector = new QVector<Tag>();
     tagTypeVector = new QVector<TagType*>();
     compareToTagTypeVector = new QVector<TagType*>();
 }
 
 ATagger::~ATagger() {
-
-    //delete tagVector;
     tagVector.clear();
-
     for(int i=0; i<tagTypeVector->size(); i++) {
         delete (*tagTypeVector)[i];
     }
@@ -133,12 +127,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
 
         QVariantMap tagdata;
         tagdata.insert("file",_atagger->textFile);
-        //if(_atagger->isSarf) {
-            //tagdata.insert("TagTypeFile",_atagger->sarftagtypeFile);
-        //}
-        //else {
         tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
-        //}
         tagdata.insert("textchecksum", _atagger->text.count());
         QVariantList tagset;
         for(int i=0; i<_atagger->tagVector.count(); i++) {

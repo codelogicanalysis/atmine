@@ -29,7 +29,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     lblfgcolor = new QLabel(this);
     lblbgcolor = new QLabel(this);
     lblfont = new QLabel(this);
-    lblunderline = new QLabel(this);
+    //lblunderline = new QLabel(this);
     lblbold = new QLabel(this);
     lblitalic = new QLabel(this);
 
@@ -38,7 +38,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     lblfgcolor->setText("Foreground Color:");
     lblbgcolor->setText("Background Color:");
     lblfont->setText("Font:");
-    lblunderline->setText("Underline:");
+    //lblunderline->setText("Underline:");
     lblbold->setText("Bold:");
     lblitalic->setText("Italic:");
 
@@ -47,7 +47,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     grid->addWidget(lblfgcolor,2,3);
     grid->addWidget(lblbgcolor,3,3);
     grid->addWidget(lblfont,4,3);
-    grid->addWidget(lblunderline,5,3);
+    //grid->addWidget(lblunderline,5,3);
     grid->addWidget(lblbold,6,3);
     grid->addWidget(lblitalic,7,3);
 
@@ -102,14 +102,14 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     grid->addWidget(cbfont,4,4);
 
-    cbunderline = new QCheckBox(this);
-    cbunderline->setEnabled(false);
+    //cbunderline = new QCheckBox(this);
+    //cbunderline->setEnabled(false);
     cbBold = new QCheckBox(this);
     cbBold->setEnabled(false);
     cbItalic = new QCheckBox(this);
     cbItalic->setEnabled(false);
 
-    grid->addWidget(cbunderline,5,4);
+    //grid->addWidget(cbunderline,5,4);
     grid->addWidget(cbBold,6,4);
     grid->addWidget(cbItalic,7,4);
 
@@ -171,7 +171,8 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
         QString fgcolor = tt->fgcolor;
         QString bgcolor = tt->bgcolor;
         int font = tt->font;
-        bool underline = tt->underline;
+        //bool underline = tt->underline;
+        bool underline = false;
         bool italic = tt->italic;
         bool bold = tt->bold;
         int id = tt->id;
@@ -218,7 +219,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
     if(index != -1) {
         cbfont->setCurrentIndex(index);
     }
-    cbunderline->setChecked((tagTypeVector->at(0))->underline);
+    //cbunderline->setChecked((tagTypeVector->at(0))->underline);
     cbBold->setChecked((tagTypeVector->at(0))->bold);
     cbItalic->setChecked((tagTypeVector->at(0))->italic);
 }
@@ -239,7 +240,7 @@ void EditTagTypeView::update_TagTypes() {
     if(index != -1) {
         cbfont->setCurrentIndex(index);
     }
-    cbunderline->setChecked((tagTypeVector->at(0))->underline);
+    //cbunderline->setChecked((tagTypeVector->at(0))->underline);
     cbBold->setChecked((tagTypeVector->at(0))->bold);
     cbItalic->setChecked((tagTypeVector->at(0))->italic);
 
@@ -300,8 +301,8 @@ void EditTagTypeView::add_clicked() {
     colorfgcolor->setEnabled(true);
     colorbgcolor->setEnabled(true);
     cbfont->setEnabled(true);
-    cbunderline->setEnabled(true);
-    cbunderline->setChecked(false);
+    //cbunderline->setEnabled(true);
+    //cbunderline->setChecked(false);
     cbBold->setEnabled(true);
     cbBold->setChecked(false);
     cbItalic->setEnabled(true);
@@ -330,7 +331,7 @@ void EditTagTypeView::edit_clicked() {
         colorfgcolor->setEnabled(true);
         colorbgcolor->setEnabled(true);
         cbfont->setEnabled(true);
-        cbunderline->setEnabled(true);
+        //cbunderline->setEnabled(true);
         cbBold->setEnabled(true);
         cbItalic->setEnabled(true);
     }
@@ -343,7 +344,7 @@ void EditTagTypeView::edit_clicked() {
         colorfgcolor->setEnabled(false);
         colorbgcolor->setEnabled(false);
         cbfont->setEnabled(false);
-        cbunderline->setEnabled(false);
+        //cbunderline->setEnabled(false);
         cbBold->setEnabled(false);
         cbItalic->setEnabled(false);
 
@@ -353,7 +354,8 @@ void EditTagTypeView::edit_clicked() {
         QString fgcolor = colorfgcolor->color().name();
         QString bgcolor = colorbgcolor->color().name();
         int font = cbfont->currentText().toInt();
-        bool underline = cbunderline->isChecked();
+        //bool underline = cbunderline->isChecked();
+        bool underline = false;
         bool bold = cbBold->isChecked();
         bool italic = cbItalic->isChecked();
         if(index >= tagTypeVector->count()) {
@@ -419,7 +421,8 @@ void EditTagTypeView::load_clicked() {
                  QString fgcolor = tt->fgcolor;
                  QString bgcolor = tt->bgcolor;
                  int font = tt->font;
-                 bool underline = tt->underline;
+                 //bool underline = tt->underline;
+                 bool underline = false;
                  bool italic = tt->italic;
                  bool bold = tt->bold;
                  int id = tt->id;
@@ -458,7 +461,7 @@ void EditTagTypeView::item_clicked() {
     if(fontindex != -1) {
         cbfont->setCurrentIndex(fontindex);
     }
-    cbunderline->setChecked((tagTypeVector->at(index))->underline);
+    //cbunderline->setChecked((tagTypeVector->at(index))->underline);
     cbBold->setChecked((tagTypeVector->at(index))->bold);
     cbItalic->setChecked((tagTypeVector->at(index))->italic);
 }

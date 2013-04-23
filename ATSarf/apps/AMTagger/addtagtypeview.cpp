@@ -13,7 +13,7 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
     lblfgcolor = new QLabel(this);
     lblbgcolor = new QLabel(this);
     lblfont = new QLabel(this);
-    lblunderline = new QLabel(this);
+    //lblunderline = new QLabel(this);
     lblbold = new QLabel(this);
     lblitalic = new QLabel(this);
 
@@ -22,7 +22,7 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
     lblfgcolor->setText("Foreground Color:");
     lblbgcolor->setText("Background Color:");
     lblfont->setText("Font:");
-    lblunderline->setText("Underline:");
+    //lblunderline->setText("Underline:");
     lblbold->setText("Bold:");
     lblitalic->setText("Italic:");
 
@@ -39,7 +39,7 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
         std::string str = out.str();
         cbfont->addItem(QString::fromStdString(str));
     }
-    cbunderline = new QCheckBox(this);
+    //cbunderline = new QCheckBox(this);
     cbBold = new QCheckBox(this);
     cbItalic = new QCheckBox(this);
 
@@ -58,13 +58,13 @@ AddTagTypeView::AddTagTypeView(QWidget *parent) :
     grid->addWidget(colorbgcolor,3,1);
     grid->addWidget(lblfont,4,0);
     grid->addWidget(cbfont,4,1);
-    grid->addWidget(lblunderline,5,0);
-    grid->addWidget(cbunderline,5,1);
-    grid->addWidget(lblbold,6,0);
-    grid->addWidget(cbBold,6,1);
-    grid->addWidget(lblitalic,7,0);
-    grid->addWidget(cbItalic,7,1);
-    grid->addWidget(btnAddTagType,8,0,1,2,Qt::AlignCenter);
+    //grid->addWidget(lblunderline,5,0);
+    //grid->addWidget(cbunderline,5,1);
+    grid->addWidget(lblbold,5,0);
+    grid->addWidget(cbBold,5,1);
+    grid->addWidget(lblitalic,6,0);
+    grid->addWidget(cbItalic,6,1);
+    grid->addWidget(btnAddTagType,7,0,1,2,Qt::AlignCenter);
     setCentralWidget(scrollArea);
 
     connect(btnAddTagType,SIGNAL(clicked()),this,SLOT(addTagType_clicked()));
@@ -89,7 +89,8 @@ void AddTagTypeView::addTagType_clicked() {
     QString fgcolor = colorfgcolor->color().name();
     QString bgcolor = colorbgcolor->color().name();
     int font = cbfont->currentText().toInt();
-    bool underline = cbunderline->isChecked();
+    //bool underline = cbunderline->isChecked();
+    bool underline = false;
     bool bold = cbBold->isChecked();
     bool italic = cbItalic->isChecked();
     _atagger->insertTagType(tag,description,id,fgcolor,bgcolor,font,underline,bold,italic,user,original);
