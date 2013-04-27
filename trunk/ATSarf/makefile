@@ -75,4 +75,4 @@ cscope: cscope.files
 	@cscope -C  -b
 
 
-opt 32 64 cyg mtest ex0 ex1 ex2 ATSarf tagger: all
+opt 32 64 cyg mtest ex0 ex1 ex2 ATSarf tagger numnorm: all
