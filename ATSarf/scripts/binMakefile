@@ -48,7 +48,7 @@ $(APPLICATION): $(ATSarfGui_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn
+all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm
 
 EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
 EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
@@ -93,8 +93,15 @@ syn: $(SYN_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(SYN_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
+NUMNORM_LIBDIR = $(TOP)/lib/libnumnorm.a $(TOP)/lib/libsyn.a $(ATSarf_LIBS)
+NUMNORM_LIBS_LINKFLAGS=-L$(TOP)/lib -lnumnorm -lsyn $(ATSarf_LIBS_LINKFLAGS4)
+
+numnorm: $(NUMNORM_LIBDIR)
+	$(CXX) -o $@ $(LDDFLAGS) $(NUMNORM_LIBS_LINKFLAGS) \
+                $(THIRD_LIBS_LINKFLAGS)
+
 #clean: 
-#	@rm -rf ATSarfGui ex0 ex1 ex2 case tagger
+#	@rm -rf ATSarfGui ex0 ex1 ex2 case tagger numnorm
 
 cleandata:
 		rm -rf $(DAT_CLEAN_TARGETS)
