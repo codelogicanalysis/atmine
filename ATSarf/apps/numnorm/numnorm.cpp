@@ -1,5 +1,4 @@
 #include "numnorm.h"
-#include "word.h"
 
 NumNorm::NumNorm(QString *_text) {
     text = _text;
@@ -9,6 +8,10 @@ NumNorm::NumNorm(QString *_text) {
     isKey = false;
     isHundred = false;
     isNumberDone = false;
+    numtype = None;
+
+    numberStart = -1;
+    numberEnd = -1;
 
     // fill the hash table
     hashGlossInt.insert("one", 1);
@@ -39,16 +42,24 @@ NumNorm::NumNorm(QString *_text) {
 
 bool NumNorm::operator ()() {
     int start = 0;
-    // fix case when last words are a number
-    // won't be added to numbers
     while(start != text->count()) {
         Word word = nextWord(*text, start);
         if(word.word.isEmpty()) {
             break;
         }
-        Number number(this, word.word);
+        int val = -1;
+        Number number(this, &word, &val);
         number();
 
+        if(numtype == TenDigit) {
+            digitsTensActions(val);
+        }
+        else if(numtype == Key) {
+            keyActions(val);
+        }
+        else if(numtype == Hundred) {
+            hundredActions(val);
+        }
         int sum = previous + current + currentH;
         if(isNumberDone && sum != 0) {
             numberFound();
@@ -65,12 +76,80 @@ bool NumNorm::operator ()() {
 
 void NumNorm::numberFound() {
     int number = previous + current + currentH;
-    //cout << previous << ' ' << current << ' ' << currentH << '\n';
+    NumSolution numSolution(numberStart, numberEnd, number);
     isKey = false;
     isHundred = false;
     previous = 0;
     current = 0;
     currentH = 0;
-    extractedNumbers.append(number);
+    numberStart = -1;
+    numberEnd = -1;
+    extractedNumbers.append(numSolution);
     cout << number << '\n';
+}
+
+void NumNorm::digitsTensActions(int val) {
+    if(isHundred) {
+        currentH += val;
+    }
+    else {
+        if(current == 0) {
+            current = val;
+        }
+        else {
+            if(isKey) {
+                previous += current;
+                current = val;
+            }
+            else {
+                current += val;
+            }
+        }
+    }
+    isKey = false;
+}
+
+void NumNorm::keyActions(int val) {
+    if(isHundred) {
+        if(current != 0) {
+            previous += current;
+        }
+        current = currentH * val;
+        currentH = 0;
+        isHundred = false;
+        isKey = true;
+    }
+    else {
+        if(current == 0) {
+            current = val;
+            isKey = true;
+        }
+        else {
+            if(!(isKey)) {
+                isKey = true;
+                current = current * val;
+            }
+            else {
+                previous += current;
+                current = val;
+            }
+        }
+    }
+}
+
+void NumNorm::hundredActions(int val) {
+    isHundred = true;
+    if(current == 0) {
+        currentH = val;
+    }
+    else {
+        if(!isKey) {
+            currentH = current * val;
+            current = 0;
+        }
+        else {
+            currentH = val;
+        }
+    }
+    isKey = false;
 }

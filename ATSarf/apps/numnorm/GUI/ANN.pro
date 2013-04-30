@@ -75,7 +75,8 @@ SOURCES += \
     ../../../src/common/global_variables.cpp \
     ../../syn/getGloss.cpp \
     ../numnorm.cpp \
-    ../number.cpp
+    ../number.cpp \
+    ../numsolution.cpp
 
 HEADERS += \
     ../numnorm.h \
@@ -137,7 +138,8 @@ HEADERS += \
     ../../../src/util/morphemes.h \
     ../../syn/getGloss.h \
     ../number.h \
-    ../word.h
+    ../word.h \
+    ../numsolution.h
 
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
     -ldatrie

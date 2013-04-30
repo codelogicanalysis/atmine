@@ -10,7 +10,7 @@ public:
     int end;
 };
 
-Word nextWord(QString & text, int pos) {
+inline Word nextWord(QString & text, int pos) {
     Word word;
     word.word = "";
     if(pos == text.count()) {
