@@ -1,38 +1,100 @@
 #include "number.h"
 #include <getGloss.h>
 
-Number::Number(NumNorm *controller, QString word) : Stemmer(&word, 0)
+Number::Number(NumNorm *_controller, Word* _word, int * _val) : Stemmer(&(_word->word), 0)
 {
-    this->controller = controller;
-    hashGlossInt = &(controller->hashGlossInt);
-    this->word = &word;
-    controller->isNumberDone = true;
+    val = _val;
+    *val = -1;
+    controller = _controller;
+    hashGlossInt = &(_controller->hashGlossInt);
+    word = &(_word->word);
+    start = _word->start;
+    end = _word->end;
+    _controller->isNumberDone = true;
+    _controller->numtype = None;
+    numstate = Nothing;
 }
 
 bool Number::on_match() {
     minimal_item_info & stem = *stem_info;
 
     int target_category_id = database_info.comp_rules->getAbstractCategoryID("Number");
-    for(unsigned int k=0; k< stem.abstract_categories.length(); k++) {
-        if (stem.abstract_categories[k]) {
-            int category_id = database_info.comp_rules->getAbstractCategoryID(k);
+    for(unsigned int c=0; c< stem.abstract_categories.length(); c++) {
+        if (stem.abstract_categories[c]) {
+            int category_id = database_info.comp_rules->getAbstractCategoryID(c);
             if(target_category_id == category_id) {
 
                 controller->isNumberDone = false;
                 minimal_item_info & stem = *stem_info;
                 QStringList stem_glosses = getGloss(stem.description());
 
-                int val = -1;
-                if(isDigitsTens(stem_glosses, val)) {
-                    digitsTensActions(val);
+                if(isDigitsTens(stem_glosses, *val)) {
+                    controller->numtype = TenDigit;
+                    numstate = Done;
+                    if(controller->numberStart == -1) {
+                        controller->numberStart = start;
+                        controller->numberEnd = end;
+                    }
+                    else {
+                        controller->numberEnd = end;
+                    }
                 }
-                else if(isKey(stem_glosses, val)) {
-                    keyActions(val);
+                else if(isKey(stem_glosses, *val)) {
+                    numstate = Continue;
+                    for(int k=0;k<suffix_infos->size();k++) {
+
+                        minimal_item_info & suff = (*suffix_infos)[k];
+                        if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+                            continue;
+
+                        QStringList suff_glosses = getGloss(suff.description());
+                        if(suff_glosses.contains("two")) {
+                            (*val) = (*val) * 2;
+                            numstate = Done;
+                            break;
+                        }
+
+                    }
+                    controller->numtype = Key;
+                    if(controller->numberStart == -1) {
+                        controller->numberStart = start;
+                        controller->numberEnd = end;
+                    }
+                    else {
+                        controller->numberEnd = end;
+                    }
                 }
-                else if(isHundred(stem_glosses, val)) {
-                    hundredActions(val);
+                else if(isHundred(stem_glosses, *val)) {
+                    numstate = Continue;
+                    for(int k=0;k<suffix_infos->size();k++) {
+
+                        minimal_item_info & suff = (*suffix_infos)[k];
+                        if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+                            continue;
+
+                        QStringList suff_glosses = getGloss(suff.description());
+                        if(suff_glosses.contains("two")) {
+                            (*val) = (*val) * 2;
+                            numstate = Done;
+                            break;
+                        }
+
+                    }
+                    controller->numtype = Hundred;
+                    if(controller->numberStart == -1) {
+                        controller->numberStart = start;
+                        controller->numberEnd = end;
+                    }
+                    else {
+                        controller->numberEnd = end;
+                    }
                 }
-                return false;
+                if(numstate == Done) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
             }
         }
     }
@@ -83,71 +145,4 @@ bool Number::isHundred(QStringList& stem_glosses, int& val) {
         val = -1;
         return false;
     }
-}
-
-void Number::digitsTensActions(int val) {
-    if(controller->isHundred) {
-                            controller->currentH += val;
-                    }
-                    else {
-                            if(controller->current == 0) {
-                                    controller->current = val;
-                            }
-                            else {
-                                    if(controller->isKey) {
-                                            controller->previous += controller->current;
-                                            controller->current = val;
-                                    }
-                                    else {
-                                            controller->current += val;
-                                    }
-                            }
-                    }
-                    controller->isKey = false;
-}
-
-void Number::keyActions(int val) {
-    if(controller->isHundred) {
-        if(controller->current != 0) {
-            controller->previous += controller->current;
-            //cout << "current " << controller->current << " previous " << controller->previous << '\n';
-        }
-        controller->current = controller->currentH * val;
-        controller->currentH = 0;
-        controller->isHundred = false;
-        controller->isKey = true;
-    }
-    else {
-        if(controller->current == 0) {
-            controller->current = val;
-            controller->isKey = true;
-        }
-        else {
-            if(!(controller->isKey)) {
-                controller->isKey = true;
-                controller->current = controller->current * val;
-            }
-            else {
-                controller->previous += controller->current;
-                controller->current = val;
-            }
-        }
-    }
-}
-
-void Number::hundredActions(int val) {
-    controller->isHundred = true;
-    if(controller->current == 0) {
-        controller->currentH = val;
-    }
-    else {
-        if(!(controller->isKey)) {
-            controller->currentH = controller->current * val;
-            controller->current = 0;
-        }
-        else {
-            controller->currentH = val;
-        }
-    }
-    controller->isKey = false;
 }

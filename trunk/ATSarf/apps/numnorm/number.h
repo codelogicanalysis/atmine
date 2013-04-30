@@ -2,8 +2,12 @@
 #define NUMBER_H
 #include <stemmer.h>
 #include <numnorm.h>
+#include <word.h>
 
 class NumNorm;
+
+// This enum is used to keep track of the state of the number being nothing, single, or double such as 100 and 200
+typedef enum {Nothing, Continue, Done} NumberState;
 
 class Number : public Stemmer
 {
@@ -11,14 +15,15 @@ private:
     bool isDigitsTens(QStringList& stem_glosses, int& val);
     bool isKey(QStringList& stem_glosses, int& val);
     bool isHundred(QStringList& stem_glosses, int& val);
-    void digitsTensActions(int val);
-    void keyActions(int val);
-    void hundredActions(int val);
+    NumberState numstate;
 public:
     QString * word;
+    int start;
+    int end;
+    int *val;
     QHash<QString, int>* hashGlossInt;
     NumNorm * controller;
-    Number(NumNorm *, QString);
+    Number(NumNorm *, Word *, int *);
     bool on_match();
 };
 
