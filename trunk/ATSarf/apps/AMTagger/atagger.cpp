@@ -7,6 +7,7 @@ ATagger * _atagger = NULL;
 ATagger::ATagger() {
     tagTypeVector = new QVector<TagType*>();
     compareToTagTypeVector = new QVector<TagType*>();
+    msfVector = new QVector<MSFormula*>();
 }
 
 ATagger::~ATagger() {

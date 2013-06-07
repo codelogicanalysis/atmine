@@ -9,7 +9,13 @@
 class SarfTag : public Stemmer
 {
 public:
-    SarfTag(int start, int length, QString *text, QHash< QString, QSet<QString> > * synSetHash , QWidget *parent=0);
+    SarfTag(int start,
+            int length,
+            QString *text,
+            QHash< QString, QSet<QString> > * synSetHash ,
+            QSet<QString>* eNF,
+            QHash<QString, QString>* iNF,
+            QWidget *parent=0);
     bool on_match();
 
 private:
@@ -19,6 +25,8 @@ private:
     int start;
     int length;
     QHash< QString, QSet<QString> > * synSetHash;
+    QSet<QString>* eNF;
+    QHash<QString, QString>* iNF;
 };
 
 #endif // SARFTAG_H

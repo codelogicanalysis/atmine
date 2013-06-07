@@ -4,13 +4,19 @@
 
 class AMTMainWindow;
 
-SarfTag::SarfTag(int start, int length, QString *text, QHash< QString, QSet<QString> > * synSetHash, QWidget *parent)
+SarfTag::SarfTag(int start, int length, QString *text,
+                 QHash< QString, QSet<QString> > * synSetHash,
+                 QSet<QString> *eNF,
+                 QHash<QString, QString>* iNF,
+                 QWidget *parent)
     : Stemmer(text,0)
 {
     this->text = *text;
     this->start = start;
     this->length = length;
     this->synSetHash = synSetHash;
+    this->eNF = eNF;
+    this->iNF = iNF;
 }
 
 bool SarfTag::on_match() {
@@ -42,9 +48,27 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                if(contain && (tag->third.compare("NOT") != 0)) {
                     belong = true;
                     break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
                 }
                 else {
                     continue;
@@ -66,17 +90,28 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else {
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
                         continue;
                     }
                 }
                 else {
                     if(tag->third.compare("NOT") == 0) {
-                        belong = true;
-                        break;
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+                        if(!contain) {
+                            if(!(eNF->contains(key))) {
+                                iNF->insert(key,tagtype->tag);
+                            }
+                        }
                     }
-                    else {
-                        continue;
-                    }
+                    continue;
                 }
             }
             else if(tag->first == "Category") {
@@ -93,9 +128,27 @@ bool SarfTag::on_match() {
                         }
                     }
                 }
-                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                if(contain && (tag->third.compare("NOT") != 0)) {
                     belong = true;
                     break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
                 }
                 else {
                     continue;
@@ -113,9 +166,27 @@ bool SarfTag::on_match() {
                         break;
                     }
                 }
-                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                if(contain && (tag->third.compare("NOT") != 0)) {
                     belong = true;
                     break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
                 }
                 else {
                     continue;
@@ -131,17 +202,26 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else {
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
                         continue;
                     }
                 }
                 else {
                     if(tag->third.compare("NOT") == 0) {
-                        belong = true;
-                        break;
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
                     }
-                    else {
-                        continue;
-                    }
+                    continue;
                 }
             }
             else if(tag->first == "Prefix-POS") {
@@ -152,14 +232,32 @@ bool SarfTag::on_match() {
                     if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
                             continue;
 
-                    if(pre.POS == tag->second) {
+                    if(pre.POS.contains(tag->second,Qt::CaseSensitive)) {
                         contain = true;
                         break;
                     }
                 }
-                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                if(contain && (tag->third.compare("NOT") != 0)) {
                     belong = true;
                     break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
                 }
                 else {
                     continue;
@@ -173,14 +271,32 @@ bool SarfTag::on_match() {
                     if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
                             continue;
 
-                    if(suff.POS == tag->second) {
+                    if(suff.POS.contains(tag->second,Qt::CaseSensitive)) {
                         contain = true;
                         break;
                     }
                 }
-                if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                if(contain && (tag->third.compare("NOT") != 0)) {
                     belong = true;
                     break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
                 }
                 else {
                     continue;
@@ -203,9 +319,27 @@ bool SarfTag::on_match() {
                         }
                     }
 
-                    if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                    if(contain && (tag->third.compare("NOT") != 0)) {
                         belong = true;
                         break;
+                    }
+                    else if(tag->third.compare("NOT") == 0) {
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+
+                        if(!contain) {
+                            if(!(eNF->contains(key))) {
+                                iNF->insert(key,tagtype->tag);
+                            }
+                        }
+                        else {
+                            if(iNF->contains(key)) {
+                                iNF->remove(key);
+                                eNF->insert(key);
+                            }
+                        }
+                        continue;
                     }
                     else {
                         continue;
@@ -315,9 +449,27 @@ bool SarfTag::on_match() {
                             break;
                         }
                     }
-                    if((contain && (tag->third.compare("NOT") != 0)) || ((!contain) && (tag->third.compare("NOT") == 0))) {
+                    if(contain && (tag->third.compare("NOT") != 0)) {
                         belong = true;
                         break;
+                    }
+                    else if(tag->third.compare("NOT") == 0) {
+                        QString key = tagtype->tag;
+                        key.append(tag->first);
+                        key.append(tag->second);
+
+                        if(!contain) {
+                            if(!(eNF->contains(key))) {
+                                iNF->insert(key,tagtype->tag);
+                            }
+                        }
+                        else {
+                            if(iNF->contains(key)) {
+                                iNF->remove(key);
+                                eNF->insert(key);
+                            }
+                        }
+                        continue;
                     }
                     else {
                         continue;

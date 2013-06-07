@@ -43,6 +43,8 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void aboutQt();
          void sarfTagging();
          void customizeSarfTags();
+         void customizeMSFs();
+         void runMERFSimulator();
          void loadText_clicked();
          void loadTagTypes_clicked();
          void closeEvent(QCloseEvent *event);
@@ -80,6 +82,7 @@ private:
          QMenu *mTags;
          QMenu *umTags;
          QMenu *sarfMenu;
+         QMenu *merfMenu;
          QMenu *analyseMenu;
 
          QAction *newAct;
@@ -98,6 +101,8 @@ private:
          QAction *aboutAct;
          QAction *sarftagsAct;
          QAction *sarfAct;
+         QAction *editMSFAct;
+         QAction *simulatorAct;
          QAction *diffAct;
 
          QTextBrowser * txtBrwsr;
