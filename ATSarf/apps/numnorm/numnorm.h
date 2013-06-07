@@ -24,6 +24,7 @@ public:
     int numberEnd;
 
     QHash<QString, int> hashGlossInt;
+    QHash<QString, int> hashFlexible;
     QVector<NumSolution> extractedNumbers;
 
     NumNorm(QString*);

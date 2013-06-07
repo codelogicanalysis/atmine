@@ -18,45 +18,13 @@
 #include "global.h"
 #include "edittagtypeview.h"
 #include "customsttview.h"
-#include "sarftag.h"
 #include "diffview.h"
 #include "ger.h"
+#include "autotagger.h"
+#include "customizemsfview.h"
 
 bool parentCheck;
 class SarfTag;
-
-class Word {
-public:
-    QString word;
-    int start;
-    int end;
-};
-
-Word nextWord(QString & text, int pos) {
-    Word word;
-    word.word = "";
-    if(pos == text.count()) {
-        return word;
-    }
-    int next = pos;
-    while((next != text.count()) && !(text.at(next).isLetter())) {
-        next++;
-    }
-
-    if(next == text.count()) {
-        return word;
-    }
-
-    int end = next+1;
-    while((end != text.count()) && text.at(end).isLetter()) {
-        end++;
-    }
-    end = end -1;
-    word.start = next;
-    word.end = end;
-    word.word = text.mid(next,end-next+1);
-    return word;
-}
 
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -335,9 +303,11 @@ void AMTMainWindow::open() {
 
     if(!_atagger->text.isEmpty()) {
         sarfAct->setEnabled(true);
+        simulatorAct->setEnabled(true);
     }
     edittagtypesAct->setEnabled(true);
     sarftagsAct->setEnabled(true);
+    editMSFAct->setEnabled(true);
     tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
     umTags->setEnabled(true);
@@ -1073,9 +1043,15 @@ void AMTMainWindow::createActions()
 
     sarfAct = new QAction(tr("Run Sarf"), this);
     sarfAct->setEnabled(false);
-    //tagAct->setShortcuts(QKeySequence::Cut);
-    //tagAct->setStatusTip(tr("Tag selected word"));
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
+
+    editMSFAct = new QAction(tr("Edit MSFs"), this);
+    editMSFAct->setEnabled(true);
+    connect(editMSFAct, SIGNAL(triggered()), this, SLOT(customizeMSFs()));
+
+    simulatorAct = new QAction(tr("Run Simulator"), this);
+    simulatorAct->setEnabled(false);
+    connect(simulatorAct, SIGNAL(triggered()), this, SLOT(runMERFSimulator()));
 
     diffAct = new QAction(tr("diff..."),this);
     diffAct->setEnabled(false);
@@ -1131,6 +1107,10 @@ void AMTMainWindow::createMenus()
     sarfMenu = menuBar()->addMenu(tr("Sarf"));
     sarfMenu->addAction(sarftagsAct);
     sarfMenu->addAction(sarfAct);
+
+    merfMenu = menuBar()->addMenu(tr("MERF"));
+    merfMenu->addAction(editMSFAct);
+    merfMenu->addAction(simulatorAct);
 
     analyseMenu = menuBar()->addMenu(tr("Analyse"));
     analyseMenu->addAction(diffAct);
@@ -1337,40 +1317,11 @@ void AMTMainWindow::sarfTagging() {
 
     /** Process Text and analyse each work using sarf **/
 
-    int start = 0;
-    while(start != text.count()) {
-        Word word = nextWord(text, start);
-        if(word.word.isEmpty()) {
-            break;
-        }
-        int length = word.end - word.start + 1;
-        SarfTag sarftag(word.start, length, &(word.word), &synSetHash , this);
-        sarftag();
-        start = word.end + 1;
-    }
+    AutoTagger autotag(&text,&synSetHash);
+    autotag();
 
     /** Analysis Done **/
 
-    /*
-    for(int i=0; i<_atagger->tagVector.count(); i++) {
-        for(int j=0; j<_atagger->tagTypeVector->count(); j++) {
-            QString type = (_atagger->tagVector.at(i)).type;
-            QString tag = (_atagger->tagTypeVector->at(j))->tag;
-            if(type == tag) {
-                int start = (_atagger->tagVector.at(i)).pos;
-                int length = (_atagger->tagVector.at(i)).length;
-                QColor fgcolor = QColor((_atagger->tagTypeVector->at(j))->fgcolor);
-                QColor bgcolor = QColor((_atagger->tagTypeVector->at(j))->bgcolor);
-                int font = (_atagger->tagTypeVector->at(j))->font;
-                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool underline = false;
-                bool bold = (_atagger->tagTypeVector->at(j))->bold;
-                bool italic = (_atagger->tagTypeVector->at(j))->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-            }
-        }
-    }
-    */
     applyTags();
 
     fillTreeWidget(sarf);
@@ -1380,6 +1331,7 @@ void AMTMainWindow::sarfTagging() {
 void AMTMainWindow::customizeSarfTags() {
     if(!_atagger->textFile.isEmpty()) {
         sarfAct->setEnabled(true);
+        simulatorAct->setEnabled(true);
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
@@ -1695,6 +1647,7 @@ void AMTMainWindow::loadText_clicked() {
 
          lineEditTFName->setText(fileName);
          sarfAct->setEnabled(true);
+         simulatorAct->setEnabled(true);
          //btnTFName->setEnabled(false);
          QString text = file.readAll();
          _atagger->textFile = fileName;
@@ -1743,6 +1696,7 @@ void AMTMainWindow::loadTagTypes_clicked() {
         else if(fileName.endsWith(".stt.json")) {
             _atagger->tagtypeFile = fileName;
             sarfAct->setEnabled(true);
+            simulatorAct->setEnabled(true);
         }
         else {
             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
@@ -1786,6 +1740,7 @@ void AMTMainWindow::_new() {
 	createDockWindows(false);
 
 	sarftagsAct->setEnabled(true);
+        editMSFAct->setEnabled(true);
 	edittagtypesAct->setEnabled(true);
 	tagremoveAct->setEnabled(true);
 	mTags->setEnabled(true);
@@ -1807,6 +1762,34 @@ void AMTMainWindow::setLineSpacing(int lineSpacing) {
             tc.setBlockFormat(fmt);
         }
     }
+}
+
+void AMTMainWindow::customizeMSFs() {
+    /*
+    if(!_atagger->textFile.isEmpty()) {
+        simulatorAct->setEnabled(true);
+    }
+
+    if(_atagger->tagtypeFile.isEmpty()) {
+        QString ttFileName = QFileDialog::getSaveFileName(this,
+                                                          tr("Sarf TagType File Name"), "",
+                                                          tr("tag types (*.stt.json);;All Files (*)"));
+        if(ttFileName.isEmpty())
+        {
+            return;
+        }
+        else {
+            _atagger->tagtypeFile = ttFileName + ".stt.json";
+            lineEditTTFName->setText(_atagger->tagtypeFile);
+        }
+    }
+    */
+    CustomizeMSFView * cmsfv = new CustomizeMSFView(this);
+    cmsfv->show();
+}
+
+void AMTMainWindow::runMERFSimulator() {
+
 }
 
 void AMTMainWindow::resetActionDisplay() {

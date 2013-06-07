@@ -38,6 +38,14 @@ NumNorm::NumNorm(QString *_text) {
     hashGlossInt.insert("million", 1000000);
     hashGlossInt.insert("millions", 1000000);
     hashGlossInt.insert("billion", 1000000000);
+
+    // fill the flexibility table
+    hashFlexible.insert("kilogram", 1000);
+    hashFlexible.insert("kilometer(s)", 1000);
+    hashFlexible.insert("millimeter", 0.001);
+    hashFlexible.insert("milligram", 0.001);
+    hashFlexible.insert("meter", 1);
+    hashFlexible.insert("gram", 1);
 }
 
 bool NumNorm::operator ()() {

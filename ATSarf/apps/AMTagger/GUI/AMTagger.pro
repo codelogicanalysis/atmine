@@ -99,7 +99,16 @@ HEADERS += \
     ../../syn/getGloss.h \
     ../../syn/ger.h \
     ../../syn/gamma.h \
-    ../../syn/alpha.h
+    ../../syn/alpha.h \
+    ../autotagger.h \
+    ../word.h \
+    ../customizemsfview.h \
+    ../mbf.h \
+    ../msf.h \
+    ../unaryf.h \
+    ../binaryf.h \
+    ../merfutil.h \
+    ../msformula.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -158,7 +167,15 @@ SOURCES += \
     ../../syn/getGloss.cpp \
     ../../syn/ger.cpp \
     ../../syn/gamma.cpp \
-    ../../syn/alpha.cpp
+    ../../syn/alpha.cpp \
+    ../autotagger.cpp \
+    ../word.cpp \
+    ../customizemsfview.cpp \
+    ../mbf.cpp \
+    ../msf.cpp \
+    ../unaryf.cpp \
+    ../binaryf.cpp \
+    ../msformula.cpp
 
 FORMS    +=
 

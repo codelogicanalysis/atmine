@@ -6,6 +6,7 @@
 #include "tag.h"
 #include "tagtype.h"
 #include "sarftagtype.h"
+#include "msformula.h"
 #include "commonS.h"
 
 class ATagger;
@@ -23,6 +24,7 @@ public:
     QVector<Tag> compareToTagVector;
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
+    QVector<MSFormula*> *msfVector;
     QString text;
     QString textFile;
     QString tagFile;
