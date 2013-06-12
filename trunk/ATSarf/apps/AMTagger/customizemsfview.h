@@ -15,6 +15,11 @@
 #include <QtCore/QDir>
 #include "global.h"
 #include "logger.h"
+#include "mbf.h"
+#include "unaryf.h"
+#include "binaryf.h"
+#include "msformula.h"
+#include "sequetialf.h"
 
 class CustomizeMSFView : public QMainWindow
 {
@@ -29,8 +34,14 @@ private slots:
     void btnUnselect_clicked();
     void btnAdd_clicked();
     void btnRemove_clicked();
+    void btnStar_clicked();
+    void btnPlus_clicked();
+    void btnQuestion_clicked();
+    void btnLimit_clicked();
+    void btnOr_clicked();
+    void btnAnd_clicked();
+    void btnSequence_clicked();
     void cbMSF_changed(QString);
-    void cbOperation_changed(QString);
     void listMBF_itemclicked(QListWidgetItem*);
 
 private:
@@ -38,16 +49,24 @@ private:
     QPushButton *btnUnselect;
     QPushButton *btnAdd;
     QPushButton *btnRemove;
+    QPushButton* btnStar;
+    QPushButton* btnPlus;
+    QPushButton* btnQuestion;
+    QPushButton* btnLimit;
+    QPushButton* btnOr;
+    QPushButton* btnAnd;
+    QPushButton* btnSequence;
 
     QLabel *lblMBF;
     QLabel *lblMSF;
     QLabel *lblActions;
+    QLabel *lblFormula;
 
     QLineEdit *editLimit;
+    QLineEdit *editFormula;
     QTextEdit *editActions;
 
     QComboBox *cbMSF;
-    QComboBox *cbOperations;
 
     QListWidget *listMBF;
 
@@ -56,6 +75,7 @@ private:
 
     QStringList listCategoryId;
     QStringList listCategory;
+    MSFormula* currentF;
 
     void disconnect_Signals();
     void connect_Signals();

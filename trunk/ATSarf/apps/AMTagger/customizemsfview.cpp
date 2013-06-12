@@ -3,55 +3,84 @@
 CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QMainWindow(parent)
 {
+
     QGridLayout *grid = new QGridLayout();
     btnSelect = new QPushButton(tr(">>"), this);
     btnUnselect = new QPushButton(tr("<<"), this);
     btnAdd = new QPushButton(tr("Add\nMSF"), this);
     btnRemove = new QPushButton(tr("Remove\nMSF"), this);
 
+    btnStar = new QPushButton(tr("*"), this);
+    btnPlus = new QPushButton(tr("+"), this);
+    btnQuestion = new QPushButton(tr("?"), this);
+    btnLimit = new QPushButton(tr("^"), this);
+    btnOr = new QPushButton(tr("|"), this);
+    btnAnd = new QPushButton(tr("&&"), this);
+    btnSequence = new QPushButton(tr("()"), this);
+
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
     btnRemove->setEnabled(false);
+
+    btnStar->setEnabled(false);
+    btnPlus->setEnabled(false);
+    btnQuestion->setEnabled(false);
+    btnLimit->setEnabled(false);
+    btnOr->setEnabled(false);
+    btnAnd->setEnabled(false);
+    btnSequence->setEnabled(false);
 
     connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
     connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
     connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
     connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
 
-    grid->addWidget(btnSelect,6,2);
-    grid->addWidget(btnUnselect,7,2);
-    grid->addWidget(btnAdd,3,2);
-    grid->addWidget(btnRemove,4,2);
+    connect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
+    connect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
+    connect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
+    connect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
+    connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
+    connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
+    connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
 
-    lblMBF = new QLabel(tr("Possible MBFs"), this);
+    grid->addWidget(btnSelect,4,2);
+    grid->addWidget(btnUnselect,5,2);
+    grid->addWidget(btnAdd,1,2);
+    grid->addWidget(btnRemove,2,2);
+
+    grid->addWidget(btnStar,11,3);
+    grid->addWidget(btnPlus,12,3);
+    grid->addWidget(btnQuestion,11,4);
+    grid->addWidget(btnOr,11,5);
+    grid->addWidget(btnAnd,12,5);
+    grid->addWidget(btnLimit,11,6);
+    grid->addWidget(btnSequence,12,4);
+
+    lblMBF = new QLabel(tr("MBFs"), this);
     lblMSF = new QLabel(tr("MSF:"), this);
     lblActions = new QLabel(tr("Actions"), this);
+    lblFormula = new QLabel(tr("Formula:"), this);
 
     grid->addWidget(lblMBF,0,0);
     grid->addWidget(lblMSF,0,3);
     grid->addWidget(lblActions,0,5,1,2,Qt::AlignCenter);
+    grid->addWidget(lblFormula,10,2,Qt::AlignCenter);
 
     editActions = new QTextEdit(this);
+    editFormula = new QLineEdit(this);
+    editFormula->setReadOnly(true);
     editLimit = new QLineEdit(this);
     editLimit->setMaximumWidth(90);
-    editLimit->setEnabled(false);
 
-    grid->addWidget(editActions,1,5,12,2);
-    grid->addWidget(editLimit,9,2);
+    grid->addWidget(editActions,1,5,9,4);
+    grid->addWidget(editLimit,12,6);
+    grid->addWidget(editFormula,10,3,1,4);
 
     cbMSF = new QComboBox(this);
-    cbOperations = new QComboBox(this);
 
-    cbOperations->addItem("?");
-    cbOperations->addItem("*");
-    cbOperations->addItem("+");
-    cbOperations->addItem("^");
-
-    connect(cbOperations, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbOperation_changed(QString)));
     connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
 
     grid->addWidget(cbMSF,0,4);
-    grid->addWidget(cbOperations,8,2);
 
     listMBF = new QListWidget(this);
     listMBF->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -64,18 +93,16 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     treeMSF->setColumnCount(3);
     QStringList columnsD;
     columnsD << "Name" << "MBF" << "Operation";
-    QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
-    treeMSF->setHeaderItem(itemD);
-    treeMSF->setSelectionMode(QAbstractItemView::SingleSelection);
+    treeMSF->setHeaderLabels(columnsD);
+    treeMSF->setSelectionMode(QAbstractItemView::MultiSelection);
 
-    grid->addWidget(treeMSF,1,3,12,2);
+    grid->addWidget(treeMSF,1,3,9,2);
 
     treeMBFdesc = new QTreeWidget(this);
     treeMBFdesc->setColumnCount(4);
     QStringList columnsdesc;
     columnsdesc << QString() << "Feature" << "Relation" << "Value";
-    QTreeWidgetItem* itemdesc=new QTreeWidgetItem(columnsdesc);
-    treeMBFdesc->setHeaderItem(itemdesc);
+    treeMBFdesc->setHeaderLabels(columnsdesc);
     treeMBFdesc->setSelectionMode(QAbstractItemView::SingleSelection);
 
     grid->addWidget(treeMBFdesc,7,0,6,2);
@@ -95,20 +122,29 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         }
     }
 
+    if(_atagger->tagTypeVector->count() == 0) {
+        return;
+    }
+
     QStringList tagtypes;
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         tagtypes.append(_atagger->tagTypeVector->at(i)->tag);
     }
     tagtypes.append("NONE");
+
+    if(_atagger->msfVector->count() != 0) {
+        for(int i=0; i<_atagger->msfVector->count(); i++) {
+            tagtypes.append(_atagger->msfVector->at(i)->name);
+        }
+    }
     listMBF->addItems(tagtypes);
-    //listMBF->setAlternatingRowColors(true);
 }
 
 void CustomizeMSFView::btnAdd_clicked() {
 
     bool ok;
     QString msfName = QInputDialog::getText(this,"Tag Name","Please insert a formula Name", QLineEdit::Normal,
-                                            QDir::home().dirName(), &ok);
+                                            QString(), &ok);
     if(!ok || msfName.isEmpty()) {
         return;
     }
@@ -120,9 +156,18 @@ void CustomizeMSFView::btnAdd_clicked() {
             return;
         }
     }
+    for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
+        const TagType* tt = _atagger->tagTypeVector->at(i);
+        if(tt->tag == msfName) {
+            QMessageBox::warning(this, "Warning", "Name conflict with an MBF!");
+            return;
+        }
+    }
 
-    MSFormula* formula = new MSFormula(msfName);
+    MSFormula* formula = new MSFormula(msfName, NULL);
+    currentF = formula;
     _atagger->msfVector->append(formula);
+    listMBF->addItem(formula->name);
 
     disconnect_Signals();
 
@@ -132,12 +177,22 @@ void CustomizeMSFView::btnAdd_clicked() {
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
         btnRemove->setEnabled(true);
+        btnStar->setEnabled(true);
+        btnPlus->setEnabled(true);
+        btnQuestion->setEnabled(true);
+        btnLimit->setEnabled(true);
+        btnOr->setEnabled(true);
+        btnAnd->setEnabled(true);
+        btnSequence->setEnabled(true);
     }
     treeMSF->clear();
     editActions->clear();
+    listMBF->clearSelection();
+    treeMBFdesc->clear();
 
     cbMSF->addItem(msfName);
     cbMSF->setCurrentIndex(cbMSF->findText(msfName));
+    editFormula->clear();
 
     connect_Signals();
 }
@@ -146,6 +201,8 @@ void CustomizeMSFView::btnRemove_clicked() {
     if(_atagger->msfVector->count() == 0) {
         return;
     }
+    disconnect_Signals();
+
     QString msfRemoved = cbMSF->currentText();
     for(int i=0; i<_atagger->msfVector->count(); i++) {
         const MSFormula * msf = _atagger->msfVector->at(i);
@@ -154,20 +211,628 @@ void CustomizeMSFView::btnRemove_clicked() {
             break;
         }
     }
+
+    listMBF->clear();
+    if(_atagger->tagTypeVector->count() != 0) {
+        for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
+            listMBF->addItem(_atagger->tagTypeVector->at(i)->tag);
+        }
+    }
+
+    if(_atagger->msfVector->count() != 0) {
+        for(int i=0; i< _atagger->msfVector->count(); i++) {
+            listMBF->addItem(_atagger->msfVector->at(i)->name);
+        }
+    }
+
     cbMSF->removeItem(cbMSF->currentIndex());
+
     if(_atagger->msfVector->count() == 0) {
         btnSelect->setEnabled(false);
         btnUnselect->setEnabled(false);
         btnRemove->setEnabled(false);
+        btnStar->setEnabled(false);
+        btnPlus->setEnabled(false);
+        btnQuestion->setEnabled(false);
+        btnLimit->setEnabled(false);
+        btnOr->setEnabled(false);
+        btnAnd->setEnabled(false);
+        btnSequence->setEnabled(false);
     }
+
+    connect_Signals();
 }
 
 void CustomizeMSFView::btnSelect_clicked() {
 
+    QString name = "s";
+
+    if(!(listMBF->selectedItems().isEmpty())) {
+
+        QListWidgetItem* item = listMBF->selectedItems().at(0);
+        QString bf = item->text();
+        name.append(QString::number(currentF->i));
+
+        /// Insert as top child in MSF
+        MBF* mbf = new MBF(name, currentF, bf);
+        if(!(currentF->addMSF(currentF->name, mbf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+            return;
+        }
+
+        QStringList data;
+        data << name << bf << QString();
+        QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
+        editFormula->setText(currentF->print());
+    }
+    else {
+        /// No MBFs are selected, invalid move
+        QMessageBox::warning(this, "Warning", "Invalid Move!");
+        return;
+    }
 }
 
 void CustomizeMSFView::btnUnselect_clicked() {
 
+}
+
+void CustomizeMSFView::btnStar_clicked() {
+    /// Star is selected as unary operation
+    if(treeMSF->selectedItems().count() != 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Only one MSF for unary operations!");
+        return;
+    }
+
+    QString name = "s";
+    QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
+    QString childName = item->text(0);
+    name.append(QString::number(currentF->i));
+
+    QStringList unaryOp;
+    unaryOp << "*" << "+" << "?";
+    /// Check if item is a unary operation
+    if(item->childCount() == 1 || item->text(3).contains("^") || unaryOp.contains(item->text(3))) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply unary operation to a unary formula!");
+        return;
+    }
+
+    /// Check if parent exist
+    if(!(item->parent())) {
+        /// Selected item is a top level item in tree
+
+        UNARYF* uf = new UNARYF(name, currentF, STAR);
+        if(!(currentF->updateMSF(currentF->name, childName, uf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+            return;
+        }
+
+        int index;
+        index = treeMSF->indexOfTopLevelItem(item);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item);
+        newItem->setText(0,name);
+        newItem->setText(2,"*");
+
+        QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
+        newItem->addChild(childItem);
+        editFormula->setText(currentF->print());
+        return;
+    }
+
+    QString parentName = item->parent()->text(0);
+    /// Check if parent is a Unary formula
+    if(item->parent()->childCount() == 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply multiple unary operations to a MBF!");
+        return;
+    }
+
+    /// No selected item, should insert as top child in main MSF
+
+    /// Check if parent node exists in internal tree
+    if(currentF->map.find(parentName) == currentF->map.end()) {
+        QMessageBox::warning(this, "Warning", "Can't find parent!");
+        return;
+    }
+
+    UNARYF* uf = new UNARYF(name, currentF->map.value(parentName), STAR);
+    if(!(currentF->updateMSF(parentName, childName, uf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+        return;
+    }
+
+    /// Update tree data
+    int index;
+    index = item->parent()->indexOfChild(item);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item->parent(),item);
+    newItem->setText(0,name);
+    newItem->setText(2,"*");
+
+    QTreeWidgetItem* childItem = item->parent()->takeChild(index);
+    newItem->addChild(childItem);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnPlus_clicked() {
+    /// Plus is selected as unary operation
+
+    if(treeMSF->selectedItems().count() != 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Only one MSF for unary operations!");
+        return;
+    }
+
+    QString name = "s";
+    QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
+    QString childName = item->text(0);
+    name.append(QString::number(currentF->i));
+
+    QStringList unaryOp;
+    unaryOp << "*" << "+" << "?";
+    /// Check if item is a unary operation
+    if(item->childCount() == 1 || item->text(3).contains("^") || unaryOp.contains(item->text(3))) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply unary operation to a unary formula!");
+        return;
+    }
+
+    /// Check if parent exist
+    if(!(item->parent())) {
+        /// Selected item is a top level item in tree
+
+        UNARYF* uf = new UNARYF(name, currentF, PLUS);
+        if(!(currentF->updateMSF(currentF->name, childName, uf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+            return;
+        }
+
+        int index;
+        index = treeMSF->indexOfTopLevelItem(item);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item);
+        newItem->setText(0,name);
+        newItem->setText(2,"+");
+
+        QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
+        newItem->addChild(childItem);
+        editFormula->setText(currentF->print());
+        return;
+    }
+
+    QString parentName = item->parent()->text(0);
+    /// Check if parent is a Unary formula
+    if(item->parent()->childCount() == 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply multiple unary operations to a MBF!");
+        return;
+    }
+
+    /// No selected item, should insert as top child in main MSF
+
+    /// Check if parent node exists in internal tree
+    if(currentF->map.find(parentName) == currentF->map.end()) {
+        QMessageBox::warning(this, "Warning", "Can't find parent!");
+        return;
+    }
+
+    UNARYF* uf = new UNARYF(name, currentF->map.value(parentName), PLUS);
+    if(!(currentF->updateMSF(parentName, childName, uf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+        return;
+    }
+
+    /// Update tree data
+    int index;
+    index = item->parent()->indexOfChild(item);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item->parent(),item);
+    newItem->setText(0,name);
+    newItem->setText(2,"+");
+
+    QTreeWidgetItem* childItem = item->parent()->takeChild(index);
+    newItem->addChild(childItem);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnQuestion_clicked() {
+    /// Star is selected as unary operation
+    if(treeMSF->selectedItems().count() != 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Only one MSF for unary operations!");
+        return;
+    }
+
+    QString name = "s";
+    QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
+    QString childName = item->text(0);
+    name.append(QString::number(currentF->i));
+
+    QStringList unaryOp;
+    unaryOp << "*" << "+" << "?";
+    /// Check if item is a unary operation
+    if(item->childCount() == 1 || item->text(3).contains("^") || unaryOp.contains(item->text(3))) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply unary operation to a unary formula!");
+        return;
+    }
+
+    /// Check if parent exist
+    if(!(item->parent())) {
+        /// Selected item is a top level item in tree
+
+        UNARYF* uf = new UNARYF(name, currentF, KUESTION);
+        if(!(currentF->updateMSF(currentF->name, childName, uf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+            return;
+        }
+
+        int index;
+        index = treeMSF->indexOfTopLevelItem(item);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item);
+        newItem->setText(0,name);
+        newItem->setText(2,"?");
+
+        QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
+        newItem->addChild(childItem);
+        editFormula->setText(currentF->print());
+        return;
+    }
+
+    QString parentName = item->parent()->text(0);
+    /// Check if parent is a Unary formula
+    if(item->parent()->childCount() == 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply multiple unary operations to a MBF!");
+        return;
+    }
+
+    /// No selected item, should insert as top child in main MSF
+
+    /// Check if parent node exists in internal tree
+    if(currentF->map.find(parentName) == currentF->map.end()) {
+        QMessageBox::warning(this, "Warning", "Can't find parent!");
+        return;
+    }
+
+    UNARYF* uf = new UNARYF(name, currentF->map.value(parentName), KUESTION);
+    if(!(currentF->updateMSF(parentName, childName, uf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+        return;
+    }
+
+    /// Update tree data
+    int index;
+    index = item->parent()->indexOfChild(item);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item->parent(),item);
+    newItem->setText(0,name);
+    newItem->setText(2,"?");
+
+    QTreeWidgetItem* childItem = item->parent()->takeChild(index);
+    newItem->addChild(childItem);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnLimit_clicked() {
+    /// Upto is selected as unary operation
+
+    if(treeMSF->selectedItems().count() != 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Only one MSF for unary operations!");
+        return;
+    }
+
+    bool ok;
+    if(editLimit->text().isEmpty()) {
+        QMessageBox::warning(this, "Warning", "No limit for upto operation!");
+        return;
+    }
+    int limit = editLimit->text().toInt(&ok);
+    if(!ok || limit<=0) {
+        QMessageBox::warning(this, "Warning", "Invalid limit for upto operation!");
+        return;
+    }
+    QString opText = "^";
+    opText.append(QString::number(limit));
+
+    QString name = "s";
+    QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
+    QString childName = item->text(0);
+    name.append(QString::number(currentF->i));
+
+    QStringList unaryOp;
+    unaryOp << "*" << "+" << "?";
+    /// Check if item is a unary operation
+    if(item->childCount() == 1 || item->text(3).contains("^") || unaryOp.contains(item->text(3))) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply unary operation to a unary formula!");
+        return;
+    }
+
+    /// Check if parent exist
+    if(!(item->parent())) {
+        /// Selected item is a top level item in tree
+
+        UNARYF* uf = new UNARYF(name, currentF, UPTO, limit);
+        if(!(currentF->updateMSF(currentF->name, childName, uf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+            return;
+        }
+
+        int index;
+        index = treeMSF->indexOfTopLevelItem(item);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item);
+        newItem->setText(0,name);
+        newItem->setText(2,opText);
+
+        QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
+        newItem->addChild(childItem);
+        editFormula->setText(currentF->print());
+        return;
+    }
+
+    QString parentName = item->parent()->text(0);
+    /// Check if parent is a Unary formula
+    if(item->parent()->childCount() == 1) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Can't apply multiple unary operations to a MBF!");
+        return;
+    }
+
+    /// No selected item, should insert as top child in main MSF
+
+    /// Check if parent node exists in internal tree
+    if(currentF->map.find(parentName) == currentF->map.end()) {
+        QMessageBox::warning(this, "Warning", "Can't find parent!");
+        return;
+    }
+
+    UNARYF* uf = new UNARYF(name, currentF->map.value(parentName), UPTO, limit);
+    if(!(currentF->updateMSF(parentName, childName, uf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+        return;
+    }
+
+    /// Update tree data
+    int index;
+    index = item->parent()->indexOfChild(item);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item->parent(),item);
+    newItem->setText(0,name);
+    newItem->setText(2,opText);
+
+    QTreeWidgetItem* childItem = item->parent()->takeChild(index);
+    newItem->addChild(childItem);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnOr_clicked() {
+    /// Selection of or as binary operation
+
+    if(treeMSF->selectedItems().count() != 2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Two MSFs for binary operations!");
+        return;
+    }
+
+    QString name = "s";
+    QTreeWidgetItem* item1 = treeMSF->selectedItems().at(0);
+    QString childName1 = item1->text(0);
+    QTreeWidgetItem* item2 = treeMSF->selectedItems().at(1);
+    QString childName2 = item2->text(0);
+    name.append(QString::number(currentF->i));
+
+    if((!(item1->parent())) && (!(item2->parent()))) {
+        /// Selected item is a top level item in tree
+
+        BINARYF* bf = new BINARYF(name, currentF, OR);
+        if(!(currentF->updateMSF(currentF->name, childName1, childName2, bf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process data!");
+            return;
+        }
+
+        int index1;
+        index1 = treeMSF->indexOfTopLevelItem(item1);
+        int index2;
+        index2 = treeMSF->indexOfTopLevelItem(item2);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item2);
+        newItem->setText(0,name);
+        newItem->setText(2,"|");
+
+        QTreeWidgetItem* childItem2 = treeMSF->takeTopLevelItem(index2);
+        newItem->addChild(childItem2);
+        QTreeWidgetItem* childItem1 = treeMSF->takeTopLevelItem(index1);
+        newItem->addChild(childItem1);
+        editFormula->setText(currentF->print());
+        return;
+    }
+    else if(!(item1->parent()) || !(item2->parent())) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+        return;
+    }
+
+    /// Check if item is a unary operation
+    if(item1->parent()->childCount() == 2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Invalid Update!");
+        return;
+    }
+
+    /// Check if selected MSFs are siblings
+    if(item1->parent()->text(0) != item2->parent()->text(0)) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+        return;
+    }
+    QString parentName = item1->parent()->text(0);
+
+    BINARYF* bf = new BINARYF(name, currentF->map.value(parentName),OR);
+    if(!(currentF->updateMSF(parentName, childName1, childName2, bf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process data!");
+        return;
+    }
+
+    int index1;
+    index1 = item1->parent()->indexOfChild(item1);
+    int index2;
+    index2 = item2->parent()->indexOfChild(item2);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item2->parent(), item2);
+    newItem->setText(0,name);
+    newItem->setText(2,"|");
+
+    QTreeWidgetItem* childItem2 = item2->parent()->takeChild(index2);
+    newItem->addChild(childItem2);
+    QTreeWidgetItem* childItem1 = item1->parent()->takeChild(index1);
+    newItem->addChild(childItem1);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnAnd_clicked() {
+    /// Selection of a binary operation
+
+    if(treeMSF->selectedItems().count() != 2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Two MSFs for binary operations!");
+        return;
+    }
+
+    QString name = "s";
+    QTreeWidgetItem* item1 = treeMSF->selectedItems().at(0);
+    QString childName1 = item1->text(0);
+    QTreeWidgetItem* item2 = treeMSF->selectedItems().at(1);
+    QString childName2 = item2->text(0);
+    name.append(QString::number(currentF->i));
+
+    if((!(item1->parent())) && (!(item2->parent()))) {
+        /// Selected item is a top level item in tree
+
+        BINARYF* bf = new BINARYF(name, currentF, AND);
+        if(!(currentF->updateMSF(currentF->name, childName1, childName2, bf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process data!");
+            return;
+        }
+
+        int index1;
+        index1 = treeMSF->indexOfTopLevelItem(item1);
+        int index2;
+        index2 = treeMSF->indexOfTopLevelItem(item2);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, item2);
+        newItem->setText(0,name);
+        newItem->setText(2,"&");
+
+        QTreeWidgetItem* childItem2 = treeMSF->takeTopLevelItem(index2);
+        newItem->addChild(childItem2);
+        QTreeWidgetItem* childItem1 = treeMSF->takeTopLevelItem(index1);
+        newItem->addChild(childItem1);
+        editFormula->setText(currentF->print());
+        return;
+    }
+    else if(!(item1->parent()) || !(item2->parent())) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+        return;
+    }
+
+    /// Check if item is a unary operation
+    if(item1->parent()->childCount() == 2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Invalid Update!");
+        return;
+    }
+
+    /// Check if selected MSFs are siblings
+    if(item1->parent()->text(0) != item2->parent()->text(0)) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+        return;
+    }
+    QString parentName = item1->parent()->text(0);
+
+    BINARYF* bf = new BINARYF(name, currentF->map.value(parentName),AND);
+    if(!(currentF->updateMSF(parentName, childName1, childName2, bf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process data!");
+        return;
+    }
+
+    int index1;
+    index1 = item1->parent()->indexOfChild(item1);
+    int index2;
+    index2 = item2->parent()->indexOfChild(item2);
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item2->parent(), item2);
+    newItem->setText(0,name);
+    newItem->setText(2,"&");
+
+    QTreeWidgetItem* childItem2 = item2->parent()->takeChild(index2);
+    newItem->addChild(childItem2);
+    QTreeWidgetItem* childItem1 = item1->parent()->takeChild(index1);
+    newItem->addChild(childItem1);
+    editFormula->setText(currentF->print());
+}
+
+void CustomizeMSFView::btnSequence_clicked() {
+    /// Selection of sequential operation
+
+    if(treeMSF->selectedItems().count() < 2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: Two MSFs for binary operations!");
+        return;
+    }
+    QString name = "s";
+    name.append(QString::number(currentF->i));
+
+    QTreeWidgetItem* item1 = treeMSF->selectedItems().at(0);
+    if(!(item1->parent())) {
+        /// First item is a top level item
+        /// Check if other selected items are top level too
+        foreach(QTreeWidgetItem* item, treeMSF->selectedItems()) {
+
+            if(item->parent()) {
+                QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+                return;
+            }
+        }
+
+        SequentialF* sf = new SequentialF(name, currentF);
+        QTreeWidgetItem* newItem = new QTreeWidgetItem(treeMSF, treeMSF->selectedItems().last());
+        newItem->setText(0,name);
+        newItem->setText(2,"()");
+
+        QVector<QString> msfs;
+        foreach(QTreeWidgetItem* item, treeMSF->selectedItems()) {
+            msfs.append(item->text(0));
+
+            int index;
+            index = treeMSF->indexOfTopLevelItem(item);
+            QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
+            newItem->addChild(childItem);
+        }
+
+        if(!(currentF->updateMSF(currentF->name, &msfs, sf))) {
+            QMessageBox::warning(this, "Warning", "Couldn't process data!");
+            return;
+        }
+        editFormula->setText(currentF->print());
+        return;
+    }
+
+    QString parentName = item1->parent()->text(0);
+    foreach(QTreeWidgetItem* item, treeMSF->selectedItems()) {
+
+        if(item->parent()->text(0) != parentName) {
+            QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs are not on same level!");
+            return;
+        }
+    }
+
+    QStringList biOps;
+    biOps << "|" << "&";
+    if(biOps.contains(item1->parent()->text(3))) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: The MSFs belong to a binary operation!");
+        return;
+    }
+
+    if(item1->parent()->text(3).compare("()")==0 && treeMSF->selectedItems().count()==2) {
+        QMessageBox::warning(this, "Warning", "Invalid Formula: MSFs are already sequential!");
+        return;
+    }
+
+    SequentialF* sf = new SequentialF(name, currentF->map.value(parentName));
+    QTreeWidgetItem* newItem = new QTreeWidgetItem(item1->parent(), treeMSF->selectedItems().last());
+    newItem->setText(0,name);
+    newItem->setText(2,"()");
+
+    QVector<QString> msfs;
+    foreach(QTreeWidgetItem* item, treeMSF->selectedItems()) {
+        msfs.append(item->text(0));
+
+        int index;
+        index = item->parent()->indexOfChild(item);
+        QTreeWidgetItem* childItem = item->parent()->takeChild(index);
+        newItem->addChild(childItem);
+    }
+
+    if(!(currentF->updateMSF(parentName, &msfs, sf))) {
+        QMessageBox::warning(this, "Warning", "Couldn't process data!");
+        return;
+    }
+    editFormula->setText(currentF->print());
 }
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
@@ -177,6 +842,9 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
     }
 
     disconnect_Signals();
+    editLimit->clear();
+    editActions->clear();
+    editFormula->clear();
     for(int i=0; i<_atagger->msfVector->count(); i++) {
         MSFormula * msf = _atagger->msfVector->at(i);
         if(msf->name == name) {
@@ -187,17 +855,9 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
     connect_Signals();
 }
 
-void CustomizeMSFView::cbOperation_changed(QString op) {
-    editLimit->clear();
-    if(op == "^") {
-        editLimit->setEnabled(true);
-    }
-    else {
-        editLimit->setEnabled(false);
-    }
-}
-
 void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
+
+    disconnect_Signals();
     treeMBFdesc->clear();
     QString tagtype = item->text();
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
@@ -224,6 +884,7 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
             break;
         }
     }
+    connect_Signals();
 }
 
 void CustomizeMSFView::disconnect_Signals() {
@@ -232,8 +893,15 @@ void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
     disconnect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
     disconnect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
-    disconnect(cbOperations,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbOperation_changed(QString)));
     disconnect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
+
+    disconnect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
+    disconnect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
+    disconnect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
+    disconnect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
+    disconnect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
+    disconnect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
+    disconnect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
 }
 
 void CustomizeMSFView::connect_Signals() {
@@ -242,6 +910,13 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
     connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
     connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
-    connect(cbOperations,SIGNAL(currentIndexChanged(QString)), this, SLOT(cbOperation_changed(QString)));
     connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
+
+    connect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
+    connect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
+    connect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
+    connect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
+    connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
+    connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
+    connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
 }

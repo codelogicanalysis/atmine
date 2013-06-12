@@ -506,9 +506,17 @@ void CustomSTTView::connect_Signals() {
 
 void CustomSTTView::btnAdd_clicked() {
 
-    QString tagName = QInputDialog::getText(this,"Tag Name","Please insert a Tag Type Name");
+    bool ok;
+    QString tagName = QInputDialog::getText(this, "Tag Name", "Please insert a Tag Type Name", QLineEdit::Normal, QString(), &ok);
+    if(!ok) {
+        return;
+    }
     if(tagName.isEmpty()) {
         QMessageBox::warning(this,"Warning","Empty TagType Name!");
+        return;
+    }
+    if(tagName.compare("NONE")==0) {
+        QMessageBox::warning(this,"Warning","Invalid TagType Name!");
         return;
     }
 

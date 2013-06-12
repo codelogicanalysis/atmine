@@ -8,6 +8,7 @@ AutoTagger::AutoTagger(QString *text, QHash<QString, QSet<QString> > *synSetHash
 
 bool AutoTagger::operator ()() {
     int start = 0;
+    int tagCount = 0;
     while(start != text->count()) {
         Word word = nextWord(*text, start);
         if(word.word.isEmpty()) {
@@ -41,6 +42,13 @@ bool AutoTagger::operator ()() {
             }
         }
         /** End of cleaning **/
+
+        /** Check if word has no tags **/
+
+        if(_atagger->tagVector.count() == tagCount) {
+            _atagger->insertTag("NONE", word.start, length, sarf, original);
+        }
+        /** Done checking **/
 
         start = word.end + 1;
     }
