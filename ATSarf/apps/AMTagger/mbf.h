@@ -7,10 +7,14 @@
 class MBF : public MSF
 {
 public:
-    MBF(QString, QString, Operation, int);
+    MBF(QString name, MSF* parent, QString bf);
     QString bf;
-    Operation op;
-    int limit;
+    bool isMBF();
+    bool isUnary();
+    bool isBinary();
+    bool isFormula();
+    bool isSequential();
+    QString print();
 };
 
 #endif // MBF_H

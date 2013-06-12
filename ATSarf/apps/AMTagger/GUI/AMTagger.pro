@@ -108,7 +108,8 @@ HEADERS += \
     ../unaryf.h \
     ../binaryf.h \
     ../merfutil.h \
-    ../msformula.h
+    ../msformula.h \
+    ../sequetialf.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -175,7 +176,8 @@ SOURCES += \
     ../msf.cpp \
     ../unaryf.cpp \
     ../binaryf.cpp \
-    ../msformula.cpp
+    ../msformula.cpp \
+    ../sequetialf.cpp
 
 FORMS    +=
 

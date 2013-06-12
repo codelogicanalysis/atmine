@@ -8,12 +8,18 @@
 class BINARYF : public MSF
 {
 public:
-    BINARYF(QString, Operation);
-    void addLeftMSF(MSF*);
-    void addRightMSF(MSF*);
-    QVector<MSF*> lvector;
-    QVector<MSF*> rvector;
+    BINARYF(QString name, MSF* parent, Operation op);
+    void setLeftMSF(MSF*);
+    void setRightMSF(MSF*);
+    MSF* leftMSF;
+    MSF* rightMSF;
     Operation op;
+    bool isMBF();
+    bool isUnary();
+    bool isBinary();
+    bool isFormula();
+    bool isSequential();
+    QString print();
 };
 
 #endif // BINARYF_H

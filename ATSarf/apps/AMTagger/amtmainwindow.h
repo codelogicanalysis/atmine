@@ -82,7 +82,6 @@ private:
          QMenu *mTags;
          QMenu *umTags;
          QMenu *sarfMenu;
-         QMenu *merfMenu;
          QMenu *analyseMenu;
 
          QAction *newAct;

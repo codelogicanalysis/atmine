@@ -8,11 +8,17 @@
 class UNARYF : public MSF
 {
 public:
-    UNARYF(QString, Operation, int);
-    void addMSF(MSF*);
-    QVector<MSF*> vector;
+    UNARYF(QString name, MSF* parent, Operation op, int limit=-1);
+    void setMSF(MSF* msf);
+    MSF* msf;
     Operation op;
     int limit;
+    bool isMBF();
+    bool isUnary();
+    bool isBinary();
+    bool isFormula();
+    bool isSequential();
+    QString print();
 };
 
 #endif // UNARYF_H

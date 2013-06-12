@@ -1041,7 +1041,7 @@ void AMTMainWindow::createActions()
     sarftagsAct->setEnabled(false);
     connect(sarftagsAct, SIGNAL(triggered()), this, SLOT(customizeSarfTags()));
 
-    sarfAct = new QAction(tr("Run Sarf"), this);
+    sarfAct = new QAction(tr("Run Simulator"), this);
     sarfAct->setEnabled(false);
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
 
@@ -1107,10 +1107,9 @@ void AMTMainWindow::createMenus()
     sarfMenu = menuBar()->addMenu(tr("Sarf"));
     sarfMenu->addAction(sarftagsAct);
     sarfMenu->addAction(sarfAct);
-
-    merfMenu = menuBar()->addMenu(tr("MERF"));
-    merfMenu->addAction(editMSFAct);
-    merfMenu->addAction(simulatorAct);
+    sarfMenu->addSeparator();
+    sarfMenu->addAction(editMSFAct);
+    sarfMenu->addAction(simulatorAct);
 
     analyseMenu = menuBar()->addMenu(tr("Analyse"));
     analyseMenu->addAction(diffAct);

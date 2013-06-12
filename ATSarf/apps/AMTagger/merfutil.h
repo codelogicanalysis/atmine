@@ -7,6 +7,7 @@ typedef enum {
     UPTO,
     STAR,
     PLUS,
+    SEQUENCE,
     KUESTION // Can't use the Q due to Qt platform
 } Operation;
 #endif // MERFUTIL_H
