@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QMap>
 #include "msf.h"
+#include "mbf.h"
 #include "unaryf.h"
 #include "binaryf.h"
 #include "sequetialf.h"
@@ -15,6 +16,8 @@ public:
     MSFormula(QString name, MSF* parent);
     /// Add an MSF to a given parent
     bool addMSF(QString parent, MSF* msf,int left=-1);
+    /// Remove an MSF from formula
+    bool removeMSF(QString parent, QString msfName);
     /// Unary update MSFs
     bool updateMSF(QString parent, QString child, UNARYF* msf);
     /// Binary update MSFs
@@ -33,6 +36,11 @@ public:
     bool isFormula();
     bool isSequential();
     QString print();
+    void buildTree(QTreeWidget* parent);
+    void buildTree(QTreeWidgetItem* parent);
+    QVariantMap getJSON();
+    int usedCount;
+    ~MSFormula();
 };
 
 #endif // MSFORMULA_H

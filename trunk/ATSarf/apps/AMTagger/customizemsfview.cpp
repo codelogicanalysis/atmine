@@ -4,6 +4,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QMainWindow(parent)
 {
 
+    isDirty = false;
     QGridLayout *grid = new QGridLayout();
     btnSelect = new QPushButton(tr(">>"), this);
     btnUnselect = new QPushButton(tr("<<"), this);
@@ -29,19 +30,6 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnOr->setEnabled(false);
     btnAnd->setEnabled(false);
     btnSequence->setEnabled(false);
-
-    connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
-    connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
-    connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
-    connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
-
-    connect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
-    connect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
-    connect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
-    connect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
-    connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
-    connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
-    connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
 
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
@@ -78,14 +66,10 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 
     cbMSF = new QComboBox(this);
 
-    connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
-
     grid->addWidget(cbMSF,0,4);
 
     listMBF = new QListWidget(this);
     listMBF->setSelectionMode(QAbstractItemView::SingleSelection);
-
-    connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
 
     grid->addWidget(listMBF,1,0,6,2);
 
@@ -133,11 +117,46 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     tagtypes.append("NONE");
 
     if(_atagger->msfVector->count() != 0) {
+        currentF = (MSFormula*)(_atagger->msfVector->at(0));
         for(int i=0; i<_atagger->msfVector->count(); i++) {
             tagtypes.append(_atagger->msfVector->at(i)->name);
+            cbMSF->addItem(_atagger->msfVector->at(i)->name);
         }
+
+        cbMSF->setCurrentIndex(0);
+        currentF->buildTree(treeMSF);
+        editFormula->setText(currentF->print());
+        editActions->setText(currentF->actions);
+
+        btnSelect->setEnabled(true);
+        btnUnselect->setEnabled(true);
+        btnRemove->setEnabled(true);
+
+        btnStar->setEnabled(true);
+        btnPlus->setEnabled(true);
+        btnQuestion->setEnabled(true);
+        btnLimit->setEnabled(true);
+        btnOr->setEnabled(true);
+        btnAnd->setEnabled(true);
+        btnSequence->setEnabled(true);
     }
     listMBF->addItems(tagtypes);
+
+    /** Connect Signals **/
+    connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
+    connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
+    connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
+    connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
+    connect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
+    connect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
+    connect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
+    connect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
+    connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
+    connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
+    connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
+    connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
+    connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
+    /** Connections Done **/
 }
 
 void CustomizeMSFView::btnAdd_clicked() {
@@ -168,6 +187,7 @@ void CustomizeMSFView::btnAdd_clicked() {
     currentF = formula;
     _atagger->msfVector->append(formula);
     listMBF->addItem(formula->name);
+    isDirty = true;
 
     disconnect_Signals();
 
@@ -207,8 +227,15 @@ void CustomizeMSFView::btnRemove_clicked() {
     for(int i=0; i<_atagger->msfVector->count(); i++) {
         const MSFormula * msf = _atagger->msfVector->at(i);
         if(msf->name == msfRemoved) {
-            _atagger->msfVector->remove(i);
-            break;
+            if(msf->usedCount != 0) {
+                QMessageBox::warning(this, "Warning", "Formula used in building other formulae\nRemove it from them first");
+                return;
+            }
+            else {
+                _atagger->msfVector->remove(i);
+                delete (_atagger->msfVector->at(i));
+                break;
+            }
         }
     }
 
@@ -239,6 +266,7 @@ void CustomizeMSFView::btnRemove_clicked() {
         btnAnd->setEnabled(false);
         btnSequence->setEnabled(false);
     }
+    isDirty = true;
 
     connect_Signals();
 }
@@ -253,6 +281,25 @@ void CustomizeMSFView::btnSelect_clicked() {
         QString bf = item->text();
         name.append(QString::number(currentF->i));
 
+        for(int i=0; i< _atagger->msfVector->count(); i++) {
+            if(_atagger->msfVector->at(i)->name == bf) {
+
+                /// Insert as top child in MSF
+                MBF* mbf = new MBF(name, currentF, bf, true);
+                if(!(currentF->addMSF(currentF->name, mbf))) {
+                    QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
+                    return;
+                }
+
+                QStringList data;
+                data << name << bf << QString();
+                QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
+                editFormula->setText(currentF->print());
+                isDirty = true;
+                return;
+            }
+        }
+
         /// Insert as top child in MSF
         MBF* mbf = new MBF(name, currentF, bf);
         if(!(currentF->addMSF(currentF->name, mbf))) {
@@ -264,6 +311,7 @@ void CustomizeMSFView::btnSelect_clicked() {
         data << name << bf << QString();
         QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
         editFormula->setText(currentF->print());
+        isDirty = true;
     }
     else {
         /// No MBFs are selected, invalid move
@@ -274,6 +322,73 @@ void CustomizeMSFView::btnSelect_clicked() {
 
 void CustomizeMSFView::btnUnselect_clicked() {
 
+    if(!(treeMSF->selectedItems().isEmpty())) {
+
+        if(treeMSF->selectedItems().count() == 1) {
+            /// One item is selected to remove
+
+            QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
+            int index = treeMSF->indexOfTopLevelItem(item);
+            QString name = item->text(0);
+
+            /// Check if selected item is a top level item in tree
+            if(!(item->parent())) {
+
+                bool isMBF = false;
+                /// Remove as top child in MSF
+                if(!(currentF->removeMSF(currentF->name, name))) {
+                    QMessageBox::warning(this, "Warning", "Couldn't remove entry!");
+                    return;
+                }
+                isMBF = true;
+                delete treeMSF->takeTopLevelItem(index);
+                QMapIterator<QString,MSF*> iterator(currentF->map);
+                while(iterator.hasNext()) {
+                     iterator.next();
+                     if(iterator.value()== NULL) {
+                         QMessageBox::warning(this, "Warning", iterator.key());
+                     }
+                 }
+
+                editFormula->setText(currentF->print());
+                isDirty = true;
+                return;
+            }
+
+            MSF* msf = currentF->map.value(item->parent()->text(0));
+            if(!(msf->isSequential())) {
+                QMessageBox::warning(this, "Warning", "Invalid Move: Can't remove this item!");
+                return;
+            }
+
+            SequentialF* parent = (SequentialF*)msf;
+            if(parent->vector.count() < 2) {
+                QMessageBox::warning(this, "Warning", "Invalid Move: Can't remove this item!");
+                return;
+            }
+
+
+            /// Remove as top child in MSF
+            if(!(currentF->removeMSF(parent->name, name))) {
+                QMessageBox::warning(this, "Warning", "Couldn't remove entry!");
+                return;
+            }
+            delete item->parent()->takeChild(index);
+            editFormula->setText(currentF->print());
+            isDirty = true;
+        }
+        else {
+            /// More than one item is selected!!
+
+            QMessageBox::warning(this, "Warning", "Select one entry to remove at a time!");
+            return;
+        }
+    }
+    else {
+        /// No MBFs are selected, invalid move
+        QMessageBox::warning(this, "Warning", "No selected items in formula tree!");
+        return;
+    }
 }
 
 void CustomizeMSFView::btnStar_clicked() {
@@ -315,6 +430,7 @@ void CustomizeMSFView::btnStar_clicked() {
         QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
         newItem->addChild(childItem);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
 
@@ -349,6 +465,7 @@ void CustomizeMSFView::btnStar_clicked() {
     QTreeWidgetItem* childItem = item->parent()->takeChild(index);
     newItem->addChild(childItem);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnPlus_clicked() {
@@ -391,6 +508,7 @@ void CustomizeMSFView::btnPlus_clicked() {
         QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
         newItem->addChild(childItem);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
 
@@ -425,6 +543,7 @@ void CustomizeMSFView::btnPlus_clicked() {
     QTreeWidgetItem* childItem = item->parent()->takeChild(index);
     newItem->addChild(childItem);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnQuestion_clicked() {
@@ -466,6 +585,7 @@ void CustomizeMSFView::btnQuestion_clicked() {
         QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
         newItem->addChild(childItem);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
 
@@ -500,6 +620,7 @@ void CustomizeMSFView::btnQuestion_clicked() {
     QTreeWidgetItem* childItem = item->parent()->takeChild(index);
     newItem->addChild(childItem);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnLimit_clicked() {
@@ -555,6 +676,7 @@ void CustomizeMSFView::btnLimit_clicked() {
         QTreeWidgetItem* childItem = treeMSF->takeTopLevelItem(index);
         newItem->addChild(childItem);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
 
@@ -589,6 +711,7 @@ void CustomizeMSFView::btnLimit_clicked() {
     QTreeWidgetItem* childItem = item->parent()->takeChild(index);
     newItem->addChild(childItem);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnOr_clicked() {
@@ -628,6 +751,7 @@ void CustomizeMSFView::btnOr_clicked() {
         QTreeWidgetItem* childItem1 = treeMSF->takeTopLevelItem(index1);
         newItem->addChild(childItem1);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
     else if(!(item1->parent()) || !(item2->parent())) {
@@ -667,6 +791,7 @@ void CustomizeMSFView::btnOr_clicked() {
     QTreeWidgetItem* childItem1 = item1->parent()->takeChild(index1);
     newItem->addChild(childItem1);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnAnd_clicked() {
@@ -706,6 +831,7 @@ void CustomizeMSFView::btnAnd_clicked() {
         QTreeWidgetItem* childItem1 = treeMSF->takeTopLevelItem(index1);
         newItem->addChild(childItem1);
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
     else if(!(item1->parent()) || !(item2->parent())) {
@@ -745,6 +871,7 @@ void CustomizeMSFView::btnAnd_clicked() {
     QTreeWidgetItem* childItem1 = item1->parent()->takeChild(index1);
     newItem->addChild(childItem1);
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::btnSequence_clicked() {
@@ -789,6 +916,7 @@ void CustomizeMSFView::btnSequence_clicked() {
             return;
         }
         editFormula->setText(currentF->print());
+        isDirty = true;
         return;
     }
 
@@ -833,15 +961,16 @@ void CustomizeMSFView::btnSequence_clicked() {
         return;
     }
     editFormula->setText(currentF->print());
+    isDirty = true;
 }
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
-    treeMSF->clear();
     if(name.isEmpty() || name.isNull()) {
         return;
     }
 
     disconnect_Signals();
+    treeMSF->clear();
     editLimit->clear();
     editActions->clear();
     editFormula->clear();
@@ -850,6 +979,8 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
         if(msf->name == name) {
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
+            msf->buildTree(treeMSF);
+            editActions->setText(msf->actions);
         }
     }
     connect_Signals();

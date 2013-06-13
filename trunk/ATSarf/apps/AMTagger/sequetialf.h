@@ -15,6 +15,10 @@ public:
     bool isFormula();
     bool isSequential();
     QString print();
+    void buildTree(QTreeWidgetItem* parent);
+    void buildTree(QTreeWidget* parent);
+    QVariantMap getJSON();
+    ~SequentialF();
 };
 
 #endif // SEQUETIALF_H

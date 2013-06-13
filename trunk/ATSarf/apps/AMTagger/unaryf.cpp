@@ -48,3 +48,74 @@ QString UNARYF::print() {
     }
     return value;
 }
+
+void UNARYF::buildTree(QTreeWidgetItem* parent) {
+    QStringList data;
+    QString opText = "";
+    if(op == STAR) {
+        opText = "*";
+    }
+    else if(op == PLUS) {
+        opText = "+";
+    }
+    else if(op == UPTO) {
+        opText = "^";
+        opText.append(QString::number(limit));
+    }
+    else if(op == KUESTION) {
+        opText = "?";
+    }
+    data << name << QString() << opText;
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    msf->buildTree(item);
+}
+
+void UNARYF::buildTree(QTreeWidget* parent) {
+    QStringList data;
+    QString opText = "";
+    if(op == STAR) {
+        opText = "*";
+    }
+    else if(op == PLUS) {
+        opText = "+";
+    }
+    else if(op == UPTO) {
+        opText = "^";
+        opText.append(QString::number(limit));
+    }
+    else if(op == KUESTION) {
+        opText = "?";
+    }
+    data << name << QString() << opText;
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    msf->buildTree(item);
+}
+
+QVariantMap UNARYF::getJSON() {
+    QVariantMap uMap;
+    uMap.insert("name", name);
+    uMap.insert("type","unary");
+    uMap.insert("parent", parent->name);
+    QString opText = "";
+    if(op == STAR) {
+        opText = "*";
+    }
+    else if(op == PLUS) {
+        opText = "+";
+    }
+    else if(op == UPTO) {
+        opText = "^";
+        opText.append(QString::number(limit));
+    }
+    else if(op == KUESTION) {
+        opText = "?";
+    }
+    uMap.insert("op",opText);
+    uMap.insert("limit",limit);
+    uMap.insert("MSF",msf->getJSON());
+    return uMap;
+}
+
+UNARYF::~UNARYF() {
+    delete msf;
+}

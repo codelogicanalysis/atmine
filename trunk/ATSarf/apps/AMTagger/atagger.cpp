@@ -143,6 +143,19 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(tagdata);
     }
+    else if(_data == sarfMSF) {
+        /** Convert MSFs to JSON **/
+
+        QVariantMap msfsMap;
+        msfsMap.insert("mbffile",_atagger->tagtypeFile);
+        QVariantList msfsList;
+        for(int i=0; i<_atagger->msfVector->count(); i++) {
+            msfsList << _atagger->msfVector->at(i)->getJSON();
+        }
+        msfsMap.insert("MSFs",msfsList);
+        QJson::Serializer serializer;
+        json = serializer.serialize(msfsMap);
+    }
 
     return json;
 }

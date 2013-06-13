@@ -47,3 +47,58 @@ QString BINARYF::print() {
     value.append(")");
     return value;
 }
+
+void BINARYF::buildTree(QTreeWidgetItem* parent) {
+    QStringList data;
+    QString opText = "";
+    if(op == OR) {
+        opText = "|";
+    }
+    else if(op == AND) {
+        opText = "&";
+    }
+
+    data << name << QString() << opText;
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    leftMSF->buildTree(item);
+    rightMSF->buildTree(item);
+}
+
+void BINARYF::buildTree(QTreeWidget* parent) {
+    QStringList data;
+    QString opText = "";
+    if(op == OR) {
+        opText = "|";
+    }
+    else if(op == AND) {
+        opText = "&";
+    }
+
+    data << name << QString() << opText;
+    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    leftMSF->buildTree(item);
+    rightMSF->buildTree(item);
+}
+
+QVariantMap BINARYF::getJSON() {
+    QVariantMap bMap;
+    bMap.insert("name",name);
+    bMap.insert("type","binary");
+    bMap.insert("parent", parent->name);
+    QString opText = "";
+    if(op == OR) {
+        opText = "|";
+    }
+    else if(op == AND) {
+        opText = "&";
+    }
+    bMap.insert("op",opText);
+    bMap.insert("leftMSF",leftMSF->getJSON());
+    bMap.insert("rightMSF",rightMSF->getJSON());
+    return bMap;
+}
+
+BINARYF::~BINARYF() {
+    delete leftMSF;
+    delete rightMSF;
+}
