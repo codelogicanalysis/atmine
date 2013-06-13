@@ -1018,6 +1018,40 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
     connect_Signals();
 }
 
+void CustomizeMSFView::save() {
+    QByteArray msfsData = _atagger->dataInJsonFormat(sarfMSF);
+    QString fileName;
+    if(_atagger->msfFile.isEmpty()) {
+        fileName = QFileDialog::getSaveFileName(
+                this,
+                tr("Save MSFs"), "",
+                tr("Text (*.msf.json);;All Files (*)"));
+        if(fileName.isEmpty()) {
+            QMessageBox::warning(this, "Warning", "The Sarf Tag Types file wasn't saved");
+            return;
+        }
+        else {
+            fileName += ".stt.json";
+            _atagger->msfFile = fileName;
+        }
+    }
+    else {
+        fileName = _atagger->msfFile;
+    }
+
+    QFile tfile(fileName);
+    if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
+        return;
+    }
+    _atagger->msfFile = fileName;
+
+    QTextStream outtags(&tfile);
+    outtags << msfsData;
+    tfile.close();
+    isDirty = false;
+}
+
 void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
     disconnect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
@@ -1050,4 +1084,26 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
     connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
+}
+
+void CustomizeMSFView::closeEvent(QCloseEvent *event) {
+
+    if(isDirty) {
+        QMessageBox msgBox;
+         msgBox.setText("The document has been modified.");
+         msgBox.setInformativeText("Do you want to save your changes?");
+         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
+         msgBox.setDefaultButton(QMessageBox::Save);
+         int ret = msgBox.exec();
+
+         switch (ret) {
+         case QMessageBox::Save:
+             save();
+             break;
+         case QMessageBox::Discard:
+             break;
+         default:
+             break;
+         }
+     }
 }

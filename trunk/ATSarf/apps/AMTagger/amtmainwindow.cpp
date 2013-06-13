@@ -1764,25 +1764,24 @@ void AMTMainWindow::setLineSpacing(int lineSpacing) {
 }
 
 void AMTMainWindow::customizeMSFs() {
-    /*
+
     if(!_atagger->textFile.isEmpty()) {
         simulatorAct->setEnabled(true);
     }
 
-    if(_atagger->tagtypeFile.isEmpty()) {
-        QString ttFileName = QFileDialog::getSaveFileName(this,
-                                                          tr("Sarf TagType File Name"), "",
-                                                          tr("tag types (*.stt.json);;All Files (*)"));
-        if(ttFileName.isEmpty())
+    if(_atagger->msfFile.isEmpty()) {
+        QString msfFileName = QFileDialog::getSaveFileName(this,
+                                                          tr("MSF File Name"), "",
+                                                          tr("MSF (*.msf.json);;All Files (*)"));
+        if(msfFileName.isEmpty())
         {
             return;
         }
         else {
-            _atagger->tagtypeFile = ttFileName + ".stt.json";
-            lineEditTTFName->setText(_atagger->tagtypeFile);
+            _atagger->msfFile = msfFileName + ".msf.json";
         }
     }
-    */
+
     CustomizeMSFView * cmsfv = new CustomizeMSFView(this);
     cmsfv->show();
 }

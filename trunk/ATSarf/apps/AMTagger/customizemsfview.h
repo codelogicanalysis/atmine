@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QtCore/QDir>
+#include <QFileDialog>
 #include "global.h"
 #include "logger.h"
 #include "mbf.h"
@@ -45,6 +46,8 @@ private slots:
     void btnSequence_clicked();
     void cbMSF_changed(QString);
     void listMBF_itemclicked(QListWidgetItem*);
+    void closeEvent(QCloseEvent *event);
+    void save();
 
 private:
     QPushButton *btnSelect;

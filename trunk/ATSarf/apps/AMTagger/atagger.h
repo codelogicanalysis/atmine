@@ -31,6 +31,7 @@ public:
     QString compareToTagFile;
     QString tagtypeFile;
     QString compareToTagTypeFile;
+    QString msfFile;
     bool isSarf;
     bool compareToIsSarf;
 };
