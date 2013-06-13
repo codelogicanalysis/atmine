@@ -2,6 +2,8 @@
 #define MSF_H
 
 #include <QString>
+#include <QTreeWidget>
+#include <qjson/parser.h>
 
 class MSF
 {
@@ -16,6 +18,11 @@ public:
     virtual bool isFormula()=0;
     virtual bool isSequential()=0;
     virtual QString print()=0;
+    virtual void buildTree(QTreeWidgetItem* parent)=0;
+    virtual void buildTree(QTreeWidget* parent)=0;
+    virtual QVariantMap getJSON()=0;
+    //virtual QVariantList getJSON()=0;
+    virtual ~MSF();
 };
 
 #endif // MSF_H

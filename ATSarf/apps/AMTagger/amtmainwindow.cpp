@@ -1046,7 +1046,7 @@ void AMTMainWindow::createActions()
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
 
     editMSFAct = new QAction(tr("Edit MSFs"), this);
-    editMSFAct->setEnabled(true);
+    editMSFAct->setEnabled(false);
     connect(editMSFAct, SIGNAL(triggered()), this, SLOT(customizeMSFs()));
 
     simulatorAct = new QAction(tr("Run Simulator"), this);

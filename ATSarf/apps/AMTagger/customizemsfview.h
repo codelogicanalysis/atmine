@@ -21,6 +21,8 @@
 #include "msformula.h"
 #include "sequetialf.h"
 
+//class MSFormula;
+
 class CustomizeMSFView : public QMainWindow
 {
     Q_OBJECT
@@ -76,6 +78,7 @@ private:
     QStringList listCategoryId;
     QStringList listCategory;
     MSFormula* currentF;
+    bool isDirty;
 
     void disconnect_Signals();
     void connect_Signals();

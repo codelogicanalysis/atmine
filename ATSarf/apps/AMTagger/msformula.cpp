@@ -1,14 +1,25 @@
 #include "msformula.h"
+#include "global.h"
 
 MSFormula::MSFormula(QString name, MSF* parent): MSF(name, parent)
 {
     i=0;
+    usedCount = 0;
 }
 
 bool MSFormula::addMSF(QString parent, MSF * msf, int left) {
     if(parent == this->name) {
         map.insert(msf->name,msf);
         vector.append(msf);
+        if(msf->isFormula()) {
+            MBF* mbf = (MBF*)msf;
+            for(int j=0; j<_atagger->msfVector->count(); j++) {
+                if(_atagger->msfVector->at(j)->name == mbf->bf) {
+                    _atagger->msfVector->at(j)->usedCount++;
+                    break;
+                }
+            }
+        }
         i++;
         return true;
     }
@@ -39,6 +50,40 @@ bool MSFormula::addMSF(QString parent, MSF * msf, int left) {
             return false;
         }
         i++;
+        return true;
+    }
+    return false;
+}
+
+bool MSFormula::removeMSF(QString parent, QString msfName) {
+
+    MSF* msf = map.value(msfName);
+    delete msf;
+    if(name == parent) {
+        if(!(map.remove(msfName) == 1)) {
+            return false;
+        }
+        for(int j=0; j< vector.count(); j++) {
+            if(vector.at(j)->name == msfName) {
+                vector.remove(j);
+                break;
+            }
+        }
+        return true;
+    }
+
+    if(map.find(parent) != map.end()) {
+        SequentialF* sf = (SequentialF*)(map.value(parent));
+        delete msf;
+        if(!(map.remove(msfName) == 1)) {
+            return false;
+        }
+        for(int j=0; j< sf->vector.count(); j++) {
+            if(sf->vector.at(j)->name == msfName) {
+                sf->vector.remove(j);
+                break;
+            }
+        }
         return true;
     }
     return false;
@@ -240,6 +285,10 @@ bool MSFormula::isSequential() {
 }
 
 QString MSFormula::print() {
+    if(parent != NULL) {
+        return name;
+    }
+
     QString value = "";
     if(vector.count() == 0) {
         return value;
@@ -250,4 +299,36 @@ QString MSFormula::print() {
     }
     value.chop(1);
     return value;
+}
+
+void MSFormula::buildTree(QTreeWidget* parent) {
+    for(int j=0; j<vector.count(); j++) {
+        vector.at(j)->buildTree(parent);
+    }
+}
+
+void MSFormula::buildTree(QTreeWidgetItem* parent) {
+    for(int j=0; j<vector.count(); j++) {
+        vector.at(j)->buildTree(parent);
+    }
+}
+
+QVariantMap MSFormula::getJSON() {
+    QVariantMap msfMap;
+    msfMap.insert("name", name);
+    msfMap.insert("type","msformula");
+    msfMap.insert("parent",parent->name);
+    msfMap.insert("i",i);
+    QVariantList msfList;
+    for(int j=0; j<vector.count(); j++) {
+        msfList << vector.at(j)->getJSON();
+    }
+    msfMap.insert("MSFs",msfList);
+    return msfMap;
+}
+
+MSFormula::~MSFormula() {
+    for(int j=0; j<vector.count(); j++) {
+        delete vector.at(j);
+    }
 }

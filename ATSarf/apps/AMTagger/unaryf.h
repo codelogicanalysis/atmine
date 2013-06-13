@@ -2,6 +2,7 @@
 #define UNARYF_H
 
 #include <QVector>
+#include <QTreeWidget>
 #include "msf.h"
 #include "merfutil.h"
 
@@ -19,6 +20,11 @@ public:
     bool isFormula();
     bool isSequential();
     QString print();
+    void buildTree(QTreeWidgetItem* parent);
+    void buildTree(QTreeWidget* parent);
+    QVariantMap getJSON();
+    //QVariantList getJSON();
+    ~UNARYF();
 };
 
 #endif // UNARYF_H
