@@ -16,6 +16,14 @@ ATagger::~ATagger() {
         delete (*tagTypeVector)[i];
     }
     delete tagTypeVector;
+    for(int i=0; i<compareToTagTypeVector->size(); i++) {
+        delete (*compareToTagTypeVector)[i];
+    }
+    delete compareToTagTypeVector;
+    for(int i=0; i<msfVector->count(); i++) {
+        delete (*msfVector)[i];
+    }
+    delete msfVector;
 }
 
 bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest dest) {

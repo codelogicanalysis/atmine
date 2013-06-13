@@ -317,7 +317,6 @@ QVariantMap MSFormula::getJSON() {
     QVariantMap msfMap;
     msfMap.insert("name", name);
     msfMap.insert("type","msformula");
-    msfMap.insert("parent",parent->name);
     msfMap.insert("i",i);
     QVariantList msfList;
     for(int j=0; j<vector.count(); j++) {
