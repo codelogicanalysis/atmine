@@ -8,6 +8,7 @@ ATagger::ATagger() {
     tagTypeVector = new QVector<TagType*>();
     compareToTagTypeVector = new QVector<TagType*>();
     msfVector = new QVector<MSFormula*>();
+    nfaVector = new QVector<NFA*>();
 }
 
 ATagger::~ATagger() {
@@ -24,6 +25,10 @@ ATagger::~ATagger() {
         delete (*msfVector)[i];
     }
     delete msfVector;
+    for(int i=0; i<nfaVector->count(); i++) {
+        delete (*nfaVector)[i];
+    }
+    delete nfaVector;
 }
 
 bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest dest) {
@@ -71,6 +76,30 @@ bool ATagger::insertSarfTagType(QString tag, QVector<Quadruple< QString , QStrin
     return true;
 }
 
+bool ATagger::buildNFA() {
+    for(int i=0; i<msfVector->count(); i++) {
+        NFA* nfa = new NFA(msfVector->at(i)->name);
+        nfaVector->append(nfa);
+        msfVector->at(i)->buildNFA(nfa);
+    }
+    return false;
+}
+
+bool ATagger::buildDFA() {
+    return false;
+}
+
+bool ATagger::runSimulator() {
+
+    if(!buildNFA()) {
+        return false;
+    }
+    if(!buildDFA()) {
+        return false;
+    }
+    return false;
+}
+
 QByteArray ATagger::dataInJsonFormat(Data _data) {
     QByteArray json;
 
@@ -104,6 +133,18 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
             sarftagtypeset << data;
         }
         sarftagtypedata.insert("TagTypeSet",sarftagtypeset);
+
+        /** Convert MSFs to JSON **/
+
+        if(!(_atagger->msfVector->isEmpty())) {
+
+            QVariantList msfsList;
+            for(int i=0; i<_atagger->msfVector->count(); i++) {
+                msfsList << _atagger->msfVector->at(i)->getJSON();
+            }
+            sarftagtypedata.insert("MSFs", msfsList);
+        }
+
         QJson::Serializer serializer;
         json = serializer.serialize(sarftagtypedata);
     }
@@ -151,6 +192,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(tagdata);
     }
+#if 0
     else if(_data == sarfMSF) {
         /** Convert MSFs to JSON **/
 
@@ -164,6 +206,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(msfsMap);
     }
+#endif
 
     return json;
 }

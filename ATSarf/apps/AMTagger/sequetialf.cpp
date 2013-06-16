@@ -70,6 +70,16 @@ QVariantMap SequentialF::getJSON() {
     return sMap;
 }
 
+bool SequentialF::buildNFA(NFA *nfa) {
+    for(int i=0; i< vector.count(); i++) {
+        if(!(vector.at(i)->buildNFA(nfa))) {
+            return false;
+        }
+    }
+    nfa->accept = nfa->last;
+    return true;
+}
+
 SequentialF::~SequentialF() {
     for(int i=0; i<vector.count(); i++) {
         delete vector.at(i);

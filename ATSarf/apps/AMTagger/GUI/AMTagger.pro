@@ -109,7 +109,9 @@ HEADERS += \
     ../binaryf.h \
     ../merfutil.h \
     ../msformula.h \
-    ../sequetialf.h
+    ../sequetialf.h \
+    ../nfa.h \
+    ../nfastate.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -177,7 +179,9 @@ SOURCES += \
     ../unaryf.cpp \
     ../binaryf.cpp \
     ../msformula.cpp \
-    ../sequetialf.cpp
+    ../sequetialf.cpp \
+    ../nfa.cpp \
+    ../nfastate.cpp
 
 FORMS    +=
 

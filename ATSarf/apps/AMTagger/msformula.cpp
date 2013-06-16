@@ -326,6 +326,15 @@ QVariantMap MSFormula::getJSON() {
     return msfMap;
 }
 
+bool MSFormula::buildNFA(NFA *nfa) {
+    for(int j=0; j<vector.count(); j++) {
+        if(!(vector.at(j)->buildNFA(nfa))) {
+            return false;
+        }
+    }
+    return true;
+}
+
 MSFormula::~MSFormula() {
     for(int j=0; j<vector.count(); j++) {
         delete vector.at(j);

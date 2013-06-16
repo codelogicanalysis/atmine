@@ -98,6 +98,45 @@ QVariantMap BINARYF::getJSON() {
     return bMap;
 }
 
+bool BINARYF::buildNFA(NFA *nfa) {
+
+    if(nfa->start.isEmpty()) {
+        QString state1 = "q";
+        state1.append(QString::number(nfa->i));
+        nfa->start = state1;
+        nfa->last = state1;
+        (nfa->i)++;
+    }
+
+    QString currentLast = "q";
+    currentLast.append(QString::number(nfa->i));
+    (nfa->i)++;
+
+    QString currentStart = nfa->last;
+
+    if(op == OR) {
+
+        if(!(leftMSF->buildNFA(nfa))) {
+            return false;
+        }
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+        nfa->last = currentStart;
+
+        if(!(rightMSF->buildNFA(nfa))) {
+            return false;
+        }
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+        nfa->last = currentLast;
+        nfa->accept = currentLast;
+        return true;
+    }
+    else if(op == AND) {
+
+        return false;
+    }
+    return false;
+}
+
 BINARYF::~BINARYF() {
     delete leftMSF;
     delete rightMSF;

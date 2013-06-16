@@ -39,6 +39,7 @@ public:
     void buildTree(QTreeWidget* parent);
     void buildTree(QTreeWidgetItem* parent);
     QVariantMap getJSON();
+    bool buildNFA(NFA *nfa);
     int usedCount;
     ~MSFormula();
 };
