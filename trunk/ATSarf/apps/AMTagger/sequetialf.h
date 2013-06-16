@@ -18,6 +18,7 @@ public:
     void buildTree(QTreeWidgetItem* parent);
     void buildTree(QTreeWidget* parent);
     QVariantMap getJSON();
+    bool buildNFA(NFA *nfa);
     ~SequentialF();
 };
 

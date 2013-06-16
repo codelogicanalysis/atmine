@@ -1769,16 +1769,16 @@ void AMTMainWindow::customizeMSFs() {
         simulatorAct->setEnabled(true);
     }
 
-    if(_atagger->msfFile.isEmpty()) {
+    if(_atagger->tagtypeFile.isEmpty()) {
         QString msfFileName = QFileDialog::getSaveFileName(this,
-                                                          tr("MSF File Name"), "",
-                                                          tr("MSF (*.msf.json);;All Files (*)"));
+                                                           tr("Sarf TagType File Name"), "",
+                                                           tr("tag types (*.stt.json);;All Files (*)"));
         if(msfFileName.isEmpty())
         {
             return;
         }
         else {
-            _atagger->msfFile = msfFileName + ".msf.json";
+            _atagger->tagtypeFile = msfFileName + ".stt.json";
         }
     }
 
@@ -1787,7 +1787,13 @@ void AMTMainWindow::customizeMSFs() {
 }
 
 void AMTMainWindow::runMERFSimulator() {
+    if(_atagger->msfVector->isEmpty()) {
+        return;
+    }
 
+    if(!(_atagger->runSimulator())) {
+        return;
+    }
 }
 
 void AMTMainWindow::resetActionDisplay() {

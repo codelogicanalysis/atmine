@@ -1019,24 +1019,24 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
 }
 
 void CustomizeMSFView::save() {
-    QByteArray msfsData = _atagger->dataInJsonFormat(sarfMSF);
+    QByteArray msfsData = _atagger->dataInJsonFormat(sarfTTV);
     QString fileName;
-    if(_atagger->msfFile.isEmpty()) {
+    if(_atagger->tagtypeFile.isEmpty()) {
         fileName = QFileDialog::getSaveFileName(
                 this,
-                tr("Save MSFs"), "",
-                tr("Text (*.msf.json);;All Files (*)"));
+                tr("Save Sarf Tag Types"), "",
+                tr("Text (*.stt.json);;All Files (*)"));
         if(fileName.isEmpty()) {
             QMessageBox::warning(this, "Warning", "The Sarf Tag Types file wasn't saved");
             return;
         }
         else {
             fileName += ".stt.json";
-            _atagger->msfFile = fileName;
+            _atagger->tagtypeFile = fileName;
         }
     }
     else {
-        fileName = _atagger->msfFile;
+        fileName = _atagger->tagtypeFile;
     }
 
     QFile tfile(fileName);
@@ -1044,7 +1044,7 @@ void CustomizeMSFView::save() {
         QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
         return;
     }
-    _atagger->msfFile = fileName;
+    _atagger->tagtypeFile = fileName;
 
     QTextStream outtags(&tfile);
     outtags << msfsData;

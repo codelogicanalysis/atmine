@@ -57,6 +57,26 @@ QVariantMap MBF::getJSON() {
     return mbfMap;
 }
 
+bool MBF::buildNFA(NFA *nfa) {
+    // O -> O under bf
+    QString state1 = "q";
+    state1.append(QString::number(nfa->i));
+    (nfa->i)++;
+    QString state2 = "q";
+    state2.append(QString::number(nfa->i));
+    (nfa->i)++;
+    nfa->transitions.insert(state1 + '|' + bf,state2);
+    if(nfa->start.isEmpty()) {
+        nfa->start = state1;
+    }
+    else {
+        nfa->transitions.insert(nfa->last + '|' + "epsilon",state1);
+    }
+    nfa->last = state2;
+    nfa->accept = state2;
+    return true;
+}
+
 MBF::~MBF() {
 
 }

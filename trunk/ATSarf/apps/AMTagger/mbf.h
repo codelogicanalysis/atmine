@@ -18,7 +18,7 @@ public:
     void buildTree(QTreeWidgetItem* parent);
     void buildTree(QTreeWidget* parent);
     QVariantMap getJSON();
-    //QVariantList getJSON();
+    bool buildNFA(NFA *nfa);
     bool isF;
     ~MBF();
 };

@@ -116,6 +116,63 @@ QVariantMap UNARYF::getJSON() {
     return uMap;
 }
 
+bool UNARYF::buildNFA(NFA *nfa) {
+
+    if(op == PLUS) {
+        if(!(msf->buildNFA(nfa))) {
+            return false;
+        }
+    }
+
+    if(nfa->start.isEmpty()) {
+        QString state1 = "q";
+        state1.append(QString::number(nfa->i));
+        nfa->start = state1;
+        nfa->last = state1;
+        (nfa->i)++;
+    }
+    /// Need to save this to connect to last state after addition of MSF
+    QString currentStart = nfa->last;
+    QString nextState = "q";
+    nextState.append(QString::number(nfa->i));
+
+    if(!(msf->buildNFA(nfa))) {
+        return false;
+    }
+
+    QString currentLast = "q";
+    currentLast.append(QString::number(nfa->i));
+    (nfa->i)++;
+    nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
+    nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+
+    if(op == KUESTION) {
+        nfa->last = currentLast;
+        return true;
+    }
+
+    if(op == PLUS || op == STAR) {
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", nextState);
+        nfa->last = currentLast;
+        return true;
+    }
+
+    nfa->last = currentStart;
+    int newLimit = limit - 1;
+    for(int i=0; i<newLimit; i++) {
+        for(int j=0; j<i; j++) {
+            if(!(msf->buildNFA(nfa))) {
+                return false;
+            }
+        }
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+        nfa->last = currentStart;
+    }
+    nfa->last = currentLast;
+    nfa->accept = currentLast;
+    return true;
+}
+
 UNARYF::~UNARYF() {
     delete msf;
 }
