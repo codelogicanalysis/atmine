@@ -4,6 +4,7 @@
 #include <QVector>
 #include <QByteArray>
 #include "tag.h"
+#include "merftag.h"
 #include "tagtype.h"
 #include "sarftagtype.h"
 #include "msformula.h"
@@ -21,11 +22,11 @@ public:
     bool insertSarfTagType(QString, QVector < Quadruple< QString , QString , QString , QString > > , QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
     QByteArray dataInJsonFormat(Data _data);
     bool buildNFA();
-    bool buildDFA();
     bool runSimulator();
-//private:
+    QVector<Tag*>* simulateNFA(NFA* nfa, QString state, int tagIndex);
     QVector<Tag> tagVector;
     QVector<Tag> compareToTagVector;
+    QVector<MERFTag> simulationVector;
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
     QVector<MSFormula*> *msfVector;

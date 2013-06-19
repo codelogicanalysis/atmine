@@ -48,6 +48,7 @@ bool AutoTagger::operator ()() {
         if(_atagger->tagVector.count() == tagCount) {
             _atagger->insertTag("NONE", word.start, length, sarf, original);
         }
+        tagCount = _atagger->tagVector.count();
         /** Done checking **/
 
         start = word.end + 1;
