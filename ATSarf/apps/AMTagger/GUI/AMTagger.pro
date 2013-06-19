@@ -111,7 +111,8 @@ HEADERS += \
     ../msformula.h \
     ../sequetialf.h \
     ../nfa.h \
-    ../nfastate.h
+    ../nfastate.h \
+    ../merftag.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -181,7 +182,8 @@ SOURCES += \
     ../msformula.cpp \
     ../sequetialf.cpp \
     ../nfa.cpp \
-    ../nfastate.cpp
+    ../nfastate.cpp \
+    ../merftag.cpp
 
 FORMS    +=
 

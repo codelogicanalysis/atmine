@@ -80,24 +80,113 @@ bool ATagger::buildNFA() {
     for(int i=0; i<msfVector->count(); i++) {
         NFA* nfa = new NFA(msfVector->at(i)->name);
         nfaVector->append(nfa);
-        msfVector->at(i)->buildNFA(nfa);
+        if(!(msfVector->at(i)->buildNFA(nfa))) {
+            return false;
+        }
     }
-    return false;
-}
-
-bool ATagger::buildDFA() {
-    return false;
+    return true;
 }
 
 bool ATagger::runSimulator() {
 
+    /// Build NFA
     if(!buildNFA()) {
         return false;
     }
-    if(!buildDFA()) {
-        return false;
+
+    /// Simulate NFAs referring to all the MSFs built
+    for(int i=0; i<nfaVector->count(); i++) {
+        int index = 0;
+        /// Simulate current MSF starting from a set of tokens referring to a single word
+        for(int j=index; j<tagVector.count(); j++) {
+            QVector<Tag*>* tags = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, index);
+            if(tags != NULL) {
+                int pos = tags->first()->pos;
+                int length = tags->last()->pos - tags->first()->pos + tags->last()->length;
+                MERFTag tag(nfaVector->at(i)->name, pos, length);
+                tag.tags = tags;
+                simulationVector.append(tag);
+
+                /// Skip the tokens of the words in the match
+                for(j; j<tagVector.count(); j++) {
+                    if((tagVector.at(j).pos) > (tags->last()->pos)) {
+                        index = j;
+                        break;
+                    }
+                }
+            }
+            else {
+                while((j<tagVector.count()) && (tagVector.at(index).pos == tagVector.at(j).pos)) {
+                    j++;
+                }
+                index = j;
+            }
+        }
     }
-    return false;
+
+    return true;
+}
+
+QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
+    if(state == nfa->accept) {
+        QVector<Tag*> *tags = new QVector<Tag*>();
+        return tags;
+    }
+    /// Use a vector of vectors to collect correct solutions and choose longest
+    QVector<QVector<Tag*>*> tags;
+
+    QVector<int> tokens;
+    for(int i=tagIndex; (i<tagVector.count()) && (tagVector.at(i).pos == tagVector.at(tagIndex).pos); i++) {
+        tokens.append(i);
+    }
+
+    int nextIndex;
+    if(!(tokens.isEmpty())) {
+        nextIndex = (tokens.last()) + 1;
+    }
+
+    for(int i=0; i<tokens.count(); i++) {
+        QList<QString> nstates = nfa->transitions.values(state + '|' + tagVector.at(tokens.at(i)).type);
+        for(int j = 0; j < nstates.size(); j++) {
+            QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), nextIndex);
+            if(temp != NULL) {
+                Tag* t = new Tag(tagVector.at(tokens.at(i)).type, tagVector.at(tokens.at(i)).pos, tagVector.at(tokens.at(i)).length, sarf);
+                temp->prepend(t);
+                tags.append(temp);
+            }
+        }
+    }
+
+    QList<QString> nstates =nfa->transitions.values(state + '|' + "epsilon");
+    for(int j = 0; j < nstates.size(); j++) {
+        QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), tagIndex);
+        if(temp != NULL) {
+            tags.append(temp);
+        }
+    }
+
+    if(tags.count() != 0) {
+        int maxCount = -1;
+        int maxIndex;
+        for(int i=0; i< tags.count(); i++) {
+            if(tags.at(i)->count() > maxCount) {
+                maxIndex = i;
+                maxCount = tags.at(i)->count();
+            }
+        }
+
+        /// Delete smaller matches
+        for(int i=0; i< tags.count(); i++) {
+            if(i != maxIndex) {
+                for(int j=0; j< tags.at(i)->count(); j++) {
+                    delete tags.at(i)->at(j);
+                }
+            }
+        }
+        return tags.at(maxIndex);
+    }
+
+    return NULL;
 }
 
 QByteArray ATagger::dataInJsonFormat(Data _data) {
