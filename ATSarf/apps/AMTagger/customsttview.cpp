@@ -1039,12 +1039,12 @@ void CustomSTTView::tagName_changed(QString name) {
                 for(int j=0; j<stt->tags.count(); j++) {
                     QStringList list;
                     if(stt->tags.at(j).first != "Category") {
-                        list << stt->tags.at(i).third << stt->tags.at(j).first << stt->tags.at(i).fourth << stt->tags.at(j).second;
+                        list << stt->tags.at(j).third << stt->tags.at(j).first << stt->tags.at(j).fourth << stt->tags.at(j).second;
                     }
                     else {
                         for(int k=0; k< listCategoryId.count();k++) {
                             if(listCategoryId[k] == stt->tags.at(j).second) {
-                                list << stt->tags.at(i).third << stt->tags.at(j).first << stt->tags.at(i).fourth << listCategory[k];
+                                list << stt->tags.at(j).third << stt->tags.at(j).first << stt->tags.at(j).fourth << listCategory[k];
                             }
                         }
                     }

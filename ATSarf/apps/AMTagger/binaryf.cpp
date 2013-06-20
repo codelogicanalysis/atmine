@@ -132,7 +132,26 @@ bool BINARYF::buildNFA(NFA *nfa) {
     }
     else if(op == AND) {
 
-        return false;
+        QString andAccept = "q";
+        andAccept.append(QString::number(nfa->i));
+        (nfa->i)++;
+        nfa->andAccept.append(andAccept);
+
+        if(!(leftMSF->buildNFA(nfa))) {
+            return false;
+        }
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", andAccept);
+        nfa->last = currentStart;
+
+        if(!(rightMSF->buildNFA(nfa))) {
+            return false;
+        }
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", andAccept);
+        nfa->last = currentLast;
+        nfa->accept = currentLast;
+
+        nfa->transitions.insert(currentStart + '|' + "*AND*", currentLast);
+        return true;
     }
     return false;
 }
