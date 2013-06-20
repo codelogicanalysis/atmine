@@ -128,7 +128,7 @@ bool ATagger::runSimulator() {
 }
 
 QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
-    if(state == nfa->accept) {
+    if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
         QVector<Tag*> *tags = new QVector<Tag*>();
         return tags;
     }
@@ -166,6 +166,53 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
     }
 
     if(tags.count() != 0) {
+
+        /** check if we have AND formula **/
+        if(nfa->transitions.contains(state + "|*AND*")) {
+
+            if((tags.count() == 2) && (tags.at(0)->count() == tags.at(1)->count())) {
+                /// We have two matches referring to the two AND paths and both of same length
+
+                int wordSkip = tags.at(0)->count();
+                int index = tagIndex;
+                for(int i=0; i<wordSkip; i++) {
+                    int j=index;
+                    while((j<tagVector.count()) && (tagVector.at(j).pos == tagVector.at(index).pos)) {
+                        j++;
+                    }
+                    index = j;
+                }
+
+                QList<QString> nstates =nfa->transitions.values(state + "|*AND*");
+                for(int j = 0; j < nstates.size(); j++) {
+                    QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), index);
+                    if(temp != NULL) {
+                        tags.append(temp);
+                    }
+                    else {
+                        return NULL;
+                    }
+                }
+
+                /** add AND tags to consequent match **/
+                for(int i=2; i< tags.count(); i++) {
+                    for(int j = (tags.at(1)->count()-1); j>=0 ; j--) {
+                        tags.at(i)->prepend(tags.at(1)->at(j));
+                    }
+                }
+
+                tags.remove(1);
+                for(int i=0; i< tags.at(0)->count(); i++) {
+                    delete tags.at(0)->at(i);
+                }
+                tags.remove(0);
+            }
+            else {
+                return NULL;
+            }
+        }
+
+        /** get longest match and return it **/
         int maxCount = -1;
         int maxIndex;
         for(int i=0; i< tags.count(); i++) {
