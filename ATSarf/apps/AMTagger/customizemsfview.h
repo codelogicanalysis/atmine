@@ -21,6 +21,7 @@
 #include "binaryf.h"
 #include "msformula.h"
 #include "sequetialf.h"
+#include "colorlisteditor.h"
 
 //class MSFormula;
 
@@ -48,6 +49,9 @@ private slots:
     void listMBF_itemclicked(QListWidgetItem*);
     void closeEvent(QCloseEvent *event);
     void save();
+    void fgcolor_changed(QString color);
+    void bgcolor_changed(QString color);
+    void description_edited();
 
 private:
     QPushButton *btnSelect;
@@ -66,10 +70,15 @@ private:
     QLabel *lblMSF;
     QLabel *lblActions;
     QLabel *lblFormula;
+    QLabel *lblDescription;
+    QLabel *lblFGColor;
+    QLabel *lblBGColor;
 
     QLineEdit *editLimit;
     QLineEdit *editFormula;
+
     QTextEdit *editActions;
+    QTextEdit *editDescription;
 
     QComboBox *cbMSF;
 
@@ -77,6 +86,9 @@ private:
 
     QTreeWidget *treeMSF;
     QTreeWidget *treeMBFdesc;
+
+    ColorListEditor * colorfgcolor;
+    ColorListEditor * colorbgcolor;
 
     QStringList listCategoryId;
     QStringList listCategory;

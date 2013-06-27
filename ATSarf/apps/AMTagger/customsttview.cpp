@@ -558,24 +558,14 @@ void CustomSTTView::btnAdd_clicked() {
     double randomNumber = ((double) rand() / (RAND_MAX));
     int index = size * randomNumber;
     QColor initColor = colorNames[index];
-    //colorfgcolor = new ColorListEditor(this);
     colorfgcolor->setColor(initColor);
 
     int contrastIndex = 147 - index;
     QColor contrastColor = colorNames[contrastIndex];
 
-    //colorbgcolor = new ColorListEditor(this);
     colorbgcolor->setColor(contrastColor);
 
     /** routine End **/
-
-#if 0
-    colorfgcolor = new ColorListEditor(this);
-    colorfgcolor->setColor(QColor("Red"));
-
-    colorbgcolor = new ColorListEditor(this);
-    colorbgcolor->setColor(QColor("Yellow"));
-#endif
 
     QVector < Quadruple< QString , QString , QString , QString > > tags;
     int id = sttVector->count();

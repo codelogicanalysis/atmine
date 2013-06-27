@@ -57,10 +57,10 @@ public:
          virtual void resetActionDisplay();
          virtual QString getFileName();
 
-         void fillTreeWidget(Source Data);
+         void fillTreeWidget(Source Data, int basic=0);
          void finishTaggingText();
          void process(QByteArray & json);
-         void applyTags();
+         void applyTags(int basic=0);
          void process_TagTypes(QByteArray &tagtypedata);
 
 private:

@@ -316,6 +316,9 @@ void MSFormula::buildTree(QTreeWidgetItem* parent) {
 QVariantMap MSFormula::getJSON() {
     QVariantMap msfMap;
     msfMap.insert("name", name);
+    msfMap.insert("description", description);
+    msfMap.insert("fgcolor", fgcolor);
+    msfMap.insert("bgcolor", bgcolor);
     msfMap.insert("type","msformula");
     msfMap.insert("i",i);
     QVariantList msfList;

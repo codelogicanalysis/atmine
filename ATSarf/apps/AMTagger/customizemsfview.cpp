@@ -5,6 +5,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 {
 
     isDirty = false;
+    currentF = NULL;
     QGridLayout *grid = new QGridLayout();
     btnSelect = new QPushButton(tr(">>"), this);
     btnUnselect = new QPushButton(tr("<<"), this);
@@ -48,21 +49,51 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     lblMSF = new QLabel(tr("MSF:"), this);
     lblActions = new QLabel(tr("Actions"), this);
     lblFormula = new QLabel(tr("Formula:"), this);
+    lblDescription = new QLabel(tr("Description:"), this);
+    lblFGColor = new QLabel(tr("Foregroud Color:"), this);
+    lblBGColor = new QLabel(tr("Background Color:"), this);
 
     grid->addWidget(lblMBF,0,0);
     grid->addWidget(lblMSF,0,3);
     grid->addWidget(lblActions,0,5,1,2,Qt::AlignCenter);
     grid->addWidget(lblFormula,10,2,Qt::AlignCenter);
+    grid->addWidget(lblDescription,0,7);
+    grid->addWidget(lblFGColor,2,7);
+    grid->addWidget(lblBGColor,4,7);
 
     editActions = new QTextEdit(this);
+    editDescription = new QTextEdit(this);
+
     editFormula = new QLineEdit(this);
     editFormula->setReadOnly(true);
     editLimit = new QLineEdit(this);
     editLimit->setMaximumWidth(90);
 
-    grid->addWidget(editActions,1,5,9,4);
+    grid->addWidget(editActions,1,5,9,2);
     grid->addWidget(editLimit,12,6);
     grid->addWidget(editFormula,10,3,1,4);
+    grid->addWidget(editDescription,1,7);
+
+    /** random color routine **/
+
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int index = size * randomNumber;
+    QColor initColor = colorNames[index];
+    colorfgcolor = new ColorListEditor(this);
+    colorfgcolor->setColor(initColor);
+
+    int contrastIndex = 147 - index;
+    QColor contrastColor = colorNames[contrastIndex];
+
+    colorbgcolor = new ColorListEditor(this);
+    colorbgcolor->setColor(contrastColor);
+
+    /** end of routine **/
+
+    grid->addWidget(colorfgcolor,3,7);
+    grid->addWidget(colorbgcolor,5,7);
 
     cbMSF = new QComboBox(this);
 
@@ -127,6 +158,9 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         currentF->buildTree(treeMSF);
         editFormula->setText(currentF->print());
         editActions->setText(currentF->actions);
+        editDescription->setText(currentF->description);
+        colorfgcolor->setColor(QColor(currentF->fgcolor));
+        colorbgcolor->setColor(QColor(currentF->bgcolor));
 
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
@@ -143,6 +177,9 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     listMBF->addItems(tagtypes);
 
     /** Connect Signals **/
+    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    connect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
     connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
     connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
     connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
@@ -157,6 +194,41 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
     connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
     /** Connections Done **/
+}
+
+void CustomizeMSFView::description_edited() {
+    if(currentF == NULL) {
+        return;
+    }
+
+    isDirty = true;
+    currentF->description = editDescription->toPlainText();
+}
+
+void CustomizeMSFView::fgcolor_changed(QString color) {
+    if(color.isNull() || color.isEmpty()) {
+        return;
+    }
+
+    if(currentF == NULL) {
+        return;
+    }
+
+    isDirty = true;
+    currentF->fgcolor = color;
+}
+
+void CustomizeMSFView::bgcolor_changed(QString color) {
+    if(color.isNull() || color.isEmpty()) {
+        return;
+    }
+
+    if(currentF == NULL) {
+        return;
+    }
+
+    isDirty = true;
+    currentF->bgcolor = color;
 }
 
 void CustomizeMSFView::btnAdd_clicked() {
@@ -207,8 +279,28 @@ void CustomizeMSFView::btnAdd_clicked() {
     }
     treeMSF->clear();
     editActions->clear();
+    editDescription->clear();
     listMBF->clearSelection();
     treeMBFdesc->clear();
+
+    /** Random Color Routine **/
+
+    QStringList colorNames = QColor::colorNames();
+    int size = colorNames.size();
+    double randomNumber = ((double) rand() / (RAND_MAX));
+    int index = size * randomNumber;
+    QColor initColor = colorNames[index];
+    colorfgcolor->setColor(initColor);
+
+    int contrastIndex = 147 - index;
+    QColor contrastColor = colorNames[contrastIndex];
+
+    colorbgcolor->setColor(contrastColor);
+
+    /** routine End **/
+
+    formula->fgcolor = colorfgcolor->color().name();
+    formula->bgcolor = colorbgcolor->color().name();
 
     cbMSF->addItem(msfName);
     cbMSF->setCurrentIndex(cbMSF->findText(msfName));
@@ -1053,6 +1145,9 @@ void CustomizeMSFView::save() {
 }
 
 void CustomizeMSFView::disconnect_Signals() {
+    disconnect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    disconnect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    disconnect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
     disconnect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
     disconnect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
     disconnect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
@@ -1070,6 +1165,9 @@ void CustomizeMSFView::disconnect_Signals() {
 }
 
 void CustomizeMSFView::connect_Signals() {
+    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
+    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
+    connect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
     connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
     connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
     connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
