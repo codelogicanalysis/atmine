@@ -30,6 +30,12 @@ public:
     QMap<QString,MSF*> map;
     /// Counter for msf names
     int i;
+    /// Formula Description
+    QString description;
+    /// Foreground Color
+    QString fgcolor;
+    /// Background Color
+    QString bgcolor;
     bool isMBF();
     bool isUnary();
     bool isBinary();

@@ -95,6 +95,7 @@ bool ATagger::runSimulator() {
     }
 
     /// Simulate NFAs referring to all the MSFs built
+    simulationVector.clear();
     for(int i=0; i<nfaVector->count(); i++) {
         int index = 0;
         /// Simulate current MSF starting from a set of tokens referring to a single word
@@ -108,7 +109,7 @@ bool ATagger::runSimulator() {
                 simulationVector.append(tag);
 
                 /// Skip the tokens of the words in the match
-                for(j; j<tagVector.count(); j++) {
+                for(; j<tagVector.count(); j++) {
                     if((tagVector.at(j).pos) > (tags->last()->pos)) {
                         index = j;
                         break;
