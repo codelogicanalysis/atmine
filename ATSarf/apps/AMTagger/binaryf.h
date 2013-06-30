@@ -24,6 +24,7 @@ public:
     void buildTree(QTreeWidget* parent);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
+    bool removeSelfFromMap(QMap<QString, MSF*> &map);
     ~BINARYF();
 };
 

@@ -141,17 +141,76 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         return;
     }
 
+    /** Initialize a copy of the MSFs **/
+    tempMSFVector = new QVector<MSFormula*>();
+
+    QString ttFName;
+    ttFName = _atagger->tagtypeFile;
+
+    QFile ITfile(ttFName);
+    if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        close();
+    }
+
+    QByteArray tagtypedata = ITfile.readAll();
+    ITfile.close();
+
+    QJson::Parser parser;
+    bool ok;
+
+    QVariantMap result = parser.parse (tagtypedata,&ok).toMap();
+
+    if (!ok) {
+        close();
+    }
+
+    if(!(result.value("MSFs").isNull())) {
+        /** The tagtype file contains MSFs **/
+
+        foreach(QVariant msfsData, result.value("MSFs").toList()) {
+
+            /** List of variables for each MSFormula **/
+            QString bgcolor;
+            QString fgcolor;
+            QString name;
+            QString description;
+            int i;
+
+            /** This is an MSFormula **/
+            QVariantMap msformulaData = msfsData.toMap();
+
+            name = msformulaData.value("name").toString();
+            description = msformulaData.value("description").toString();
+            fgcolor = msformulaData.value("fgcolor").toString();
+            bgcolor = msformulaData.value("bgcolor").toString();
+            i = msformulaData.value("i").toInt();
+
+            MSFormula* msf = new MSFormula(name, NULL);
+            msf->fgcolor = fgcolor;
+            msf->bgcolor = bgcolor;
+            msf->description = description;
+            msf->i = i;
+            tempMSFVector->append(msf);
+
+            /** Get MSFormula MSFs **/
+            foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
+                readMSF(msf, msfData, msf);
+            }
+        }
+    }
+    /** Done **/
+
     QStringList tagtypes;
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         tagtypes.append(_atagger->tagTypeVector->at(i)->tag);
     }
     tagtypes.append("NONE");
 
-    if(_atagger->msfVector->count() != 0) {
-        currentF = (MSFormula*)(_atagger->msfVector->at(0));
-        for(int i=0; i<_atagger->msfVector->count(); i++) {
-            tagtypes.append(_atagger->msfVector->at(i)->name);
-            cbMSF->addItem(_atagger->msfVector->at(i)->name);
+    if(tempMSFVector->count() != 0) {
+        currentF = (MSFormula*)(tempMSFVector->at(0));
+        for(int i=0; i<tempMSFVector->count(); i++) {
+            tagtypes.append(tempMSFVector->at(i)->name);
+            cbMSF->addItem(tempMSFVector->at(i)->name);
         }
 
         cbMSF->setCurrentIndex(0);
@@ -194,6 +253,215 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
     connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
     /** Connections Done **/
+}
+
+bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
+    /** Common variables in MSFs **/
+    QString name;
+    QString parentName;
+    QString type;
+
+    QVariantMap msfData = data.toMap();
+    name = msfData.value("name").toString();
+    parentName = msfData.value("parent").toString();
+    type = msfData.value("type").toString();
+
+    if(type == "mbf") {
+        /** This is MBF **/
+        QString bf = msfData.value("MBF").toString();
+        bool isF = msfData.value("isFormula").toBool();
+
+        /** initialize MBF **/
+        MBF* mbf = new MBF(name,parent,bf,isF);
+        formula->map.insert(name, mbf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(mbf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(mbf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(mbf);
+            }
+            else {
+                prnt->setRightMSF(mbf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(mbf);
+        }
+        else {
+            return false;
+        }
+
+        return true;
+    }
+    else if(type == "unary") {
+        /** This is a UNARY formula **/
+        QString operation = msfData.value("op").toString();
+        Operation op;
+        if(operation == "?") {
+            op = KUESTION;
+        }
+        else if(operation == "*") {
+            op = STAR;
+        }
+        else if(operation == "+") {
+            op = PLUS;
+        }
+        else if(operation.contains('^')) {
+            op = UPTO;
+        }
+        else {
+            return false;
+        }
+        int limit = -1;
+        if(operation.contains('^')) {
+            bool ok;
+            limit = operation.mid(1).toInt(&ok);
+            if(!ok) {
+                return false;
+            }
+        }
+
+        /** Initialize a UNARYF **/
+        UNARYF* uf = new UNARYF(name,parent,op,limit);
+        formula->map.insert(name,uf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(uf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(uf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(uf);
+            }
+            else {
+                prnt->setRightMSF(uf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(uf);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with child MSF **/
+        return readMSF(formula,msfData.value("MSF"),uf);
+    }
+    else if(type == "binary") {
+        /** This is a BINARY formula **/
+        QString operation = msfData.value("op").toString();
+        Operation op;
+        if(operation == "&") {
+            op = AND;
+        }
+        else if(operation == "|") {
+            op = OR;
+        }
+        else {
+            return false;
+        }
+
+        /** Initialize BINARYF **/
+        BINARYF* bif = new BINARYF(name,parent,op);
+        formula->map.insert(name, bif);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(bif);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(bif);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(bif);
+            }
+            else {
+                prnt->setRightMSF(bif);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(bif);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with child MSFs **/
+        bool first = readMSF(formula,msfData.value("leftMSF"),bif);
+        bool second = readMSF(formula,msfData.value("rightMSF"),bif);
+        if(first && second) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else if(type == "sequential") {
+        /** This is a sequential formula **/
+        /** Initialize a SequentialF **/
+        SequentialF* sf = new SequentialF(name,parent);
+        formula->map.insert(name, sf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(sf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(sf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(sf);
+            }
+            else {
+                prnt->setRightMSF(sf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(sf);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with children **/
+        foreach(QVariant seqMSFData, msfData.value("MSFs").toList()) {
+            if(!(readMSF(formula,seqMSFData,sf))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void CustomizeMSFView::description_edited() {
@@ -240,8 +508,8 @@ void CustomizeMSFView::btnAdd_clicked() {
         return;
     }
 
-    for(int i=0; i<_atagger->msfVector->count(); i++) {
-        const MSFormula* msf = _atagger->msfVector->at(i);
+    for(int i=0; i<tempMSFVector->count(); i++) {
+        const MSFormula* msf = tempMSFVector->at(i);
         if(msf->name == msfName) {
             QMessageBox::warning(this, "Warning", "This formula Name already exists!");
             return;
@@ -257,7 +525,7 @@ void CustomizeMSFView::btnAdd_clicked() {
 
     MSFormula* formula = new MSFormula(msfName, NULL);
     currentF = formula;
-    _atagger->msfVector->append(formula);
+    tempMSFVector->append(formula);
     listMBF->addItem(formula->name);
     isDirty = true;
 
@@ -310,22 +578,26 @@ void CustomizeMSFView::btnAdd_clicked() {
 }
 
 void CustomizeMSFView::btnRemove_clicked() {
-    if(_atagger->msfVector->count() == 0) {
+    if(tempMSFVector->count() == 0) {
         return;
     }
     disconnect_Signals();
 
     QString msfRemoved = cbMSF->currentText();
-    for(int i=0; i<_atagger->msfVector->count(); i++) {
-        const MSFormula * msf = _atagger->msfVector->at(i);
+    for(int i=0; i<tempMSFVector->count(); i++) {
+        const MSFormula * msf = tempMSFVector->at(i);
         if(msf->name == msfRemoved) {
             if(msf->usedCount != 0) {
                 QMessageBox::warning(this, "Warning", "Formula used in building other formulae\nRemove it from them first");
                 return;
             }
             else {
-                _atagger->msfVector->remove(i);
-                delete (_atagger->msfVector->at(i));
+                if(!(tempMSFVector->at(i)->removeSelfFromMap(tempMSFVector->at(i)->map))) {
+                    QMessageBox::warning(this, "Warning", "Couldn't remove Formula");
+                    return;
+                }
+                delete (tempMSFVector->at(i));
+                tempMSFVector->remove(i);
                 break;
             }
         }
@@ -338,15 +610,15 @@ void CustomizeMSFView::btnRemove_clicked() {
         }
     }
 
-    if(_atagger->msfVector->count() != 0) {
-        for(int i=0; i< _atagger->msfVector->count(); i++) {
-            listMBF->addItem(_atagger->msfVector->at(i)->name);
+    if(tempMSFVector->count() != 0) {
+        for(int i=0; i< tempMSFVector->count(); i++) {
+            listMBF->addItem(tempMSFVector->at(i)->name);
         }
     }
 
     cbMSF->removeItem(cbMSF->currentIndex());
 
-    if(_atagger->msfVector->count() == 0) {
+    if(tempMSFVector->count() == 0) {
         btnSelect->setEnabled(false);
         btnUnselect->setEnabled(false);
         btnRemove->setEnabled(false);
@@ -373,12 +645,12 @@ void CustomizeMSFView::btnSelect_clicked() {
         QString bf = item->text();
         name.append(QString::number(currentF->i));
 
-        for(int i=0; i< _atagger->msfVector->count(); i++) {
-            if(_atagger->msfVector->at(i)->name == bf) {
+        for(int i=0; i< tempMSFVector->count(); i++) {
+            if(tempMSFVector->at(i)->name == bf) {
 
                 /// Insert as top child in MSF
                 MBF* mbf = new MBF(name, currentF, bf, true);
-                if(!(currentF->addMSF(currentF->name, mbf))) {
+                if(!(currentF->addMSF(mbf))) {
                     QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
                     return;
                 }
@@ -394,7 +666,7 @@ void CustomizeMSFView::btnSelect_clicked() {
 
         /// Insert as top child in MSF
         MBF* mbf = new MBF(name, currentF, bf);
-        if(!(currentF->addMSF(currentF->name, mbf))) {
+        if(!(currentF->addMSF(mbf))) {
             QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
             return;
         }
@@ -420,27 +692,18 @@ void CustomizeMSFView::btnUnselect_clicked() {
             /// One item is selected to remove
 
             QTreeWidgetItem* item = treeMSF->selectedItems().at(0);
-            int index = treeMSF->indexOfTopLevelItem(item);
             QString name = item->text(0);
 
             /// Check if selected item is a top level item in tree
             if(!(item->parent())) {
 
-                bool isMBF = false;
                 /// Remove as top child in MSF
                 if(!(currentF->removeMSF(currentF->name, name))) {
                     QMessageBox::warning(this, "Warning", "Couldn't remove entry!");
                     return;
                 }
-                isMBF = true;
+                int index = treeMSF->indexOfTopLevelItem(item);
                 delete treeMSF->takeTopLevelItem(index);
-                QMapIterator<QString,MSF*> iterator(currentF->map);
-                while(iterator.hasNext()) {
-                     iterator.next();
-                     if(iterator.value()== NULL) {
-                         QMessageBox::warning(this, "Warning", iterator.key());
-                     }
-                 }
 
                 editFormula->setText(currentF->print());
                 isDirty = true;
@@ -459,12 +722,12 @@ void CustomizeMSFView::btnUnselect_clicked() {
                 return;
             }
 
-
-            /// Remove as top child in MSF
+            /// Remove as subformula
             if(!(currentF->removeMSF(parent->name, name))) {
                 QMessageBox::warning(this, "Warning", "Couldn't remove entry!");
                 return;
             }
+            int index = item->parent()->indexOfChild(item);
             delete item->parent()->takeChild(index);
             editFormula->setText(currentF->print());
             isDirty = true;
@@ -1066,8 +1329,8 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
     editLimit->clear();
     editActions->clear();
     editFormula->clear();
-    for(int i=0; i<_atagger->msfVector->count(); i++) {
-        MSFormula * msf = _atagger->msfVector->at(i);
+    for(int i=0; i<tempMSFVector->count(); i++) {
+        MSFormula * msf = tempMSFVector->at(i);
         if(msf->name == name) {
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
@@ -1111,6 +1374,15 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
 }
 
 void CustomizeMSFView::save() {
+    /** Replace _atagger msfVector by tempMSFVector **/
+    for(int i=0; i<_atagger->msfVector->count(); i++) {
+        delete (_atagger->msfVector->at(i));
+    }
+    _atagger->msfVector->clear();
+    _atagger->msfVector = tempMSFVector;
+    tempMSFVector = NULL;
+
+    /** Save data to output file **/
     QByteArray msfsData = _atagger->dataInJsonFormat(sarfTTV);
     QString fileName;
     if(_atagger->tagtypeFile.isEmpty()) {

@@ -7,58 +7,29 @@ MSFormula::MSFormula(QString name, MSF* parent): MSF(name, parent)
     usedCount = 0;
 }
 
-bool MSFormula::addMSF(QString parent, MSF * msf, int left) {
-    if(parent == this->name) {
-        map.insert(msf->name,msf);
-        vector.append(msf);
-        if(msf->isFormula()) {
-            MBF* mbf = (MBF*)msf;
-            for(int j=0; j<_atagger->msfVector->count(); j++) {
-                if(_atagger->msfVector->at(j)->name == mbf->bf) {
-                    _atagger->msfVector->at(j)->usedCount++;
-                    break;
-                }
+bool MSFormula::addMSF(MSF * msf) {
+    map.insert(msf->name,msf);
+    vector.append(msf);
+    if(msf->isFormula()) {
+        MBF* mbf = (MBF*)msf;
+        for(int j=0; j<_atagger->msfVector->count(); j++) {
+            if(_atagger->msfVector->at(j)->name == mbf->bf) {
+                _atagger->msfVector->at(j)->usedCount++;
+                break;
             }
         }
-        i++;
-        return true;
     }
-
-    if(map.find(parent) != map.end()) {
-        map.insert(msf->name,msf);
-        MSF* parentF = map.value(parent);
-        if(parentF->isUnary()) {
-            UNARYF* pf = (UNARYF*)parentF;
-            pf->setMSF(msf);
-            //delete pf;
-        }
-        else if(parentF->isBinary()) {
-            BINARYF* pf = (BINARYF*)parentF;
-            if(left == 0) {
-                pf->setRightMSF(msf);
-            }
-            else {
-                pf->setLeftMSF(msf);
-            }
-            //delete pf;
-        }
-        else if(parentF->isSequential()) {
-            SequentialF* sf = (SequentialF*)parentF;
-            sf->addMSF(msf);
-        }
-        else {
-            return false;
-        }
-        i++;
-        return true;
-    }
-    return false;
+    i++;
+    return true;
 }
 
 bool MSFormula::removeMSF(QString parent, QString msfName) {
 
     MSF* msf = map.value(msfName);
-    delete msf;
+    if(!(msf->removeSelfFromMap(map))) {
+        return false;
+    }
+    map.insert(msfName, msf);
     if(name == parent) {
         if(!(map.remove(msfName) == 1)) {
             return false;
@@ -69,12 +40,12 @@ bool MSFormula::removeMSF(QString parent, QString msfName) {
                 break;
             }
         }
+        delete msf;
         return true;
     }
 
     if(map.find(parent) != map.end()) {
         SequentialF* sf = (SequentialF*)(map.value(parent));
-        delete msf;
         if(!(map.remove(msfName) == 1)) {
             return false;
         }
@@ -84,6 +55,7 @@ bool MSFormula::removeMSF(QString parent, QString msfName) {
                 break;
             }
         }
+        delete msf;
         return true;
     }
     return false;
@@ -101,6 +73,7 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
             }
         }
         msf->msf = childMSF;
+        childMSF->parent = msf;
         vector.replace(j, msf);
         i++;
         return true;
@@ -115,6 +88,7 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
 
             BINARYF* parentMSF = (BINARYF*)parentF;
             msf->msf = childMSF;
+            childMSF->parent = msf;
             if(childMSF->name == parentMSF->leftMSF->name) {
                 parentMSF->leftMSF = msf;
             }
@@ -129,15 +103,12 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
             int j;
             for(j=0; j<sf->vector.count(); j++) {
                 if(sf->vector.at(j)->name == child) {
-                    childMSF = vector.at(j);
                     break;
                 }
             }
             msf->msf = childMSF;
+            childMSF->parent = msf;
             sf->vector.replace(j,msf);
-        }
-        else if(parentF->isFormula()) {
-            /// Parent is a formula
         }
         else {
             return false;
@@ -165,7 +136,9 @@ bool MSFormula::updateMSF(QString parent, QString fchild, QString schild, BINARY
             }
         }
         msf->setLeftMSF(childMSF1);
+        childMSF1->parent = msf;
         msf->setRightMSF(childMSF2);
+        childMSF2->parent = msf;
         vector.replace(m, msf);
         vector.remove(n);
         i++;
@@ -193,7 +166,9 @@ bool MSFormula::updateMSF(QString parent, QString fchild, QString schild, BINARY
                 }
             }
             msf->setLeftMSF(childMSF1);
+            childMSF1->parent = msf;
             msf->setRightMSF(childMSF2);
+            childMSF2->parent = msf;
             sf->vector.replace(m,msf);
             sf->vector.remove(n);
         }
@@ -218,10 +193,12 @@ bool MSFormula::updateMSF(QString parent, QVector<QString> *children, Sequential
                 if(children->at(m) == vector.at(n)->name) {
                     if(m == 0) {
                         msf->addMSF(fchild);
+                        fchild->parent = msf;
                         vector.replace(n,msf);
                     }
                     else {
                         msf->addMSF(child);
+                        child->parent = msf;
                         vector.remove(n);
                     }
                     break;
@@ -247,10 +224,12 @@ bool MSFormula::updateMSF(QString parent, QVector<QString> *children, Sequential
                     if(children->at(m) == parentF->vector.at(n)->name) {
                         if(m == 0) {
                             msf->addMSF(fchild);
+                            fchild->parent = msf;
                             parentF->vector.replace(n,msf);
                         }
                         else {
                             msf->addMSF(child);
+                            child->parent = msf;
                             parentF->vector.remove(n);
                         }
                         break;
@@ -293,8 +272,8 @@ QString MSFormula::print() {
     if(vector.count() == 0) {
         return value;
     }
-    for(int i=0; i<vector.count(); i++) {
-        value.append(vector.at(i)->print());
+    for(int j=0; j<vector.count(); j++) {
+        value.append(vector.at(j)->print());
         value.append(" ");
     }
     value.chop(1);
@@ -332,6 +311,15 @@ QVariantMap MSFormula::getJSON() {
 bool MSFormula::buildNFA(NFA *nfa) {
     for(int j=0; j<vector.count(); j++) {
         if(!(vector.at(j)->buildNFA(nfa))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool MSFormula::removeSelfFromMap(QMap<QString, MSF*> &map) {
+    for(int j=0; j<vector.count(); j++) {
+        if(!(vector.at(j)->removeSelfFromMap(map))) {
             return false;
         }
     }

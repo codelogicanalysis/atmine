@@ -20,6 +20,7 @@ public:
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     bool isF;
+    bool removeSelfFromMap(QMap<QString, MSF*> &map);
     ~MBF();
 };
 

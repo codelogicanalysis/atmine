@@ -2,6 +2,8 @@
 
 BINARYF::BINARYF(QString name, MSF* parent, Operation op): MSF(name,parent) {
     this->op = op;
+    leftMSF = NULL;
+    rightMSF = NULL;
 }
 
 void BINARYF::setLeftMSF(MSF * msf) {
@@ -154,6 +156,22 @@ bool BINARYF::buildNFA(NFA *nfa) {
         return true;
     }
     return false;
+}
+
+bool BINARYF::removeSelfFromMap(QMap<QString, MSF*> &map) {
+    if(!(leftMSF->removeSelfFromMap(map))) {
+        return false;
+    }
+    if(!(rightMSF->removeSelfFromMap(map))) {
+        return false;
+    }
+    int count = map.remove(name);
+    if(count > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 BINARYF::~BINARYF() {

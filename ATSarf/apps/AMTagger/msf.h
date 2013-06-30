@@ -23,6 +23,7 @@ public:
     virtual void buildTree(QTreeWidget* parent)=0;
     virtual QVariantMap getJSON()=0;
     virtual bool buildNFA(NFA* nfa)=0;
+    virtual bool removeSelfFromMap(QMap<QString, MSF*> &map)=0;
     virtual ~MSF();
 };
 

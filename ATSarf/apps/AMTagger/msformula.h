@@ -15,7 +15,7 @@ public:
     /// Constructor taking name and parent of MSF
     MSFormula(QString name, MSF* parent);
     /// Add an MSF to a given parent
-    bool addMSF(QString parent, MSF* msf,int left=-1);
+    bool addMSF(/*QString parent, */MSF* msf/*,int left=-1*/);
     /// Remove an MSF from formula
     bool removeMSF(QString parent, QString msfName);
     /// Unary update MSFs
@@ -47,6 +47,7 @@ public:
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     int usedCount;
+    bool removeSelfFromMap(QMap<QString, MSF*> &map);
     ~MSFormula();
 };
 

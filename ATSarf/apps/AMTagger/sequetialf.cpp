@@ -80,6 +80,21 @@ bool SequentialF::buildNFA(NFA *nfa) {
     return true;
 }
 
+bool SequentialF::removeSelfFromMap(QMap<QString, MSF*> &map) {
+    for(int j=0; j<vector.count(); j++) {
+        if(!(vector.at(j)->removeSelfFromMap(map))) {
+            return false;
+        }
+    }
+    int count = map.remove(name);
+    if(count > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 SequentialF::~SequentialF() {
     for(int i=0; i<vector.count(); i++) {
         delete vector.at(i);
