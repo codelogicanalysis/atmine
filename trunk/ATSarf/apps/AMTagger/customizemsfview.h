@@ -52,6 +52,7 @@ private slots:
     void fgcolor_changed(QString color);
     void bgcolor_changed(QString color);
     void description_edited();
+    bool readMSF(MSFormula* formula, QVariant data, MSF *parent);
 
 private:
     QPushButton *btnSelect;
@@ -90,6 +91,7 @@ private:
     ColorListEditor * colorfgcolor;
     ColorListEditor * colorbgcolor;
 
+    QVector<MSFormula*> *tempMSFVector;
     QStringList listCategoryId;
     QStringList listCategory;
     MSFormula* currentF;

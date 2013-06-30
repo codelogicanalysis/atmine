@@ -175,6 +175,19 @@ bool UNARYF::buildNFA(NFA *nfa) {
     return true;
 }
 
+bool UNARYF::removeSelfFromMap(QMap<QString, MSF*> &map) {
+    if(!(msf->removeSelfFromMap(map))) {
+        return false;
+    }
+    int count = map.remove(name);
+    if(count > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 UNARYF::~UNARYF() {
     delete msf;
 }

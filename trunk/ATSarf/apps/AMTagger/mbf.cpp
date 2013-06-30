@@ -77,6 +77,16 @@ bool MBF::buildNFA(NFA *nfa) {
     return true;
 }
 
+bool MBF::removeSelfFromMap(QMap<QString, MSF*> &map) {
+    int count = map.remove(name);
+    if(count > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 MBF::~MBF() {
 
 }

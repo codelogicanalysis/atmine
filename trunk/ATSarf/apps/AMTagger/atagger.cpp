@@ -133,6 +133,9 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
         QVector<Tag*> *tags = new QVector<Tag*>();
         return tags;
     }
+    /** checked when transition found from MBF before MSF**/
+    bool done = false;
+
     /// Use a vector of vectors to collect correct solutions and choose longest
     QVector<QVector<Tag*>*> tags;
 
@@ -149,6 +152,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
     for(int i=0; i<tokens.count(); i++) {
         QList<QString> nstates = nfa->transitions.values(state + '|' + tagVector.at(tokens.at(i)).type);
         for(int j = 0; j < nstates.size(); j++) {
+            done = true;
             QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), nextIndex);
             if(temp != NULL) {
                 Tag* t = new Tag(tagVector.at(tokens.at(i)).type, tagVector.at(tokens.at(i)).pos, tagVector.at(tokens.at(i)).length, sarf);
@@ -163,6 +167,22 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
         QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), tagIndex);
         if(temp != NULL) {
             tags.append(temp);
+        }
+    }
+
+    QString formula;
+    /** check for formula transition **/
+    if(!done) {
+        for(int i=0; i<nfaVector->count(); i++) {
+            QList<QString> nstates = nfa->transitions.values(state + '|' + nfaVector->at(i)->name);
+            for(int j = 0; j < nstates.size(); j++) {
+                formula = nfaVector->at(i)->name;
+                QVector<Tag*>* temp = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, tagIndex);
+                if(temp != NULL) {
+                    tags.append(temp);
+                }
+                break;
+            }
         }
     }
 
@@ -203,6 +223,49 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
                 }
 
                 tags.remove(1);
+                for(int i=0; i< tags.at(0)->count(); i++) {
+                    delete tags.at(0)->at(i);
+                }
+                tags.remove(0);
+            }
+            else {
+                return NULL;
+            }
+        }
+
+        /** Check if we have a MSF use **/
+        if(!(formula.isEmpty())) {
+            if(!(tags.isEmpty())) {
+                /// We have a match referring to the MSF path
+
+                int wordSkip = tags.at(0)->count();
+                int index = tagIndex;
+                for(int i=0; i<wordSkip; i++) {
+                    int j=index;
+                    while((j<tagVector.count()) && (tagVector.at(j).pos == tagVector.at(index).pos)) {
+                        j++;
+                    }
+                    index = j;
+                }
+
+                QList<QString> nstates =nfa->transitions.values(state + '|' + formula);
+                for(int j = 0; j < nstates.size(); j++) {
+                    QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), index);
+                    if(temp != NULL) {
+                        tags.append(temp);
+                    }
+                    else {
+                        return NULL;
+                    }
+                }
+
+                /** add AND tags to consequent match **/
+                for(int i=1; i< tags.count(); i++) {
+                    for(int j = (tags.at(0)->count()-1); j>=0 ; j--) {
+                        tags.at(i)->prepend(tags.at(0)->at(j));
+                    }
+                }
+
                 for(int i=0; i< tags.at(0)->count(); i++) {
                     delete tags.at(0)->at(i);
                 }

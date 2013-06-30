@@ -13,6 +13,16 @@
 #include <QLabel>
 #include "ATMProgressIFC.h"
 #include "commonS.h"
+#include "addtagview.h"
+#include "addtagtypeview.h"
+#include "removetagtypeview.h"
+#include "global.h"
+#include "edittagtypeview.h"
+#include "customsttview.h"
+#include "diffview.h"
+#include "ger.h"
+#include "autotagger.h"
+#include "customizemsfview.h"
 
 class AMTMainWindow : public QMainWindow,public ATMProgressIFC
 {
@@ -62,6 +72,7 @@ public:
          void process(QByteArray & json);
          void applyTags(int basic=0);
          void process_TagTypes(QByteArray &tagtypedata);
+         bool readMSF(MSFormula* formula, QVariant data, MSF* parent);
 
 private:
          void createActions();

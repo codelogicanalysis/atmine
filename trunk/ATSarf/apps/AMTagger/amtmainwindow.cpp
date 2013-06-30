@@ -11,18 +11,6 @@
 #include <QTextBlock>
 #include <QtAlgorithms>
 
-#include "commonS.h"
-#include <addtagview.h>
-#include <addtagtypeview.h>
-#include <removetagtypeview.h>
-#include "global.h"
-#include "edittagtypeview.h"
-#include "customsttview.h"
-#include "diffview.h"
-#include "ger.h"
-#include "autotagger.h"
-#include "customizemsfview.h"
-
 bool parentCheck;
 class SarfTag;
 
@@ -404,6 +392,215 @@ void AMTMainWindow::process(QByteArray & json) {
     createUntagMenu();
 }
 
+bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
+    /** Common variables in MSFs **/
+    QString name;
+    QString parentName;
+    QString type;
+
+    QVariantMap msfData = data.toMap();
+    name = msfData.value("name").toString();
+    parentName = msfData.value("parent").toString();
+    type = msfData.value("type").toString();
+
+    if(type == "mbf") {
+        /** This is MBF **/
+        QString bf = msfData.value("MBF").toString();
+        bool isF = msfData.value("isFormula").toBool();
+
+        /** initialize MBF **/
+        MBF* mbf = new MBF(name,parent,bf,isF);
+        formula->map.insert(name, mbf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(mbf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(mbf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(mbf);
+            }
+            else {
+                prnt->setRightMSF(mbf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(mbf);
+        }
+        else {
+            return false;
+        }
+
+        return true;
+    }
+    else if(type == "unary") {
+        /** This is a UNARY formula **/
+        QString operation = msfData.value("op").toString();
+        Operation op;
+        if(operation == "?") {
+            op = KUESTION;
+        }
+        else if(operation == "*") {
+            op = STAR;
+        }
+        else if(operation == "+") {
+            op = PLUS;
+        }
+        else if(operation.contains('^')) {
+            op = UPTO;
+        }
+        else {
+            return false;
+        }
+        int limit = -1;
+        if(operation.contains('^')) {
+            bool ok;
+            limit = operation.mid(1).toInt(&ok);
+            if(!ok) {
+                return false;
+            }
+        }
+
+        /** Initialize a UNARYF **/
+        UNARYF* uf = new UNARYF(name,parent,op,limit);
+        formula->map.insert(name,uf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(uf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(uf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(uf);
+            }
+            else {
+                prnt->setRightMSF(uf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(uf);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with child MSF **/
+        return readMSF(formula,msfData.value("MSF"),uf);
+    }
+    else if(type == "binary") {
+        /** This is a BINARY formula **/
+        QString operation = msfData.value("op").toString();
+        Operation op;
+        if(operation == "&") {
+            op = AND;
+        }
+        else if(operation == "|") {
+            op = OR;
+        }
+        else {
+            return false;
+        }
+
+        /** Initialize BINARYF **/
+        BINARYF* bif = new BINARYF(name,parent,op);
+        formula->map.insert(name, bif);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(bif);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(bif);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(bif);
+            }
+            else {
+                prnt->setRightMSF(bif);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(bif);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with child MSFs **/
+        bool first = readMSF(formula,msfData.value("leftMSF"),bif);
+        bool second = readMSF(formula,msfData.value("rightMSF"),bif);
+        if(first && second) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else if(type == "sequential") {
+        /** This is a sequential formula **/
+        /** Initialize a SequentialF **/
+        SequentialF* sf = new SequentialF(name,parent);
+        formula->map.insert(name, sf);
+
+        /** Check parent type and add accordingly **/
+        if(parent->isFormula()) {
+            MSFormula* prnt = (MSFormula*)parent;
+            prnt->addMSF(sf);
+        }
+        else if(parent->isUnary()) {
+            UNARYF* prnt = (UNARYF*)parent;
+            prnt->setMSF(sf);
+        }
+        else if(parent->isBinary()) {
+            BINARYF* prnt = (BINARYF*)parent;
+            if(prnt->leftMSF == NULL) {
+                prnt->setLeftMSF(sf);
+            }
+            else {
+                prnt->setRightMSF(sf);
+            }
+        }
+        else if(parent->isSequential()) {
+            SequentialF* prnt = (SequentialF*)parent;
+            prnt->addMSF(sf);
+        }
+        else {
+            return false;
+        }
+
+        /** Proceed with children **/
+        foreach(QVariant seqMSFData, msfData.value("MSFs").toList()) {
+            if(!(readMSF(formula,seqMSFData,sf))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
     QJson::Parser parser;
     bool ok;
@@ -557,6 +754,41 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
         else {
             _atagger->isSarf = false;
             _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user,original);
+        }
+    }
+
+    if(!(result.value("MSFs").isNull())) {
+        /** The tagtype file contains MSFs **/
+
+        foreach(QVariant msfsData, result.value("MSFs").toList()) {
+
+            /** List of variables for each MSFormula **/
+            QString bgcolor;
+            QString fgcolor;
+            QString name;
+            QString description;
+            int i;
+
+            /** This is an MSFormula **/
+            QVariantMap msformulaData = msfsData.toMap();
+
+            name = msformulaData.value("name").toString();
+            description = msformulaData.value("description").toString();
+            fgcolor = msformulaData.value("fgcolor").toString();
+            bgcolor = msformulaData.value("bgcolor").toString();
+            i = msformulaData.value("i").toInt();
+
+            MSFormula* msf = new MSFormula(name, NULL);
+            msf->fgcolor = fgcolor;
+            msf->bgcolor = bgcolor;
+            msf->description = description;
+            msf->i = i;
+            _atagger->msfVector->append(msf);
+
+            /** Get MSFormula MSFs **/
+            foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
+                readMSF(msf, msfData, msf);
+            }
         }
     }
 }
@@ -1051,19 +1283,19 @@ void AMTMainWindow::createActions()
     tagtyperemoveAct->setStatusTip(tr("Remove a TagType"));
     connect(tagtyperemoveAct, SIGNAL(triggered()), this, SLOT(tagtyperemove()));
 
-    sarftagsAct = new QAction(tr("Edit Sarf TagTypes..."), this);
+    sarftagsAct = new QAction(tr("Morphology-based Boolean Formulae..."), this);
     sarftagsAct->setEnabled(false);
     connect(sarftagsAct, SIGNAL(triggered()), this, SLOT(customizeSarfTags()));
 
-    sarfAct = new QAction(tr("Run Simulator"), this);
+    sarfAct = new QAction(tr("Simulate with Sarf"), this);
     sarfAct->setEnabled(false);
     connect(sarfAct, SIGNAL(triggered()), this, SLOT(sarfTagging()));
 
-    editMSFAct = new QAction(tr("Edit MSFs"), this);
+    editMSFAct = new QAction(tr("Morphology-based Sequential Formulae..."), this);
     editMSFAct->setEnabled(false);
     connect(editMSFAct, SIGNAL(triggered()), this, SLOT(customizeMSFs()));
 
-    simulatorAct = new QAction(tr("Run Simulator"), this);
+    simulatorAct = new QAction(tr("Simulate with Sarf"), this);
     simulatorAct->setEnabled(false);
     connect(simulatorAct, SIGNAL(triggered()), this, SLOT(runMERFSimulator()));
 
@@ -1118,7 +1350,7 @@ void AMTMainWindow::createMenus()
     tagtypeMenu->addSeparator();
     */
 
-    sarfMenu = menuBar()->addMenu(tr("Sarf"));
+    sarfMenu = menuBar()->addMenu(tr("Tagtypes"));
     sarfMenu->addAction(sarftagsAct);
     sarfMenu->addAction(sarfAct);
     sarfMenu->addSeparator();
@@ -1887,6 +2119,10 @@ void AMTMainWindow::runMERFSimulator() {
     _atagger->isSarf = true;
     startTaggingText(_atagger->text);
     _atagger->simulationVector.clear();
+    for(int i=0; i<_atagger->nfaVector->count(); i++) {
+        delete (_atagger->nfaVector->at(i));
+    }
+    _atagger->nfaVector->clear();
 
     error_str = "";
     output_str = "";
