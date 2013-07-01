@@ -142,7 +142,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     }
 
     /** Initialize a copy of the MSFs **/
-    tempMSFVector = new QVector<MSFormula*>();
+    _atagger->tempMSFVector = new QVector<MSFormula*>();
 
     QString ttFName;
     ttFName = _atagger->tagtypeFile;
@@ -175,6 +175,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             QString name;
             QString description;
             int i;
+            int usedCount;
 
             /** This is an MSFormula **/
             QVariantMap msformulaData = msfsData.toMap();
@@ -184,13 +185,15 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             fgcolor = msformulaData.value("fgcolor").toString();
             bgcolor = msformulaData.value("bgcolor").toString();
             i = msformulaData.value("i").toInt();
+            usedCount = msformulaData.value("usedCount").toInt();
 
             MSFormula* msf = new MSFormula(name, NULL);
             msf->fgcolor = fgcolor;
             msf->bgcolor = bgcolor;
             msf->description = description;
             msf->i = i;
-            tempMSFVector->append(msf);
+            msf->usedCount = usedCount;
+            _atagger->tempMSFVector->append(msf);
 
             /** Get MSFormula MSFs **/
             foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
@@ -206,11 +209,11 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     }
     tagtypes.append("NONE");
 
-    if(tempMSFVector->count() != 0) {
-        currentF = (MSFormula*)(tempMSFVector->at(0));
-        for(int i=0; i<tempMSFVector->count(); i++) {
-            tagtypes.append(tempMSFVector->at(i)->name);
-            cbMSF->addItem(tempMSFVector->at(i)->name);
+    if(_atagger->tempMSFVector->count() != 0) {
+        currentF = (MSFormula*)(_atagger->tempMSFVector->at(0));
+        for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
+            tagtypes.append(_atagger->tempMSFVector->at(i)->name);
+            cbMSF->addItem(_atagger->tempMSFVector->at(i)->name);
         }
 
         cbMSF->setCurrentIndex(0);
@@ -508,8 +511,8 @@ void CustomizeMSFView::btnAdd_clicked() {
         return;
     }
 
-    for(int i=0; i<tempMSFVector->count(); i++) {
-        const MSFormula* msf = tempMSFVector->at(i);
+    for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
+        const MSFormula* msf = _atagger->tempMSFVector->at(i);
         if(msf->name == msfName) {
             QMessageBox::warning(this, "Warning", "This formula Name already exists!");
             return;
@@ -525,7 +528,7 @@ void CustomizeMSFView::btnAdd_clicked() {
 
     MSFormula* formula = new MSFormula(msfName, NULL);
     currentF = formula;
-    tempMSFVector->append(formula);
+    _atagger->tempMSFVector->append(formula);
     listMBF->addItem(formula->name);
     isDirty = true;
 
@@ -578,26 +581,26 @@ void CustomizeMSFView::btnAdd_clicked() {
 }
 
 void CustomizeMSFView::btnRemove_clicked() {
-    if(tempMSFVector->count() == 0) {
+    if(_atagger->tempMSFVector->count() == 0) {
         return;
     }
-    disconnect_Signals();
+    //disconnect_Signals();
 
     QString msfRemoved = cbMSF->currentText();
-    for(int i=0; i<tempMSFVector->count(); i++) {
-        const MSFormula * msf = tempMSFVector->at(i);
+    for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
+        const MSFormula * msf = _atagger->tempMSFVector->at(i);
         if(msf->name == msfRemoved) {
             if(msf->usedCount != 0) {
                 QMessageBox::warning(this, "Warning", "Formula used in building other formulae\nRemove it from them first");
                 return;
             }
             else {
-                if(!(tempMSFVector->at(i)->removeSelfFromMap(tempMSFVector->at(i)->map))) {
+                if(!(_atagger->tempMSFVector->at(i)->removeSelfFromMap(_atagger->tempMSFVector->at(i)->map))) {
                     QMessageBox::warning(this, "Warning", "Couldn't remove Formula");
                     return;
                 }
-                delete (tempMSFVector->at(i));
-                tempMSFVector->remove(i);
+                delete (_atagger->tempMSFVector->at(i));
+                _atagger->tempMSFVector->remove(i);
                 break;
             }
         }
@@ -609,16 +612,18 @@ void CustomizeMSFView::btnRemove_clicked() {
             listMBF->addItem(_atagger->tagTypeVector->at(i)->tag);
         }
     }
+    listMBF->addItem("NONE");
 
-    if(tempMSFVector->count() != 0) {
-        for(int i=0; i< tempMSFVector->count(); i++) {
-            listMBF->addItem(tempMSFVector->at(i)->name);
+    if(_atagger->tempMSFVector->count() != 0) {
+        for(int i=0; i< _atagger->tempMSFVector->count(); i++) {
+            listMBF->addItem(_atagger->tempMSFVector->at(i)->name);
         }
     }
 
+
     cbMSF->removeItem(cbMSF->currentIndex());
 
-    if(tempMSFVector->count() == 0) {
+    if(_atagger->tempMSFVector->count() == 0) {
         btnSelect->setEnabled(false);
         btnUnselect->setEnabled(false);
         btnRemove->setEnabled(false);
@@ -632,7 +637,7 @@ void CustomizeMSFView::btnRemove_clicked() {
     }
     isDirty = true;
 
-    connect_Signals();
+    //connect_Signals();
 }
 
 void CustomizeMSFView::btnSelect_clicked() {
@@ -645,8 +650,8 @@ void CustomizeMSFView::btnSelect_clicked() {
         QString bf = item->text();
         name.append(QString::number(currentF->i));
 
-        for(int i=0; i< tempMSFVector->count(); i++) {
-            if(tempMSFVector->at(i)->name == bf) {
+        for(int i=0; i< _atagger->tempMSFVector->count(); i++) {
+            if(_atagger->tempMSFVector->at(i)->name == bf) {
 
                 /// Insert as top child in MSF
                 MBF* mbf = new MBF(name, currentF, bf, true);
@@ -654,6 +659,7 @@ void CustomizeMSFView::btnSelect_clicked() {
                     QMessageBox::warning(this, "Warning", "Couldn't process entered data!");
                     return;
                 }
+                _atagger->tempMSFVector->at(i)->usedCount = _atagger->tempMSFVector->at(i)->usedCount + 1;
 
                 QStringList data;
                 data << name << bf << QString();
@@ -1320,17 +1326,17 @@ void CustomizeMSFView::btnSequence_clicked() {
 }
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
+    treeMSF->clear();
+    editLimit->clear();
+    editActions->clear();
+    editFormula->clear();
     if(name.isEmpty() || name.isNull()) {
         return;
     }
 
     disconnect_Signals();
-    treeMSF->clear();
-    editLimit->clear();
-    editActions->clear();
-    editFormula->clear();
-    for(int i=0; i<tempMSFVector->count(); i++) {
-        MSFormula * msf = tempMSFVector->at(i);
+    for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
+        MSFormula * msf = _atagger->tempMSFVector->at(i);
         if(msf->name == name) {
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
@@ -1374,13 +1380,13 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
 }
 
 void CustomizeMSFView::save() {
-    /** Replace _atagger msfVector by tempMSFVector **/
+    /** Replace _atagger msfVector by _atagger->tempMSFVector **/
     for(int i=0; i<_atagger->msfVector->count(); i++) {
         delete (_atagger->msfVector->at(i));
     }
     _atagger->msfVector->clear();
-    _atagger->msfVector = tempMSFVector;
-    tempMSFVector = NULL;
+    _atagger->msfVector = _atagger->tempMSFVector;
+    _atagger->tempMSFVector = NULL;
 
     /** Save data to output file **/
     QByteArray msfsData = _atagger->dataInJsonFormat(sarfTTV);

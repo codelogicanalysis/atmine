@@ -30,6 +30,7 @@ public:
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
     QVector<MSFormula*> *msfVector;
+    QVector<MSFormula*> *tempMSFVector;
     QVector<NFA*> *nfaVector;
     QString text;
     QString textFile;
