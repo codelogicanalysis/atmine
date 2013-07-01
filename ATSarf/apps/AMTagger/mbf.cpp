@@ -1,4 +1,5 @@
 #include "mbf.h"
+#include "global.h"
 
 MBF::MBF(QString name, MSF* parent, QString bf, bool isF) : MSF(name,parent)
 {
@@ -88,5 +89,12 @@ bool MBF::removeSelfFromMap(QMap<QString, MSF*> &map) {
 }
 
 MBF::~MBF() {
-
+    if(isF) {
+        for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
+            if(_atagger->tempMSFVector->at(i)->name == bf) {
+                _atagger->tempMSFVector->at(i)->usedCount = _atagger->tempMSFVector->at(i)->usedCount -1;
+                break;
+            }
+        }
+    }
 }

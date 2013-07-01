@@ -91,7 +91,6 @@ private:
     ColorListEditor * colorfgcolor;
     ColorListEditor * colorbgcolor;
 
-    QVector<MSFormula*> *tempMSFVector;
     QStringList listCategoryId;
     QStringList listCategory;
     MSFormula* currentF;

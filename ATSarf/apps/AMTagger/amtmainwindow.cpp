@@ -768,6 +768,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             QString name;
             QString description;
             int i;
+            int usedCount;
 
             /** This is an MSFormula **/
             QVariantMap msformulaData = msfsData.toMap();
@@ -777,12 +778,14 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             fgcolor = msformulaData.value("fgcolor").toString();
             bgcolor = msformulaData.value("bgcolor").toString();
             i = msformulaData.value("i").toInt();
+            usedCount = msformulaData.value("usedCount").toInt();
 
             MSFormula* msf = new MSFormula(name, NULL);
             msf->fgcolor = fgcolor;
             msf->bgcolor = bgcolor;
             msf->description = description;
             msf->i = i;
+            msf->usedCount = usedCount;
             _atagger->msfVector->append(msf);
 
             /** Get MSFormula MSFs **/

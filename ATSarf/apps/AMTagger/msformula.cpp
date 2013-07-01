@@ -300,6 +300,7 @@ QVariantMap MSFormula::getJSON() {
     msfMap.insert("bgcolor", bgcolor);
     msfMap.insert("type","msformula");
     msfMap.insert("i",i);
+    msfMap.insert("usedCount", usedCount);
     QVariantList msfList;
     for(int j=0; j<vector.count(); j++) {
         msfList << vector.at(j)->getJSON();
