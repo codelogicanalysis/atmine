@@ -11,7 +11,10 @@ class MSF
 public:
     MSF(QString name, MSF* parent);
     QString name;
+    QString init;
     QString actions;
+    QString after;
+    QString returns;
     MSF * parent;
     virtual bool isMBF()=0;
     virtual bool isUnary()=0;
