@@ -14,6 +14,7 @@
 #include <QMessageBox>
 #include <QtCore/QDir>
 #include <QFileDialog>
+#include <QScrollArea>
 #include "global.h"
 #include "logger.h"
 #include "mbf.h"
@@ -45,6 +46,16 @@ private slots:
     void btnOr_clicked();
     void btnAnd_clicked();
     void btnSequence_clicked();
+    void btnText_clicked();
+    void btnPOS_clicked();
+    void btnLength_clicked();
+    void btnNumber_clicked();
+    void includes_edited();
+    void members_edited();
+    void init_edited();
+    void after_edited();
+    void actions_edited();
+    void returns_edited(QString returns);
     void cbMSF_changed(QString);
     void listMBF_itemclicked(QListWidgetItem*);
     void closeEvent(QCloseEvent *event);
@@ -59,13 +70,17 @@ private:
     QPushButton *btnUnselect;
     QPushButton *btnAdd;
     QPushButton *btnRemove;
-    QPushButton* btnStar;
-    QPushButton* btnPlus;
-    QPushButton* btnQuestion;
-    QPushButton* btnLimit;
-    QPushButton* btnOr;
-    QPushButton* btnAnd;
-    QPushButton* btnSequence;
+    QPushButton *btnStar;
+    QPushButton *btnPlus;
+    QPushButton *btnQuestion;
+    QPushButton *btnLimit;
+    QPushButton *btnOr;
+    QPushButton *btnAnd;
+    QPushButton *btnSequence;
+    QPushButton *btnText;
+    QPushButton *btnPOS;
+    QPushButton *btnLength;
+    QPushButton *btnNumber;
 
     QLabel *lblMBF;
     QLabel *lblMSF;
@@ -74,14 +89,27 @@ private:
     QLabel *lblDescription;
     QLabel *lblFGColor;
     QLabel *lblBGColor;
+    QLabel *lblIncludes;
+    QLabel *lblMembers;
+    QLabel *lblInit;
+    QLabel *lblAfter;
+    QLabel *lblReturns;
+    QLabel *lblActionMSF;
+    QLabel *lblMSFAction;
 
     QLineEdit *editLimit;
     QLineEdit *editFormula;
+    QLineEdit *editReturns;
 
+    QTextEdit *editIncludes;
+    QTextEdit *editMembers;
+    QTextEdit *editInit;
+    QTextEdit *editAfter;
     QTextEdit *editActions;
     QTextEdit *editDescription;
 
     QComboBox *cbMSF;
+    QComboBox *cbActionMSF;
 
     QListWidget *listMBF;
 

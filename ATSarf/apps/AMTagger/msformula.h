@@ -36,6 +36,10 @@ public:
     QString fgcolor;
     /// Background Color
     QString bgcolor;
+    /// Headers included in actions
+    QString includes;
+    /// Members used in actions
+    QString members;
     bool isMBF();
     bool isUnary();
     bool isBinary();
