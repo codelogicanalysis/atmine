@@ -36,6 +36,13 @@ QString MBF::print() {
     return bf;
 }
 
+QString MBF::printwithNames() {
+    QString value = name;
+    value.append('=');
+    value.append(bf);
+    return value;
+}
+
 void MBF::buildTree(QTreeWidgetItem* parent) {
     QStringList data;
     data << name << bf << QString();
@@ -52,6 +59,10 @@ QVariantMap MBF::getJSON() {
     QVariantMap mbfMap;
     mbfMap.insert("name", name);
     mbfMap.insert("type","mbf");
+    mbfMap.insert("init", init);
+    mbfMap.insert("actions",actions);
+    mbfMap.insert("after", after);
+    mbfMap.insert("returns", returns);
     mbfMap.insert("parent", parent->name);
     mbfMap.insert("MBF", bf);
     mbfMap.insert("isFormula",isF);
@@ -86,6 +97,10 @@ bool MBF::removeSelfFromMap(QMap<QString, MSF*> &map) {
     else {
         return false;
     }
+}
+
+QStringList MBF::getMSFNames() {
+    return QStringList(name);
 }
 
 MBF::~MBF() {

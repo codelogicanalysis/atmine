@@ -49,6 +49,28 @@ QString UNARYF::print() {
     return value;
 }
 
+QString UNARYF::printwithNames() {
+    QString value = name;
+    value.append("=((");
+    value.append(msf->printwithNames());
+    value.append(")");
+    if(op == STAR) {
+        value.append("*");
+    }
+    else if(op == PLUS) {
+        value.append("+");
+    }
+    else if(op == UPTO) {
+        value.append("^");
+        value.append(QString::number(limit));
+    }
+    else {
+        value.append("?");
+    }
+    value.append(')');
+    return value;
+}
+
 void UNARYF::buildTree(QTreeWidgetItem* parent) {
     QStringList data;
     QString opText = "";
@@ -95,6 +117,10 @@ QVariantMap UNARYF::getJSON() {
     QVariantMap uMap;
     uMap.insert("name", name);
     uMap.insert("type","unary");
+    uMap.insert("init", init);
+    uMap.insert("actions",actions);
+    uMap.insert("after", after);
+    uMap.insert("returns", returns);
     uMap.insert("parent", parent->name);
     QString opText = "";
     if(op == STAR) {
@@ -186,6 +212,12 @@ bool UNARYF::removeSelfFromMap(QMap<QString, MSF*> &map) {
     else {
         return false;
     }
+}
+
+QStringList UNARYF::getMSFNames() {
+    QStringList list(name);
+    list += msf->getMSFNames();
+    return list;
 }
 
 UNARYF::~UNARYF() {

@@ -19,6 +19,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnOr = new QPushButton(tr("|"), this);
     btnAnd = new QPushButton(tr("&&"), this);
     btnSequence = new QPushButton(tr("()"), this);
+    btnActions = new QPushButton(tr("Edit Actions"), this);
 
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
@@ -31,6 +32,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnOr->setEnabled(false);
     btnAnd->setEnabled(false);
     btnSequence->setEnabled(false);
+    btnActions->setEnabled(false);
 
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
@@ -44,6 +46,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(btnAnd,12,5);
     grid->addWidget(btnLimit,11,6);
     grid->addWidget(btnSequence,12,4);
+    grid->addWidget(btnActions,6,5,1,2);
 
     lblMBF = new QLabel(tr("MBFs"), this);
     lblMSF = new QLabel(tr("MSF:"), this);
@@ -118,98 +121,6 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 
     grid->addWidget(treeMBFdesc,7,0,6,2);
 
-
-    /** Add Action widget block **/
-#if 0
-    QGridLayout *actiongrid = new QGridLayout();
-#endif
-
-    lblActions = new QLabel(tr("Actions"), this);
-    lblIncludes = new QLabel(tr("Includes:"), this);
-    lblMembers = new QLabel(tr("Members:"), this);
-    lblInit = new QLabel(tr("Init:"), this);
-    lblAfter = new QLabel(tr("After:"), this);
-    lblActionMSF = new QLabel(tr("MSF:"), this);
-    lblReturns = new QLabel(tr("Returns"), this);
-    lblMSFAction = new QLabel(tr("MSF Actions:"), this);
-
-#if 0
-    actiongrid->addWidget(lblActions,0,0,1,4,Qt::AlignCenter);
-    actiongrid->addWidget(lblIncludes,1,0);
-    actiongrid->addWidget(lblMembers,1,2);
-    actiongrid->addWidget(lblInit,3,0);
-    actiongrid->addWidget(lblAfter,3,2);
-    actiongrid->addWidget(lblMSFAction,5,0);
-    actiongrid->addWidget(lblActionMSF,8,0);
-    actiongrid->addWidget(lblReturns,10,0);
-#else
-    grid->addWidget(lblActions,0,7,1,4,Qt::AlignCenter);
-    grid->addWidget(lblIncludes,1,7);
-    grid->addWidget(lblMembers,1,9);
-    grid->addWidget(lblInit,3,7);
-    grid->addWidget(lblAfter,3,9);
-    grid->addWidget(lblMSFAction,5,7);
-    grid->addWidget(lblActionMSF,8,7);
-    grid->addWidget(lblReturns,10,7);
-#endif
-    editIncludes = new QTextEdit(this);
-    editMembers = new QTextEdit(this);
-    editInit = new QTextEdit(this);
-    editAfter = new QTextEdit(this);
-    editActions = new QTextEdit(this);
-
-#if 0
-    actiongrid->addWidget(editIncludes,1,1);
-    actiongrid->addWidget(editMembers,1,3);
-    actiongrid->addWidget(editInit,3,1);
-    actiongrid->addWidget(editAfter,3,3);
-    actiongrid->addWidget(editActions,5,1,3,3);
-#else
-    grid->addWidget(editIncludes,1,8);
-    grid->addWidget(editMembers,1,10);
-    grid->addWidget(editInit,3,8);
-    grid->addWidget(editAfter,3,10);
-    grid->addWidget(editActions,5,8,3,3);
-#endif
-    cbActionMSF = new QComboBox(this);
-#if 0
-    actiongrid->addWidget(cbActionMSF,8,1);
-#else
-    grid->addWidget(cbActionMSF,8,8);
-#endif
-    btnText = new QPushButton(tr("Text"), this);
-    btnText->setMaximumWidth(100);
-    btnPOS = new QPushButton(tr("pos"), this);
-    btnPOS->setMaximumWidth(100);
-    btnLength = new QPushButton(tr("Length"), this);
-    btnLength->setMaximumWidth(100);
-    btnNumber = new QPushButton(tr("Number"), this);
-    btnNumber->setMaximumWidth(100);
-#if 0
-    actiongrid->addWidget(btnText,8,2);
-    actiongrid->addWidget(btnPOS,8,3);
-    actiongrid->addWidget(btnLength,9,2);
-    actiongrid->addWidget(btnNumber,9,3);
-#else
-    grid->addWidget(btnText,8,9);
-    grid->addWidget(btnPOS,8,10);
-    grid->addWidget(btnLength,9,9);
-    grid->addWidget(btnNumber,9,10);
-#endif
-    editReturns = new QLineEdit(this);
-#if 0
-    actiongrid->addWidget(editReturns,10,1,1,3);
-#else
-    grid->addWidget(editReturns,10,8,1,3);
-#endif
-
-#if 0
-    QScrollArea *sa = new QScrollArea(this);
-    sa->setLayout(actiongrid);
-    grid->addWidget(sa,0,7,12,4);
-#endif
-    /** Done **/
-
     QWidget *widget = new QWidget(this);
     widget->setLayout(grid);
     setCentralWidget(widget);
@@ -261,6 +172,11 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             QString bgcolor;
             QString fgcolor;
             QString name;
+            QString init;
+            QString after;
+            QString actions;
+            QString includes;
+            QString members;
             QString description;
             int i;
             int usedCount;
@@ -269,6 +185,11 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             QVariantMap msformulaData = msfsData.toMap();
 
             name = msformulaData.value("name").toString();
+            init = msformulaData.value("init").toString();
+            after = msformulaData.value("after").toString();
+            actions = msformulaData.value("actions").toString();
+            includes = msformulaData.value("includes").toString();
+            members = msformulaData.value("members").toString();
             description = msformulaData.value("description").toString();
             fgcolor = msformulaData.value("fgcolor").toString();
             bgcolor = msformulaData.value("bgcolor").toString();
@@ -276,6 +197,8 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             usedCount = msformulaData.value("usedCount").toInt();
 
             MSFormula* msf = new MSFormula(name, NULL);
+            msf->includes = includes;
+            msf->members = members;
             msf->fgcolor = fgcolor;
             msf->bgcolor = bgcolor;
             msf->description = description;
@@ -307,7 +230,6 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         cbMSF->setCurrentIndex(0);
         currentF->buildTree(treeMSF);
         editFormula->setText(currentF->print());
-        editActions->setText(currentF->actions);
         editDescription->setText(currentF->description);
         colorfgcolor->setColor(QColor(currentF->fgcolor));
         colorbgcolor->setColor(QColor(currentF->bgcolor));
@@ -323,28 +245,11 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         btnOr->setEnabled(true);
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
+        btnActions->setEnabled(true);
     }
     listMBF->addItems(tagtypes);
 
     /** Connect Signals **/
-    /*
-    connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
-    connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
-    connect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
-    connect(btnSelect, SIGNAL(clicked()), this, SLOT(btnSelect_clicked()));
-    connect(btnUnselect, SIGNAL(clicked()), this, SLOT(btnUnselect_clicked()));
-    connect(btnAdd, SIGNAL(clicked()), this, SLOT(btnAdd_clicked()));
-    connect(btnRemove, SIGNAL(clicked()), this, SLOT(btnRemove_clicked()));
-    connect(btnStar, SIGNAL(clicked()), this, SLOT(btnStar_clicked()));
-    connect(btnPlus, SIGNAL(clicked()), this, SLOT(btnPlus_clicked()));
-    connect(btnQuestion, SIGNAL(clicked()), this, SLOT(btnQuestion_clicked()));
-    connect(btnLimit, SIGNAL(clicked()), this, SLOT(btnLimit_clicked()));
-    connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
-    connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
-    connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
-    connect(cbMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbMSF_changed(QString)));
-    connect(listMBF, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listMBF_itemclicked(QListWidgetItem*)));
-    */
     connect_Signals();
     /** Connections Done **/
 }
@@ -352,11 +257,19 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
     /** Common variables in MSFs **/
     QString name;
+    QString init;
+    QString after;
+    QString actions;
+    QString returns;
     QString parentName;
     QString type;
 
     QVariantMap msfData = data.toMap();
     name = msfData.value("name").toString();
+    init = msfData.value("init").toString();
+    after = msfData.value("after").toString();
+    actions = msfData.value("actions").toString();
+    returns = msfData.value("returns").toString();
     parentName = msfData.value("parent").toString();
     type = msfData.value("type").toString();
 
@@ -367,6 +280,10 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** initialize MBF **/
         MBF* mbf = new MBF(name,parent,bf,isF);
+        mbf->init = init;
+        mbf->after = after;
+        mbf->actions = actions;
+        mbf->returns = returns;
         formula->map.insert(name, mbf);
 
         /** Check parent type and add accordingly **/
@@ -427,6 +344,10 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Initialize a UNARYF **/
         UNARYF* uf = new UNARYF(name,parent,op,limit);
+        uf->init = init;
+        uf->after = after;
+        uf->actions = actions;
+        uf->returns = returns;
         formula->map.insert(name,uf);
 
         /** Check parent type and add accordingly **/
@@ -474,6 +395,10 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Initialize BINARYF **/
         BINARYF* bif = new BINARYF(name,parent,op);
+        bif->init = init;
+        bif->after = after;
+        bif->actions = actions;
+        bif->returns = returns;
         formula->map.insert(name, bif);
 
         /** Check parent type and add accordingly **/
@@ -516,6 +441,10 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
         /** This is a sequential formula **/
         /** Initialize a SequentialF **/
         SequentialF* sf = new SequentialF(name,parent);
+        sf->init = init;
+        sf->after = after;
+        sf->actions = actions;
+        sf->returns = returns;
         formula->map.insert(name, sf);
 
         /** Check parent type and add accordingly **/
@@ -638,12 +567,13 @@ void CustomizeMSFView::btnAdd_clicked() {
         btnOr->setEnabled(true);
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
+        btnActions->setEnabled(true);
     }
     treeMSF->clear();
-    editActions->clear();
     editDescription->clear();
     listMBF->clearSelection();
     treeMBFdesc->clear();
+    editFormula->clear();
 
     /** Random Color Routine **/
 
@@ -666,7 +596,6 @@ void CustomizeMSFView::btnAdd_clicked() {
 
     cbMSF->addItem(msfName);
     cbMSF->setCurrentIndex(cbMSF->findText(msfName));
-    editFormula->clear();
 
     connect_Signals();
 }
@@ -726,6 +655,7 @@ void CustomizeMSFView::btnRemove_clicked() {
         btnOr->setEnabled(false);
         btnAnd->setEnabled(false);
         btnSequence->setEnabled(false);
+        btnActions->setEnabled(false);
     }
     isDirty = true;
 
@@ -1417,54 +1347,22 @@ void CustomizeMSFView::btnSequence_clicked() {
     isDirty = true;
 }
 
-void CustomizeMSFView::btnText_clicked() {
+void CustomizeMSFView::btnActions_clicked() {
     if(currentF == NULL) {
         return;
     }
 
-    QString text = "$";
-    text.append(cbActionMSF->currentText());
-    text.append(".text");
-    editActions->textCursor().insertText(text);
-    isDirty = true;
-}
-
-void CustomizeMSFView::btnPOS_clicked() {
-    if(currentF == NULL) {
+    if(treeMSF->selectedItems().count() == 0) {
         return;
     }
 
-    QString text = "$";
-    text.append(cbActionMSF->currentText());
-    text.append(".position");
-    editActions->textCursor().insertText(text);
-    isDirty = true;
+    QTreeWidgetItem *item = treeMSF->selectedItems().last();
+    QString msfName = item->text(0);
+    ActionsView *av = new ActionsView(currentF, msfName, &isDirty, this);
+    av->show();
 }
 
-void CustomizeMSFView::btnLength_clicked() {
-    if(currentF == NULL) {
-        return;
-    }
-
-    QString text = "$";
-    text.append(cbActionMSF->currentText());
-    text.append(".length");
-    editActions->textCursor().insertText(text);
-    isDirty = true;
-}
-
-void CustomizeMSFView::btnNumber_clicked() {
-    if(currentF == NULL) {
-        return;
-    }
-
-    QString text = "$";
-    text.append(cbActionMSF->currentText());
-    text.append(".number");
-    editActions->textCursor().insertText(text);
-    isDirty = true;
-}
-
+/*
 void CustomizeMSFView::includes_edited() {
     if(currentF == NULL) {
         return;
@@ -1511,20 +1409,6 @@ void CustomizeMSFView::after_edited() {
     isDirty = true;
 }
 
-void CustomizeMSFView::actions_edited() {
-    if(currentF == NULL) {
-        return;
-    }
-
-    QString msfName = cbActionMSF->currentText();
-    if(msfName.isEmpty()) {
-        return;
-    }
-    MSF* msf = currentF->map.value(msfName);
-    msf->actions = editActions->toPlainText();
-    isDirty = true;
-}
-
 void CustomizeMSFView::returns_edited(QString returns) {
     if(currentF == NULL) {
         return;
@@ -1538,11 +1422,11 @@ void CustomizeMSFView::returns_edited(QString returns) {
     msf->returns = returns;
     isDirty = true;
 }
+*/
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
     treeMSF->clear();
     editLimit->clear();
-    editActions->clear();
     editFormula->clear();
     if(name.isEmpty() || name.isNull()) {
         return;
@@ -1555,7 +1439,6 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
             msf->buildTree(treeMSF);
-            editActions->setText(msf->actions);
         }
     }
     connect_Signals();
@@ -1593,6 +1476,27 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
     connect_Signals();
 }
 
+/*
+void CustomizeMSFView::cbcurrentMSF_changed(QString text) {
+    if(text.isEmpty()) {
+        return;
+    }
+
+    disconnect_Signals();
+    MSF* msf;
+    if(text == currentF->name) {
+        msf = currentF;
+    }
+    else {
+        msf = currentF->map.value(text);
+    }
+    editInit->setText(msf->init);
+    editAfter->setText(msf->after);
+    editActions->setText(msf->actions);
+    editReturns->setText(msf->returns);
+    connect_Signals();
+}
+*/
 void CustomizeMSFView::save() {
     /** Replace _atagger msfVector by _atagger->tempMSFVector **/
     for(int i=0; i<_atagger->msfVector->count(); i++) {
@@ -1638,16 +1542,11 @@ void CustomizeMSFView::save() {
 
 void CustomizeMSFView::disconnect_Signals() {
 
-    disconnect(btnText, SIGNAL(clicked()), this, SLOT(btnText_clicked()));
-    disconnect(btnPOS, SIGNAL(clicked()), this, SLOT(btnPOS_clicked()));
-    disconnect(btnLength, SIGNAL(clicked()), this, SLOT(btnLength_clicked()));
-    disconnect(btnNumber, SIGNAL(clicked()), this, SLOT(btnNumber_clicked()));
-    disconnect(editIncludes, SIGNAL(textChanged()), this, SLOT(includes_edited()));
-    disconnect(editMembers, SIGNAL(textChanged()), this, SLOT(members_edited()));
+    /*
     disconnect(editInit, SIGNAL(textChanged()), this, SLOT(init_edited()));
     disconnect(editAfter, SIGNAL(textChanged()), this, SLOT(after_edited()));
-    disconnect(editActions, SIGNAL(textChanged()), this, SLOT(actions_edited()));
     disconnect(editReturns, SIGNAL(textChanged(QString)), this, SLOT(returns_edited(QString)));
+    */
     disconnect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
     disconnect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
     disconnect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
@@ -1664,20 +1563,17 @@ void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
     disconnect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     disconnect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
+    disconnect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
+    //disconnect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
 void CustomizeMSFView::connect_Signals() {
 
-    connect(btnText, SIGNAL(clicked()), this, SLOT(btnText_clicked()));
-    connect(btnPOS, SIGNAL(clicked()), this, SLOT(btnPOS_clicked()));
-    connect(btnLength, SIGNAL(clicked()), this, SLOT(btnLength_clicked()));
-    connect(btnNumber, SIGNAL(clicked()), this, SLOT(btnNumber_clicked()));
-    connect(editIncludes, SIGNAL(textChanged()), this, SLOT(includes_edited()));
-    connect(editMembers, SIGNAL(textChanged()), this, SLOT(members_edited()));
+    /*
     connect(editInit, SIGNAL(textChanged()), this, SLOT(init_edited()));
     connect(editAfter, SIGNAL(textChanged()), this, SLOT(after_edited()));
-    connect(editActions, SIGNAL(textChanged()), this, SLOT(actions_edited()));
     connect(editReturns, SIGNAL(textChanged(QString)), this, SLOT(returns_edited(QString)));
+    */
     connect(colorfgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(fgcolor_changed(QString)));
     connect(colorbgcolor, SIGNAL(currentIndexChanged(QString)), this, SLOT(bgcolor_changed(QString)));
     connect(editDescription, SIGNAL(textChanged()), this, SLOT(description_edited()));
@@ -1694,6 +1590,8 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnOr, SIGNAL(clicked()), this, SLOT(btnOr_clicked()));
     connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
+    connect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
+    //connect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
 void CustomizeMSFView::closeEvent(QCloseEvent *event) {

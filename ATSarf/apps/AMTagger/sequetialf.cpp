@@ -38,6 +38,22 @@ QString SequentialF::print() {
     return value;
 }
 
+QString SequentialF::printwithNames() {
+    if(parent != NULL) {
+        return QString();
+    }
+
+    QString value = name;
+    value.append("=(");
+    for(int i=0; i<vector.count(); i++) {
+        value.append(vector.at(i)->printwithNames());
+        value.append(" ");
+    }
+    value.chop(1);
+    value.append(')');
+    return value;
+}
+
 void SequentialF::buildTree(QTreeWidgetItem* parent) {
     QStringList data;
     data << name << QString() << "()";
@@ -61,6 +77,10 @@ QVariantMap SequentialF::getJSON() {
     QVariantMap sMap;
     sMap.insert("name", name);
     sMap.insert("type","sequential");
+    sMap.insert("init", init);
+    sMap.insert("actions",actions);
+    sMap.insert("after", after);
+    sMap.insert("returns", returns);
     sMap.insert("parent",parent->name);
     QVariantList sList;
     for(int i=0; i<vector.count();i++) {
@@ -93,6 +113,16 @@ bool SequentialF::removeSelfFromMap(QMap<QString, MSF*> &map) {
     else {
         return false;
     }
+}
+
+QStringList SequentialF::getMSFNames() {
+    QStringList list;
+    list.append(name);
+    for(int i=0; i<vector.count(); i++) {
+        QStringList tempList = vector.at(i)->getMSFNames();
+        list += tempList;
+    }
+    return list;
 }
 
 SequentialF::~SequentialF() {

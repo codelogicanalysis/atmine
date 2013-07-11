@@ -22,11 +22,13 @@ public:
     virtual bool isFormula()=0;
     virtual bool isSequential()=0;
     virtual QString print()=0;
+    virtual QString printwithNames()=0;
     virtual void buildTree(QTreeWidgetItem* parent)=0;
     virtual void buildTree(QTreeWidget* parent)=0;
     virtual QVariantMap getJSON()=0;
     virtual bool buildNFA(NFA* nfa)=0;
     virtual bool removeSelfFromMap(QMap<QString, MSF*> &map)=0;
+    virtual QStringList getMSFNames()=0;
     virtual ~MSF();
 };
 
