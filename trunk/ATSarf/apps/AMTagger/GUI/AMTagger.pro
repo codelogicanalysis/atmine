@@ -111,7 +111,6 @@ HEADERS += \
     ../msformula.h \
     ../sequetialf.h \
     ../nfa.h \
-    ../nfastate.h \
     ../merftag.h \
     ../actionsview.h \
     ../includesview.h \
@@ -187,7 +186,6 @@ SOURCES += \
     ../msformula.cpp \
     ../sequetialf.cpp \
     ../nfa.cpp \
-    ../nfastate.cpp \
     ../merftag.cpp \
     ../actionsview.cpp \
     ../includesview.cpp \
