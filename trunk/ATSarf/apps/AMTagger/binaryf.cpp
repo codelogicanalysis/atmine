@@ -50,6 +50,23 @@ QString BINARYF::print() {
     return value;
 }
 
+QString BINARYF::printwithNames() {
+    QString value = name;
+    value.append("=((");
+    value.append(leftMSF->printwithNames());
+    value.append(")");
+    if(op == AND) {
+        value.append("&");
+    }
+    else {
+        value.append("|");
+    }
+    value.append("(");
+    value.append(rightMSF->printwithNames());
+    value.append("))");
+    return value;
+}
+
 void BINARYF::buildTree(QTreeWidgetItem* parent) {
     QStringList data;
     QString opText = "";
@@ -86,6 +103,10 @@ QVariantMap BINARYF::getJSON() {
     QVariantMap bMap;
     bMap.insert("name",name);
     bMap.insert("type","binary");
+    bMap.insert("init", init);
+    bMap.insert("actions",actions);
+    bMap.insert("after", after);
+    bMap.insert("returns", returns);
     bMap.insert("parent", parent->name);
     QString opText = "";
     if(op == OR) {
@@ -172,6 +193,13 @@ bool BINARYF::removeSelfFromMap(QMap<QString, MSF*> &map) {
     else {
         return false;
     }
+}
+
+QStringList BINARYF::getMSFNames() {
+    QStringList list(name);
+    list += leftMSF->getMSFNames();
+    list += rightMSF->getMSFNames();
+    return list;
 }
 
 BINARYF::~BINARYF() {

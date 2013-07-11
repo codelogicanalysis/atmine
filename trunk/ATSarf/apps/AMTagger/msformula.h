@@ -46,12 +46,14 @@ public:
     bool isFormula();
     bool isSequential();
     QString print();
+    QString printwithNames();
     void buildTree(QTreeWidget* parent);
     void buildTree(QTreeWidgetItem* parent);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     int usedCount;
     bool removeSelfFromMap(QMap<QString, MSF*> &map);
+    QStringList getMSFNames();
     ~MSFormula();
 };
 

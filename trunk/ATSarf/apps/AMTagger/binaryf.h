@@ -20,11 +20,13 @@ public:
     bool isFormula();
     bool isSequential();
     QString print();
+    QString printwithNames();
     void buildTree(QTreeWidgetItem* parent);
     void buildTree(QTreeWidget* parent);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     bool removeSelfFromMap(QMap<QString, MSF*> &map);
+    QStringList getMSFNames();
     ~BINARYF();
 };
 

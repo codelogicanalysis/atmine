@@ -112,7 +112,12 @@ HEADERS += \
     ../sequetialf.h \
     ../nfa.h \
     ../nfastate.h \
-    ../merftag.h
+    ../merftag.h \
+    ../actionsview.h \
+    ../includesview.h \
+    ../declarationsview.h \
+    ../afterview.h \
+    ../initview.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -183,7 +188,12 @@ SOURCES += \
     ../sequetialf.cpp \
     ../nfa.cpp \
     ../nfastate.cpp \
-    ../merftag.cpp
+    ../merftag.cpp \
+    ../actionsview.cpp \
+    ../includesview.cpp \
+    ../declarationsview.cpp \
+    ../afterview.cpp \
+    ../initview.cpp
 
 FORMS    +=
 

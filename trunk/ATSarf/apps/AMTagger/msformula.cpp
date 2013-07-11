@@ -280,6 +280,28 @@ QString MSFormula::print() {
     return value;
 }
 
+QString MSFormula::printwithNames() {
+    if(parent != NULL) {
+        return QString();
+    }
+
+    if(vector.count() == 0) {
+        return QString();
+    }
+    else if(vector.count() == 1) {
+        return vector.at(0)->printwithNames();
+    }
+
+    QString value;
+    for(int j=0; j<vector.count(); j++) {
+        value.append(vector.at(j)->printwithNames());
+        value.append(" ");
+    }
+    value.chop(1);
+    value.append(')');
+    return value;
+}
+
 void MSFormula::buildTree(QTreeWidget* parent) {
     for(int j=0; j<vector.count(); j++) {
         vector.at(j)->buildTree(parent);
@@ -295,12 +317,18 @@ void MSFormula::buildTree(QTreeWidgetItem* parent) {
 QVariantMap MSFormula::getJSON() {
     QVariantMap msfMap;
     msfMap.insert("name", name);
+    msfMap.insert("init", init);
+    msfMap.insert("after", after);
+    msfMap.insert("actions", actions);
+    msfMap.insert("returns", returns);
     msfMap.insert("description", description);
     msfMap.insert("fgcolor", fgcolor);
     msfMap.insert("bgcolor", bgcolor);
     msfMap.insert("type","msformula");
     msfMap.insert("i",i);
     msfMap.insert("usedCount", usedCount);
+    msfMap.insert("includes",includes);
+    msfMap.insert("members",members);
     QVariantList msfList;
     for(int j=0; j<vector.count(); j++) {
         msfList << vector.at(j)->getJSON();
@@ -325,6 +353,14 @@ bool MSFormula::removeSelfFromMap(QMap<QString, MSF*> &map) {
         }
     }
     return true;
+}
+
+QStringList MSFormula::getMSFNames() {
+    QStringList list;
+    for(int j=0; j<vector.count(); j++) {
+        list += vector.at(j)->getMSFNames();
+    }
+    return list;
 }
 
 MSFormula::~MSFormula() {

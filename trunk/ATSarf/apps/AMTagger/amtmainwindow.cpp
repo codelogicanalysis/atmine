@@ -395,11 +395,19 @@ void AMTMainWindow::process(QByteArray & json) {
 bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
     /** Common variables in MSFs **/
     QString name;
+    QString init;
+    QString after;
+    QString actions;
+    QString returns;
     QString parentName;
     QString type;
 
     QVariantMap msfData = data.toMap();
     name = msfData.value("name").toString();
+    init = msfData.value("init").toString();
+    after = msfData.value("after").toString();
+    actions = msfData.value("actions").toString();
+    returns = msfData.value("returns").toString();
     parentName = msfData.value("parent").toString();
     type = msfData.value("type").toString();
 
@@ -410,6 +418,10 @@ bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** initialize MBF **/
         MBF* mbf = new MBF(name,parent,bf,isF);
+        mbf->init = init;
+        mbf->after = after;
+        mbf->actions = actions;
+        mbf->returns = returns;
         formula->map.insert(name, mbf);
 
         /** Check parent type and add accordingly **/
@@ -470,6 +482,10 @@ bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Initialize a UNARYF **/
         UNARYF* uf = new UNARYF(name,parent,op,limit);
+        uf->init = init;
+        uf->after = after;
+        uf->actions = actions;
+        uf->returns = returns;
         formula->map.insert(name,uf);
 
         /** Check parent type and add accordingly **/
@@ -517,6 +533,10 @@ bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Initialize BINARYF **/
         BINARYF* bif = new BINARYF(name,parent,op);
+        bif->init = init;
+        bif->after = after;
+        bif->actions = actions;
+        bif->returns = returns;
         formula->map.insert(name, bif);
 
         /** Check parent type and add accordingly **/
@@ -559,6 +579,10 @@ bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
         /** This is a sequential formula **/
         /** Initialize a SequentialF **/
         SequentialF* sf = new SequentialF(name,parent);
+        sf->init = init;
+        sf->after = after;
+        sf->actions = actions;
+        sf->returns = returns;
         formula->map.insert(name, sf);
 
         /** Check parent type and add accordingly **/
@@ -766,6 +790,11 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             QString bgcolor;
             QString fgcolor;
             QString name;
+            QString init;
+            QString after;
+            QString actions;
+            QString includes;
+            QString members;
             QString description;
             int i;
             int usedCount;
@@ -774,6 +803,11 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             QVariantMap msformulaData = msfsData.toMap();
 
             name = msformulaData.value("name").toString();
+            init = msformulaData.value("init").toString();
+            after = msformulaData.value("after").toString();
+            actions = msformulaData.value("actions").toString();
+            includes = msformulaData.value("includes").toString();
+            members = msformulaData.value("members").toString();
             description = msformulaData.value("description").toString();
             fgcolor = msformulaData.value("fgcolor").toString();
             bgcolor = msformulaData.value("bgcolor").toString();
@@ -781,6 +815,8 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             usedCount = msformulaData.value("usedCount").toInt();
 
             MSFormula* msf = new MSFormula(name, NULL);
+            msf->includes = includes;
+            msf->members = members;
             msf->fgcolor = fgcolor;
             msf->bgcolor = bgcolor;
             msf->description = description;
