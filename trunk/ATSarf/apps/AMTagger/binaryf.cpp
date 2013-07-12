@@ -123,17 +123,18 @@ QVariantMap BINARYF::getJSON() {
 
 bool BINARYF::buildNFA(NFA *nfa) {
 
-    if(nfa->start.isEmpty()) {
+    //if(nfa->start.isEmpty()) {
         QString state1 = "q";
         state1.append(QString::number(nfa->i));
-        nfa->start = state1;
+        if(nfa->start.isEmpty()) {
+            nfa->start = state1;
+        }
+        else {
+            nfa->transitions.insert(nfa->last + "|epsilon", state1);
+        }
         nfa->last = state1;
         (nfa->i)++;
-    }
-
-    QString currentLast = "q";
-    currentLast.append(QString::number(nfa->i));
-    (nfa->i)++;
+    //}
 
     QString currentStart = nfa->last;
 
@@ -142,34 +143,48 @@ bool BINARYF::buildNFA(NFA *nfa) {
         if(!(leftMSF->buildNFA(nfa))) {
             return false;
         }
-        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+        QString leftlast = nfa->last;
         nfa->last = currentStart;
 
         if(!(rightMSF->buildNFA(nfa))) {
             return false;
         }
+
+        QString currentLast = "q";
+        currentLast.append(QString::number(nfa->i));
+        (nfa->i)++;
+
+        nfa->transitions.insert(leftlast + '|' + "epsilon", currentLast);
         nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+
         nfa->last = currentLast;
         nfa->accept = currentLast;
         return true;
     }
     else if(op == AND) {
 
-        QString andAccept = "q";
-        andAccept.append(QString::number(nfa->i));
-        (nfa->i)++;
-        nfa->andAccept.append(andAccept);
-
         if(!(leftMSF->buildNFA(nfa))) {
             return false;
         }
-        nfa->transitions.insert(nfa->last + '|' + "epsilon", andAccept);
+        QString leftlast = nfa->last;
         nfa->last = currentStart;
 
         if(!(rightMSF->buildNFA(nfa))) {
             return false;
         }
+
+        QString currentLast = "q";
+        currentLast.append(QString::number(nfa->i));
+        (nfa->i)++;
+
+        QString andAccept = "q";
+        andAccept.append(QString::number(nfa->i));
+        (nfa->i)++;
+        nfa->andAccept.append(andAccept);
+
+        nfa->transitions.insert(leftlast + '|' + "epsilon", andAccept);
         nfa->transitions.insert(nfa->last + '|' + "epsilon", andAccept);
+
         nfa->last = currentLast;
         nfa->accept = currentLast;
 
