@@ -153,7 +153,9 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     cbTagType->addItem("Prefix-POS");
     cbTagType->addItem("Stem-POS");
     cbTagType->addItem("Suffix-POS");
-    cbTagType->addItem("Gloss");
+    cbTagType->addItem("Prefix-Gloss");
+    cbTagType->addItem("Stem-Gloss");
+    cbTagType->addItem("Suffix-Gloss");
     cbTagType->addItem("Category");
 
     grid->addWidget(cbfont,9,6);
@@ -458,16 +460,42 @@ void CustomSTTView::cbTagType_changed(QString text) {
         }
         listPossibleTags->addItems(listSuffixPOS);
     }
-    else if(field == "Gloss") {
-        if(listGloss.isEmpty()) {
+    else if(field == "Prefix-Gloss") {
+        if(listPrefixGloss.isEmpty()) {
 
-            theSarf->query.exec("SELECT name FROM description");
+            theSarf->query.exec("SELECT DISTINCT d.name FROM description d, prefix_category p where p.description_id = d.id");
             while(theSarf->query.next()) {
                 if(!(theSarf->query.value(0).toString().isEmpty()))
-                    listGloss << theSarf->query.value(0).toString();
+                    listPrefixGloss << theSarf->query.value(0).toString();
             }
         }
-        listPossibleTags->addItems(listGloss);
+        listPossibleTags->addItems(listPrefixGloss);
+        gbSyn->setEnabled(true);
+        cbContain->setEnabled(true);
+    }
+    else if(field == "Stem-Gloss") {
+        if(listStemGloss.isEmpty()) {
+
+            theSarf->query.exec("SELECT DISTINCT d.name FROM description d, stem_category s where s.description_id = d.id");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty()))
+                    listStemGloss << theSarf->query.value(0).toString();
+            }
+        }
+        listPossibleTags->addItems(listStemGloss);
+        gbSyn->setEnabled(true);
+        cbContain->setEnabled(true);
+    }
+    else if(field == "Suffix-Gloss") {
+        if(listSuffixGloss.isEmpty()) {
+
+            theSarf->query.exec("SELECT DISTINCT d.name FROM description d, suffix_category s where s.description_id = d.id");
+            while(theSarf->query.next()) {
+                if(!(theSarf->query.value(0).toString().isEmpty()))
+                    listSuffixGloss << theSarf->query.value(0).toString();
+            }
+        }
+        listPossibleTags->addItems(listSuffixGloss);
         gbSyn->setEnabled(true);
         cbContain->setEnabled(true);
     }
@@ -606,7 +634,7 @@ void CustomSTTView::btnSelect_clicked() {
         QStringList list;
         QString relation = "isA";
         list << "  " << field;
-        if((field.compare("Gloss") == 0) || (field.compare("Stem") == 0)) {
+        if((field.contains("Gloss") == 0) || (field.compare("Stem") == 0)) {
             if(cbContain->isEnabled() && (cbContain->currentText().compare("contains") == 0)) {
                 list << "contains" << item->text();
                 relation = "contains";
@@ -687,8 +715,14 @@ void CustomSTTView::editPattern_changed(QString text) {
     else if(cbTagType->currentText() == "Suffix") {
         list = &listSuffix;
     }
-    else if(cbTagType->currentText() == "Gloss") {
-        list = &listGloss;
+    else if(cbTagType->currentText() == "Prefix-Gloss") {
+        list = &listPrefixGloss;
+    }
+    else if(cbTagType->currentText() == "Stem-Gloss") {
+        list = &listStemGloss;
+    }
+    else if(cbTagType->currentText() == "Suffix-Gloss") {
+        list = &listSuffixGloss;
     }
     else if(cbTagType->currentText() == "Prefix-POS") {
         list = &listPrefixPOS;
@@ -832,9 +866,31 @@ void CustomSTTView::btnLoad_clicked() {
                      }
                      tags.append(quad);
                  }
-                 else if(!(st.value("Gloss").isNull())) {
-                     quad.first = "Gloss";
-                     quad.second = st.value("Gloss").toString();
+                 else if(!(st.value("Prefix-Gloss").isNull())) {
+                     quad.first = "Prefix-Gloss";
+                     quad.second = st.value("Prefix-Gloss").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.third = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
+                 }
+                 else if(!(st.value("Stem-Gloss").isNull())) {
+                     quad.first = "Stem-Gloss";
+                     quad.second = st.value("Stem-Gloss").toString();
+                     if(!(st.value("Negation").isNull())) {
+                         quad.third = st.value("Negation").toString();
+                     }
+                     if(!(st.value("Relation").isNull())) {
+                         quad.third = st.value("Relation").toString();
+                     }
+                     tags.append(quad);
+                 }
+                 else if(!(st.value("Suffix-Gloss").isNull())) {
+                     quad.first = "Suffix-Gloss";
+                     quad.second = st.value("Suffix-Gloss").toString();
                      if(!(st.value("Negation").isNull())) {
                          quad.third = st.value("Negation").toString();
                      }

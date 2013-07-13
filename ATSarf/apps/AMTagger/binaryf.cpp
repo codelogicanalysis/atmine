@@ -124,16 +124,16 @@ QVariantMap BINARYF::getJSON() {
 bool BINARYF::buildNFA(NFA *nfa) {
 
     //if(nfa->start.isEmpty()) {
-        QString state1 = "q";
-        state1.append(QString::number(nfa->i));
-        if(nfa->start.isEmpty()) {
-            nfa->start = state1;
-        }
-        else {
-            nfa->transitions.insert(nfa->last + "|epsilon", state1);
-        }
-        nfa->last = state1;
-        (nfa->i)++;
+    QString state1 = "q";
+    state1.append(QString::number(nfa->i));
+    if(nfa->start.isEmpty()) {
+        nfa->start = state1;
+    }
+    else {
+        nfa->transitions.insert(nfa->last + "|epsilon", state1);
+    }
+    nfa->last = state1;
+    (nfa->i)++;
     //}
 
     QString currentStart = nfa->last;
