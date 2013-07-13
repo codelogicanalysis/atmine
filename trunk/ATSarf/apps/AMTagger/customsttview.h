@@ -103,7 +103,9 @@ private:
 
     QStringList listStems;
     QStringList listStemPOS;
-    QStringList listGloss;
+    QStringList listPrefixGloss;
+    QStringList listStemGloss;
+    QStringList listSuffixGloss;
     QStringList listPrefix;
     QStringList listPrefixPOS;
     QStringList listSuffix;

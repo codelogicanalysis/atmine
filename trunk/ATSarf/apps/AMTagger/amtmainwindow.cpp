@@ -748,9 +748,31 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
                     }
                     tags.append(quad);
                 }
-                else if(!(st.value("Gloss").isNull())) {
-                    quad.first = "Gloss";
-                    quad.second = st.value("Gloss").toString();
+                else if(!(st.value("Prefix-Gloss").isNull())) {
+                    quad.first = "Prefix-Gloss";
+                    quad.second = st.value("Prefix-Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
+                }
+                else if(!(st.value("Stem-Gloss").isNull())) {
+                    quad.first = "Stem-Gloss";
+                    quad.second = st.value("Stem-Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
+                }
+                else if(!(st.value("Suffix-Gloss").isNull())) {
+                    quad.first = "Suffix-Gloss";
+                    quad.second = st.value("Suffix-Gloss").toString();
                     if(!(st.value("Negation").isNull())) {
                         quad.third = st.value("Negation").toString();
                     }
@@ -1933,9 +1955,42 @@ void AMTMainWindow::difference() {
                     }
                     tags.append(quad);
                 }
-                else if(!(st.value("Gloss").isNull())) {
-                    quad.first = "Gloss";
-                    quad.second = st.value("Gloss").toString();
+                else if(!(st.value("Prefix-Gloss").isNull())) {
+                    quad.first = "Prefix-Gloss";
+                    quad.second = st.value("Prefix-Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
+                }
+                else if(!(st.value("Stem-Gloss").isNull())) {
+                    quad.first = "Stem-Gloss";
+                    quad.second = st.value("Stem-Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
+                }
+                else if(!(st.value("Suffix-Gloss").isNull())) {
+                    quad.first = "Suffix-Gloss";
+                    quad.second = st.value("Suffix-Gloss").toString();
+                    if(!(st.value("Negation").isNull())) {
+                        quad.third = st.value("Negation").toString();
+                    }
+                    if(!(st.value("Relation").isNull())) {
+                        quad.fourth = st.value("Relation").toString();
+                    }
+                    tags.append(quad);
+                }
+                else if(!(st.value("Category").isNull())) {
+                    quad.first = "Category";
+                    quad.second = st.value("Category").toString();
                     if(!(st.value("Negation").isNull())) {
                         quad.third = st.value("Negation").toString();
                     }

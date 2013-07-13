@@ -302,7 +302,7 @@ bool SarfTag::on_match() {
                     continue;
                 }
             }
-            else if(tag->first == "Gloss") {
+            else if(tag->first == "Stem-Gloss") {
 
                 if(tag->fourth.contains("Syn")) {
                     int order = tag->fourth.mid(3).toInt();
@@ -353,42 +353,6 @@ bool SarfTag::on_match() {
                     }
 
                     QStringList second_glosses = getGloss(tag->second);
-                    // check prefix glosses
-
-                    for(int k=0;k<prefix_infos->size();k++) {
-
-                        minimal_item_info & pre = (*prefix_infos)[k];
-                        if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
-                                continue;
-
-                        QStringList pre_glosses = getGloss(pre.description());
-                        for(int n=0; n<second_glosses.count(); n++) {
-                            if( isA && pre_glosses.contains(second_glosses[n])) {
-                                contain = true;
-                                break;
-                            }
-                            else if(!isA) {
-                                for(int m=0; m< pre_glosses.count(); m++) {
-                                    QString gloss = pre_glosses[m];
-                                    if(gloss.contains(second_glosses[n])) {
-                                        contain = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(contain) {
-                                break;
-                            }
-                        }
-                        if(contain) {
-                            break;
-                        }
-                    }
-
-                    if((contain && (tag->third.compare("NOT") != 0))) {
-                        belong = true;
-                        break;
-                    }
 
                     // check stem glosses
 
@@ -417,42 +381,6 @@ bool SarfTag::on_match() {
                         belong = true;
                         break;
                     }
-
-                    // check suffix glosses
-
-                    for(int k=0;k<suffix_infos->size();k++) {
-
-                        minimal_item_info & suff = (*suffix_infos)[k];
-                        if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
-                                continue;
-
-                        QStringList suff_glosses = getGloss(suff.description());
-                        for(int n=0; n<second_glosses.count(); n++) {
-                            if(isA && suff_glosses.contains(second_glosses[n])) {
-                                contain = true;
-                                break;
-                            }
-                            else if(!isA) {
-                                for(int m=0; m< suff_glosses.count(); m++) {
-                                    QString gloss = suff_glosses[m];
-                                    if(gloss.contains(second_glosses[n])) {
-                                        contain = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(contain) {
-                                break;
-                            }
-                        }
-                        if(contain) {
-                            break;
-                        }
-                    }
-                    if(contain && (tag->third.compare("NOT") != 0)) {
-                        belong = true;
-                        break;
-                    }
                     else if(tag->third.compare("NOT") == 0) {
                         QString key = tagtype->tag;
                         key.append(tag->first);
@@ -474,6 +402,139 @@ bool SarfTag::on_match() {
                     else {
                         continue;
                     }
+                }
+            }
+            else if(tag->first == "Prefix-Gloss") {
+
+                // Check for isA or contain relation
+                bool isA = true;
+                if(tag->fourth.compare("contains") == 0) {
+                    isA = false;
+                }
+
+                QStringList second_glosses = getGloss(tag->second);
+                // check prefix glosses
+
+                for(int k=0;k<prefix_infos->size();k++) {
+
+                    minimal_item_info & pre = (*prefix_infos)[k];
+                    if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
+                            continue;
+
+                    QStringList pre_glosses = getGloss(pre.description());
+                    for(int n=0; n<second_glosses.count(); n++) {
+                        if( isA && pre_glosses.contains(second_glosses[n])) {
+                            contain = true;
+                            break;
+                        }
+                        else if(!isA) {
+                            for(int m=0; m< pre_glosses.count(); m++) {
+                                QString gloss = pre_glosses[m];
+                                if(gloss.contains(second_glosses[n])) {
+                                    contain = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(contain) {
+                            break;
+                        }
+                    }
+                    if(contain) {
+                        break;
+                    }
+                }
+
+                if((contain && (tag->third.compare("NOT") != 0))) {
+                    belong = true;
+                    break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
+                }
+                else {
+                    continue;
+                }
+            }
+            else if(tag->first == "Suffix-Gloss") {
+
+                // Check for isA or contain relation
+                bool isA = true;
+                if(tag->fourth.compare("contains") == 0) {
+                    isA = false;
+                }
+
+                QStringList second_glosses = getGloss(tag->second);
+                // check suffix glosses
+
+                for(int k=0;k<suffix_infos->size();k++) {
+
+                    minimal_item_info & suff = (*suffix_infos)[k];
+                    if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
+                            continue;
+
+                    QStringList suff_glosses = getGloss(suff.description());
+                    for(int n=0; n<second_glosses.count(); n++) {
+                        if(isA && suff_glosses.contains(second_glosses[n])) {
+                            contain = true;
+                            break;
+                        }
+                        else if(!isA) {
+                            for(int m=0; m< suff_glosses.count(); m++) {
+                                QString gloss = suff_glosses[m];
+                                if(gloss.contains(second_glosses[n])) {
+                                    contain = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(contain) {
+                            break;
+                        }
+                    }
+                    if(contain) {
+                        break;
+                    }
+                }
+                if(contain && (tag->third.compare("NOT") != 0)) {
+                    belong = true;
+                    break;
+                }
+                else if(tag->third.compare("NOT") == 0) {
+                    QString key = tagtype->tag;
+                    key.append(tag->first);
+                    key.append(tag->second);
+
+                    if(!contain) {
+                        if(!(eNF->contains(key))) {
+                            iNF->insert(key,tagtype->tag);
+                        }
+                    }
+                    else {
+                        if(iNF->contains(key)) {
+                            iNF->remove(key);
+                            eNF->insert(key);
+                        }
+                    }
+                    continue;
+                }
+                else {
+                    continue;
                 }
             }
         }
