@@ -272,6 +272,7 @@ bool BINARYF::buildNFA(NFA *nfa) {
     }
     nfa->last = state1;
     (nfa->i)++;
+    nfa->stateTOmsfMap.insert(state1, name + "|pre");
     //}
 
     QString currentStart = nfa->last;
@@ -291,6 +292,8 @@ bool BINARYF::buildNFA(NFA *nfa) {
         QString currentLast = "q";
         currentLast.append(QString::number(nfa->i));
         (nfa->i)++;
+        nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+        nfa->stateTOmsfMap.insert(currentLast, name + "|post");
 
         nfa->transitions.insert(leftlast + '|' + "epsilon", currentLast);
         nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
@@ -314,6 +317,8 @@ bool BINARYF::buildNFA(NFA *nfa) {
         QString currentLast = "q";
         currentLast.append(QString::number(nfa->i));
         (nfa->i)++;
+        nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+        nfa->stateTOmsfMap.insert(currentLast, name + "|post");
 
         QString andAccept = "q";
         andAccept.append(QString::number(nfa->i));

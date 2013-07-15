@@ -18,6 +18,7 @@ public:
     /// The last state added to the list of states
     QString last;
     QMultiMap<QString, QString> transitions;
+    QMultiMap<QString, QString> stateTOmsfMap;
     int i;
 };
 

@@ -279,6 +279,9 @@ QVariantMap UNARYF::getJSON() {
 bool UNARYF::buildNFA(NFA *nfa) {
 
     if(op == PLUS) {
+        QString state1 = "q";
+        state1.append(QString::number(nfa->i));
+        nfa->stateTOmsfMap.insert(state1, name + "|pre");
         if(!(msf->buildNFA(nfa))) {
             return false;
         }
@@ -287,6 +290,9 @@ bool UNARYF::buildNFA(NFA *nfa) {
     //if(nfa->start.isEmpty()) {
     QString state1 = "q";
     state1.append(QString::number(nfa->i));
+    if(op != PLUS) {
+        nfa->stateTOmsfMap.insert(state1, name + "|pre");
+    }
     if(nfa->start.isEmpty()) {
         nfa->start = state1;
     }
@@ -309,6 +315,8 @@ bool UNARYF::buildNFA(NFA *nfa) {
     QString currentLast = "q";
     currentLast.append(QString::number(nfa->i));
     (nfa->i)++;
+    nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+    nfa->stateTOmsfMap.insert(currentLast, name + "|post");
     nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
     nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
 
