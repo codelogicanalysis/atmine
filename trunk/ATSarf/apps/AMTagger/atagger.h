@@ -22,6 +22,7 @@ public:
     bool insertSarfTagType(QString, QVector < Quadruple< QString , QString , QString , QString > > , QString, int, QString, QString, int, bool, bool, bool, Source, Dest);
     QByteArray dataInJsonFormat(Data _data);
     bool buildNFA();
+    bool buildActionFile();
     bool runSimulator();
     QVector<Tag*>* simulateNFA(NFA* nfa, QString state, int tagIndex);
     QVector<Tag> tagVector;

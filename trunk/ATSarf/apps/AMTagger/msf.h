@@ -25,6 +25,7 @@ public:
     virtual QString printwithNames()=0;
     virtual void buildTree(QTreeWidgetItem* parent)=0;
     virtual void buildTree(QTreeWidget* parent)=0;
+    virtual bool buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap)=0;
     virtual QVariantMap getJSON()=0;
     virtual bool buildNFA(NFA* nfa)=0;
     virtual bool removeSelfFromMap(QMap<QString, MSF*> &map)=0;

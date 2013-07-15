@@ -28,6 +28,8 @@ public:
     QVector<MSF*> vector;
     /// Map that takes formula name and returns its structure
     QMap<QString,MSF*> map;
+    /// Map to keep list of parameters to each function
+    QMultiMap<QString,QString> functionParametersMap;
     /// Counter for msf names
     int i;
     /// Formula Description
@@ -40,6 +42,8 @@ public:
     QString includes;
     /// Members used in actions
     QString members;
+    /// String to save all functions and function calls for actions
+    QString actionData;
     bool isMBF();
     bool isUnary();
     bool isBinary();
@@ -49,6 +53,7 @@ public:
     QString printwithNames();
     void buildTree(QTreeWidget* parent);
     void buildTree(QTreeWidgetItem* parent);
+    bool buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     int usedCount;
