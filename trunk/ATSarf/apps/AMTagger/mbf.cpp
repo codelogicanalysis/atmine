@@ -216,6 +216,11 @@ bool MBF::buildNFA(NFA *nfa) {
     }
     nfa->last = state2;
     nfa->accept = state2;
+
+    nfa->stateTOmsfMap.insert(state1, name + "|pre");
+    nfa->stateTOmsfMap.insert(state2, name + "|on");
+    nfa->stateTOmsfMap.insert(state2, name + "|post");
+
     return true;
 }
 

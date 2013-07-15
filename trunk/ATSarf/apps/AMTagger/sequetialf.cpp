@@ -227,12 +227,19 @@ QVariantMap SequentialF::getJSON() {
 }
 
 bool SequentialF::buildNFA(NFA *nfa) {
+    QString state1 = "q";
+    state1.append(QString::number(nfa->i));
+    nfa->stateTOmsfMap.insert(state1, name + "|pre");
+
     for(int i=0; i< vector.count(); i++) {
         if(!(vector.at(i)->buildNFA(nfa))) {
             return false;
         }
     }
     nfa->accept = nfa->last;
+
+    nfa->stateTOmsfMap.insert(nfa->last, name + "|on");
+    nfa->stateTOmsfMap.insert(nfa->last, name + "|post");
     return true;
 }
 
