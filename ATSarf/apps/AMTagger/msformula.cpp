@@ -314,6 +314,18 @@ void MSFormula::buildTree(QTreeWidgetItem* parent) {
     }
 }
 
+bool MSFormula::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
+    actionsData.append(includes + "\n\n");
+    actionsData.append(members + "\n\n");
+
+    for(int j=0; j<vector.count(); j++) {
+        if(!(vector.at(j)->buildActionFile(actionsData, functionParametersMap))) {
+            return false;
+        }
+    }
+    return true;
+}
+
 QVariantMap MSFormula::getJSON() {
     QVariantMap msfMap;
     msfMap.insert("name", name);

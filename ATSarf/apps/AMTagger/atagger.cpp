@@ -1,6 +1,8 @@
 #include "atagger.h"
 #include <QVariant>
 #include <qjson/serializer.h>
+#include <QFile>
+#include <QTextStream>
 
 ATagger * _atagger = NULL;
 
@@ -87,10 +89,38 @@ bool ATagger::buildNFA() {
     return true;
 }
 
+bool ATagger::buildActionFile() {
+    for(int i=0; i<msfVector->count(); i++) {
+        MSFormula *formula = msfVector->at(i);
+        if(!(formula->buildActionFile(formula->actionData, &(formula->functionParametersMap)))) {
+            return false;
+        }
+    }
+
+    /*
+    for(int i=0; i<msfVector->count(); i++) {
+        MSFormula *formula = msfVector->at(i);
+        QFile file(formula->name + ".txt");
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            return false;
+
+        QTextStream out(&file);
+        out << formula->actionData;
+        file.close();
+    }
+    */
+
+    return true;
+}
+
 bool ATagger::runSimulator() {
 
     /// Build NFA
     if(!buildNFA()) {
+        return false;
+    }
+
+    if(!buildActionFile()) {
         return false;
     }
 
