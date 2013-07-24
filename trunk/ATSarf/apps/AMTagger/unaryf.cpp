@@ -140,6 +140,7 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             if(param.contains(msfName + '|' + attribute)) {
                 continue;
             }
+            param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_preMatch", msfName + "|text");
@@ -190,6 +191,7 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             if(param.contains(msfName + '|' + attribute)) {
                 continue;
             }
+            param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_onMatch", msfName + "|text");

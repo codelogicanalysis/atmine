@@ -269,12 +269,13 @@ bool ATagger::refineFunctions(NFA* nfa, QList<QString> &function, int index) {
                     break;
                 }
             }
-            QString key = function[i].replace('_','|');
+            QString key = function[i];
+            key.chop(1);
             QList<QString> params = functionParametersMap->values(key);
             for(int j=0; j<params.count(); j++) {
                 QString msfName = params.at(j).section('|',0,0);
                 QString field = params.at(j).section('|',1,1);
-                QString msfName2 = function[i].section('|',0,0);
+                QString msfName2 = function[i].section('_',0,0);
                 if(!(msfName.compare(msfName2) == 0)) {
                     return false;
                 }
@@ -296,6 +297,10 @@ bool ATagger::refineFunctions(NFA* nfa, QList<QString> &function, int index) {
                     int number = NULL;
                     if(nn.extractedNumbers.count()!=0) {
                         number = nn.extractedNumbers[0].getNumber();
+                        function[i].append(QString::number(number) + ',');
+                    }
+                    else {
+                        function[i].append("-1,");
                     }
                 }
                 else {
@@ -303,11 +308,11 @@ bool ATagger::refineFunctions(NFA* nfa, QList<QString> &function, int index) {
                 }
             }
             if(params.count() == 0) {
-                function[i] = function[i].append(')');
+                function[i].append(')');
             }
             else {
                 function[i].chop(1);
-                function[i] = function[i].append(')');
+                function[i].append(')');
             }
         }
         else {
@@ -325,7 +330,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
         if(!(functionCalls.isEmpty())) {
             qSort(functionCalls.begin(), functionCalls.end(), lessThan);
         }
-        refineFunctions(nfa,functionCalls,-1);
+        refineFunctions(nfa,functionCalls);
         actionStack = new QStack<QString>();
         for(int i=0; i< functionCalls.count(); i++) {
             actionStack->push(functionCalls.at(i));
@@ -363,6 +368,9 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
                 temp->prepend(t);
                 tags.append(temp);
                 /// construct action stack for this match
+                //QString tempState = "q";
+                //int stateNumber = state.mid(1).toInt() +1;
+                //tempState.append(QString::number(stateNumber));
                 QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
                 if(!(functionCalls.isEmpty())) {
                     qSort(functionCalls.begin(), functionCalls.end(), lessThan);
@@ -388,7 +396,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
             if(!(functionCalls.isEmpty())) {
                 qSort(functionCalls.begin(), functionCalls.end(), lessThan);
             }
-            refineFunctions(nfa,functionCalls,-1);
+            refineFunctions(nfa,functionCalls);
             for(int i=0; i< functionCalls.count(); i++) {
                 tempStack->push(functionCalls.at(i));
             }
@@ -412,7 +420,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
                     if(!(functionCalls.isEmpty())) {
                         qSort(functionCalls.begin(), functionCalls.end(), lessThan);
                     }
-                    refineFunctions(nfa,functionCalls,-1);
+                    refineFunctions(nfa,functionCalls);
                     for(int i=0; i< functionCalls.count(); i++) {
                         tempStack->push(functionCalls.at(i));
                     }
@@ -452,7 +460,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
                         if(!(functionCalls.isEmpty())) {
                             qSort(functionCalls.begin(), functionCalls.end(), lessThan);
                         }
-                        refineFunctions(nfa,functionCalls,-1);
+                        refineFunctions(nfa,functionCalls);
                         /// Add two branch stacks to current
                         for(int i=0; i< 2; i++) {
                             for(int k=0; k<stacks.at(i)->count(); k++) {
@@ -519,7 +527,7 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QSt
                         if(!(functionCalls.isEmpty())) {
                             qSort(functionCalls.begin(), functionCalls.end(), lessThan);
                         }
-                        refineFunctions(nfa,functionCalls,-1);
+                        refineFunctions(nfa,functionCalls);
                         /// Add formula stack to current
                         for(int i=0; i< stacks.count(); i++) {
                             for(int k=0; k<stacks.at(i)->count(); k++) {
