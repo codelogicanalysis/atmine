@@ -19,7 +19,8 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../../../src/util \
     ../../../src/case \
     ../../../apps/gui \
-    ../../../apps/syn
+    ../../../apps/syn \
+    ../../../apps/numnorm
 
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
@@ -115,8 +116,10 @@ HEADERS += \
     ../actionsview.h \
     ../includesview.h \
     ../declarationsview.h \
-    ../afterview.h \
-    ../initview.h
+    ../initview.h \
+    ../../numnorm/numsolution.h \
+    ../../numnorm/numnorm.h \
+    ../../numnorm/number.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -190,8 +193,10 @@ SOURCES += \
     ../actionsview.cpp \
     ../includesview.cpp \
     ../declarationsview.cpp \
-    ../afterview.cpp \
-    ../initview.cpp
+    ../initview.cpp \
+    ../../numnorm/numsolution.cpp \
+    ../../numnorm/numnorm.cpp \
+    ../../numnorm/number.cpp
 
 FORMS    +=
 

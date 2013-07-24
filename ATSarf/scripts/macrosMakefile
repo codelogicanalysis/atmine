@@ -28,7 +28,7 @@ QJSON=third/qjson
 
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build 
-INCLUDEDIRS+= apps/gui apps/syn apps/syntest 
+INCLUDEDIRS+= apps/gui apps/syn apps/syntest apps/numnorm
 INCLUDEDIRS+= include
 INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
 INCLUDEDIRS+= $(QJSON)
@@ -86,9 +86,9 @@ SO_LIBS=$(patsubst %,$(TOP)/lib/lib%.so, $(SO_DIRS))
 #	@echo $(SO_DIRS)
 
 #Macros to control the C/C++ compiler flags
-CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
-CFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall
-LDDFLAGS=-L$(TOP)/lib -fPIC -Wall
+CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -ldl -Wall
+CFLAGS= $(INCLUDEFLAGS) -c -fPIC -ldl -Wall
+LDDFLAGS=-L$(TOP)/lib -fPIC -ldl -Wall
 
 ifneq ($(findstring opt,$(MAKECMDGOALS)),opt)
     OPT_DEBUG=-g

@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include "includesview.h"
 #include "declarationsview.h"
-#include "afterview.h"
+//#include "afterview.h"
 #include "initview.h"
 
 class ActionsView : public QMainWindow
@@ -28,7 +28,7 @@ private slots:
     void btnIncludes_clicked();
     void btnDeclarations_clicked();
     void btnInit_clicked();
-    void btnAfter_clicked();
+    //void btnAfter_clicked();
     void actions_edited();
 
 private:
@@ -46,7 +46,7 @@ private:
     QPushButton *btnLength;
     QPushButton *btnNumber;
     QPushButton *btnInit;
-    QPushButton *btnAfter;
+    //QPushButton *btnAfter;
     QPushButton *btnDeclarations;
     QPushButton *btnIncludes;
 
