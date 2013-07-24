@@ -78,6 +78,7 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             if(param.contains(msfName + '|' + attribute)) {
                 continue;
             }
+            param.insert(msfName + '|' + attribute);
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_preMatch", msfName + "|text");
                 actionsData.append("QString " + msfName + "_text, ");
@@ -127,6 +128,7 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             if(param.contains(msfName + '|' + attribute)) {
                 continue;
             }
+            param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_onMatch", msfName + "|text");
@@ -232,7 +234,7 @@ bool MBF::buildNFA(NFA *nfa) {
     nfa->last = state2;
     nfa->accept = state2;
     nfa->stateTOmsfMap.insert(state1, name + "|pre");
-    nfa->stateTOmsfMap.insert(state2, name + "|on");
+    nfa->stateTOmsfMap.insert(state1, name + "|on");
     //nfa->stateTOmsfMap.insert(state2, name + "|post");
 
     return true;
