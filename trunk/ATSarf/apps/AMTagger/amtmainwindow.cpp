@@ -219,11 +219,6 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
 void AMTMainWindow::open() {
 
-    /** Initialize Tagger instance again **/
-
-    _atagger = NULL;
-    _atagger = new ATagger();
-
     /** Get and open tags file **/
 
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -240,6 +235,11 @@ void AMTMainWindow::open() {
                      tr("The <b>File</b> can't be opened!"));
         return;
     }
+
+    /** Initialize Tagger instance again **/
+
+    _atagger = NULL;
+    _atagger = new ATagger();
 
     _atagger->tagFile = fileName;
 
