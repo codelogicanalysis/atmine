@@ -35,7 +35,7 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     btnLength = new QPushButton(tr("Length"), this);
     btnNumber = new QPushButton(tr("Number"), this);
     btnInit = new QPushButton(tr("Pre-Match"), this);
-    btnAfter = new QPushButton(tr("Post-Match"), this);
+    //btnAfter = new QPushButton(tr("Post-Match"), this);
     btnDeclarations = new QPushButton(tr("Declarations"), this);
     btnIncludes = new QPushButton(tr("Includes"), this);
 
@@ -44,7 +44,7 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     grid->addWidget(btnLength,6,3);
     grid->addWidget(btnNumber,7,3);
     grid->addWidget(btnInit,8,2);
-    grid->addWidget(btnAfter,8,3);
+    //grid->addWidget(btnAfter,8,3);
     grid->addWidget(btnDeclarations,8,1);
     grid->addWidget(btnIncludes,8,0);
 
@@ -125,10 +125,12 @@ void ActionsView::btnInit_clicked() {
     iv->show();
 }
 
+/*
 void ActionsView::btnAfter_clicked() {
     AfterView *av = new AfterView(currentF, msfName, isDirty, this);
     av->show();
 }
+*/
 
 void ActionsView::actions_edited() {
     if(currentF == NULL) {
@@ -148,7 +150,7 @@ void ActionsView::disconnect_Signals() {
     disconnect(editActions, SIGNAL(textChanged()), this, SLOT(actions_edited()));
     disconnect(btnIncludes, SIGNAL(clicked()), this, SLOT(btnIncludes_clicked()));
     disconnect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
-    disconnect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
+    //disconnect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     disconnect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
 }
 
@@ -160,6 +162,6 @@ void ActionsView::connect_Signals() {
     connect(editActions, SIGNAL(textChanged()), this, SLOT(actions_edited()));
     connect(btnIncludes, SIGNAL(clicked()), this, SLOT(btnIncludes_clicked()));
     connect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
-    connect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
+    //connect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     connect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
 }

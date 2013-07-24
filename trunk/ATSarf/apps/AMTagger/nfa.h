@@ -5,6 +5,7 @@
 //#include <QString>
 #include <QMultiMap>
 #include <QStringList>
+#include <QStack>
 
 class NFA
 {
@@ -19,6 +20,8 @@ public:
     QString last;
     QMultiMap<QString, QString> transitions;
     QMultiMap<QString, QString> stateTOmsfMap;
+    /// Stack to keep actions
+    QStack<QString> *actionStack;
     int i;
 };
 

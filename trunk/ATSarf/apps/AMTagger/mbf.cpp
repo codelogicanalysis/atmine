@@ -58,8 +58,9 @@ void MBF::buildTree(QTreeWidget* parent) {
 bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
     /// Adding function for preMatch actions
     QString tempInit = init;
-    actionsData.append("void " + name + "_preMatch(");
+    actionsData.append("extern \"C\" void " + name + "_preMatch(");
     if(!(tempInit.isEmpty())) {
+        QSet<QString> param;
         while(true) {
             int dollarIndex = tempInit.indexOf("$", 0);
             if(dollarIndex == -1) {
@@ -74,6 +75,9 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             tempInit = tempInit.remove(dollarIndex, 1);
             tempInit = tempInit.replace(afterDotPosition-2, 1, '_');
 
+            if(param.contains(msfName + '|' + attribute)) {
+                continue;
+            }
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_preMatch", msfName + "|text");
                 actionsData.append("QString " + msfName + "_text, ");
@@ -95,14 +99,17 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
                 return false;
             }
         }
-        actionsData.chop(2);
+        if(param.count() != 0) {
+            actionsData.chop(2);
+        }
     }
     actionsData.append(") {\n" + tempInit + "\n}\n\n");
 
     /// Adding function for onMatch actions
     QString tempMatch = actions;
-    actionsData.append("void " + name + "_onMatch(");
+    actionsData.append("extern \"C\" void " + name + "_onMatch(");
     if(!(tempMatch.isEmpty())) {
+        QSet<QString> param;
         while(true) {
             int dollarIndex = tempMatch.indexOf("$", 0);
             if(dollarIndex == -1) {
@@ -116,6 +123,11 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             QString attribute = tempMatch.mid(afterDotPosition).section(sep, 0, 0);
             tempMatch = tempMatch.remove(dollarIndex, 1);
             tempMatch = tempMatch.replace(afterDotPosition-2, 1, '_');
+
+            if(param.contains(msfName + '|' + attribute)) {
+                continue;
+            }
+
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_onMatch", msfName + "|text");
                 actionsData.append("QString " + msfName + "_text, ");
@@ -137,10 +149,13 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
                 return false;
             }
         }
-        actionsData.chop(2);
+        if(param.count() != 0) {
+            actionsData.chop(2);
+        }
     }
     actionsData.append(") {\n" + tempMatch + "\n}\n\n");
 
+    /*
     QString tempAfter = after;
     actionsData.append("void " + name + "_postMatch(");
     if(!(tempAfter.isEmpty())) {
@@ -181,7 +196,7 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
         actionsData.chop(2);
     }
     actionsData.append(") {\n" + tempAfter + "\n}\n\n");
-
+    */
     return true;
 }
 
@@ -191,7 +206,7 @@ QVariantMap MBF::getJSON() {
     mbfMap.insert("type","mbf");
     mbfMap.insert("init", init);
     mbfMap.insert("actions",actions);
-    mbfMap.insert("after", after);
+    //mbfMap.insert("after", after);
     mbfMap.insert("returns", returns);
     mbfMap.insert("parent", parent->name);
     mbfMap.insert("MBF", bf);
@@ -216,10 +231,9 @@ bool MBF::buildNFA(NFA *nfa) {
     }
     nfa->last = state2;
     nfa->accept = state2;
-
     nfa->stateTOmsfMap.insert(state1, name + "|pre");
     nfa->stateTOmsfMap.insert(state2, name + "|on");
-    nfa->stateTOmsfMap.insert(state2, name + "|post");
+    //nfa->stateTOmsfMap.insert(state2, name + "|post");
 
     return true;
 }

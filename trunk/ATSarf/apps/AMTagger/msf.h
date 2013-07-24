@@ -13,7 +13,7 @@ public:
     QString name;
     QString init;
     QString actions;
-    QString after;
+    //QString after;
     QString returns;
     MSF * parent;
     virtual bool isMBF()=0;

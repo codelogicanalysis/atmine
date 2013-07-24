@@ -3,6 +3,9 @@
 #include <qjson/serializer.h>
 #include <QFile>
 #include <QTextStream>
+#include <QFile>
+#include <dlfcn.h>
+#include <stdlib.h>
 
 ATagger * _atagger = NULL;
 
@@ -113,6 +116,66 @@ bool ATagger::buildActionFile() {
     return true;
 }
 
+bool ATagger::executeActions() {
+
+    /** Add function calls of each formula to a function named msfName() **/
+    for(int i=0; i< nfaVector->count(); i++) {
+
+        NFA* nfa = nfaVector->at(i);
+        for(int j=0; j< msfVector->count(); j++) {
+
+            MSFormula* formula = msfVector->at(i);
+            if(nfa->name == formula->name) {
+
+                formula->actionData.append("extern \"C\" void " + formula->name + "_actions() {\n");
+                while(!(nfa->actionStack->isEmpty())) {
+                    formula->actionData.append(nfa->actionStack->pop() + ";\n");
+                }
+                formula->actionData.append("}\n");
+            }
+        }
+
+    }
+
+    /** write action functions in .cpp output files, compile shared library, and call them **/
+    for(int i=0; i< msfVector->count(); i++) {
+        MSFormula* formula = msfVector->at(i);
+
+        QString msfName = formula->name;
+        QString cppFile = msfName + ".cpp";
+        QFile f(cppFile);
+        f.open(QIODevice::ReadWrite);
+        QTextStream out(&f);
+        out << formula->actionData;
+
+        f.close();
+
+        // create library
+        QString command = "/usr/bin/g++ -fPIC -shared " + msfName + ".cpp -o lib" + msfName + ".so";
+        system (command.toStdString().c_str());
+
+        // load library
+        QString sharedLib = "./lib" + msfName + ".so";
+        void * fLib = dlopen ( sharedLib.toStdString().c_str(), RTLD_LAZY );
+        if ( !fLib ) {
+            cerr << "Cannot open library: " << dlerror() << '\n';
+            return false;
+        }
+
+        if ( fLib ) {
+            QString actionFunction = msfName + "_actions";
+            void (*fn)() = (void (*)()) dlsym ( fLib, actionFunction.toStdString().c_str());
+            if (fn) {
+                // use function
+                fn();
+            }
+            dlclose(fLib);
+        }
+    }
+
+    return true;
+}
+
 bool ATagger::runSimulator() {
 
     /// Build NFA
@@ -130,7 +193,8 @@ bool ATagger::runSimulator() {
         int index = 0;
         /// Simulate current MSF starting from a set of tokens referring to a single word
         for(int j=index; j<tagVector.count(); j++) {
-            QVector<Tag*>* tags = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, index);
+            QStack<QString> *tempStack;
+            QVector<Tag*>* tags = simulateNFA(nfaVector->at(i), tempStack, nfaVector->at(i)->start, index);
             if(tags != NULL) {
                 int pos = tags->first()->pos;
                 int length = tags->last()->pos - tags->first()->pos + tags->last()->length;
@@ -145,6 +209,18 @@ bool ATagger::runSimulator() {
                         break;
                     }
                 }
+                /// Join stacks
+                if(nfaVector->at(i)->actionStack == NULL) {
+                    nfaVector->at(i)->actionStack = tempStack;
+                }
+                else {
+                    for(int k=0; k< nfaVector->at(i)->actionStack->count(); k++) {
+                        tempStack->push(nfaVector->at(i)->actionStack->at(k));
+                        //nfaVector->at(i)->actionStack->pop_back();
+                    }
+                    delete (nfaVector->at(i)->actionStack);
+                    nfaVector->at(i)->actionStack = tempStack;
+                }
             }
             else {
                 while((j<tagVector.count()) && (tagVector.at(index).pos == tagVector.at(j).pos)) {
@@ -155,11 +231,106 @@ bool ATagger::runSimulator() {
         }
     }
 
+    executeActions();
     return true;
 }
 
-QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
+bool lessThan(const QString &s1, const QString &s2)
+{
+    QString actionType1 = s1.section('|',1,1);
+    QString actionType2 = s2.section('|',1,1);
+    if((actionType1 == actionType2) && (actionType1 == "pre")) {
+        return s1 < s2;
+    }
+    else if((actionType1 == actionType2) && (actionType1 == "on")) {
+        return s1 > s2;
+    }
+    else if(actionType1 == "on"){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool ATagger::refineFunctions(NFA* nfa, QList<QString> &function, int index) {
+    for(int i=0; i<function.count(); i++) {
+        function[i] = function[i].replace('|','_');
+        function[i] = function[i].append("Match(");
+        if(function[i].contains("pre")) {
+            function[i] = function[i].append(')');
+            continue;
+        }
+        if(index != -1) {
+            QMultiMap<QString,QString> *functionParametersMap;
+            for(int j=0; j< msfVector->count(); j++) {
+                if(msfVector->at(j)->name == nfa->name) {
+                    functionParametersMap = &(msfVector->at(j)->functionParametersMap);
+                    break;
+                }
+            }
+            QString key = function[i].replace('_','|');
+            QList<QString> params = functionParametersMap->values(key);
+            for(int j=0; j<params.count(); j++) {
+                QString msfName = params.at(j).section('|',0,0);
+                QString field = params.at(j).section('|',1,1);
+                QString msfName2 = function[i].section('|',0,0);
+                if(!(msfName.compare(msfName2) == 0)) {
+                    return false;
+                }
+
+                if(field.compare("text") == 0) {
+                    QString paramText = text.mid(tagVector.at(index).pos, tagVector.at(index).length);
+                    function[i].append('\"' + paramText + "\",");
+                }
+                else if(field.compare("position") == 0) {
+                    function[i].append(tagVector.at(index).pos + ',');
+                }
+                else if(field.compare("length") == 0) {
+                    function[i].append(tagVector.at(index).length + ',');
+                }
+                else if(field.compare("number") == 0) {
+                    QString possibleNum = text.mid(tagVector.at(index).pos, tagVector.at(index).length);
+                    NumNorm nn(&possibleNum);
+                    nn();
+                    int number = NULL;
+                    if(nn.extractedNumbers.count()!=0) {
+                        number = nn.extractedNumbers[0].getNumber();
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+            if(params.count() == 0) {
+                function[i] = function[i].append(')');
+            }
+            else {
+                function[i].chop(1);
+                function[i] = function[i].append(')');
+            }
+        }
+        else {
+            function[i].append(')');
+        }
+    }
+    return true;
+}
+
+QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QString state, int tagIndex) {
+
     if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
+        /// check if the accept state stands for any function calls and push them to stack
+        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+        if(!(functionCalls.isEmpty())) {
+            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+        }
+        refineFunctions(nfa,functionCalls,-1);
+        actionStack = new QStack<QString>();
+        for(int i=0; i< functionCalls.count(); i++) {
+            actionStack->push(functionCalls.at(i));
+        }
+        /// initialize a tag vector and return it
         QVector<Tag*> *tags = new QVector<Tag*>();
         return tags;
     }
@@ -168,6 +339,8 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
 
     /// Use a vector of vectors to collect correct solutions and choose longest
     QVector<QVector<Tag*>*> tags;
+    /// Use a vector of stacks to collect functions calls
+    QVector<QStack<QString> *> stacks;
 
     QVector<int> tokens;
     for(int i=tagIndex; (i<tagVector.count()) && (tagVector.at(i).pos == tagVector.at(tagIndex).pos); i++) {
@@ -183,20 +356,43 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
         QList<QString> nstates = nfa->transitions.values(state + '|' + tagVector.at(tokens.at(i)).type);
         for(int j = 0; j < nstates.size(); j++) {
             done = true;
-            QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), nextIndex);
+            QStack<QString> *tempStack;
+            QVector<Tag*>* temp = simulateNFA(nfa, tempStack, nstates.at(j), nextIndex);
             if(temp != NULL) {
                 Tag* t = new Tag(tagVector.at(tokens.at(i)).type, tagVector.at(tokens.at(i)).pos, tagVector.at(tokens.at(i)).length, sarf);
                 temp->prepend(t);
                 tags.append(temp);
+                /// construct action stack for this match
+                QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+                if(!(functionCalls.isEmpty())) {
+                    qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+                }
+                refineFunctions(nfa,functionCalls, tokens.at(i));
+                for(int i=0; i< functionCalls.count(); i++) {
+                    tempStack->push(functionCalls.at(i));
+                }
+                stacks.append(tempStack);
             }
         }
     }
 
     QList<QString> nstates =nfa->transitions.values(state + '|' + "epsilon");
     for(int j = 0; j < nstates.size(); j++) {
-        QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), tagIndex);
+        done = true;
+        QStack<QString> *tempStack;
+        QVector<Tag*>* temp = simulateNFA(nfa, tempStack, nstates.at(j), tagIndex);
         if(temp != NULL) {
             tags.append(temp);
+            /// construct action stack for this match
+            QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+            if(!(functionCalls.isEmpty())) {
+                qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+            }
+            refineFunctions(nfa,functionCalls,-1);
+            for(int i=0; i< functionCalls.count(); i++) {
+                tempStack->push(functionCalls.at(i));
+            }
+            stacks.append(tempStack);
         }
     }
 
@@ -207,9 +403,20 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
             QList<QString> nstates = nfa->transitions.values(state + '|' + nfaVector->at(i)->name);
             for(int j = 0; j < nstates.size(); j++) {
                 formula = nfaVector->at(i)->name;
-                QVector<Tag*>* temp = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, tagIndex);
+                QStack<QString> *tempStack;
+                QVector<Tag*>* temp = simulateNFA(nfaVector->at(i), tempStack, nfaVector->at(i)->start, tagIndex);
                 if(temp != NULL) {
                     tags.append(temp);
+                    /// construct action stack for this match
+                    QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+                    if(!(functionCalls.isEmpty())) {
+                        qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+                    }
+                    refineFunctions(nfa,functionCalls,-1);
+                    for(int i=0; i< functionCalls.count(); i++) {
+                        tempStack->push(functionCalls.at(i));
+                    }
+                    stacks.append(tempStack);
                 }
                 break;
             }
@@ -236,9 +443,32 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
 
                 QList<QString> nstates =nfa->transitions.values(state + "|*AND*");
                 for(int j = 0; j < nstates.size(); j++) {
-                    QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), index);
+                    QStack<QString> *tempStack;
+                    QVector<Tag*>* temp = simulateNFA(nfa, tempStack, nstates.at(j), index);
                     if(temp != NULL) {
                         tags.append(temp);
+                        /// construct action stack for this match
+                        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+                        if(!(functionCalls.isEmpty())) {
+                            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+                        }
+                        refineFunctions(nfa,functionCalls,-1);
+                        /// Add two branch stacks to current
+                        for(int i=0; i< 2; i++) {
+                            for(int k=0; k<stacks.at(i)->count(); k++) {
+                                tempStack->push(stacks.at(i)->at(k));
+                                //stacks.at(i)->pop_back();
+                            }
+                        }
+                        /// Add AND actions including on match and successive ones
+                        for(int i=0; i< functionCalls.count(); i++) {
+                            tempStack->push(functionCalls.at(i));
+                        }
+                        delete (stacks.at(1));
+                        stacks.remove(1);
+                        delete (stacks.at(0));
+                        stacks.remove(0);
+                        stacks.append(tempStack);
                     }
                     else {
                         return NULL;
@@ -280,9 +510,30 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
 
                 QList<QString> nstates =nfa->transitions.values(state + '|' + formula);
                 for(int j = 0; j < nstates.size(); j++) {
-                    QVector<Tag*>* temp = simulateNFA(nfa, nstates.at(j), index);
+                    QStack<QString> *tempStack;
+                    QVector<Tag*>* temp = simulateNFA(nfa, tempStack, nstates.at(j), index);
                     if(temp != NULL) {
                         tags.append(temp);
+                        /// construct action stack for this match
+                        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
+                        if(!(functionCalls.isEmpty())) {
+                            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
+                        }
+                        refineFunctions(nfa,functionCalls,-1);
+                        /// Add formula stack to current
+                        for(int i=0; i< stacks.count(); i++) {
+                            for(int k=0; k<stacks.at(i)->count(); k++) {
+                                tempStack->push(stacks.at(i)->at(k));
+                                //stacks.at(i)->pop_back();
+                            }
+                        }
+                        /// Add current node actions
+                        for(int i=0; i< functionCalls.count(); i++) {
+                            tempStack->push(functionCalls.at(i));
+                        }
+                        delete (stacks.at(0));
+                        stacks.remove(0);
+                        stacks.append(tempStack);
                     }
                     else {
                         return NULL;
@@ -322,11 +573,15 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QString state, int tagIndex) {
                 for(int j=0; j< tags.at(i)->count(); j++) {
                     delete tags.at(i)->at(j);
                 }
+                delete (stacks.at(i));
+                //stacks.remove(i);
             }
         }
+        actionStack = stacks.at(maxIndex);
         return tags.at(maxIndex);
     }
 
+    actionStack = NULL;
     return NULL;
 }
 

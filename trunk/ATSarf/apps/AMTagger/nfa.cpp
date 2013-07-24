@@ -7,4 +7,5 @@ NFA::NFA(QString name)
     accept = "";
     last = "";
     i=0;
+    actionStack = NULL;
 }

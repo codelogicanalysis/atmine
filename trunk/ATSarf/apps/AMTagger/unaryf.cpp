@@ -120,8 +120,9 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
 
     /// Adding function for preMatch actions
     QString tempInit = init;
-    actionsData.append("void " + name + "_preMatch(");
+    actionsData.append("extern \"C\" void " + name + "_preMatch(");
     if(!(tempInit.isEmpty())) {
+        QSet<QString> param;
         while(true) {
             int dollarIndex = tempInit.indexOf("$", 0);
             if(dollarIndex == -1) {
@@ -135,6 +136,10 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             QString attribute = tempInit.mid(afterDotPosition).section(sep, 0, 0);
             tempInit = tempInit.remove(dollarIndex, 1);
             tempInit = tempInit.replace(afterDotPosition-2, 1, '_');
+
+            if(param.contains(msfName + '|' + attribute)) {
+                continue;
+            }
 
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_preMatch", msfName + "|text");
@@ -157,14 +162,17 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
                 return false;
             }
         }
-        actionsData.chop(2);
+        if(param.count() != 0) {
+            actionsData.chop(2);
+        }
     }
     actionsData.append(") {\n" + tempInit + "\n}\n\n");
 
     /// Adding function for onMatch actions
     QString tempMatch = actions;
-    actionsData.append("void " + name + "_onMatch(");
+    actionsData.append("extern \"C\" void " + name + "_onMatch(");
     if(!(tempMatch.isEmpty())) {
+        QSet<QString> param;
         while(true) {
             int dollarIndex = tempMatch.indexOf("$", 0);
             if(dollarIndex == -1) {
@@ -178,6 +186,11 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             QString attribute = tempMatch.mid(afterDotPosition).section(sep, 0, 0);
             tempMatch = tempMatch.remove(dollarIndex, 1);
             tempMatch = tempMatch.replace(afterDotPosition-2, 1, '_');
+
+            if(param.contains(msfName + '|' + attribute)) {
+                continue;
+            }
+
             if(attribute.compare("text") == 0) {
                 functionParametersMap->insert(name + "_onMatch", msfName + "|text");
                 actionsData.append("QString " + msfName + "_text, ");
@@ -199,50 +212,11 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
                 return false;
             }
         }
-        actionsData.chop(2);
+        if(param.count() != 0) {
+            actionsData.chop(2);
+        }
     }
     actionsData.append(") {\n" + tempMatch + "\n}\n\n");
-
-    QString tempAfter = after;
-    actionsData.append("void " + name + "_postMatch(");
-    if(!(tempAfter.isEmpty())) {
-        while(true) {
-            int dollarIndex = tempAfter.indexOf("$", 0);
-            if(dollarIndex == -1) {
-                break;
-            }
-
-            QString msfName = tempAfter.mid(dollarIndex+1).section('.',0,0);
-
-            int afterDotPosition = tempAfter.indexOf('.', dollarIndex) +1;
-            QRegExp sep("[^a-zA-Z]");
-            QString attribute = tempAfter.mid(afterDotPosition).section(sep, 0, 0);
-            tempAfter = tempAfter.remove(dollarIndex, 1);
-            tempAfter = tempAfter.replace(afterDotPosition-2, 1, '_');
-            if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|text");
-                actionsData.append("QString " + msfName + "_text, ");
-            }
-            else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|number");
-                actionsData.append("int " + msfName + "_number, ");
-            }
-            else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|position");
-                actionsData.append("int " + msfName + "_position, ");
-            }
-
-            else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|length");
-                actionsData.append("int " + msfName + "_length, ");
-            }
-            else {
-                return false;
-            }
-        }
-        actionsData.chop(2);
-    }
-    actionsData.append(") {\n" + tempAfter + "\n}\n\n");
 
     return true;
 }
@@ -253,7 +227,7 @@ QVariantMap UNARYF::getJSON() {
     uMap.insert("type","unary");
     uMap.insert("init", init);
     uMap.insert("actions",actions);
-    uMap.insert("after", after);
+    //uMap.insert("after", after);
     uMap.insert("returns", returns);
     uMap.insert("parent", parent->name);
     QString opText = "";
@@ -316,7 +290,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
     currentLast.append(QString::number(nfa->i));
     (nfa->i)++;
     nfa->stateTOmsfMap.insert(currentLast, name + "|on");
-    nfa->stateTOmsfMap.insert(currentLast, name + "|post");
+    //nfa->stateTOmsfMap.insert(currentLast, name + "|post");
     nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
     nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
 

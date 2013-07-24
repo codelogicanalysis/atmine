@@ -330,7 +330,7 @@ QVariantMap MSFormula::getJSON() {
     QVariantMap msfMap;
     msfMap.insert("name", name);
     msfMap.insert("init", init);
-    msfMap.insert("after", after);
+    //msfMap.insert("after", after);
     msfMap.insert("actions", actions);
     msfMap.insert("returns", returns);
     msfMap.insert("description", description);

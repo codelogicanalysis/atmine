@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QByteArray>
+#include <QtAlgorithms>
 #include "tag.h"
 #include "merftag.h"
 #include "tagtype.h"
@@ -10,6 +11,7 @@
 #include "msformula.h"
 #include "nfa.h"
 #include "commonS.h"
+#include "numnorm.h"
 
 class ATagger;
 
@@ -24,7 +26,9 @@ public:
     bool buildNFA();
     bool buildActionFile();
     bool runSimulator();
-    QVector<Tag*>* simulateNFA(NFA* nfa, QString state, int tagIndex);
+    QVector<Tag*>* simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QString state, int tagIndex);
+    bool refineFunctions(NFA* nfa, QList<QString> &function, int index=-1);
+    bool executeActions();
     QVector<Tag> tagVector;
     QVector<Tag> compareToTagVector;
     QVector<MERFTag> simulationVector;
