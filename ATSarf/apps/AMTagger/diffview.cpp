@@ -798,7 +798,7 @@ void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> &
                 }
                 bool bold = tt->bold;
                 bool italic = tt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,reverse);
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,_reverse);
                 break;
             }
         }
