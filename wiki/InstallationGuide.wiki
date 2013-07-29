@@ -6,12 +6,19 @@
     * mysql-client
     * mysql-server
     * libmysqlcppconn
+    * libqt4-sql-mysql
     * libmysqlcppconn-dev
     * subversion
     * qt-sdk
     * qtcreator
     * g++
+
+The ATSarf Gui needs the following additional package for graph generation
     * graphviz
+
+The "tagger" tools needs the following additional pacakge for json parsing
+    * libqjson
+
 
 == Details ==
 
