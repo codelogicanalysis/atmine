@@ -79,7 +79,7 @@ mtest: $(MTEST_LIBDIR)
 		$(THIRD_LIBS_LINKFLAGS)
 
 TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(TOP)/lib/libsyn.a  $(TOP)/lib/libnumnorm.a $(ATSarf_LIBS) $(QJSON_LIBS)
-TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger -lsyn -lnumnorm $(ATSarf_LIBS_LINKFLAGS4)
+TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger -lsyn -lnumnorm $(ATSarf_LIBS_LINKFLAGS4) -ldl
 
 tagger: $(TAGGER_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
