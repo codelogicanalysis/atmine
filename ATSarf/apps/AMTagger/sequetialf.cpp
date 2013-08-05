@@ -133,7 +133,12 @@ bool SequentialF::buildActionFile(QString &actionsData, QMultiMap<QString, QStri
 
     /// Adding function for onMatch actions
     QString tempMatch = actions;
-    actionsData.append("extern \"C\" void " + name + "_onMatch(");
+    if(returns.isEmpty()) {
+        actionsData.append("extern \"C\" void " + name + "_onMatch(");
+    }
+    else {
+        actionsData.append("extern \"C\" " + returns + ' ' + name + "_onMatch(");
+    }
     if(!(tempMatch.isEmpty())) {
         QSet<QString> param;
         while(true) {

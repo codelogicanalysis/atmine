@@ -30,12 +30,15 @@ private slots:
     void btnInit_clicked();
     //void btnAfter_clicked();
     void actions_edited();
+    void return_edited(QString);
 
 private:
     QLabel *lblVariables;
     QLabel *lblFormula;
+    QLabel* lblReturn;
 
     QLineEdit *editFormula;
+    QLineEdit *editReturn;
 
     QTextEdit *editActions;
 

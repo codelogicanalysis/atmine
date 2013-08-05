@@ -49,7 +49,6 @@ private slots:
     /*
     void init_edited();
     void after_edited();
-    void returns_edited(QString returns);
     */
     void cbMSF_changed(QString);
     void listMBF_itemclicked(QListWidgetItem*);
