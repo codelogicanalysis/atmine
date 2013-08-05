@@ -75,5 +75,6 @@ private:
     bool edit;
     QVector<TagType*> *tagTypeVector;
     QMenu *viewMenu;
+    QString tagtypePath;
 };
 #endif // EDITTAGTYPEVIEW_H

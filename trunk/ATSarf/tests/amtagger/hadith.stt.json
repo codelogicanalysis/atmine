@@ -1,0 +1,213 @@
+{
+    "MSFs": [
+        {
+            "MSFs": [
+                {
+                    "MSF": {
+                        "MSFs": [
+                            {
+                                "MBF": "TOLD",
+                                "isFormula": false,
+                                "name": "s0",
+                                "init": "",
+                                "actions": "",
+                                "after": "",
+                                "returns": "",
+                                "parent": "nchain",
+                                "type": "mbf"
+                            },
+                            {
+                                "MBF": "PN",
+                                "isFormula": false,
+                                "name": "s1",
+                                "init": "",
+                                "actions": "",
+                                "after": "",
+                                "returns": "",
+                                "parent": "nchain",
+                                "type": "mbf"
+                            },
+                            {
+                                "MSF": {
+                                    "MSFs": [
+                                        {
+                                            "MSF": {
+                                                "MBF": "NONE",
+                                                "isFormula": false,
+                                                "name": "s2",
+                                                "init": "",
+                                                "actions": "",
+                                                "after": "",
+                                                "returns": "",
+                                                "parent": "nchain",
+                                                "type": "mbf"
+                                            },
+                                            "limit": 3,
+                                            "name": "s3",
+                                            "init": "",
+                                            "actions": "",
+                                            "after": "",
+                                            "returns": "",
+                                            "op": "^3",
+                                            "parent": "nchain",
+                                            "type": "unary"
+                                        },
+                                        {
+                                            "MBF": "FAM",
+                                            "isFormula": false,
+                                            "name": "s4",
+                                            "init": "",
+                                            "actions": "",
+                                            "after": "",
+                                            "returns": "",
+                                            "parent": "nchain",
+                                            "type": "mbf"
+                                        },
+                                        {
+                                            "MSF": {
+                                                "MBF": "NONE",
+                                                "isFormula": false,
+                                                "name": "s5",
+                                                "init": "",
+                                                "actions": "",
+                                                "after": "",
+                                                "returns": "",
+                                                "parent": "nchain",
+                                                "type": "mbf"
+                                            },
+                                            "limit": 3,
+                                            "name": "s6",
+                                            "init": "",
+                                            "actions": "",
+                                            "after": "",
+                                            "returns": "",
+                                            "op": "^3",
+                                            "parent": "nchain",
+                                            "type": "unary"
+                                        },
+                                        {
+                                            "MBF": "PN",
+                                            "isFormula": false,
+                                            "name": "s7",
+                                            "init": "",
+                                            "actions": "",
+                                            "after": "",
+                                            "returns": "",
+                                            "parent": "nchain",
+                                            "type": "mbf"
+                                        }
+                                    ],
+                                    "name": "s8",
+                                    "init": "",
+                                    "actions": "",
+                                    "after": "",
+                                    "returns": "",
+                                    "parent": "nchain",
+                                    "type": "sequential"
+                                },
+                                "limit": -1,
+                                "name": "s9",
+                                "init": "",
+                                "actions": "",
+                                "after": "",
+                                "returns": "",
+                                "op": "*",
+                                "parent": "nchain",
+                                "type": "unary"
+                            }
+                        ],
+                        "name": "s10",
+                        "init": "",
+                        "actions": "",
+                        "after": "",
+                        "returns": "",
+                        "parent": "nchain",
+                        "type": "sequential"
+                    },
+                    "limit": -1,
+                    "name": "s11",
+                    "init": "",
+                    "actions": "",
+                    "after": "",
+                    "returns": "",
+                    "op": "+",
+                    "parent": "nchain",
+                    "type": "unary"
+                }
+            ],
+            "bgcolor": "brown",
+            "description": "",
+            "fgcolor": "#ee82ee",
+            "i": 12,
+            "usedCount": 0,
+            "name": "nchain",
+            "init": "",
+            "after": "",
+            "actions": "",
+            "includes": "",
+            "members": "",
+            "type": "msformula"
+        }
+    ],
+    "TagTypeSet": [
+        {
+            "Description": "narration key",
+            "Features": [
+                {
+                    "Stem-Gloss": "happen/take place",
+                    "Negation": "",
+                    "Relation": "isA"
+                },
+                {
+                    "Stem-Gloss": "from/about",
+                    "Negation": "",
+                    "Relation": "isA"
+                }
+            ],
+            "Tag": "TOLD",
+            "background_color": "black",
+            "bold": false,
+            "font": 12,
+            "foreground_color": "tomato",
+            "id": 3,
+            "italic": false,
+            "underline": false
+        },
+        {
+            "Description": "name of a person",
+            "Features": [
+                {
+                    "Category": "566",
+                    "Negation": "",
+                    "Relation": "isA"
+                }
+            ],
+            "Tag": "PN",
+            "background_color": "royalblue",
+            "bold": false,
+            "font": 12,
+            "foreground_color": "coral",
+            "id": 3,
+            "italic": false,
+            "underline": false
+        },
+        {
+            "Description": "parental relation",
+            "Features": [
+                {
+                    "Stem-Gloss": "son",
+                    "Negation": "",
+                    "Relation": "isA"
+                }
+            ],
+            "Tag": "FAM",
+            "background_color": "midnightblue",
+            "bold": false,
+            "font": 12,
+            "foreground_color": "honeydew",
+            "id": 3,
+            "italic": false,
+            "underline": false
+        }
+    ]
+}

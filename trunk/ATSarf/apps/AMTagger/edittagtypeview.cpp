@@ -396,8 +396,13 @@ void EditTagTypeView::save_clicked() {
 
 void EditTagTypeView::load_clicked() {
 
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
     QString fileName = QFileDialog::getOpenFileName(this,
-             tr("Open Tag Types"), "",
+             tr("Open Tag Types"), dir,
              tr("Tag Types (*.tt.json);;All Files (*)"));
 
          if (fileName.isEmpty())
@@ -408,6 +413,8 @@ void EditTagTypeView::load_clicked() {
                  QMessageBox::information(this, tr("Unable to open file"),file.errorString());
                  return;
              }
+
+             _atagger->tagtypeFile = QDir(dir).relativeFilePath(fileName);
 
              QByteArray TagTypes = file.readAll();
              file.close();
