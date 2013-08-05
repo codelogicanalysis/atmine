@@ -758,8 +758,14 @@ void CustomSTTView::editPattern_changed(QString text) {
 }
 
 void CustomSTTView::btnLoad_clicked() {
+
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
     QString fileName = QFileDialog::getOpenFileName(this,
-             tr("Open Sarf Tag Types"), "",
+             tr("Open Sarf Tag Types"), dir,
              tr("Sarf Tag Types (*.stt.json);;All Files (*)"));
 
     if (fileName.isEmpty()) {
@@ -777,6 +783,8 @@ void CustomSTTView::btnLoad_clicked() {
 
          QByteArray sarfTT = file.readAll();
          file.close();
+
+         tagtypePath = QDir(dir).relativeFilePath(fileName);
 
          QJson::Parser parser;
          bool ok;
@@ -1252,6 +1260,7 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
                      _atagger->tagTypeVector->append(stt);
                  }
              }
+             _atagger->tagtypeFile = tagtypePath;
 
              btnSave_clicked();
              break;

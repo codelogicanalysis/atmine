@@ -116,6 +116,7 @@ private:
     QVector<TagType*> *sttVector;
     QString field;
     bool dirty;
+    QString tagtypePath;
     void disconnect_Signals();
     void connect_Signals();
 };

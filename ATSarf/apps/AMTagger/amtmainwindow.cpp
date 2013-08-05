@@ -265,7 +265,7 @@ void AMTMainWindow::open() {
     QJson::Parser parser;
     bool ok;
 
-    QVariantMap result = parser.parse (Tags,&ok).toMap();
+    QVariantMap result = parser.parse(Tags,&ok).toMap();
 
     if (!ok) {
         QMessageBox::about(this, tr("Input Tag File"),
@@ -275,9 +275,16 @@ void AMTMainWindow::open() {
 
     /** Read text file path **/
 
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
     _atagger->textFile = result["file"].toString();
 
-    QFile Ifile(_atagger->textFile);
+    QString textPath = dir;
+    textPath.append(_atagger->textFile);
+    QFile Ifile(textPath);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::about(this, tr("Input text File"),
                      tr("The <b>Input Text File</b> can't be opened!"));
@@ -297,7 +304,8 @@ void AMTMainWindow::open() {
 
     createDockWindows(true);
 
-    lineEditTFName->setText(_atagger->textFile);
+    QString absoluteTextPath = QDir(_atagger->textFile).absolutePath();
+    lineEditTFName->setText(absoluteTextPath);
     _atagger->text = text;
     Ifile.close();
 
@@ -370,15 +378,17 @@ void AMTMainWindow::process(QByteArray & json) {
     else {
         _atagger->isSarf = true;
     }
-    _atagger->tagtypeFile = tagtypeFile;
-    lineEditTTFName->setText(_atagger->tagtypeFile);
 
     /** Read the TagType file and store it **/
 
-    QString ttFName;
-    ttFName = _atagger->tagtypeFile;
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
 
-    QFile ITfile(ttFName);
+    QString tagtypePath = dir + tagtypeFile;
+
+    QFile ITfile(tagtypePath);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::about(this, tr("Input Tag File"),
                      tr("The <b>Tag Type File</b> can't be opened!"));
@@ -392,7 +402,9 @@ void AMTMainWindow::process(QByteArray & json) {
     QByteArray tagtypedata = ITfile.readAll();
     ITfile.close();
 
-    lineEditTTFName->setText(ttFName);
+    _atagger->tagtypeFile = tagtypeFile;
+    QString absoluteTTPath = QDir(_atagger->tagtypeFile).absolutePath();
+    lineEditTTFName->setText(absoluteTTPath);
     process_TagTypes(tagtypedata);
 
 
@@ -2139,8 +2151,13 @@ void AMTMainWindow::loadText_clicked() {
          }
     }
 
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
     QString fileName = QFileDialog::getOpenFileName(this,
-             tr("Text File"), "",
+             tr("Text File"), dir,
              tr("Text File (*.txt);;All Files (*)"));
 
     if (fileName.isEmpty()) {
@@ -2162,7 +2179,9 @@ void AMTMainWindow::loadText_clicked() {
          simulatorAct->setEnabled(true);
          //btnTFName->setEnabled(false);
          QString text = file.readAll();
-         _atagger->textFile = fileName;
+
+         QString relativePaths = QDir(dir).relativeFilePath(fileName);
+         _atagger->textFile = relativePaths;
          _atagger->text = text;
          txtBrwsr->setText(text);
          setLineSpacing(10);
@@ -2188,8 +2207,13 @@ void AMTMainWindow::loadTagTypes_clicked() {
          }
     }
 
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
     QString fileName = QFileDialog::getOpenFileName(this,
-             tr("Tag Type File"), "",
+             tr("Tag Type File"), dir,
              tr("Tag Type File (*.tt.json *.stt.json);;All Files (*)"));
 
     if (fileName.isEmpty()) {
@@ -2202,11 +2226,12 @@ void AMTMainWindow::loadTagTypes_clicked() {
             return;
         }
 
+        QString relativePaths = QDir(dir).relativeFilePath(fileName);
         if(fileName.endsWith(".tt.json")) {
-            _atagger->tagtypeFile = fileName;
+            _atagger->tagtypeFile = relativePaths;
         }
         else if(fileName.endsWith(".stt.json")) {
-            _atagger->tagtypeFile = fileName;
+            _atagger->tagtypeFile = relativePaths;
             sarfAct->setEnabled(true);
             simulatorAct->setEnabled(true);
         }
