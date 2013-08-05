@@ -1,7 +1,7 @@
 #include "tag.h"
 
 Tag::Tag() {
-
+    tType.clear();
 }
 
 Tag::Tag(QString type, int pos, int length, Source source) {

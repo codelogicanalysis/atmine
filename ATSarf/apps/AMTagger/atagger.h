@@ -26,9 +26,11 @@ public:
     bool buildNFA();
     bool buildActionFile();
     bool runSimulator();
-    QVector<Tag*>* simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QString state, int tagIndex);
+    QVector<Tag*>* simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QVector<QString> *&matchStruct, QString state, int tagIndex);
     bool refineFunctions(NFA* nfa, QList<QString> &function, int index=-1);
     bool executeActions();
+    void drawNFA();
+    bool buildMatchStruct(NFA* nfa, QList<QString>& functionCalls, QVector<QString> *matchStruct);
     QVector<Tag> tagVector;
     QVector<Tag> compareToTagVector;
     QVector<MERFTag> simulationVector;
