@@ -17,7 +17,7 @@ class SarfTag;
 AMTMainWindow::AMTMainWindow(QWidget *parent) :
     QMainWindow(parent),
     browseFileDlg(NULL)
-{   
+{
     resize(800,600);
 
     // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
@@ -37,7 +37,23 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     bool all_set = theSarf->start(&output_str, &error_str, this);
     if(!all_set) {
         QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
-        return;
+        return;QMessageBox msgBox;
+        msgBox.setText("The document has been modified.");
+        msgBox.setInformativeText("Do you want to save your changes?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Open);
+        msgBox.button(QMessageBox::Save)->setText("New");
+        msgBox.setDefaultButton(QMessageBox::Save);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+            case QMessageBox::Save:
+                _new();
+            case QMessageBox::Open:
+                open();
+            default:
+                _new();
+                break;
+        }
     }
     Sarf::use(theSarf);
     initialize_other();
@@ -1493,10 +1509,10 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
              QString text = cursor.selectedText();
              entry<<text;
              entry<<(temp.at(i)).type;
-            entry<<"MERF";
-            entry<<QString::number(pos);
-            entry<<QString::number(length);
-            items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
+             entry<<"MERF";
+             entry<<QString::number(pos);
+             entry<<QString::number(length);
+             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
          }
      }
      tagDescription->insertTopLevelItems(0, items);
@@ -1595,7 +1611,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             txtBrwsr->setTextCursor(c);
 
             QStringList entry;
-            entry << "Match" << item->text(0);
+            entry << "Text" << item->text(0);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Description" <<desc;
@@ -1621,6 +1637,94 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             items.last()->setBackgroundColor(1,fgcolor);
             descBrwsr->insertTopLevelItems(0, items);
+
+            /// Add the match structure
+            QStringList mSData;
+            mSData << "Match" << QString();
+            QTreeWidgetItem* matchSItem = new QTreeWidgetItem(descBrwsr,mSData);
+            QTreeWidgetItem* tempItem = matchSItem;
+            int index = tagDescription->indexOfTopLevelItem(item);
+            const MERFTag& merftag = _atagger->simulationVector.at(index);
+            for(int m=0; m<merftag.tags->count(); m++) {
+                Tag* tag = merftag.tags->at(m);
+                for(int n=0; n<tag->tType.count(); n++) {
+                    QString structType = tag->tType[n];
+
+                    if(structType == "mbf|") {
+                        QStringList data;
+                        data << tag->type << _atagger->text.mid(tag->pos,tag->length);
+                        QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                    }
+                    else if(structType.contains("STAR")) {
+                        if(structType.contains("pre")) {
+                            QStringList data;
+                            data << "Operation" << "*";
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                    else if(structType.contains("PLUS")) {
+                        if(structType.contains("pre")) {
+                            QStringList data;
+                            data << "Operation" << "+";
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                    else if(structType.contains("QUESTION")) {
+                        if(structType.contains("pre")) {
+                            QStringList data;
+                            data << "Operation" << "?";
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                    else if(structType.contains("UPTO")) {
+                        if(structType.contains("pre")) {
+                            QString limit = structType.section('|',2,2);
+                            limit.prepend('^');
+                            QStringList data;
+                            data << "Operation" << limit;
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                    else if(structType.contains("OR")) {
+                        if(structType.contains("pre")) {
+                            QStringList data;
+                            data << "Operation" << "|";
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                    else if(structType.contains("AND")) {
+                        if(structType.contains("pre")) {
+                            QStringList data;
+                            data << "Operation" << "&&";
+                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+                            tempItem = newItem;
+                        }
+                        else {
+                            tempItem = tempItem->parent();
+                        }
+                    }
+                }
+            }
             break;
         }
     }

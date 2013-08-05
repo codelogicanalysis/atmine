@@ -257,6 +257,14 @@ bool UNARYF::buildNFA(NFA *nfa) {
     if(op == PLUS) {
         QString state1 = "q";
         state1.append(QString::number(nfa->i));
+        if(nfa->start.isEmpty()) {
+            nfa->start = state1;
+        }
+        else {
+            nfa->transitions.insert(nfa->last + "|epsilon", state1);
+        }
+        nfa->last = state1;
+        (nfa->i)++;
         nfa->stateTOmsfMap.insert(state1, name + "|pre");
         if(!(msf->buildNFA(nfa))) {
             return false;
@@ -288,13 +296,15 @@ bool UNARYF::buildNFA(NFA *nfa) {
         return false;
     }
 
-    QString currentLast = "q";
-    currentLast.append(QString::number(nfa->i));
-    (nfa->i)++;
-    nfa->stateTOmsfMap.insert(currentLast, name + "|on");
-    //nfa->stateTOmsfMap.insert(currentLast, name + "|post");
-    nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
-    nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+    QString currentLast;
+    if(op != UPTO) {
+        currentLast = "q";
+        currentLast.append(QString::number(nfa->i));
+        (nfa->i)++;
+        nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+        nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
+        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+    }
 
     if(op == KUESTION) {
         nfa->last = currentLast;
@@ -309,17 +319,31 @@ bool UNARYF::buildNFA(NFA *nfa) {
         return true;
     }
 
+    /// This is the case when the operation is UPTO with some limit
+    /// This vector keeps the states that should be linked to currentLast in UPTO case
+    QVector<QString> tempStates;
+
+    tempStates.append(nfa->last);
     nfa->last = currentStart;
-    int newLimit = limit - 1;
-    for(int i=0; i<newLimit; i++) {
-        for(int j=0; j<i; j++) {
+    for(int i=2; i<=limit; i++) {
+        for(int j=1; j<=i; j++) {
             if(!(msf->buildNFA(nfa))) {
                 return false;
             }
         }
-        nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
+        tempStates.append(nfa->last);
         nfa->last = currentStart;
     }
+
+    currentLast = "q";
+    currentLast.append(QString::number(nfa->i));
+    (nfa->i)++;
+    nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+    nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
+    for(int i=0; i<tempStates.count(); i++) {
+        nfa->transitions.insert(tempStates.at(i) + '|' + "epsilon",currentLast);
+    }
+
     nfa->last = currentLast;
     nfa->accept = currentLast;
     return true;
