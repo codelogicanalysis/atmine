@@ -143,10 +143,14 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     /** Initialize a copy of the MSFs **/
     _atagger->tempMSFVector = new QVector<MSFormula*>();
 
-    QString ttFName;
-    ttFName = _atagger->tagtypeFile;
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
 
-    QFile ITfile(ttFName);
+    QString tagtypePath = dir + _atagger->tagtypeFile;
+
+    QFile ITfile(tagtypePath);
     if (!ITfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         close();
     }
