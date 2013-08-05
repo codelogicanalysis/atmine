@@ -11,14 +11,18 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
 
     lblVariables = new QLabel(tr("Variable List:"), this);
     lblFormula = new QLabel(tr("Formula:"), this);
+    lblReturn = new QLabel(tr("Returns:"), this);
 
     grid->addWidget(lblVariables, 0,3);
     grid->addWidget(lblFormula,0,0);
+    grid->addWidget(lblReturn,8,0);
 
     editFormula = new QLineEdit(this);
     editFormula->setReadOnly(true);
+    editReturn = new QLineEdit(this);
 
     grid->addWidget(editFormula,0,1,1,3);
+    grid->addWidget(editReturn,8,1,1,2);
 
     editActions = new QTextEdit(this);
 
@@ -51,10 +55,10 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     grid->addWidget(btnPosition,5,3);
     grid->addWidget(btnLength,6,3);
     grid->addWidget(btnNumber,7,3);
-    grid->addWidget(btnInit,8,2);
-    //grid->addWidget(btnAfter,8,3);
-    grid->addWidget(btnDeclarations,8,1);
-    grid->addWidget(btnIncludes,8,0);
+    grid->addWidget(btnInit,9,2);
+    //grid->addWidget(btnAfter,9,3);
+    grid->addWidget(btnDeclarations,9,1);
+    grid->addWidget(btnIncludes,9,0);
 
     QWidget *widget = new QWidget(this);
     widget->setLayout(grid);
@@ -66,6 +70,7 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     editFormula->setText(currentF->map.value(msfName)->printwithNames());
     listVariables->addItems(currentF->map.value(msfName)->getMSFNames());
     editActions->setText(currentF->map.value(msfName)->actions);
+    editReturn->setText(currentF->map.value(msfName)->returns);
 
     connect_Signals();
 }
@@ -150,6 +155,16 @@ void ActionsView::actions_edited() {
     *isDirty = true;
 }
 
+void ActionsView::return_edited(QString value) {
+    if(currentF == NULL) {
+        return;
+    }
+
+    MSF* msf = currentF->map.value(msfName);
+    msf->returns = value;
+    *isDirty = true;
+}
+
 void ActionsView::disconnect_Signals() {
     disconnect(btnText, SIGNAL(clicked()), this, SLOT(btnText_clicked()));
     disconnect(btnPosition, SIGNAL(clicked()), this, SLOT(btnPosition_clicked()));
@@ -160,6 +175,7 @@ void ActionsView::disconnect_Signals() {
     disconnect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
     //disconnect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     disconnect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
+    disconnect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
 }
 
 void ActionsView::connect_Signals() {
@@ -172,4 +188,5 @@ void ActionsView::connect_Signals() {
     connect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
     //connect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     connect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
+    connect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
 }
