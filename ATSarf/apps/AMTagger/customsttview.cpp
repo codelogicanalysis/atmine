@@ -1002,7 +1002,13 @@ void CustomSTTView::btnSave_clicked() {
         fileName = _atagger->tagtypeFile;
     }
 
-    QFile tfile(fileName);
+    QStringList dirList = _atagger->tagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
+
+    QString filePath = dir + fileName;
+    QFile tfile(filePath);
     if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this,"Warning","Can't open tagtypes file to Save");
         return;
@@ -1260,7 +1266,10 @@ void CustomSTTView::closeEvent(QCloseEvent *event) {
                      _atagger->tagTypeVector->append(stt);
                  }
              }
-             _atagger->tagtypeFile = tagtypePath;
+
+             if(!(tagtypePath.isEmpty())) {
+                 _atagger->tagtypeFile = tagtypePath;
+             }
 
              btnSave_clicked();
              break;

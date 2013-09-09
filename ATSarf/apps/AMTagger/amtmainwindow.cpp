@@ -1826,24 +1826,30 @@ void AMTMainWindow::customizeSarfTags() {
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
+
+        QStringList dirList = _atagger->tagFile.split('/');
+        dirList.removeLast();
+        QString dir = dirList.join("/");
+        dir.append('/');
+
         QString ttFileName = QFileDialog::getSaveFileName(this,
-                                                          tr("Sarf TagType File Name"), "",
+                                                          tr("Sarf TagType File Name"), dir,
                                                           tr("tag types (*.stt.json);;All Files (*)"));
         if(ttFileName.isEmpty())
         {
             return;
         }
         else {
-            _atagger->tagtypeFile = ttFileName + ".stt.json";
+
+            QString relativePaths = QDir(dir).relativeFilePath(ttFileName);
+            _atagger->tagtypeFile = relativePaths + ".stt.json";
             lineEditTTFName->setText(_atagger->tagtypeFile);
             //btnTTFName->setEnabled(false);
         }
     }
 
     CustomSTTView * cttv = new CustomSTTView(this);
-    //if(cttv->showWindow) {
     cttv->show();
-    //}
 }
 
 void AMTMainWindow::difference() {
@@ -2216,7 +2222,7 @@ void AMTMainWindow::loadTagTypes_clicked() {
              tr("Tag Type File"), dir,
              tr("Tag Type File (*.tt.json *.stt.json);;All Files (*)"));
 
-    if (fileName.isEmpty()) {
+    if(fileName.isEmpty()) {
         return;
     }
     else {
