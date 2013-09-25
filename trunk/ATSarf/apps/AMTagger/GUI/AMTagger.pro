@@ -204,3 +204,14 @@ LIBS += -L$$TOP/qjson/build/lib/ \
     -lqjson
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
     -ldatrie
+
+OTHER_FILES += \
+    ../stylesheetimages/stylesheet-branch-closed.png \
+    ../stylesheetimages/stylesheet-branch-end.png \
+    ../stylesheetimages/stylesheet-branch-more.png \
+    ../stylesheetimages/stylesheet-branch-open.png \
+    ../stylesheetimages/branch-closed.png \
+    ../stylesheetimages/branch-end.png \
+    ../stylesheetimages/branch-more.png \
+    ../stylesheetimages/branch-open.png \
+    ../stylesheetimages/vline.png

@@ -138,6 +138,7 @@ bool ATagger::executeActions() {
         }
 
     }
+    //qDebug(msfVector->at(0)->actionData.toStdString().c_str());
 
     /** write action functions in .cpp output files, compile shared library, and call them **/
     for(int i=0; i< msfVector->count(); i++) {
@@ -148,6 +149,7 @@ bool ATagger::executeActions() {
         QFile f(cppFile);
         f.open(QIODevice::ReadWrite);
         QTextStream out(&f);
+        out.flush();
         out << formula->actionData;
 
         f.close();
@@ -236,9 +238,9 @@ bool ATagger::runSimulator() {
             if(tags != NULL && !(tags->isEmpty())) {
                 int pos = tags->first()->pos;
                 int length = tags->last()->pos - tags->first()->pos + tags->last()->length;
-                MERFTag tag(nfaVector->at(i)->name, pos, length);
-                tag.tags = tags;
-                simulationVector.append(tag);
+                MERFTag merfTag(nfaVector->at(i)->name, pos, length);
+                merfTag.tags = tags;
+                simulationVector.append(merfTag);
                 /// Check if matchStruct is not empty, and add content to first match
                 if(!(matchStruct->isEmpty())) {
                     Tag* firstTag = tags->at(0);
@@ -253,9 +255,12 @@ bool ATagger::runSimulator() {
                     for(int m=0; m<(tempTag->tType.count()-1); m++) {
                         QString structType1 = tempTag->tType.at(m).section('|',0,0);
                         QString structType2 = tempTag->tType.at(m+1).section('|',0,0);
-                        if(structType1.compare(structType2) == 0) {
+                        QString structPOS1 = tempTag->tType.at(m).section('|',1,1);
+                        QString structPOS2 = tempTag->tType.at(m+1).section('|',1,1);
+                        if((structType1.compare(structType2) == 0) && (structPOS1.compare("pre") == 0) && (structPOS2.compare("on") == 0)) {
                             tempTag->tType.remove(m+1);
                             tempTag->tType.remove(m);
+                            m = m-1;
                         }
                     }
                 }
@@ -832,7 +837,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QJson::Serializer serializer;
         json = serializer.serialize(tagtypedata);
     }
-    else if(_data == tagV || _data == sarfTV) {
+    else if(_data == tagV || _data == sarfTV || _data == sarfMSF) {
 
         /** Convert Tag to JSON **/
 
@@ -850,24 +855,40 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
             tagset << data;
         }
         tagdata.insert("TagArray",tagset);
+
+        if(!(_atagger->simulationVector.isEmpty())) {
+            QVariantList simulationList;
+            for(int i=0; i<_atagger->simulationVector.count(); i++) {
+                const MERFTag *mtag = &(_atagger->simulationVector.at(i));
+                QVariantMap data;
+                data.insert("type", mtag->type);
+                data.insert("pos", mtag->pos);
+                data.insert("length", mtag->length);
+                QVariantList mbfList;
+                for(int j=0; j< mtag->tags->count(); j++) {
+                    Tag* tag = mtag->tags->at(j);
+                    QVariantMap mbfData;
+                    mbfData.insert("type", tag->type);
+                    mbfData.insert("pos", tag->pos);
+                    mbfData.insert("length", tag->length);
+                    if(!(tag->tType.isEmpty())) {
+                        QVariantList tTypeList;
+                        for(int k=0; k<tag->tType.count(); k++) {
+                            tTypeList << tag->tType.at(k);
+                        }
+                        mbfData.insert("tagType", tTypeList);
+                    }
+                    mbfList << mbfData;
+                }
+                data.insert("tags", mbfList);
+                simulationList << data;
+            }
+            tagdata.insert("simulationTags",simulationList);
+        }
+
         QJson::Serializer serializer;
         json = serializer.serialize(tagdata);
     }
-#if 0
-    else if(_data == sarfMSF) {
-        /** Convert MSFs to JSON **/
-
-        QVariantMap msfsMap;
-        msfsMap.insert("mbffile",_atagger->tagtypeFile);
-        QVariantList msfsList;
-        for(int i=0; i<_atagger->msfVector->count(); i++) {
-            msfsList << _atagger->msfVector->at(i)->getJSON();
-        }
-        msfsMap.insert("MSFs",msfsList);
-        QJson::Serializer serializer;
-        json = serializer.serialize(msfsMap);
-    }
-#endif
 
     return json;
 }

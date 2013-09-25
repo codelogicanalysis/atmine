@@ -45,15 +45,15 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnUnselect,7,2);
     grid->addWidget(btnAdd,3,2);
     grid->addWidget(btnRemove,4,2);
-    grid->addWidget(btnLoad,14,4,1,2);
-    grid->addWidget(btnClose,14,6);
+    grid->addWidget(btnLoad,15,4,1,2);
+    grid->addWidget(btnClose,15,6);
     //grid->addWidget(btnCancel,13,5);
     grid->addWidget(btnSelectAll,14,0);
     grid->addWidget(btnUnselectAll,14,1);
 
     lblPattern = new QLabel(tr("Pattern:"),this);
     lblFeatures = new QLabel(tr("Features:"), this);
-    lblTagName = new QLabel(tr("TagName:"), this);
+    lblTagName = new QLabel(tr("Tagtype Name:"), this);
     lblDescription = new QLabel(tr("Description:"), this);
     lblFGColor = new QLabel(tr("Foregroud Color:"), this);
     lblBGColor = new QLabel(tr("Background Color:"), this);
@@ -182,21 +182,24 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
     listSelectedTags = new QTreeWidget(this);
     listSelectedTags->setColumnCount(4);
+    listSelectedTags->setColumnWidth(0,45);
+    listSelectedTags->setColumnWidth(1,90);
+    listSelectedTags->setColumnWidth(2,65);
     QStringList columnsD;
-    columnsD << QString() << "Feature" << QString() << "Value";
+    columnsD << "Not" << "Feature" << "Relation" << "Value";
     QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
     listSelectedTags->setHeaderItem(itemD);
     listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
-    connect(listSelectedTags,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_doubleclicked(QTreeWidgetItem*,int)));
+    connect(listSelectedTags,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_clicked(QTreeWidgetItem*,int)));
 
     grid->addWidget(listPossibleTags,2,0,12,2);
-    grid->addWidget(listSelectedTags,1,3,13,3);
+    grid->addWidget(listSelectedTags,1,3,14,3);
 
     QWidget *widget = new QWidget(this);
 
     widget->setLayout(grid);
     setCentralWidget(widget);
-    setWindowTitle(tr("Custom Sarf Tag Types"));
+    setWindowTitle(tr("Custom MBF Tag Types"));
     //resize(480, 320);
 
     /** Do queries and Fill Tables**/
@@ -254,7 +257,16 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
                             }
                         }
                     }
-                    listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+                    QTreeWidgetItem *item = new QTreeWidgetItem(list);
+                    if(item->text(0).compare("NOT") == 0) {
+                        item->setText(0,QString());
+                        item->setCheckState(0,Qt::Checked);
+                    }
+                    else
+                    {
+                        item->setCheckState(0,Qt::Unchecked);
+                    }
+                    listSelectedTags->addTopLevelItem(item);
                 }
                 btnSelect->setEnabled(true);
                 btnUnselect->setEnabled(true);
@@ -307,7 +319,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     }
 }
 
-void CustomSTTView::selectedTags_doubleclicked(QTreeWidgetItem *item, int i) {
+void CustomSTTView::selectedTags_clicked(QTreeWidgetItem *item, int i) {
     if((item == NULL) || (i != 0)) {
         return;
     }
@@ -319,9 +331,8 @@ void CustomSTTView::selectedTags_doubleclicked(QTreeWidgetItem *item, int i) {
         }
     }
 
-    QString text = item->text(0);
-    if(text.compare("NOT") == 0) {
-        item->setText(0,QString());
+    if(item->checkState(0) == Qt::Unchecked) {
+
         for(int j=0; j < stt->tags.count(); j++) {
             if(stt->tags.at(j).first.compare("Category") == 0) {
                 int index = -1;
@@ -345,9 +356,7 @@ void CustomSTTView::selectedTags_doubleclicked(QTreeWidgetItem *item, int i) {
         }
     }
     else {
-        item->setText(0,"NOT");
-        QFont serifFont("Times", 8, QFont::Bold);
-        item->setFont(0,serifFont);
+
         for(int j=0; j < stt->tags.count(); j++) {
             if(stt->tags.at(j).first.compare("Category") == 0) {
                 int index = -1;
@@ -634,7 +643,7 @@ void CustomSTTView::btnSelect_clicked() {
         QStringList list;
         QString relation = "isA";
         list << "  " << field;
-        if((field.contains("Gloss") == 0) || (field.compare("Stem") == 0)) {
+        if(field.contains("Gloss") || (field.compare("Stem") == 0)) {
             if(cbContain->isEnabled() && (cbContain->currentText().compare("contains") == 0)) {
                 list << "contains" << item->text();
                 relation = "contains";
@@ -654,7 +663,9 @@ void CustomSTTView::btnSelect_clicked() {
         else {
             list << relation << item->text();
         }
-        listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+        QTreeWidgetItem *treeitem = new QTreeWidgetItem(list);
+        treeitem->setCheckState(0, Qt::Unchecked);
+        listSelectedTags->addTopLevelItem(treeitem);
         QString value = item->text();
         if(field == "Category") {
             int index = -1;//listCategory.indexOf('^' + value + '$');
@@ -1108,7 +1119,15 @@ void CustomSTTView::tagName_changed(QString name) {
                             }
                         }
                     }
-                    listSelectedTags->addTopLevelItem(new QTreeWidgetItem(list));
+                    QTreeWidgetItem *item = new QTreeWidgetItem(list);
+                    if(item->text(0).compare("NOT") == 0) {
+                        item->setText(0,QString());
+                        item->setCheckState(0,Qt::Checked);
+                    }
+                    else {
+                        item->setCheckState(0,Qt::Unchecked);
+                    }
+                    listSelectedTags->addTopLevelItem(item);
                 }
                 btnSelect->setEnabled(true);
                 btnUnselect->setEnabled(true);

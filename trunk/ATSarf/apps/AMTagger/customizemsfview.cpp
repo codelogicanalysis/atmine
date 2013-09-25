@@ -1,4 +1,5 @@
 #include "customizemsfview.h"
+//#include <QtSvg/QSvgRenderer>
 
 CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QMainWindow(parent)
@@ -13,13 +14,21 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnRemove = new QPushButton(tr("Remove\nMSF"), this);
 
     btnStar = new QPushButton(tr("*"), this);
+    btnStar->setToolTip("zero or more");
     btnPlus = new QPushButton(tr("+"), this);
+    btnPlus->setToolTip("one or more");
     btnQuestion = new QPushButton(tr("?"), this);
+    btnQuestion->setToolTip("zero or one");
     btnLimit = new QPushButton(tr("^"), this);
+    btnLimit->setToolTip("zero up to constant limit");
     btnOr = new QPushButton(tr("|"), this);
+    btnOr->setToolTip("Or");
     btnAnd = new QPushButton(tr("&&"), this);
+    btnAnd->setToolTip("And");
     btnSequence = new QPushButton(tr("()"), this);
+    btnSequence->setToolTip("Sequence");
     btnActions = new QPushButton(tr("Edit Actions"), this);
+    btnFSM = new QPushButton(tr("Show Formula FSM"), this);
 
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
@@ -33,6 +42,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnAnd->setEnabled(false);
     btnSequence->setEnabled(false);
     btnActions->setEnabled(false);
+    btnFSM->setEnabled(false);
 
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
@@ -47,9 +57,10 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(btnLimit,11,6);
     grid->addWidget(btnSequence,12,4);
     grid->addWidget(btnActions,6,5,1,2);
+    grid->addWidget(btnFSM,7,5,1,2);
 
     lblMBF = new QLabel(tr("MBFs"), this);
-    lblMSF = new QLabel(tr("MSF:"), this);
+    lblMSF = new QLabel(tr("Tagtype Name:"), this);
     lblFormula = new QLabel(tr("Formula:"), this);
     lblDescription = new QLabel(tr("Description:"), this);
     lblFGColor = new QLabel(tr("Foregroud Color:"), this);
@@ -109,13 +120,22 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     columnsD << "Name" << "MBF" << "Operation";
     treeMSF->setHeaderLabels(columnsD);
     treeMSF->setSelectionMode(QAbstractItemView::MultiSelection);
+    treeMSF->setStyleSheet("QTreeWidget::branch:has-siblings:!adjoins-item {border-image: url(vline.png) 0;}"
+        "QTreeWidget::branch:has-siblings:adjoins-item { border-image: url(branch-more.png) 0;}"
+        "QTreeWidget::branch:!has-children:!has-siblings:adjoins-item { border-image: url(branch-end.png) 0;}"
+        "QTreeWidget::branch:has-children:!has-siblings:closed,QTreeWidget::branch:closed:has-children:has-siblings {border-image: none;image: url(branch-closed.png);}"
+        "QTreeWidget::branch:open:has-children:!has-siblings,QTreeWidget::branch:open:has-children:has-siblings  {border-image: none;image: url(branch-open.png);}"
+        );
 
     grid->addWidget(treeMSF,1,3,9,2);
 
     treeMBFdesc = new QTreeWidget(this);
     treeMBFdesc->setColumnCount(4);
+    treeMBFdesc->setColumnWidth(0,45);
+    treeMBFdesc->setColumnWidth(1,90);
+    treeMBFdesc->setColumnWidth(2,65);
     QStringList columnsdesc;
-    columnsdesc << QString() << "Feature" << "Relation" << "Value";
+    columnsdesc << "Not" << "Feature" << "Relation" << "Value";
     treeMBFdesc->setHeaderLabels(columnsdesc);
     treeMBFdesc->setSelectionMode(QAbstractItemView::SingleSelection);
 
@@ -124,7 +144,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QWidget *widget = new QWidget(this);
     widget->setLayout(grid);
     setCentralWidget(widget);
-    setWindowTitle(tr("Custom Morphology-based Sequential Formula"));
+    setWindowTitle(tr("Custom MSF Tag Types"));
 
     /** Initialize Elements **/
 
@@ -250,6 +270,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
         btnActions->setEnabled(true);
+        btnFSM->setEnabled(true);
     }
     listMBF->addItems(tagtypes);
 
@@ -572,6 +593,7 @@ void CustomizeMSFView::btnAdd_clicked() {
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
         btnActions->setEnabled(true);
+        btnFSM->setEnabled(true);
     }
     treeMSF->clear();
     editDescription->clear();
@@ -660,6 +682,7 @@ void CustomizeMSFView::btnRemove_clicked() {
         btnAnd->setEnabled(false);
         btnSequence->setEnabled(false);
         btnActions->setEnabled(false);
+        btnFSM->setEnabled(false);
     }
     isDirty = true;
 
@@ -1356,7 +1379,11 @@ void CustomizeMSFView::btnActions_clicked() {
         return;
     }
 
-    if(treeMSF->selectedItems().count() == 0) {
+    if(treeMSF->selectedItems().count() != 1) {
+        return;
+    }
+    else if(treeMSF->selectedItems().count() > 2) {
+        QMessageBox::warning(this, "Warning", "Choose only one MSF to edit actions!");
         return;
     }
 
@@ -1364,6 +1391,20 @@ void CustomizeMSFView::btnActions_clicked() {
     QString msfName = item->text(0);
     ActionsView *av = new ActionsView(currentF, msfName, &isDirty, this);
     av->show();
+}
+
+void CustomizeMSFView::btnFSM_clicked() {
+    if((currentF == NULL) || (treeMSF->children().count() == 0)) {
+        return;
+    }
+
+    /*
+    // create library
+    QString command = "/usr/bin/dot -Tsvg " + msfName + ".dot -o " + msfName + ".svg";
+    system(command.toStdString().c_str());
+
+    QSvgRenderer *fsmImage = new QSvgRenderer();
+    */
 }
 
 /*
@@ -1472,7 +1513,16 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
                         }
                     }
                 }
-                treeMBFdesc->addTopLevelItem(new QTreeWidgetItem(list));
+                QTreeWidgetItem *treeItem = new QTreeWidgetItem(list);
+                if(treeItem->text(0).compare("NOT") == 0) {
+                    treeItem->setText(0,QString());
+                    treeItem->setCheckState(0,Qt::Checked);
+                }
+                else {
+                    treeItem->setCheckState(0,Qt::Unchecked);
+                }
+                treeItem->setFlags(Qt::ItemIsEnabled);
+                treeMBFdesc->addTopLevelItem(treeItem);
             }
             break;
         }
@@ -1574,6 +1624,7 @@ void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     disconnect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     disconnect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
+    disconnect(btnFSM, SIGNAL(clicked()), this, SLOT(btnFSM_clicked()));
     //disconnect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
@@ -1601,6 +1652,7 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     connect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
+    connect(btnFSM, SIGNAL(clicked()), this, SLOT(btnFSM_clicked()));
     //connect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 

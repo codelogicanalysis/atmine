@@ -10,6 +10,7 @@ public:
     MERFTag();
     MERFTag(QString name, int pos, int length);
     QVector<Tag*> *tags;
+    ~MERFTag();
 };
 
 #endif // MERFTAG_H
