@@ -46,6 +46,7 @@ private slots:
     void btnAnd_clicked();
     void btnSequence_clicked();
     void btnActions_clicked();
+    void btnFSM_clicked();
     /*
     void init_edited();
     void after_edited();
@@ -72,6 +73,7 @@ private:
     QPushButton *btnAnd;
     QPushButton *btnSequence;
     QPushButton *btnActions;
+    QPushButton *btnFSM;
 
     QLabel *lblMBF;
     QLabel *lblMSF;

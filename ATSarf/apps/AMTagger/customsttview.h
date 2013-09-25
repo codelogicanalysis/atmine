@@ -51,7 +51,7 @@ private slots:
     void bold_clicked(bool bold);
     void italic_clicked(bool italic);
     void desc_edited();
-    void selectedTags_doubleclicked(QTreeWidgetItem* item,int i);
+    void selectedTags_clicked(QTreeWidgetItem* item,int i);
     void closeEvent(QCloseEvent *event);
 
 private:

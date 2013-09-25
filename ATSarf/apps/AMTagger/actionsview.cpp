@@ -11,18 +11,18 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
 
     lblVariables = new QLabel(tr("Variable List:"), this);
     lblFormula = new QLabel(tr("Formula:"), this);
-    lblReturn = new QLabel(tr("Returns:"), this);
+    //lblReturn = new QLabel(tr("Returns:"), this);
 
     grid->addWidget(lblVariables, 0,3);
     grid->addWidget(lblFormula,0,0);
-    grid->addWidget(lblReturn,8,0);
+    //grid->addWidget(lblReturn,8,0);
 
     editFormula = new QLineEdit(this);
     editFormula->setReadOnly(true);
-    editReturn = new QLineEdit(this);
+    //editReturn = new QLineEdit(this);
 
     grid->addWidget(editFormula,0,1,1,3);
-    grid->addWidget(editReturn,8,1,1,2);
+    //grid->addWidget(editReturn,8,1,1,2);
 
     editActions = new QTextEdit(this);
 
@@ -70,7 +70,7 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     editFormula->setText(currentF->map.value(msfName)->printwithNames());
     listVariables->addItems(currentF->map.value(msfName)->getMSFNames());
     editActions->setText(currentF->map.value(msfName)->actions);
-    editReturn->setText(currentF->map.value(msfName)->returns);
+    //editReturn->setText(currentF->map.value(msfName)->returns);
 
     connect_Signals();
 }
@@ -175,7 +175,7 @@ void ActionsView::disconnect_Signals() {
     disconnect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
     //disconnect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     disconnect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
-    disconnect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
+    //disconnect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
 }
 
 void ActionsView::connect_Signals() {
@@ -188,5 +188,5 @@ void ActionsView::connect_Signals() {
     connect(btnDeclarations, SIGNAL(clicked()), this, SLOT(btnDeclarations_clicked()));
     //connect(btnAfter, SIGNAL(clicked()), this, SLOT(btnAfter_clicked()));
     connect(btnInit, SIGNAL(clicked()), this, SLOT(btnInit_clicked()));
-    connect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
+    //connect(editReturn, SIGNAL(textChanged(QString)), this, SLOT(return_edited(QString)));
 }

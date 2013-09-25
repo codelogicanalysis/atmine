@@ -29,6 +29,14 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     createActions();
     createMenus();
     //createDockWindows();
+    /** Create Hello Dock **/
+    QLabel *label = new QLabel(this);
+    label->setText("AUB's Arabic NLP Research Group Welcomes You.\n\n"
+                   "To create a new project, select File from the menu above then New\n"
+                   "To open an existing project, select File from the menu then Open\n\n"
+                   "Enjoy :)");
+    label->setAlignment(Qt::AlignCenter);
+    setCentralWidget(label);
 
     setWindowTitle(tr("Arabic Morphological Tagger"));
 
@@ -379,6 +387,39 @@ void AMTMainWindow::process(QByteArray & json) {
         _atagger->isSarf = true;
     }
 
+    /** Read simulation Tags if found **/
+
+    if(!(result.value("simulationTags").isNull())) {
+        foreach(QVariant merfTag, result["simulationTags"].toList()) {
+
+            QVariantMap merfTagElements = merfTag.toMap();
+            QString type = merfTagElements.value("type").toString();
+            int pos = merfTagElements.value("pos").toInt();
+            int length = merfTagElements.value("length").toInt();
+            MERFTag merftag(type,pos,length);
+            merftag.tags = new QVector<Tag*>();
+
+            foreach(QVariant tagData, merfTagElements["tags"].toList()) {
+
+                QVariantMap tagElements = tagData.toMap();
+                QString tagType = tagElements.value("type").toString();
+                int tagpos = tagElements.value("pos").toInt();
+                int taglength = tagElements.value("length").toInt();
+                Tag *tag = new Tag(tagType,tagpos,taglength,sarf);
+
+                if(!(tagElements.value("tagType").isNull())) {
+                    foreach(QVariant tagTypeData, tagElements["tagType"].toList()) {
+                        QString matchInfo = tagTypeData.toString();
+                        tag->tType.append(matchInfo);
+                    }
+                }
+                merftag.tags->append(tag);
+            }
+
+            _atagger->simulationVector.append(merftag);
+        }
+    }
+
     /** Read the TagType file and store it **/
 
     QStringList dirList = _atagger->tagFile.split('/');
@@ -408,14 +449,24 @@ void AMTMainWindow::process(QByteArray & json) {
     process_TagTypes(tagtypedata);
 
 
-    setWindowTitle("MATAr: " + _atagger->tagFile);
+    setWindowTitle("MERF: " + _atagger->tagFile);
     /** Apply Tags on Input Text **/
 
-    applyTags();
+    if(_atagger->simulationVector.isEmpty()) {
+        applyTags();
+    }
+    else {
+        applyTags(1);
+    }
 
     /** Add Tags to tagDescription Tree **/
 
-    fillTreeWidget(user);
+    if(_atagger->simulationVector.isEmpty()) {
+        fillTreeWidget(user);
+    }
+    else {
+        fillTreeWidget(sarf,1);
+    }
     createTagMenu();
     createUntagMenu();
 }
@@ -1022,7 +1073,7 @@ void AMTMainWindow::save() {
         }
         else {
             _atagger->tagFile = fileName + ".tags.json";
-            setWindowTitle("AMTagger: " + _atagger->tagFile);
+            setWindowTitle("MERF: " + _atagger->tagFile);
         }
     }
 
@@ -1171,7 +1222,7 @@ void AMTMainWindow::tag(QString tagValue) {
             }
             else {
                 _atagger->tagFile = fileName + ".tags.json";
-                setWindowTitle("AMTagger: " + _atagger->tagFile);
+                setWindowTitle("MERF: " + _atagger->tagFile);
             }
         }
 
@@ -1743,6 +1794,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
 }
 
 void AMTMainWindow::sarfTagging() {
+    /*
     if(_atagger->text.isEmpty()) {
         QMessageBox::warning(this,"Warning","Add a text file before initializing the Sarf Analyzer!");
         return;
@@ -1758,8 +1810,32 @@ void AMTMainWindow::sarfTagging() {
         }
         else {
             _atagger->tagFile = fileName + ".tags.json";
-            setWindowTitle("AMTagger: " + _atagger->tagFile);
+            setWindowTitle("MERF: " + _atagger->tagFile);
         }
+    }
+    */
+    if(_atagger->tagTypeVector->isEmpty()) {
+        QMessageBox::warning(this,"Warning","No tag types with MBF defined!");
+        return;
+    }
+
+    if(!(_atagger->simulationVector.isEmpty())) {
+        QMessageBox msgBox;
+         msgBox.setText("The MSF Simulation matches will be cleared.");
+         msgBox.setInformativeText("Do you want to Continue?");
+         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+         msgBox.setDefaultButton(QMessageBox::No);
+         int ret = msgBox.exec();
+
+         switch (ret) {
+         case QMessageBox::Yes:
+             _atagger->simulationVector.clear();
+             break;
+         case QMessageBox::No:
+             return;
+         default:
+             return;
+         }
     }
 
     _atagger->isSarf = true;
@@ -2277,7 +2353,7 @@ void AMTMainWindow::_new() {
         }
 
         _atagger->tagFile = tagFileName + ".tags.json";
-	setWindowTitle("AMTagger: " + _atagger->tagFile);
+        setWindowTitle("MERF: " + _atagger->tagFile);
 
 
 	createDockWindows(false);
@@ -2335,6 +2411,7 @@ void AMTMainWindow::runMERFSimulator() {
         return;
     }
 
+    /*
     if(_atagger->text.isEmpty()) {
         QMessageBox::warning(this,"Warning","Add a text file before initializing the Sarf Analyzer!");
         return;
@@ -2343,6 +2420,15 @@ void AMTMainWindow::runMERFSimulator() {
     if(_atagger->tagFile.isEmpty()) {
         QMessageBox::warning(this,"Warning","You have to add tag types first!");
         return;
+    }
+    */
+    if(_atagger->tagTypeVector->isEmpty()) {
+        QMessageBox::warning(this,"Warning","No tag types with MBF defined!");
+        return;
+    }
+    _atagger->simulationVector.clear();
+    if(_atagger->tagVector.isEmpty()) {
+        sarfTagging();
     }
 
     _atagger->isSarf = true;
