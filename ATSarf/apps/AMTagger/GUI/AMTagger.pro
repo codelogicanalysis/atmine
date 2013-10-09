@@ -119,7 +119,9 @@ HEADERS += \
     ../initview.h \
     ../../numnorm/numsolution.h \
     ../../numnorm/numnorm.h \
-    ../../numnorm/number.h
+    ../../numnorm/number.h \
+    ../graphedge.h \
+    ../graphnode.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -196,7 +198,9 @@ SOURCES += \
     ../initview.cpp \
     ../../numnorm/numsolution.cpp \
     ../../numnorm/numnorm.cpp \
-    ../../numnorm/number.cpp
+    ../../numnorm/number.cpp \
+    ../graphedge.cpp \
+    ../graphnode.cpp
 
 FORMS    +=
 
@@ -204,6 +208,10 @@ LIBS += -L$$TOP/qjson/build/lib/ \
     -lqjson
 LIBS += -L$$TOP/datrie/datrie/.libs/ \
     -ldatrie
+LIBS += -L$$TOP/graphviz/lib/cgraph/.libs/ \
+    -lcgraph
+LIBS += -L$$TOP/graphviz/lib/gvc/.libs/ \
+    -lgvc
 
 OTHER_FILES += \
     ../stylesheetimages/stylesheet-branch-closed.png \

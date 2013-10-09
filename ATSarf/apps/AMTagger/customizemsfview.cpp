@@ -1,4 +1,5 @@
 #include "customizemsfview.h"
+#include <QGroupBox>
 //#include <QtSvg/QSvgRenderer>
 
 CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
@@ -49,15 +50,24 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(btnAdd,1,2);
     grid->addWidget(btnRemove,2,2);
 
-    grid->addWidget(btnStar,11,3);
-    grid->addWidget(btnPlus,12,3);
+    grid->addWidget(btnStar,11,5);
+    grid->addWidget(btnPlus,12,5);
     grid->addWidget(btnQuestion,11,4);
-    grid->addWidget(btnOr,11,5);
-    grid->addWidget(btnAnd,12,5);
+    grid->addWidget(btnOr,11,3);
+    grid->addWidget(btnAnd,12,3);
     grid->addWidget(btnLimit,11,6);
     grid->addWidget(btnSequence,12,4);
     grid->addWidget(btnActions,6,5,1,2);
     grid->addWidget(btnFSM,7,5,1,2);
+
+    //QGroupBox *groupBox = new QGroupBox(tr("UpTo"));
+    //QVBoxLayout *vbox = new QVBoxLayout;
+    //vbox->addWidget(btnLimit);
+    //editLimit = new QLineEdit(this);
+    //editLimit->setMaximumWidth(90);
+    //vbox->addWidget(editLimit);
+    //groupBox->setLayout(vbox);
+    //grid->addWidget(groupBox,11,6,2,1);
 
     lblMBF = new QLabel(tr("MBFs"), this);
     lblMSF = new QLabel(tr("Tagtype Name:"), this);

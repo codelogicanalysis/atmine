@@ -11,6 +11,9 @@
 #include <QMenuBar>
 #include <QSignalMapper>
 #include <QLabel>
+#include <QtGui/QGraphicsView>
+#include "graphedge.h"
+#include "graphnode.h"
 #include "ATMProgressIFC.h"
 #include "commonS.h"
 #include "addtagview.h"
@@ -127,10 +130,16 @@ private:
 
          QLineEdit *lineEditTFName;
          QLineEdit *lineEditTTFName;
+
+         QGraphicsScene *scene;
+         QGraphicsView *graphics;
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
          ~AMTMainWindow();
-    
+
+protected:
+         void wheelEvent(QWheelEvent *event);
+         void scaleView(qreal scaleFactor);
 private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;
