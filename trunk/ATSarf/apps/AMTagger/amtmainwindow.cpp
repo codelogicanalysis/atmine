@@ -5,11 +5,17 @@
 #include <QContextMenuEvent>
 #include <QTextCodec>
 #include <QTextStream>
-#include<QDockWidget>
-#include<QList>
+#include <QDockWidget>
+#include <QList>
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
+//#include <QtGui>
+#include <math.h>
+#include "graphviz/cgraph.h"
+#include "graphviz/gvc.h"
+#include <sstream>
+#include <string.h>
 
 bool parentCheck;
 class SarfTag;
@@ -31,10 +37,10 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     //createDockWindows();
     /** Create Hello Dock **/
     QLabel *label = new QLabel(this);
-    label->setText("AUB's Arabic NLP Research Group Welcomes You.\n\n"
-                   "To create a new project, select File from the menu above then New\n"
-                   "To open an existing project, select File from the menu then Open\n\n"
-                   "Enjoy :)");
+    label->setText("This is Morphology-based Automated Tagger for Arabic (MATAr)\n\n"
+                   "Courtesy of the NLP/CL research team at AUB.\n\n"
+                   "Use New in the File Menu to create a new project.\n"
+                   "Use Open in the File Menu to open an existing project\n");
     label->setAlignment(Qt::AlignCenter);
     setCentralWidget(label);
 
@@ -105,7 +111,7 @@ void AMTMainWindow::createDockWindows(bool open) {
     sa1->setMaximumHeight(50);
 
     txtBrwsr = new QTextBrowser(dock);
-    hbox->addWidget(txtBrwsr);
+    //hbox->addWidget(txtBrwsr);
     txtBrwsr->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(txtBrwsr,SIGNAL(customContextMenuRequested(const QPoint&)), this,SLOT(showContextMenu(const QPoint&)));
 
@@ -125,7 +131,21 @@ void AMTMainWindow::createDockWindows(bool open) {
         lineEditTFName->setText(_atagger->textFile);
     }
 
-    dock = new QDockWidget(tr("Tags/TagTypes"), this);
+    dock = new QDockWidget(tr("Tags"), this);
+    tagDescription = new QTreeWidget(dock);
+    tagDescription->setColumnCount(5);
+    QStringList columns;
+    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
+    QTreeWidgetItem* item=new QTreeWidgetItem(columns);
+    connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
+    tagDescription->setHeaderItem(item);
+    dock->setWidget(tagDescription);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+
+    //vbox->addWidget(tagDescription);
+
+    dock = new QDockWidget(tr("Tag/Tagtype"), this);
     hbox = new QHBoxLayout();
     lblTTFName = new QLabel("Tag Type File:",dock);
     lineEditTTFName = new QLineEdit(dock);
@@ -142,15 +162,6 @@ void AMTMainWindow::createDockWindows(bool open) {
 
     vbox = new QVBoxLayout();
     vbox->addWidget(sa);
-
-    tagDescription = new QTreeWidget(dock);
-    tagDescription->setColumnCount(5);
-    QStringList columns;
-    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
-    QTreeWidgetItem* item=new QTreeWidgetItem(columns);
-    connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
-    tagDescription->setHeaderItem(item);
-    vbox->addWidget(tagDescription);
 
     descBrwsr = new QTreeWidget(dock);
     descBrwsr->setColumnCount(2);
@@ -172,6 +183,37 @@ void AMTMainWindow::createDockWindows(bool open) {
     if(open) {
         lineEditTFName->setText(_atagger->tagtypeFile);
     }
+
+    dock = new QDockWidget(tr("Match"), this);
+    graphics = new QGraphicsView(this);
+    scene = new QGraphicsScene(this);
+    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+    scene->setSceneRect(-150, -150, 300, 300);
+    graphics->setScene(scene);
+    graphics->setCacheMode(QGraphicsView::CacheBackground);
+    graphics->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    graphics->setRenderHint(QPainter::Antialiasing);
+    graphics->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    graphics->scale(qreal(2), qreal(2));
+    //graphics->setMinimumSize(400, 400);
+    dock->setWidget(graphics);
+    addDockWidget(Qt::RightDockWidgetArea, dock);
+    viewMenu->addAction(dock->toggleViewAction());
+}
+
+void AMTMainWindow::wheelEvent(QWheelEvent *event) {
+    if(graphics->hasFocus()) {
+        scaleView(pow((double)2, event->delta() / 240.0));
+    }
+}
+
+void AMTMainWindow::scaleView(qreal scaleFactor)
+{
+    qreal factor = graphics->transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
+    if (factor < 0.07 || factor > 100)
+        return;
+
+    graphics->scale(scaleFactor, scaleFactor);
 }
 
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
@@ -1583,6 +1625,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
 
 void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     descBrwsr->clear();
+    scene->clear();
     txtBrwsr->textCursor().clearSelection();
     QList<QTreeWidgetItem *> items;
     QString type = item->text(1);
@@ -1701,11 +1744,39 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             items.last()->setBackgroundColor(1,fgcolor);
             descBrwsr->insertTopLevelItems(0, items);
 
-            /// Add the match structure
+            /** Create the match graph of graphviz
+                We use this graph to create the match graph
+                and calculate the coordinates of each node for better visualization
+                **/
+            GVC_t* gvc = gvContext();
+            Agraph_t* G;
+            Agedge_t *edge;//,*edge1;
+            char* args[] = {
+            const_cast<char *>("dot"),
+            const_cast<char *>("-Tsvg"),    /* svg output */
+            const_cast<char *>("-oabc.svg") /* output to file abc.svg */
+            };
+            gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
+            G = agopen(const_cast<char *>("matchGraph"), Agstrictdirected, 0);
+            //Set graph attributes
+            agsafeset(G, const_cast<char *>("overlap"), const_cast<char *>("prism"),const_cast<char *>(""));
+            agsafeset(G, const_cast<char *>("splines"), const_cast<char *>("true"),const_cast<char *>("true"));
+            agsafeset(G, const_cast<char *>("pad"), const_cast<char *>("0,2"),const_cast<char *>("0,2"));
+            agsafeset(G, const_cast<char *>("dpi"), const_cast<char *>("96,0"),const_cast<char *>("96,0"));
+            agsafeset(G, const_cast<char *>("nodesep"), const_cast<char *>("0,4"),const_cast<char *>("0,4"));
+            agattr(G,AGNODE,const_cast<char *>("label"),const_cast<char *>(""));
+            agattr(G,AGNODE,const_cast<char *>("fixedsize"), const_cast<char *>("true"));
+            agattr(G,AGNODE,const_cast<char *>("regular"), const_cast<char *>("true"));
+            int id = 0;
+
+            /// Used to track each node's source node
+            QMap<Agnode_t *,Agnode_t *> parentNode;
+            /// Add the match structure to description
             QStringList mSData;
             mSData << "Match" << QString();
             QTreeWidgetItem* matchSItem = new QTreeWidgetItem(descBrwsr,mSData);
             QTreeWidgetItem* tempItem = matchSItem;
+            Agnode_t * tempNode = NULL;
             int index = tagDescription->indexOfTopLevelItem(item);
             const MERFTag& merftag = _atagger->simulationVector.at(index);
             for(int m=0; m<merftag.tags->count(); m++) {
@@ -1717,6 +1788,34 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                         QStringList data;
                         data << tag->type << _atagger->text.mid(tag->pos,tag->length);
                         QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
+
+                        QString text = tag->type + '\n' + _atagger->text.mid(tag->pos,tag->length);
+                        char * writable = strdup(text.toStdString().c_str());
+                        if(tempNode == NULL) {
+                            stringstream strs;
+                            strs << id;
+                            string temp_str = strs.str();
+                            char* nodeID = strdup(temp_str.c_str());
+                            Agnode_t * newNode = agnode(G,nodeID, 1);
+                            agset(G,const_cast<char *>("root"),nodeID);
+                            id = id+1;
+                            agset(newNode,const_cast<char *>("label"),writable);
+                            parentNode.insert(newNode,NULL);
+                            tempNode = newNode;
+                        }
+                        else {
+                            stringstream strs;
+                            strs << id;
+                            string temp_str = strs.str();
+                            char* nodeID = strdup(temp_str.c_str());
+                            Agnode_t * newNode = agnode(G,nodeID, 1);
+                            id = id+1;
+                            agset(newNode,const_cast<char *>("label"),writable);
+                            edge = agedge(G, tempNode, newNode, 0, 1);
+                            parentNode.insert(newNode, tempNode);
+
+                        }
+                        free(writable);
                     }
                     else if(structType.contains("STAR")) {
                         if(structType.contains("pre")) {
@@ -1724,9 +1823,35 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << "*";
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("*"));
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("*"));
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                     else if(structType.contains("PLUS")) {
@@ -1735,9 +1860,35 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << "+";
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("+"));
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("+"));
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                     else if(structType.contains("QUESTION")) {
@@ -1746,9 +1897,35 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << "?";
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("?"));
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("?"));
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                     else if(structType.contains("UPTO")) {
@@ -1759,9 +1936,37 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << limit;
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            char * writable = strdup(limit.toStdString().c_str());
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),writable);
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),writable);
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
+                            free(writable);
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                     else if(structType.contains("OR")) {
@@ -1770,9 +1975,35 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << "|";
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                     else if(structType.contains("AND")) {
@@ -1781,13 +2012,124 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                             data << "Operation" << "&&";
                             QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
                             tempItem = newItem;
+
+                            if(tempNode == NULL) {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                agset(G,const_cast<char *>("root"),nodeID);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+                                parentNode.insert(newNode,NULL);
+                                tempNode = newNode;
+                            }
+                            else {
+                                stringstream strs;
+                                strs << id;
+                                string temp_str = strs.str();
+                                char* nodeID = strdup(temp_str.c_str());
+                                Agnode_t * newNode = agnode(G,nodeID, 1);
+                                id = id+1;
+                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+                                edge = agedge(G, tempNode, newNode, 0, 1);
+                                parentNode.insert(newNode, tempNode);
+                                tempNode = newNode;
+                            }
                         }
                         else {
                             tempItem = tempItem->parent();
+                            tempNode = parentNode.value(tempNode);
                         }
                     }
                 }
             }
+
+            /** Set layout of the graph and get coordinates **/
+            /* Compute a layout using layout engine from command line args */
+            gvLayoutJobs(gvc, G);
+            /* Write the graph according to -T and -o options */
+            //gvRenderJobs(gvc, G);
+
+            /** Set scene rectangle **/
+            int left = GD_bb(G).LL.x;
+            int top = GD_bb(G).LL.y;
+            int width = GD_bb(G).UR.x;
+            int height = GD_bb(G).UR.y;
+            QRectF rect(left,top,width,height);
+            scene->setSceneRect(rect);
+
+            /** Get coordinates of nodes and draw nodes in scene **/
+            QMap<Agnode_t*,GraphNode *> nodes;
+            QMapIterator<Agnode_t *,Agnode_t *> iterator(parentNode);
+            while (iterator.hasNext()) {
+                iterator.next();
+                /// Use this string to know if an edge label should be added
+                QString edgeLabel;
+                Agnode_t* tmpNode1 = iterator.key();
+                char* label1 = agget(tmpNode1,const_cast<char *>("label"));
+                qreal nodeX1 = ND_coord(tmpNode1).x;
+                qreal nodeY1 = (GD_bb(G).UR.y - ND_coord(tmpNode1).y);
+                GraphNode *node1;
+                if(!(nodes.contains(tmpNode1))) {
+                    QString stringlabel1(label1);
+                    if(stringlabel1.contains('\n')) {
+                        QString text = stringlabel1.section('\n',1,1);
+                        edgeLabel = stringlabel1.section('\n',0,0);
+                        node1 = new GraphNode(text);
+                    }
+                    else {
+                        node1 = new GraphNode(stringlabel1);
+                    }
+                    scene->addItem(node1);
+                    node1->setPos(nodeX1,nodeY1);
+                    nodes.insert(tmpNode1,node1);
+                }
+                else {
+                    node1 = nodes.value(tmpNode1);
+                }
+
+                Agnode_t* tmpNode2 = iterator.value();
+                if(tmpNode2 == NULL) {
+                    continue;
+                }
+                char* label2 = agget(tmpNode2,const_cast<char *>("label"));
+                qreal nodeX2 = ND_coord(tmpNode2).x;
+                qreal nodeY2 = (GD_bb(G).UR.y - ND_coord(tmpNode2).y);
+                GraphNode *node2;
+                if(!(nodes.contains(tmpNode2))) {
+                    QString stringlabel2(label2);
+                    node2 = new GraphNode(stringlabel2);
+                    scene->addItem(node2);
+                    node2->setPos(nodeX2,nodeY2);
+                    nodes.insert(tmpNode2,node2);
+                    if(edgeLabel.isEmpty()) {
+                        scene->addItem(new GraphEdge(node2,node1));
+                    }
+                    else {
+                        scene->addItem(new GraphEdge(node2,node1,edgeLabel));
+                        edgeLabel.clear();
+                    }
+                }
+                else {
+                    node2 = nodes.value(tmpNode2);
+                    if(edgeLabel.isEmpty()) {
+                        scene->addItem(new GraphEdge(node2,node1));
+                    }
+                    else {
+                        scene->addItem(new GraphEdge(node2,node1,edgeLabel));
+                        edgeLabel.clear();
+                    }
+                }
+            }
+
+            /* Free layout data */
+            gvFreeLayout(gvc, G);
+            /* Free graph structures */
+            agclose(G);
+            /* close output file and free context */
+            gvFreeContext(gvc);
             break;
         }
     }
