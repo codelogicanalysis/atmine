@@ -124,7 +124,7 @@ void AMTMainWindow::createDockWindows(bool open) {
 
     dock->setWidget(sa);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
+    paneMenu->addAction(dock->toggleViewAction());
     dock->setMinimumWidth(300);
 
     if(open) {
@@ -141,7 +141,7 @@ void AMTMainWindow::createDockWindows(bool open) {
     tagDescription->setHeaderItem(item);
     dock->setWidget(tagDescription);
     addDockWidget(Qt::LeftDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
+    paneMenu->addAction(dock->toggleViewAction());
 
     //vbox->addWidget(tagDescription);
 
@@ -177,7 +177,7 @@ void AMTMainWindow::createDockWindows(bool open) {
 
     dock->setWidget(sa);
     addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
+    paneMenu->addAction(dock->toggleViewAction());
     dock->setMinimumWidth(300);
 
     if(open) {
@@ -198,7 +198,7 @@ void AMTMainWindow::createDockWindows(bool open) {
     //graphics->setMinimumSize(400, 400);
     dock->setWidget(graphics);
     addDockWidget(Qt::RightDockWidgetArea, dock);
-    viewMenu->addAction(dock->toggleViewAction());
+    paneMenu->addAction(dock->toggleViewAction());
 }
 
 void AMTMainWindow::wheelEvent(QWheelEvent *event) {
@@ -373,6 +373,7 @@ void AMTMainWindow::open() {
     tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
     umTags->setEnabled(true);
+    viewTagAct->setEnabled(true);
     saveAct->setEnabled(true);
     saveasAct->setEnabled(true);
     diffAct->setEnabled(true);
@@ -1405,6 +1406,10 @@ void AMTMainWindow::addtagtype() {
 
 }
 
+void AMTMainWindow::viewTags() {
+
+}
+
 void AMTMainWindow::about() {
 
 }
@@ -1497,6 +1502,10 @@ void AMTMainWindow::createActions()
     addtagAct->setStatusTip(tr("Add a TagType"));
     connect(addtagAct, SIGNAL(triggered()), this, SLOT(addtagtype()));
 
+    viewTagAct = new QAction(tr("&View Tags"), this);
+    viewTagAct->setEnabled(false);
+    connect(viewTagAct, SIGNAL(triggered()), this, SLOT(viewTags()));
+
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -1543,6 +1552,9 @@ void AMTMainWindow::createMenus()
     analyseMenu->addAction(diffAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(viewTagAct);
+
+    paneMenu = menuBar()->addMenu(tr("&Panes"));
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
@@ -2706,6 +2718,7 @@ void AMTMainWindow::_new() {
 	tagremoveAct->setEnabled(true);
 	mTags->setEnabled(true);
         umTags->setEnabled(true);
+        viewTagAct->setEnabled(true);
 	saveAct->setEnabled(true);
 	saveasAct->setEnabled(true);
         diffAct->setEnabled(true);
