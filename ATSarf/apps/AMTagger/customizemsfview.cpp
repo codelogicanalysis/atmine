@@ -87,12 +87,18 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 
     editFormula = new QLineEdit(this);
     editFormula->setReadOnly(true);
-    editLimit = new QLineEdit(this);
-    editLimit->setMaximumWidth(90);
+    //editLimit = new QLineEdit(this);
+    //editLimit->setMaximumWidth(90);
 
-    grid->addWidget(editLimit,12,6);
+    //grid->addWidget(editLimit,12,6);
     grid->addWidget(editFormula,10,3,1,4);
     grid->addWidget(editDescription,1,5,1,2);
+
+    spinLimit = new QSpinBox(this);
+    spinLimit->setRange(1,7);
+    spinLimit->setSingleStep(1);
+    spinLimit->setValue(1);
+    grid->addWidget(spinLimit,12,6);
 
     /** random color routine **/
 
@@ -1051,6 +1057,7 @@ void CustomizeMSFView::btnLimit_clicked() {
         return;
     }
 
+    /*
     bool ok;
     if(editLimit->text().isEmpty()) {
         QMessageBox::warning(this, "Warning", "No limit for upto operation!");
@@ -1061,6 +1068,8 @@ void CustomizeMSFView::btnLimit_clicked() {
         QMessageBox::warning(this, "Warning", "Invalid limit for upto operation!");
         return;
     }
+    */
+    int limit = spinLimit->value();
     QString opText = "^";
     opText.append(QString::number(limit));
 
@@ -1481,7 +1490,7 @@ void CustomizeMSFView::returns_edited(QString returns) {
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
     treeMSF->clear();
-    editLimit->clear();
+    spinLimit->setValue(1);
     editFormula->clear();
     if(name.isEmpty() || name.isNull()) {
         return;

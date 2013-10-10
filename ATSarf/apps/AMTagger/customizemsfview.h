@@ -15,6 +15,7 @@
 #include <QtCore/QDir>
 #include <QFileDialog>
 #include <QScrollArea>
+#include <QSpinBox>
 #include "global.h"
 #include "logger.h"
 #include "mbf.h"
@@ -82,7 +83,8 @@ private:
     QLabel *lblFGColor;
     QLabel *lblBGColor;
 
-    QLineEdit *editLimit;
+    QSpinBox *spinLimit;
+    //QLineEdit *editLimit;
     QLineEdit *editFormula;
 
     QTextEdit *editDescription;
