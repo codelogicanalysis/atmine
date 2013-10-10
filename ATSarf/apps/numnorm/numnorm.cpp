@@ -93,7 +93,7 @@ void NumNorm::numberFound() {
     numberStart = -1;
     numberEnd = -1;
     extractedNumbers.append(numSolution);
-    cout << number << '\n';
+    //cout << number << '\n';
 }
 
 void NumNorm::digitsTensActions(int val) {
