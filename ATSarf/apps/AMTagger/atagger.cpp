@@ -14,6 +14,7 @@ ATagger::ATagger() {
     compareToTagTypeVector = new QVector<TagType*>();
     msfVector = new QVector<MSFormula*>();
     nfaVector = new QVector<NFA*>();
+    isTagMBF = true;
 }
 
 ATagger::~ATagger() {
@@ -147,7 +148,7 @@ bool ATagger::executeActions() {
         QString msfName = formula->name;
         QString cppFile = msfName + ".cpp";
         QFile f(cppFile);
-        f.open(QIODevice::ReadWrite);
+        f.open(QIODevice::ReadWrite|QIODevice::Truncate|QIODevice::Text);
         QTextStream out(&f);
         out.flush();
         out << formula->actionData;
@@ -176,7 +177,6 @@ bool ATagger::executeActions() {
             dlclose(fLib);
         }
     }
-
     return true;
 }
 
@@ -298,6 +298,12 @@ bool ATagger::runSimulator() {
     }
 
     executeActions();
+
+    /** Clean data in MSF vector **/
+    for(int i=0; i<msfVector->count();i++) {
+        msfVector->at(i)->actionData.clear();
+        msfVector->at(i)->functionParametersMap.clear();
+    }
     return true;
 }
 

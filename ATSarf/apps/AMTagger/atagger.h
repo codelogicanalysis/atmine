@@ -47,6 +47,8 @@ public:
     QString compareToTagTypeFile;
     bool isSarf;
     bool compareToIsSarf;
+    /// This boolean keeps track of whether the current tags are MBF based or MSF based
+    bool isTagMBF;
 };
 
 #endif // ATAGGER_H
