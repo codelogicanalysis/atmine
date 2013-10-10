@@ -413,7 +413,8 @@ void AMTMainWindow::open() {
     tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
     umTags->setEnabled(true);
-    viewTagAct->setEnabled(true);
+    viewMBFTagAct->setEnabled(true);
+    viewMSFTagAct->setEnabled(true);
     saveAct->setEnabled(true);
     saveasAct->setEnabled(true);
     diffAct->setEnabled(true);
@@ -1505,8 +1506,81 @@ void AMTMainWindow::addtagtype() {
 
 }
 
-void AMTMainWindow::viewTags() {
+void AMTMainWindow::viewMBFTags() {
+    if(_atagger->tagVector.isEmpty()) {
+        return;
+    }
+    startTaggingText(_atagger->text);
+    scene->clear();
+    descBrwsr->clear();
 
+    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
+
+    for(int i =0; i< _atagger->tagVector.count(); i++) {
+        const Tag * pt = NULL;
+        if(i>0) {
+            pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
+        }
+        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+
+        if(pt != NULL && pt->pos == t->pos) {
+            continue;
+        }
+        const Tag * nt = NULL;
+        if(i<(_atagger->tagVector.count()-1)) {
+            nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
+        }
+
+        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+
+            if(t->type == tt->tag) {
+                int start = t->pos;
+                int length = t->length;
+                QColor bgcolor(tt->bgcolor);
+                QColor fgcolor(tt->fgcolor);
+                int font = tt->font;
+                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+                bool underline = false;
+                if(nt!=NULL && nt->pos == start) {
+                    underline = true;
+                }
+                bool bold = tt->bold;
+                bool italic = tt->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                break;
+            }
+        }
+    }
+
+    fillTreeWidget(user);
+    createTagMenu();
+    createUntagMenu();
+    _atagger->isTagMBF = true;
+    finishTaggingText();
+}
+
+void AMTMainWindow::viewMSFTags() {
+    if(_atagger->simulationVector.isEmpty()) {
+        return;
+    }
+    startTaggingText(_atagger->text);
+    scene->clear();
+    descBrwsr->clear();
+
+    for(int i=0; i<_atagger->simulationVector.count(); i++) {
+        const MERFTag tag = _atagger->simulationVector.at(i);
+        for(int j=0; j< _atagger->msfVector->count(); j++) {
+            const MSFormula* msf = _atagger->msfVector->at(j);
+            if(msf->name == tag.type) {
+                tagWord(tag.pos,tag.length,msf->fgcolor,msf->bgcolor,12,false,false,false);
+                break;
+            }
+        }
+    }
+    fillTreeWidget(sarf,1);
+    _atagger->isTagMBF = false;
+    finishTaggingText();
 }
 
 void AMTMainWindow::about() {
@@ -1601,9 +1675,13 @@ void AMTMainWindow::createActions()
     addtagAct->setStatusTip(tr("Add a TagType"));
     connect(addtagAct, SIGNAL(triggered()), this, SLOT(addtagtype()));
 
-    viewTagAct = new QAction(tr("&View Tags"), this);
-    viewTagAct->setEnabled(false);
-    connect(viewTagAct, SIGNAL(triggered()), this, SLOT(viewTags()));
+    viewMBFTagAct = new QAction(tr("&View MBF-based Tags"), this);
+    viewMBFTagAct->setEnabled(false);
+    connect(viewMBFTagAct, SIGNAL(triggered()), this, SLOT(viewMBFTags()));
+
+    viewMSFTagAct = new QAction(tr("&View MSF-based Tags"), this);
+    viewMSFTagAct->setEnabled(false);
+    connect(viewMSFTagAct, SIGNAL(triggered()), this, SLOT(viewMSFTags()));
 
     aboutAct = new QAction(tr("&About"), this);
     aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -1651,7 +1729,8 @@ void AMTMainWindow::createMenus()
     analyseMenu->addAction(diffAct);
 
     viewMenu = menuBar()->addMenu(tr("&View"));
-    viewMenu->addAction(viewTagAct);
+    viewMenu->addAction(viewMBFTagAct);
+    viewMenu->addAction(viewMSFTagAct);
 
     paneMenu = menuBar()->addMenu(tr("&Panes"));
 
@@ -2293,6 +2372,8 @@ void AMTMainWindow::sarfTagging() {
 
     _atagger->isSarf = true;
     startTaggingText(_atagger->text);
+    scene->clear();
+    descBrwsr->clear();
     _atagger->tagVector.clear();
 
     error_str = "";
@@ -2819,7 +2900,8 @@ void AMTMainWindow::_new() {
 	tagremoveAct->setEnabled(true);
 	mTags->setEnabled(true);
         umTags->setEnabled(true);
-        viewTagAct->setEnabled(true);
+        viewMBFTagAct->setEnabled(true);
+        viewMSFTagAct->setEnabled(true);
 	saveAct->setEnabled(true);
 	saveasAct->setEnabled(true);
         diffAct->setEnabled(true);

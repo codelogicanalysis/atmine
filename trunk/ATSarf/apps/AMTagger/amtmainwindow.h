@@ -52,7 +52,8 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void tagtypeadd();
          void tagtyperemove();
          void addtagtype();
-         void viewTags();
+         void viewMBFTags();
+         void viewMSFTags();
          void about();
          void aboutQt();
          void sarfTagging();
@@ -113,7 +114,8 @@ private:
          QAction *tagAct;
          QAction *untagMAct;
          QAction *addtagAct;
-         QAction *viewTagAct;
+         QAction *viewMBFTagAct;
+         QAction *viewMSFTagAct;
          QAction *aboutAct;
          QAction *sarftagsAct;
          QAction *sarfAct;
