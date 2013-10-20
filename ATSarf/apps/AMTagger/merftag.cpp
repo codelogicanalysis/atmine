@@ -1,9 +1,11 @@
 #include "merftag.h"
 
 MERFTag::MERFTag() : Tag() {
+    tags = NULL;
 }
 
 MERFTag::MERFTag(QString name, int pos, int length) : Tag(name, pos, length, sarf) {
+    tags = NULL;
 }
 
 MERFTag::~MERFTag() {

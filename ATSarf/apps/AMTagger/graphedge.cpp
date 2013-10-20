@@ -61,7 +61,7 @@ QRectF GraphEdge::boundingRect() const
  return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
                                    destPoint.y() - sourcePoint.y()))
      .normalized()
-     .adjusted(-extra, -extra, extra, extra);
+     .adjusted(-extra, -extra, extra+30, extra);
 }
 
 void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
@@ -102,16 +102,17 @@ void GraphEdge::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
      return;
  }
  painter->setPen(QPen(Qt::black, 0));
- qreal x = abs((source->x() + dest->x())/2);
- qreal y = abs((source->y() + dest->y())/2);
+ qreal x = (source->x() + dest->x())/2;
+ qreal y = (source->y() + dest->y())/2;
  //painter->drawEllipse(x, y, 20, 20);
  QRect rect(x,y-12.5,25,25);
 
- QFont font("Times", 12, QFont::Normal);
+ QFont font("Times", 4, QFont::Normal);
  painter->setFont(font);
  while(painter->fontMetrics().width(text) > rect.width()) {
-     int newsize = painter->font().pointSize() - 1;
-     painter->setFont(QFont(painter->font().family(), newsize));
+     //int newsize = painter->font().pointSize() - 1;
+     //painter->setFont(QFont(painter->font().family(), newsize));
+     rect.setWidth(rect.width()+1);
  }
  painter->drawText(rect, Qt::AlignCenter, text);
 }

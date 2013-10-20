@@ -1939,15 +1939,14 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                 and calculate the coordinates of each node for better visualization
                 **/
             GVC_t* gvc = gvContext();
-            Agraph_t* G;
-            Agedge_t *edge;//,*edge1;
+            Agedge_t *edge = NULL;//,*edge1;
             char* args[] = {
             const_cast<char *>("dot"),
             const_cast<char *>("-Tsvg"),    /* svg output */
             const_cast<char *>("-oabc.svg") /* output to file abc.svg */
             };
             gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
-            G = agopen(const_cast<char *>("matchGraph"), Agstrictdirected, 0);
+            Agraph_t* G = agopen(const_cast<char *>("matchGraph"), Agstrictdirected, 0);
             //Set graph attributes
             agsafeset(G, const_cast<char *>("overlap"), const_cast<char *>("prism"),const_cast<char *>(""));
             agsafeset(G, const_cast<char *>("splines"), const_cast<char *>("true"),const_cast<char *>("true"));
@@ -2267,10 +2266,19 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     if(stringlabel1.contains('\n')) {
                         QString text = stringlabel1.section('\n',1,1);
                         edgeLabel = stringlabel1.section('\n',0,0);
-                        node1 = new GraphNode(text);
+                        QString fgcolor;
+                        QString bgcolor;
+                        for(int k=0; k<_atagger->tagTypeVector->count(); k++) {
+                            const TagType* tt = (TagType*)(_atagger->tagTypeVector->at(k));
+                            if(edgeLabel == tt->tag) {
+                                fgcolor = tt->fgcolor;
+                                bgcolor = tt->bgcolor;
+                            }
+                        }
+                        node1 = new GraphNode(text,fgcolor,bgcolor);
                     }
                     else {
-                        node1 = new GraphNode(stringlabel1);
+                        node1 = new GraphNode(stringlabel1,"","");
                     }
                     scene->addItem(node1);
                     node1->setPos(nodeX1,nodeY1);
@@ -2290,7 +2298,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                 GraphNode *node2;
                 if(!(nodes.contains(tmpNode2))) {
                     QString stringlabel2(label2);
-                    node2 = new GraphNode(stringlabel2);
+                    node2 = new GraphNode(stringlabel2,"","");
                     scene->addItem(node2);
                     node2->setPos(nodeX2,nodeY2);
                     nodes.insert(tmpNode2,node2);

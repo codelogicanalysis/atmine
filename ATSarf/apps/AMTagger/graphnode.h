@@ -11,7 +11,7 @@ class QGraphicsSceneMouseEvent;
 class GraphNode : public QGraphicsItem
 {
 public:
-    GraphNode(QString text);
+    GraphNode(QString text, QString fgcolor, QString bgcolor);
 
      void addEdge(GraphEdge *edge);
      QList<GraphEdge *> edges() const;
@@ -36,6 +36,8 @@ private:
      QList<GraphEdge *> edgeList;
      QPointF newPos;
      QString text;
+     QString fgcolor;
+     QString bgcolor;
 };
 
 #endif

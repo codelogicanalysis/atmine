@@ -5,14 +5,17 @@
 
 #include "graphedge.h"
 #include "graphnode.h"
+#include "global.h"
 
-GraphNode::GraphNode(QString text)
+GraphNode::GraphNode(QString text, QString fgcolor, QString bgcolor)
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
     this->text = text;
+    this->fgcolor = fgcolor;
+    this->bgcolor = bgcolor;
 }
 
 void GraphNode::addEdge(GraphEdge *edge)
@@ -85,45 +88,65 @@ QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
     return QRectF( -10 - adjust, -10 - adjust,
-                   23 + adjust, 23 + adjust);
+                   43 + adjust, 23 + adjust);
 }
 
 QPainterPath GraphNode::shape() const
 {
     QPainterPath path;
-    path.addEllipse(-10, -10, 20, 20);
+    path.addEllipse(-10, -10, 40, 20);
     return path;
 }
 
 void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
+    /** Draw text rectangle **/
+    QRect textrect(-10,-10,20,20);
+
+    QFont font("Times", 7, QFont::Normal);
+    painter->setFont(font);
+    while(painter->fontMetrics().width(text) > textrect.width()) {
+        //int newsize = painter->font().pointSize() - 1;
+        //painter->setFont(QFont(painter->font().family(), newsize));
+        textrect.setWidth(textrect.width()+1);
+
+    }
+    if(textrect.width() != 20) {
+        textrect.setWidth(textrect.width()+5);
+    }
+    /** End **/
+
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-7, -7, 20, 20);
+    painter->drawEllipse(-7, -7, textrect.width(), 20);
 
-    QRadialGradient gradient(-3, -3, 10);
-    if (option->state & QStyle::State_Sunken) {
-        gradient.setCenter(3, 3);
-        gradient.setFocalPoint(3, 3);
-        gradient.setColorAt(1, QColor(Qt::yellow).light(120));
-        gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
-    } else {
-        gradient.setColorAt(0, Qt::yellow);
-        gradient.setColorAt(1, Qt::darkYellow);
+    if(bgcolor.isEmpty()) {
+
+        /*
+        QRadialGradient gradient(-3, -3, 10);
+        if (option->state & QStyle::State_Sunken) {
+            gradient.setCenter(3, 3);
+            gradient.setFocalPoint(3, 3);
+            gradient.setColorAt(1, QColor(Qt::yellow).light(120));
+            gradient.setColorAt(0, QColor(Qt::darkYellow).light(120));
+        } else {
+            gradient.setColorAt(0, Qt::yellow);
+            gradient.setColorAt(1, Qt::darkYellow);
+        }
+        painter->setBrush(gradient);
+        */
+        painter->setBrush(Qt::yellow);
+        painter->setPen(QPen(Qt::black, 0));
     }
-    painter->setBrush(gradient);
-
-    painter->setPen(QPen(Qt::black, 0));
-    painter->drawEllipse(-10, -10, 20, 20);
-    QRect rect(-10,-10,20,20);
-
-    QFont font("Times", 10, QFont::Normal);
-    painter->setFont(font);
-    while(painter->fontMetrics().width(text) > rect.width()) {
-        int newsize = painter->font().pointSize() - 1;
-        painter->setFont(QFont(painter->font().family(), newsize));
+    else {
+        painter->setBrush(QColor(bgcolor));
+        painter->setPen(QPen(QColor(fgcolor),0));
     }
-    painter->drawText(rect, Qt::AlignCenter, text);
+
+    painter->drawEllipse(-10, -10, textrect.width(), 20);
+
+    /** Draw the text **/
+    painter->drawText(textrect, Qt::AlignCenter, text);
 }
 
 QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant &value)
