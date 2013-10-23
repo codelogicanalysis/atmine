@@ -87,14 +87,14 @@ bool GraphNode::advance()
 QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -10 - adjust, -10 - adjust,
+    return QRectF( -20 - adjust, -10 - adjust,
                    43 + adjust, 23 + adjust);
 }
 
 QPainterPath GraphNode::shape() const
 {
     QPainterPath path;
-    path.addEllipse(-10, -10, 40, 20);
+    path.addEllipse(-20, -10, 40, 20);
     return path;
 }
 
@@ -118,7 +118,7 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-7, -7, textrect.width(), 20);
+    painter->drawEllipse(((-1)*textrect.width()/2)+3, -7, textrect.width(), 20);
 
     if(bgcolor.isEmpty()) {
 
@@ -143,9 +143,13 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->setPen(QPen(QColor(fgcolor),0));
     }
 
-    painter->drawEllipse(-10, -10, textrect.width(), 20);
+    painter->drawEllipse((-1)*textrect.width()/2, -10, textrect.width(), 20);
 
     /** Draw the text **/
+    textrect.setX((-1)*textrect.width()/2);
+    if(textrect.width() != 20) {
+        textrect.setWidth(textrect.width()-5);
+    }
     painter->drawText(textrect, Qt::AlignCenter, text);
 }
 
