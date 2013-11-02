@@ -179,7 +179,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(cbCaseSensetive,1,2);
 
     listPossibleTags = new QListWidget(this);
-    listPossibleTags->setSelectionMode(QAbstractItemView::MultiSelection);
+    listPossibleTags->setSelectionMode(QAbstractItemView::ExtendedSelection);
     listSelectedTags = new QTreeWidget(this);
     listSelectedTags->setColumnCount(4);
     listSelectedTags->setColumnWidth(0,45);
@@ -189,7 +189,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     columnsD << "Not" << "Feature" << "Relation" << "Value";
     QTreeWidgetItem* itemD=new QTreeWidgetItem(columnsD);
     listSelectedTags->setHeaderItem(itemD);
-    listSelectedTags->setSelectionMode(QAbstractItemView::MultiSelection);
+    listSelectedTags->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(listSelectedTags,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_clicked(QTreeWidgetItem*,int)));
 
     grid->addWidget(listPossibleTags,2,0,12,2);

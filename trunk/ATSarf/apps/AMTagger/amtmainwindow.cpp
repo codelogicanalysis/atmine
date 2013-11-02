@@ -1770,6 +1770,9 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
      if(basic == 0) {
          QVector<Tag> *temp = new QVector<Tag>(_atagger->tagVector);
          for(int i=0; i < temp->count(); i++) {
+             if(temp->at(i).type == "NONE") {
+                 continue;
+             }
              QStringList entry;
              QTextCursor cursor = txtBrwsr->textCursor();
              int pos = (temp->at(i)).pos;
@@ -2888,14 +2891,30 @@ void AMTMainWindow::_new() {
         _atagger = new ATagger();
 
 	setWindowTitle("Arabic Morphological Tagger");
+        static QFileDialog * fdlg = NULL;
+        if (fdlg == NULL) {
+            fdlg = new QFileDialog(this,
+                                     tr("Create Tag File"), "",
+                                     tr("tags (*.tags.json);;All Files (*)"));
+            fdlg->setLabelText(QFileDialog::Accept,"Create");
+            fdlg->setViewMode(QFileDialog::Detail);
+        }
+        if (!fdlg->exec()) {
+            return;
+        }
+        if (fdlg->selectedFiles().empty()) {
+            return;
+        }
+        QString tagFileName = fdlg->selectedFiles()[0];
+#if 0
 
 	QString tagFileName = QFileDialog::getSaveFileName(this,
-			tr("Tags File"), "",
-			tr("tags (*.tags.json);;All Files (*)"));
+                        tr("Create Tag File"), "",
+                        tr("tags (*.tags.json);;All Files (*)"));
         if(tagFileName.isEmpty()) {
 		return;
         }
-
+#endif
         _atagger->tagFile = tagFileName + ".tags.json";
         setWindowTitle("MERF: " + _atagger->tagFile);
 
