@@ -135,12 +135,12 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QStringList columnsD;
     columnsD << "Name" << "MBF" << "Operation";
     treeMSF->setHeaderLabels(columnsD);
-    treeMSF->setSelectionMode(QAbstractItemView::MultiSelection);
-    treeMSF->setStyleSheet("QTreeWidget::branch:has-siblings:!adjoins-item {border-image: url(vline.png) 0;}"
-        "QTreeWidget::branch:has-siblings:adjoins-item { border-image: url(branch-more.png) 0;}"
-        "QTreeWidget::branch:!has-children:!has-siblings:adjoins-item { border-image: url(branch-end.png) 0;}"
-        "QTreeWidget::branch:has-children:!has-siblings:closed,QTreeWidget::branch:closed:has-children:has-siblings {border-image: none;image: url(branch-closed.png);}"
-        "QTreeWidget::branch:open:has-children:!has-siblings,QTreeWidget::branch:open:has-children:has-siblings  {border-image: none;image: url(branch-open.png);}"
+    treeMSF->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    treeMSF->setStyleSheet("QTreeWidget::branch:has-siblings:!adjoins-item {border-image: url(./resources/vline.png) 0;}"
+        "QTreeWidget::branch:has-siblings:adjoins-item { border-image: url(./resources/branch-more.png) 0;}"
+        "QTreeWidget::branch:!has-children:!has-siblings:adjoins-item { border-image: url(./resources/branch-end.png) 0;}"
+        "QTreeWidget::branch:has-children:!has-siblings:closed,QTreeWidget::branch:closed:has-children:has-siblings {border-image: none;image: url(./resources/branch-closed.png);}"
+        "QTreeWidget::branch:open:has-children:!has-siblings,QTreeWidget::branch:open:has-children:has-siblings  {border-image: none;image: url(./resources/branch-open.png);}"
         );
 
     grid->addWidget(treeMSF,1,3,9,2);
