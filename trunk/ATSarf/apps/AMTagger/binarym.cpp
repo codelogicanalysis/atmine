@@ -1,67 +1,84 @@
-#include "merftag.h"
+#include "binarym.h"
 
-MERFTag::MERFTag() : Match(NONE,NULL) {
-    match = NULL;
+BinaryM::BinaryM(Operation op, Match *parent): Match(op,parent)
+{
+    leftMatch = NULL;
+    rightMatch = NULL;
 }
 
-MERFTag::MERFTag(MSFormula* formula, Source source) : Match(NONE, NULL) {
-    match = NULL;
-    this->formula = formula;
-    this->source = source;
-}
-
-bool MERFTag::setMatch(Match *match) {
-    this->match = match;
+bool BinaryM::setMatch(Match *match) {
+    if(leftMatch == NULL) {
+        leftMatch = match;
+    }
+    else {
+        rightMatch = match;
+    }
     return true;
 }
 
-bool MERFTag::isUnaryM() {
+bool BinaryM::isUnaryM() {
     return false;
 }
 
-bool MERFTag::isBinaryM() {
-    return false;
-}
-
-bool MERFTag::isSequentialM() {
-    return false;
-}
-
-bool MERFTag::isKeyM() {
-    return false;
-}
-
-bool MERFTag::isDummyM() {
-    return false;
-}
-
-bool MERFTag::isMERFTag() {
+bool BinaryM::isBinaryM() {
     return true;
 }
 
-int MERFTag::getPOS() {
-    return match->getPOS();
+bool BinaryM::isSequentialM() {
+    return false;
 }
 
-int MERFTag::getLength() {
-    return match->getLength();
+bool BinaryM::isKeyM() {
+    return false;
 }
 
-QString MERFTag::getText() {
-    return match->getText();
+bool BinaryM::isDummyM() {
+    return false;
 }
 
-int MERFTag::getMatchCount() {
-    return match->getMatchCount();
+bool BinaryM::isMERFTag() {
+    return false;
 }
 
-void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
+int BinaryM::getPOS() {
+    if(leftMatch == NULL) {
+        return -1;
+    }
+    return leftMatch->getPOS();
+}
+
+int BinaryM::getLength() {
+    if(leftMatch == NULL) {
+        return 0;
+    }
+    return leftMatch->getLength();
+}
+
+QString BinaryM::getText() {
+    return leftMatch->getText();
+}
+
+int BinaryM::getMatchCount() {
+    if(leftMatch == NULL) {
+        return 0;
+    }
+    return leftMatch->getMatchCount();
+}
+
+void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
+    Agnode_t* oldNode = node;
+    QTreeWidgetItem* oldParentItem = parentItem;
+
     QStringList data;
-    data << "Formula" << formula->name;
+    if(op == OR) {
+        data << "Operation" << "|";
+    }
+    else {
+        data << "Operation" << "&&";
+    }
     QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
     parentItem = newItem;
 
-    char * writable = strdup(formula->name.toStdString().c_str());
     if(node == NULL) {
         stringstream strs;
         strs << id;
@@ -70,7 +87,12 @@ void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
         Agnode_t * newNode = agnode(G,nodeID, 1);
         agset(G,const_cast<char *>("root"),nodeID);
         id = id+1;
-        agset(newNode,const_cast<char *>("label"),writable);
+        if(op == OR) {
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
+        }
+        else {
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+        }
         parentNodeMap->insert(newNode,NULL);
         node = newNode;
     }
@@ -81,15 +103,24 @@ void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
         char* nodeID = strdup(temp_str.c_str());
         Agnode_t * newNode = agnode(G,nodeID, 1);
         id = id+1;
-        agset(newNode,const_cast<char *>("label"),writable);
+        if(op == OR) {
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
+        }
+        else {
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+        }
         edge = agedge(G, node, newNode, 0, 1);
         parentNodeMap->insert(newNode, node);
         node = newNode;
     }
-    match->buildMatchTree(G,node,edge,parentNodeMap,parentItem,id);
+
+    leftMatch->buildMatchTree(G,node,edge,parentNodeMap,parentItem,id);
+    if(rightMatch != NULL) {
+        rightMatch->buildMatchTree(G,oldNode,edge,parentNodeMap,oldParentItem,id);
+    }
 }
 
-void MERFTag::executeActions(NFA* nfa) {
+void BinaryM::executeActions(NFA* nfa) {
     MSFormula* formula = (MSFormula*)(nfa->formula);
 
     /** pre match **/
@@ -98,7 +129,10 @@ void MERFTag::executeActions(NFA* nfa) {
     formula->actionData.append(preMatch);
     /** Done **/
 
-    match->executeActions(nfa);
+    leftMatch->executeActions(nfa);
+    if(rightMatch != NULL && op == AND) {
+        rightMatch->executeActions(nfa);
+    }
 
     /** on match **/
     QString onMatch = msf->name;
@@ -136,7 +170,7 @@ void MERFTag::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString MERFTag::getParam(QString msfName,QString param) {
+QString BinaryM::getParam(QString msfName,QString param) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();
@@ -162,28 +196,35 @@ QString MERFTag::getParam(QString msfName,QString param) {
         }
     }
     else {
-        return match->getParam(msfName,param);
+        if(op == OR) {
+            return leftMatch->getParam(msfName,param);
+        }
+        else {
+            QString lParamValue = leftMatch->getParam(msfName,param);
+            if(!(lParamValue.isEmpty())) {
+                return lParamValue;
+            }
+            return rightMatch->getParam(msfName,param);
+        }
     }
     return "";
 }
 
-QVariantMap MERFTag::getJSON() {
-    QVariantMap merftagMap;
-    merftagMap.insert("type","merftag");
-    merftagMap.insert("msf",msf->name);
-    merftagMap.insert("formula",formula->name);
-    merftagMap.insert("match",match->getJSON());
-    return merftagMap;
+QVariantMap BinaryM::getJSON() {
+    QVariantMap binaryMap;
+    binaryMap.insert("type","binary");
+    binaryMap.insert("msf",msf->name);
+    binaryMap.insert("op",op);
+    binaryMap.insert("leftMatch",leftMatch->getJSON());
+    if(rightMatch != NULL) {
+        binaryMap.insert("rightMatch",rightMatch->getJSON());
+    }
+    return binaryMap;
 }
 
-MERFTag::~MERFTag() {
-    /*
-    if(match == NULL) {
-        return;
-    }
-    else {
-        delete match;
-    }
-    match = NULL;
-    */
+BinaryM::~BinaryM() {
+    delete leftMatch;
+    delete rightMatch;
+    leftMatch = NULL;
+    rightMatch = NULL;
 }

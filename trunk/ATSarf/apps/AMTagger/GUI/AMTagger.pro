@@ -121,7 +121,12 @@ HEADERS += \
     ../../numnorm/numnorm.h \
     ../../numnorm/number.h \
     ../graphedge.h \
-    ../graphnode.h
+    ../graphnode.h \
+    ../match.h \
+    ../unarym.h \
+    ../binarym.h \
+    ../sequentialm.h \
+    ../keym.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -200,7 +205,12 @@ SOURCES += \
     ../../numnorm/numnorm.cpp \
     ../../numnorm/number.cpp \
     ../graphedge.cpp \
-    ../graphnode.cpp
+    ../graphnode.cpp \
+    ../match.cpp \
+    ../unarym.cpp \
+    ../binarym.cpp \
+    ../sequentialm.cpp \
+    ../keym.cpp
 
 FORMS    +=
 

@@ -29,7 +29,7 @@ public:
     /// Map that takes formula name and returns its structure
     QMap<QString,MSF*> map;
     /// Map to keep list of parameters to each function
-    QMultiMap<QString,QString> functionParametersMap;
+    QMultiMap<QString,QPair<QString,QString> > functionParametersMap;
     /// Counter for msf names
     int i;
     /// Formula Description
@@ -53,7 +53,7 @@ public:
     QString printwithNames();
     void buildTree(QTreeWidget* parent);
     void buildTree(QTreeWidgetItem* parent);
-    bool buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap);
+    bool buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     int usedCount;

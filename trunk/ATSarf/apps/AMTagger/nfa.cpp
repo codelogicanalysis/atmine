@@ -1,8 +1,8 @@
 #include "nfa.h"
 
-NFA::NFA(QString name)
+NFA::NFA(MSF* formula)
 {
-    this->name = name;
+    this->formula = formula;
     start = "";
     accept = "";
     last = "";

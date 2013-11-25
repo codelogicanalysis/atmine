@@ -73,7 +73,7 @@ void SequentialF::buildTree(QTreeWidget* parent) {
     }
 }
 
-bool SequentialF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
+bool SequentialF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {
     for(int i=0; i<vector.count(); i++) {
         if(!(vector.at(i)->buildActionFile(actionsData, functionParametersMap))) {
             return false;
@@ -105,20 +105,20 @@ bool SequentialF::buildActionFile(QString &actionsData, QMultiMap<QString, QStri
             param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -161,20 +161,20 @@ bool SequentialF::buildActionFile(QString &actionsData, QMultiMap<QString, QStri
             param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -210,17 +210,29 @@ QVariantMap SequentialF::getJSON() {
 bool SequentialF::buildNFA(NFA *nfa) {
     QString state1 = "q";
     state1.append(QString::number(nfa->i));
-    nfa->stateTOmsfMap.insert(state1, name + "|pre");
+    (nfa->i)++;
+    nfa->stateTOmsfMap.insert(state1, QPair<MSF*,QString>(this,"pre"));
+    if(nfa->start.isEmpty()) {
+        nfa->start = state1;
+    }
+    else {
+        nfa->transitions.insert(nfa->last + '|' + "epsilon",state1);
+    }
+    nfa->last = state1;
 
     for(int i=0; i< vector.count(); i++) {
         if(!(vector.at(i)->buildNFA(nfa))) {
             return false;
         }
     }
-    nfa->accept = nfa->last;
 
-    nfa->stateTOmsfMap.insert(nfa->last, name + "|on");
-    //nfa->stateTOmsfMap.insert(nfa->last, name + "|post");
+    QString state2 = "q";
+    state2.append(QString::number(nfa->i));
+    (nfa->i)++;
+    nfa->stateTOmsfMap.insert(state2, QPair<MSF*,QString>(this,"on"));
+    nfa->transitions.insert(nfa->last + '|' + "epsilon",state2);
+    nfa->last = state2;
+    nfa->accept = state2;
     return true;
 }
 

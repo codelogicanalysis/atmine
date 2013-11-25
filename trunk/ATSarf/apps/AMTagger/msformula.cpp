@@ -314,7 +314,7 @@ void MSFormula::buildTree(QTreeWidgetItem* parent) {
     }
 }
 
-bool MSFormula::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
+bool MSFormula::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {
     actionsData.append(includes + "\n\n");
     actionsData.append(members + "\n\n");
 
@@ -355,6 +355,17 @@ bool MSFormula::buildNFA(NFA *nfa) {
             return false;
         }
     }
+    QString state1 = "q";
+    state1.append(QString::number(nfa->i));
+    (nfa->i)++;
+    if(nfa->start.isEmpty()) {
+        nfa->start = state1;
+    }
+    else {
+        nfa->transitions.insert(nfa->last + '|' + "epsilon",state1);
+    }
+    nfa->last = state1;
+    nfa->accept = state1;
     return true;
 }
 

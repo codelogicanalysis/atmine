@@ -23,7 +23,7 @@ public:
     QString printwithNames();
     void buildTree(QTreeWidgetItem* parent);
     void buildTree(QTreeWidget* parent);
-    bool buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap);
+    bool buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap);
     QVariantMap getJSON();
     bool buildNFA(NFA *nfa);
     bool removeSelfFromMap(QMap<QString, MSF*> &map);

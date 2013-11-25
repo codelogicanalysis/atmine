@@ -13,12 +13,12 @@ bool compareTags(const Tag &tag1, const Tag &tag2) {
         return tag1.pos < tag2.pos;
     }
     else {
-        return tag1.type < tag2.type;
+        return tag1.tagtype->name < tag2.tagtype->name;
     }
 }
 
 bool compareTagTypes(const TagType *tt1, const TagType *tt2) {
-    return (tt1->tag < tt2->tag);
+    return (tt1->name < tt2->name);
 }
 
 DiffView::DiffView(QWidget *parent) :
@@ -125,12 +125,30 @@ DiffView::DiffView(QWidget *parent) :
     resize(800,600);
 
     /** Sort the Tags in both Tag Vectors **/
+    /*
     qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compareTags);
     qSort(_atagger->compareToTagVector.begin(), _atagger->compareToTagVector.end(), compareTags);
+    */
 
     /** Copy two tag vectors **/
-    tVector = new QVector<Tag>(_atagger->tagVector);
-    cttVector = new QVector<Tag>(_atagger->compareToTagVector);
+    tVector = new QVector<Tag>();
+    cttVector = new QVector<Tag>();
+
+    QHashIterator<int, Tag> iTag(_atagger->tagHash);
+    while (iTag.hasNext()) {
+        iTag.next();
+        tVector->append(iTag.value());
+    }
+
+    QHashIterator<int, Tag> iCompareToTag(_atagger->compareToTagHash);
+    while (iCompareToTag.hasNext()) {
+        iCompareToTag.next();
+        cttVector->append(iCompareToTag.value());
+    }
+
+    qSort(tVector->begin(),tVector->end(),compareTags);
+    qSort(cttVector->begin(),cttVector->end(),compareTags);
+
     dirty = false;
 
     /** Analyze tagtype difference **/
@@ -140,20 +158,20 @@ DiffView::DiffView(QWidget *parent) :
         bool found = false;
         for(int j=0; j<_atagger->compareToTagTypeVector->count();j++) {
             const TagType * ctt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(stt->tag == ctt->tag) {
+            if(stt->name == ctt->name) {
                 found = true;
-                commonTT.append(stt->tag);
+                commonTT.append(stt->name);
             }
         }
         if(!found) {
-            forwardTT.append(stt->tag);
+            forwardTT.append(stt->name);
         }
     }
 
     for(int i=0; i<_atagger->compareToTagTypeVector->count();i++) {
         const TagType * ctt = (TagType*)(_atagger->tagTypeVector->at(i));
-        if(!(commonTT.contains(ctt->tag))){
-            reverseTT.append(ctt->tag);
+        if(!(commonTT.contains(ctt->name))){
+            reverseTT.append(ctt->name);
         }
     }
 
@@ -293,20 +311,20 @@ void DiffView::rbTagTypes_clicked() {
         bool found = false;
         for(int j=0; j<_atagger->compareToTagTypeVector->count();j++) {
             const TagType * ctt = (TagType*)(_atagger->compareToTagTypeVector->at(j));
-            if(stt->tag == ctt->tag) {
+            if(stt->name == ctt->name) {
                 found = true;
-                commonTT.append(stt->tag);
+                commonTT.append(stt->name);
             }
         }
         if(!found) {
-            forwardTT.append(stt->tag);
+            forwardTT.append(stt->name);
         }
     }
 
     for(int i=0; i<_atagger->compareToTagTypeVector->count();i++) {
         const TagType * ctt = (TagType*)(_atagger->tagTypeVector->at(i));
-        if(!(commonTT.contains(ctt->tag))){
-            reverseTT.append(ctt->tag);
+        if(!(commonTT.contains(ctt->name))){
+            reverseTT.append(ctt->name);
         }
     }
 
@@ -372,12 +390,12 @@ void DiffView::rbExact_clicked() {
         const Tag * ott = (Tag*)(&(tVector->at(c1)));
         const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos) == (ctt->pos)) && ((ott->length) == (ctt->length))) {
-            if((ott->type) == (ctt->type))  {
+            if((ott->tagtype->name) == (ctt->tagtype->name))  {
                 commonVector.append(ott);
                 c1++;
                 c2++;
             }
-            else if((ott->type) > (ctt->type)){
+            else if((ott->tagtype->name) > (ctt->tagtype->name)){
                 reverseVector.append(ctt);
                 c2++;
             }
@@ -457,12 +475,12 @@ void DiffView::rbIntersect_clicked() {
         const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos <= ctt->pos) && ((ott->pos + ott->length) > (ctt->pos))) ||
            ((ctt->pos <= ott->pos) && ((ctt->pos + ctt->length) > (ott->pos)))) {
-            if((ott->type) == (ctt->type)) {
+            if((ott->tagtype->name) == (ctt->tagtype->name)) {
                 commonVector.append(ott);
                 c1++;
                 c2++;
             }
-            else if((ott->type) > (ctt->type)) {
+            else if((ott->tagtype->name) > (ctt->tagtype->name)) {
                 reverseVector.append(ctt);
                 c2++;
             }
@@ -542,12 +560,12 @@ void DiffView::rbAContainB_clicked() {
         const Tag * ott = (Tag*)(&(tVector->at(c1)));
         const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ott->pos) <= (ctt->pos)) && ((ott->pos + ott->length) >= (ctt->pos + ctt->length))) {
-            if((ott->type) == (ctt->type)) {
+            if((ott->tagtype->name) == (ctt->tagtype->name)) {
                 commonVector.append(ott);
                 c1++;
                 c2++;
             }
-            else if((ott->type) > (ctt->type)) {
+            else if((ott->tagtype->name) > (ctt->tagtype->name)) {
                 reverseVector.append(ctt);
                 c2++;
             }
@@ -627,12 +645,12 @@ void DiffView::rbBContainA_clicked() {
         const Tag * ott = (Tag*)(&(tVector->at(c1)));
         const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
         if(((ctt->pos) <= (ott->pos)) && ((ctt->pos + ctt->length) >= (ott->pos + ott->length))) {
-            if((ctt->type) == (ott->type)) {
+            if((ctt->tagtype->name) == (ott->tagtype->name)) {
                 commonVector.append(ott);
                 c1++;
                 c2++;
             }
-            else if((ott->type) > (ctt->type)) {
+            else if((ott->tagtype->name) > (ctt->tagtype->name)) {
                 reverseVector.append(ctt);
                 c2++;
             }
@@ -706,26 +724,26 @@ void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> &
             nt = (Tag*)(commonVector.at(i+1));
         }
 
-        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+        //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
 
-            if(t->type == tt->tag) {
-                int start = t->pos;
-                int length = t->length;
-                QColor bgcolor(tt->bgcolor);
-                QColor fgcolor(tt->fgcolor);
-                int font = tt->font;
-                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool underline = false;
-                if(nt!=NULL && nt->pos == start) {
-                    underline = true;
-                }
-                bool bold = tt->bold;
-                bool italic = tt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
-                break;
-            }
+            //if(t->type == tt->name) {
+        int start = t->pos;
+        int length = t->length;
+        QColor bgcolor(t->tagtype->bgcolor);
+        QColor fgcolor(t->tagtype->fgcolor);
+        int font = t->tagtype->font;
+        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+        bool underline = false;
+        if(nt!=NULL && nt->pos == start) {
+            underline = true;
         }
+        bool bold = t->tagtype->bold;
+        bool italic = t->tagtype->italic;
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,common);
+                //break;
+            //}
+        //}
     }
 
     /** Add forward tags to A-B view **/
@@ -744,26 +762,26 @@ void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> &
             nt = (Tag*)(forwardVector.at(i+1));
         }
 
-        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+        //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
 
-            if(t->type == tt->tag) {
-                int start = t->pos;
-                int length = t->length;
-                QColor bgcolor(tt->bgcolor);
-                QColor fgcolor(tt->fgcolor);
-                int font = tt->font;
-                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool underline = false;
-                if(nt!=NULL && nt->pos == start) {
-                    underline = true;
-                }
-                bool bold = tt->bold;
-                bool italic = tt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
-                break;
-            }
+            //if(t->type == tt->tag) {
+        int start = t->pos;
+        int length = t->length;
+        QColor bgcolor(t->tagtype->bgcolor);
+        QColor fgcolor(t->tagtype->fgcolor);
+        int font = t->tagtype->font;
+        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+        bool underline = false;
+        if(nt!=NULL && nt->pos == start) {
+            underline = true;
         }
+        bool bold = t->tagtype->bold;
+        bool italic = t->tagtype->italic;
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
+                //break;
+            //}
+        //}
     }
 
     /** Add reverse tags to B-A view **/
@@ -782,26 +800,26 @@ void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> &
             nt = (Tag*)(reverseVector.at(i+1));
         }
 
-        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+        //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
 
-            if(t->type == tt->tag) {
-                int start = t->pos;
-                int length = t->length;
-                QColor bgcolor(tt->bgcolor);
-                QColor fgcolor(tt->fgcolor);
-                int font = tt->font;
-                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool underline = false;
-                if(nt!=NULL && nt->pos == start) {
-                    underline = true;
-                }
-                bool bold = tt->bold;
-                bool italic = tt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,_reverse);
-                break;
-            }
+            //if(t->type == tt->tag) {
+        int start = t->pos;
+        int length = t->length;
+        QColor bgcolor(t->tagtype->bgcolor);
+        QColor fgcolor(t->tagtype->fgcolor);
+        int font = t->tagtype->font;
+        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+        bool underline = false;
+        if(nt!=NULL && nt->pos == start) {
+            underline = true;
         }
+        bool bold = t->tagtype->bold;
+        bool italic = t->tagtype->italic;
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,_reverse);
+                //break;
+            //}
+        //}
     }
 }
 
@@ -858,15 +876,15 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
     for(int i=0; i < commonVector.count(); i++) {
         const Tag * t = (Tag*)(commonVector.at(i));
         if(t->pos == pos) {
-            tagtypes << t->type;
+            tagtypes << t->tagtype->name;
         }
     }
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->name))) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
             mTags->addAction(taginstance);
         }
@@ -874,10 +892,10 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
     connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagCommon(QString)));
     //menu->addAction(untagCommonAct);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->name)) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
             muTags->addAction(taginstance);
         }
@@ -887,26 +905,18 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
     delete menu;
 }
 
-int DiffView::insertTag(QString type, int pos, int length, Source source, Dest dest) {
+int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source source, Dest dest) {
 
-    Tag tag(type,pos,length,source);
+    const TagType* tagtype = NULL;
+    for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+        if(_atagger->tagTypeVector->at(i)->name == type) {
+            tagtype = _atagger->tagTypeVector->at(i);
+            break;
+        }
+    }
+    Tag tag(tagtype,pos,length,wordIndex,source);
     if(dest == original) {
         if(!(tVector->contains(tag))) {
-            /*
-            int i;
-            for(i=0; i< tVector->count(); i++) {
-                if(((tVector->at(i).pos >= pos) && (tVector->at(i).type > type)) || (i == (tVector->count()-1))) {
-                    if((tVector->at(i).pos >= pos) && (tVector->at(i).type > type)) {
-                        tVector->insert(i-1,tag);
-                        return i-1;
-                    }
-                    else {
-                        tVector->append(tag);
-                        return tVector->count()-1;
-                    }
-                }
-            }
-            */
             tVector->append(tag);
             qSort(tVector->begin(), tVector->end(), compareTags);
             return 1;
@@ -917,21 +927,6 @@ int DiffView::insertTag(QString type, int pos, int length, Source source, Dest d
     }
     else {
         if(!(cttVector->contains(tag))) {
-            /*
-            int i;
-            for(i=0; i< cttVector->count(); i++) {
-                if(((cttVector->at(i).pos >= pos) && (cttVector->at(i).type > type)) || (i == (cttVector->count()-1))) {
-                    if((cttVector->at(i).pos >= pos) && (cttVector->at(i).type > type)) {
-                        cttVector->insert(i-1,tag);
-                        return i-1;
-                    }
-                    else {
-                        cttVector->append(tag);
-                        return cttVector->count()-1;
-                    }
-                }
-            }
-            */
             cttVector->append(tag);
             qSort(cttVector->begin(), cttVector->end(), compareTags);
             return 1;
@@ -948,9 +943,17 @@ void DiffView::tagCommon(QString tagValue) {
         dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
+        int wordIndex;
+        if(_atagger->wordIndexMap.contains(start)) {
+            wordIndex = _atagger->wordIndexMap.value(start);
+        }
+        else {
+            QMessageBox::warning(this,"Warning","Invalid tag: doesn't start by a word");
+            return;
+        }
         int length = cursor.selectionEnd() - cursor.selectionStart();
-        int insertA = insertTag(tagValue, start, length, user, original);
-        int insertB = insertTag(tagValue, start, length, user, compareTo);
+        int insertA = insertTag(tagValue,start,length,wordIndex,user,original);
+        int insertB = insertTag(tagValue,start,length,wordIndex,user,compareTo);
 
         if(insertA == -1 && insertB == -1) {
             return;
@@ -1021,22 +1024,22 @@ void DiffView::untagCommon(QString tagValue) {
     dirty = true;
     for(int i=0; i < commonVector.count(); i++) {
         const Tag * t = (Tag*)(commonVector.at(i));
-        QString t_type = t->type;
+        QString t_type = t->tagtype->name;
         int t_pos = t->pos;
         //int t_length = t->length;
         Source t_source = t->source;
 
-        if(t->pos == start && t->type == tagValue) {
+        if(t->pos == start && t->tagtype->name == tagValue) {
 
             for(int j=0; j< tVector->count(); j++) {
-                if(t_pos == tVector->at(j).pos && t_type == tVector->at(j).type && t_source == tVector->at(j).source) {
+                if(t_pos == tVector->at(j).pos && t_type == tVector->at(j).tagtype->name && t_source == tVector->at(j).source) {
                     tVector->remove(j);
                     break;
                 }
             }
 
             for(int j=0; j< cttVector->count(); j++) {
-                if(t_pos == cttVector->at(j).pos && t_type == cttVector->at(j).type && t_source == cttVector->at(j).source) {
+                if(t_pos == cttVector->at(j).pos && t_type == cttVector->at(j).tagtype->name && t_source == cttVector->at(j).source) {
                     cttVector->remove(j);
                     break;
                 }
@@ -1111,15 +1114,15 @@ void DiffView::showContextMenuForward(const QPoint &pt) {
     for(int i=0; i < forwardVector.count(); i++) {
         const Tag * t = (Tag*)(forwardVector.at(i));
         if(t->pos == pos) {
-            tagtypes << t->type;
+            tagtypes << t->tagtype->name;
         }
     }
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->name))) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
             mTags->addAction(taginstance);
         }
@@ -1127,10 +1130,10 @@ void DiffView::showContextMenuForward(const QPoint &pt) {
     connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagForward(QString)));
     //menu->addAction(untagCommonAct);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->name)) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
             muTags->addAction(taginstance);
         }
@@ -1146,8 +1149,16 @@ void DiffView::tagForward(QString tagValue) {
         dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
+        int wordIndex;
+        if(_atagger->wordIndexMap.contains(start)) {
+            wordIndex = _atagger->wordIndexMap.value(start);
+        }
+        else {
+            QMessageBox::warning(this,"Warning","Invalid tag: doesn't start by a word");
+            return;
+        }
         int length = cursor.selectionEnd() - cursor.selectionStart();
-        insertTag(tagValue, start, length, user, original);
+        insertTag(tagValue,start,length,wordIndex,user,original);
 
         if(rbExact->isChecked()) {
             rbExact_clicked();
@@ -1197,9 +1208,9 @@ void DiffView::untagForward(QString tagValue) {
     for(int i=0; i < forwardVector.count(); i++) {
         const Tag * t = (Tag*)(forwardVector.at(i));
 
-        if(t->pos == start && t->type == tagValue) {
+        if(t->pos == start && t->tagtype->name == tagValue) {
             for(int j=0; j< tVector->count(); j++) {
-                if(t->pos == tVector->at(j).pos && t->type == tVector->at(j).type && t->source == tVector->at(j).source) {
+                if(t->pos == tVector->at(j).pos && t->tagtype->name == tVector->at(j).tagtype->name && t->source == tVector->at(j).source) {
                     tVector->remove(j);
                     cursor.clearSelection();
                     break;
@@ -1260,15 +1271,15 @@ void DiffView::showContextMenuReverse(const QPoint &pt) {
     for(int i=0; i < reverseVector.count(); i++) {
         const Tag * t = (Tag*)(reverseVector.at(i));
         if(t->pos == pos) {
-            tagtypes << t->type;
+            tagtypes << t->tagtype->name;
         }
     }
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+        if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->name))) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
             mTags->addAction(taginstance);
         }
@@ -1276,10 +1287,10 @@ void DiffView::showContextMenuReverse(const QPoint &pt) {
     connect(signalMapper, SIGNAL(mapped(const QString &)), this, SLOT(tagReverse(QString)));
     //menu->addAction(untagCommonAct);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+        if(tagtypes.contains(_atagger->tagTypeVector->at(i)->name)) {
             QAction * taginstance;
-            taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+            taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+            signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
             connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
             muTags->addAction(taginstance);
         }
@@ -1295,8 +1306,16 @@ void DiffView::tagReverse(QString tagValue) {
         dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
+        int wordIndex;
+        if(_atagger->wordIndexMap.contains(start)) {
+            wordIndex = _atagger->wordIndexMap.value(start);
+        }
+        else {
+            QMessageBox::warning(this,"Warning","Invalid tag: doesn't start by a word");
+            return;
+        }
         int length = cursor.selectionEnd() - cursor.selectionStart();
-        insertTag(tagValue, start, length, user, compareTo);
+        insertTag(tagValue,start,length,wordIndex,user,compareTo);
 
         if(rbExact->isChecked()) {
             rbExact_clicked();
@@ -1346,9 +1365,9 @@ void DiffView::untagReverse(QString tagValue) {
     for(int i=0; i < reverseVector.count(); i++) {
         const Tag * t = (Tag*)(reverseVector.at(i));
 
-        if(t->pos == start && t->type == tagValue) {
+        if(t->pos == start && t->tagtype->name == tagValue) {
             for(int j=0; j< cttVector->count(); j++) {
-                if(t->pos == cttVector->at(j).pos && t->type == cttVector->at(j).type && t->source == cttVector->at(j).source) {
+                if(t->pos == cttVector->at(j).pos && t->tagtype->name == cttVector->at(j).tagtype->name && t->source == cttVector->at(j).source) {
                     cttVector->remove(j);
                     cursor.clearSelection();
                     break;
@@ -1384,13 +1403,13 @@ void DiffView::closeEvent(QCloseEvent *event) {
 
          switch (ret) {
          case QMessageBox::Save:
-             _atagger->tagVector.clear();
+             _atagger->tagHash.clear();
              for(int i=0; i<tVector->count(); i++) {
-                 _atagger->tagVector.append((*tVector)[i]);
+                 _atagger->tagHash.insert(tVector->at(i).wordIndex,(*tVector)[i]);
              }
-             _atagger->compareToTagVector.clear();
+             _atagger->compareToTagHash.clear();
              for(int i=0; i<cttVector->count(); i++) {
-                 _atagger->compareToTagVector.append((*cttVector)[i]);
+                 _atagger->compareToTagHash.insert(cttVector->at(i).wordIndex,(*cttVector)[i]);
              }
              break;
          case QMessageBox::Discard:

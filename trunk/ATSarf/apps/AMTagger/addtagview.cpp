@@ -33,7 +33,7 @@ AddTagView::AddTagView(QTextBrowser *txtBrwsr, QWidget *parent) :
     grid->addWidget(btnAddTag,3,0,1,2,Qt::AlignCenter);
 
     for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
-        QString type = (_atagger->tagTypeVector->at(i))->tag;
+        QString type = (_atagger->tagTypeVector->at(i))->name;
         cbType->insertItem(i,type);
     }
     std::stringstream out1;
@@ -55,17 +55,16 @@ AddTagView::AddTagView(QTextBrowser *txtBrwsr, QWidget *parent) :
 void AddTagView::addTag_clicked() {
     QTextCursor cursor = txtBrwsr->textCursor();
     QString tag = cbType->currentText();
-    _atagger->insertTag(tag,cursor.selectionStart(), cursor.selectionEnd(), user,original);
 
     for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
-        if((_atagger->tagTypeVector->at(i))->tag == tag) {
+        if((_atagger->tagTypeVector->at(i))->name == tag) {
             QColor bgcolor((_atagger->tagTypeVector->at(i))->bgcolor);
             QColor fgcolor((_atagger->tagTypeVector->at(i))->fgcolor);
             int font = (_atagger->tagTypeVector->at(i))->font;
             bool underline = (_atagger->tagTypeVector->at(i))->underline;
             bool bold = (_atagger->tagTypeVector->at(i))->bold;
             bool italic = (_atagger->tagTypeVector->at(i))->italic;
-
+            _atagger->insertTag(_atagger->tagTypeVector->at(i),cursor.selectionStart(), cursor.selectionEnd(), 0,user,original);
             ((AMTMainWindow*)parentWidget())->tagWord(cursor.selectionStart(),cursor.selectionEnd()-cursor.selectionStart(),fgcolor,bgcolor,font,underline,italic,bold);
         }
     }

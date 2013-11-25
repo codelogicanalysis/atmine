@@ -3,7 +3,6 @@
 #include <qjson/serializer.h>
 #include <QFile>
 #include <QTextStream>
-#include <QFile>
 #include <dlfcn.h>
 #include <stdlib.h>
 
@@ -18,7 +17,7 @@ ATagger::ATagger() {
 }
 
 ATagger::~ATagger() {
-    tagVector.clear();
+    tagHash.clear();
     for(int i=0; i<tagTypeVector->size(); i++) {
         delete (*tagTypeVector)[i];
     }
@@ -37,20 +36,20 @@ ATagger::~ATagger() {
     delete nfaVector;
 }
 
-bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest dest) {
+bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex, Source source, Dest dest) {
 
-    Tag tag(type,pos,length,source);
+    Tag tag(type,pos,length,wordIndex,source);
     if(dest == original) {
-        if(!(tagVector.contains(tag))) {
-            tagVector.append(tag);
+        if(!(tagHash.contains(wordIndex,tag))) {
+            tagHash.insert(wordIndex,tag);
         }
         else {
             return false;
         }
     }
     else {
-        if(!(compareToTagVector.contains(tag))) {
-            compareToTagVector.append(tag);
+        if(!(compareToTagHash.contains(wordIndex,tag))) {
+            compareToTagHash.insert(wordIndex,tag);
         }
         else {
             return false;
@@ -59,9 +58,9 @@ bool ATagger::insertTag(QString type, int pos, int length, Source source, Dest d
     return true;
 }
 
-bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
+bool ATagger::insertTagType(QString tag, QString desc, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
 
-    TagType* tt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+    TagType* tt = new TagType(tag,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
     if(dest == original) {
         tagTypeVector->append(tt);
     }
@@ -71,8 +70,8 @@ bool ATagger::insertTagType(QString tag, QString desc, int id, QString fgcolor, 
     return true;
 }
 
-bool ATagger::insertSarfTagType(QString tag, QVector<Quadruple< QString , QString , QString , QString > > tags, QString desc, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
-    SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+bool ATagger::insertSarfTagType(QString tag, QVector<Quadruple< QString , QString , QString , QString > > tags, QString desc, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source, Dest dest) {
+    SarfTagType* stt = new SarfTagType(tag,tags,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
     if(dest == original) {
         tagTypeVector->append(stt);
     }
@@ -84,7 +83,7 @@ bool ATagger::insertSarfTagType(QString tag, QVector<Quadruple< QString , QStrin
 
 bool ATagger::buildNFA() {
     for(int i=0; i<msfVector->count(); i++) {
-        NFA* nfa = new NFA(msfVector->at(i)->name);
+        NFA* nfa = new NFA(msfVector->at(i));
         nfaVector->append(nfa);
         if(!(msfVector->at(i)->buildNFA(nfa))) {
             return false;
@@ -117,78 +116,63 @@ bool ATagger::buildActionFile() {
     return true;
 }
 
-bool ATagger::executeActions() {
+void ATagger::executeActions(NFA* nfa) {
 
     /** Add function calls of each formula to a function named msfName() **/
-    for(int i=0; i< nfaVector->count(); i++) {
-
-        NFA* nfa = nfaVector->at(i);
-        for(int j=0; j< msfVector->count(); j++) {
-
-            MSFormula* formula = msfVector->at(i);
-            if(nfa->name == formula->name) {
-
-                formula->actionData.append("extern \"C\" void " + formula->name + "_actions() {\n");
-                if(nfa->actionStack != NULL) {
-                    while(!(nfa->actionStack->isEmpty())) {
-                        formula->actionData.append(nfa->actionStack->pop() + ";\n");
-                    }
-                }
-                formula->actionData.append("}\n");
-            }
+    MSFormula* formula = (MSFormula*)nfa->formula;
+    formula->actionData.append("extern \"C\" void " + formula->name + "_actions() {\n");
+    for(int i=0; i<simulationVector.count(); i++) {
+        MERFTag* mTag = (MERFTag*)(simulationVector.at(i));
+        MSFormula* _formula = mTag->formula;
+        if(_formula->name == formula->name) {
+            mTag->match->executeActions(nfa);
         }
-
     }
-    //qDebug(msfVector->at(0)->actionData.toStdString().c_str());
+    formula->actionData.append("}\n");
 
     /** write action functions in .cpp output files, compile shared library, and call them **/
-    for(int i=0; i< msfVector->count(); i++) {
-        MSFormula* formula = msfVector->at(i);
+    QString msfName = formula->name;
+    QString cppFile = msfName + ".cpp";
+    QFile f(cppFile);
+    f.open(QIODevice::ReadWrite|QIODevice::Truncate|QIODevice::Text);
+    QTextStream out(&f);
+    out.flush();
+    out << formula->actionData;
 
-        QString msfName = formula->name;
-        QString cppFile = msfName + ".cpp";
-        QFile f(cppFile);
-        f.open(QIODevice::ReadWrite|QIODevice::Truncate|QIODevice::Text);
-        QTextStream out(&f);
-        out.flush();
-        out << formula->actionData;
+    f.close();
 
-        f.close();
+    // create library
+    QString command = "/usr/bin/g++ -fPIC -shared " + msfName + ".cpp -o lib" + msfName + ".so";
+    system (command.toStdString().c_str());
 
-        // create library
-        QString command = "/usr/bin/g++ -fPIC -shared " + msfName + ".cpp -o lib" + msfName + ".so";
-        system (command.toStdString().c_str());
-
-        // load library
-        QString sharedLib = "./lib" + msfName + ".so";
-        void * fLib = dlopen ( sharedLib.toStdString().c_str(), RTLD_LAZY );
-        if ( !fLib ) {
-            cerr << "Cannot open library: " << dlerror() << '\n';
-            return false;
-        }
-
-        if ( fLib ) {
-            QString actionFunction = msfName + "_actions";
-            void (*fn)() = (void (*)()) dlsym ( fLib, actionFunction.toStdString().c_str());
-            if (fn) {
-                // use function
-                fn();
-            }
-            dlclose(fLib);
-        }
+    // load library
+    QString sharedLib = "./lib" + msfName + ".so";
+    void * fLib = dlopen ( sharedLib.toStdString().c_str(), RTLD_LAZY );
+    if ( !fLib ) {
+        cerr << "Cannot open library: " << dlerror() << '\n';
+        return;
     }
-    return true;
+
+    if ( fLib ) {
+        QString actionFunction = msfName + "_actions";
+        void (*fn)() = (void (*)()) dlsym ( fLib, actionFunction.toStdString().c_str());
+        if (fn) {
+            // use function
+            fn();
+        }
+        dlclose(fLib);
+    }
 }
 
 void ATagger::drawNFA() {
     for(int i=0; i< _atagger->nfaVector->count(); i++) {
         NFA* nfa = _atagger->nfaVector->at(i);
 
-        QString cppFile = nfa->name + ".dot";
+        QString cppFile = nfa->formula->name + ".dot";
         QFile f(cppFile);
         f.open(QIODevice::WriteOnly);
         QTextStream out(&f);
-        out << "digraph " << nfa->name << " {\n";
+        out << "digraph " << nfa->formula->name << " {\n";
 
         QMapIterator<QString, QString> iterator(nfa->transitions);
         while (iterator.hasNext()) {
@@ -225,79 +209,32 @@ bool ATagger::runSimulator() {
         return false;
     }
 
-
     /// Simulate NFAs referring to all the MSFs built
     simulationVector.clear();
     for(int i=0; i<nfaVector->count(); i++) {
-        int index = 0;
         /// Simulate current MSF starting from a set of tokens referring to a single word
-        for(int j=index; j<tagVector.count(); j++) {
-            QStack<QString> *tempStack;
-            QVector<QString> *matchStruct;
-            QVector<Tag*>* tags = simulateNFA(nfaVector->at(i), tempStack, matchStruct, nfaVector->at(i)->start, index);
-            if(tags != NULL && !(tags->isEmpty())) {
-                int pos = tags->first()->pos;
-                int length = tags->last()->pos - tags->first()->pos + tags->last()->length;
-                MERFTag merfTag(nfaVector->at(i)->name, pos, length);
-                merfTag.tags = tags;
-                simulationVector.append(merfTag);
-                /// Check if matchStruct is not empty, and add content to first match
-                if(!(matchStruct->isEmpty())) {
-                    Tag* firstTag = tags->at(0);
-                    for(int k=matchStruct->count()-1; k>=0; k--) {
-                        firstTag->tType.prepend(matchStruct->at(k));
-                    }
-                }
+        for(int j=1; j<=wordCount; j++) {
+            Match* match = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, j);
+            if(match != NULL && match->getLength() > 0) {
+                MERFTag* merftag = (MERFTag*)(match->parent);
+                merftag->pos = merftag->getPOS();
+                merftag->length = merftag->getLength();
+                simulationVector.append(merftag);
 
-                /// Clean the match struct info by removing redundant info
-                for(int k=0; k<tags->count(); k++) {
-                    Tag* tempTag = tags->at(k);
-                    for(int m=0; m<(tempTag->tType.count()-1); m++) {
-                        QString structType1 = tempTag->tType.at(m).section('|',0,0);
-                        QString structType2 = tempTag->tType.at(m+1).section('|',0,0);
-                        QString structPOS1 = tempTag->tType.at(m).section('|',1,1);
-                        QString structPOS2 = tempTag->tType.at(m+1).section('|',1,1);
-                        if((structType1.compare(structType2) == 0) && (structPOS1.compare("pre") == 0) && (structPOS2.compare("on") == 0)) {
-                            tempTag->tType.remove(m+1);
-                            tempTag->tType.remove(m);
-                            m = m-1;
-                        }
-                    }
-                }
-
-                /// Skip the tokens of the words in the match
-                for(; j<tagVector.count(); j++) {
-                    if((tagVector.at(j).pos) > (tags->last()->pos)) {
-                        index = j;
-                        break;
-                    }
-                }
-                /// Join stacks
-                if(nfaVector->at(i)->actionStack == NULL) {
-                    nfaVector->at(i)->actionStack = tempStack;
-                }
-                else {
-                    for(int k=0; k< nfaVector->at(i)->actionStack->count(); k++) {
-                        tempStack->push(nfaVector->at(i)->actionStack->at(k));
-                        //nfaVector->at(i)->actionStack->pop_back();
-                    }
-                    delete (nfaVector->at(i)->actionStack);
-                    nfaVector->at(i)->actionStack = tempStack;
-                }
+                /// Skip the words in the match
+                int matchCount = merftag->getMatchCount();
+                j = j + matchCount -1;
             }
             else {
-                if(tags != NULL) {
-                    delete tags;
+                if(match != NULL) {
+                    delete match;
                 }
-                while((j<tagVector.count()) && (tagVector.at(index).pos == tagVector.at(j).pos)) {
-                    j++;
-                }
-                index = j;
             }
         }
+        /** Execute Actions **/
+        executeActions(nfaVector->at(i));
+        /** Done **/
     }
-
-    executeActions();
 
     /** Clean data in MSF vector **/
     for(int i=0; i<msfVector->count();i++) {
@@ -325,209 +262,63 @@ bool lessThan(const QString &s1, const QString &s2)
     }
 }
 
-bool ATagger::refineFunctions(NFA* nfa, QList<QString> &function, int index) {
-    for(int i=0; i<function.count(); i++) {
-        function[i] = function[i].replace('|','_');
-        function[i] = function[i].append("Match(");
-        if(function[i].contains("pre")) {
-            function[i] = function[i].append(')');
-            continue;
-        }
-        if(index != -1) {
-            QMultiMap<QString,QString> *functionParametersMap;
-            for(int j=0; j< msfVector->count(); j++) {
-                if(msfVector->at(j)->name == nfa->name) {
-                    functionParametersMap = &(msfVector->at(j)->functionParametersMap);
-                    break;
-                }
-            }
-            QString key = function[i];
-            key.chop(1);
-            QList<QString> params = functionParametersMap->values(key);
-            for(int j=0; j<params.count(); j++) {
-                QString msfName = params.at(j).section('|',0,0);
-                QString field = params.at(j).section('|',1,1);
-                QString msfName2 = function[i].section('_',0,0);
-                if(!(msfName.compare(msfName2) == 0)) {
-                    return false;
-                }
-
-                if(field.compare("text") == 0) {
-                    QString paramText = text.mid(tagVector.at(index).pos, tagVector.at(index).length);
-                    function[i].append('\"' + paramText + "\",");
-                }
-                else if(field.compare("position") == 0) {
-                    function[i].append(tagVector.at(index).pos + ',');
-                }
-                else if(field.compare("length") == 0) {
-                    function[i].append(tagVector.at(index).length + ',');
-                }
-                else if(field.compare("number") == 0) {
-                    QString possibleNum = text.mid(tagVector.at(index).pos, tagVector.at(index).length);
-                    NumNorm nn(&possibleNum);
-                    nn();
-                    int number = NULL;
-                    if(nn.extractedNumbers.count()!=0) {
-                        number = nn.extractedNumbers[0].getNumber();
-                        function[i].append(QString::number(number) + ',');
-                    }
-                    else {
-                        function[i].append("-1,");
-                    }
-                }
-                else {
-                    return false;
-                }
-            }
-            if(params.count() == 0) {
-                function[i].append(')');
-            }
-            else {
-                function[i].chop(1);
-                function[i].append(')');
-            }
-        }
-        else {
-            function[i].append(')');
-        }
-    }
-    return true;
-}
-
-bool ATagger::buildMatchStruct(NFA *nfa, QList<QString> &functionCalls, QVector<QString> *matchStruct) {
-    /// Use MSF states to build match structure
-    for(int i=0; i<functionCalls.count(); i++) {
-        QString msfName = functionCalls.at(i).section('|',0,0);
-        QString msfSE = functionCalls.at(i).section('|',1,1);
-        for(int j=0; j<_atagger->msfVector->count(); j++) {
-            if(_atagger->msfVector->at(j)->name == nfa->name) {
-                MSFormula* formula = _atagger->msfVector->at(j);
-                MSF* msf = formula->map.value(msfName);
-                if(msf->isMBF()) {
-                    if(!matchStruct->contains("mbf|")) {
-                        matchStruct->prepend("mbf|");
-                    }
-                }
-                else if(msf->isUnary()) {
-                    UNARYF* unaryF = (UNARYF*)msf;
-                    if(unaryF->op == STAR) {
-                        matchStruct->prepend("STAR|" + msfSE);
-                    }
-                    else if(unaryF->op == PLUS) {
-                        matchStruct->prepend("PLUS|" + msfSE);
-                    }
-                    else if(unaryF->op == UPTO) {
-                        matchStruct->prepend("UPTO|" + msfSE + '|' + QString::number(unaryF->limit));
-                    }
-                    else if(unaryF->op == KUESTION) {
-                        matchStruct->prepend("QUESTION|" + msfSE);
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else if(msf->isBinary()) {
-                    BINARYF* binaryF = (BINARYF*)msf;
-                    if(binaryF->op == OR) {
-                        matchStruct->prepend("OR|" + msfSE);
-                    }
-                    else if(binaryF->op == AND) {
-                        matchStruct->prepend("AND|" + msfSE);
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else if(msf->isSequential()) {
-                    //matchStruct->prepend("SEQ|" + msfSE);
-                }
-                else if(msf->isFormula()) {
-                    //Do later
-                    return false;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QVector<QString> *&matchStruct, QString state, int tagIndex) {
-
+Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
-        /// check if the accept state stands for any function calls and push them to stack
-        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-        matchStruct = new QVector<QString>();
-        if(!(functionCalls.isEmpty())) {
-            /// Sort the function calls based on formula order and pre/on
-            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-            if(!buildMatchStruct(nfa,functionCalls,matchStruct)) {
-                return NULL;
-            }
-        }
-        refineFunctions(nfa,functionCalls);
-        actionStack = new QStack<QString>();
-        for(int i=0; i< functionCalls.count(); i++) {
-            actionStack->push(functionCalls.at(i));
-        }
-        /// initialize a tag vector and return it
-        QVector<Tag*> *tags = new QVector<Tag*>();
-        return tags;
+        /// initialize a MERFTag and return it
+        MERFTag* merftag = new MERFTag((MSFormula*)(nfa->formula),sarf);
+        SequentialM* seq = new SequentialM(merftag);
+        merftag->setMatch(seq);
+        seq->msf = NULL;
+        return seq;
     }
+
     /** checked when transition found from MBF before MSF**/
     bool done = false;
 
-    /// Use a vector of vectors to collect correct solutions and choose longest
-    QVector<QVector<Tag*>*> tags;
-    /// Use a vector of stacks to collect functions calls
-    QVector<QStack<QString> *> stacks;
-    QVector<QVector<QString> *> matchStructVectors;
+    /// Use a vector of matches to collect correct solutions and choose longest
+    QVector<Match*> matches;
 
-    QVector<int> tokens;
-    for(int i=tagIndex; (i<tagVector.count()) && (tagVector.at(i).pos == tagVector.at(tagIndex).pos); i++) {
-        tokens.append(i);
+    /// Get the tags for word at wordIndex
+    QList<Tag> tokens;
+    if(tagHash.contains(wordIndex)) {
+        tokens = tagHash.values(wordIndex);
     }
-
-    int nextIndex;
-    if(!(tokens.isEmpty())) {
-        nextIndex = (tokens.last()) + 1;
+    else {
+        /// Word is tagged by NONE
+        int pos = wordIndexMap.key(wordIndex);
+        Word word = nextWord(text, pos);
+        int length = word.end-word.start+1;
+        Tag t(NULL,pos,length,wordIndex,sarf);
+        tokens.append(t);
     }
 
     for(int i=0; i<tokens.count(); i++) {
-        QList<QString> nstates = nfa->transitions.values(state + '|' + tagVector.at(tokens.at(i)).type);
+        QList<QString> nstates;
+        if(tokens.at(i).tagtype == NULL) {
+            nstates = nfa->transitions.values(state + "|NONE");
+        }
+        else {
+            nstates = nfa->transitions.values(state + '|' + tokens.at(i).tagtype->name);
+        }
         for(int j = 0; j < nstates.size(); j++) {
             done = true;
-            QStack<QString> *tempStack;
-            QVector<QString> *tempMatchStruct;
-            QVector<Tag*>* temp = simulateNFA(nfa, tempStack, tempMatchStruct, nstates.at(j), nextIndex);
+            Match* temp = simulateNFA(nfa, nstates.at(j), wordIndex+1);
             if(temp != NULL) {
-                Tag* t = new Tag(tagVector.at(tokens.at(i)).type, tagVector.at(tokens.at(i)).pos, tagVector.at(tokens.at(i)).length, sarf);
-                temp->prepend(t);
-                tags.append(temp);
-                /// construct action stack for this match
-                //QString tempState = "q";
-                //int stateNumber = state.mid(1).toInt() +1;
-                //tempState.append(QString::number(stateNumber));
-                QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-                if(!(functionCalls.isEmpty())) {
-                    qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-                    if(!buildMatchStruct(nfa,functionCalls,tempMatchStruct)) {
-                        return NULL;
-                    }
+                /** Update Match **/
+                KeyM* keyMatch = (KeyM*)temp;
+                if(tokens.at(i).tagtype == NULL) {
+                    keyMatch->key = "NONE";
                 }
-                for(int k=0; k<tempMatchStruct->count(); k++) {
-                    t->tType.append(tempMatchStruct->at(k));
+                else {
+                    keyMatch->key = tokens.at(i).tagtype->name;
                 }
-                /// Clear previous struct since it has been added to tag
-                tempMatchStruct->clear();
-                matchStructVectors.append(tempMatchStruct);
-                refineFunctions(nfa,functionCalls, tokens.at(i));
-                for(int i=0; i< functionCalls.count(); i++) {
-                    tempStack->push(functionCalls.at(i));
-                }
-                stacks.append(tempStack);
+                keyMatch->length = tokens.at(i).length;
+                keyMatch->pos = tokens.at(i).pos;
+                keyMatch->msf = nfa->stateTOmsfMap.value(state).first;
+                keyMatch->word = text.mid(tokens.at(i).pos,tokens.at(i).length);
+                temp = temp->parent;
+                /** Done **/
+                matches.append(temp);
             }
         }
     }
@@ -535,137 +326,143 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QVe
     QList<QString> nstates =nfa->transitions.values(state + '|' + "epsilon");
     for(int j = 0; j < nstates.size(); j++) {
         done = true;
-        QStack<QString> *tempStack;
-        QVector<QString> *tempMatchStruct;
-        QVector<Tag*>* temp = simulateNFA(nfa, tempStack, tempMatchStruct, nstates.at(j), tagIndex);
+        Match* temp = simulateNFA(nfa,nstates.at(j),wordIndex);
         if(temp != NULL) {
-            tags.append(temp);
-            /// construct action stack for this match
-            QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-            if(!(functionCalls.isEmpty())) {
-                qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-                if(!buildMatchStruct(nfa,functionCalls,tempMatchStruct)) {
-                    return NULL;
+            /** Update Match **/
+            if(nfa->stateTOmsfMap.contains(state)) {
+                QPair<MSF*,QString> pair = nfa->stateTOmsfMap.value(state);
+                MSF* msf = pair.first;
+                if(pair.second.compare("pre") == 0) {
+                    /** Check for case of empty Unary Solution with STAR operation **/
+
+                    if(temp->getLength()<=0) {
+                        Match* tmp = temp;
+                        temp = temp->parent;
+                        if(temp->isSequentialM()) {
+                            SequentialM* seq = (SequentialM*)temp;
+                            /// Remove empty match from parent if parent sequential
+                            for(int i=0; i<seq->matches.count(); i++) {
+                                if(seq->matches.at(i) == tmp) {
+                                    seq->matches.remove(i);
+                                }
+                            }
+                        }
+                        else if(temp->isBinaryM()) {
+                            BinaryM* binary = (BinaryM*)temp;
+                            /// Remove empty solution from parent if parent binary
+                            if(binary->leftMatch == tmp) {
+                                binary->leftMatch = NULL;
+                            }
+                            else if(binary->rightMatch == tmp) {
+                                binary->rightMatch = NULL;
+                            }
+                        }
+                        delete tmp;
+                    }
+                    else {
+                        temp = temp->parent;
+                    }
+                    /** Done **/
+                }
+                else {
+                    if(msf->isMBF()) {
+                        KeyM* keym = new KeyM(temp,"",-1,-1);
+                        keym->msf = msf;
+                        temp->setMatch(keym);
+                        temp = keym;
+                    }
+                    else if(msf->isUnary()) {
+                        UNARYF* unary = (UNARYF*)msf;
+                        UnaryM* unarym = new UnaryM(unary->op,temp,unary->limit);
+                        unarym->msf = msf;
+                        temp->setMatch(unarym);
+                        temp = unarym;
+                    }
+                    else if(msf->isBinary()) {
+                        /// AND case is resolved down in code
+                        BINARYF* binary = (BINARYF*)msf;
+                        if(binary->op == OR) {
+                            BinaryM* binarym = new BinaryM(OR,temp);
+                            binarym->msf = msf;
+                            temp->setMatch(binarym);
+                            temp = binarym;
+                        }
+                    }
+                    else if(msf->isSequential()) {
+                        SequentialM* seqm = new SequentialM(temp);
+                        seqm->msf = msf;
+                        temp->setMatch(seqm);
+                        temp = seqm;
+                    }
+                    else {
+                        /// TODO: Case of a formula
+                    }
                 }
             }
-            matchStructVectors.append(tempMatchStruct);
-            refineFunctions(nfa,functionCalls);
-            for(int i=0; i< functionCalls.count(); i++) {
-                tempStack->push(functionCalls.at(i));
-            }
-            stacks.append(tempStack);
+            /** Done **/
+            matches.append(temp);
         }
     }
 
-    QString formula;
+    bool isSpecial = false;
+    MSFormula* formula = NULL;
     /** check for formula transition **/
     if(!done) {
         for(int i=0; i<nfaVector->count(); i++) {
-            QList<QString> nstates = nfa->transitions.values(state + '|' + nfaVector->at(i)->name);
-            for(int j = 0; j < nstates.size(); j++) {
-                formula = nfaVector->at(i)->name;
-                QStack<QString> *tempStack;
-                QVector<QString> *tempMatchStruct;
-                QVector<Tag*>* temp = simulateNFA(nfaVector->at(i), tempStack, tempMatchStruct, nfaVector->at(i)->start, tagIndex);
-                if(temp != NULL) {
-                    tags.append(temp);
-                    /// construct action stack for this match
-                    QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-                    if(!(functionCalls.isEmpty())) {
-                        qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-                        if(!buildMatchStruct(nfa,functionCalls,tempMatchStruct)) {
-                            return NULL;
-                        }
-                    }
-                    matchStructVectors.append(tempMatchStruct);
-                    refineFunctions(nfa,functionCalls);
-                    for(int i=0; i< functionCalls.count(); i++) {
-                        tempStack->push(functionCalls.at(i));
-                    }
-                    stacks.append(tempStack);
-                }
-                break;
+            if(!(nfa->transitions.contains(state + '|' + nfaVector->at(i)->formula->name))) {
+                continue;
             }
+            QList<QString> nstates = nfa->transitions.values(state + '|' + nfaVector->at(i)->formula->name);
+            for(int j = 0; j < nstates.size(); j++) {
+                isSpecial = true;
+                formula = (MSFormula*)(nfaVector->at(i)->formula);
+                Match* temp = simulateNFA(nfaVector->at(i),nfaVector->at(i)->start,wordIndex);
+                if(temp != NULL) {
+                    matches.append(temp);
+                }
+            }
+            break;
         }
     }
 
-    if(tags.count() != 0) {
+    if(matches.count() != 0) {
 
         /** check if we have AND formula **/
         if(nfa->transitions.contains(state + "|*AND*")) {
 
-            if((tags.count() == 2) && (tags.at(0)->count() == tags.at(1)->count())) {
+            isSpecial = true;
+            if((matches.count() == 2) && (matches.at(0)->getMatchCount() == matches.at(1)->getMatchCount())) {
                 /// We have two matches referring to the two AND paths and both of same length
 
-                int wordSkip = tags.at(0)->count();
-                int index = tagIndex;
-                for(int i=0; i<wordSkip; i++) {
-                    int j=index;
-                    while((j<tagVector.count()) && (tagVector.at(j).pos == tagVector.at(index).pos)) {
-                        j++;
-                    }
-                    index = j;
-                }
+                int wordSkip = matches.at(0)->getMatchCount();
+                int nextWordIndex = wordIndex + wordSkip;
 
                 QList<QString> nstates =nfa->transitions.values(state + "|*AND*");
                 for(int j = 0; j < nstates.size(); j++) {
-                    QStack<QString> *tempStack;
-                    QVector<QString> *tempMatchStruct;
-                    QVector<Tag*>* temp = simulateNFA(nfa, tempStack, tempMatchStruct, nstates.at(j), index);
+                    Match* temp = simulateNFA(nfa,nstates.at(j),nextWordIndex);
                     if(temp != NULL) {
-                        tags.append(temp);
-                        /*
-                        /// Add two branch stacks to current
-                        for(int i=0; i< 2; i++) {
-                            for(int k=matchStructVectors.at(i)->count()-1; k>=0; k--) {
-
-                            }
-                        }
-                        */
-                        /// construct action stack for this match
-                        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-                        if(!(functionCalls.isEmpty())) {
-                            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-                            if(!buildMatchStruct(nfa,functionCalls,tempMatchStruct)) {
-                                return NULL;
-                            }
-                        }
-                        matchStructVectors.append(tempMatchStruct);
-                        refineFunctions(nfa,functionCalls);
-                        /// Add two branch stacks to current
-                        for(int i=0; i< 2; i++) {
-                            for(int k=0; k<stacks.at(i)->count(); k++) {
-                                tempStack->push(stacks.at(i)->at(k));
-                                //stacks.at(i)->pop_back();
-                            }
-                        }
-                        /// Add AND actions including on match and successive ones
-                        for(int i=0; i< functionCalls.count(); i++) {
-                            tempStack->push(functionCalls.at(i));
-                        }
-                        delete (stacks.at(1));
-                        stacks.remove(1);
-                        delete (stacks.at(0));
-                        stacks.remove(0);
-                        stacks.append(tempStack);
+                        matches.append(temp);
                     }
                     else {
                         return NULL;
                     }
                 }
 
-                /** add AND tags to consequent match **/
-                for(int i=2; i< tags.count(); i++) {
-                    for(int j = (tags.at(1)->count()-1); j>=0 ; j--) {
-                        tags.at(i)->prepend(tags.at(1)->at(j));
-                    }
-                }
+                /** Update Match: add AND matches to consequent match **/
+                QPair<MSF*,QString> pair = nfa->stateTOmsfMap.value(state);
+                MSF* msf = pair.first;
 
-                tags.remove(1);
-                for(int i=0; i< tags.at(0)->count(); i++) {
-                    delete tags.at(0)->at(i);
-                }
-                tags.remove(0);
+                Match* parent = matches[2];
+                BinaryM* binarym = new BinaryM(AND,parent);
+                binarym->msf = msf;
+                parent->setMatch(binarym);
+                binarym->setMatch(matches[0]);
+                matches[0]->parent = binarym;
+                binarym->setMatch(matches[1]);
+                matches[1]->parent = binarym;
+                matches.clear();
+                matches.append(binarym);
+                /** Done **/
             }
             else {
                 return NULL;
@@ -673,68 +470,38 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QVe
         }
 
         /** Check if we have a MSF use **/
-        if(!(formula.isEmpty())) {
-            if(!(tags.isEmpty())) {
+        if(formula != NULL) {
+            if(!(matches.isEmpty())) {
                 /// We have a match referring to the MSF path
 
-                int wordSkip = tags.at(0)->count();
-                int index = tagIndex;
-                for(int i=0; i<wordSkip; i++) {
-                    int j=index;
-                    while((j<tagVector.count()) && (tagVector.at(j).pos == tagVector.at(index).pos)) {
-                        j++;
-                    }
-                    index = j;
-                }
+                int wordSkip = matches.at(0)->getMatchCount();
+                int nextWordIndex = wordIndex + wordSkip;
 
-                QList<QString> nstates =nfa->transitions.values(state + '|' + formula);
+                QList<QString> nstates =nfa->transitions.values(state + '|' + formula->name);
                 for(int j = 0; j < nstates.size(); j++) {
-                    QStack<QString> *tempStack;
-                    QVector<QString> *tempMatchStruct;
-                    QVector<Tag*>* temp = simulateNFA(nfa, tempStack, tempMatchStruct, nstates.at(j), index);
+                    Match* temp = simulateNFA(nfa,nstates.at(j),nextWordIndex);
                     if(temp != NULL) {
-                        tags.append(temp);
-                        /// construct action stack for this match
-                        QList<QString> functionCalls = nfa->stateTOmsfMap.values(state);
-                        if(!(functionCalls.isEmpty())) {
-                            qSort(functionCalls.begin(), functionCalls.end(), lessThan);
-                            if(!buildMatchStruct(nfa,functionCalls,tempMatchStruct)) {
-                                return NULL;
-                            }
-                        }
-                        matchStructVectors.append(tempMatchStruct);
-                        refineFunctions(nfa,functionCalls);
-                        /// Add formula stack to current
-                        for(int i=0; i< stacks.count(); i++) {
-                            for(int k=0; k<stacks.at(i)->count(); k++) {
-                                tempStack->push(stacks.at(i)->at(k));
-                                //stacks.at(i)->pop_back();
-                            }
-                        }
-                        /// Add current node actions
-                        for(int i=0; i< functionCalls.count(); i++) {
-                            tempStack->push(functionCalls.at(i));
-                        }
-                        delete (stacks.at(0));
-                        stacks.remove(0);
-                        stacks.append(tempStack);
+                        matches.append(temp);
                     }
                     else {
                         return NULL;
                     }
                 }
 
-                /** add AND tags to consequent match **/
-                for(int i=1; i< tags.count(); i++) {
-                    for(int j = (tags.at(0)->count()-1); j>=0 ; j--) {
-                        tags.at(i)->prepend(tags.at(0)->at(j));
-                    }
-                }
+                /** Update Match: add formula matches to consequent match **/
+                QPair<MSF*,QString> pair = nfa->stateTOmsfMap.value(state);
+                MSF* msf = pair.first;
 
-                for(int i=0; i< tags.at(0)->count(); i++) {
-                    delete tags.at(0)->at(i);
-                }
-                tags.remove(0);
+                Match* parent = matches[1];
+                MERFTag* mtag = new MERFTag(formula,sarf);
+                mtag->msf = msf;
+                mtag->parent = parent;
+                parent->setMatch(mtag);
+                mtag->setMatch(matches[0]);
+                matches[0]->parent = mtag;
+                matches.clear();
+                matches.append(mtag);
+                /** Done **/
             }
             else {
                 return NULL;
@@ -744,31 +511,43 @@ QVector<Tag*>* ATagger::simulateNFA(NFA* nfa, QStack<QString> *&actionStack, QVe
         /** get longest match and return it **/
         int maxCount = -1;
         int maxIndex;
-        for(int i=0; i< tags.count(); i++) {
-            if(tags.at(i)->count() > maxCount) {
+        if(isSpecial) {
+            /// This is the case where we have a subformula or AND operation
+            /// In such a case, the matches are connected to each other and shouldn't be deleted
+            if(formula != NULL) {
+                /// We have a formula
+                return matches.at(1);
+            }
+            else {
+                /// We have an AND operation
+                return matches.at(2);
+            }
+
+        }
+        for(int i=0; i< matches.count(); i++) {
+            Match* temp = matches[i];
+            while(temp->parent != NULL) {
+                temp = temp->parent;
+            }
+            int tempMatchCount = temp->getMatchCount();
+            if( tempMatchCount > maxCount) {
                 maxIndex = i;
-                maxCount = tags.at(i)->count();
+                maxCount = tempMatchCount;
             }
         }
 
         /// Delete smaller matches
-        for(int i=0; i< tags.count(); i++) {
+        for(int i=0; i< matches.count(); i++) {
             if(i != maxIndex) {
-                for(int j=0; j< tags.at(i)->count(); j++) {
-                    delete tags.at(i)->at(j);
+                Match* temp = matches[i];
+                while(temp->parent != NULL) {
+                    temp = temp->parent;
                 }
-                delete (stacks.at(i));
-                delete (matchStructVectors.at(i));
-                //stacks.remove(i);
+                delete temp;
             }
         }
-        actionStack = stacks.at(maxIndex);
-        matchStruct = matchStructVectors.at(maxIndex);
-        return tags.at(maxIndex);
+        return matches.at(maxIndex);
     }
-
-    actionStack = NULL;
-    matchStruct = NULL;
     return NULL;
 }
 
@@ -781,9 +560,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         for( int i=0; i < _atagger->tagTypeVector->count(); i++) {
             QVariantMap data;
             SarfTagType* tagtype = (SarfTagType*)(tagTypeVector->at(i));
-            data.insert("Tag",tagtype->tag);
+            data.insert("Tag",tagtype->name);
             data.insert("Description",tagtype->description);
-            data.insert("id",_atagger->tagTypeVector->count());
             data.insert("foreground_color",tagtype->fgcolor);
             data.insert("background_color",tagtype->bgcolor);
             data.insert("font",tagtype->font);
@@ -827,9 +605,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         QVariantList tagtypeset;
         for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
             QVariantMap data;
-            data.insert("Tag",(_atagger->tagTypeVector->at(i))->tag);
+            data.insert("Tag",(_atagger->tagTypeVector->at(i))->name);
             data.insert("Description",(_atagger->tagTypeVector->at(i))->description);
-            data.insert("id",_atagger->tagTypeVector->count());
             data.insert("foreground_color",(_atagger->tagTypeVector->at(i))->fgcolor);
             data.insert("background_color",(_atagger->tagTypeVector->at(i))->bgcolor);
             data.insert("font",(_atagger->tagTypeVector->at(i))->font);
@@ -851,13 +628,17 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         tagdata.insert("file",_atagger->textFile);
         tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
         tagdata.insert("textchecksum", _atagger->text.count());
+        tagdata.insert("version", 1.0);
         QVariantList tagset;
-        for(int i=0; i<_atagger->tagVector.count(); i++) {
+        QHashIterator<int, Tag> iTag(_atagger->tagHash);
+        while (iTag.hasNext()) {
+            iTag.next();
             QVariantMap data;
-            data.insert("type",(_atagger->tagVector.at(i)).type);
-            data.insert("pos",(_atagger->tagVector.at(i)).pos);
-            data.insert("length",(_atagger->tagVector.at(i)).length);
-            data.insert("source",(_atagger->tagVector.at(i)).source);
+            data.insert("type",iTag.value().tagtype->name);
+            data.insert("pos",iTag.value().pos);
+            data.insert("length",iTag.value().length);
+            data.insert("wordIndex",iTag.value().wordIndex);
+            data.insert("source",iTag.value().source);
             tagset << data;
         }
         tagdata.insert("TagArray",tagset);
@@ -865,28 +646,16 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         if(!(_atagger->simulationVector.isEmpty())) {
             QVariantList simulationList;
             for(int i=0; i<_atagger->simulationVector.count(); i++) {
-                const MERFTag *mtag = &(_atagger->simulationVector.at(i));
+                MERFTag *mtag = (MERFTag*)(_atagger->simulationVector.at(i));
+                MSFormula* formula = mtag->formula;
                 QVariantMap data;
-                data.insert("type", mtag->type);
+                data.insert("formula", formula->name);
                 data.insert("pos", mtag->pos);
                 data.insert("length", mtag->length);
-                QVariantList mbfList;
-                for(int j=0; j< mtag->tags->count(); j++) {
-                    Tag* tag = mtag->tags->at(j);
-                    QVariantMap mbfData;
-                    mbfData.insert("type", tag->type);
-                    mbfData.insert("pos", tag->pos);
-                    mbfData.insert("length", tag->length);
-                    if(!(tag->tType.isEmpty())) {
-                        QVariantList tTypeList;
-                        for(int k=0; k<tag->tType.count(); k++) {
-                            tTypeList << tag->tType.at(k);
-                        }
-                        mbfData.insert("tagType", tTypeList);
-                    }
-                    mbfList << mbfData;
+                data.insert("source",mtag->source);
+                if(mtag->match != NULL) {
+                    data.insert("match",mtag->match->getJSON());
                 }
-                data.insert("tags", mbfList);
                 simulationList << data;
             }
             tagdata.insert("simulationTags",simulationList);

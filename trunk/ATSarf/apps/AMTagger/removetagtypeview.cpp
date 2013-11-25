@@ -15,7 +15,7 @@ RemoveTagTypeView::RemoveTagTypeView(QTextBrowser *txtBrwsr,QTreeWidget * tagDes
     lblType->setText("Tag Type: ");
     btnRemoveTagType->setText("Remove TagType");
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        cbType->addItem((_atagger->tagTypeVector->at(i))->tag);
+        cbType->addItem((_atagger->tagTypeVector->at(i))->name);
     }
 
     scrollArea=new QScrollArea(this);
@@ -30,19 +30,23 @@ RemoveTagTypeView::RemoveTagTypeView(QTextBrowser *txtBrwsr,QTreeWidget * tagDes
 }
 
 void RemoveTagTypeView::removeTagType_clicked() {
-    QString tag = cbType->currentText();
+    QString tagtype = cbType->currentText();
     for(int i=0; i < _atagger->tagTypeVector->count(); i++) {
-        if((_atagger->tagTypeVector->at(i))->tag == tag) {
-            for(int j=0; j < _atagger->tagVector.count(); j++) {
-                if((_atagger->tagVector.at(j)).type == tag) {
-                    int start = (_atagger->tagVector.at(j)).pos;
-                    int length = (_atagger->tagVector.at(j)).length;
-                    ((AMTMainWindow*)parentWidget())->tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
-                    _atagger->tagVector.remove(j);
+        if((_atagger->tagTypeVector->at(i))->name == tagtype) {
+            _atagger->tagTypeVector->remove(i);
+
+            /// Remove all tags based on removed tag type
+            QHashIterator<int, Tag> iTag(_atagger->tagHash);
+            while (iTag.hasNext()) {
+                iTag.next();
+                if(iTag.value().tagtype->name == tagtype) {
+                    _atagger->tagHash.remove(iTag.value().wordIndex,iTag.value());
                 }
             }
-            _atagger->tagTypeVector->remove(i);
-            ((AMTMainWindow*)parentWidget())->fillTreeWidget(user);
+
+            if(_atagger->isTagMBF) {
+                ((AMTMainWindow*)parentWidget())->applyTags(0);
+            }
             break;
         }
     }

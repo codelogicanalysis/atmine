@@ -8,7 +8,7 @@ AutoTagger::AutoTagger(QString *text, QHash<QString, QSet<QString> > *synSetHash
 
 bool AutoTagger::operator ()() {
     int start = 0;
-    int tagCount = 0;
+    int wordCount = 1;
     while(start != text->count()) {
         Word word = nextWord(*text, start);
         if(word.word.isEmpty()) {
@@ -30,28 +30,42 @@ bool AutoTagger::operator ()() {
             iNFIterator.next();
             QString tag = iNFIterator.value();
             bool add = true;
+            /*
             for( int z=0; z<(_atagger->tagVector.count()); z++) {
                 const Tag * tag2 = &(_atagger->tagVector.at(z));
-                if((tag2->pos == word.start) && (tag2->length == length) && (tag2->type == tag)) {
+                if((tag2->pos == word.start) && (tag2->length == length) && (tag2->tagtype->name == tag)) {
+                    add = false;
+                    break;
+                }
+            }
+            */
+            QList<Tag> values = _atagger->tagHash.values(wordCount);
+            /// This is just to check if anything goes wrong with wordIndex/wordPOS
+            if(values[0].pos != word.start) {
+                _atagger->tagHash.clear();
+                return false;
+            }
+            for(int i=0; i<values.count(); i++) {
+                if(values[i].tagtype->name == tag) {
                     add = false;
                     break;
                 }
             }
             if(add) {
-                _atagger->insertTag(tag,word.start,length,sarf,original);
+                const TagType* type = NULL;
+                for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+                    if(_atagger->tagTypeVector->at(i)->name == tag) {
+                        type = _atagger->tagTypeVector->at(i);
+                        break;
+                    }
+                }
+                _atagger->insertTag(type,word.start,length,wordCount,sarf,original);
             }
         }
         /** End of cleaning **/
 
-        /** Check if word has no tags **/
-
-        if(_atagger->tagVector.count() == tagCount) {
-            _atagger->insertTag("NONE", word.start, length, sarf, original);
-        }
-        tagCount = _atagger->tagVector.count();
-        /** Done checking **/
-
         start = word.end + 1;
+        wordCount = wordCount + 1;
     }
 
     return true;
