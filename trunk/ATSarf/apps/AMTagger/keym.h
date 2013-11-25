@@ -18,7 +18,6 @@ public:
     bool isSequentialM();
     bool isKeyM();
     bool isMERFTag();
-    bool isDummyM();
     int getPOS();
     int getLength();
     QString getText();

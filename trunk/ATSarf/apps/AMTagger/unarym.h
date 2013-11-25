@@ -15,7 +15,6 @@ public:
     bool isBinaryM();
     bool isSequentialM();
     bool isKeyM();
-    bool isDummyM();
     bool isMERFTag();
     int getPOS();
     int getLength();

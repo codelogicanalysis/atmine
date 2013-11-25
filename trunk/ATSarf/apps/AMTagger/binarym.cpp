@@ -32,10 +32,6 @@ bool BinaryM::isKeyM() {
     return false;
 }
 
-bool BinaryM::isDummyM() {
-    return false;
-}
-
 bool BinaryM::isMERFTag() {
     return false;
 }
