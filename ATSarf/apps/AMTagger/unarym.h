@@ -1,16 +1,15 @@
-#ifndef MERFTAG_H
-#define MERFTAG_H
+#ifndef UNARYM_H
+#define UNARYM_H
 
 #include <QVector>
 #include "match.h"
-#include "tag.h"
-#include "msformula.h"
 
-class MERFTag : public Match
+class UnaryM : public Match
 {
 public:
-    MERFTag();
-    MERFTag(MSFormula* formula, Source source=sarf);
+    UnaryM(Operation op, Match *parent, int limit=-1);
+    QVector<Match*> matches;
+    int limit;
     bool setMatch(Match* match);
     bool isUnaryM();
     bool isBinaryM();
@@ -26,12 +25,7 @@ public:
     void executeActions(NFA* nfa);
     QString getParam(QString msfName,QString param);
     QVariantMap getJSON();
-    MSFormula* formula;
-    int pos;
-    int length;
-    Source source;
-    Match* match;
-    ~MERFTag();
+    ~UnaryM();
 };
 
-#endif // MERFTAG_H
+#endif // UNARYM_H

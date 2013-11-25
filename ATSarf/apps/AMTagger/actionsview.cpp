@@ -44,12 +44,14 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     btnIncludes = new QPushButton(tr("Includes"), this);
 
     MSF* msf = currentF->map.value(msfName);
+    /*
     if(!(msf->isMBF())) {
         btnText->setEnabled(false);
         btnLength->setEnabled(false);
         btnPosition->setEnabled(false);
         btnNumber->setEnabled(false);
     }
+    */
 
     grid->addWidget(btnText,4,3);
     grid->addWidget(btnPosition,5,3);

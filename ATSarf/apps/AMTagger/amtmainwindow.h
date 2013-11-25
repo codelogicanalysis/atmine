@@ -46,8 +46,6 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void _new();
          void open();
          bool saveas();
-         void tagadd();
-         void tagremove();
          void edittagtypes();
          void tagtypeadd();
          void tagtyperemove();
@@ -56,7 +54,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void viewMSFTags();
          void about();
          void aboutQt();
-         void sarfTagging();
+         void sarfTagging(bool color=true);
          void customizeSarfTags();
          void customizeMSFs();
          void runMERFSimulator();
@@ -78,6 +76,7 @@ public:
          void applyTags(int basic=0);
          void process_TagTypes(QByteArray &tagtypedata);
          bool readMSF(MSFormula* formula, QVariant data, MSF* parent);
+         bool readMatch(MSFormula* formula, QVariant data, Match* parent);
 
 private:
          void createActions();
@@ -106,8 +105,8 @@ private:
          QAction *saveAct;
          QAction *saveasAct;
          QAction *exitAct;
-         QAction *tagaddAct;
-         QAction *tagremoveAct;
+         //QAction *tagaddAct;
+         //QAction *tagremoveAct;
          QAction *edittagtypesAct;
          QAction *tagtypeaddAct;
          QAction *tagtyperemoveAct;

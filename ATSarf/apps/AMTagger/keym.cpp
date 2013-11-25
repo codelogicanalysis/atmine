@@ -1,67 +1,64 @@
-#include "merftag.h"
+#include "keym.h"
 
-MERFTag::MERFTag() : Match(NONE,NULL) {
-    match = NULL;
+KeyM::KeyM(Match *parent, QString key, int pos, int length): Match(KEY,parent)
+{
+    this->parent = parent;
+    this->key = key;
+    this->pos = pos;
+    this->length = length;
 }
 
-MERFTag::MERFTag(MSFormula* formula, Source source) : Match(NONE, NULL) {
-    match = NULL;
-    this->formula = formula;
-    this->source = source;
-}
-
-bool MERFTag::setMatch(Match *match) {
-    this->match = match;
+bool KeyM::setMatch(Match *match) {
     return true;
 }
 
-bool MERFTag::isUnaryM() {
+bool KeyM::isUnaryM() {
     return false;
 }
 
-bool MERFTag::isBinaryM() {
+bool KeyM::isBinaryM() {
     return false;
 }
 
-bool MERFTag::isSequentialM() {
+bool KeyM::isSequentialM() {
     return false;
 }
 
-bool MERFTag::isKeyM() {
-    return false;
-}
-
-bool MERFTag::isDummyM() {
-    return false;
-}
-
-bool MERFTag::isMERFTag() {
+bool KeyM::isKeyM() {
     return true;
 }
 
-int MERFTag::getPOS() {
-    return match->getPOS();
+bool KeyM::isMERFTag() {
+    return false;
 }
 
-int MERFTag::getLength() {
-    return match->getLength();
+bool KeyM::isDummyM() {
+    return false;
 }
 
-QString MERFTag::getText() {
-    return match->getText();
+int KeyM::getPOS() {
+    return pos;
 }
 
-int MERFTag::getMatchCount() {
-    return match->getMatchCount();
+int KeyM::getLength() {
+    return length;
 }
 
-void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
+QString KeyM::getText() {
+    return word;
+}
+
+int KeyM::getMatchCount() {
+    return 1;
+}
+
+void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
     QStringList data;
-    data << "Formula" << formula->name;
+    data << key << word;
     QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
-    parentItem = newItem;
 
-    char * writable = strdup(formula->name.toStdString().c_str());
+    QString text = key + '\n' + word;
+    char * writable = strdup(text.toStdString().c_str());
     if(node == NULL) {
         stringstream strs;
         strs << id;
@@ -84,12 +81,12 @@ void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
         agset(newNode,const_cast<char *>("label"),writable);
         edge = agedge(G, node, newNode, 0, 1);
         parentNodeMap->insert(newNode, node);
-        node = newNode;
+
     }
-    match->buildMatchTree(G,node,edge,parentNodeMap,parentItem,id);
+    free(writable);
 }
 
-void MERFTag::executeActions(NFA* nfa) {
+void KeyM::executeActions(NFA* nfa) {
     MSFormula* formula = (MSFormula*)(nfa->formula);
 
     /** pre match **/
@@ -97,8 +94,6 @@ void MERFTag::executeActions(NFA* nfa) {
     preMatch.append("_preMatch();\n");
     formula->actionData.append(preMatch);
     /** Done **/
-
-    match->executeActions(nfa);
 
     /** on match **/
     QString onMatch = msf->name;
@@ -136,17 +131,16 @@ void MERFTag::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString MERFTag::getParam(QString msfName,QString param) {
+QString KeyM::getParam(QString msfName,QString param) {
     if(msf->name == msfName) {
         if(param  == "text") {
-            return getText();
+            return word;
         }
         else if(param == "position") {
-            return QString::number(getPOS());
+            return QString::number(pos);
         }
         else if(param == "number") {
-            QString text = getText();
-            NumNorm nn(&text);
+            NumNorm nn(&word);
             nn();
             int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
@@ -158,32 +152,22 @@ QString MERFTag::getParam(QString msfName,QString param) {
             }
         }
         else if(param == "length") {
-            return QString::number(getLength());
+            return QString::number(length);
         }
-    }
-    else {
-        return match->getParam(msfName,param);
     }
     return "";
 }
 
-QVariantMap MERFTag::getJSON() {
-    QVariantMap merftagMap;
-    merftagMap.insert("type","merftag");
-    merftagMap.insert("msf",msf->name);
-    merftagMap.insert("formula",formula->name);
-    merftagMap.insert("match",match->getJSON());
-    return merftagMap;
+QVariantMap KeyM::getJSON() {
+    QVariantMap keyMap;
+    keyMap.insert("type","key");
+    keyMap.insert("key",key);
+    keyMap.insert("pos",pos);
+    keyMap.insert("length",length);
+    keyMap.insert("word",word);
+    keyMap.insert("msf",msf->name);
+    return keyMap;
 }
 
-MERFTag::~MERFTag() {
-    /*
-    if(match == NULL) {
-        return;
-    }
-    else {
-        delete match;
-    }
-    match = NULL;
-    */
+KeyM::~KeyM() {
 }

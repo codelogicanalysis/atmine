@@ -4,11 +4,10 @@ TagType::TagType() {
 
 }
 
-TagType::TagType(QString tag, QString description, int id, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source)
+TagType::TagType(QString name, QString description, QString fgcolor, QString bgcolor, int font, bool underline, bool bold, bool italic, Source source)
 {
-    this->tag = tag;
+    this->name = name;
     this->description = description;
-    this->id = id;
     this->fgcolor = fgcolor;
     this->bgcolor = bgcolor;
     this->font = font;

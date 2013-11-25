@@ -6,12 +6,16 @@
 #include <QMultiMap>
 #include <QStringList>
 #include <QStack>
+#include <QPair>
+#include "msf.h"
+
+class MSF;
 
 class NFA
 {
 public:
-    NFA(QString name);
-    QString name;
+    NFA(MSF* formula);
+    MSF* formula;
     QString start;
     QStringList states;
     QString accept;
@@ -19,7 +23,7 @@ public:
     /// The last state added to the list of states
     QString last;
     QMultiMap<QString, QString> transitions;
-    QMultiMap<QString, QString> stateTOmsfMap;
+    QMap<QString, QPair<MSF*,QString> > stateTOmsfMap;
     /// Stack to keep actions
     QStack<QString> *actionStack;
     int i;

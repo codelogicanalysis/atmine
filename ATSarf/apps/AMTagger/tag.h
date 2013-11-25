@@ -3,13 +3,15 @@
 #include <QString>
 #include <QVector>
 #include "commonS.h"
+#include "tagtype.h"
 
 class Tag {
 public:
     Tag();
-    Tag(QString, int, int, Source);
+    Tag(const TagType*, int, int, int, Source);
 //private:
-    QString type;
+    const TagType* tagtype;
+    int wordIndex;
     int pos;
     int length;
     Source source;

@@ -4,15 +4,16 @@ Tag::Tag() {
     tType.clear();
 }
 
-Tag::Tag(QString type, int pos, int length, Source source) {
-    this->type = type;
+Tag::Tag(const TagType* tagtype, int pos, int length, int wordIndex, Source source) {
+    this->tagtype = tagtype;
     this->pos = pos;
     this->length = length;
+    this->wordIndex = wordIndex;
     this->source = source;
 }
 
 bool Tag::operator ==(const Tag& tag) const {
-    if((type == tag.type) && (pos == tag.pos) && (length == tag.length) && (source == tag.source)) {
+    if((tagtype->name == tag.tagtype->name) && (pos == tag.pos) && (length == tag.length) && (source == tag.source)) {
         return true;
     }
     else {

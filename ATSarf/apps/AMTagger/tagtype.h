@@ -8,12 +8,11 @@ class TagType
 {
 public:
     TagType();
-    TagType(QString, QString, int, QString, QString, int, bool, bool, bool, Source);
+    TagType(QString, QString, QString, QString, int, bool, bool, bool, Source);
 //private:
     Source source;
-    QString tag;
+    QString name;
     QString description;
-    int id;
     QString fgcolor;
     QString bgcolor;
     int font;

@@ -55,7 +55,7 @@ void MBF::buildTree(QTreeWidget* parent) {
     QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
 }
 
-bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
+bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {
     /// Adding function for preMatch actions
     QString tempInit = init;
     actionsData.append("extern \"C\" void " + name + "_preMatch(");
@@ -80,20 +80,20 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             }
             param.insert(msfName + '|' + attribute);
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -136,20 +136,20 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *fun
             param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -238,9 +238,8 @@ bool MBF::buildNFA(NFA *nfa) {
     }
     nfa->last = state2;
     nfa->accept = state2;
-    nfa->stateTOmsfMap.insert(state1, name + "|pre");
-    nfa->stateTOmsfMap.insert(state1, name + "|on");
-    //nfa->stateTOmsfMap.insert(state2, name + "|post");
+    nfa->stateTOmsfMap.insert(state1, QPair<MSF*,QString>(this,"pre"));
+    nfa->stateTOmsfMap.insert(state2, QPair<MSF*,QString>(this,"on"));
 
     return true;
 }

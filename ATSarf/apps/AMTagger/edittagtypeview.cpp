@@ -166,7 +166,7 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         TagType* tt = _atagger->tagTypeVector->at(i);
-        QString tag = tt->tag;
+        QString tag = tt->name;
         QString desc = tt->description;
         QString fgcolor = tt->fgcolor;
         QString bgcolor = tt->bgcolor;
@@ -175,18 +175,17 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
         bool underline = false;
         bool italic = tt->italic;
         bool bold = tt->bold;
-        int id = tt->id;
         Source source = tt->source;
 
         if(_atagger->tagTypeVector->at(i)->source == sarf) {
             SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
             QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
-            SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            SarfTagType* stt = new SarfTagType(tag,tags,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
             tagTypeVector->append(stt);
 
         }
         else {
-            TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+            TagType* stt = new TagType(tag,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
             tagTypeVector->append(stt);
         }
     }
@@ -204,14 +203,14 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     int tagtypeCount = tagTypeVector->count();
     for( int i=0; i< tagtypeCount; i++) {
-        lvTypes->addItem((tagTypeVector->at(i))->tag);
+        lvTypes->addItem((tagTypeVector->at(i))->name);
     }
 
     setWindowTitle(tr("Edit Tag Type DialogBox"));
     edit = false;
 
     lvTypes->item(0)->setSelected(true);
-    lineEditTag->setText((tagTypeVector->at(0))->tag);
+    lineEditTag->setText((tagTypeVector->at(0))->name);
     lineEditDescription->setText((tagTypeVector->at(0))->description);
     colorfgcolor->setColor(QColor((tagTypeVector->at(0))->fgcolor));
     colorbgcolor->setColor(QColor((tagTypeVector->at(0))->bgcolor));
@@ -228,11 +227,11 @@ void EditTagTypeView::update_TagTypes() {
     lvTypes->clear();
     int tagtypeCount = tagTypeVector->count();
     for( int i=0; i< tagtypeCount; i++) {
-        lvTypes->addItem((tagTypeVector->at(i))->tag);
+        lvTypes->addItem((tagTypeVector->at(i))->name);
     }
 
     lvTypes->item(0)->setSelected(true);
-    lineEditTag->setText((tagTypeVector->at(0))->tag);
+    lineEditTag->setText((tagTypeVector->at(0))->name);
     lineEditDescription->setText((tagTypeVector->at(0))->description);
     colorfgcolor->setColor(QColor((tagTypeVector->at(0))->fgcolor));
     colorbgcolor->setColor(QColor((tagTypeVector->at(0))->bgcolor));
@@ -266,7 +265,7 @@ void EditTagTypeView::add_clicked() {
         return;
 
     for(int i=0; i< tagTypeVector->count(); i++) {
-        if((tagTypeVector->at(i))->tag == text) {
+        if((tagTypeVector->at(i))->name == text) {
             QMessageBox::warning(this,"Warning","Tag Type Name already Present!");
             return;
         }
@@ -359,11 +358,11 @@ void EditTagTypeView::edit_clicked() {
         bool bold = cbBold->isChecked();
         bool italic = cbItalic->isChecked();
         if(index >= tagTypeVector->count()) {
-            TagType* t = new TagType(tag,description,tagTypeVector->count(), fgcolor,bgcolor,font,underline,bold,italic,user);
+            TagType* t = new TagType(tag,description,fgcolor,bgcolor,font,underline,bold,italic,user);
             tagTypeVector->append(t);
         }
         else {
-            (*tagTypeVector)[index]->tag = tag;
+            (*tagTypeVector)[index]->name = tag;
             (*tagTypeVector)[index]->description = description;
             (*tagTypeVector)[index]->fgcolor = fgcolor;
             (*tagTypeVector)[index]->bgcolor = bgcolor;
@@ -423,7 +422,7 @@ void EditTagTypeView::load_clicked() {
 
              for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
                  TagType* tt = _atagger->tagTypeVector->at(i);
-                 QString tag = tt->tag;
+                 QString tag = tt->name;
                  QString desc = tt->description;
                  QString fgcolor = tt->fgcolor;
                  QString bgcolor = tt->bgcolor;
@@ -432,18 +431,17 @@ void EditTagTypeView::load_clicked() {
                  bool underline = false;
                  bool italic = tt->italic;
                  bool bold = tt->bold;
-                 int id = tt->id;
                  Source source = tt->source;
 
                  if(_atagger->tagTypeVector->at(i)->source == sarf) {
                      SarfTagType* _stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
                      QVector< Quadruple< QString , QString , QString , QString > > tags = QVector< Quadruple< QString , QString , QString , QString > >(_stt->tags);
-                     SarfTagType* stt = new SarfTagType(tag,tags,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     SarfTagType* stt = new SarfTagType(tag,tags,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
                      tagTypeVector->append(stt);
 
                  }
                  else {
-                     TagType* stt = new TagType(tag,desc,id,fgcolor,bgcolor,font,underline,bold,italic,source);
+                     TagType* stt = new TagType(tag,desc,fgcolor,bgcolor,font,underline,bold,italic,source);
                      tagTypeVector->append(stt);
                  }
              }
@@ -460,7 +458,7 @@ void EditTagTypeView::item_clicked() {
     colorbgcolor->setEnabled(false);
     cbfont->setEnabled(false);
     int index = lvTypes->currentRow();
-    lineEditTag->setText((tagTypeVector->at(index))->tag);
+    lineEditTag->setText((tagTypeVector->at(index))->name);
     lineEditDescription->setText((tagTypeVector->at(index))->description);
     colorfgcolor->setColor(QColor((tagTypeVector->at(index))->fgcolor));
     colorbgcolor->setColor(QColor((tagTypeVector->at(index))->bgcolor));

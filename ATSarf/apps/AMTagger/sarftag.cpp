@@ -23,7 +23,7 @@ bool SarfTag::on_match() {
 
     for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
 
-        QString _tag = _atagger->tagTypeVector->at(i)->tag;
+        QString _tag = _atagger->tagTypeVector->at(i)->name;
         bool belong = false;
 
         /** Check if tag source is sarf tag types **/
@@ -53,13 +53,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -90,7 +90,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
                         if(iNF->contains(key)) {
@@ -102,12 +102,12 @@ bool SarfTag::on_match() {
                 }
                 else {
                     if(tag->third.compare("NOT") == 0) {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
                         if(!contain) {
                             if(!(eNF->contains(key))) {
-                                iNF->insert(key,tagtype->tag);
+                                iNF->insert(key,tagtype->name);
                             }
                         }
                     }
@@ -133,13 +133,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -171,13 +171,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -202,7 +202,7 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
                         if(iNF->contains(key)) {
@@ -214,11 +214,11 @@ bool SarfTag::on_match() {
                 }
                 else {
                     if(tag->third.compare("NOT") == 0) {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     continue;
@@ -242,13 +242,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -281,13 +281,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -324,13 +324,13 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else if(tag->third.compare("NOT") == 0) {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
 
                         if(!contain) {
                             if(!(eNF->contains(key))) {
-                                iNF->insert(key,tagtype->tag);
+                                iNF->insert(key,tagtype->name);
                             }
                         }
                         else {
@@ -382,13 +382,13 @@ bool SarfTag::on_match() {
                         break;
                     }
                     else if(tag->third.compare("NOT") == 0) {
-                        QString key = tagtype->tag;
+                        QString key = tagtype->name;
                         key.append(tag->first);
                         key.append(tag->second);
 
                         if(!contain) {
                             if(!(eNF->contains(key))) {
-                                iNF->insert(key,tagtype->tag);
+                                iNF->insert(key,tagtype->name);
                             }
                         }
                         else {
@@ -450,13 +450,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -516,13 +516,13 @@ bool SarfTag::on_match() {
                     break;
                 }
                 else if(tag->third.compare("NOT") == 0) {
-                    QString key = tagtype->tag;
+                    QString key = tagtype->name;
                     key.append(tag->first);
                     key.append(tag->second);
 
                     if(!contain) {
                         if(!(eNF->contains(key))) {
-                            iNF->insert(key,tagtype->tag);
+                            iNF->insert(key,tagtype->name);
                         }
                     }
                     else {
@@ -541,17 +541,8 @@ bool SarfTag::on_match() {
 
         if(belong) {
             // Add tag with this tagtype
-            bool add = true;
-            for( int z=0; z<(_atagger->tagVector.count()); z++) {
-                const Tag * tag2 = &(_atagger->tagVector.at(z));
-                if((tag2->pos == start) && (tag2->length == length) && (tag2->type == _tag)) {
-                    add = false;
-                    break;
-                }
-            }
-            if(add) {
-                _atagger->insertTag(_tag,start,length,sarf,original);
-            }
+            int wordIndex = _atagger->wordIndexMap.value(start);
+            _atagger->insertTag(_atagger->tagTypeVector->at(i),start,length,wordIndex,sarf,original);
         }
     }
     return true;

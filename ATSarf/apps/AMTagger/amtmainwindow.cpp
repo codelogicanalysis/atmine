@@ -4,18 +4,12 @@
 
 #include <QContextMenuEvent>
 #include <QTextCodec>
-#include <QTextStream>
 #include <QDockWidget>
 #include <QList>
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
 //#include <QtGui>
-#include <math.h>
-#include "graphviz/cgraph.h"
-#include "graphviz/gvc.h"
-#include <sstream>
-#include <string.h>
 
 bool parentCheck;
 class SarfTag;
@@ -26,10 +20,10 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
 {
     resize(800,600);
 
-    // Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
+    /// Used to check for parent Widget between windows (EditTagTypeView and AMTMainWindow)
     parentCheck = false;
 
-    // Boolean to check any change in tags
+    /// Boolean to check any change in tags
     dirty = false;
 
     createActions();
@@ -133,10 +127,11 @@ void AMTMainWindow::createDockWindows(bool open) {
 
     dock = new QDockWidget(tr("Tags"), this);
     tagDescription = new QTreeWidget(dock);
-    tagDescription->setColumnCount(5);
+    tagDescription->setColumnCount(6);
     QStringList columns;
-    columns << "Word" << "Tag" << "Source" << "Start" << "Length";
+    columns << "index" << "Word" << "Tag" << "Source" << "Start" << "Length";
     QTreeWidgetItem* item=new QTreeWidgetItem(columns);
+    tagDescription->hideColumn(0);
     connect(tagDescription,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelectionChanged(QTreeWidgetItem*,int)));
     tagDescription->setHeaderItem(item);
     dock->setWidget(tagDescription);
@@ -246,18 +241,25 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
     QStringList tagtypes;
     if(_atagger->isTagMBF) {
-        for(int i=0; i < _atagger->tagVector.count(); i++) {
-            const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-            if(t->pos == pos) {
-                tagtypes << t->type;
-            }
+        int wordIndex = _atagger->wordIndexMap.value(pos);
+        if(wordIndex == 0) {
+            return;
         }
+        //for(int i=0; i < _atagger->tagVector.count(); i++) {
+            //const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
+            //if(t->pos == pos) {
+        QList<Tag> values = _atagger->tagHash.values(wordIndex);
+        for(int i=0; i<values.size();i++) {
+            tagtypes << values.at(i).tagtype->name;
+        }
+            //}
+        //}
     }
     else {
         for(int i=0; i < _atagger->simulationVector.count(); i++) {
             const MERFTag * t = (MERFTag*)(&(_atagger->simulationVector.at(i)));
             if(t->pos == pos) {
-                tagtypes << t->type;
+                tagtypes << t->msf->name;
             }
         }
     }
@@ -267,10 +269,10 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     mTags = menu->addMenu(tr("Tag"));
     if(_atagger->isTagMBF) {
         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-            if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag))) {
+            if(!(tagtypes.contains(_atagger->tagTypeVector->at(i)->name))) {
                 QAction * taginstance;
-                taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-                signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+                taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+                signalMapper->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
                 connect(taginstance, SIGNAL(triggered()), signalMapper, SLOT(map()));
                 mTags->addAction(taginstance);
             }
@@ -294,10 +296,10 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     muTags = menu->addMenu(tr("Untag"));
     if(_atagger->isTagMBF) {
         for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-            if(tagtypes.contains(_atagger->tagTypeVector->at(i)->tag)) {
+            if(tagtypes.contains(_atagger->tagTypeVector->at(i)->name)) {
                 QAction * taginstance;
-                taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-                signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+                taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+                signalMapperU->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
                 connect(taginstance, SIGNAL(triggered()), signalMapperU, SLOT(map()));
                 muTags->addAction(taginstance);
             }
@@ -323,8 +325,29 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     delete menu;
 }
 
+void processText(QString *text) {
+
+    _atagger->wordIndexMap.clear();
+    int start = 0;
+    int wordIndex = 1;
+    while(start != text->count()) {
+        Word word = nextWord(*text, start);
+        if(word.word.isEmpty()) {
+            break;
+        }
+
+        _atagger->wordIndexMap.insert(word.start,wordIndex);
+        start = word.end + 1;
+        wordIndex = wordIndex + 1;
+    }
+    _atagger->wordCount = wordIndex - 1;
+}
+
 void AMTMainWindow::open() {
 
+    if(dirty == true) {
+        /// Save current data
+    }
     /** Get and open tags file **/
 
     QString fileName = QFileDialog::getOpenFileName(this,
@@ -363,6 +386,23 @@ void AMTMainWindow::open() {
         return;
     }
 
+    /** Check tag file version **/
+
+    double version;
+    if(result.value("version").isNull()) {
+        QMessageBox::warning(this, "Warning", "Tool doesn't support this tag version anymore");
+        return;
+    }
+    else {
+        version = result.value("version").toDouble();
+        if(version<1.0) {
+            QMessageBox::warning(this, "Warning", "Tool doesn't support this tag version anymore");
+            return;
+        }
+    }
+
+    /** End of Check **/
+
     /** Read text file path **/
 
     QStringList dirList = _atagger->tagFile.split('/');
@@ -397,6 +437,7 @@ void AMTMainWindow::open() {
     QString absoluteTextPath = QDir(_atagger->textFile).absolutePath();
     lineEditTFName->setText(absoluteTextPath);
     _atagger->text = text;
+    processText(&text);
     Ifile.close();
 
     startTaggingText(text);
@@ -410,7 +451,6 @@ void AMTMainWindow::open() {
     edittagtypesAct->setEnabled(true);
     sarftagsAct->setEnabled(true);
     editMSFAct->setEnabled(true);
-    tagremoveAct->setEnabled(true);
     mTags->setEnabled(true);
     umTags->setEnabled(true);
     viewMBFTagAct->setEnabled(true);
@@ -436,6 +476,98 @@ void AMTMainWindow::startTaggingText(QString & text) {
     setLineSpacing(10);
 }
 
+bool AMTMainWindow::readMatch(MSFormula* formula, QVariant data, Match* parent) {
+    /** Common variables in a match **/
+    QString type;
+    QString msfName;
+
+    QVariantMap matchData = data.toMap();
+    type = matchData.value("type").toString();
+    msfName = matchData.value("msf").toString();
+
+    if(type == "key") {
+        int pos = matchData.value("pos").toInt();
+        int length = matchData.value("length").toInt();
+        QString key = matchData.value("key").toString();
+        QString word = matchData.value("word").toString();
+        MSF* msf = formula->map.value(msfName);
+        KeyM* keym = new KeyM(parent,key,pos,length);
+        keym->word = word;
+        keym->msf = msf;
+        parent->setMatch(keym);
+        return true;
+    }
+    else if(type == "unary") {
+        MSF* msf = formula->map.value(msfName);
+        int limit = matchData.value("limit").toInt();
+        Operation op = (Operation)(matchData.value("op").toInt());
+        UnaryM* unary = new UnaryM(op,parent,limit);
+        unary->msf = msf;
+        foreach(QVariant unaryMatchData, matchData.value("matches").toList()) {
+            if(!(readMatch(formula,unaryMatchData,unary))) {
+                return false;
+            }
+        }
+        parent->setMatch(unary);
+        return true;
+    }
+    else if(type == "binary") {
+        MSF* msf = formula->map.value(msfName);
+        Operation op = (Operation)(matchData.value("op").toInt());
+        BinaryM* binary = new BinaryM(op,parent);
+        binary->msf = msf;
+        QVariant leftMatchData = matchData.value("leftMatch");
+        if(!(readMatch(formula,leftMatchData,binary))) {
+            return false;
+        }
+        if(!(matchData.value("rightMatch").isNull())) {
+            QVariant rightMatchData = matchData.value("rightMatch");
+            if(!(readMatch(formula,rightMatchData,binary))) {
+                return false;
+            }
+        }
+        parent->setMatch(binary);
+        return true;
+    }
+    else if(type == "sequential") {
+        SequentialM* seq = new SequentialM(parent);
+        if(msfName == "_NULL_") {
+            seq->msf = NULL;
+        }
+        else {
+            MSF* msf = formula->map.value(msfName);
+            seq->msf = msf;
+        }
+        foreach(QVariant seqMatchData, matchData.value("matches").toList()) {
+            if(!(readMatch(formula,seqMatchData,seq))) {
+                return false;
+            }
+        }
+        parent->setMatch(seq);
+        return true;
+    }
+    else {
+        /// MERFTag case
+        MERFTag* merftag = new MERFTag();
+        MSF* msf = formula->map.value(msfName);
+        merftag->msf = msf;
+        QString formulaName = matchData.value("formula").toString();
+        for(int i=0; i<_atagger->msfVector->count(); i++) {
+            if(_atagger->msfVector->at(i)->name == formulaName) {
+                merftag->formula = _atagger->msfVector->at(i);
+                break;
+            }
+        }
+        QVariant merftagMatchData = matchData.value("match");
+        if(!(readMatch(formula,merftagMatchData,merftag))) {
+            return false;
+        }
+        parent->setMatch(merftag);
+        return true;
+    }
+    return false;
+}
+
 void AMTMainWindow::process(QByteArray & json) {
 
     QJson::Parser parser;
@@ -449,61 +581,6 @@ void AMTMainWindow::process(QByteArray & json) {
         txtBrwsr->clear();
         _atagger = new ATagger();
         return;
-    }
-
-    /** Read Tags **/
-
-    foreach(QVariant tag, result["TagArray"].toList()) {
-
-        QVariantMap tagElements = tag.toMap();
-        int start = tagElements["pos"].toInt();
-        int length = tagElements["length"].toInt();
-        QString tagtype = tagElements["type"].toString();
-        Source source = (Source)(tagElements["source"].toInt());
-        bool check;
-        check = _atagger->insertTag(tagtype,start,length,source,original);
-    }
-
-    if(_atagger->tagVector.at(0).source == user) {
-        _atagger->isSarf = false;
-    }
-    else {
-        _atagger->isSarf = true;
-    }
-    _atagger->isTagMBF = true;
-
-    /** Read simulation Tags if found **/
-
-    if(!(result.value("simulationTags").isNull())) {
-        foreach(QVariant merfTag, result["simulationTags"].toList()) {
-
-            QVariantMap merfTagElements = merfTag.toMap();
-            QString type = merfTagElements.value("type").toString();
-            int pos = merfTagElements.value("pos").toInt();
-            int length = merfTagElements.value("length").toInt();
-            MERFTag merftag(type,pos,length);
-            merftag.tags = new QVector<Tag*>();
-
-            foreach(QVariant tagData, merfTagElements["tags"].toList()) {
-
-                QVariantMap tagElements = tagData.toMap();
-                QString tagType = tagElements.value("type").toString();
-                int tagpos = tagElements.value("pos").toInt();
-                int taglength = tagElements.value("length").toInt();
-                Tag *tag = new Tag(tagType,tagpos,taglength,sarf);
-
-                if(!(tagElements.value("tagType").isNull())) {
-                    foreach(QVariant tagTypeData, tagElements["tagType"].toList()) {
-                        QString matchInfo = tagTypeData.toString();
-                        tag->tType.append(matchInfo);
-                    }
-                }
-                merftag.tags->append(tag);
-            }
-
-            _atagger->simulationVector.append(merftag);
-        }
-        _atagger->isTagMBF = false;
     }
 
     /** Read the TagType file and store it **/
@@ -534,6 +611,117 @@ void AMTMainWindow::process(QByteArray & json) {
     lineEditTTFName->setText(absoluteTTPath);
     process_TagTypes(tagtypedata);
 
+    /** Read Tags **/
+
+    foreach(QVariant tag, result["TagArray"].toList()) {
+
+        QVariantMap tagElements = tag.toMap();
+        int start = tagElements["pos"].toInt();
+        int length = tagElements["length"].toInt();
+        int wordIndex = tagElements["wordIndex"].toInt();
+        QString tagtype = tagElements["type"].toString();
+        Source source = (Source)(tagElements["source"].toInt());
+        bool check;
+        const TagType* type = NULL;
+        for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+            if(_atagger->tagTypeVector->at(i)->name == tagtype) {
+                type = _atagger->tagTypeVector->at(i);
+                break;
+            }
+        }
+        if(type == NULL) {
+            QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+            _atagger = new ATagger();
+            clearLayout(this->layout());
+            return;
+        }
+        check = _atagger->insertTag(type,start,length,wordIndex,source,original);
+    }
+
+    if(_atagger->tagHash.begin().value().source == user) {
+        _atagger->isSarf = false;
+    }
+    else {
+        _atagger->isSarf = true;
+    }
+    _atagger->isTagMBF = true;
+
+    /** Read simulation Tags if found **/
+
+    if(!(result.value("simulationTags").isNull())) {
+        foreach(QVariant merfTag, result["simulationTags"].toList()) {
+
+            QVariantMap merfTagElements = merfTag.toMap();
+            QString formulaName = merfTagElements.value("formula").toString();
+            int pos = merfTagElements.value("pos").toInt();
+            int length = merfTagElements.value("length").toInt();
+            Source source = (Source)(merfTagElements.value("source").toInt());
+            MSFormula* formula = NULL;
+            for(int i=0; i<_atagger->msfVector->count(); i++) {
+                if(_atagger->msfVector->at(i)->name == formulaName) {
+                    formula = _atagger->msfVector->at(i);
+                    break;
+                }
+            }
+            if(formula == NULL) {
+                QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+                _atagger = new ATagger();
+                clearLayout(this->layout());
+                return;
+            }
+            MERFTag* merftag = new MERFTag(formula);
+            merftag->pos = pos;
+            merftag->length = length;
+            merftag->source = source;
+            if(!(merfTagElements.value("match").isNull())) {
+                if(!(readMatch(formula,merfTagElements.value("match"),merftag))) {
+                    QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+                    _atagger = new ATagger();
+                    clearLayout(this->layout());
+                    return;
+                }
+            }
+            else {
+                merftag->match = NULL;
+            }
+
+#if 0
+            foreach(QVariant tagData, merfTagElements["tags"].toList()) {
+
+                QVariantMap tagElements = tagData.toMap();
+                QString tagType = tagElements.value("type").toString();
+                int tagpos = tagElements.value("pos").toInt();
+                int taglength = tagElements.value("length").toInt();
+                int wordIndex = tagElements.value("wordIndex").toInt();
+                const TagType* type = NULL;
+                for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+                    if(_atagger->tagTypeVector->at(i)->name == tagType) {
+                        type = _atagger->tagTypeVector->at(i);
+                        break;
+                    }
+                }
+                if(type == NULL) {
+                    QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+                    _atagger = new ATagger();
+                    clearLayout(this->layout());
+                    return;
+                }
+                Tag *tag = new Tag(type,tagpos,taglength,wordIndex,sarf);
+
+                if(!(tagElements.value("tagType").isNull())) {
+                    foreach(QVariant tagTypeData, tagElements["tagType"].toList()) {
+                        QString matchInfo = tagTypeData.toString();
+                        tag->tType.append(matchInfo);
+                    }
+                }
+                merftag.tags->append(tag);
+            }
+#endif
+
+            _atagger->simulationVector.append(merftag);
+        }
+        _atagger->isTagMBF = false;
+    }
 
     setWindowTitle("MERF: " + _atagger->tagFile);
     /** Apply Tags on Input Text **/
@@ -801,27 +989,9 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
                      tr("The <b>Tag File</b> has a wrong format"));
     }
 
-    if(result.value("TagTypeSet").toList().at(0).toMap().value("Features").isNull()) {
-        for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-            const TagType& tt = *(_atagger->tagTypeVector->at(i));
-            for(int j=0; j<_atagger->tagVector.count(); j++) {
-                const Tag & tag = (_atagger->tagVector.at(j));
-                if(tt.tag == tag.type) {
-                    int start = tag.pos;
-                    int length = tag.length;
-                    tagWord(start,length,QColor("black"),QColor("white"),12,false,false,false);
-                    _atagger->tagVector.remove(i);
-                }
-            }
-        }
-        _atagger->tagTypeVector->clear();
-        fillTreeWidget(user);
-    }
-
     foreach(QVariant type, result["TagTypeSet"].toList()) {
         QString tag;
         QString desc;
-        int id;
         QString foreground_color;
         QString background_color;
         int font;
@@ -833,7 +1003,6 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
 
         tag = typeElements["Tag"].toString();
         desc = typeElements["Description"].toString();
-        id = typeElements["Legend"].toInt();
         foreground_color = typeElements["foreground_color"].toString();
         background_color = typeElements["background_color"].toString();
         font = typeElements["font"].toInt();
@@ -960,11 +1129,11 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             }
 
             _atagger->isSarf = true;
-            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf,original);
+            _atagger->insertSarfTagType(tag,tags,desc,foreground_color,background_color,font,underline,bold,italic,sarf,original);
         }
         else {
             _atagger->isSarf = false;
-            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user,original);
+            _atagger->insertTagType(tag,desc,foreground_color,background_color,font,underline,bold,italic,user,original);
         }
     }
 
@@ -1024,7 +1193,7 @@ bool compare(const Tag &tag1, const Tag &tag2) {
         return tag1.pos < tag2.pos;
     }
     else {
-        return tag1.type < tag2.type;
+        return tag1.tagtype->name < tag2.tagtype->name;
     }
 }
 
@@ -1032,59 +1201,33 @@ void AMTMainWindow::applyTags(int basic) {
 
     startTaggingText(_atagger->text);
     if(basic == 0) {
-        qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
-
-        for(int i =0; i< _atagger->tagVector.count(); i++) {
-            const Tag * pt = NULL;
-            if(i>0) {
-                pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
-            }
-            const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-
-            if(pt != NULL && pt->pos == t->pos) {
-                continue;
-            }
-            const Tag * nt = NULL;
-            if(i<(_atagger->tagVector.count()-1)) {
-                nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-            }
-
-            for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-
-                if(t->type == tt->tag) {
-                    int start = t->pos;
-                    int length = t->length;
-                    QColor bgcolor(tt->bgcolor);
-                    QColor fgcolor(tt->fgcolor);
-                    int font = tt->font;
-                    //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                    bool underline = false;
-                    if(nt!=NULL && nt->pos == start) {
-                        underline = true;
-                    }
-                    bool bold = tt->bold;
-                    bool italic = tt->italic;
-                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                    break;
+        QList<int> keys = _atagger->tagHash.uniqueKeys();
+        for(int i=0; i<keys.count(); i++) {
+            QList<Tag> values = _atagger->tagHash.values(keys[i]);
+            for(int j = 0; j<values.size(); j++) {
+                int start = values.at(j).pos;
+                int length = values.at(j).length;
+                QColor bgcolor(values.at(j).tagtype->bgcolor);
+                QColor fgcolor(values.at(j).tagtype->fgcolor);
+                int font = values.at(j).tagtype->font;
+                bool underline = false;
+                if(values.count() > 1) {
+                    underline = true;
                 }
+                bool bold = values.at(j).tagtype->bold;
+                bool italic = values.at(j).tagtype->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
             }
         }
-
         fillTreeWidget(user);
         createTagMenu();
         createUntagMenu();
     }
     else {
         for(int i=0; i<_atagger->simulationVector.count(); i++) {
-            const MERFTag tag = _atagger->simulationVector.at(i);
-            for(int j=0; j< _atagger->msfVector->count(); j++) {
-                const MSFormula* msf = _atagger->msfVector->at(j);
-                if(msf->name == tag.type) {
-                    tagWord(tag.pos,tag.length,msf->fgcolor,msf->bgcolor,12,false,false,false);
-                    break;
-                }
-            }
+            const MERFTag* tag = (const MERFTag*)_atagger->simulationVector.at(i);
+            MSFormula* formula = tag->formula;
+            tagWord(tag->pos,tag->length,formula->fgcolor,formula->bgcolor,12,false,false,false);
         }
         fillTreeWidget(sarf,1);
     }
@@ -1170,7 +1313,7 @@ void AMTMainWindow::save() {
         return;
     }
 
-    if(_atagger->tagVector.isEmpty()) {
+    if(_atagger->tagHash.isEmpty()) {
         QMessageBox::warning(this,"Warning","No tags to save!");
         return;
     }
@@ -1201,68 +1344,6 @@ bool AMTMainWindow::saveas() {
         tagData = _atagger->dataInJsonFormat(tagV);
     }
     return saveFile(fileName,tagData);
-}
-
-/** Not needed Anymore**/
-void AMTMainWindow::tagadd() {
-    if(txtBrwsr->textCursor().selectedText() != "") {
-        AddTagView * atv = new AddTagView(txtBrwsr, this);
-        atv->show();
-    }
-    else {
-        switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
-            return;
-        }
-    }
-}
-
-void AMTMainWindow::tagremove() {
-    dirty = true;
-    QTextCursor cursor = txtBrwsr->textCursor();
-    int start = cursor.selectionStart();
-    int length = cursor.selectionEnd() - cursor.selectionStart();
-
-    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
-    for(int i=0; i < _atagger->tagVector.count(); i++) {
-        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-        const Tag * nt = NULL;
-        if(i < (_atagger->tagVector.count()-1)) {
-            nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-        }
-        if(t->pos == start) {
-            if(nt != NULL && nt->pos == start) {
-                for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                    const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-
-                    if(nt->type == tt->tag) {
-                        QColor bgcolor(tt->bgcolor);
-                        QColor fgcolor(tt->fgcolor);
-                        int font = tt->font;
-                        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                        bool underline = false;
-                        const Tag* nnt = NULL;
-                        if(i < (_atagger->tagVector.count()-2)) {
-                            nnt = (Tag*)(&(_atagger->tagVector.at(i+2)));
-                        }
-                        if(nnt!=NULL && nnt->pos == start) {
-                            underline = true;
-                        }
-                        bool bold = tt->bold;
-                        bool italic = tt->italic;
-                        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                        break;
-                    }
-                }
-            }
-            else {
-                tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
-            }
-            _atagger->tagVector.remove(i);
-            cursor.clearSelection();
-            fillTreeWidget(user);
-            break;
-        }
-    }
 }
 
 void AMTMainWindow::edittagtypes() {
@@ -1300,28 +1381,33 @@ void AMTMainWindow::tagtyperemove() {
 void AMTMainWindow::tag(QString tagValue) {
 
     if(!(myTC.selectedText().isEmpty())) {
-        if(_atagger->tagFile.isEmpty()) {
-            QString fileName = QFileDialog::getSaveFileName(this,
-                                                            tr("Tags File"), "",
-                                                            tr("Tags (*.tags.json);;All Files (*)"));
-            if(fileName.isEmpty()) {
-                QMessageBox::warning(this,"Warning","You have to add a tag file name before tagging the text!");
-                return;
-            }
-            else {
-                _atagger->tagFile = fileName + ".tags.json";
-                setWindowTitle("MERF: " + _atagger->tagFile);
-            }
-        }
 
-        dirty = true;
         QTextCursor cursor = myTC;
         int start = cursor.selectionStart();
+        int wordIndex;
+        if(_atagger->wordIndexMap.contains(start)) {
+            wordIndex = _atagger->wordIndexMap.value(start);
+        }
+        else {
+            QMessageBox::warning(this,"Warning","Invalid tag: doesn't start by a word");
+            return;
+        }
         int length = cursor.selectionEnd() - cursor.selectionStart();
         if(_atagger->isTagMBF) {
             /// MBF based tags
-            _atagger->insertTag(tagValue, start, length, user, original);
-            //applyTags(0);
+            const TagType* type = NULL;
+            for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+                if(_atagger->tagTypeVector->at(i)->name == tagValue) {
+                    type = _atagger->tagTypeVector->at(i);
+                    break;
+                }
+            }
+            if(type == NULL) {
+                QMessageBox::warning(this,"warning","Tag type not found!");
+                return;
+            }
+            _atagger->insertTag(type, start, length, wordIndex, user, original);
+            /*
             qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
             for(int i =0; i< _atagger->tagVector.count(); i++) {
                 const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
@@ -1334,31 +1420,49 @@ void AMTMainWindow::tag(QString tagValue) {
                     nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
                 }
 
-                for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                    const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-                    if(tt->tag == tagValue) {
-                        QColor bgcolor(tt->bgcolor);
-                        QColor fgcolor(tt->fgcolor);
-                        int font = tt->font;
+                //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+                    //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+                    //if(tt->tag == tagValue) {
+                        QColor bgcolor(t->tagtype->bgcolor);
+                        QColor fgcolor(t->tagtype->fgcolor);
+                        int font = t->tagtype->font;
                         //bool underline = (_atagger->tagTypeVector->at(i))->underline;
                         bool underline = false;
                         if(nt!=NULL && nt->pos == start) {
                             underline = true;
                         }
-                        bool bold = tt->bold;
-                        bool italic = tt->italic;
+                        bool bold = t->tagtype->bold;
+                        bool italic = t->tagtype->italic;
 
                         tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                    }
-                }
+                    //}
+                //}
                 cursor.clearSelection();
                 fillTreeWidget(user);
                 break;
             }
+            */
+            QList<Tag> values = _atagger->tagHash.values(wordIndex);
+
+            QColor bgcolor(values.at(0).tagtype->bgcolor);
+            QColor fgcolor(values.at(0).tagtype->fgcolor);
+            int font = values.at(0).tagtype->font;
+            bool bold = values.at(0).tagtype->bold;
+            bool italic = values.at(0).tagtype->italic;
+
+            if(values.size() > 1) {
+                tagWord(start,length,fgcolor,bgcolor,font,true,italic,bold);
+            }
+            else {
+                tagWord(start,length,fgcolor,bgcolor,font,false,italic,bold);
+            }
+            cursor.clearSelection();
+            fillTreeWidget(user);
         }
         else {
             /// MSF based tags
         }
+        dirty = true;
     }
     else {
         switch( QMessageBox::information( this, "Add Tag","No word is selected for tagging!","&Ok",0,0) ) {
@@ -1371,6 +1475,14 @@ void AMTMainWindow::untag(QString tagValue) {
 
     QTextCursor cursor = myTC;
     int start = cursor.selectionStart();
+    int wordIndex;
+    if(_atagger->wordIndexMap.contains(start)) {
+        wordIndex = _atagger->wordIndexMap.value(start);
+    }
+    else {
+        QMessageBox::warning(this,"Warning","Invalid tag: doesn't start by a word");
+        return;
+    }
     int length = cursor.selectionEnd() - cursor.selectionStart();
     if(length <= 0) {
         return;
@@ -1378,119 +1490,40 @@ void AMTMainWindow::untag(QString tagValue) {
 
     if(_atagger->isTagMBF) {
         /// MBF based tags
-        qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
-        for(int i=0; i < _atagger->tagVector.count(); i++) {
-            const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-
-            if(t->pos == start && t->type == tagValue) {
-                int counter = 0;
-                bool previous = false;
-                const Tag* ppt = NULL;
-                if(i > 1) {
-                    ppt = (Tag*)(&(_atagger->tagVector.at(i-2)));
-                    if(ppt->pos == start) {
-                        counter++;
-                    }
-                }
-                const Tag* pt = NULL;
-                if(i > 0) {
-                    pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
-                    if(pt->pos == start) {
-                        counter++;
-                        previous = true;
-                    }
-                }
-                const Tag* nt = NULL;
-                if(i < (_atagger->tagVector.count()-1)) {
-                    nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-                    if(nt->pos == start) {
-                        counter++;
-                    }
-                }
-                const Tag* nnt = NULL;
-                if(i < (_atagger->tagVector.count()-2)) {
-                    nnt = (Tag*)(&(_atagger->tagVector.at(i+2)));
-                    if(nnt->pos == start) {
-                        counter++;
-                    }
-                }
-                if(counter == 0) {
-                    tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
-                }
-                else {
-                    QString targetTag;
-                    if(previous) {
-                        targetTag = pt->type;
-                    }
-                    else {
-                        targetTag = nt->type;
-                    }
-                    for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                        const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-
-                        if(tt->tag == targetTag) {
-                            QColor bgcolor(tt->bgcolor);
-                            QColor fgcolor(tt->fgcolor);
-                            int font = tt->font;
-                            //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                            bool underline = false;
-                            if(counter >= 2) {
-                                underline = true;
-                            }
-                            bool bold = tt->bold;
-                            bool italic = tt->italic;
-                            tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                            break;
-                        }
-                    }
-                }
-                _atagger->tagVector.remove(i);
-                cursor.clearSelection();
-                fillTreeWidget(user);
-                dirty = true;
-                break;
+        QList<Tag> values = _atagger->tagHash.values(wordIndex);
+        for(int i=0; i<values.size(); i++) {
+            if(values.at(i).tagtype->name == tagValue) {
+                _atagger->tagHash.remove(wordIndex,values[i]);
             }
         }
 
-        /*
-        for(int i =0; i< _atagger->tagVector.count(); i++) {
-            const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-            if(t->pos != start) {
-                continue;
-            }
-
-            const Tag * nt = NULL;
-            if(i<(_atagger->tagVector.count()-1)) {
-                nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-            }
-
-            for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-                if(tt->tag == tagValue) {
-                    QColor bgcolor(tt->bgcolor);
-                    QColor fgcolor(tt->fgcolor);
-                    int font = tt->font;
-                    //bool underline = (_atagger->tagTypeVector->at(i))->underline;
-                    bool underline = false;
-                    if(nt!=NULL && nt->pos == start) {
-                        underline = true;
-                    }
-                    bool bold = tt->bold;
-                    bool italic = tt->italic;
-
-                    tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+        QList<Tag> _values = _atagger->tagHash.values(wordIndex);
+        if(_values.count() > 0) {
+                QColor bgcolor(_values.at(0).tagtype->bgcolor);
+                QColor fgcolor(_values.at(0).tagtype->fgcolor);
+                int font = _values.at(0).tagtype->font;
+                bool underline = false;
+                if(_values.count() > 1) {
+                    underline = true;
                 }
-            }
-            cursor.clearSelection();
-            fillTreeWidget(user);
-            break;
+                bool bold = _values.at(0).tagtype->bold;
+                bool italic = _values.at(0).tagtype->italic;
+                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
         }
-        */
+        else {
+            tagWord(start,length,QColor("black"),QColor("white"),9,false,false,false);
+        }
+        cursor.clearSelection();
+        fillTreeWidget(user);
+        dirty = true;
     }
     else {
         /// MSF based tags
         for(int i=0; i<_atagger->simulationVector.count(); i++) {
-            if(_atagger->simulationVector.at(i).pos == start && _atagger->simulationVector.at(i).type == tagValue) {
+            const MERFTag* merftag = (const MERFTag*)_atagger->simulationVector.at(i);
+            MSFormula* formula = merftag->formula;
+            if(merftag->pos == start && formula->name == tagValue) {
+                delete _atagger->simulationVector.at(i);
                 _atagger->simulationVector.remove(i);
                 dirty = true;
                 break;
@@ -1507,13 +1540,14 @@ void AMTMainWindow::addtagtype() {
 }
 
 void AMTMainWindow::viewMBFTags() {
-    if(_atagger->tagVector.isEmpty()) {
+    if(_atagger->tagHash.isEmpty()) {
         return;
     }
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
 
+    /*
     qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
 
     for(int i =0; i< _atagger->tagVector.count(); i++) {
@@ -1531,26 +1565,44 @@ void AMTMainWindow::viewMBFTags() {
             nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
         }
 
-        for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
+        //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
+            //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
 
-            if(t->type == tt->tag) {
-                int start = t->pos;
-                int length = t->length;
-                QColor bgcolor(tt->bgcolor);
-                QColor fgcolor(tt->fgcolor);
-                int font = tt->font;
-                //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-                bool underline = false;
-                if(nt!=NULL && nt->pos == start) {
-                    underline = true;
-                }
-                bool bold = tt->bold;
-                bool italic = tt->italic;
-                tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                break;
-            }
+            //if(t->type == tt->tag) {
+        int start = t->pos;
+        int length = t->length;
+        QColor bgcolor(t->tagtype->bgcolor);
+        QColor fgcolor(t->tagtype->fgcolor);
+        int font = t->tagtype->font;
+        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
+        bool underline = false;
+        if(nt!=NULL && nt->pos == start) {
+            underline = true;
         }
+        bool bold = t->tagtype->bold;
+        bool italic = t->tagtype->italic;
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+        //break;
+            //}
+        //}
+    }
+    */
+
+    QList<int> keys = _atagger->tagHash.uniqueKeys();
+    for(int i=0; i<keys.count(); i++) {
+        QList<Tag> values = _atagger->tagHash.values(keys[i]);
+        int start = values[0].pos;
+        int length = values[0].length;
+        QColor bgcolor(values[0].tagtype->bgcolor);
+        QColor fgcolor(values[0].tagtype->fgcolor);
+        int font = values[0].tagtype->font;
+        bool underline = false;
+        if(values.count() > 1) {
+            underline = true;
+        }
+        bool bold = values[0].tagtype->bold;
+        bool italic = values[0].tagtype->italic;
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
     }
 
     fillTreeWidget(user);
@@ -1569,14 +1621,9 @@ void AMTMainWindow::viewMSFTags() {
     descBrwsr->clear();
 
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
-        const MERFTag tag = _atagger->simulationVector.at(i);
-        for(int j=0; j< _atagger->msfVector->count(); j++) {
-            const MSFormula* msf = _atagger->msfVector->at(j);
-            if(msf->name == tag.type) {
-                tagWord(tag.pos,tag.length,msf->fgcolor,msf->bgcolor,12,false,false,false);
-                break;
-            }
-        }
+        const MERFTag* tag =(const MERFTag*)_atagger->simulationVector.at(i);
+        MSFormula* formula = tag->formula;
+        tagWord(tag->pos,tag->length,formula->fgcolor,formula->bgcolor,12,false,false,false);
     }
     fillTreeWidget(sarf,1);
     _atagger->isTagMBF = false;
@@ -1619,16 +1666,6 @@ void AMTMainWindow::createActions()
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-    tagaddAct = new QAction(tr("&Tag"), this);
-    //tagaddAct->setShortcuts(QKeySequence::);
-    tagaddAct->setStatusTip(tr("Add a Tag"));
-    connect(tagaddAct, SIGNAL(triggered()), this, SLOT(tagadd()));
-
-    tagremoveAct = new QAction(tr("&Untag"), this);
-    tagremoveAct->setEnabled(false);
-    tagremoveAct->setStatusTip(tr("Remove a Tag"));
-    connect(tagremoveAct, SIGNAL(triggered()), this, SLOT(tagremove()));
 
     edittagtypesAct = new QAction(tr("Edit TagTypes..."),this);
     edittagtypesAct->setEnabled(false);
@@ -1743,8 +1780,8 @@ void AMTMainWindow::createTagMenu() {
     signalMapperM = new QSignalMapper(this);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-        signalMapperM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+        signalMapperM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
         connect(taginstance, SIGNAL(triggered()), signalMapperM, SLOT(map()));
         mTags->addAction(taginstance);
     }
@@ -1756,8 +1793,8 @@ void AMTMainWindow::createUntagMenu() {
     signalMapperUM = new QSignalMapper(this);
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         QAction * taginstance;
-        taginstance = new QAction((_atagger->tagTypeVector->at(i))->tag,this);
-        signalMapperUM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->tag);
+        taginstance = new QAction((_atagger->tagTypeVector->at(i))->name,this);
+        signalMapperUM->setMapping(taginstance, (_atagger->tagTypeVector->at(i))->name);
         connect(taginstance, SIGNAL(triggered()), signalMapperUM, SLOT(map()));
         umTags->addAction(taginstance);
     }
@@ -1767,23 +1804,29 @@ void AMTMainWindow::createUntagMenu() {
 void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
     tagDescription->clear();
      QList<QTreeWidgetItem *> items;
+     int wordCountCharCount = QString::number(_atagger->wordCount).size();
      if(basic == 0) {
-         QVector<Tag> *temp = new QVector<Tag>(_atagger->tagVector);
-         for(int i=0; i < temp->count(); i++) {
-             if(temp->at(i).type == "NONE") {
-                 continue;
-             }
+         QHashIterator<int, Tag> iTag(_atagger->tagHash);
+         while (iTag.hasNext()) {
+             iTag.next();
              QStringList entry;
+             QString wordIndexString = QString::number(iTag.key());
+             int wordIndexCharCount = wordIndexString.size();
+             while(wordIndexCharCount < wordCountCharCount) {
+                 wordIndexString.prepend('0');
+                 wordIndexCharCount++;
+             }
+             entry << wordIndexString;
              QTextCursor cursor = txtBrwsr->textCursor();
-             int pos = (temp->at(i)).pos;
-             int length = (temp->at(i)).length;
+             int pos = iTag.value().pos;
+             int length = iTag.value().length;
              cursor.setPosition(pos,QTextCursor::MoveAnchor);
              cursor.setPosition(pos + length,QTextCursor::KeepAnchor);
              QString text = cursor.selectedText();
              entry<<text;
-             entry<<(temp->at(i)).type;
+             entry<<iTag.value().tagtype->name;
              QString src;
-             if((temp->at(i)).source == user) {
+             if(iTag.value().source == user) {
                 src = "user";
             }
             else {
@@ -1796,17 +1839,26 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
         }
      }
      else {
-         QVector<MERFTag> temp(_atagger->simulationVector);
          for(int i=0; i<_atagger->simulationVector.count(); i++) {
+             const MERFTag* merftag = (const MERFTag*)_atagger->simulationVector.at(i);
+             MSFormula* formula = merftag->formula;
              QStringList entry;
+             int wordIndex = _atagger->wordIndexMap.value(merftag->pos);
+             QString wordIndexString = QString::number(wordIndex);
+             int wordIndexCharCount = wordIndexString.size();
+             while(wordIndexCharCount < wordCountCharCount) {
+                 wordIndexString.prepend('0');
+                 wordIndexCharCount++;
+             }
+             entry << wordIndexString;
              QTextCursor cursor = txtBrwsr->textCursor();
-             int pos = (temp.at(i)).pos;
-             int length = (temp.at(i)).length;
+             int pos = merftag->pos;
+             int length = merftag->length;
              cursor.setPosition(pos,QTextCursor::MoveAnchor);
              cursor.setPosition(pos + length,QTextCursor::KeepAnchor);
              QString text = cursor.selectedText();
              entry<<text;
-             entry<<(temp.at(i)).type;
+             entry<<formula->name;
              entry<<"MERF";
              entry<<QString::number(pos);
              entry<<QString::number(length);
@@ -1814,6 +1866,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
          }
      }
      tagDescription->insertTopLevelItems(0, items);
+     tagDescription->sortByColumn(0,Qt::AscendingOrder);
 }
 
 void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
@@ -1821,11 +1874,11 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     scene->clear();
     txtBrwsr->textCursor().clearSelection();
     QList<QTreeWidgetItem *> items;
-    QString type = item->text(1);
+    QString type = item->text(2);
     bool done = false;
 
     for(int j=0; j < _atagger->tagTypeVector->count(); j++) {
-        if((_atagger->tagTypeVector->at(j))->tag == type) {
+        if((_atagger->tagTypeVector->at(j))->name == type) {
             QString desc = (_atagger->tagTypeVector->at(j))->description;
             QColor bgcolor((_atagger->tagTypeVector->at(j))->bgcolor);
             QColor fgcolor((_atagger->tagTypeVector->at(j))->fgcolor);
@@ -1836,12 +1889,12 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             bool italic = (_atagger->tagTypeVector->at(j))->italic;
 
             QTextCursor c = txtBrwsr->textCursor();
-            c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
-            c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
+            c.setPosition(item->text(4).toInt(),QTextCursor::MoveAnchor);
+            c.setPosition(item->text(4).toInt() + item->text(5).toInt(),QTextCursor::KeepAnchor);
             txtBrwsr->setTextCursor(c);
 
             QStringList entry;
-            entry << "Word" << item->text(0);
+            entry << "Word" << item->text(1);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Description" <<desc;
@@ -1850,13 +1903,13 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             entry << "TagType" << type;
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Source" << item->text(2);
+            entry << "Source" << item->text(3);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Position" << item->text(3);
+            entry << "Position" << item->text(4);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Length" << item->text(4);
+            entry << "Length" << item->text(5);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Background Color" << QString();//bgcolor.name();
@@ -1905,12 +1958,12 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             QColor fgcolor(msf->fgcolor);
 
             QTextCursor c = txtBrwsr->textCursor();
-            c.setPosition(item->text(3).toInt(),QTextCursor::MoveAnchor);
-            c.setPosition(item->text(3).toInt() + item->text(4).toInt(),QTextCursor::KeepAnchor);
+            c.setPosition(item->text(4).toInt(),QTextCursor::MoveAnchor);
+            c.setPosition(item->text(4).toInt() + item->text(5).toInt(),QTextCursor::KeepAnchor);
             txtBrwsr->setTextCursor(c);
 
             QStringList entry;
-            entry << "Text" << item->text(0);
+            entry << "Text" << item->text(1);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Description" <<desc;
@@ -1919,13 +1972,13 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             entry << "Formula" << type;
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Source" << item->text(2);
+            entry << "Source" << item->text(3);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Position" << item->text(3);
+            entry << "Position" << item->text(4);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Length" << item->text(4);
+            entry << "Length" << item->text(5);
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Background Color" << QString();
@@ -1970,273 +2023,8 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             QTreeWidgetItem* tempItem = matchSItem;
             Agnode_t * tempNode = NULL;
             int index = tagDescription->indexOfTopLevelItem(item);
-            const MERFTag& merftag = _atagger->simulationVector.at(index);
-            for(int m=0; m<merftag.tags->count(); m++) {
-                Tag* tag = merftag.tags->at(m);
-                for(int n=0; n<tag->tType.count(); n++) {
-                    QString structType = tag->tType[n];
-
-                    if(structType == "mbf|") {
-                        QStringList data;
-                        data << tag->type << _atagger->text.mid(tag->pos,tag->length);
-                        QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-
-                        QString text = tag->type + '\n' + _atagger->text.mid(tag->pos,tag->length);
-                        char * writable = strdup(text.toStdString().c_str());
-                        if(tempNode == NULL) {
-                            stringstream strs;
-                            strs << id;
-                            string temp_str = strs.str();
-                            char* nodeID = strdup(temp_str.c_str());
-                            Agnode_t * newNode = agnode(G,nodeID, 1);
-                            agset(G,const_cast<char *>("root"),nodeID);
-                            id = id+1;
-                            agset(newNode,const_cast<char *>("label"),writable);
-                            parentNode.insert(newNode,NULL);
-                            tempNode = newNode;
-                        }
-                        else {
-                            stringstream strs;
-                            strs << id;
-                            string temp_str = strs.str();
-                            char* nodeID = strdup(temp_str.c_str());
-                            Agnode_t * newNode = agnode(G,nodeID, 1);
-                            id = id+1;
-                            agset(newNode,const_cast<char *>("label"),writable);
-                            edge = agedge(G, tempNode, newNode, 0, 1);
-                            parentNode.insert(newNode, tempNode);
-
-                        }
-                        free(writable);
-                    }
-                    else if(structType.contains("STAR")) {
-                        if(structType.contains("pre")) {
-                            QStringList data;
-                            data << "Operation" << "*";
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("*"));
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("*"));
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                    else if(structType.contains("PLUS")) {
-                        if(structType.contains("pre")) {
-                            QStringList data;
-                            data << "Operation" << "+";
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("+"));
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("+"));
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                    else if(structType.contains("QUESTION")) {
-                        if(structType.contains("pre")) {
-                            QStringList data;
-                            data << "Operation" << "?";
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("?"));
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("?"));
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                    else if(structType.contains("UPTO")) {
-                        if(structType.contains("pre")) {
-                            QString limit = structType.section('|',2,2);
-                            limit.prepend('^');
-                            QStringList data;
-                            data << "Operation" << limit;
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            char * writable = strdup(limit.toStdString().c_str());
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),writable);
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),writable);
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                            free(writable);
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                    else if(structType.contains("OR")) {
-                        if(structType.contains("pre")) {
-                            QStringList data;
-                            data << "Operation" << "|";
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                    else if(structType.contains("AND")) {
-                        if(structType.contains("pre")) {
-                            QStringList data;
-                            data << "Operation" << "&&";
-                            QTreeWidgetItem* newItem = new QTreeWidgetItem(tempItem,data);
-                            tempItem = newItem;
-
-                            if(tempNode == NULL) {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                agset(G,const_cast<char *>("root"),nodeID);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
-                                parentNode.insert(newNode,NULL);
-                                tempNode = newNode;
-                            }
-                            else {
-                                stringstream strs;
-                                strs << id;
-                                string temp_str = strs.str();
-                                char* nodeID = strdup(temp_str.c_str());
-                                Agnode_t * newNode = agnode(G,nodeID, 1);
-                                id = id+1;
-                                agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
-                                edge = agedge(G, tempNode, newNode, 0, 1);
-                                parentNode.insert(newNode, tempNode);
-                                tempNode = newNode;
-                            }
-                        }
-                        else {
-                            tempItem = tempItem->parent();
-                            tempNode = parentNode.value(tempNode);
-                        }
-                    }
-                }
-            }
+            const MERFTag* merftag = (const MERFTag*)_atagger->simulationVector.at(index);
+            merftag->match->buildMatchTree(G,tempNode,edge,&parentNode,tempItem,id);
 
             /** Set layout of the graph and get coordinates **/
             /* Compute a layout using layout engine from command line args */
@@ -2273,7 +2061,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                         QString bgcolor;
                         for(int k=0; k<_atagger->tagTypeVector->count(); k++) {
                             const TagType* tt = (TagType*)(_atagger->tagTypeVector->at(k));
-                            if(edgeLabel == tt->tag) {
+                            if(edgeLabel == tt->name) {
                                 fgcolor = tt->fgcolor;
                                 bgcolor = tt->bgcolor;
                             }
@@ -2336,27 +2124,8 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     }
 }
 
-void AMTMainWindow::sarfTagging() {
-    /*
-    if(_atagger->text.isEmpty()) {
-        QMessageBox::warning(this,"Warning","Add a text file before initializing the Sarf Analyzer!");
-        return;
-    }
+void AMTMainWindow::sarfTagging(bool color) {
 
-    if(_atagger->tagFile.isEmpty()) {
-        QString fileName = QFileDialog::getSaveFileName(this,
-                                                        tr("Tags File"), "",
-                                                        tr("Tags (*.tags.json);;All Files (*)"));
-        if(fileName.isEmpty()) {
-            QMessageBox::warning(this,"Warning","You have to add a tag file name before tagging the text!");
-            return;
-        }
-        else {
-            _atagger->tagFile = fileName + ".tags.json";
-            setWindowTitle("MERF: " + _atagger->tagFile);
-        }
-    }
-    */
     if(_atagger->tagTypeVector->isEmpty()) {
         QMessageBox::warning(this,"Warning","No tag types with MBF defined!");
         return;
@@ -2385,7 +2154,7 @@ void AMTMainWindow::sarfTagging() {
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
-    _atagger->tagVector.clear();
+    _atagger->tagHash.clear();
 
     error_str = "";
     output_str = "";
@@ -2436,10 +2205,12 @@ void AMTMainWindow::sarfTagging() {
 
     /** Analysis Done **/
 
-    applyTags();
+    if(color) {
+        applyTags();
 
-    fillTreeWidget(sarf);
-    finishTaggingText();
+        fillTreeWidget(sarf);
+        finishTaggingText();
+    }
 }
 
 void AMTMainWindow::customizeSarfTags() {
@@ -2481,8 +2252,8 @@ void AMTMainWindow::difference() {
     _atagger->compareToTagFile.clear();
     _atagger->compareToTagTypeFile.clear();
     _atagger->compareToTagTypeVector->clear();
-    _atagger->compareToTagVector.clear();
-    if(_atagger->tagVector.isEmpty()) {
+    _atagger->compareToTagHash.clear();
+    if(_atagger->tagHash.isEmpty()) {
         QMessageBox msgBox;
         msgBox.setText("There are no tags present to compare to");
         return;
@@ -2565,13 +2336,27 @@ void AMTMainWindow::difference() {
         QVariantMap tagElements = tag.toMap();
         int start = tagElements["pos"].toInt();
         int length = tagElements["length"].toInt();
+        int wordIndex = tagElements["wordIndex"].toInt();
         QString tagtype = tagElements["type"].toString();
         Source source = (Source)(tagElements["source"].toInt());
         bool check;
-        check = _atagger->insertTag(tagtype,start,length,source,compareTo);
+        const TagType* type = NULL;
+        for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
+            if(_atagger->tagTypeVector->at(i)->name == tagtype) {
+                type = _atagger->tagTypeVector->at(i);
+                break;
+            }
+        }
+        if(type == NULL) {
+            QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+            _atagger = new ATagger();
+            clearLayout(this->layout());
+            return;
+        }
+        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo);
     }
 
-    if(_atagger->tagVector.at(0).source == user) {
+    if(_atagger->tagHash.begin().value().source == user) {
         _atagger->compareToIsSarf = false;
     }
     else {
@@ -2587,7 +2372,7 @@ void AMTMainWindow::difference() {
                      tr("The <b>Tag Type File</b> can't be opened!"));
         _atagger->compareToTagFile.clear();
         _atagger->compareToTagTypeFile.clear();
-        _atagger->compareToTagVector.clear();
+        _atagger->compareToTagHash.clear();
         return;
     }
 
@@ -2608,7 +2393,6 @@ void AMTMainWindow::difference() {
     foreach(QVariant type, resulttt["TagTypeSet"].toList()) {
         QString tag;
         QString desc;
-        int id;
         QString foreground_color;
         QString background_color;
         int font;
@@ -2620,7 +2404,6 @@ void AMTMainWindow::difference() {
 
         tag = typeElements["Tag"].toString();
         desc = typeElements["Description"].toString();
-        id = typeElements["Legend"].toInt();
         foreground_color = typeElements["foreground_color"].toString();
         background_color = typeElements["background_color"].toString();
         font = typeElements["font"].toInt();
@@ -2747,11 +2530,11 @@ void AMTMainWindow::difference() {
             }
 
             _atagger->isSarf = true;
-            _atagger->insertSarfTagType(tag,tags,desc,id,foreground_color,background_color,font,underline,bold,italic,sarf,compareTo);
+            _atagger->insertSarfTagType(tag,tags,desc,foreground_color,background_color,font,underline,bold,italic,sarf,compareTo);
         }
         else {
             _atagger->isSarf = false;
-            _atagger->insertTagType(tag,desc,id,foreground_color,background_color,font,underline,bold,italic,user,compareTo);
+            _atagger->insertTagType(tag,desc,foreground_color,background_color,font,underline,bold,italic,user,compareTo);
         }
     }
 #endif
@@ -2799,7 +2582,7 @@ void AMTMainWindow::loadText_clicked() {
              return;
          }
 
-         _atagger->tagVector.clear();
+         _atagger->tagHash.clear();
          tagDescription->clear();
          descBrwsr->clear();
 
@@ -2812,6 +2595,7 @@ void AMTMainWindow::loadText_clicked() {
          QString relativePaths = QDir(dir).relativeFilePath(fileName);
          _atagger->textFile = relativePaths;
          _atagger->text = text;
+         processText(&text);
          txtBrwsr->setText(text);
          setLineSpacing(10);
     }
@@ -2869,11 +2653,12 @@ void AMTMainWindow::loadTagTypes_clicked() {
             return;
         }
 
-        _atagger->tagVector.clear();
+        _atagger->tagHash.clear();
         _atagger->tagTypeVector->clear();
         tagDescription->clear();
         descBrwsr->clear();
         txtBrwsr->clear();
+        scene->clear();
         txtBrwsr->setText(_atagger->text);
 
         lineEditTTFName->setText(fileName);
@@ -2886,52 +2671,52 @@ void AMTMainWindow::loadTagTypes_clicked() {
 }
 
 void AMTMainWindow::_new() {
-	clearLayout(this->layout());
+    if(dirty == true) {
+    }
+    clearLayout(this->layout());
 
-        _atagger = new ATagger();
+    _atagger = new ATagger();
 
-	setWindowTitle("Arabic Morphological Tagger");
-        static QFileDialog * fdlg = NULL;
-        if (fdlg == NULL) {
-            fdlg = new QFileDialog(this,
-                                     tr("Create Tag File"), "",
-                                     tr("tags (*.tags.json);;All Files (*)"));
-            fdlg->setLabelText(QFileDialog::Accept,"Create");
-            fdlg->setViewMode(QFileDialog::Detail);
-        }
-        if (!fdlg->exec()) {
-            return;
-        }
-        if (fdlg->selectedFiles().empty()) {
-            return;
-        }
-        QString tagFileName = fdlg->selectedFiles()[0];
+    setWindowTitle("Arabic Morphological Tagger");
+    static QFileDialog * fdlg = NULL;
+    if (fdlg == NULL) {
+        fdlg = new QFileDialog(this,
+                                 tr("Create Tag File"), "",
+                                 tr("tags (*.tags.json);;All Files (*)"));
+        fdlg->setLabelText(QFileDialog::Accept,"Create");
+        fdlg->setViewMode(QFileDialog::Detail);
+    }
+    if (!fdlg->exec()) {
+        return;
+    }
+    if (fdlg->selectedFiles().empty()) {
+        return;
+    }
+    QString tagFileName = fdlg->selectedFiles()[0];
 #if 0
-
-	QString tagFileName = QFileDialog::getSaveFileName(this,
-                        tr("Create Tag File"), "",
-                        tr("tags (*.tags.json);;All Files (*)"));
-        if(tagFileName.isEmpty()) {
-		return;
-        }
+    QString tagFileName = QFileDialog::getSaveFileName(this,
+                    tr("Create Tag File"), "",
+                    tr("tags (*.tags.json);;All Files (*)"));
+    if(tagFileName.isEmpty()) {
+            return;
+    }
 #endif
-        _atagger->tagFile = tagFileName + ".tags.json";
-        setWindowTitle("MERF: " + _atagger->tagFile);
+    _atagger->tagFile = tagFileName + ".tags.json";
+    setWindowTitle("MERF: " + _atagger->tagFile);
 
 
-	createDockWindows(false);
+    createDockWindows(false);
 
-	sarftagsAct->setEnabled(true);
-        editMSFAct->setEnabled(true);
-	edittagtypesAct->setEnabled(true);
-	tagremoveAct->setEnabled(true);
-	mTags->setEnabled(true);
-        umTags->setEnabled(true);
-        viewMBFTagAct->setEnabled(true);
-        viewMSFTagAct->setEnabled(true);
-	saveAct->setEnabled(true);
-	saveasAct->setEnabled(true);
-        diffAct->setEnabled(true);
+    sarftagsAct->setEnabled(true);
+    editMSFAct->setEnabled(true);
+    edittagtypesAct->setEnabled(true);
+    mTags->setEnabled(true);
+    umTags->setEnabled(true);
+    viewMBFTagAct->setEnabled(true);
+    viewMSFTagAct->setEnabled(true);
+    saveAct->setEnabled(true);
+    saveasAct->setEnabled(true);
+    diffAct->setEnabled(true);
 }
 
 void AMTMainWindow::setLineSpacing(int lineSpacing) {
@@ -2971,29 +2756,29 @@ void AMTMainWindow::customizeMSFs() {
     cmsfv->show();
 }
 
+bool compareTag(const Tag &tag1, const Tag &tag2) {
+    if(tag1.pos != tag2.pos) {
+        return tag1.pos < tag2.pos;
+    }
+    else {
+        return tag1.tagtype->name < tag2.tagtype->name;
+    }
+}
+
 void AMTMainWindow::runMERFSimulator() {
     if(_atagger->msfVector->isEmpty()) {
         return;
     }
 
-    /*
-    if(_atagger->text.isEmpty()) {
-        QMessageBox::warning(this,"Warning","Add a text file before initializing the Sarf Analyzer!");
-        return;
-    }
-
-    if(_atagger->tagFile.isEmpty()) {
-        QMessageBox::warning(this,"Warning","You have to add tag types first!");
-        return;
-    }
-    */
     if(_atagger->tagTypeVector->isEmpty()) {
         QMessageBox::warning(this,"Warning","No tag types with MBF defined!");
         return;
     }
+
     _atagger->simulationVector.clear();
-    if(_atagger->tagVector.isEmpty()) {
-        sarfTagging();
+    descBrwsr->clear();
+    if(_atagger->tagHash.isEmpty()) {
+        sarfTagging(false);
     }
 
     _atagger->isSarf = true;
@@ -3007,8 +2792,6 @@ void AMTMainWindow::runMERFSimulator() {
     error_str = "";
     output_str = "";
     dirty = true;
-
-    //QString text = _atagger->text;
 
     if(!(_atagger->runSimulator())) {
         return;

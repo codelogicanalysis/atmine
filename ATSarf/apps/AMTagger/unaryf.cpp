@@ -113,7 +113,7 @@ void UNARYF::buildTree(QTreeWidget* parent) {
     msf->buildTree(item);
 }
 
-bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *functionParametersMap) {
+bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {
     if(!(msf->buildActionFile(actionsData, functionParametersMap))) {
         return false;
     }
@@ -143,20 +143,20 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_preMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -199,20 +199,20 @@ bool UNARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QString> *
             param.insert(msfName + '|' + attribute);
 
             if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|text");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"text"));
                 actionsData.append("QString " + msfName + "_text, ");
             }
             else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|number");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"number"));
                 actionsData.append("int " + msfName + "_number, ");
             }
             else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|position");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"position"));
                 actionsData.append("int " + msfName + "_position, ");
             }
 
             else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_onMatch", msfName + "|length");
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
             else {
@@ -270,7 +270,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
         }
         nfa->last = state1;
         (nfa->i)++;
-        nfa->stateTOmsfMap.insert(state1, name + "|pre");
+        nfa->stateTOmsfMap.insert(state1, QPair<MSF*,QString>(this,"pre"));
         if(!(msf->buildNFA(nfa))) {
             return false;
         }
@@ -280,7 +280,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
     QString state1 = "q";
     state1.append(QString::number(nfa->i));
     if(op != PLUS) {
-        nfa->stateTOmsfMap.insert(state1, name + "|pre");
+        nfa->stateTOmsfMap.insert(state1, QPair<MSF*,QString>(this,"pre"));
     }
     if(nfa->start.isEmpty()) {
         nfa->start = state1;
@@ -306,7 +306,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
         currentLast = "q";
         currentLast.append(QString::number(nfa->i));
         (nfa->i)++;
-        nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+        nfa->stateTOmsfMap.insert(currentLast, QPair<MSF*,QString>(this,"on"));
         nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
         nfa->transitions.insert(nfa->last + '|' + "epsilon", currentLast);
     }
@@ -343,7 +343,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
     currentLast = "q";
     currentLast.append(QString::number(nfa->i));
     (nfa->i)++;
-    nfa->stateTOmsfMap.insert(currentLast, name + "|on");
+    nfa->stateTOmsfMap.insert(currentLast, QPair<MSF*,QString>(this,"on"));
     nfa->transitions.insert(currentStart + '|' + "epsilon",currentLast);
     for(int i=0; i<tempStates.count(); i++) {
         nfa->transitions.insert(tempStates.at(i) + '|' + "epsilon",currentLast);

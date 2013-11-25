@@ -1,23 +1,24 @@
-#ifndef MERFTAG_H
-#define MERFTAG_H
+#ifndef KEYM_H
+#define KEYM_H
 
-#include <QVector>
+#include <QString>
 #include "match.h"
-#include "tag.h"
-#include "msformula.h"
 
-class MERFTag : public Match
+class KeyM : public Match
 {
 public:
-    MERFTag();
-    MERFTag(MSFormula* formula, Source source=sarf);
+    KeyM(Match* parent, QString key, int pos, int length);
+    QString word;
+    QString key;
+    int pos;
+    int length;
     bool setMatch(Match* match);
     bool isUnaryM();
     bool isBinaryM();
     bool isSequentialM();
     bool isKeyM();
-    bool isDummyM();
     bool isMERFTag();
+    bool isDummyM();
     int getPOS();
     int getLength();
     QString getText();
@@ -26,12 +27,7 @@ public:
     void executeActions(NFA* nfa);
     QString getParam(QString msfName,QString param);
     QVariantMap getJSON();
-    MSFormula* formula;
-    int pos;
-    int length;
-    Source source;
-    Match* match;
-    ~MERFTag();
+    ~KeyM();
 };
 
-#endif // MERFTAG_H
+#endif // KEYM_H

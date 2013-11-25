@@ -256,7 +256,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 
     QStringList tagtypes;
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        tagtypes.append(_atagger->tagTypeVector->at(i)->tag);
+        tagtypes.append(_atagger->tagTypeVector->at(i)->name);
     }
     tagtypes.append("NONE");
 
@@ -581,7 +581,7 @@ void CustomizeMSFView::btnAdd_clicked() {
     }
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         const TagType* tt = _atagger->tagTypeVector->at(i);
-        if(tt->tag == msfName) {
+        if(tt->name == msfName) {
             QMessageBox::warning(this, "Warning", "Name conflict with an MBF!");
             return;
         }
@@ -671,7 +671,7 @@ void CustomizeMSFView::btnRemove_clicked() {
     listMBF->clear();
     if(_atagger->tagTypeVector->count() != 0) {
         for(int i=0; i< _atagger->tagTypeVector->count(); i++) {
-            listMBF->addItem(_atagger->tagTypeVector->at(i)->tag);
+            listMBF->addItem(_atagger->tagTypeVector->at(i)->name);
         }
     }
     listMBF->addItem("NONE");
@@ -1514,7 +1514,7 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
     treeMBFdesc->clear();
     QString tagtype = item->text();
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
-        if(_atagger->tagTypeVector->at(i)->tag == tagtype && _atagger->tagTypeVector->at(i)->source == sarf) {
+        if(_atagger->tagTypeVector->at(i)->name == tagtype && _atagger->tagTypeVector->at(i)->source == sarf) {
             SarfTagType* stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
             for(int j=0; j<stt->tags.count(); j++) {
                 QStringList list;

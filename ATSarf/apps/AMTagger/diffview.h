@@ -40,7 +40,7 @@ private slots:
     void tagForward(QString tagValue);
     void untagReverse(QString tagValue);
     void tagReverse(QString tagValue);
-    int insertTag(QString type, int pos, int length, Source source, Dest dest);
+    int insertTag(QString type, int pos, int length, int wordIndex, Source source, Dest dest);
     void closeEvent(QCloseEvent *event);
 
 private:
