@@ -32,10 +32,6 @@ bool KeyM::isMERFTag() {
     return false;
 }
 
-bool KeyM::isDummyM() {
-    return false;
-}
-
 int KeyM::getPOS() {
     return pos;
 }

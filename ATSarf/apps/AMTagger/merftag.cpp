@@ -31,10 +31,6 @@ bool MERFTag::isKeyM() {
     return false;
 }
 
-bool MERFTag::isDummyM() {
-    return false;
-}
-
 bool MERFTag::isMERFTag() {
     return true;
 }

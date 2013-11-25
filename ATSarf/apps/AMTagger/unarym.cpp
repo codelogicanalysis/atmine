@@ -26,10 +26,6 @@ bool UnaryM::isKeyM() {
     return false;
 }
 
-bool UnaryM::isDummyM() {
-    return false;
-}
-
 bool UnaryM::isMERFTag() {
     return false;
 }

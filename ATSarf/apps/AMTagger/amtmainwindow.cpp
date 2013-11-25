@@ -9,7 +9,6 @@
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
-//#include <QtGui>
 
 bool parentCheck;
 class SarfTag;
@@ -245,15 +244,10 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         if(wordIndex == 0) {
             return;
         }
-        //for(int i=0; i < _atagger->tagVector.count(); i++) {
-            //const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-            //if(t->pos == pos) {
         QList<Tag> values = _atagger->tagHash.values(wordIndex);
         for(int i=0; i<values.size();i++) {
             tagtypes << values.at(i).tagtype->name;
         }
-            //}
-        //}
     }
     else {
         for(int i=0; i < _atagger->simulationVector.count(); i++) {
@@ -317,7 +311,6 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         }
     }
     connect(signalMapperU, SIGNAL(mapped(const QString &)), this, SLOT(untag(QString)));
-    //menu->addAction(untagMAct);
     menu->addSeparator();
     menu->addAction(addtagAct);
 
@@ -1407,41 +1400,6 @@ void AMTMainWindow::tag(QString tagValue) {
                 return;
             }
             _atagger->insertTag(type, start, length, wordIndex, user, original);
-            /*
-            qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
-            for(int i =0; i< _atagger->tagVector.count(); i++) {
-                const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-                if(t->pos != start) {
-                    continue;
-                }
-
-                const Tag * nt = NULL;
-                if(i<(_atagger->tagVector.count()-1)) {
-                    nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-                }
-
-                //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-                    //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-                    //if(tt->tag == tagValue) {
-                        QColor bgcolor(t->tagtype->bgcolor);
-                        QColor fgcolor(t->tagtype->fgcolor);
-                        int font = t->tagtype->font;
-                        //bool underline = (_atagger->tagTypeVector->at(i))->underline;
-                        bool underline = false;
-                        if(nt!=NULL && nt->pos == start) {
-                            underline = true;
-                        }
-                        bool bold = t->tagtype->bold;
-                        bool italic = t->tagtype->italic;
-
-                        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-                    //}
-                //}
-                cursor.clearSelection();
-                fillTreeWidget(user);
-                break;
-            }
-            */
             QList<Tag> values = _atagger->tagHash.values(wordIndex);
 
             QColor bgcolor(values.at(0).tagtype->bgcolor);
@@ -1546,47 +1504,6 @@ void AMTMainWindow::viewMBFTags() {
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
-
-    /*
-    qSort(_atagger->tagVector.begin(), _atagger->tagVector.end(), compare);
-
-    for(int i =0; i< _atagger->tagVector.count(); i++) {
-        const Tag * pt = NULL;
-        if(i>0) {
-            pt = (Tag*)(&(_atagger->tagVector.at(i-1)));
-        }
-        const Tag * t = (Tag*)(&(_atagger->tagVector.at(i)));
-
-        if(pt != NULL && pt->pos == t->pos) {
-            continue;
-        }
-        const Tag * nt = NULL;
-        if(i<(_atagger->tagVector.count()-1)) {
-            nt = (Tag*)(&(_atagger->tagVector.at(i+1)));
-        }
-
-        //for(int j=0; j< _atagger->tagTypeVector->count(); j++) {
-            //const TagType * tt = (TagType*)(_atagger->tagTypeVector->at(j));
-
-            //if(t->type == tt->tag) {
-        int start = t->pos;
-        int length = t->length;
-        QColor bgcolor(t->tagtype->bgcolor);
-        QColor fgcolor(t->tagtype->fgcolor);
-        int font = t->tagtype->font;
-        //bool underline = (_atagger->tagTypeVector->at(j))->underline;
-        bool underline = false;
-        if(nt!=NULL && nt->pos == start) {
-            underline = true;
-        }
-        bool bold = t->tagtype->bold;
-        bool italic = t->tagtype->italic;
-        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
-        //break;
-            //}
-        //}
-    }
-    */
 
     QList<int> keys = _atagger->tagHash.uniqueKeys();
     for(int i=0; i<keys.count(); i++) {

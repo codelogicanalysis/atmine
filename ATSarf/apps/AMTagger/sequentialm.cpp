@@ -25,10 +25,6 @@ bool SequentialM::isKeyM() {
     return false;
 }
 
-bool SequentialM::isDummyM() {
-    return false;
-}
-
 bool SequentialM::isMERFTag() {
     return false;
 }

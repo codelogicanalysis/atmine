@@ -25,7 +25,6 @@ public:
     virtual bool isBinaryM()=0;
     virtual bool isSequentialM()=0;
     virtual bool isKeyM()=0;
-    virtual bool isDummyM()=0;
     virtual bool isMERFTag()=0;
     virtual int getPOS()=0;
     virtual int getLength()=0;
