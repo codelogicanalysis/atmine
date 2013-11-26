@@ -132,7 +132,8 @@ void ATagger::executeActions(NFA* nfa) {
 
     /** write action functions in .cpp output files, compile shared library, and call them **/
     QString msfName = formula->name;
-    QString cppFile = msfName + ".cpp";
+    QString path = tagFile.left(tagFile.lastIndexOf('/')+1);
+    QString cppFile = path + msfName + ".cpp";
     QFile f(cppFile);
     f.open(QIODevice::ReadWrite|QIODevice::Truncate|QIODevice::Text);
     QTextStream out(&f);
@@ -142,11 +143,11 @@ void ATagger::executeActions(NFA* nfa) {
     f.close();
 
     // create library
-    QString command = "/usr/bin/g++ -fPIC -shared " + msfName + ".cpp -o lib" + msfName + ".so";
+    QString command = "/usr/bin/g++ -fPIC -shared " + cppFile + " -o " + path + "lib" + msfName + ".so";
     system (command.toStdString().c_str());
 
     // load library
-    QString sharedLib = "./lib" + msfName + ".so";
+    QString sharedLib = path + "lib" + msfName + ".so";
     void * fLib = dlopen ( sharedLib.toStdString().c_str(), RTLD_LAZY );
     if ( !fLib ) {
         cerr << "Cannot open library: " << dlerror() << '\n';
@@ -168,7 +169,8 @@ void ATagger::drawNFA() {
     for(int i=0; i< _atagger->nfaVector->count(); i++) {
         NFA* nfa = _atagger->nfaVector->at(i);
 
-        QString cppFile = nfa->formula->name + ".dot";
+        QString path = tagFile.left(tagFile.lastIndexOf('/')+1);
+        QString cppFile = path + nfa->formula->name + ".dot";
         QFile f(cppFile);
         f.open(QIODevice::WriteOnly);
         QTextStream out(&f);
