@@ -25,6 +25,7 @@
 #include "sequetialf.h"
 #include "colorlisteditor.h"
 #include "actionsview.h"
+#include "relationsview.h"
 
 class CustomizeMSFView : public QMainWindow
 {
@@ -47,7 +48,7 @@ private slots:
     void btnAnd_clicked();
     void btnSequence_clicked();
     void btnActions_clicked();
-    void btnFSM_clicked();
+    void btnRelations_clicked();
     /*
     void init_edited();
     void after_edited();
@@ -74,7 +75,7 @@ private:
     QPushButton *btnAnd;
     QPushButton *btnSequence;
     QPushButton *btnActions;
-    QPushButton *btnFSM;
+    QPushButton *btnRelations;
 
     QLabel *lblMBF;
     QLabel *lblMSF;

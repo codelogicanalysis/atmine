@@ -107,7 +107,8 @@ void MERFTag::executeActions(NFA* nfa) {
         QString msfName = params.at(j).first;
         QString field = params.at(j).second;
 
-        QString paramValue = getParam(msfName,field);
+        QString sarfMatches;
+        QString paramValue = getParam(msfName,field,&sarfMatches);
         if(field.compare("text") == 0) {
             onMatch.append('\"' + paramValue + "\",");
         }
@@ -119,6 +120,10 @@ void MERFTag::executeActions(NFA* nfa) {
         }
         else if(field.compare("number") == 0) {
             onMatch.append(paramValue + ',');
+        }
+        else if(field.compare("matches") == 0) {
+            onMatch.append(paramValue + ',');
+            formula->actionData.append(sarfMatches);
         }
     }
     if(params.count() == 0) {
@@ -132,7 +137,7 @@ void MERFTag::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString MERFTag::getParam(QString msfName,QString param) {
+QString MERFTag::getParam(QString msfName,QString param, QString* sarfMatches) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();
@@ -155,6 +160,9 @@ QString MERFTag::getParam(QString msfName,QString param) {
         }
         else if(param == "length") {
             return QString::number(getLength());
+        }
+        else {
+            return "NULL";
         }
     }
     else {

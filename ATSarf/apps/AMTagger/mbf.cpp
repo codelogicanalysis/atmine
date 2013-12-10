@@ -96,6 +96,10 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString
                 functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
+            else if(attribute.compare("matches") == 0) {
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"matches"));
+                actionsData.append("vector<Match>& " + msfName + "_matches, ");
+            }
             else {
                 return false;
             }
@@ -152,6 +156,10 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString
                 functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
+            else if(attribute.compare("matches") == 0) {
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"matches"));
+                actionsData.append("vector<Match>& " + msfName + "_matches, ");
+            }
             else {
                 return false;
             }
@@ -161,49 +169,6 @@ bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString
         }
     }
     actionsData.append(") {\n" + tempMatch + "\n}\n\n");
-
-    /*
-    QString tempAfter = after;
-    actionsData.append("void " + name + "_postMatch(");
-    if(!(tempAfter.isEmpty())) {
-        while(true) {
-            int dollarIndex = tempAfter.indexOf("$", 0);
-            if(dollarIndex == -1) {
-                break;
-            }
-
-            QString msfName = tempAfter.mid(dollarIndex+1).section('.',0,0);
-
-            int afterDotPosition = tempAfter.indexOf('.', dollarIndex) +1;
-            QRegExp sep("[^a-zA-Z]");
-            QString attribute = tempAfter.mid(afterDotPosition).section(sep, 0, 0);
-            tempAfter = tempAfter.remove(dollarIndex, 1);
-            tempAfter = tempAfter.replace(afterDotPosition-2, 1, '_');
-            if(attribute.compare("text") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|text");
-                actionsData.append("QString " + msfName + "_text, ");
-            }
-            else if(attribute.compare("number") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|number");
-                actionsData.append("int " + msfName + "_number, ");
-            }
-            else if(attribute.compare("position") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|position");
-                actionsData.append("int " + msfName + "_position, ");
-            }
-
-            else if(attribute.compare("length") == 0) {
-                functionParametersMap->insert(name + "_postMatch", msfName + "|length");
-                actionsData.append("int " + msfName + "_length, ");
-            }
-            else {
-                return false;
-            }
-        }
-        actionsData.chop(2);
-    }
-    actionsData.append(") {\n" + tempAfter + "\n}\n\n");
-    */
     return true;
 }
 

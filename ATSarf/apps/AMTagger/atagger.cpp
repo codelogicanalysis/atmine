@@ -246,24 +246,6 @@ bool ATagger::runSimulator() {
     return true;
 }
 
-bool lessThan(const QString &s1, const QString &s2)
-{
-    QString actionType1 = s1.section('|',1,1);
-    QString actionType2 = s2.section('|',1,1);
-    if((actionType1 == actionType2) && (actionType1 == "pre")) {
-        return s1 < s2;
-    }
-    else if((actionType1 == actionType2) && (actionType1 == "on")) {
-        return s1 > s2;
-    }
-    else if(actionType1 == "on"){
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
 Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
         /// initialize a MERFTag and return it

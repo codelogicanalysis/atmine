@@ -316,6 +316,25 @@ void MSFormula::buildTree(QTreeWidgetItem* parent) {
 
 bool MSFormula::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {
     actionsData.append(includes + "\n\n");
+    if(!(includes.contains("<string>"))) {
+        actionsData.prepend("#include <string>\n");
+    }
+    if(!(includes.contains("<vector>"))) {
+        actionsData.prepend("#include <vector>\n");
+    }
+    actionsData.append("struct Match { \n"
+        "string prefix[3];\n"
+        "string stem;\n"
+        "string suffix[3];\n"
+
+        "\nstring prefixPOS[3]\n;"
+        "string stemPOS;\n"
+        "string suffixPOS[3];\n"
+
+        "\nstring prefixGloss3];\n"
+        "string stemGloss;\n"
+        "string suffixGloss[3];\n"
+       "};\")\n\n");
     actionsData.append(members + "\n\n");
 
     for(int j=0; j<vector.count(); j++) {
@@ -341,6 +360,23 @@ QVariantMap MSFormula::getJSON() {
     msfMap.insert("usedCount", usedCount);
     msfMap.insert("includes",includes);
     msfMap.insert("members",members);
+    if(relationVector.count()>0) {
+        QVariantList relationList;
+        for(int j=0; j<relationVector.count(); j++) {
+            QVariantMap relationMap;
+            relationMap.insert("name", relationVector.at(j)->name);
+            relationMap.insert("entity1", relationVector.at(j)->entity1->name);
+            relationMap.insert("entity2", relationVector.at(j)->entity2->name);
+            if(relationVector.at(j)->edge != NULL) {
+                relationMap.insert("edge", relationVector.at(j)->edge->name);
+            }
+            relationMap.insert("e1Label", relationVector.at(j)->e1Label);
+            relationMap.insert("e2Label", relationVector.at(j)->e2Label);
+            relationMap.insert("edgeLabel", relationVector.at(j)->edgeLabel);
+            relationList << relationMap;
+        }
+        msfMap.insert("Relations", relationList);
+    }
     QVariantList msfList;
     for(int j=0; j<vector.count(); j++) {
         msfList << vector.at(j)->getJSON();
