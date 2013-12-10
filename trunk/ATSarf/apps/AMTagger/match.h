@@ -32,7 +32,7 @@ public:
     virtual int getMatchCount()=0;
     virtual void buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem,int& id)=0;
     virtual void executeActions(NFA* nfa)=0;
-    virtual QString getParam(QString msfName,QString param)=0;
+    virtual QString getParam(QString msfName,QString param, QString* sarfMatches=NULL)=0;
     virtual QVariantMap getJSON()=0;
     virtual ~Match();
 };

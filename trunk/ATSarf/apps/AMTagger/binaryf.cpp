@@ -149,6 +149,10 @@ bool BINARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QSt
                 functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
             }
+            else if(attribute.compare("matches") == 0) {
+                functionParametersMap->insert(name + "_preMatch", QPair<QString,QString>(msfName,"matches"));
+                actionsData.append("vector<Match>& " + msfName + "_matches, ");
+            }
             else {
                 return false;
             }
@@ -204,6 +208,10 @@ bool BINARYF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QSt
             else if(attribute.compare("length") == 0) {
                 functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"length"));
                 actionsData.append("int " + msfName + "_length, ");
+            }
+            else if(attribute.compare("matches") == 0) {
+                functionParametersMap->insert(name + "_onMatch", QPair<QString,QString>(msfName,"matches"));
+                actionsData.append("vector<Match>& " + msfName + "_matches, ");
             }
             else {
                 return false;

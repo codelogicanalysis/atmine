@@ -3,11 +3,11 @@
 
 #include <QVector>
 #include <QMap>
-#include "msf.h"
 #include "mbf.h"
 #include "unaryf.h"
 #include "binaryf.h"
 #include "sequetialf.h"
+#include "relation.h"
 
 class MSFormula: public MSF
 {
@@ -26,6 +26,8 @@ public:
     bool updateMSF(QString parent, QVector<QString>* children, SequentialF* msf);
     /// Vector containing the sequence of MSFs
     QVector<MSF*> vector;
+    /// Vector containing the formula relations
+    QVector<Relation*> relationVector;
     /// Map that takes formula name and returns its structure
     QMap<QString,MSF*> map;
     /// Map to keep list of parameters to each function

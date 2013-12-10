@@ -126,7 +126,10 @@ HEADERS += \
     ../unarym.h \
     ../binarym.h \
     ../sequentialm.h \
-    ../keym.h
+    ../keym.h \
+    ../amfiller.h \
+    ../relationsview.h \
+    ../relation.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -210,7 +213,10 @@ SOURCES += \
     ../unarym.cpp \
     ../binarym.cpp \
     ../sequentialm.cpp \
-    ../keym.cpp
+    ../keym.cpp \
+    ../amfiller.cpp \
+    ../relationsview.cpp \
+    ../relation.cpp
 
 FORMS    +=
 

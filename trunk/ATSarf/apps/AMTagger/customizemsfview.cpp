@@ -1,11 +1,9 @@
 #include "customizemsfview.h"
 #include <QGroupBox>
-//#include <QtSvg/QSvgRenderer>
 
 CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QMainWindow(parent)
 {
-
     isDirty = false;
     currentF = NULL;
     QGridLayout *grid = new QGridLayout();
@@ -29,7 +27,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnSequence = new QPushButton(tr("()"), this);
     btnSequence->setToolTip("Sequence");
     btnActions = new QPushButton(tr("Edit Actions"), this);
-    btnFSM = new QPushButton(tr("Show Formula FSM"), this);
+    btnRelations = new QPushButton(tr("Edit Relations"), this);
 
     btnSelect->setEnabled(false);
     btnUnselect->setEnabled(false);
@@ -43,7 +41,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     btnAnd->setEnabled(false);
     btnSequence->setEnabled(false);
     btnActions->setEnabled(false);
-    btnFSM->setEnabled(false);
+    btnRelations->setEnabled(false);
 
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
@@ -57,8 +55,8 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(btnAnd,12,3);
     grid->addWidget(btnLimit,11,6);
     grid->addWidget(btnSequence,12,4);
-    grid->addWidget(btnActions,6,5,1,2);
-    grid->addWidget(btnFSM,7,5,1,2);
+    grid->addWidget(btnRelations,6,5,1,2);
+    grid->addWidget(btnActions,7,5,1,2);
 
     //QGroupBox *groupBox = new QGroupBox(tr("UpTo"));
     //QVBoxLayout *vbox = new QVBoxLayout;
@@ -250,6 +248,29 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
                 readMSF(msf, msfData, msf);
             }
+
+            /** Get relations **/
+            if(!(msformulaData.value("Relations").isNull())) {
+                foreach(QVariant relationsData, msformulaData.value("Relations").toList()) {
+                    QVariantMap relationData = relationsData.toMap();
+                    QString relationName = relationData.value("name").toString();
+                    QString e1Label = relationData.value("e1Label").toString();
+                    QString e2Label = relationData.value("e2Label").toString();
+                    QString edgeLabel = relationData.value("edgeLabel").toString();
+
+                    QString entity1_Name = relationData.value("entity1").toString();
+                    MSF* entity1 = msf->map.value(entity1_Name);
+                    QString entity2_Name = relationData.value("entity2").toString();
+                    MSF* entity2 = msf->map.value(entity2_Name);
+                    MSF* edge = NULL;
+                    if(!(relationData.value("edge").isNull())) {
+                        QString edge_Name = relationData.value("edge").toString();
+                        edge = msf->map.value(edge_Name);
+                    }
+                    Relation* relation = new Relation(relationName,entity1,e1Label,entity2,e2Label,edge,edgeLabel);
+                    msf->relationVector.append(relation);
+                }
+            }
         }
     }
     /** Done **/
@@ -286,7 +307,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
         btnActions->setEnabled(true);
-        btnFSM->setEnabled(true);
+        btnRelations->setEnabled(true);
     }
     listMBF->addItems(tagtypes);
 
@@ -609,7 +630,7 @@ void CustomizeMSFView::btnAdd_clicked() {
         btnAnd->setEnabled(true);
         btnSequence->setEnabled(true);
         btnActions->setEnabled(true);
-        btnFSM->setEnabled(true);
+        btnRelations->setEnabled(true);
     }
     treeMSF->clear();
     editDescription->clear();
@@ -698,7 +719,7 @@ void CustomizeMSFView::btnRemove_clicked() {
         btnAnd->setEnabled(false);
         btnSequence->setEnabled(false);
         btnActions->setEnabled(false);
-        btnFSM->setEnabled(false);
+        btnRelations->setEnabled(false);
     }
     isDirty = true;
 
@@ -1412,18 +1433,13 @@ void CustomizeMSFView::btnActions_clicked() {
     av->show();
 }
 
-void CustomizeMSFView::btnFSM_clicked() {
+void CustomizeMSFView::btnRelations_clicked() {
     if((currentF == NULL) || (treeMSF->children().count() == 0)) {
         return;
     }
 
-    /*
-    // create library
-    QString command = "/usr/bin/dot -Tsvg " + msfName + ".dot -o " + msfName + ".svg";
-    system(command.toStdString().c_str());
-
-    QSvgRenderer *fsmImage = new QSvgRenderer();
-    */
+    RelationsView* rView = new RelationsView(currentF, &isDirty, this);
+    rView->show();
 }
 
 /*
@@ -1503,6 +1519,7 @@ void CustomizeMSFView::cbMSF_changed(QString name) {
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
             msf->buildTree(treeMSF);
+            currentF = msf;
         }
     }
     connect_Signals();
@@ -1643,7 +1660,7 @@ void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     disconnect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     disconnect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
-    disconnect(btnFSM, SIGNAL(clicked()), this, SLOT(btnFSM_clicked()));
+    disconnect(btnRelations, SIGNAL(clicked()), this, SLOT(btnRelations_clicked()));
     //disconnect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
@@ -1671,7 +1688,7 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnAnd, SIGNAL(clicked()), this, SLOT(btnAnd_clicked()));
     connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     connect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
-    connect(btnFSM, SIGNAL(clicked()), this, SLOT(btnFSM_clicked()));
+    connect(btnRelations, SIGNAL(clicked()), this, SLOT(btnRelations_clicked()));
     //connect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
@@ -1679,7 +1696,7 @@ void CustomizeMSFView::closeEvent(QCloseEvent *event) {
 
     if(isDirty) {
         QMessageBox msgBox;
-         msgBox.setText("The document has been modified.");
+         msgBox.setText("The data has been modified.");
          msgBox.setInformativeText("Do you want to save your changes?");
          msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard);
          msgBox.setDefaultButton(QMessageBox::Save);

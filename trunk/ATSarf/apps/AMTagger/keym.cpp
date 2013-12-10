@@ -1,4 +1,5 @@
 #include "keym.h"
+#include "amfiller.h"
 
 KeyM::KeyM(Match *parent, QString key, int pos, int length): Match(KEY,parent)
 {
@@ -102,7 +103,8 @@ void KeyM::executeActions(NFA* nfa) {
         QString msfName = params.at(j).first;
         QString field = params.at(j).second;
 
-        QString paramValue = getParam(msfName,field);
+        QString sarfMatches;
+        QString paramValue = getParam(msfName,field,&sarfMatches);
         if(field.compare("text") == 0) {
             onMatch.append('\"' + paramValue + "\",");
         }
@@ -114,6 +116,10 @@ void KeyM::executeActions(NFA* nfa) {
         }
         else if(field.compare("number") == 0) {
             onMatch.append(paramValue + ',');
+        }
+        else if(field.compare("matches") == 0) {
+            onMatch.append(paramValue + ',');
+            formula->actionData.append(sarfMatches);
         }
     }
     if(params.count() == 0) {
@@ -127,7 +133,7 @@ void KeyM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString KeyM::getParam(QString msfName,QString param) {
+QString KeyM::getParam(QString msfName,QString param, QString* sarfMatches) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return word;
@@ -149,6 +155,14 @@ QString KeyM::getParam(QString msfName,QString param) {
         }
         else if(param == "length") {
             return QString::number(length);
+        }
+        else if(param == "matches") {
+            QString mvName = msfName + '_' + param;
+            AMFiller filler(word,sarfMatches,mvName);
+            filler();
+            QString rValue;
+            rValue.append('&' + mvName);
+            return rValue;
         }
     }
     return "";

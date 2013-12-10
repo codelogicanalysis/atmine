@@ -21,7 +21,7 @@ public:
     int getMatchCount();
     void buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id);
     void executeActions(NFA* nfa);
-    QString getParam(QString msfName,QString param);
+    QString getParam(QString msfName,QString param, QString* sarfMatches=NULL);
     QVariantMap getJSON();
     ~BinaryM();
 };

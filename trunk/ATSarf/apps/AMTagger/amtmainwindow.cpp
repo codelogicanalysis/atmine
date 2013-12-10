@@ -1177,6 +1177,29 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
                 readMSF(msf, msfData, msf);
             }
+
+            /** Get relations **/
+            if(!(msformulaData.value("Relations").isNull())) {
+                foreach(QVariant relationsData, msformulaData.value("Relations").toList()) {
+                    QVariantMap relationData = relationsData.toMap();
+                    QString relationName = relationData.value("name").toString();
+                    QString e1Label = relationData.value("e1Label").toString();
+                    QString e2Label = relationData.value("e2Label").toString();
+                    QString edgeLabel = relationData.value("edgeLabel").toString();
+
+                    QString entity1_Name = relationData.value("entity1").toString();
+                    MSF* entity1 = msf->map.value(entity1_Name);
+                    QString entity2_Name = relationData.value("entity2").toString();
+                    MSF* entity2 = msf->map.value(entity2_Name);
+                    MSF* edge = NULL;
+                    if(!(relationData.value("edge").isNull())) {
+                        QString edge_Name = relationData.value("edge").toString();
+                        edge = msf->map.value(edge_Name);
+                    }
+                    Relation* relation = new Relation(relationName,entity1,e1Label,entity2,e2Label,edge,edgeLabel);
+                    msf->relationVector.append(relation);
+                }
+            }
         }
     }
 }
