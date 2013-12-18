@@ -226,6 +226,42 @@ QVariantMap BinaryM::getJSON() {
     return binaryMap;
 }
 
+bool BinaryM::constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge) {
+    bool edgeBool = true;
+    if(relation->edge != NULL && edge == NULL) {
+        edgeBool = false;
+    }
+
+    if(relation->entity1->name == msf->name) {
+        entity1 = this;
+    }
+    else if(relation->entity2->name == msf->name) {
+        entity2 = this;
+    }
+    else if(relation->edge != NULL && relation->edge->name == msf->name) {
+        edge = this;
+        edgeBool = true;
+    }
+
+    if(entity1!= NULL && entity2!= NULL && edgeBool) {
+        return true;
+    }
+    else {
+        if(!(leftMatch->constructRelation(relation,entity1,entity2,edge))) {
+            if(rightMatch != NULL) {
+                return rightMatch->constructRelation(relation,entity1,entity2,edge);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return true;
+        }
+    }
+    return false;
+}
+
 BinaryM::~BinaryM() {
     delete leftMatch;
     delete rightMatch;

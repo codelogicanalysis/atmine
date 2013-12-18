@@ -129,7 +129,8 @@ HEADERS += \
     ../keym.h \
     ../amfiller.h \
     ../relationsview.h \
-    ../relation.h
+    ../relation.h \
+    ../relationm.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -216,7 +217,8 @@ SOURCES += \
     ../keym.cpp \
     ../amfiller.cpp \
     ../relationsview.cpp \
-    ../relation.cpp
+    ../relation.cpp \
+    ../relationm.cpp
 
 FORMS    +=
 

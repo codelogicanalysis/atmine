@@ -31,7 +31,8 @@ public:
     bool buildActionFile();
     bool runSimulator();
     Match* simulateNFA(NFA* nfa, QString state, int wordIndex);
-    void executeActions(NFA* nfa);
+    void executeActions(NFA* nfa, int index);
+    void constructRelations(int index);
     void drawNFA();
     void updateMatch(Match* match,NFA* nfa, QString state, const Tag* tag=NULL);
     QMultiHash<int,Tag> tagHash;

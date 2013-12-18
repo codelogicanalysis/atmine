@@ -87,8 +87,8 @@ bool GraphNode::advance()
 QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -20 - adjust, -10 - adjust,
-                   43 + adjust, 23 + adjust);
+    return QRectF( -30 - adjust, -20 - adjust,
+                   63 + adjust, 43 + adjust);
 }
 
 QPainterPath GraphNode::shape() const
@@ -108,11 +108,14 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     while(painter->fontMetrics().width(text) > textrect.width()) {
         //int newsize = painter->font().pointSize() - 1;
         //painter->setFont(QFont(painter->font().family(), newsize));
+        //textrect.setX(textrect.x()-0.5);
+        //textrect.setWidth(textrect.width()+1);
         textrect.setWidth(textrect.width()+1);
-
+        textrect.setX((-1)*textrect.width()/2);
     }
     if(textrect.width() != 20) {
-        textrect.setWidth(textrect.width()+5);
+        textrect.setWidth(textrect.width()+3);
+        textrect.setX((-1)*textrect.width()/2);
     }
     /** End **/
 
@@ -146,9 +149,9 @@ void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->drawEllipse((-1)*textrect.width()/2, -10, textrect.width(), 20);
 
     /** Draw the text **/
-    textrect.setX((-1)*textrect.width()/2);
     if(textrect.width() != 20) {
-        textrect.setWidth(textrect.width()-5);
+        textrect.setWidth(textrect.width()-3);
+        textrect.setX((-1)*textrect.width()/2);
     }
     painter->drawText(textrect, Qt::AlignCenter, text);
 }

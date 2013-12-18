@@ -322,19 +322,22 @@ bool MSFormula::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<Q
     if(!(includes.contains("<vector>"))) {
         actionsData.prepend("#include <vector>\n");
     }
+    if(!(includes.contains("using namespace std;"))) {
+        actionsData.append("using namespace std;\n\n");
+    }
     actionsData.append("struct Match { \n"
         "string prefix[3];\n"
         "string stem;\n"
         "string suffix[3];\n"
 
-        "\nstring prefixPOS[3]\n;"
+        "\nstring prefixPOS[3];\n"
         "string stemPOS;\n"
         "string suffixPOS[3];\n"
 
-        "\nstring prefixGloss3];\n"
+        "\nstring prefixGloss[3];\n"
         "string stemGloss;\n"
         "string suffixGloss[3];\n"
-       "};\")\n\n");
+       "};\n\n");
     actionsData.append(members + "\n\n");
 
     for(int j=0; j<vector.count(); j++) {
