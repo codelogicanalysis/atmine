@@ -8,7 +8,7 @@ class GraphNode;
 class GraphEdge : public QGraphicsItem
 {
 public:
- GraphEdge(GraphNode *sourceNode, GraphNode *destNode, QString text="");
+ GraphEdge(GraphNode *sourceNode, GraphNode *destNode, QString text="", bool addArrow=true);
 
  GraphNode *sourceNode() const;
  GraphNode *destNode() const;
@@ -29,6 +29,7 @@ private:
  QPointF destPoint;
  qreal arrowSize;
  QString text;
+ bool addArrow;
 };
 
 #endif

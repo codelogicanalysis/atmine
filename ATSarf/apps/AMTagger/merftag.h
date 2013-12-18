@@ -5,6 +5,7 @@
 #include "match.h"
 #include "tag.h"
 #include "msformula.h"
+#include "relationm.h"
 
 class MERFTag : public Match
 {
@@ -25,7 +26,9 @@ public:
     void executeActions(NFA* nfa);
     QString getParam(QString msfName,QString param, QString* sarfMatches=NULL);
     QVariantMap getJSON();
+    bool constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge);
     MSFormula* formula;
+    QVector<RelationM*> relationMatchVector;
     int pos;
     int length;
     Source source;

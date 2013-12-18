@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
+#include "Triplet.h"
 
 bool parentCheck;
 class SarfTag;
@@ -178,7 +179,8 @@ void AMTMainWindow::createDockWindows(bool open) {
         lineEditTFName->setText(_atagger->tagtypeFile);
     }
 
-    dock = new QDockWidget(tr("Match"), this);
+    dock = new QDockWidget(tr("Matches"), this);
+    tab = new QTabWidget(this);
     graphics = new QGraphicsView(this);
     scene = new QGraphicsScene(this);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -189,8 +191,22 @@ void AMTMainWindow::createDockWindows(bool open) {
     graphics->setRenderHint(QPainter::Antialiasing);
     graphics->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     graphics->scale(qreal(2), qreal(2));
-    //graphics->setMinimumSize(400, 400);
-    dock->setWidget(graphics);
+
+    /** Scene of entity-relation Graph**/
+    relationGraphics = new QGraphicsView(this);
+    relationScene = new QGraphicsScene(this);
+    relationScene->setItemIndexMethod(QGraphicsScene::NoIndex);
+    relationScene->setSceneRect(-150, -150, 300, 300);
+    relationGraphics->setScene(relationScene);
+    relationGraphics->setCacheMode(QGraphicsView::CacheBackground);
+    relationGraphics->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    relationGraphics->setRenderHint(QPainter::Antialiasing);
+    relationGraphics->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    relationGraphics->scale(qreal(2), qreal(2));
+
+    tab->addTab(graphics,"Match Tree");
+    tab->addTab(relationGraphics,"Entity-Relation Graph");
+    dock->setWidget(tab);
     addDockWidget(Qt::RightDockWidgetArea, dock);
     paneMenu->addAction(dock->toggleViewAction());
 }
@@ -677,6 +693,36 @@ void AMTMainWindow::process(QByteArray & json) {
             else {
                 merftag->match = NULL;
             }
+
+            for(int j=0; j<formula->relationVector.count(); j++) {
+                Relation* relation = formula->relationVector[j];
+                Match* entity1 = NULL;
+                Match* entity2 = NULL;
+                Match* edge = NULL;
+                if(merftag->match->constructRelation(relation,entity1,entity2,edge)) {
+                    RelationM* relM = new RelationM(relation,entity1,entity2,edge);
+                    merftag->relationMatchVector.append(relM);
+                }
+            }
+            /*
+            if(!(merfTagElements.value("relationMatches").isNull())) {
+                foreach(QVariant relMatch, merfTagElements.value("relationMatches").toList()) {
+                    QVariantMap relmData = relMatch.toMap();
+                    QString relationName = relmData.value("relation").toString();
+                    QString e1Label = relmData.value("e1Label").toString();
+                    QString e2Label = relmData.value("e2Label").toString();
+                    QString edgeLabel = relmData.value("edgeLabel").toString();
+                    Relation* rel = NULL;
+                    for(int i=0; i<merftag->formula->relationVector.count();i++) {
+                        if(merftag->formula->relationVector.at(i)->name == relationName) {
+                            rel = merftag->formula->relationVector[i];
+                        }
+                    }
+                    RelationM* relm = new RelationM(rel,NULL,e1Label,NULL,e2Label,NULL,edgeLabel);
+                    merftag->relationMatchVector.append(relm);
+                }
+            }
+            */
 
 #if 0
             foreach(QVariant tagData, merfTagElements["tags"].toList()) {
@@ -1812,6 +1858,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
 void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
     descBrwsr->clear();
     scene->clear();
+    relationScene->clear();
     txtBrwsr->textCursor().clearSelection();
     QList<QTreeWidgetItem *> items;
     QString type = item->text(2);
@@ -2052,6 +2099,150 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     }
                 }
             }
+
+            /* Free layout data */
+            gvFreeLayout(gvc, G);
+            /* Free graph structures */
+            agclose(G);
+            /* close output file and free context */
+            gvFreeContext(gvc);
+
+
+            /** Create the entity-relation graph of graphviz
+                We use this graph to create the ER graph
+                and calculate the coordinates of each node for better visualization **/
+            gvc = gvContext();
+            edge = NULL;
+            gvParseArgs(gvc, sizeof(args)/sizeof(char*), args);
+            G = agopen(const_cast<char *>("matchGraph"), Agstrictdirected, 0);
+            //Set graph attributes
+            agsafeset(G, const_cast<char *>("overlap"), const_cast<char *>("prism"),const_cast<char *>(""));
+            agsafeset(G, const_cast<char *>("splines"), const_cast<char *>("true"),const_cast<char *>("true"));
+            agsafeset(G, const_cast<char *>("pad"), const_cast<char *>("0,2"),const_cast<char *>("0,2"));
+            agsafeset(G, const_cast<char *>("dpi"), const_cast<char *>("96,0"),const_cast<char *>("96,0"));
+            agsafeset(G, const_cast<char *>("nodesep"), const_cast<char *>("0,4"),const_cast<char *>("0,4"));
+            agattr(G,AGNODE,const_cast<char *>("label"),const_cast<char *>(""));
+            agattr(G,AGNODE,const_cast<char *>("fixedsize"), const_cast<char *>("true"));
+            agattr(G,AGNODE,const_cast<char *>("regular"), const_cast<char *>("true"));
+            id=0;
+
+            QHash<QString, Agnode_t*> rmnHash;
+            //QMap<Agnode_t*,Agnode_t*> edgesMap;
+            QSet<Triplet<Agnode_t*,Agnode_t*,QString>*> nodeedgeSet;
+            for(int k=0; k<merftag->relationMatchVector.count(); k++) {
+                RelationM* relMatch = merftag->relationMatchVector[k];
+                Agnode_t* node1;
+                if(rmnHash.contains(relMatch->entity1->msf->name)) {
+                    node1 = rmnHash.value(relMatch->entity1->msf->name);
+                }
+                else {
+                    stringstream strs;
+                    strs << id;
+                    string temp_str = strs.str();
+                    char* nodeID = strdup(temp_str.c_str());
+                    node1 = agnode(G,nodeID, 1);
+                    //agset(reG,const_cast<char *>("root"),nodeID);
+                    id = id+1;
+                    char * writable = strdup(relMatch->e1Label.toStdString().c_str());
+                    agset(node1,const_cast<char *>("label"),writable);
+                    rmnHash.insert(relMatch->entity1->msf->name,node1);
+                }
+
+                Agnode_t* node2;
+                if(rmnHash.contains(relMatch->entity2->msf->name)) {
+                    node2 = rmnHash.value(relMatch->entity2->msf->name);
+                }
+                else {
+                    stringstream strs;
+                    strs << id;
+                    string temp_str = strs.str();
+                    char* nodeID = strdup(temp_str.c_str());
+                    node2 = agnode(G,nodeID, 1);
+                    //agset(reG,const_cast<char *>("root"),nodeID);
+                    id = id+1;
+                    char * writable = strdup(relMatch->e2Label.toStdString().c_str());
+                    agset(node2,const_cast<char *>("label"),writable);
+                    rmnHash.insert(relMatch->entity2->msf->name,node2);
+                }
+
+                edge = agedge(G, node1, node2, 0, 1);
+                Triplet<Agnode_t*,Agnode_t*,QString>* triplet = new Triplet<Agnode_t*,Agnode_t*,QString>(node1,node2,relMatch->edgeLabel);
+                nodeedgeSet.insert(triplet);
+                //edgesMap.insert(node1,node2);
+            }
+
+            /** Set layout of the graph and get coordinates **/
+            /* Compute a layout using layout engine from command line args */
+            gvLayoutJobs(gvc, G);
+            //gvRenderJobs(gvc, G);
+
+            /** Set scene rectangle **/
+            left = GD_bb(G).LL.x;
+            top = GD_bb(G).LL.y;
+            width = GD_bb(G).UR.x;
+            height = GD_bb(G).UR.y;
+            QRectF rerect(left,top,width,height);
+            relationScene->setSceneRect(rerect);
+
+            /** Get coordinates of nodes and draw nodes in scene **/
+            QMap<Agnode_t*,GraphNode *> renodes;
+            QSetIterator<Triplet<Agnode_t *,Agnode_t *,QString>*> reiterator(nodeedgeSet);
+            while (reiterator.hasNext()) {
+                Triplet<Agnode_t*,Agnode_t*,QString>* triplet = reiterator.next();
+                /// Use this string to know if an edge label should be added
+                QString edgeLabel(triplet->third);
+
+                Agnode_t* tmpNode1 = triplet->first;
+                char* label1 = agget(tmpNode1,const_cast<char *>("label"));
+                qreal nodeX1 = ND_coord(tmpNode1).x;
+                qreal nodeY1 = (GD_bb(G).UR.y - ND_coord(tmpNode1).y);
+                GraphNode *node1;
+                if(!(renodes.contains(tmpNode1))) {
+                    QString stringlabel1(label1);
+                    node1 = new GraphNode(stringlabel1,"","");
+                    relationScene->addItem(node1);
+                    node1->setPos(nodeX1,nodeY1);
+                    renodes.insert(tmpNode1,node1);
+                }
+                else {
+                    node1 = renodes.value(tmpNode1);
+                }
+
+                Agnode_t* tmpNode2 = triplet->second;
+                if(tmpNode2 == NULL) {
+                    continue;
+                }
+                char* label2 = agget(tmpNode2,const_cast<char *>("label"));
+                qreal nodeX2 = ND_coord(tmpNode2).x;
+                qreal nodeY2 = (GD_bb(G).UR.y - ND_coord(tmpNode2).y);
+                GraphNode *node2;
+                if(!(renodes.contains(tmpNode2))) {
+                    QString stringlabel2(label2);
+                    node2 = new GraphNode(stringlabel2,"","");
+                    relationScene->addItem(node2);
+                    node2->setPos(nodeX2,nodeY2);
+                    renodes.insert(tmpNode2,node2);
+                    if(edgeLabel.isEmpty()) {
+                        relationScene->addItem(new GraphEdge(node2,node1,"",false));
+                    }
+                    else {
+                        relationScene->addItem(new GraphEdge(node2,node1,edgeLabel,false));
+                        edgeLabel.clear();
+                    }
+                }
+                else {
+                    node2 = renodes.value(tmpNode2);
+                    if(edgeLabel.isEmpty()) {
+                        relationScene->addItem(new GraphEdge(node2,node1,"",false));
+                    }
+                    else {
+                        relationScene->addItem(new GraphEdge(node2,node1,edgeLabel,false));
+                        edgeLabel.clear();
+                    }
+                }
+                delete triplet;
+            }
+            nodeedgeSet.clear();
 
             /* Free layout data */
             gvFreeLayout(gvc, G);

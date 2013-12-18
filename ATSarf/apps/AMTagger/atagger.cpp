@@ -116,12 +116,12 @@ bool ATagger::buildActionFile() {
     return true;
 }
 
-void ATagger::executeActions(NFA* nfa) {
+void ATagger::executeActions(NFA* nfa, int index) {
 
     /** Add function calls of each formula to a function named msfName() **/
     MSFormula* formula = (MSFormula*)nfa->formula;
     formula->actionData.append("extern \"C\" void " + formula->name + "_actions() {\n");
-    for(int i=0; i<simulationVector.count(); i++) {
+    for(int i=index; i<simulationVector.count(); i++) {
         MERFTag* mTag = (MERFTag*)(simulationVector.at(i));
         MSFormula* _formula = mTag->formula;
         if(_formula->name == formula->name) {
@@ -162,6 +162,24 @@ void ATagger::executeActions(NFA* nfa) {
             fn();
         }
         dlclose(fLib);
+    }
+}
+
+void ATagger::constructRelations(int index) {
+
+    for(int i=index; i<simulationVector.count(); i++) {
+        MERFTag* merftag = (MERFTag*)(simulationVector[i]);
+        MSFormula* formula = (MSFormula*)(merftag->formula);
+        for(int j=0; j<formula->relationVector.count(); j++) {
+            Relation* relation = formula->relationVector[j];
+            Match* entity1 = NULL;
+            Match* entity2 = NULL;
+            Match* edge = NULL;
+            if(merftag->match->constructRelation(relation,entity1,entity2,edge)) {
+                RelationM* relM = new RelationM(relation,entity1,entity2,edge);
+                merftag->relationMatchVector.append(relM);
+            }
+        }
     }
 }
 
@@ -214,6 +232,7 @@ bool ATagger::runSimulator() {
     /// Simulate NFAs referring to all the MSFs built
     simulationVector.clear();
     for(int i=0; i<nfaVector->count(); i++) {
+        int lastCount = simulationVector.count();
         /// Simulate current MSF starting from a set of tokens referring to a single word
         for(int j=1; j<=wordCount; j++) {
             Match* match = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, j);
@@ -234,7 +253,10 @@ bool ATagger::runSimulator() {
             }
         }
         /** Execute Actions **/
-        executeActions(nfaVector->at(i));
+        if(lastCount != simulationVector.count()) {
+            executeActions(nfaVector->at(i), lastCount);
+            constructRelations(lastCount);
+        }
         /** Done **/
     }
 
@@ -640,6 +662,22 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
                 if(mtag->match != NULL) {
                     data.insert("match",mtag->match->getJSON());
                 }
+
+                /*
+                if(!(mtag->relationMatchVector.isEmpty())) {
+                    QVariantList relMatchList;
+                    for(int j=0; j<mtag->relationMatchVector.count(); j++) {
+                        RelationM* relm = mtag->relationMatchVector[j];
+                        QVariantMap relmData;
+                        relmData.insert("relation",relm->relation->name);
+                        relmData.insert("e1Label",relm->e1Label);
+                        relmData.insert("e2Label",relm->e2Label);
+                        relmData.insert("edgeLabel",relm->edgeLabel);
+                        relMatchList << relmData;
+                    }
+                    data.insert("relationMatches",relMatchList);
+                }
+                */
                 simulationList << data;
             }
             tagdata.insert("simulationTags",simulationList);

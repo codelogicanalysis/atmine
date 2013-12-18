@@ -24,6 +24,7 @@ public:
     void executeActions(NFA* nfa);
     QString getParam(QString msfName,QString param, QString* sarfMatches=NULL);
     QVariantMap getJSON();
+    bool constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge);
     ~UnaryM();
 };
 

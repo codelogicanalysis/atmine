@@ -34,6 +34,7 @@ public:
     virtual void executeActions(NFA* nfa)=0;
     virtual QString getParam(QString msfName,QString param, QString* sarfMatches=NULL)=0;
     virtual QVariantMap getJSON()=0;
+    virtual bool constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge)=0;
     virtual ~Match();
 };
 

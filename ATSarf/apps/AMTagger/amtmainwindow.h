@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QSignalMapper>
+#include <QTabWidget>
 #include <QLabel>
 #include <QtGui/QGraphicsView>
 #include "graphedge.h"
@@ -135,8 +136,11 @@ private:
          QLineEdit *lineEditTFName;
          QLineEdit *lineEditTTFName;
 
+         QTabWidget* tab;
          QGraphicsScene *scene;
          QGraphicsView *graphics;
+         QGraphicsScene *relationScene;
+         QGraphicsView *relationGraphics;
 public:
          explicit AMTMainWindow(QWidget *parent = 0);
          ~AMTMainWindow();
