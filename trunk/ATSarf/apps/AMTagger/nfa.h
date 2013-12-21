@@ -19,7 +19,7 @@ public:
     QString start;
     QStringList states;
     QString accept;
-    QString andAccept;
+    QStringList andAccept;
     /// The last state added to the list of states
     QString last;
     QMultiMap<QString, QString> transitions;

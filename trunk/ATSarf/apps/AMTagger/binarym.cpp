@@ -62,15 +62,15 @@ int BinaryM::getMatchCount() {
 }
 
 void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
-    Agnode_t* oldNode = node;
-    QTreeWidgetItem* oldParentItem = parentItem;
+    //Agnode_t* oldNode = node;
+    //QTreeWidgetItem* oldParentItem = parentItem;
 
     QStringList data;
     if(op == OR) {
         data << "Operation" << "|";
     }
     else {
-        data << "Operation" << "&&";
+        data << "Operation" << "&";
     }
     QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
     parentItem = newItem;
@@ -87,10 +87,11 @@ void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
             agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
         }
         else {
-            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&"));
         }
         parentNodeMap->insert(newNode,NULL);
         node = newNode;
+        //oldNode = newNode;
     }
     else {
         stringstream strs;
@@ -103,7 +104,7 @@ void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
             agset(newNode,const_cast<char *>("label"),const_cast<char *>("|"));
         }
         else {
-            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&&"));
+            agset(newNode,const_cast<char *>("label"),const_cast<char *>("&"));
         }
         edge = agedge(G, node, newNode, 0, 1);
         parentNodeMap->insert(newNode, node);
@@ -112,7 +113,7 @@ void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
 
     leftMatch->buildMatchTree(G,node,edge,parentNodeMap,parentItem,id);
     if(rightMatch != NULL) {
-        rightMatch->buildMatchTree(G,oldNode,edge,parentNodeMap,oldParentItem,id);
+        rightMatch->buildMatchTree(G,node,edge,parentNodeMap,parentItem,id);
     }
 }
 
