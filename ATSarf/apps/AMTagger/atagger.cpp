@@ -330,7 +330,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     }
 
     QList<QString> nstates =nfa->transitions.values(state + '|' + "epsilon");
-    for(int j = 0; j < nstates.size(); j++) {
+    for(int j = nstates.size()-1; j >=0 ; j--) {
         done = true;
         Match* temp = simulateNFA(nfa,nstates.at(j),wordIndex);
         if(temp != NULL) {
@@ -462,15 +462,35 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 BinaryM* binarym = new BinaryM(AND,parent);
                 binarym->msf = msf;
                 parent->setMatch(binarym);
-                binarym->setMatch(matches[0]);
-                matches[0]->parent = binarym;
-                binarym->setMatch(matches[1]);
-                matches[1]->parent = binarym;
+                MERFTag* mt1 = (MERFTag*)(matches[0]);
+                SequentialM* seq1 = (SequentialM*)(mt1->match);
+                if(seq1->matches.count()>1) {
+                    binarym->setMatch(seq1);
+                    seq1->parent = binarym;
+                }
+                else {
+                    binarym->setMatch(seq1->matches[0]);
+                    seq1->matches[0]->parent = binarym;
+                }
+                MERFTag* mt2 = (MERFTag*)(matches[1]);
+                SequentialM* seq2 = (SequentialM*)(mt2->match);
+                if(seq2->matches.count()>1) {
+                    binarym->setMatch(seq2);
+                    seq2->parent = binarym;
+                }
+                else {
+                    binarym->setMatch(seq2->matches[0]);
+                    seq2->matches[0]->parent = binarym;
+                }
                 matches.clear();
-                matches.append(binarym);
+                matches.append(parent);
                 /** Done **/
             }
             else {
+                for(int i=0; i<matches.count(); i++) {
+                    delete matches[i];
+                }
+                matches.clear();
                 return NULL;
             }
         }
@@ -498,6 +518,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 QPair<MSF*,QString> pair = nfa->stateTOmsfMap.value(state);
                 MSF* msf = pair.first;
 
+                /*
                 Match* parent = matches[1];
                 MERFTag* mtag = new MERFTag(formula,sarf);
                 mtag->msf = msf;
@@ -507,6 +528,14 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 matches[0]->parent = mtag;
                 matches.clear();
                 matches.append(mtag);
+                */
+
+                Match* parent = matches[1];
+                matches[0]->msf = msf;
+                matches[0]->parent = parent;
+                parent->setMatch(matches[0]);
+                matches.clear();
+                matches.append(parent);
                 /** Done **/
             }
             else {
@@ -517,6 +546,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
         /** get longest match and return it **/
         int maxCount = -1;
         int maxIndex;
+        /*
         if(isSpecial) {
             /// This is the case where we have a subformula or AND operation
             /// In such a case, the matches are connected to each other and shouldn't be deleted
@@ -530,6 +560,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             }
 
         }
+        */
         for(int i=0; i< matches.count(); i++) {
             Match* temp = matches[i];
             while(temp->parent != NULL) {

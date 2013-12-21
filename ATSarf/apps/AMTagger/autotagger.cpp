@@ -41,7 +41,7 @@ bool AutoTagger::operator ()() {
             */
             QList<Tag> values = _atagger->tagHash.values(wordCount);
             /// This is just to check if anything goes wrong with wordIndex/wordPOS
-            if(values[0].pos != word.start) {
+            if(!(values.isEmpty()) && values[0].pos != word.start) {
                 _atagger->tagHash.clear();
                 return false;
             }

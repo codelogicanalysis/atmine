@@ -1,4 +1,5 @@
 #include "merftag.h"
+#include "sequentialm.h"
 
 MERFTag::MERFTag() : Match(NONE,NULL) {
     match = NULL;
