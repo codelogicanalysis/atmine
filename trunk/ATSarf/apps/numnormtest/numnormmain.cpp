@@ -57,6 +57,12 @@ int main(int argc, char *argv[]) {
     NumNorm nn(&text);
     nn();
 
+    if(nn.extractedNumbers.count()!=0) {
+        for(int i=0; i< nn.extractedNumbers.count(); i++) {
+            cout << nn.extractedNumbers[i].getNumber() << '\n';
+        }
+    }
+
     /** Close Sarf instance and exit **/
     srf.exit();
     return 0;

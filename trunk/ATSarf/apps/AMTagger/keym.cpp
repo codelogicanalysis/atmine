@@ -150,7 +150,7 @@ QString KeyM::getParam(QString msfName,QString param, QString* sarfMatches) {
                 return QString::number(number);
             }
             else {
-                return "";
+                return "NULL";
             }
         }
         else if(param == "length") {

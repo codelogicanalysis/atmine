@@ -3,11 +3,15 @@
 Word nextWord(QString & text, int pos) {
     Word word;
     word.word = "";
+    word.isStatementStart = false;
     if(pos == text.count()) {
         return word;
     }
     int next = pos;
     while((next != text.count()) && !(text.at(next).isLetter())) {
+        if(text.at(next) == '.') {
+            word.isStatementStart = true;
+        }
         next++;
     }
 

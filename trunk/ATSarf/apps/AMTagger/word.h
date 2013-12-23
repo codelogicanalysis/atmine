@@ -8,6 +8,7 @@ public:
     QString word;
     int start;
     int end;
+    bool isStatementStart;
 };
 
 Word nextWord(QString & text, int pos);

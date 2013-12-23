@@ -25,7 +25,7 @@ bool Number::on_match() {
     //for(unsigned int c=0; c< stem.abstract_categories.length(); c++) {
     const int NUMBER_CATEGORY_INDEX = 142;
 
-    if (stem.abstract_categories[NUMBER_CATEGORY_INDEX]) {
+    if (stem.abstract_categories[NUMBER_CATEGORY_INDEX] || glosses.contains("ninety") || glosses.contains("one")) {
         //int category_id = database_info.comp_rules->getAbstractCategoryID(c);
         //if(target_category_id == category_id) {
 
