@@ -308,7 +308,14 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
         }
         for(int j = 0; j < nstates.size(); j++) {
             done = true;
-            Match* temp = simulateNFA(nfa, nstates.at(j), wordIndex+1);
+            int nextWordIndex = wordIndex;
+            if(_atagger->isStatementEndSet.contains(wordIndex)) {
+                nextWordIndex = (_atagger->wordCount) + 1;
+            }
+            else {
+                nextWordIndex++;
+            }
+            Match* temp = simulateNFA(nfa, nstates.at(j), nextWordIndex);
             if(temp != NULL) {
                 /** Update Match **/
                 KeyM* keyMatch = (KeyM*)temp;

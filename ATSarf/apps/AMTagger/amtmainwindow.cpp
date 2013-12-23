@@ -337,10 +337,14 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 void processText(QString *text) {
 
     _atagger->wordIndexMap.clear();
+    _atagger->isStatementEndSet.clear();
     int start = 0;
     int wordIndex = 1;
     while(start != text->count()) {
         Word word = nextWord(*text, start);
+        if(word.isStatementStart && wordIndex != 1) {
+            _atagger->isStatementEndSet.insert(wordIndex-1);
+        }
         if(word.word.isEmpty()) {
             break;
         }

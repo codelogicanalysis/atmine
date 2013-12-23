@@ -93,7 +93,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(editDescription,1,5,1,2);
 
     spinLimit = new QSpinBox(this);
-    spinLimit->setRange(1,7);
+    spinLimit->setMinimum(1);
     spinLimit->setSingleStep(1);
     spinLimit->setValue(1);
     grid->addWidget(spinLimit,12,6);

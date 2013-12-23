@@ -197,7 +197,7 @@ QString SequentialM::getParam(QString msfName,QString param, QString* sarfMatche
                 return QString::number(number);
             }
             else {
-                return "";
+                return "NULL";
             }
         }
         else if(param == "length") {

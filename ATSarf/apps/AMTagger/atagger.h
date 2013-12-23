@@ -55,6 +55,8 @@ public:
     bool isTagMBF;
     /// Hash to keep track of word index based on position
     QHash<int,int> wordIndexMap;
+    /// Hash to keep track of statement end with a full stop
+    QSet<int> isStatementEndSet;
     /// Counter to save word count in text
     int wordCount;
 };
