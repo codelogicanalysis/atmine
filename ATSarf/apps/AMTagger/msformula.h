@@ -46,6 +46,8 @@ public:
     QString members;
     /// String to save all functions and function calls for actions
     QString actionData;
+    /// boolean to be true if using full stop as delimiter else false for full punctuation
+    bool isFullStop;
     bool isMBF();
     bool isUnary();
     bool isBinary();

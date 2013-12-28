@@ -5,6 +5,7 @@ MSFormula::MSFormula(QString name, MSF* parent): MSF(name, parent)
 {
     i=0;
     usedCount = 0;
+    isFullStop = true;
 }
 
 bool MSFormula::addMSF(MSF * msf) {
@@ -363,6 +364,7 @@ QVariantMap MSFormula::getJSON() {
     msfMap.insert("usedCount", usedCount);
     msfMap.insert("includes",includes);
     msfMap.insert("members",members);
+    msfMap.insert("delimiter",isFullStop);
     if(relationVector.count()>0) {
         QVariantList relationList;
         for(int j=0; j<relationVector.count(); j++) {

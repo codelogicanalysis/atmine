@@ -6,7 +6,7 @@ NumSolution::NumSolution () {
     number = 0;
 }
 
-NumSolution::NumSolution(int _start, int _end, int _number)
+NumSolution::NumSolution(int _start, int _end, long _number)
 {
     start = _start;
     end = _end;
@@ -21,7 +21,7 @@ int NumSolution::getEnd() {
     return end;
 }
 
-int NumSolution::getNumber() {
+long NumSolution::getNumber() {
     return number;
 }
 
@@ -33,6 +33,6 @@ void NumSolution::setEnd(int _end) {
     end = _end;
 }
 
-void NumSolution::setNumber(int _number) {
+void NumSolution::setNumber(long _number) {
     number = _number;
 }

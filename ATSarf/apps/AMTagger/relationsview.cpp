@@ -324,10 +324,10 @@ void RelationsView::disconnect_Signals() {
     disconnect(cbEdge, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdge_changed(QString)));
     disconnect(cbE1, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE1_changed(QString)));
     disconnect(cbE2, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE2_changed(QString)));
-    disconnect(cbEdgeLabel, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
+    //disconnect(cbEdgeLabel, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
     disconnect(cbEdgeLabel, SIGNAL(editTextChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
-    disconnect(cbE1Label, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE1Label_changed(QString)));
-    disconnect(cbE2Label, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE2Label_changed(QString)));
+    disconnect(cbE1Label, SIGNAL(editTextChanged(QString)), this, SLOT(cbE1Label_changed(QString)));
+    disconnect(cbE2Label, SIGNAL(editTextChanged(QString)), this, SLOT(cbE2Label_changed(QString)));
 }
 
 void RelationsView::connect_Signals() {
@@ -337,10 +337,10 @@ void RelationsView::connect_Signals() {
     connect(cbEdge, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdge_changed(QString)));
     connect(cbE1, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE1_changed(QString)));
     connect(cbE2, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE2_changed(QString)));
-    connect(cbEdgeLabel, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
+    //connect(cbEdgeLabel, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
     connect(cbEdgeLabel, SIGNAL(editTextChanged(QString)), this, SLOT(cbEdgeLabel_changed(QString)));
-    connect(cbE1Label, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE1Label_changed(QString)));
-    connect(cbE2Label, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbE2Label_changed(QString)));
+    connect(cbE1Label, SIGNAL(editTextChanged(QString)), this, SLOT(cbE1Label_changed(QString)));
+    connect(cbE2Label, SIGNAL(editTextChanged(QString)), this, SLOT(cbE2Label_changed(QString)));
 }
 
 void RelationsView::closeEvent(QCloseEvent *event) {

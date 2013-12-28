@@ -35,8 +35,8 @@ public:
     void constructRelations(int index);
     void drawNFA();
     void updateMatch(Match* match,NFA* nfa, QString state, const Tag* tag=NULL);
-    QMultiHash<int,Tag> tagHash;
-    QMultiHash<int,Tag> compareToTagHash;
+    QMultiHash<int,Tag*> tagHash;
+    QMultiHash<int,Tag*> compareToTagHash;
     QVector<Match*> simulationVector;
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
@@ -56,9 +56,13 @@ public:
     /// Hash to keep track of word index based on position
     QHash<int,int> wordIndexMap;
     /// Hash to keep track of statement end with a full stop
-    QSet<int> isStatementEndSet;
+    QSet<int> isStatementEndFSSet;
+    /// Hash to keep track of statement end with a punctuation
+    QSet<int> isStatementEndPSet;
     /// Counter to save word count in text
     int wordCount;
+    /// Set containing the diacritics
+    QSet<QChar> diacriticsSet;
 };
 
 #endif // ATAGGER_H

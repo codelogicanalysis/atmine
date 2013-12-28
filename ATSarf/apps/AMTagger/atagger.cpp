@@ -38,7 +38,40 @@ ATagger::~ATagger() {
 
 bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex, Source source, Dest dest) {
 
-    Tag tag(type,pos,length,wordIndex,source);
+    Tag* tag = new Tag(type,pos,length,wordIndex,source);
+    if(dest == original) {
+        bool insert = true;
+        QMultiHash<int,Tag*>::iterator it;
+        for(it=tagHash.begin(); it != tagHash.end(); ++it) {
+            if((it.value()->pos == pos) && (it.value()->tagtype->name == type->name)) {
+                insert = false;
+                break;
+            }
+        }
+        if(insert) {
+            tagHash.insert(wordIndex,tag);
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        bool insert = true;
+        QMultiHash<int,Tag*>::iterator it;
+        for(it=compareToTagHash.begin(); it != compareToTagHash.end(); ++it) {
+            if((it.value()->pos == pos) && (it.value()->tagtype->name == type->name)) {
+                insert = false;
+                break;
+            }
+        }
+        if(insert) {
+            compareToTagHash.insert(wordIndex,tag);
+        }
+        else {
+            return false;
+        }
+    }
+    /*
     if(dest == original) {
         if(!(tagHash.contains(wordIndex,tag))) {
             tagHash.insert(wordIndex,tag);
@@ -55,6 +88,7 @@ bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex,
             return false;
         }
     }
+     */
     return true;
 }
 
@@ -285,7 +319,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     QVector<Match*> matches;
 
     /// Get the tags for word at wordIndex
-    QList<Tag> tokens;
+    QList<Tag*> tokens;
     if(tagHash.contains(wordIndex)) {
         tokens = tagHash.values(wordIndex);
     }
@@ -294,41 +328,55 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
         int pos = wordIndexMap.key(wordIndex);
         Word word = nextWord(text, pos);
         int length = word.end-word.start+1;
-        Tag t(NULL,pos,length,wordIndex,sarf);
+        Tag* t = new Tag(NULL,pos,length,wordIndex,sarf);
         tokens.append(t);
     }
 
     for(int i=0; i<tokens.count(); i++) {
         QList<QString> nstates;
-        if(tokens.at(i).tagtype == NULL) {
+        if(tokens.at(i)->tagtype == NULL) {
             nstates = nfa->transitions.values(state + "|NONE");
         }
         else {
-            nstates = nfa->transitions.values(state + '|' + tokens.at(i).tagtype->name);
+            nstates = nfa->transitions.values(state + '|' + tokens.at(i)->tagtype->name);
         }
         for(int j = 0; j < nstates.size(); j++) {
             done = true;
             int nextWordIndex = wordIndex;
-            if(_atagger->isStatementEndSet.contains(wordIndex)) {
-                nextWordIndex = (_atagger->wordCount) + 1;
+
+            /** check if end of statement based on full stop or punctuation criteria **/
+            if(((MSFormula*)(nfa->formula))->isFullStop) {
+                if(_atagger->isStatementEndFSSet.contains(wordIndex)) {
+                    nextWordIndex = (_atagger->wordCount) + 1;
+                }
+                else {
+                    nextWordIndex++;
+                }
             }
             else {
-                nextWordIndex++;
+                if(_atagger->isStatementEndPSet.contains(wordIndex)) {
+                    nextWordIndex = (_atagger->wordCount) + 1;
+                }
+                else {
+                    nextWordIndex++;
+                }
             }
+            /** Done **/
+
             Match* temp = simulateNFA(nfa, nstates.at(j), nextWordIndex);
             if(temp != NULL) {
                 /** Update Match **/
                 KeyM* keyMatch = (KeyM*)temp;
-                if(tokens.at(i).tagtype == NULL) {
+                if(tokens.at(i)->tagtype == NULL) {
                     keyMatch->key = "NONE";
                 }
                 else {
-                    keyMatch->key = tokens.at(i).tagtype->name;
+                    keyMatch->key = tokens.at(i)->tagtype->name;
                 }
-                keyMatch->length = tokens.at(i).length;
-                keyMatch->pos = tokens.at(i).pos;
+                keyMatch->length = tokens.at(i)->length;
+                keyMatch->pos = tokens.at(i)->pos;
                 keyMatch->msf = nfa->stateTOmsfMap.value(state).first;
-                keyMatch->word = text.mid(tokens.at(i).pos,tokens.at(i).length);
+                keyMatch->word = text.mid(tokens.at(i)->pos,tokens.at(i)->length);
                 temp = temp->parent;
                 /** Done **/
                 matches.append(temp);
@@ -674,15 +722,15 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         tagdata.insert("textchecksum", _atagger->text.count());
         tagdata.insert("version", 1.0);
         QVariantList tagset;
-        QHashIterator<int, Tag> iTag(_atagger->tagHash);
+        QHashIterator<int, Tag*> iTag(_atagger->tagHash);
         while (iTag.hasNext()) {
             iTag.next();
             QVariantMap data;
-            data.insert("type",iTag.value().tagtype->name);
-            data.insert("pos",iTag.value().pos);
-            data.insert("length",iTag.value().length);
-            data.insert("wordIndex",iTag.value().wordIndex);
-            data.insert("source",iTag.value().source);
+            data.insert("type",iTag.value()->tagtype->name);
+            data.insert("pos",iTag.value()->pos);
+            data.insert("length",iTag.value()->length);
+            data.insert("wordIndex",iTag.value()->wordIndex);
+            data.insert("source",iTag.value()->source);
             tagset << data;
         }
         tagdata.insert("TagArray",tagset);

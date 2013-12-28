@@ -79,8 +79,8 @@ private:
 
     bool dirty;
 
-    QVector<Tag> *tVector;
-    QVector<Tag> *cttVector;
+    QVector<Tag*> *tVector;
+    QVector<Tag*> *cttVector;
 
     QVector<const Tag*> commonVector;
     QVector<const Tag*> forwardVector;

@@ -8,12 +8,12 @@
 #include <QtAlgorithms>
 #include <QMessageBox>
 
-bool compareTags(const Tag &tag1, const Tag &tag2) {
-    if(tag1.pos != tag2.pos) {
-        return tag1.pos < tag2.pos;
+bool compareTags(const Tag *tag1, const Tag *tag2) {
+    if(tag1->pos != tag2->pos) {
+        return tag1->pos < tag2->pos;
     }
     else {
-        return tag1.tagtype->name < tag2.tagtype->name;
+        return tag1->tagtype->name < tag2->tagtype->name;
     }
 }
 
@@ -131,19 +131,21 @@ DiffView::DiffView(QWidget *parent) :
     */
 
     /** Copy two tag vectors **/
-    tVector = new QVector<Tag>();
-    cttVector = new QVector<Tag>();
+    tVector = new QVector<Tag*>();
+    cttVector = new QVector<Tag*>();
 
-    QHashIterator<int, Tag> iTag(_atagger->tagHash);
+    QHashIterator<int, Tag*> iTag(_atagger->tagHash);
     while (iTag.hasNext()) {
         iTag.next();
-        tVector->append(iTag.value());
+        Tag* t = new Tag(iTag.value()->tagtype,iTag.value()->pos,iTag.value()->length,iTag.value()->wordIndex,iTag.value()->source);
+        tVector->append(t);
     }
 
-    QHashIterator<int, Tag> iCompareToTag(_atagger->compareToTagHash);
+    QHashIterator<int, Tag*> iCompareToTag(_atagger->compareToTagHash);
     while (iCompareToTag.hasNext()) {
         iCompareToTag.next();
-        cttVector->append(iCompareToTag.value());
+        Tag* t = new Tag(iCompareToTag.value()->tagtype,iCompareToTag.value()->pos,iCompareToTag.value()->length,iCompareToTag.value()->wordIndex,iCompareToTag.value()->source);
+        cttVector->append(t);
     }
 
     qSort(tVector->begin(),tVector->end(),compareTags);
@@ -914,9 +916,16 @@ int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source
             break;
         }
     }
-    Tag tag(tagtype,pos,length,wordIndex,source);
+    Tag* tag = new Tag(tagtype,pos,length,wordIndex,source);
     if(dest == original) {
-        if(!(tVector->contains(tag))) {
+        bool insert = true;
+        for(int i=0; i<tVector->count(); i++) {
+            if((tVector->at(i)->pos == pos) && (tVector->at(i)->tagtype->name == type)) {
+                insert = false;
+                break;
+            }
+        }
+        if(insert) {
             tVector->append(tag);
             qSort(tVector->begin(), tVector->end(), compareTags);
             return 1;
@@ -926,7 +935,14 @@ int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source
         }
     }
     else {
-        if(!(cttVector->contains(tag))) {
+        bool insert = true;
+        for(int i=0; i<cttVector->count(); i++) {
+            if((cttVector->at(i)->pos == pos) && (cttVector->at(i)->tagtype->name == type)) {
+                insert = false;
+                break;
+            }
+        }
+        if(insert) {
             cttVector->append(tag);
             qSort(cttVector->begin(), cttVector->end(), compareTags);
             return 1;
@@ -1032,14 +1048,16 @@ void DiffView::untagCommon(QString tagValue) {
         if(t->pos == start && t->tagtype->name == tagValue) {
 
             for(int j=0; j< tVector->count(); j++) {
-                if(t_pos == tVector->at(j).pos && t_type == tVector->at(j).tagtype->name && t_source == tVector->at(j).source) {
+                if(t_pos == tVector->at(j)->pos && t_type == tVector->at(j)->tagtype->name && t_source == tVector->at(j)->source) {
+                    delete (tVector->at(j));
                     tVector->remove(j);
                     break;
                 }
             }
 
             for(int j=0; j< cttVector->count(); j++) {
-                if(t_pos == cttVector->at(j).pos && t_type == cttVector->at(j).tagtype->name && t_source == cttVector->at(j).source) {
+                if(t_pos == cttVector->at(j)->pos && t_type == cttVector->at(j)->tagtype->name && t_source == cttVector->at(j)->source) {
+                    delete (cttVector->at(j));
                     cttVector->remove(j);
                     break;
                 }
@@ -1210,7 +1228,8 @@ void DiffView::untagForward(QString tagValue) {
 
         if(t->pos == start && t->tagtype->name == tagValue) {
             for(int j=0; j< tVector->count(); j++) {
-                if(t->pos == tVector->at(j).pos && t->tagtype->name == tVector->at(j).tagtype->name && t->source == tVector->at(j).source) {
+                if(t->pos == tVector->at(j)->pos && t->tagtype->name == tVector->at(j)->tagtype->name && t->source == tVector->at(j)->source) {
+                    delete (tVector->at(j));
                     tVector->remove(j);
                     cursor.clearSelection();
                     break;
@@ -1367,7 +1386,8 @@ void DiffView::untagReverse(QString tagValue) {
 
         if(t->pos == start && t->tagtype->name == tagValue) {
             for(int j=0; j< cttVector->count(); j++) {
-                if(t->pos == cttVector->at(j).pos && t->tagtype->name == cttVector->at(j).tagtype->name && t->source == cttVector->at(j).source) {
+                if(t->pos == cttVector->at(j)->pos && t->tagtype->name == cttVector->at(j)->tagtype->name && t->source == cttVector->at(j)->source) {
+                    delete (cttVector->at(j));
                     cttVector->remove(j);
                     cursor.clearSelection();
                     break;
@@ -1405,11 +1425,11 @@ void DiffView::closeEvent(QCloseEvent *event) {
          case QMessageBox::Save:
              _atagger->tagHash.clear();
              for(int i=0; i<tVector->count(); i++) {
-                 _atagger->tagHash.insert(tVector->at(i).wordIndex,(*tVector)[i]);
+                 _atagger->tagHash.insert(tVector->at(i)->wordIndex,tVector->at(i));
              }
              _atagger->compareToTagHash.clear();
              for(int i=0; i<cttVector->count(); i++) {
-                 _atagger->compareToTagHash.insert(cttVector->at(i).wordIndex,(*cttVector)[i]);
+                 _atagger->compareToTagHash.insert(cttVector->at(i)->wordIndex,cttVector->at(i));
              }
              break;
          case QMessageBox::Discard:

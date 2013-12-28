@@ -15,6 +15,7 @@
 #include <QtCore/QDir>
 #include <QFileDialog>
 #include <QScrollArea>
+#include <QRadioButton>
 #include <QSpinBox>
 #include "global.h"
 #include "logger.h"
@@ -49,6 +50,8 @@ private slots:
     void btnSequence_clicked();
     void btnActions_clicked();
     void btnRelations_clicked();
+    void radioFS_clicked();
+    void radioPunct_clicked();
     /*
     void init_edited();
     void after_edited();
@@ -83,6 +86,9 @@ private:
     QLabel *lblDescription;
     QLabel *lblFGColor;
     QLabel *lblBGColor;
+
+    QRadioButton *radioFS;
+    QRadioButton *radioPunct;
 
     QSpinBox *spinLimit;
     //QLineEdit *editLimit;

@@ -12,9 +12,9 @@ typedef enum {TenDigit, Hundred, Key, None} NumType;
 class NumNorm {
 public:
     QString *text;
-    int previous;
-    int current;
-    int currentH;
+    long previous;
+    long current;
+    long currentH;
     bool isKey;
     bool isHundred;
     bool isNumberDone;
@@ -23,15 +23,15 @@ public:
     int numberStart;
     int numberEnd;
 
-    QHash<QString, int> hashGlossInt;
+    QHash<QString, long> hashGlossInt;
     QHash<QString, int> hashFlexible;
     QVector<NumSolution> extractedNumbers;
 
     NumNorm(QString*);
     void numberFound();
-    void digitsTensActions(int val);
-    void keyActions(int val);
-    void hundredActions(int val);
+    void digitsTensActions(long val);
+    void keyActions(long val);
+    void hundredActions(long val);
     bool operator()();
 };
 #endif

@@ -1,7 +1,7 @@
 #include "number.h"
 #include <getGloss.h>
 
-Number::Number(NumNorm *_controller, Word* _word, int * _val) : Stemmer(&(_word->word), 0)
+Number::Number(NumNorm *_controller, Word* _word, long * _val) : Stemmer(&(_word->word), 0)
 {
     val = _val;
     *val = -1;
@@ -106,9 +106,9 @@ bool Number::on_match() {
     return true;
 }
 
-bool Number::isDigitsTens(QStringList& stem_glosses, int& val) {
+bool Number::isDigitsTens(QStringList& stem_glosses, long& val) {
     for(int i=0; i<stem_glosses.count(); i++) {
-        QHash<QString, int>::const_iterator it = hashGlossInt->find(stem_glosses[i]);
+        QHash<QString, long>::const_iterator it = hashGlossInt->find(stem_glosses[i]);
         if(it == hashGlossInt->end()) {
             continue;
         }
@@ -123,9 +123,9 @@ bool Number::isDigitsTens(QStringList& stem_glosses, int& val) {
     return false;
 }
 
-bool Number::isKey(QStringList& stem_glosses, int& val) {
+bool Number::isKey(QStringList& stem_glosses, long& val) {
     for(int i=0; i<stem_glosses.count(); i++) {
-        QHash<QString, int>::const_iterator it = hashGlossInt->find(stem_glosses[i]);
+        QHash<QString, long>::const_iterator it = hashGlossInt->find(stem_glosses[i]);
         if(it == hashGlossInt->end()) {
             continue;
         }
@@ -140,7 +140,7 @@ bool Number::isKey(QStringList& stem_glosses, int& val) {
     return false;
 }
 
-bool Number::isHundred(QStringList& stem_glosses, int& val) {
+bool Number::isHundred(QStringList& stem_glosses, long& val) {
     int index = stem_glosses.indexOf("hundred");
     if(index >=0 ) {
         val = hashGlossInt->value("hundred");
