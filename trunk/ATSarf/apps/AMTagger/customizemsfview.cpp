@@ -45,8 +45,8 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
 
     grid->addWidget(btnSelect,4,2);
     grid->addWidget(btnUnselect,5,2);
-    grid->addWidget(btnAdd,1,2);
-    grid->addWidget(btnRemove,2,2);
+    grid->addWidget(btnAdd,2,2);
+    grid->addWidget(btnRemove,3,2);
 
     grid->addWidget(btnStar,11,5);
     grid->addWidget(btnPlus,12,5);
@@ -80,6 +80,19 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     grid->addWidget(lblDescription,0,5);
     grid->addWidget(lblFGColor,2,5,1,2);
     grid->addWidget(lblBGColor,4,5,1,2);
+
+    QGroupBox *radioBox = new QGroupBox(tr("Delimiter"));
+
+    radioFS = new QRadioButton(tr("Full Stop"));
+    radioPunct = new QRadioButton(tr("Punctuation"));
+    radioFS->setChecked(true);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    vbox->addWidget(radioFS);
+    vbox->addWidget(radioPunct);
+    vbox->addStretch(1);
+    radioBox->setLayout(vbox);
+
+    grid->addWidget(radioBox,0,2,2,1);
 
     editDescription = new QTextEdit(this);
 
@@ -218,6 +231,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             QString description;
             int i;
             int usedCount;
+            bool isFullStop;
 
             /** This is an MSFormula **/
             QVariantMap msformulaData = msfsData.toMap();
@@ -233,8 +247,15 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
             bgcolor = msformulaData.value("bgcolor").toString();
             i = msformulaData.value("i").toInt();
             usedCount = msformulaData.value("usedCount").toInt();
+            if(!(msformulaData.value("delimiter").isNull())) {
+                isFullStop = msformulaData.value("delimiter").toBool();
+            }
+            else {
+                isFullStop = true;
+            }
 
             MSFormula* msf = new MSFormula(name, NULL);
+            msf->isFullStop = isFullStop;
             msf->includes = includes;
             msf->members = members;
             msf->fgcolor = fgcolor;
@@ -294,6 +315,12 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
         editDescription->setText(currentF->description);
         colorfgcolor->setColor(QColor(currentF->fgcolor));
         colorbgcolor->setColor(QColor(currentF->bgcolor));
+        if(currentF->isFullStop) {
+            radioFS->setChecked(true);
+        }
+        else {
+            radioPunct->setChecked(true);
+        }
 
         btnSelect->setEnabled(true);
         btnUnselect->setEnabled(true);
@@ -637,6 +664,7 @@ void CustomizeMSFView::btnAdd_clicked() {
     listMBF->clearSelection();
     treeMBFdesc->clear();
     editFormula->clear();
+    radioFS->setChecked(true);
 
     /** Random Color Routine **/
 
@@ -1442,6 +1470,16 @@ void CustomizeMSFView::btnRelations_clicked() {
     rView->show();
 }
 
+void CustomizeMSFView::radioFS_clicked() {
+    currentF->isFullStop = true;
+    isDirty = true;
+}
+
+void CustomizeMSFView::radioPunct_clicked() {
+    currentF->isFullStop = false;
+    isDirty = true;
+}
+
 /*
 void CustomizeMSFView::includes_edited() {
     if(currentF == NULL) {
@@ -1505,21 +1543,35 @@ void CustomizeMSFView::returns_edited(QString returns) {
 */
 
 void CustomizeMSFView::cbMSF_changed(QString name) {
-    treeMSF->clear();
-    spinLimit->setValue(1);
-    editFormula->clear();
     if(name.isEmpty() || name.isNull()) {
         return;
     }
 
     disconnect_Signals();
+    treeMBFdesc->clear();
+    treeMSF->clear();
+    spinLimit->setValue(1);
+    editFormula->clear();
+
     for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
         MSFormula * msf = _atagger->tempMSFVector->at(i);
         if(msf->name == name) {
+            currentF = msf;
+            currentF->buildTree(treeMSF);
+            editFormula->setText(currentF->print());
+            editDescription->setText(currentF->description);
+            colorfgcolor->setColor(QColor(currentF->fgcolor));
+            colorbgcolor->setColor(QColor(currentF->bgcolor));
+            if(currentF->isFullStop) {
+                radioFS->setChecked(true);
+            }
+            else {
+                radioPunct->setChecked(true);
+            }
+
             btnSelect->setEnabled(true);
             btnUnselect->setEnabled(true);
-            msf->buildTree(treeMSF);
-            currentF = msf;
+            break;
         }
     }
     connect_Signals();
@@ -1661,6 +1713,8 @@ void CustomizeMSFView::disconnect_Signals() {
     disconnect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     disconnect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
     disconnect(btnRelations, SIGNAL(clicked()), this, SLOT(btnRelations_clicked()));
+    disconnect(radioFS, SIGNAL(clicked()), this, SLOT(radioFS_clicked()));
+    disconnect(radioPunct, SIGNAL(clicked()), this, SLOT(radioPunct_clicked()));
     //disconnect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
@@ -1689,6 +1743,8 @@ void CustomizeMSFView::connect_Signals() {
     connect(btnSequence, SIGNAL(clicked()), this, SLOT(btnSequence_clicked()));
     connect(btnActions, SIGNAL(clicked()), this, SLOT(btnActions_clicked()));
     connect(btnRelations, SIGNAL(clicked()), this, SLOT(btnRelations_clicked()));
+    connect(radioFS, SIGNAL(clicked()), this, SLOT(radioFS_clicked()));
+    connect(radioPunct, SIGNAL(clicked()), this, SLOT(radioPunct_clicked()));
     //connect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 

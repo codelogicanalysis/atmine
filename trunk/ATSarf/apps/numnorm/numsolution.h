@@ -6,16 +6,16 @@ class NumSolution
 private:
     int start;
     int end;
-    int number;
+    long number;
 public:
     NumSolution();
-    NumSolution(int, int, int);
+    NumSolution(int, int, long);
     void setStart(int);
     void setEnd(int);
-    void setNumber(int);
+    void setNumber(long);
     int getStart();
     int getEnd();
-    int getNumber();
+    long getNumber();
 };
 
 #endif // NUMSOLUTION_H

@@ -12,18 +12,18 @@ typedef enum {Nothing, Continue, Done} NumberState;
 class Number : public Stemmer
 {
 private:
-    bool isDigitsTens(QStringList& stem_glosses, int& val);
-    bool isKey(QStringList& stem_glosses, int& val);
-    bool isHundred(QStringList& stem_glosses, int& val);
+    bool isDigitsTens(QStringList& stem_glosses, long& val);
+    bool isKey(QStringList& stem_glosses, long& val);
+    bool isHundred(QStringList& stem_glosses, long& val);
     NumberState numstate;
 public:
     QString * word;
     int start;
     int end;
-    int *val;
-    QHash<QString, int>* hashGlossInt;
+    long *val;
+    QHash<QString, long>* hashGlossInt;
     NumNorm * controller;
-    Number(NumNorm *, Word *, int *);
+    Number(NumNorm *, Word *, long *);
     bool on_match();
 };
 

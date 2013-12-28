@@ -130,7 +130,8 @@ HEADERS += \
     ../amfiller.h \
     ../relationsview.h \
     ../relation.h \
-    ../relationm.h
+    ../relationm.h \
+    ../../../src/common/word.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -191,7 +192,6 @@ SOURCES += \
     ../../syn/gamma.cpp \
     ../../syn/alpha.cpp \
     ../autotagger.cpp \
-    ../word.cpp \
     ../customizemsfview.cpp \
     ../mbf.cpp \
     ../msf.cpp \
@@ -218,7 +218,8 @@ SOURCES += \
     ../amfiller.cpp \
     ../relationsview.cpp \
     ../relation.cpp \
-    ../relationm.cpp
+    ../relationm.cpp \
+    ../../../src/common/word.cpp
 
 FORMS    +=
 

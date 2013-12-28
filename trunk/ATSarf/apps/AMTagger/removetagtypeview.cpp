@@ -36,11 +36,11 @@ void RemoveTagTypeView::removeTagType_clicked() {
             _atagger->tagTypeVector->remove(i);
 
             /// Remove all tags based on removed tag type
-            QHashIterator<int, Tag> iTag(_atagger->tagHash);
+            QHashIterator<int, Tag*> iTag(_atagger->tagHash);
             while (iTag.hasNext()) {
                 iTag.next();
-                if(iTag.value().tagtype->name == tagtype) {
-                    _atagger->tagHash.remove(iTag.value().wordIndex,iTag.value());
+                if(iTag.value()->tagtype->name == tagtype) {
+                    _atagger->tagHash.remove(iTag.value()->wordIndex,iTag.value());
                 }
             }
 

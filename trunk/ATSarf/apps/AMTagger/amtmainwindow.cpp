@@ -260,9 +260,9 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         if(wordIndex == 0) {
             return;
         }
-        QList<Tag> values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> values = _atagger->tagHash.values(wordIndex);
         for(int i=0; i<values.size();i++) {
-            tagtypes << values.at(i).tagtype->name;
+            tagtypes << values.at(i)->tagtype->name;
         }
     }
     else {
@@ -337,13 +337,17 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
 void processText(QString *text) {
 
     _atagger->wordIndexMap.clear();
-    _atagger->isStatementEndSet.clear();
+    _atagger->isStatementEndFSSet.clear();
+    _atagger->isStatementEndPSet.clear();
     int start = 0;
     int wordIndex = 1;
     while(start != text->count()) {
         Word word = nextWord(*text, start);
-        if(word.isStatementStart && wordIndex != 1) {
-            _atagger->isStatementEndSet.insert(wordIndex-1);
+        if(word.isStatementStartFS && wordIndex != 1) {
+            _atagger->isStatementEndFSSet.insert(wordIndex-1);
+        }
+        if(word.isStatementStartPunct && wordIndex != 1) {
+            _atagger->isStatementEndPSet.insert(wordIndex-1);
         }
         if(word.word.isEmpty()) {
             break;
@@ -651,7 +655,7 @@ void AMTMainWindow::process(QByteArray & json) {
         check = _atagger->insertTag(type,start,length,wordIndex,source,original);
     }
 
-    if(_atagger->tagHash.begin().value().source == user) {
+    if(_atagger->tagHash.begin().value()->source == user) {
         _atagger->isSarf = false;
     }
     else {
@@ -1197,6 +1201,7 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             QString description;
             int i;
             int usedCount;
+            bool isFullStop;
 
             /** This is an MSFormula **/
             QVariantMap msformulaData = msfsData.toMap();
@@ -1212,8 +1217,15 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
             bgcolor = msformulaData.value("bgcolor").toString();
             i = msformulaData.value("i").toInt();
             usedCount = msformulaData.value("usedCount").toInt();
+            if(!(msformulaData.value("delimiter").isNull())) {
+                isFullStop = msformulaData.value("delimiter").toBool();
+            }
+            else {
+                isFullStop = true;
+            }
 
             MSFormula* msf = new MSFormula(name, NULL);
+            msf->isFullStop = isFullStop;
             msf->includes = includes;
             msf->members = members;
             msf->fgcolor = fgcolor;
@@ -1254,12 +1266,12 @@ void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
     }
 }
 
-bool compare(const Tag &tag1, const Tag &tag2) {
-    if(tag1.pos != tag2.pos) {
-        return tag1.pos < tag2.pos;
+bool compare(const Tag *tag1, const Tag *tag2) {
+    if(tag1->pos != tag2->pos) {
+        return tag1->pos < tag2->pos;
     }
     else {
-        return tag1.tagtype->name < tag2.tagtype->name;
+        return tag1->tagtype->name < tag2->tagtype->name;
     }
 }
 
@@ -1267,21 +1279,43 @@ void AMTMainWindow::applyTags(int basic) {
 
     startTaggingText(_atagger->text);
     if(basic == 0) {
+        /*
+        for(int j=1; j <= _atagger->wordCount; j++) {
+            QMultiHash<int, Tag*>::iterator i = _atagger->tagHash.find(j);
+             while (i != _atagger->tagHash.end() && i.key() == j) {
+                 int start = i.value().pos;
+                 int length = i.value().length;
+                 QColor bgcolor(i.value().tagtype->bgcolor);
+                 QColor fgcolor(i.value().tagtype->fgcolor);
+                 int font = i.value().tagtype->font;
+                 bool underline = false;
+                 int count = _atagger->tagHash.count(j);
+                 if(count > 1) {
+                     underline = true;
+                 }
+                 bool bold = i.value().tagtype->bold;
+                 bool italic = i.value().tagtype->italic;
+                 tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+                 ++i;
+             }
+        }
+        */
+
         QList<int> keys = _atagger->tagHash.uniqueKeys();
         for(int i=0; i<keys.count(); i++) {
-            QList<Tag> values = _atagger->tagHash.values(keys[i]);
+            QList<Tag*> values = _atagger->tagHash.values(keys[i]);
             for(int j = 0; j<values.size(); j++) {
-                int start = values.at(j).pos;
-                int length = values.at(j).length;
-                QColor bgcolor(values.at(j).tagtype->bgcolor);
-                QColor fgcolor(values.at(j).tagtype->fgcolor);
-                int font = values.at(j).tagtype->font;
+                int start = values.at(j)->pos;
+                int length = values.at(j)->length;
+                QColor bgcolor(values.at(j)->tagtype->bgcolor);
+                QColor fgcolor(values.at(j)->tagtype->fgcolor);
+                int font = values.at(j)->tagtype->font;
                 bool underline = false;
                 if(values.count() > 1) {
                     underline = true;
                 }
-                bool bold = values.at(j).tagtype->bold;
-                bool italic = values.at(j).tagtype->italic;
+                bool bold = values.at(j)->tagtype->bold;
+                bool italic = values.at(j)->tagtype->italic;
                 tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
             }
         }
@@ -1473,13 +1507,13 @@ void AMTMainWindow::tag(QString tagValue) {
                 return;
             }
             _atagger->insertTag(type, start, length, wordIndex, user, original);
-            QList<Tag> values = _atagger->tagHash.values(wordIndex);
+            QList<Tag*> values = _atagger->tagHash.values(wordIndex);
 
-            QColor bgcolor(values.at(0).tagtype->bgcolor);
-            QColor fgcolor(values.at(0).tagtype->fgcolor);
-            int font = values.at(0).tagtype->font;
-            bool bold = values.at(0).tagtype->bold;
-            bool italic = values.at(0).tagtype->italic;
+            QColor bgcolor(values.at(0)->tagtype->bgcolor);
+            QColor fgcolor(values.at(0)->tagtype->fgcolor);
+            int font = values.at(0)->tagtype->font;
+            bool bold = values.at(0)->tagtype->bold;
+            bool italic = values.at(0)->tagtype->italic;
 
             if(values.size() > 1) {
                 tagWord(start,length,fgcolor,bgcolor,font,true,italic,bold);
@@ -1521,24 +1555,25 @@ void AMTMainWindow::untag(QString tagValue) {
 
     if(_atagger->isTagMBF) {
         /// MBF based tags
-        QList<Tag> values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> values = _atagger->tagHash.values(wordIndex);
         for(int i=0; i<values.size(); i++) {
-            if(values.at(i).tagtype->name == tagValue) {
+            if(values.at(i)->tagtype->name == tagValue) {
+                delete (values[i]);
                 _atagger->tagHash.remove(wordIndex,values[i]);
             }
         }
 
-        QList<Tag> _values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> _values = _atagger->tagHash.values(wordIndex);
         if(_values.count() > 0) {
-                QColor bgcolor(_values.at(0).tagtype->bgcolor);
-                QColor fgcolor(_values.at(0).tagtype->fgcolor);
-                int font = _values.at(0).tagtype->font;
+                QColor bgcolor(_values.at(0)->tagtype->bgcolor);
+                QColor fgcolor(_values.at(0)->tagtype->fgcolor);
+                int font = _values.at(0)->tagtype->font;
                 bool underline = false;
                 if(_values.count() > 1) {
                     underline = true;
                 }
-                bool bold = _values.at(0).tagtype->bold;
-                bool italic = _values.at(0).tagtype->italic;
+                bool bold = _values.at(0)->tagtype->bold;
+                bool italic = _values.at(0)->tagtype->italic;
                 tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
         }
         else {
@@ -1578,21 +1613,39 @@ void AMTMainWindow::viewMBFTags() {
     scene->clear();
     descBrwsr->clear();
 
-    QList<int> keys = _atagger->tagHash.uniqueKeys();
-    for(int i=0; i<keys.count(); i++) {
-        QList<Tag> values = _atagger->tagHash.values(keys[i]);
-        int start = values[0].pos;
-        int length = values[0].length;
-        QColor bgcolor(values[0].tagtype->bgcolor);
-        QColor fgcolor(values[0].tagtype->fgcolor);
-        int font = values[0].tagtype->font;
-        bool underline = false;
-        if(values.count() > 1) {
-            underline = true;
+    QMultiHash<int,Tag*> & th = _atagger->tagHash;
+    QMultiHash<int, Tag*>::iterator i = th.begin();
+    int lastkey = -1;
+    while(i != th.end()) {
+        int key = i.key();
+        Tag* tag = i.value();
+        const TagType* tt = tag->tagtype;
+        if(key == lastkey) {
+            int start = tag->pos;
+            int length = tag->length;
+            QColor bgcolor(tt->bgcolor);
+            QColor fgcolor(tt->fgcolor);
+            int font = tt->font;
+            bool bold = tt->bold;
+            bool italic = tt->italic;
+            tagWord(start,length,fgcolor,bgcolor,font,true,italic,bold);
+            do {
+                i++;
+            }
+            while(i.key() == key);
         }
-        bool bold = values[0].tagtype->bold;
-        bool italic = values[0].tagtype->italic;
-        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold);
+        else {
+            int start = tag->pos;
+            int length = tag->length;
+            QColor bgcolor(tt->bgcolor);
+            QColor fgcolor(tt->fgcolor);
+            int font = tt->font;
+            bool bold = tt->bold;
+            bool italic = tt->italic;
+            tagWord(start,length,fgcolor,bgcolor,font,false,italic,bold);
+            lastkey = key;
+            i++;
+        }
     }
 
     fillTreeWidget(user);
@@ -1796,7 +1849,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
      QList<QTreeWidgetItem *> items;
      int wordCountCharCount = QString::number(_atagger->wordCount).size();
      if(basic == 0) {
-         QHashIterator<int, Tag> iTag(_atagger->tagHash);
+         QHashIterator<int, Tag*> iTag(_atagger->tagHash);
          while (iTag.hasNext()) {
              iTag.next();
              QStringList entry;
@@ -1808,15 +1861,15 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
              }
              entry << wordIndexString;
              QTextCursor cursor = txtBrwsr->textCursor();
-             int pos = iTag.value().pos;
-             int length = iTag.value().length;
+             int pos = iTag.value()->pos;
+             int length = iTag.value()->length;
              cursor.setPosition(pos,QTextCursor::MoveAnchor);
              cursor.setPosition(pos + length,QTextCursor::KeepAnchor);
              QString text = cursor.selectedText();
              entry<<text;
-             entry<<iTag.value().tagtype->name;
+             entry<<iTag.value()->tagtype->name;
              QString src;
-             if(iTag.value().source == user) {
+             if(iTag.value()->source == user) {
                 src = "user";
             }
             else {
@@ -2491,7 +2544,7 @@ void AMTMainWindow::difference() {
         check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo);
     }
 
-    if(_atagger->tagHash.begin().value().source == user) {
+    if(_atagger->tagHash.begin().value()->source == user) {
         _atagger->compareToIsSarf = false;
     }
     else {

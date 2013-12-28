@@ -26,7 +26,7 @@ NumNorm::NumNorm(QString *_text) {
     hashGlossInt.insert("ten", 10);
     hashGlossInt.insert("twenty", 20);
     hashGlossInt.insert("thirty", 30);
-    hashGlossInt.insert("fourty", 40);
+    hashGlossInt.insert("forty", 40);
     hashGlossInt.insert("fifty", 50);
     hashGlossInt.insert("sixty", 60);
     hashGlossInt.insert("seventy", 70);
@@ -55,27 +55,51 @@ bool NumNorm::operator ()() {
         if(word.word.isEmpty()) {
             break;
         }
-        int val = -1;
-        Number number(this, &word, &val);
-        number();
+        long val = -1;
 
-        if(numtype == TenDigit) {
-            digitsTensActions(val);
+        if(word.isStatementStartPunct) {
+            isNumberDone = true;
+            long sum = previous + current + currentH;
+            if(sum != 0) {
+                numberFound();
+            }
         }
-        else if(numtype == Key) {
-            keyActions(val);
+
+        bool ok;
+        long number = word.word.toLong(&ok);
+        if(ok) {
+            if(number >= 1 && number <= 99) {
+                digitsTensActions(number);
+            }
+            else if(number >= 100 && number <= 999) {
+                hundredActions(number);
+            }
+            else {
+                keyActions(number);
+            }
         }
-        else if(numtype == Hundred) {
-            hundredActions(val);
-        }
-        int sum = previous + current + currentH;
-        if(isNumberDone && sum != 0) {
-            numberFound();
+        else {
+            Number number(this, &word, &val);
+            number();
+
+            if(numtype == TenDigit) {
+                digitsTensActions(val);
+            }
+            else if(numtype == Key) {
+                keyActions(val);
+            }
+            else if(numtype == Hundred) {
+                hundredActions(val);
+            }
+            long sum = previous + current + currentH;
+            if(isNumberDone && sum != 0) {
+                numberFound();
+            }
         }
         start = word.end + 1;
     }
 
-    int sum = previous + current + currentH;
+    long sum = previous + current + currentH;
     if(sum != 0) {
         numberFound();
     }
@@ -83,7 +107,7 @@ bool NumNorm::operator ()() {
 }
 
 void NumNorm::numberFound() {
-    int number = previous + current + currentH;
+    long number = previous + current + currentH;
     NumSolution numSolution(numberStart, numberEnd, number);
     isKey = false;
     isHundred = false;
@@ -96,7 +120,7 @@ void NumNorm::numberFound() {
     //cout << number << '\n';
 }
 
-void NumNorm::digitsTensActions(int val) {
+void NumNorm::digitsTensActions(long val) {
     if(isHundred) {
         currentH += val;
     }
@@ -117,7 +141,7 @@ void NumNorm::digitsTensActions(int val) {
     isKey = false;
 }
 
-void NumNorm::keyActions(int val) {
+void NumNorm::keyActions(long val) {
     if(isHundred) {
         if(current != 0) {
             previous += current;
@@ -145,7 +169,7 @@ void NumNorm::keyActions(int val) {
     }
 }
 
-void NumNorm::hundredActions(int val) {
+void NumNorm::hundredActions(long val) {
     isHundred = true;
     if(current == 0) {
         currentH = val;
