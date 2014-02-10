@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
+#include <sys/time.h>
 #include "Triplet.h"
 
 bool parentCheck;
@@ -179,7 +180,7 @@ void AMTMainWindow::createDockWindows(bool open) {
         lineEditTFName->setText(_atagger->tagtypeFile);
     }
 
-    dock = new QDockWidget(tr("Matches"), this);
+    dock = new QDockWidget(this);
     tab = new QTabWidget(this);
     graphics = new QGraphicsView(this);
     scene = new QGraphicsScene(this);
@@ -212,9 +213,16 @@ void AMTMainWindow::createDockWindows(bool open) {
 }
 
 void AMTMainWindow::wheelEvent(QWheelEvent *event) {
-    if(graphics->hasFocus()) {
-        scaleView(pow((double)2, event->delta() / 240.0));
+    if(graphics->hasFocus()|| relationGraphics->hasFocus()) {
+        int currentIndex = tab->currentIndex();
+        if(currentIndex == 0) {
+            scaleView(pow((double)2, event->delta() / 240.0));
+        }
+        else {
+            relationScaleView(pow((double)2, event->delta() / 240.0));
+        }
     }
+
 }
 
 void AMTMainWindow::scaleView(qreal scaleFactor)
@@ -224,6 +232,15 @@ void AMTMainWindow::scaleView(qreal scaleFactor)
         return;
 
     graphics->scale(scaleFactor, scaleFactor);
+}
+
+void AMTMainWindow::relationScaleView(qreal scaleFactor)
+{
+    qreal factor = relationGraphics->transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
+    if (factor < 0.07 || factor > 100)
+        return;
+
+    relationGraphics->scale(scaleFactor, scaleFactor);
 }
 
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
@@ -704,12 +721,158 @@ void AMTMainWindow::process(QByteArray & json) {
 
             for(int j=0; j<formula->relationVector.count(); j++) {
                 Relation* relation = formula->relationVector[j];
-                Match* entity1 = NULL;
-                Match* entity2 = NULL;
-                Match* edge = NULL;
-                if(merftag->match->constructRelation(relation,entity1,entity2,edge)) {
-                    RelationM* relM = new RelationM(relation,entity1,entity2,edge);
-                    merftag->relationMatchVector.append(relM);
+                QVector<Match*> entity1;
+                QVector<Match*> entity2;
+                QVector<Match*> edge;
+                merftag->match->constructRelation(relation,entity1,entity2,edge);
+                if(!(entity1.isEmpty()) && !(entity2.isEmpty()) && (!(edge.isEmpty()) || (relation->edge == NULL))) {
+                    if((entity1.count() == 1) && (entity2.count() == 1) && (edge.count() == 1)) {
+                        /// single relation
+                        RelationM* relM = new RelationM(relation,entity1[0],entity2[0],edge[0]);
+                        merftag->relationMatchVector.append(relM);
+                    }
+                    else if((entity1.count() == 1) && (entity2.count() == 1) && (edge.isEmpty())) {
+                        /// single with no edge
+                        RelationM* relM = new RelationM(relation,entity1[0],entity2[0],NULL);
+                        merftag->relationMatchVector.append(relM);
+                    }
+                    else if(edge.count() > 1) {
+                        /// cases where the edge has multiple matches
+
+                        /// extract the edge label first
+                        QString edgeLabel;
+                        if(relation->edgeLabel == "text") {
+                            for(int k=0; k<edge.count(); k++) {
+                                edgeLabel.append(edge.at(k)->getText() + ", ");
+                            }
+                            edgeLabel.chop(2);
+                        }
+                        else if(relation->edgeLabel == "position") {
+                            for(int k=0; k<edge.count(); k++) {
+                                edgeLabel.append(QString::number(edge.at(k)->getPOS()) + ", ");
+                            }
+                            edgeLabel.chop(2);
+                        }
+                        else if(relation->edgeLabel == "length") {
+                            for(int k=0; k<edge.count(); k++) {
+                                edgeLabel.append(QString::number(edge.at(k)->getLength()) + ", ");
+                            }
+                            edgeLabel.chop(2);
+                        }
+                        else if(relation->edgeLabel == "number") {
+                            for(int k=0; k<edge.count(); k++) {
+                                QString text = edge.at(k)->getText();
+                                NumNorm nn(&text);
+                                nn();
+                                int number = NULL;
+                                if(nn.extractedNumbers.count()!=0) {
+                                    number = nn.extractedNumbers[0].getNumber();
+                                     edgeLabel.append(QString::number(number) + ", ");
+                                }
+                            }
+                            if(!(edgeLabel.isEmpty())) {
+                                edgeLabel.chop(2);
+                            }
+                        }
+
+                        if(entity1.count() == 1 && entity2.count() == 1) {
+                            RelationM* relM = new RelationM(relation,entity1[0],entity2[0],NULL);
+                            relM->edgeLabel = edgeLabel;
+                            merftag->relationMatchVector.append(relM);
+                        }
+                        else if(relation->entity1->name == relation->entity2->name) {
+                            /// Relation entities belong to a + or *
+                            for(int k=1; k< entity1.count(); k++) {
+                                RelationM* relM = new RelationM(relation,entity1[k-1],entity2[k],NULL);
+                                relM->edgeLabel = edgeLabel;
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else if(entity1.count() > 1 && entity2.count() == 1) {
+                            /// multiple matches for entity1 and 1 for entity 2
+                            for(int k=0; k<entity1.count(); k++) {
+                                RelationM* relM = new RelationM(relation,entity1[k],entity2[0],NULL);
+                                relM->edgeLabel = edgeLabel;
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else if(entity1.count() == 1 && entity2.count() > 1) {
+                            /// multiple matches for entity2 and 1 for entity 1
+                            for(int k=0; k<entity2.count(); k++) {
+                                RelationM* relM = new RelationM(relation,entity1[0],entity2[k],NULL);
+                                relM->edgeLabel = edgeLabel;
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else {
+                            /// multiple matches for entities 1 and 2
+                            for(int m=0; m<entity1.count(); m++) {
+                                for(int n=0; n<entity2.count(); n++) {
+                                    RelationM* relM = new RelationM(relation,entity1[m],entity2[n],NULL);
+                                    relM->edgeLabel = edgeLabel;
+                                    merftag->relationMatchVector.append(relM);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        /// cases where the edge has only one match
+
+                        if(relation->entity1->name == relation->entity2->name) {
+                            /// Relation entities belong to a + or *
+                            for(int k=1; k< entity1.count(); k++) {
+                                RelationM* relM;
+                                if(edge.count() == 1) {
+                                    relM = new RelationM(relation,entity1[k-1],entity2[k],edge[0]);
+                                }
+                                else {
+                                    relM = new RelationM(relation,entity1[k-1],entity2[k],NULL);
+                                }
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else if(entity1.count() > 1 && entity2.count() == 1) {
+                            /// multiple matches for entity1 and 1 for entity 2
+                            for(int k=0; k<entity1.count(); k++) {
+                                RelationM* relM;
+                                if(edge.count() == 1) {
+                                    relM = new RelationM(relation,entity1[k],entity2[0],edge[0]);
+                                }
+                                else {
+                                    relM = new RelationM(relation,entity1[k],entity2[0],NULL);
+                                }
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else if(entity1.count() == 1 && entity2.count() > 1) {
+                            /// multiple matches for entity2 and 1 for entity 1
+                            for(int k=0; k<entity2.count(); k++) {
+                                RelationM* relM;
+                                if(edge.count() == 1) {
+                                    relM = new RelationM(relation,entity1[0],entity2[k],edge[0]);
+                                }
+                                else {
+                                    relM = new RelationM(relation,entity1[0],entity2[k],NULL);
+                                }
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                        else {
+                            /// multiple matches for entities 1 and 2
+                            for(int m=0; m<entity1.count(); m++) {
+                                for(int n=0; n<entity2.count(); n++) {
+                                    RelationM* relM;
+                                    if(edge.count() == 1) {
+                                        relM = new RelationM(relation,entity1[m],entity2[n],edge[0]);
+                                    }
+                                    else {
+                                        relM = new RelationM(relation,entity1[m],entity2[n],NULL);
+                                    }
+                                    merftag->relationMatchVector.append(relM);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             /*
@@ -2189,8 +2352,10 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             for(int k=0; k<merftag->relationMatchVector.count(); k++) {
                 RelationM* relMatch = merftag->relationMatchVector[k];
                 Agnode_t* node1;
-                if(rmnHash.contains(relMatch->entity1->msf->name)) {
-                    node1 = rmnHash.value(relMatch->entity1->msf->name);
+                QString e1ID = relMatch->entity1->msf->name;
+                e1ID.append(QString::number(relMatch->entity1->getPOS()));
+                if(rmnHash.contains(e1ID)) {
+                    node1 = rmnHash.value(e1ID);
                 }
                 else {
                     stringstream strs;
@@ -2202,12 +2367,14 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     id = id+1;
                     char * writable = strdup(relMatch->e1Label.toStdString().c_str());
                     agset(node1,const_cast<char *>("label"),writable);
-                    rmnHash.insert(relMatch->entity1->msf->name,node1);
+                    rmnHash.insert(e1ID,node1);
                 }
 
                 Agnode_t* node2;
-                if(rmnHash.contains(relMatch->entity2->msf->name)) {
-                    node2 = rmnHash.value(relMatch->entity2->msf->name);
+                QString e2ID = relMatch->entity2->msf->name;
+                e2ID.append(QString::number(relMatch->entity2->getPOS()));
+                if(rmnHash.contains(e2ID)) {
+                    node2 = rmnHash.value(e2ID);
                 }
                 else {
                     stringstream strs;
@@ -2219,7 +2386,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
                     id = id+1;
                     char * writable = strdup(relMatch->e2Label.toStdString().c_str());
                     agset(node2,const_cast<char *>("label"),writable);
-                    rmnHash.insert(relMatch->entity2->msf->name,node2);
+                    rmnHash.insert(e2ID,node2);
                 }
 
                 edge = agedge(G, node1, node2, 0, 1);
@@ -2436,7 +2603,6 @@ void AMTMainWindow::customizeSarfTags() {
 
 void AMTMainWindow::difference() {
 
-#if 1
     _atagger->compareToTagFile.clear();
     _atagger->compareToTagTypeFile.clear();
     _atagger->compareToTagTypeVector->clear();
@@ -2482,9 +2648,17 @@ void AMTMainWindow::difference() {
 
     /** Read text file path **/
 
-    QString textFile = result["file"].toString();
+    QStringList dirList = _atagger->compareToTagFile.split('/');
+    dirList.removeLast();
+    QString dir = dirList.join("/");
+    dir.append('/');
 
-    QFile Ifile(textFile);
+    QString textFileName = result["file"].toString();
+
+    QString textPath = dir;
+    textPath.append(textFileName);
+
+    QFile Ifile(textPath);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::about(this, tr("Input text File"),
                      tr("The <b>Input Text File</b> can't be opened!"));
@@ -2517,44 +2691,19 @@ void AMTMainWindow::difference() {
         return;
     }
 
-    /** Read Tags **/
-
-    foreach(QVariant tag, result["TagArray"].toList()) {
-
-        QVariantMap tagElements = tag.toMap();
-        int start = tagElements["pos"].toInt();
-        int length = tagElements["length"].toInt();
-        int wordIndex = tagElements["wordIndex"].toInt();
-        QString tagtype = tagElements["type"].toString();
-        Source source = (Source)(tagElements["source"].toInt());
-        bool check;
-        const TagType* type = NULL;
-        for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
-            if(_atagger->tagTypeVector->at(i)->name == tagtype) {
-                type = _atagger->tagTypeVector->at(i);
-                break;
-            }
-        }
-        if(type == NULL) {
-            QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
-            _atagger = new ATagger();
-            clearLayout(this->layout());
-            return;
-        }
-        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo);
-    }
-
-    if(_atagger->tagHash.begin().value()->source == user) {
-        _atagger->compareToIsSarf = false;
-    }
-    else {
-        _atagger->compareToIsSarf = true;
-    }
-    _atagger->compareToTagTypeFile = tagtypeFile;
-
     /** Read the TagType file and store it **/
 
-    QFile ITTfile(tagtypeFile);
+    _atagger->compareToTagTypeFile = tagtypeFile;
+
+    QStringList ttdirList = _atagger->compareToTagFile.split('/');
+    ttdirList.removeLast();
+    QString ttdir = ttdirList.join("/");
+    ttdir.append('/');
+
+    QString ttPath = ttdir;
+    ttPath.append(tagtypeFile);
+
+    QFile ITTfile(ttPath);
     if (!ITTfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::about(this, tr("Input Tag File"),
                      tr("The <b>Tag Type File</b> can't be opened!"));
@@ -2725,7 +2874,40 @@ void AMTMainWindow::difference() {
             _atagger->insertTagType(tag,desc,foreground_color,background_color,font,underline,bold,italic,user,compareTo);
         }
     }
-#endif
+
+    /** Read Tags **/
+
+    foreach(QVariant tag, result["TagArray"].toList()) {
+
+        QVariantMap tagElements = tag.toMap();
+        int start = tagElements["pos"].toInt();
+        int length = tagElements["length"].toInt();
+        int wordIndex = tagElements["wordIndex"].toInt();
+        QString tagtype = tagElements["type"].toString();
+        Source source = (Source)(tagElements["source"].toInt());
+        bool check;
+        const TagType* type = NULL;
+        for(int i=0;i<_atagger->compareToTagTypeVector->count(); i++) {
+            if(_atagger->compareToTagTypeVector->at(i)->name == tagtype) {
+                type = _atagger->compareToTagTypeVector->at(i);
+                break;
+            }
+        }
+        if(type == NULL) {
+            QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
+            _atagger = new ATagger();
+            clearLayout(this->layout());
+            return;
+        }
+        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo);
+    }
+
+    if(_atagger->tagHash.begin().value()->source == user) {
+        _atagger->compareToIsSarf = false;
+    }
+    else {
+        _atagger->compareToIsSarf = true;
+    }
     /** Show the difference view **/
 
     DiffView * diff = new DiffView(this);
@@ -2965,6 +3147,11 @@ void AMTMainWindow::runMERFSimulator() {
 
     _atagger->simulationVector.clear();
     descBrwsr->clear();
+    /*
+    timeval tim;
+    gettimeofday(&tim,NULL);
+    double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    */
     if(_atagger->tagHash.isEmpty()) {
         sarfTagging(false);
     }
@@ -2984,6 +3171,11 @@ void AMTMainWindow::runMERFSimulator() {
     if(!(_atagger->runSimulator())) {
         return;
     }
+    /*
+    gettimeofday(&tim, NULL);
+    double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    double diff = t2-t1;
+    */
 
     _atagger->isTagMBF = false;
 
@@ -3033,7 +3225,7 @@ void AMTMainWindow::closeEvent(QCloseEvent *event) {
          case QMessageBox::Discard:
              break;
          default:
-             break;
+             event->ignore();
          }
      }
 }

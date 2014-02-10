@@ -87,8 +87,8 @@ bool GraphNode::advance()
 QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF( -30 - adjust, -20 - adjust,
-                   63 + adjust, 43 + adjust);
+    return QRectF( -40 - adjust, -20 - adjust,
+                   83 + adjust, 43 + adjust);
 }
 
 QPainterPath GraphNode::shape() const

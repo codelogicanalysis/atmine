@@ -327,6 +327,7 @@ bool UNARYF::buildNFA(NFA *nfa) {
 
     if(op == PLUS || op == STAR) {
         nfa->transitions.insert(nfa->last + '|' + "epsilon", nextState);
+        nfa->prioritySet.append(nfa->last + nextState);
         nfa->last = currentLast;
         nfa->accept = currentLast;
         return true;

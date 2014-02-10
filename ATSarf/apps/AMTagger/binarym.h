@@ -23,7 +23,7 @@ public:
     void executeActions(NFA* nfa);
     QString getParam(QString msfName,QString param, QString* sarfMatches=NULL);
     QVariantMap getJSON();
-    bool constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge);
+    void constructRelation(Relation* relation, QVector<Match*>& entity1, QVector<Match*>& entity2, QVector<Match*>& edge);
     ~BinaryM();
 };
 

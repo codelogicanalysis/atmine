@@ -148,6 +148,7 @@ public:
 protected:
          void wheelEvent(QWheelEvent *event);
          void scaleView(qreal scaleFactor);
+         void relationScaleView(qreal scaleFactor);
 private:
          QFileDialog * browseFileDlg;
          QSignalMapper *signalMapper;

@@ -45,17 +45,17 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     grid->addWidget(btnUnselect,7,2);
     grid->addWidget(btnAdd,3,2);
     grid->addWidget(btnRemove,4,2);
-    grid->addWidget(btnLoad,15,4,1,2);
-    grid->addWidget(btnClose,15,6);
+    grid->addWidget(btnLoad,12,4,1,2);
+    grid->addWidget(btnClose,12,6);
     //grid->addWidget(btnCancel,13,5);
-    grid->addWidget(btnSelectAll,14,0);
-    grid->addWidget(btnUnselectAll,14,1);
+    grid->addWidget(btnSelectAll,11,0);
+    grid->addWidget(btnUnselectAll,11,1);
 
     lblPattern = new QLabel(tr("Pattern:"),this);
     lblFeatures = new QLabel(tr("Features:"), this);
     lblTagName = new QLabel(tr("Tagtype Name:"), this);
     lblDescription = new QLabel(tr("Description:"), this);
-    lblFGColor = new QLabel(tr("Foregroud Color:"), this);
+    lblFGColor = new QLabel(tr("Foreground Color:"), this);
     lblBGColor = new QLabel(tr("Background Color:"), this);
     lblFont = new QLabel(tr("Font:"), this);
     lblStep = new QLabel(tr("Steps") , this);
@@ -101,7 +101,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     gbSyn->setLayout(hbox);
     gbSyn->setEnabled(false);
 
-    grid->addWidget(gbSyn,15,0,1,2);
+    grid->addWidget(gbSyn,12,0,1,2);
 
     /** End **/
 
@@ -192,8 +192,10 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     listSelectedTags->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(listSelectedTags,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(selectedTags_clicked(QTreeWidgetItem*,int)));
 
-    grid->addWidget(listPossibleTags,2,0,12,2);
-    grid->addWidget(listSelectedTags,1,3,14,3);
+    //grid->addWidget(listPossibleTags,2,0,11,2);
+    //grid->addWidget(listSelectedTags,1,3,13,3);
+    grid->addWidget(listPossibleTags,2,0,9,2);
+    grid->addWidget(listSelectedTags,1,3,11,3);
 
     QWidget *widget = new QWidget(this);
 

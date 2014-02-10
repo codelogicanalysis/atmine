@@ -171,7 +171,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QWidget *widget = new QWidget(this);
     widget->setLayout(grid);
     setCentralWidget(widget);
-    setWindowTitle(tr("Custom MSF Tag Types"));
+    setWindowTitle(tr("Custom MRE Tag Types"));
 
     /** Initialize Elements **/
 

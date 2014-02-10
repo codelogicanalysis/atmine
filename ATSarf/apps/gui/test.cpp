@@ -125,7 +125,7 @@ int hadith(QString input_str,ATMProgressIFC * prg) {
 }
 int genealogy(QString inputString,ATMProgressIFC *prg) {
 	if (genealogyHelper(inputString,prg))
-		return -1;
+                return -1;
 	return 0;
 }
 
@@ -249,5 +249,12 @@ int breakAffix(QString, ATMProgressIFC *) {
 	return 0;
 }
 int timeRecognize(QString input_str, ATMProgressIFC * prg) {
-	return timeRecognizeHelper(input_str,prg);
+    timeval tim;
+    gettimeofday(&tim,NULL);
+    double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    int ret = timeRecognizeHelper(input_str,prg);
+    gettimeofday(&tim, NULL);
+    double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    theSarf->out << "elapsed time="<<t2-t1<<"s\n";
+    return ret;
 }
