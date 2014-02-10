@@ -179,28 +179,16 @@ QVariantMap KeyM::getJSON() {
     return keyMap;
 }
 
-bool KeyM::constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge) {
-    bool edgeBool = true;
-    if(relation->edge != NULL && edge == NULL) {
-        edgeBool = false;
-    }
+void KeyM::constructRelation(Relation* relation, QVector<Match*>& entity1, QVector<Match*>& entity2, QVector<Match*>& edge) {
 
     if(relation->entity1->name == msf->name) {
-        entity1 = this;
+        entity1.append(this);
     }
-    else if(relation->entity2->name == msf->name) {
-        entity2 = this;
+    if(relation->entity2->name == msf->name) {
+        entity2.append(this);
     }
-    else if(relation->edge != NULL && relation->edge->name == msf->name) {
-        edge = this;
-        edgeBool = true;
-    }
-
-    if(entity1!= NULL && entity2!= NULL && edgeBool) {
-        return true;
-    }
-    else {
-        return false;
+    if(relation->edge != NULL && relation->edge->name == msf->name) {
+        edge.append(this);
     }
 }
 

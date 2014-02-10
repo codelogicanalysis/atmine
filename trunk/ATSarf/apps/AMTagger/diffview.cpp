@@ -389,8 +389,8 @@ void DiffView::rbExact_clicked() {
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(tVector->at(c1)));
-        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
+        Tag * ott = tVector->at(c1);
+        Tag * ctt = cttVector->at(c2);
         if(((ott->pos) == (ctt->pos)) && ((ott->length) == (ctt->length))) {
             if((ott->tagtype->name) == (ctt->tagtype->name))  {
                 commonVector.append(ott);
@@ -417,13 +417,13 @@ void DiffView::rbExact_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(tVector->at(i)));
+            Tag * ott = tVector->at(i);
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
+            Tag * ctt = cttVector->at(i);
             reverseVector.append(ctt);
         }
     }
@@ -473,8 +473,8 @@ void DiffView::rbIntersect_clicked() {
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(tVector->at(c1)));
-        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
+        Tag * ott = tVector->at(c1);
+        Tag * ctt = cttVector->at(c2);
         if(((ott->pos <= ctt->pos) && ((ott->pos + ott->length) > (ctt->pos))) ||
            ((ctt->pos <= ott->pos) && ((ctt->pos + ctt->length) > (ott->pos)))) {
             if((ott->tagtype->name) == (ctt->tagtype->name)) {
@@ -502,13 +502,13 @@ void DiffView::rbIntersect_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(tVector->at(i)));
+            Tag * ott = tVector->at(i);
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
+            Tag * ctt = cttVector->at(i);
             reverseVector.append(ctt);
         }
     }
@@ -559,8 +559,8 @@ void DiffView::rbAContainB_clicked() {
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(tVector->at(c1)));
-        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
+        Tag * ott = tVector->at(c1);
+        Tag * ctt = cttVector->at(c2);
         if(((ott->pos) <= (ctt->pos)) && ((ott->pos + ott->length) >= (ctt->pos + ctt->length))) {
             if((ott->tagtype->name) == (ctt->tagtype->name)) {
                 commonVector.append(ott);
@@ -587,13 +587,13 @@ void DiffView::rbAContainB_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ott = (Tag*)(&(tVector->at(i)));
+            Tag * ott = tVector->at(i);
             forwardVector.append(ott);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
+            Tag * ctt = cttVector->at(i);
             reverseVector.append(ctt);
         }
     }
@@ -644,8 +644,8 @@ void DiffView::rbBContainA_clicked() {
     int c2=0;
 
     while((c1 < otlength) && (c2 < ctlength)) {
-        const Tag * ott = (Tag*)(&(tVector->at(c1)));
-        const Tag * ctt = (Tag*)(&(cttVector->at(c2)));
+        Tag * ott = tVector->at(c1);
+        Tag * ctt = cttVector->at(c2);
         if(((ctt->pos) <= (ott->pos)) && ((ctt->pos + ctt->length) >= (ott->pos + ott->length))) {
             if((ctt->tagtype->name) == (ott->tagtype->name)) {
                 commonVector.append(ott);
@@ -672,13 +672,13 @@ void DiffView::rbBContainA_clicked() {
     }
     if(c1 < (otlength-1)) {
         for(int i=c1; i< otlength; i++) {
-            const Tag * ctt = (Tag*)(&(tVector->at(i)));
+            Tag * ctt = tVector->at(i);
             forwardVector.append(ctt);
         }
     }
     else if(c2 < (ctlength-1)) {
         for(int i=c2; i< ctlength; i++) {
-            const Tag * ctt = (Tag*)(&(cttVector->at(i)));
+            Tag * ctt = cttVector->at(i);
             reverseVector.append(ctt);
         }
     }

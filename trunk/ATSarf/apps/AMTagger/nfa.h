@@ -20,6 +20,7 @@ public:
     QStringList states;
     QString accept;
     QStringList andAccept;
+    QStringList prioritySet;
     /// The last state added to the list of states
     QString last;
     QMultiMap<QString, QString> transitions;

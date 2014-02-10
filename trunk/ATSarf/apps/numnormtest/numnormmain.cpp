@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QTextCodec>
+//#include <sys/time.h>
 #include "numnorm.h"
 #include "sarf.h"
 #include "myprogressifc.h"
@@ -53,6 +54,11 @@ int main(int argc, char *argv[]) {
 
     Sarf::use(&srf);
 
+    /*
+    timeval tim;
+    gettimeofday(&tim,NULL);
+    double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
+    */
     /** Run Synonymity analysis **/
     NumNorm nn(&text);
     nn();
@@ -62,6 +68,12 @@ int main(int argc, char *argv[]) {
             cout << nn.extractedNumbers[i].getNumber() << '\n';
         }
     }
+    /*
+    gettimeofday(&tim, NULL);
+    double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
+    double diff = t2-t1;
+    cout << "elapsed time " << diff << " s\n";
+    */
 
     /** Close Sarf instance and exit **/
     srf.exit();

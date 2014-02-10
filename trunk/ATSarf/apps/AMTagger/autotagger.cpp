@@ -21,7 +21,9 @@ bool AutoTagger::operator ()() {
         QHash<QString, QString> iNF;
 
         int tagCount = _atagger->tagHash.size();
-        SarfTag sarftag(word.start, length, &(word.word), synSetHash, &eNF, &iNF);
+        QString diacriticEmptyWord = removeDiacritics(word.word);
+        //&(word.word)
+        SarfTag sarftag(word.start, length, &diacriticEmptyWord, synSetHash, &eNF, &iNF);
         sarftag();
 
         /** Clean tags to fix the negation **/

@@ -252,30 +252,21 @@ QVariantMap UnaryM::getJSON() {
     return unaryMap;
 }
 
-bool UnaryM::constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge) {
-    bool edgeBool = true;
-    if(relation->edge != NULL && edge == NULL) {
-        edgeBool = false;
-    }
+void UnaryM::constructRelation(Relation* relation, QVector<Match*>& entity1, QVector<Match*>& entity2, QVector<Match*>& edge) {
 
     if(relation->entity1->name == msf->name) {
-        entity1 = this;
+        entity1.append(this);
     }
-    else if(relation->entity2->name == msf->name) {
-        entity2 = this;
+    if(relation->entity2->name == msf->name) {
+        entity2.append(this);
     }
-    else if(relation->edge != NULL && relation->edge->name == msf->name) {
-        edge = this;
-        edgeBool = true;
+    if(relation->edge != NULL && relation->edge->name == msf->name) {
+        edge.append(this);
     }
 
-    if(entity1!= NULL && entity2!= NULL && edgeBool) {
-        return true;
+    for(int i=0; i<matches.count(); i++) {
+        matches.at(i)->constructRelation(relation,entity1,entity2,edge);
     }
-    else {
-        return matches.last()->constructRelation(relation,entity1,entity2,edge);
-    }
-    return false;
 }
 
 UnaryM::~UnaryM() {

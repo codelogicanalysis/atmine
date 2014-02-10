@@ -227,40 +227,22 @@ QVariantMap BinaryM::getJSON() {
     return binaryMap;
 }
 
-bool BinaryM::constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge) {
-    bool edgeBool = true;
-    if(relation->edge != NULL && edge == NULL) {
-        edgeBool = false;
-    }
+void BinaryM::constructRelation(Relation* relation, QVector<Match*>& entity1, QVector<Match*>& entity2, QVector<Match*>& edge) {
 
     if(relation->entity1->name == msf->name) {
-        entity1 = this;
+        entity1.append(this);
     }
-    else if(relation->entity2->name == msf->name) {
-        entity2 = this;
+    if(relation->entity2->name == msf->name) {
+        entity2.append(this);
     }
-    else if(relation->edge != NULL && relation->edge->name == msf->name) {
-        edge = this;
-        edgeBool = true;
+    if(relation->edge != NULL && relation->edge->name == msf->name) {
+        edge.append(this);
     }
 
-    if(entity1!= NULL && entity2!= NULL && edgeBool) {
-        return true;
+    leftMatch->constructRelation(relation,entity1,entity2,edge);
+    if(rightMatch != NULL) {
+        rightMatch->constructRelation(relation,entity1,entity2,edge);
     }
-    else {
-        if(!(leftMatch->constructRelation(relation,entity1,entity2,edge))) {
-            if(rightMatch != NULL) {
-                return rightMatch->constructRelation(relation,entity1,entity2,edge);
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return true;
-        }
-    }
-    return false;
 }
 
 BinaryM::~BinaryM() {

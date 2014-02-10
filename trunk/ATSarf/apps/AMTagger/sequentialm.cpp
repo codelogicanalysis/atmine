@@ -236,38 +236,23 @@ QVariantMap SequentialM::getJSON() {
     return seqMap;
 }
 
-bool SequentialM::constructRelation(Relation* relation, Match*& entity1, Match*& entity2, Match*& edge) {
-    bool edgeBool = true;
-    if(relation->edge != NULL && edge == NULL) {
-        edgeBool = false;
-    }
+void SequentialM::constructRelation(Relation* relation, QVector<Match*>& entity1, QVector<Match*>& entity2, QVector<Match*>& edge) {
 
     if(msf != NULL) {
         if(relation->entity1->name == msf->name) {
-            entity1 = this;
+            entity1.append(this);
         }
-        else if(relation->entity2->name == msf->name) {
-            entity2 = this;
+        if(relation->entity2->name == msf->name) {
+            entity2.append(this);
         }
-        else if(relation->edge != NULL && relation->edge->name == msf->name) {
-            edge = this;
-            edgeBool = true;
+        if(relation->edge != NULL && relation->edge->name == msf->name) {
+            edge.append(this);
         }
     }
 
-    if(entity1!= NULL && entity2!= NULL && edgeBool) {
-        return true;
+    for(int i=0; i<matches.count(); i++) {
+        matches.at(i)->constructRelation(relation,entity1,entity2,edge);
     }
-    else {
-        for(int i=0; i<matches.count(); i++) {
-            bool value = matches.at(i)->constructRelation(relation,entity1,entity2,edge);
-            if(value) {
-                return true;
-            }
-        }
-        return false;
-    }
-    return false;
 }
 
 SequentialM::~SequentialM() {

@@ -206,12 +206,158 @@ void ATagger::constructRelations(int index) {
         MSFormula* formula = (MSFormula*)(merftag->formula);
         for(int j=0; j<formula->relationVector.count(); j++) {
             Relation* relation = formula->relationVector[j];
-            Match* entity1 = NULL;
-            Match* entity2 = NULL;
-            Match* edge = NULL;
-            if(merftag->match->constructRelation(relation,entity1,entity2,edge)) {
-                RelationM* relM = new RelationM(relation,entity1,entity2,edge);
-                merftag->relationMatchVector.append(relM);
+            QVector<Match*> entity1;
+            QVector<Match*> entity2;
+            QVector<Match*> edge;
+            merftag->match->constructRelation(relation,entity1,entity2,edge);
+            if(!(entity1.isEmpty()) && !(entity2.isEmpty()) && (!(edge.isEmpty()) || (relation->edge == NULL))) {
+                if((entity1.count() == 1) && (entity2.count() == 1) && (edge.count() == 1)) {
+                    /// single relation
+                    RelationM* relM = new RelationM(relation,entity1[0],entity2[0],edge[0]);
+                    merftag->relationMatchVector.append(relM);
+                }
+                else if((entity1.count() == 1) && (entity2.count() == 1) && (edge.isEmpty())) {
+                    /// single with no edge
+                    RelationM* relM = new RelationM(relation,entity1[0],entity2[0],NULL);
+                    merftag->relationMatchVector.append(relM);
+                }
+                else if(edge.count() > 1) {
+                    /// cases where the edge has multiple matches
+
+                    /// extract the edge label first
+                    QString edgeLabel;
+                    if(relation->edgeLabel == "text") {
+                        for(int k=0; k<edge.count(); k++) {
+                            edgeLabel.append(edge.at(k)->getText() + ", ");
+                        }
+                        edgeLabel.chop(2);
+                    }
+                    else if(relation->edgeLabel == "position") {
+                        for(int k=0; k<edge.count(); k++) {
+                            edgeLabel.append(QString::number(edge.at(k)->getPOS()) + ", ");
+                        }
+                        edgeLabel.chop(2);
+                    }
+                    else if(relation->edgeLabel == "length") {
+                        for(int k=0; k<edge.count(); k++) {
+                            edgeLabel.append(QString::number(edge.at(k)->getLength()) + ", ");
+                        }
+                        edgeLabel.chop(2);
+                    }
+                    else if(relation->edgeLabel == "number") {
+                        for(int k=0; k<edge.count(); k++) {
+                            QString text = edge.at(k)->getText();
+                            NumNorm nn(&text);
+                            nn();
+                            int number = NULL;
+                            if(nn.extractedNumbers.count()!=0) {
+                                number = nn.extractedNumbers[0].getNumber();
+                                 edgeLabel.append(QString::number(number) + ", ");
+                            }
+                        }
+                        if(!(edgeLabel.isEmpty())) {
+                            edgeLabel.chop(2);
+                        }
+                    }
+
+                    if(entity1.count() == 1 && entity2.count() == 1) {
+                        RelationM* relM = new RelationM(relation,entity1[0],entity2[0],NULL);
+                        relM->edgeLabel = edgeLabel;
+                        merftag->relationMatchVector.append(relM);
+                    }
+                    else if(relation->entity1->name == relation->entity2->name) {
+                        /// Relation entities belong to a + or *
+                        for(int k=1; k< entity1.count(); k++) {
+                            RelationM* relM = new RelationM(relation,entity1[k-1],entity2[k],NULL);
+                            relM->edgeLabel = edgeLabel;
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else if(entity1.count() > 1 && entity2.count() == 1) {
+                        /// multiple matches for entity1 and 1 for entity 2
+                        for(int k=0; k<entity1.count(); k++) {
+                            RelationM* relM = new RelationM(relation,entity1[k],entity2[0],NULL);
+                            relM->edgeLabel = edgeLabel;
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else if(entity1.count() == 1 && entity2.count() > 1) {
+                        /// multiple matches for entity2 and 1 for entity 1
+                        for(int k=0; k<entity2.count(); k++) {
+                            RelationM* relM = new RelationM(relation,entity1[0],entity2[k],NULL);
+                            relM->edgeLabel = edgeLabel;
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else {
+                        /// multiple matches for entities 1 and 2
+                        for(int m=0; m<entity1.count(); m++) {
+                            for(int n=0; n<entity2.count(); n++) {
+                                RelationM* relM = new RelationM(relation,entity1[m],entity2[n],NULL);
+                                relM->edgeLabel = edgeLabel;
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                    }
+                }
+                else {
+                    /// cases where the edge has only one match
+
+                    if(relation->entity1->name == relation->entity2->name) {
+                        /// Relation entities belong to a + or *
+                        for(int k=1; k< entity1.count(); k++) {
+                            RelationM* relM;
+                            if(edge.count() == 1) {
+                                relM = new RelationM(relation,entity1[k-1],entity2[k],edge[0]);
+                            }
+                            else {
+                                relM = new RelationM(relation,entity1[k-1],entity2[k],NULL);
+                            }
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else if(entity1.count() > 1 && entity2.count() == 1) {
+                        /// multiple matches for entity1 and 1 for entity 2
+                        for(int k=0; k<entity1.count(); k++) {
+                            RelationM* relM;
+                            if(edge.count() == 1) {
+                                relM = new RelationM(relation,entity1[k],entity2[0],edge[0]);
+                            }
+                            else {
+                                relM = new RelationM(relation,entity1[k],entity2[0],NULL);
+                            }
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else if(entity1.count() == 1 && entity2.count() > 1) {
+                        /// multiple matches for entity2 and 1 for entity 1
+                        for(int k=0; k<entity2.count(); k++) {
+                            RelationM* relM;
+                            if(edge.count() == 1) {
+                                relM = new RelationM(relation,entity1[0],entity2[k],edge[0]);
+                            }
+                            else {
+                                relM = new RelationM(relation,entity1[0],entity2[k],NULL);
+                            }
+                            merftag->relationMatchVector.append(relM);
+                        }
+                    }
+                    else {
+                        /// multiple matches for entities 1 and 2
+                        for(int m=0; m<entity1.count(); m++) {
+                            for(int n=0; n<entity2.count(); n++) {
+                                RelationM* relM;
+                                if(edge.count() == 1) {
+                                    relM = new RelationM(relation,entity1[m],entity2[n],edge[0]);
+                                }
+                                else {
+                                    relM = new RelationM(relation,entity1[m],entity2[n],NULL);
+                                }
+                                merftag->relationMatchVector.append(relM);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -317,6 +463,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
 
     /// Use a vector of matches to collect correct solutions and choose longest
     QVector<Match*> matches;
+    QVector<QString> priorityTransitions;
 
     /// Get the tags for word at wordIndex
     QList<Tag*> tokens;
@@ -380,6 +527,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 temp = temp->parent;
                 /** Done **/
                 matches.append(temp);
+                priorityTransitions.append(state + nstates.at(j));
             }
         }
     }
@@ -462,6 +610,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             }
             /** Done **/
             matches.append(temp);
+            priorityTransitions.append(state + nstates.at(j));
         }
     }
 
@@ -480,6 +629,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 Match* temp = simulateNFA(nfaVector->at(i),nfaVector->at(i)->start,wordIndex);
                 if(temp != NULL) {
                     matches.append(temp);
+                    priorityTransitions.append(state + nstates.at(j));
                 }
             }
             break;
@@ -600,7 +750,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
 
         /** get longest match and return it **/
         int maxCount = -1;
-        int maxIndex;
+        QVector<int> maxIndexes;
         /*
         if(isSpecial) {
             /// This is the case where we have a subformula or AND operation
@@ -623,14 +773,28 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             }
             int tempMatchCount = temp->getMatchCount();
             if( tempMatchCount > maxCount) {
-                maxIndex = i;
+                maxIndexes.clear();
+                maxIndexes.append(i);
                 maxCount = tempMatchCount;
+            }
+            else if(tempMatchCount == maxCount) {
+                maxIndexes.append(i);
+            }
+        }
+        int matchIndex = maxIndexes.at(0);
+
+        if (maxIndexes.count() != 1) {
+            for(int i=0; i< matches.count(); i++) {
+                if(nfa->prioritySet.contains(priorityTransitions.at(i))) {
+                    matchIndex = i;
+                    break;
+                }
             }
         }
 
         /// Delete smaller matches
         for(int i=0; i< matches.count(); i++) {
-            if(i != maxIndex) {
+            if(i != matchIndex) {
                 Match* temp = matches[i];
                 while(temp->parent != NULL) {
                     temp = temp->parent;
@@ -638,7 +802,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 delete temp;
             }
         }
-        return matches.at(maxIndex);
+        return matches.at(matchIndex);
     }
     return NULL;
 }
