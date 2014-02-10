@@ -31,10 +31,10 @@ QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
 QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
 
 GRAPHVIZ_CGRAPH_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/cgraph/.libs -lcgraph
-GRAPHVIZ_CGRAPH_LIBS=$(TOP)/third/graphviz/lib/cgraph/.libs/libcgraph.so
+#GRAPHVIZ_CGRAPH_LIBS=$(TOP)/third/graphviz/lib/cgraph/.libs/libcgraph.so
 
 GRAPHVIZ_GVC_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/gvc/.libs -lgvc
-GRAPHVIZ_GVC_LIBS=$(TOP)/third/graphviz/lib/gvc/.libs/libgvc.so
+#GRAPHVIZ_GVC_LIBS=$(TOP)/third/graphviz/lib/gvc/.libs/libgvc.so
 
 THIRD_LIBS_LINKFLAGS= $(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
 
