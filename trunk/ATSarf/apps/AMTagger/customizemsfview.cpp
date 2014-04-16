@@ -71,7 +71,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     lblMSF = new QLabel(tr("Tagtype Name:"), this);
     lblFormula = new QLabel(tr("Formula:"), this);
     lblDescription = new QLabel(tr("Description:"), this);
-    lblFGColor = new QLabel(tr("Foregroud Color:"), this);
+    lblFGColor = new QLabel(tr("Foreground Color:"), this);
     lblBGColor = new QLabel(tr("Background Color:"), this);
 
     grid->addWidget(lblMBF,0,0);
