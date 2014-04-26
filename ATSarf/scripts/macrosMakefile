@@ -29,7 +29,7 @@ GRAPHVIZ=third/graphviz/lib
 
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build 
-INCLUDEDIRS+= apps/gui apps/syn apps/syntest apps/numnorm
+INCLUDEDIRS+= apps/gui apps/syn apps/syntest apps/numnorm apps/sarfenumerate
 INCLUDEDIRS+= include
 INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
 INCLUDEDIRS+= $(QJSON)
