@@ -23,11 +23,11 @@ INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
 
 HEADERS += \
-    ../enumerator.h \
-    ../prefix_enumerate.h \
-    ../stem_enumerate.h \
-    ../suffix_enumerate.h \
-    ../tree_enumerate.h \
+    ../sarfenumerate/enumerator.h \
+    ../sarfenumerate/prefix_enumerate.h \
+    ../sarfenumerate/stem_enumerate.h \
+    ../sarfenumerate/suffix_enumerate.h \
+    ../sarfenumerate/tree_enumerate.h \
     ../myprogressifc.h \
     ../../../src/build/functions.h \
     ../../../src/cache/Search_by_item_locally.h \
@@ -87,12 +87,12 @@ HEADERS += \
     ../../../src/common/word.h
 
 SOURCES += \
-    ../enumerator.cpp \
-    ../prefix_enumerate.cpp \
-    ../stem_enumerate.cpp \
-    ../suffix_enumerate.cpp \
-    ../tree_enumerate.cpp \
-    ../sarf-enumerate-main.cpp \
+    ../sarfenumerate/enumerator.cpp \
+    ../sarfenumerate/prefix_enumerate.cpp \
+    ../sarfenumerate/stem_enumerate.cpp \
+    ../sarfenumerate/suffix_enumerate.cpp \
+    ../sarfenumerate/tree_enumerate.cpp \
+    ../sarfenumerate/sarf-enumerate-main.cpp \
     ../../../src/build/functions.cpp \
     ../../../src/cache/Search_by_item_locally.cpp \
     ../../../src/cache/database_info_block.cpp \

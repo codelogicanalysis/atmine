@@ -55,7 +55,7 @@ void StemEnumerate::traverse(ATTrie::Position pos)
     while(!queue.isEmpty()) {
         ATTrie::Position current_pos = queue.dequeue();
 
-        for(int i=0; i< letters.count() & !stop; i++) {
+        for(int i=0; (i< letters.count()) & (!stop); i++) {
             QChar current_letter = letters[i];
             if (trie->isWalkable(current_pos,current_letter)) {
                 ATTrie::Position temp_pos = trie->clonePosition(current_pos);
