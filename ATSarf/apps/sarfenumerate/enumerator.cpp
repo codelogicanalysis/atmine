@@ -6,7 +6,7 @@
 #include "test.h"
 #include "inflections.h"
 
-SarfParameters sarfParameters;
+//SarfParameters sarfParameters;
 
 PrefixEnumeratorMachine::PrefixEnumeratorMachine(Enumerator * controller):PrefixEnumerate()
 {

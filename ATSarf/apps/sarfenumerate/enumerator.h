@@ -10,22 +10,23 @@
 #include "prefix_enumerate.h"
 #include "stem_enumerate.h"
 #include "suffix_enumerate.h"
+#include "stemmer.h"
 #include "common.h"
 #include <QVector>
 
-class SarfParameters {
-public:
-        /// Boolean in order to enable/disable run on words
-        bool enableRunonwords;
+//class SarfParameters {
+//public:
+//        /// Boolean in order to enable/disable run on words
+//        bool enableRunonwords;
 
-        /**
-          * This is the constructor of the SarfParameters class which by default sets the run on words capability to false
-          */
-        SarfParameters() {
-                enableRunonwords=false;
-        }
-};
-extern SarfParameters sarfParameters;
+//        /**
+//          * This is the constructor of the SarfParameters class which by default sets the run on words capability to false
+//          */
+//        SarfParameters() {
+//                enableRunonwords=false;
+//        }
+//};
+//extern SarfParameters sarfParameters;
 
 class Enumerator;
 

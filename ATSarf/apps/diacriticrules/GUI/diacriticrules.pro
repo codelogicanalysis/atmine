@@ -17,18 +17,20 @@ INCLUDEPATH += $$QTDIR/include/QtSql \
     ../../../src/sql \
     ../../../src/util \
     ../../../src/case \
-    ../../../apps/gui \
+    ../../gui \
+    ../../sarfenumerate \
 
 INCLUDEPATH += $$TOP/datrie/
 INCLUDEPATH += $$TOP/datrie/datrie
 
 HEADERS += \
-    ../sarfenumerate/enumerator.h \
-    ../sarfenumerate/prefix_enumerate.h \
-    ../sarfenumerate/stem_enumerate.h \
-    ../sarfenumerate/suffix_enumerate.h \
-    ../sarfenumerate/tree_enumerate.h \
+    ../../sarfenumerate/enumerator.h \
+    ../../sarfenumerate/prefix_enumerate.h \
+    ../../sarfenumerate/stem_enumerate.h \
+    ../../sarfenumerate/suffix_enumerate.h \
+    ../../sarfenumerate/tree_enumerate.h \
     ../myprogressifc.h \
+    ../diacriticrules.h \
     ../../../src/build/functions.h \
     ../../../src/cache/Search_by_item_locally.h \
     ../../../src/cache/database_info_block.h \
@@ -84,15 +86,16 @@ HEADERS += \
     ../../../src/util/Math_functions.h \
     ../../../src/util/mergeLists.h \
     ../../../src/util/morphemes.h \
-    ../../../src/common/word.h
+    ../../../src/common/word.h \
+    ../wordambiguity.h \
+    ../ruletest.h
 
 SOURCES += \
-    ../sarfenumerate/enumerator.cpp \
-    ../sarfenumerate/prefix_enumerate.cpp \
-    ../sarfenumerate/stem_enumerate.cpp \
-    ../sarfenumerate/suffix_enumerate.cpp \
-    ../sarfenumerate/tree_enumerate.cpp \
-    ../sarfenumerate/sarf-enumerate-main.cpp \
+    ../../sarfenumerate/enumerator.cpp \
+    ../../sarfenumerate/prefix_enumerate.cpp \
+    ../../sarfenumerate/stem_enumerate.cpp \
+    ../../sarfenumerate/suffix_enumerate.cpp \
+    ../../sarfenumerate/tree_enumerate.cpp \
     ../../../src/build/functions.cpp \
     ../../../src/cache/Search_by_item_locally.cpp \
     ../../../src/cache/database_info_block.cpp \
@@ -133,7 +136,11 @@ SOURCES += \
     ../../../src/util/vocalizedCombinations.cpp \
     ../../../src/util/Math_functions.cpp \
     ../../../src/util/morphemes.cpp \
-    ../../../src/common/word.cpp
+    ../../../src/common/word.cpp \
+    ../diacriticrulesmain.cpp \
+    ../diacriticrules.cpp \
+    ../wordambiguity.cpp \
+    ../ruletest.cpp
 
 FORMS    +=
 
