@@ -3,7 +3,6 @@
 
 WordDensity::WordDensity(long max_word_length, bool get_all_details) : Enumerator(get_all_details)
 {
-    counter = 0;
     this->max_word_length = max_word_length;
     number_of_uvWords = new long long[max_word_length];
     number_of_vWords = new long long[max_word_length];
