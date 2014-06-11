@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
         cout<<"All Set"<<endl;
     }
 
-    DiacriticGuidelines dg(-1,true);
+    DiacriticGuidelines dg(solutions,true);
     dg();
     dg.saveTrie();
 

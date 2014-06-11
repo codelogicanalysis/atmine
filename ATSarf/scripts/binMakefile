@@ -125,8 +125,8 @@ worddensity: $(WORDDENSITY_LIBDIR)
 DIACRITICS_LIBDIR = $(TOP)/lib/libdiacritics.a $(TOP)/lib/libsarfenumerate.a $(ATSarf_LIBS)
 DIACRITICS_LIBS_LINKFLAGS=-L$(TOP)/lib -ldiacritics -lsarfenumerate $(ATSarf_LIBS_LINKFLAGS4)
 
-diacritics: $(WORDDENSITY_LIBDIR)
-	$(CXX) -o $@ $(LDDFLAGS) $(WORDDENSITY_LIBS_LINKFLAGS) \
+diacritics: $(DIACRITICS_LIBDIR)
+	$(CXX) -o $@ $(LDDFLAGS) $(DIACRITICS_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
 #clean: 
