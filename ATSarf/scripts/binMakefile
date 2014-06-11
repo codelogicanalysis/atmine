@@ -54,7 +54,7 @@ $(APPLICATION): $(ATSarfGui_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm diacriticrules worddensity
+all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm diacriticrules worddensity diacritics
 
 EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
 EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
@@ -119,6 +119,13 @@ WORDDENSITY_LIBDIR = $(TOP)/lib/libworddensity.a $(TOP)/lib/libsarfenumerate.a $
 WORDDENSITY_LIBS_LINKFLAGS=-L$(TOP)/lib -lworddensity -lsarfenumerate $(ATSarf_LIBS_LINKFLAGS4)
 
 worddensity: $(WORDDENSITY_LIBDIR)
+	$(CXX) -o $@ $(LDDFLAGS) $(WORDDENSITY_LIBS_LINKFLAGS) \
+		$(THIRD_LIBS_LINKFLAGS)
+
+DIACRITICS_LIBDIR = $(TOP)/lib/libdiacritics.a $(TOP)/lib/libsarfenumerate.a $(ATSarf_LIBS)
+DIACRITICS_LIBS_LINKFLAGS=-L$(TOP)/lib -ldiacritics -lsarfenumerate $(ATSarf_LIBS_LINKFLAGS4)
+
+diacritics: $(WORDDENSITY_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(WORDDENSITY_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
