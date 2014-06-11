@@ -10,6 +10,7 @@ DiacriticGuidelines::DiacriticGuidelines(long number_of_solutions, bool get_all_
 
 bool DiacriticGuidelines::saveTrie() {
     trie->save(QString(".vocalizedword_trie_bama.dat").toStdString().data());
+    return true;
 }
 
 bool DiacriticGuidelines::on_match()
