@@ -54,39 +54,15 @@ bool WordDensity::on_match()
 };
 
 void WordDensity::getuvWordStats() {
-    cout << "The statistics of the unvocalized Words in Arabic of max length " << max_word_length << " are:" << endl
-            << number_of_uvWords[0] << endl
-            << number_of_uvWords[1] << endl
-            << number_of_uvWords[2] << endl
-            << number_of_uvWords[3] << endl
-            << number_of_uvWords[4] << endl
-            << number_of_uvWords[5] << endl
-            << number_of_uvWords[6] << endl
-            << number_of_uvWords[7] << endl
-            << number_of_uvWords[8] << endl
-            << number_of_uvWords[9] << endl
-            << number_of_uvWords[10] << endl
-            << number_of_uvWords[11] << endl
-            << number_of_uvWords[12] << endl
-            << number_of_uvWords[13] << endl
-            << number_of_uvWords[14] << endl;
+    theSarf->out << "The statistics of the unvocalized Words in Arabic of max length " << max_word_length << " are:" << endl;
+    for(int i=0; i < max_word_length; i++) {
+    	theSarf->out << number_of_uvWords[i] << endl;
+    }
 }
 
 void WordDensity::getvWordStats() {
-    cout << "The statistics of the vocalized Words in Arabic of max length " << max_word_length << " are:" << endl
-            << number_of_vWords[0] << endl
-            << number_of_vWords[1] << endl
-            << number_of_vWords[2] << endl
-            << number_of_vWords[3] << endl
-            << number_of_vWords[4] << endl
-            << number_of_vWords[5] << endl
-            << number_of_vWords[6] << endl
-            << number_of_vWords[7] << endl
-            << number_of_vWords[8] << endl
-            << number_of_vWords[9] << endl
-            << number_of_vWords[10] << endl
-            << number_of_vWords[11] << endl
-            << number_of_vWords[12] << endl
-            << number_of_vWords[13] << endl
-            << number_of_vWords[14] << endl;
+    theSarf->out << "The statistics of the vocalized Words in Arabic of max length " << max_word_length << " are:" << endl;
+    for(int i=0; i < max_word_length; i++) {
+        theSarf->out << number_of_vWords[i] << endl;
+    }
 }

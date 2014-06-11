@@ -1,7 +1,7 @@
 #include <QFile>
 #include <sarf.h>
 #include "diacriticrules.h"
-#include "ruletest.h"
+//#include "ruletest.h"
 #include <myprogressifc.h>
 
 using namespace std;
