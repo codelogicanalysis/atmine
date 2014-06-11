@@ -38,6 +38,18 @@ bool DiacriticGuidelines::on_match()
     }
 
     unvocalizedWord = removeDiacritics(vocalizedWord);
+    if(unvocalizedWord.isEmpty()) {
+        if(number_of_solutions == -1) {
+            return true;
+        }
+        else if(solution_counter != number_of_solutions) {
+            solution_counter++;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     /** Add word to trie **/
 
