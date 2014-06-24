@@ -56,6 +56,10 @@ bool DiacriticGuidelines::on_match()
     trie->store(unvocalizedWord,index);
     index++;
 
+    if(solution_counter%10000 == 0) {
+	   cout << solution_counter << endl;
+	}
+
     /** Check for number of solutions requested **/
     if(number_of_solutions == -1) {
         return true;

@@ -208,7 +208,7 @@ CustomSTTView::CustomSTTView(QWidget *parent) :
     theSarf->query.exec("SELECT raw_data FROM prefix_category");
     while(theSarf->query.next()) {
         if(!(theSarf->query.value(0).toString().isEmpty()))
-            listPrefix << theSarf->query.value(0).toString();
+            listPrefix << theSarf->query.value(0).toString().remove(' ');
     }
     listPrefix.removeDuplicates();
 
@@ -425,7 +425,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
             theSarf->query.exec("SELECT raw_data FROM stem_category");
             while(theSarf->query.next()) {
                 if(!(theSarf->query.value(0).toString().isEmpty()))
-                    listStems << theSarf->query.value(0).toString();
+                    listStems << theSarf->query.value(0).toString().remove(' ');
             }
             listStems.removeDuplicates();
         }
@@ -451,7 +451,7 @@ void CustomSTTView::cbTagType_changed(QString text) {
             theSarf->query.exec("SELECT raw_data FROM suffix_category");
             while(theSarf->query.next()) {
                 if(!(theSarf->query.value(0).toString().isEmpty()))
-                    listSuffix << theSarf->query.value(0).toString();
+                    listSuffix << theSarf->query.value(0).toString().remove(' ');
             }
             listSuffix.removeDuplicates();
         }

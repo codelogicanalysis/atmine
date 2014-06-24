@@ -1,6 +1,7 @@
 #include "sarftag.h"
 #include "global.h"
 #include "amtmainwindow.h"
+#include "text_handling.h"
 
 class AMTMainWindow;
 
@@ -43,7 +44,7 @@ bool SarfTag::on_match() {
                     if (pre.POS.isEmpty() && pre.raw_data.isEmpty())
                             continue;
 
-                    if(pre.raw_data == tag->second) {
+                    if(equal(pre.raw_data,tag->second)) {
                         contain = true;
                         break;
                     }
@@ -84,7 +85,11 @@ bool SarfTag::on_match() {
                     isA = false;
                 }
 
-                if((isA && stem.raw_data == tag->second) || ((!isA) && stem.raw_data.contains(tag->second))) {
+                int i1=0,i2=0;
+                QStringRef solutionRawDataRef(&(stem.raw_data));
+                QStringRef CFRef(&(tag->second));
+                if((isA && equal(stem.raw_data,tag->second)) ||
+                   ((!isA) && checkIfFirstIsContainedInSecond(CFRef,solutionRawDataRef,i1,i2))) {
                     if(tag->third.compare("NOT") != 0) {
                         belong = true;
                         break;
@@ -161,7 +166,7 @@ bool SarfTag::on_match() {
                     if (suff.POS.isEmpty() && suff.raw_data.isEmpty())
                             continue;
 
-                    if(suff.raw_data == tag->second) {
+                    if(equal(suff.raw_data,tag->second)) {
                         contain = true;
                         break;
                     }

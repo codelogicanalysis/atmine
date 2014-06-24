@@ -14,7 +14,7 @@ Word nextWord(QString & text, int pos) {
     diacriticsSet.insert(kasratayn);
     diacriticsSet.insert(dammatayn);
     diacriticsSet.insert(fathatayn);
-    diacriticsSet.insert(aleft_superscript);
+    //diacriticsSet.insert(aleft_superscript);
     diacriticsSet.insert(shadde_alef_above);
     diacriticsSet.insert(madda);
 
