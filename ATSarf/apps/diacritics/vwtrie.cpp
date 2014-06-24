@@ -74,7 +74,7 @@ VWTrie :: store(const QString & key, int index)
         data->alpha_key[i] = key[i].unicode();
     data->alpha_key[key.length()] = 0;
 
-	TrieData d = (TrieData) index;
+    TrieData d = (TrieData) index;
 
     Bool ret = trie_store(data->trie, data->alpha_key, d);
     return ret == TRUE;
