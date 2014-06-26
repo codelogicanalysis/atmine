@@ -1552,6 +1552,31 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
     outtags << tagD;
     tfile.close();
 
+    /** Output the user-defined relation matches in a file **/
+    if(_atagger->simulationVector.isEmpty()) {
+        return;
+    }
+    QString path = fileName.left(fileName.lastIndexOf('/')+1);
+    QString relationMatchFile = path + "relation_match.txt";
+    QFile rfile(relationMatchFile);
+    if (!rfile.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this,"Warning","Can't open relation match file to Save");
+        return false;
+    }
+    QTextStream outrelations(&rfile);
+    for(int i=0; i<_atagger->simulationVector.count(); i++) {
+        MERFTag* merftag = (MERFTag*)(_atagger->simulationVector[i]);
+        for(int j=0; j<merftag->relationMatchVector.count(); j++) {
+            outrelations << merftag->relationMatchVector.at(j)->e1Label
+                    << " , "
+                    << merftag->relationMatchVector.at(j)->edgeLabel
+                    << " , "
+                    << merftag->relationMatchVector.at(j)->e2Label
+                    << '\n';
+        }
+    }
+    rfile.close();
+
     return true;
 }
 
