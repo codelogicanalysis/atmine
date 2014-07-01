@@ -1,4 +1,5 @@
 #include "atagger.h"
+#include "ger.h"
 #include <QVariant>
 #include <qjson/serializer.h>
 #include <QFile>
@@ -355,6 +356,148 @@ void ATagger::constructRelations(int index) {
                                 }
                                 merftag->relationMatchVector.append(relM);
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ATagger::constructCrossRelations() {
+
+    QVector<QPair<Match*, Match*> > crossRelations;
+    for(int i=0; i<_atagger->simulationVector.count(); i++) {
+        MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
+        for(int j=0; j<_atagger->simulationVector.count(); j++) {
+            MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
+
+            if(merftag1 == merftag2) {
+                continue;
+            }
+
+            for(int m=0; m<merftag1->relationMatchVector.count(); m++) {
+                RelationM* relation1 = merftag1->relationMatchVector[m];
+                for(int n=0; n<merftag2->relationMatchVector.count(); n++) {
+                    RelationM* relation2 = merftag2->relationMatchVector[n];
+
+                    QString r1e1Label = relation1->entity1->getText();
+                    QString r1e2Label = relation1->entity2->getText();
+                    QString r2e1Label = relation2->entity1->getText();
+                    QString r2e2Label = relation2->entity2->getText();
+
+                    GER ger1(r1e1Label,0,2);
+                    ger1();
+                    QSet<QString>* set1 = &(ger1.wStem);
+                    GER ger2(r1e2Label,0,2);
+                    ger2();
+                    QSet<QString>* set2 = &(ger2.wStem);
+
+                    Gamma gamma1(&r2e1Label);
+                    gamma1();
+                    QStringList * stems1 = gamma1.getStems();
+                    Gamma gamma2(&r2e2Label);
+                    gamma2();
+                    QStringList * stems2 = gamma2.getStems();
+
+                    /// Relation1 entity 1 with relation 2 entity1
+                    if(relation1->entity1 != relation2->entity1) {
+                        bool skip = false;
+                        for(int l=0; l<crossRelations.count(); l++) {
+                            if((relation1->entity1 == crossRelations.at(l).first &&
+                               relation2->entity1 == crossRelations.at(l).second) ||
+                               (relation2->entity1 == crossRelations.at(l).first &&
+                                relation1->entity1 == crossRelations.at(l).second)) {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if(!skip) {
+                            for(int l=0; l<stems1->count(); l++) {
+                                if(set1->contains(stems1->at(l))) {
+                                    RelationM* rel = new RelationM(NULL,relation1->entity1,
+                                                                   r1e1Label,relation2->entity1,
+                                                                   r2e1Label,NULL,"cross-reference");
+                                    crossRelationVector.append(rel);
+                                    break;
+                                }
+                            }
+                            crossRelations.append(QPair<Match*,Match*>(relation1->entity1,relation2->entity1));
+                        }
+                    }
+                    /// Relation1 entity 1 with relation 2 entity2
+                    if(relation1->entity1 != relation2->entity2) {
+                        bool skip = false;
+                        for(int l=0; l<crossRelations.count(); l++) {
+                            if((relation1->entity1 == crossRelations.at(l).first &&
+                               relation2->entity2 == crossRelations.at(l).second) ||
+                               (relation2->entity2 == crossRelations.at(l).first &&
+                                relation1->entity1 == crossRelations.at(l).second)) {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if(!skip) {
+                            for(int l=0; l<stems2->count(); l++) {
+                                if(set1->contains(stems2->at(l))) {
+                                    RelationM* rel = new RelationM(NULL,relation1->entity1,
+                                                                   r1e1Label,relation2->entity2,
+                                                                   r2e2Label,NULL,"cross-reference");
+                                    crossRelationVector.append(rel);
+                                    break;
+                                }
+                            }
+                            crossRelations.append(QPair<Match*,Match*>(relation1->entity1,relation2->entity2));
+                        }
+                    }
+                    /// Relation1 entity 2 with relation 2 entity1
+                    if(relation1->entity2 != relation2->entity1) {
+                        bool skip = false;
+                        for(int l=0; l<crossRelations.count(); l++) {
+                            if((relation1->entity2 == crossRelations.at(l).first &&
+                               relation2->entity1 == crossRelations.at(l).second) ||
+                               (relation2->entity1 == crossRelations.at(l).first &&
+                                relation1->entity2 == crossRelations.at(l).second)) {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if(!skip) {
+                            for(int l=0; l<stems1->count(); l++) {
+                                if(set2->contains(stems1->at(l))) {
+                                    RelationM* rel = new RelationM(NULL,relation1->entity2,
+                                                                   r1e2Label,relation2->entity1,
+                                                                   r2e1Label,NULL,"cross-reference");
+                                    crossRelationVector.append(rel);
+                                    break;
+                                }
+                            }
+                            crossRelations.append(QPair<Match*,Match*>(relation1->entity2,relation2->entity1));
+                        }
+                    }
+                    /// Relation1 entity 2 with relation 2 entity2
+                    if(relation1->entity2 != relation2->entity2) {
+                        bool skip = false;
+                        for(int l=0; l<crossRelations.count(); l++) {
+                            if((relation1->entity2 == crossRelations.at(l).first &&
+                               relation2->entity2 == crossRelations.at(l).second) ||
+                               (relation2->entity2 == crossRelations.at(l).first &&
+                                relation1->entity2 == crossRelations.at(l).second)) {
+                                skip = true;
+                                break;
+                            }
+                        }
+                        if(!skip) {
+                            for(int l=0; l<stems2->count(); l++) {
+                                if(set2->contains(stems2->at(l))) {
+                                    RelationM* rel = new RelationM(NULL,relation1->entity2,
+                                                                   r1e2Label,relation2->entity2,
+                                                                   r2e2Label,NULL,"cross-reference");
+                                    crossRelationVector.append(rel);
+                                    break;
+                                }
+                            }
+                            crossRelations.append(QPair<Match*,Match*>(relation1->entity2,relation2->entity2));
                         }
                     }
                 }

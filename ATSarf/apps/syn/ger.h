@@ -52,12 +52,11 @@ class GER
         QVector<IGS> descT;
         /// Consider the key to be the source gloss
         //QHash<QString,IGS> descT;
-
+        QSet<QString> wStem;
  private:
 	QString word;
         int input;
 	int order;
         //QStringList wStem;
-        QSet<QString> wStem;
 };
 #endif // GER_H

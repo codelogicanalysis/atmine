@@ -10,6 +10,7 @@
 #include <QTextBlock>
 #include <QtAlgorithms>
 #include <sys/time.h>
+#include "crossreferenceview.h"
 #include "Triplet.h"
 
 bool parentCheck;
@@ -481,6 +482,7 @@ void AMTMainWindow::open() {
     if(!_atagger->text.isEmpty()) {
         sarfAct->setEnabled(true);
         simulatorAct->setEnabled(true);
+        crossRefAct->setEnabled(true);
     }
     edittagtypesAct->setEnabled(true);
     sarftagsAct->setEnabled(true);
@@ -1554,7 +1556,7 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
 
     /** Output the user-defined relation matches in a file **/
     if(_atagger->simulationVector.isEmpty()) {
-        return;
+        return true;
     }
     QString path = fileName.left(fileName.lastIndexOf('/')+1);
     QString relationMatchFile = path + "relation_match.txt";
@@ -1927,6 +1929,10 @@ void AMTMainWindow::createActions()
     simulatorAct->setEnabled(false);
     connect(simulatorAct, SIGNAL(triggered()), this, SLOT(runMERFSimulator()));
 
+    crossRefAct = new QAction(tr("Extract Cross-Reference Relations"), this);
+    crossRefAct->setEnabled(false);
+    connect(crossRefAct, SIGNAL(triggered()), this, SLOT(extractCrossReferenceRelations()));
+
     diffAct = new QAction(tr("diff..."),this);
     diffAct->setEnabled(false);
     connect(diffAct, SIGNAL(triggered()), this, SLOT(difference()));
@@ -1992,6 +1998,7 @@ void AMTMainWindow::createMenus()
     sarfMenu->addSeparator();
     sarfMenu->addAction(editMSFAct);
     sarfMenu->addAction(simulatorAct);
+    sarfMenu->addAction(crossRefAct);
 
     analyseMenu = menuBar()->addMenu(tr("Analyse"));
     analyseMenu->addAction(diffAct);
@@ -2597,6 +2604,7 @@ void AMTMainWindow::customizeSarfTags() {
     if(!_atagger->textFile.isEmpty()) {
         sarfAct->setEnabled(true);
         simulatorAct->setEnabled(true);
+        crossRefAct->setEnabled(true);
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
@@ -2984,6 +2992,7 @@ void AMTMainWindow::loadText_clicked() {
          lineEditTFName->setText(fileName);
          sarfAct->setEnabled(true);
          simulatorAct->setEnabled(true);
+         crossRefAct->setEnabled(true);
          //btnTFName->setEnabled(false);
          QString text = file.readAll();
 
@@ -3042,6 +3051,7 @@ void AMTMainWindow::loadTagTypes_clicked() {
             _atagger->tagtypeFile = relativePaths;
             sarfAct->setEnabled(true);
             simulatorAct->setEnabled(true);
+            crossRefAct->setEnabled(true);
         }
         else {
             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
@@ -3132,6 +3142,7 @@ void AMTMainWindow::customizeMSFs() {
 
     if(!_atagger->textFile.isEmpty()) {
         simulatorAct->setEnabled(true);
+        crossRefAct->setEnabled(true);
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
@@ -3207,6 +3218,19 @@ void AMTMainWindow::runMERFSimulator() {
     applyTags(1);
     fillTreeWidget(sarf,1);
     finishTaggingText();
+}
+
+void AMTMainWindow::extractCrossReferenceRelations() {
+    if(_atagger->simulationVector.isEmpty()) {
+        return;
+    }
+
+    /** Construct cross reference relations **/
+
+    _atagger->constructCrossRelations();
+
+    CrossReferenceView *crView = new CrossReferenceView(this);
+    crView->show();
 }
 
 void AMTMainWindow::resetActionDisplay() {
