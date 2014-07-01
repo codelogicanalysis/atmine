@@ -59,6 +59,7 @@ class AMTMainWindow : public QMainWindow,public ATMProgressIFC
          void customizeSarfTags();
          void customizeMSFs();
          void runMERFSimulator();
+         void extractCrossReferenceRelations();
          void loadText_clicked();
          void loadTagTypes_clicked();
          void closeEvent(QCloseEvent *event);
@@ -121,6 +122,7 @@ private:
          QAction *sarfAct;
          QAction *editMSFAct;
          QAction *simulatorAct;
+         QAction *crossRefAct;
          QAction *diffAct;
 
          QTextBrowser * txtBrwsr;

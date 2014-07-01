@@ -33,11 +33,13 @@ public:
     Match* simulateNFA(NFA* nfa, QString state, int wordIndex);
     void executeActions(NFA* nfa, int index);
     void constructRelations(int index);
+    void constructCrossRelations();
     void drawNFA();
     void updateMatch(Match* match,NFA* nfa, QString state, const Tag* tag=NULL);
     QMultiHash<int,Tag*> tagHash;
     QMultiHash<int,Tag*> compareToTagHash;
     QVector<Match*> simulationVector;
+    QVector<RelationM*> crossRelationVector;
     QVector<TagType*> *tagTypeVector;
     QVector<TagType*> *compareToTagTypeVector;
     QVector<MSFormula*> *msfVector;

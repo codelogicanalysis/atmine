@@ -131,7 +131,8 @@ HEADERS += \
     ../relationsview.h \
     ../relation.h \
     ../relationm.h \
-    ../../../src/common/word.h
+    ../../../src/common/word.h \
+    ../crossreferenceview.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -219,7 +220,8 @@ SOURCES += \
     ../relationsview.cpp \
     ../relation.cpp \
     ../relationm.cpp \
-    ../../../src/common/word.cpp
+    ../../../src/common/word.cpp \
+    ../crossreferenceview.cpp
 
 FORMS    +=
 
