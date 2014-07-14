@@ -615,7 +615,7 @@ bool simulateMBF() {
             if(tag->fourth.contains("Syn")) {
 
                 int order = tag->fourth.mid(3).toInt();
-                GER ger(tag->second,1,order);
+                GER ger(tag->second,1,order,false);
                 ger();
 
                 QString gloss_order = tag->second;
