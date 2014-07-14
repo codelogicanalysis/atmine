@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
+#include <getopt.h>
 #include <sys/time.h>
 #include "crossreferenceview.h"
 #include "Triplet.h"
@@ -2719,6 +2720,20 @@ void AMTMainWindow::closeEvent(QCloseEvent *event) {
      }
 }
 
+static struct option long_options[] =
+{
+    {"batch", no_argument, 0, 'b'},
+    {"text", required_argument, 0, 't'},
+    {"sarftagtypes", required_argument, 0, 's'},
+    {"output", required_argument, 0, 'o'},
+    {"crossrelations", required_argument, 0, 'c'},
+    {0, 0, 0, 0}
+};
+
+void print_usage() {
+    cout<< "Usage: atagger -b -t [textfile] -s [tagtypefile] -o [outputfile] -c \n" << endl;
+}
+
 int main(int argc, char *argv[])
 {
     QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
@@ -2760,75 +2775,76 @@ int main(int argc, char *argv[])
         /** Sarf Initialized **/
 
         /// batch mode
-        if(strcmp(argv[1],"-b") != 0) {
-            cerr << "incorrect parameters"<<endl;
-            return 0;
-        }
 
-        int i=2;
-        bool rel = false;
-        bool crel = false;
-        while(i < argc) {
-            if(strcmp(argv[i],"-cr") == 0) {
-                i++;
-                crel = true;
-            }
-//            else if(strcmp(argv[i],"-r") == 0) {
-//                i++;
-//                rel = true;
-//            }
-            else if(strcmp(argv[i],"-t") == 0) {
-                i++;
-                _atagger->textFile = argv[i];
-                QFile file(_atagger->textFile);
-                if (!file.open(QIODevice::ReadOnly)) {
-                    cerr << "Unable to open file" << endl;
-                    return 0;
-                }
-
-                QString text = file.readAll();
-                _atagger->text = text;
-                processText(&text);
-
-            }
-            else if(strcmp(argv[i],"-stt") == 0) {
-                i++;
-                _atagger->tagtypeFile = argv[i];
-
-                if(!_atagger->tagtypeFile.endsWith(".stt.json")) {
-                    cerr << "The selected file doesn't have the correct extension!" << endl;
-                    return 0;
-                }
-
-                QFile file(_atagger->tagtypeFile);
-                if (!file.open(QIODevice::ReadOnly)) {
-                    cerr << "Unable to open tag type file" << endl;
-                    return 0;
-                }
-
-                QByteArray tagtypes = file.readAll();
-                process_TagTypes(tagtypes);
-            }
-            else if(strcmp(argv[i],"-o") == 0) {
-                i++;
-                _atagger->tagFile = argv[i];
-                _atagger->tagFile.append(".tags.json");
-            }
-            else {
-                cerr << "incorrect parameters" << endl;
+        int option;
+        bool crossRelations = false;
+        bool batchMode = false;
+        while ((option = getopt_long(argc, argv,"bt:s:o:c",long_options,NULL)) != -1) {
+            switch (option) {
+            case 'b' :
+                batchMode = true;
+                break;
+            case 't' :
+                _atagger->textFile = QString::fromUtf8(optarg);
+                break;
+            case 's' :
+                _atagger->tagtypeFile = QString::fromUtf8(optarg);
+                break;
+            case 'o' :
+                _atagger->tagFile = QString::fromUtf8(optarg);
+                break;
+            case 'c' :
+                crossRelations = true;
+                break;
+            default:
+                print_usage();
                 return 0;
             }
-            i++;
+        }
+
+        if(!batchMode) {
+            print_usage();
+            return 0;
         }
 
         if(_atagger->textFile.isEmpty() || _atagger->tagtypeFile.isEmpty() || _atagger->tagFile.isEmpty()) {
-            cerr << "incorrect parameters" << endl;
+            cerr << "Missing parameters" << endl;
+            print_usage();
             return 0;
         }
 
+        /// Text file
+        QFile tfile(_atagger->textFile);
+        if (!tfile.open(QIODevice::ReadOnly)) {
+            cerr << "Unable to open file" << endl;
+            return 0;
+        }
+
+        QString text = tfile.readAll();
+        _atagger->text = text;
+        processText(&text);
+
+
+        /// Sarf Tag Type file
+        if(!_atagger->tagtypeFile.endsWith(".stt.json")) {
+            cerr << "The selected file doesn't have the correct extension!" << endl;
+            return 0;
+        }
+
+        QFile ttfile(_atagger->tagtypeFile);
+        if (!ttfile.open(QIODevice::ReadOnly)) {
+            cerr << "Unable to open tag type file" << endl;
+            return 0;
+        }
+
+        QByteArray tagtypes = ttfile.readAll();
+        process_TagTypes(tagtypes);
+
+        /// Tag file
+        _atagger->tagFile.append(".tags.json");
+
         /** Adjust text and tag type file paths relative to tag file **/
 
-        //QString absoluteTagFile = QDir().cleanPath(QDir().absoluteFilePath(_atagger->tagFile));
         QString absoluteTagFile = QDir(_atagger->tagFile).absolutePath();
         QStringList dirList = absoluteTagFile.split('/');
         dirList.removeLast();
@@ -2859,7 +2875,7 @@ int main(int argc, char *argv[])
 
         /** Construct cross reference relations **/
 
-        if(crel) {
+        if(crossRelations) {
             _atagger->constructCrossRelations();
         }
 
@@ -2871,15 +2887,15 @@ int main(int argc, char *argv[])
             tagData = _atagger->dataInJsonFormat(sarfTV);
         }
 
-        QFile tfile(_atagger->tagFile);
-        if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+        QFile tagfile(_atagger->tagFile);
+        if (!tagfile.open(QFile::WriteOnly | QFile::Text)) {
             cerr << "Error: Can't open the output file" << endl;
             return 0;
         }
 
-        QTextStream outtags(&tfile);
+        QTextStream outtags(&tagfile);
         outtags << tagData;
-        tfile.close();
+        tagfile.close();
 
         /** Save the relation matches in JSON format **/
 
