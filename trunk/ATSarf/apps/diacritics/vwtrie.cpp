@@ -63,7 +63,7 @@ VWTrie :: save(const char * path)
 }
 
 bool 
-VWTrie :: store(const QString & key, int index)
+VWTrie :: store(const QString & key, long long index)
 {
     if (data->trie == NULL)
         return false;
@@ -77,6 +77,8 @@ VWTrie :: store(const QString & key, int index)
     TrieData d = (TrieData) index;
 
     Bool ret = trie_store(data->trie, data->alpha_key, d);
+
+
     return ret == TRUE;
 }
 

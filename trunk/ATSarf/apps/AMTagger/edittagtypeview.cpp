@@ -2,6 +2,7 @@
 #include "addtagtypeview.h"
 #include "atagger.h"
 #include "global.h"
+#include "jsonparsinghelpers.h"
 #include <QItemEditorFactory>
 #include <sstream>
 #include <QMessageBox>
@@ -417,8 +418,11 @@ void EditTagTypeView::load_clicked() {
 
              QByteArray TagTypes = file.readAll();
              file.close();
-             ((AMTMainWindow*)parentWidget())->process_TagTypes(TagTypes);
-             //((AMTMainWindow*)parentWidget())->finishTaggingText();
+             bool val = process_TagTypes(TagTypes);
+             if(!val) {
+                 QMessageBox::about(this, tr("Input Tag File"),
+                              tr("The <b>Tag File</b> has a wrong format"));
+             }
 
              for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
                  TagType* tt = _atagger->tagTypeVector->at(i);

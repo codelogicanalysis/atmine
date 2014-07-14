@@ -132,7 +132,8 @@ HEADERS += \
     ../relation.h \
     ../relationm.h \
     ../../../src/common/word.h \
-    ../crossreferenceview.h
+    ../crossreferenceview.h \
+    ../jsonparsinghelpers.h
 
 SOURCES += \
     ../tagtype.cpp \
@@ -221,7 +222,8 @@ SOURCES += \
     ../relation.cpp \
     ../relationm.cpp \
     ../../../src/common/word.cpp \
-    ../crossreferenceview.cpp
+    ../crossreferenceview.cpp \
+    ../jsonparsinghelpers.cpp
 
 FORMS    +=
 

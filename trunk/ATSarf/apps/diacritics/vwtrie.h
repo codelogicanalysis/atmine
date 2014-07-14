@@ -16,7 +16,7 @@ class VWTrie {
         ~VWTrie() ;
 
         void save(const char * path);
-        bool store(const QString & key, int index) ;
+        bool store(const QString & key, long long index);
         bool remove(const QString & key);
         bool isDirty() const;
 

@@ -1,6 +1,5 @@
 #include <QtGui/QApplication>
 #include "amtmainwindow.h"
-#include <qjson/parser.h>
 
 #include <QContextMenuEvent>
 #include <QTextCodec>
@@ -12,6 +11,7 @@
 #include <sys/time.h>
 #include "crossreferenceview.h"
 #include "Triplet.h"
+#include "jsonparsinghelpers.h"
 
 bool parentCheck;
 class SarfTag;
@@ -352,32 +352,6 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
     delete menu;
 }
 
-void processText(QString *text) {
-
-    _atagger->wordIndexMap.clear();
-    _atagger->isStatementEndFSSet.clear();
-    _atagger->isStatementEndPSet.clear();
-    int start = 0;
-    int wordIndex = 1;
-    while(start != text->count()) {
-        Word word = nextWord(*text, start);
-        if(word.isStatementStartFS && wordIndex != 1) {
-            _atagger->isStatementEndFSSet.insert(wordIndex-1);
-        }
-        if(word.isStatementStartPunct && wordIndex != 1) {
-            _atagger->isStatementEndPSet.insert(wordIndex-1);
-        }
-        if(word.word.isEmpty()) {
-            break;
-        }
-
-        _atagger->wordIndexMap.insert(word.start,wordIndex);
-        start = word.end + 1;
-        wordIndex = wordIndex + 1;
-    }
-    _atagger->wordCount = wordIndex - 1;
-}
-
 void AMTMainWindow::open() {
 
     if(dirty == true) {
@@ -512,98 +486,6 @@ void AMTMainWindow::startTaggingText(QString & text) {
     setLineSpacing(10);
 }
 
-bool AMTMainWindow::readMatch(MSFormula* formula, QVariant data, Match* parent) {
-    /** Common variables in a match **/
-    QString type;
-    QString msfName;
-
-    QVariantMap matchData = data.toMap();
-    type = matchData.value("type").toString();
-    msfName = matchData.value("msf").toString();
-
-    if(type == "key") {
-        int pos = matchData.value("pos").toInt();
-        int length = matchData.value("length").toInt();
-        QString key = matchData.value("key").toString();
-        QString word = matchData.value("word").toString();
-        MSF* msf = formula->map.value(msfName);
-        KeyM* keym = new KeyM(parent,key,pos,length);
-        keym->word = word;
-        keym->msf = msf;
-        parent->setMatch(keym);
-        return true;
-    }
-    else if(type == "unary") {
-        MSF* msf = formula->map.value(msfName);
-        int limit = matchData.value("limit").toInt();
-        Operation op = (Operation)(matchData.value("op").toInt());
-        UnaryM* unary = new UnaryM(op,parent,limit);
-        unary->msf = msf;
-        foreach(QVariant unaryMatchData, matchData.value("matches").toList()) {
-            if(!(readMatch(formula,unaryMatchData,unary))) {
-                return false;
-            }
-        }
-        parent->setMatch(unary);
-        return true;
-    }
-    else if(type == "binary") {
-        MSF* msf = formula->map.value(msfName);
-        Operation op = (Operation)(matchData.value("op").toInt());
-        BinaryM* binary = new BinaryM(op,parent);
-        binary->msf = msf;
-        QVariant leftMatchData = matchData.value("leftMatch");
-        if(!(readMatch(formula,leftMatchData,binary))) {
-            return false;
-        }
-        if(!(matchData.value("rightMatch").isNull())) {
-            QVariant rightMatchData = matchData.value("rightMatch");
-            if(!(readMatch(formula,rightMatchData,binary))) {
-                return false;
-            }
-        }
-        parent->setMatch(binary);
-        return true;
-    }
-    else if(type == "sequential") {
-        SequentialM* seq = new SequentialM(parent);
-        if(msfName == "_NULL_") {
-            seq->msf = NULL;
-        }
-        else {
-            MSF* msf = formula->map.value(msfName);
-            seq->msf = msf;
-        }
-        foreach(QVariant seqMatchData, matchData.value("matches").toList()) {
-            if(!(readMatch(formula,seqMatchData,seq))) {
-                return false;
-            }
-        }
-        parent->setMatch(seq);
-        return true;
-    }
-    else {
-        /// MERFTag case
-        MERFTag* merftag = new MERFTag();
-        MSF* msf = formula->map.value(msfName);
-        merftag->msf = msf;
-        QString formulaName = matchData.value("formula").toString();
-        for(int i=0; i<_atagger->msfVector->count(); i++) {
-            if(_atagger->msfVector->at(i)->name == formulaName) {
-                merftag->formula = _atagger->msfVector->at(i);
-                break;
-            }
-        }
-        QVariant merftagMatchData = matchData.value("match");
-        if(!(readMatch(formula,merftagMatchData,merftag))) {
-            return false;
-        }
-        parent->setMatch(merftag);
-        return true;
-    }
-    return false;
-}
-
 void AMTMainWindow::process(QByteArray & json) {
 
     QJson::Parser parser;
@@ -645,7 +527,11 @@ void AMTMainWindow::process(QByteArray & json) {
     _atagger->tagtypeFile = tagtypeFile;
     QString absoluteTTPath = QDir(_atagger->tagtypeFile).absolutePath();
     lineEditTTFName->setText(absoluteTTPath);
-    process_TagTypes(tagtypedata);
+    bool val = process_TagTypes(tagtypedata);
+    if(!val) {
+        QMessageBox::about(this, tr("Input Tag File"),
+                     tr("The <b>Tag File</b> has a wrong format"));
+    }
 
     /** Read Tags **/
 
@@ -957,480 +843,6 @@ void AMTMainWindow::process(QByteArray & json) {
     createUntagMenu();
 }
 
-bool AMTMainWindow::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
-    /** Common variables in MSFs **/
-    QString name;
-    QString init;
-    //QString after;
-    QString actions;
-    QString returns;
-    QString parentName;
-    QString type;
-
-    QVariantMap msfData = data.toMap();
-    name = msfData.value("name").toString();
-    init = msfData.value("init").toString();
-    //after = msfData.value("after").toString();
-    actions = msfData.value("actions").toString();
-    returns = msfData.value("returns").toString();
-    parentName = msfData.value("parent").toString();
-    type = msfData.value("type").toString();
-
-    if(type == "mbf") {
-        /** This is MBF **/
-        QString bf = msfData.value("MBF").toString();
-        bool isF = msfData.value("isFormula").toBool();
-
-        /** initialize MBF **/
-        MBF* mbf = new MBF(name,parent,bf,isF);
-        mbf->init = init;
-        //mbf->after = after;
-        mbf->actions = actions;
-        mbf->returns = returns;
-        formula->map.insert(name, mbf);
-
-        /** Check parent type and add accordingly **/
-        if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
-            prnt->addMSF(mbf);
-        }
-        else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
-            prnt->setMSF(mbf);
-        }
-        else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
-            if(prnt->leftMSF == NULL) {
-                prnt->setLeftMSF(mbf);
-            }
-            else {
-                prnt->setRightMSF(mbf);
-            }
-        }
-        else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
-            prnt->addMSF(mbf);
-        }
-        else {
-            return false;
-        }
-
-        return true;
-    }
-    else if(type == "unary") {
-        /** This is a UNARY formula **/
-        QString operation = msfData.value("op").toString();
-        Operation op;
-        if(operation == "?") {
-            op = KUESTION;
-        }
-        else if(operation == "*") {
-            op = STAR;
-        }
-        else if(operation == "+") {
-            op = PLUS;
-        }
-        else if(operation.contains('^')) {
-            op = UPTO;
-        }
-        else {
-            return false;
-        }
-        int limit = -1;
-        if(operation.contains('^')) {
-            bool ok;
-            limit = operation.mid(1).toInt(&ok);
-            if(!ok) {
-                return false;
-            }
-        }
-
-        /** Initialize a UNARYF **/
-        UNARYF* uf = new UNARYF(name,parent,op,limit);
-        uf->init = init;
-        //uf->after = after;
-        uf->actions = actions;
-        uf->returns = returns;
-        formula->map.insert(name,uf);
-
-        /** Check parent type and add accordingly **/
-        if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
-            prnt->addMSF(uf);
-        }
-        else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
-            prnt->setMSF(uf);
-        }
-        else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
-            if(prnt->leftMSF == NULL) {
-                prnt->setLeftMSF(uf);
-            }
-            else {
-                prnt->setRightMSF(uf);
-            }
-        }
-        else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
-            prnt->addMSF(uf);
-        }
-        else {
-            return false;
-        }
-
-        /** Proceed with child MSF **/
-        return readMSF(formula,msfData.value("MSF"),uf);
-    }
-    else if(type == "binary") {
-        /** This is a BINARY formula **/
-        QString operation = msfData.value("op").toString();
-        Operation op;
-        if(operation == "&") {
-            op = AND;
-        }
-        else if(operation == "|") {
-            op = OR;
-        }
-        else {
-            return false;
-        }
-
-        /** Initialize BINARYF **/
-        BINARYF* bif = new BINARYF(name,parent,op);
-        bif->init = init;
-        //bif->after = after;
-        bif->actions = actions;
-        bif->returns = returns;
-        formula->map.insert(name, bif);
-
-        /** Check parent type and add accordingly **/
-        if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
-            prnt->addMSF(bif);
-        }
-        else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
-            prnt->setMSF(bif);
-        }
-        else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
-            if(prnt->leftMSF == NULL) {
-                prnt->setLeftMSF(bif);
-            }
-            else {
-                prnt->setRightMSF(bif);
-            }
-        }
-        else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
-            prnt->addMSF(bif);
-        }
-        else {
-            return false;
-        }
-
-        /** Proceed with child MSFs **/
-        bool first = readMSF(formula,msfData.value("leftMSF"),bif);
-        bool second = readMSF(formula,msfData.value("rightMSF"),bif);
-        if(first && second) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    else if(type == "sequential") {
-        /** This is a sequential formula **/
-        /** Initialize a SequentialF **/
-        SequentialF* sf = new SequentialF(name,parent);
-        sf->init = init;
-        //sf->after = after;
-        sf->actions = actions;
-        sf->returns = returns;
-        formula->map.insert(name, sf);
-
-        /** Check parent type and add accordingly **/
-        if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
-            prnt->addMSF(sf);
-        }
-        else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
-            prnt->setMSF(sf);
-        }
-        else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
-            if(prnt->leftMSF == NULL) {
-                prnt->setLeftMSF(sf);
-            }
-            else {
-                prnt->setRightMSF(sf);
-            }
-        }
-        else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
-            prnt->addMSF(sf);
-        }
-        else {
-            return false;
-        }
-
-        /** Proceed with children **/
-        foreach(QVariant seqMSFData, msfData.value("MSFs").toList()) {
-            if(!(readMSF(formula,seqMSFData,sf))) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-void AMTMainWindow::process_TagTypes(QByteArray &tagtypedata) {
-    QJson::Parser parser;
-    bool ok;
-
-    QVariantMap result = parser.parse (tagtypedata,&ok).toMap();
-
-    if (!ok) {
-        QMessageBox::about(this, tr("Input Tag File"),
-                     tr("The <b>Tag File</b> has a wrong format"));
-    }
-
-    foreach(QVariant type, result["TagTypeSet"].toList()) {
-        QString tag;
-        QString desc;
-        QString foreground_color;
-        QString background_color;
-        int font;
-        bool underline = false;
-        bool bold;
-        bool italic;
-
-        QVariantMap typeElements = type.toMap();
-
-        tag = typeElements["Tag"].toString();
-        desc = typeElements["Description"].toString();
-        foreground_color = typeElements["foreground_color"].toString();
-        background_color = typeElements["background_color"].toString();
-        font = typeElements["font"].toInt();
-        //underline = typeElements["underline"].toBool();
-        bold = typeElements["bold"].toBool();
-        italic = typeElements["italic"].toBool();
-
-        if(!typeElements.value("Features").isNull()) {
-
-            QVector < Quadruple< QString , QString , QString , QString > > tags;
-            foreach(QVariant sarfTags, typeElements["Features"].toList()) {
-                QVariantMap st = sarfTags.toMap();
-                Quadruple< QString , QString , QString , QString > quad;
-                if(!(st.value("Prefix").isNull())) {
-                    quad.first = "Prefix";
-                    quad.second = st.value("Prefix").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Stem").isNull())) {
-                    quad.first = "Stem";
-                    quad.second = st.value("Stem").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Suffix").isNull())) {
-                    quad.first = "Suffix";
-                    quad.second = st.value("Suffix").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Prefix-POS").isNull())) {
-                    quad.first = "Prefix-POS";
-                    quad.second = st.value("Prefix-POS").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Stem-POS").isNull())) {
-                    quad.first = "Stem-POS";
-                    quad.second = st.value("Stem-POS").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Suffix-POS").isNull())) {
-                    quad.first = "Suffix-POS";
-                    quad.second = st.value("Suffix-POS").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Prefix-Gloss").isNull())) {
-                    quad.first = "Prefix-Gloss";
-                    quad.second = st.value("Prefix-Gloss").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Stem-Gloss").isNull())) {
-                    quad.first = "Stem-Gloss";
-                    quad.second = st.value("Stem-Gloss").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Suffix-Gloss").isNull())) {
-                    quad.first = "Suffix-Gloss";
-                    quad.second = st.value("Suffix-Gloss").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-                else if(!(st.value("Category").isNull())) {
-                    quad.first = "Category";
-                    quad.second = st.value("Category").toString();
-                    if(!(st.value("Negation").isNull())) {
-                        quad.third = st.value("Negation").toString();
-                    }
-                    if(!(st.value("Relation").isNull())) {
-                        quad.fourth = st.value("Relation").toString();
-                    }
-                    tags.append(quad);
-                }
-            }
-
-            _atagger->isSarf = true;
-            _atagger->insertSarfTagType(tag,tags,desc,foreground_color,background_color,font,underline,bold,italic,sarf,original);
-        }
-        else {
-            _atagger->isSarf = false;
-            _atagger->insertTagType(tag,desc,foreground_color,background_color,font,underline,bold,italic,user,original);
-        }
-    }
-
-    if(!(result.value("MSFs").isNull())) {
-        /** The tagtype file contains MSFs **/
-
-        foreach(QVariant msfsData, result.value("MSFs").toList()) {
-
-            /** List of variables for each MSFormula **/
-            QString bgcolor;
-            QString fgcolor;
-            QString name;
-            QString init;
-            //QString after;
-            QString actions;
-            QString includes;
-            QString members;
-            QString description;
-            int i;
-            int usedCount;
-            bool isFullStop;
-
-            /** This is an MSFormula **/
-            QVariantMap msformulaData = msfsData.toMap();
-
-            name = msformulaData.value("name").toString();
-            init = msformulaData.value("init").toString();
-            //after = msformulaData.value("after").toString();
-            actions = msformulaData.value("actions").toString();
-            includes = msformulaData.value("includes").toString();
-            members = msformulaData.value("members").toString();
-            description = msformulaData.value("description").toString();
-            fgcolor = msformulaData.value("fgcolor").toString();
-            bgcolor = msformulaData.value("bgcolor").toString();
-            i = msformulaData.value("i").toInt();
-            usedCount = msformulaData.value("usedCount").toInt();
-            if(!(msformulaData.value("delimiter").isNull())) {
-                isFullStop = msformulaData.value("delimiter").toBool();
-            }
-            else {
-                isFullStop = true;
-            }
-
-            MSFormula* msf = new MSFormula(name, NULL);
-            msf->isFullStop = isFullStop;
-            msf->includes = includes;
-            msf->members = members;
-            msf->fgcolor = fgcolor;
-            msf->bgcolor = bgcolor;
-            msf->description = description;
-            msf->i = i;
-            msf->usedCount = usedCount;
-            _atagger->msfVector->append(msf);
-
-            /** Get MSFormula MSFs **/
-            foreach(QVariant msfData, msformulaData.value("MSFs").toList()) {
-                readMSF(msf, msfData, msf);
-            }
-
-            /** Get relations **/
-            if(!(msformulaData.value("Relations").isNull())) {
-                foreach(QVariant relationsData, msformulaData.value("Relations").toList()) {
-                    QVariantMap relationData = relationsData.toMap();
-                    QString relationName = relationData.value("name").toString();
-                    QString e1Label = relationData.value("e1Label").toString();
-                    QString e2Label = relationData.value("e2Label").toString();
-                    QString edgeLabel = relationData.value("edgeLabel").toString();
-
-                    QString entity1_Name = relationData.value("entity1").toString();
-                    MSF* entity1 = msf->map.value(entity1_Name);
-                    QString entity2_Name = relationData.value("entity2").toString();
-                    MSF* entity2 = msf->map.value(entity2_Name);
-                    MSF* edge = NULL;
-                    if(!(relationData.value("edge").isNull())) {
-                        QString edge_Name = relationData.value("edge").toString();
-                        edge = msf->map.value(edge_Name);
-                    }
-                    Relation* relation = new Relation(relationName,entity1,e1Label,entity2,e2Label,edge,edgeLabel);
-                    msf->relationVector.append(relation);
-                }
-            }
-        }
-    }
-}
-
 bool compare(const Tag *tag1, const Tag *tag2) {
     if(tag1->pos != tag2->pos) {
         return tag1->pos < tag2->pos;
@@ -1559,24 +971,93 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
         return true;
     }
     QString path = fileName.left(fileName.lastIndexOf('/')+1);
-    QString relationMatchFile = path + "relation_match.txt";
+    QString relationMatchFile = path + "relation_match.json";
     QFile rfile(relationMatchFile);
     if (!rfile.open(QFile::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this,"Warning","Can't open relation match file to Save");
         return false;
     }
-    QTextStream outrelations(&rfile);
+
+    QHash<Match*,int> entityHash;
+    QVariantList entityList;
+    QVariantList relationList;
+    int id = 0;
+
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
         MERFTag* merftag = (MERFTag*)(_atagger->simulationVector[i]);
         for(int j=0; j<merftag->relationMatchVector.count(); j++) {
-            outrelations << merftag->relationMatchVector.at(j)->e1Label
-                    << " , "
-                    << merftag->relationMatchVector.at(j)->edgeLabel
-                    << " , "
-                    << merftag->relationMatchVector.at(j)->e2Label
-                    << '\n';
+            RelationM* rel = merftag->relationMatchVector[j];
+            QVariantMap entity1Data;
+            QVariantMap entity2Data;
+            QVariantMap edgeData;
+            QVariantMap relationData;
+
+            int e1ID = -1;
+            if(!entityHash.contains(rel->entity1)) {
+                entity1Data.insert("id",id);
+                e1ID = id;
+                id++;
+                entity1Data.insert("text",rel->e1Label);
+                entity1Data.insert("pos",rel->entity1->getPOS());
+                entityHash.insert(rel->entity1,e1ID);
+                entityList.append(entity1Data);
+            }
+            else {
+                e1ID = entityHash.value(rel->entity1);
+            }
+
+            int e2ID = -1;
+            if(!entityHash.contains(rel->entity2)) {
+                entity2Data.insert("id",id);
+                e2ID = id;
+                id++;
+                entity2Data.insert("text",rel->e2Label);
+                entity2Data.insert("pos",rel->entity2->getPOS());
+                entityHash.insert(rel->entity2,e2ID);
+                entityList.append(entity2Data);
+            }
+            else {
+                e2ID = entityHash.value(rel->entity2);
+            }
+
+            int edgeID = -1;
+            if(rel->edge != NULL) {
+                if(!entityHash.contains(rel->edge)) {
+                    edgeData.insert("id",id);
+                    edgeID = id;
+                    id++;
+                    edgeData.insert("text",rel->edgeLabel);
+                    edgeData.insert("pos",rel->edge->getPOS());
+                    entityHash.insert(rel->edge,edgeID);
+                    entityList.append(edgeData);
+                }
+                else {
+                    edgeID = entityHash.value(rel->edge);
+                }
+            }
+
+            relationData.insert("id", id);
+            id++;
+            relationData.insert("e1ID", e1ID);
+            relationData.insert("e2ID", e2ID);
+            if(edgeID != -1) {
+                relationData.insert("edgeID", edgeID);
+            }
+            else {
+                relationData.insert("edge", rel->edgeLabel);
+            }
+            relationList.append(relationData);
         }
     }
+
+    QVariantMap data;
+    data.insert("entities", entityList);
+    data.insert("relations", relationList);
+
+    QJson::Serializer serializer;
+    QByteArray reljson = serializer.serialize(data);
+    QTextStream outrelations(&rfile);
+    outrelations << reljson;
     rfile.close();
 
     return true;
@@ -2537,7 +2018,6 @@ void AMTMainWindow::sarfTagging(bool color) {
          }
     }
 
-    _atagger->isSarf = true;
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
@@ -2547,48 +2027,7 @@ void AMTMainWindow::sarfTagging(bool color) {
     output_str = "";
     dirty = true;
 
-    QString text = _atagger->text;
-
-    /** Process Tag Type and Create Hash function for Synonymity Sets **/
-
-    QHash< QString, QSet<QString> > synSetHash;
-
-    for( int i=0; i< (_atagger->tagTypeVector->count()); i++) {
-
-        /** Check if tag source is sarf tag types **/
-        if(_atagger->tagTypeVector->at(i)->source != sarf) {
-            continue;
-        }
-
-        const SarfTagType * tagtype = (SarfTagType*)(_atagger->tagTypeVector->at(i));
-        for(int j=0; j < (tagtype->tags.count()); j++) {
-            const Quadruple< QString , QString , QString , QString > * tag = &(tagtype->tags.at(j));
-            if(tag->fourth.contains("Syn")) {
-
-                int order = tag->fourth.mid(3).toInt();
-                GER ger(tag->second,1,order);
-                ger();
-
-                QString gloss_order = tag->second;
-                gloss_order.append(QString::number(order));
-                QSet<QString> glossSynSet;
-                for(int i=0; i<ger.descT.count(); i++) {
-                    const IGS & igs = ger.descT[i];
-                    glossSynSet.insert(igs.getGloss());
-                }
-                synSetHash.insert(gloss_order,QSet<QString>(glossSynSet));
-            }
-        }
-    }
-
-    /** Synonymity Sets Created **/
-
-    /** Process Text and analyse each work using sarf **/
-
-    AutoTagger autotag(&text,&synSetHash);
-    autotag();
-
-    _atagger->isTagMBF = true;
+    simulateMBF();
 
     /** Analysis Done **/
 
@@ -3192,8 +2631,8 @@ void AMTMainWindow::runMERFSimulator() {
         sarfTagging(false);
     }
 
-    _atagger->isSarf = true;
     startTaggingText(_atagger->text);
+    _atagger->isSarf = true;
     _atagger->simulationVector.clear();
     for(int i=0; i<_atagger->nfaVector->count(); i++) {
         delete (_atagger->nfaVector->at(i));
@@ -3227,6 +2666,7 @@ void AMTMainWindow::extractCrossReferenceRelations() {
 
     /** Construct cross reference relations **/
 
+    dirty = true;
     _atagger->constructCrossRelations();
 
     CrossReferenceView *crView = new CrossReferenceView(this);
@@ -3286,20 +2726,264 @@ int main(int argc, char *argv[])
 
     _atagger=new ATagger();
 
-    QApplication a(argc, argv);
-    AMTMainWindow w;
-    w.show();
+    if(argc < 2) {
+        /// GUI mode
+        QApplication a(argc, argv);
+        AMTMainWindow w;
+        w.show();
 
-    int r = a.exec();
+        int r = a.exec();
 
-    if(_atagger != NULL) {
-        delete _atagger;
+        if(_atagger != NULL) {
+            delete _atagger;
+        }
+
+        if (theSarf != NULL) {
+            theSarf->exit();
+            delete theSarf;
+        }
+
+        return  r;
+    }
+    else {
+
+        /** Initialize Sarf **/
+        theSarf = new Sarf();
+        bool all_set = theSarf->start();
+        if(!all_set) {
+            cerr << "Can't set up the Sarf Tool" << endl;
+            return 0;
+        }
+        Sarf::use(theSarf);
+        initialize_other();
+
+        /** Sarf Initialized **/
+
+        /// batch mode
+        if(strcmp(argv[1],"-b") != 0) {
+            cerr << "incorrect parameters"<<endl;
+            return 0;
+        }
+
+        int i=2;
+        bool rel = false;
+        bool crel = false;
+        while(i < argc) {
+            if(strcmp(argv[i],"-cr") == 0) {
+                i++;
+                crel = true;
+            }
+//            else if(strcmp(argv[i],"-r") == 0) {
+//                i++;
+//                rel = true;
+//            }
+            else if(strcmp(argv[i],"-t") == 0) {
+                i++;
+                _atagger->textFile = argv[i];
+                QFile file(_atagger->textFile);
+                if (!file.open(QIODevice::ReadOnly)) {
+                    cerr << "Unable to open file" << endl;
+                    return 0;
+                }
+
+                QString text = file.readAll();
+                _atagger->text = text;
+                processText(&text);
+
+            }
+            else if(strcmp(argv[i],"-stt") == 0) {
+                i++;
+                _atagger->tagtypeFile = argv[i];
+
+                if(!_atagger->tagtypeFile.endsWith(".stt.json")) {
+                    cerr << "The selected file doesn't have the correct extension!" << endl;
+                    return 0;
+                }
+
+                QFile file(_atagger->tagtypeFile);
+                if (!file.open(QIODevice::ReadOnly)) {
+                    cerr << "Unable to open tag type file" << endl;
+                    return 0;
+                }
+
+                QByteArray tagtypes = file.readAll();
+                process_TagTypes(tagtypes);
+            }
+            else if(strcmp(argv[i],"-o") == 0) {
+                i++;
+                _atagger->tagFile = argv[i];
+                _atagger->tagFile.append(".tags.json");
+            }
+            else {
+                cerr << "incorrect parameters" << endl;
+                return 0;
+            }
+            i++;
+        }
+
+        if(_atagger->textFile.isEmpty() || _atagger->tagtypeFile.isEmpty() || _atagger->tagFile.isEmpty()) {
+            cerr << "incorrect parameters" << endl;
+            return 0;
+        }
+
+        /** Adjust text and tag type file paths relative to tag file **/
+
+        //QString absoluteTagFile = QDir().cleanPath(QDir().absoluteFilePath(_atagger->tagFile));
+        QString absoluteTagFile = QDir(_atagger->tagFile).absolutePath();
+        QStringList dirList = absoluteTagFile.split('/');
+        dirList.removeLast();
+        QString dir = dirList.join("/");
+        dir.append('/');
+
+        QString absoluteTFile = QDir(_atagger->textFile).absolutePath();
+        QString tRelativePath = QDir(dir).relativeFilePath(absoluteTFile);
+        _atagger->textFile = tRelativePath;
+        QString absoluteTTFile = QDir(_atagger->tagtypeFile).absolutePath();
+        QString ttRelativePath = QDir(dir).relativeFilePath(absoluteTTFile);
+        _atagger->tagtypeFile = ttRelativePath;
+
+        /** Done **/
+
+        /** Run MBF Simulator **/
+
+        if(!simulateMBF()) {
+            cerr << "Error in the MBF simulation" << endl;
+            return 0;
+        }
+
+        /** Run MRE Simulator **/
+        if(!(_atagger->runSimulator())) {
+            cerr << "Error in the MRE simulation" << endl;
+            return 0;
+        }
+
+        /** Construct cross reference relations **/
+
+        if(crel) {
+            _atagger->constructCrossRelations();
+        }
+
+        /** Save Data in output files **/
+
+        /// Save the tags in JSON format
+        QByteArray tagData;
+        if(_atagger->isSarf) {
+            tagData = _atagger->dataInJsonFormat(sarfTV);
+        }
+
+        QFile tfile(_atagger->tagFile);
+        if (!tfile.open(QFile::WriteOnly | QFile::Text)) {
+            cerr << "Error: Can't open the output file" << endl;
+            return 0;
+        }
+
+        QTextStream outtags(&tfile);
+        outtags << tagData;
+        tfile.close();
+
+        /** Save the relation matches in JSON format **/
+
+        QString path = _atagger->tagFile.left(_atagger->tagFile.lastIndexOf('/')+1);
+        QString relationMatchFile = path + "relation_match.json";
+        QFile rfile(relationMatchFile);
+        if (!rfile.open(QFile::WriteOnly | QFile::Text)) {
+            cerr << "Can't open relation match file to Save" << endl;
+            return 0;
+        }
+
+        QHash<Match*,int> entityHash;
+        QVariantList entityList;
+        QVariantList relationList;
+        int id = 0;
+
+        for(int i=0; i<_atagger->simulationVector.count(); i++) {
+            MERFTag* merftag = (MERFTag*)(_atagger->simulationVector[i]);
+            for(int j=0; j<merftag->relationMatchVector.count(); j++) {
+                RelationM* rel = merftag->relationMatchVector[j];
+                QVariantMap entity1Data;
+                QVariantMap entity2Data;
+                QVariantMap edgeData;
+                QVariantMap relationData;
+
+                int e1ID = -1;
+                if(!entityHash.contains(rel->entity1)) {
+                    entity1Data.insert("id",id);
+                    e1ID = id;
+                    id++;
+                    entity1Data.insert("text",rel->e1Label);
+                    entity1Data.insert("pos",rel->entity1->getPOS());
+                    entityHash.insert(rel->entity1,e1ID);
+                    entityList.append(entity1Data);
+                }
+                else {
+                    e1ID = entityHash.value(rel->entity1);
+                }
+
+                int e2ID = -1;
+                if(!entityHash.contains(rel->entity2)) {
+                    entity2Data.insert("id",id);
+                    e2ID = id;
+                    id++;
+                    entity2Data.insert("text",rel->e2Label);
+                    entity2Data.insert("pos",rel->entity2->getPOS());
+                    entityHash.insert(rel->entity2,e2ID);
+                    entityList.append(entity2Data);
+                }
+                else {
+                    e2ID = entityHash.value(rel->entity2);
+                }
+
+                int edgeID = -1;
+                if(rel->edge != NULL) {
+                    if(!entityHash.contains(rel->edge)) {
+                        edgeData.insert("id",id);
+                        edgeID = id;
+                        id++;
+                        edgeData.insert("text",rel->edgeLabel);
+                        edgeData.insert("pos",rel->edge->getPOS());
+                        entityHash.insert(rel->edge,edgeID);
+                        entityList.append(edgeData);
+                    }
+                    else {
+                        edgeID = entityHash.value(rel->edge);
+                    }
+                }
+
+                relationData.insert("id", id);
+                id++;
+                relationData.insert("e1ID", e1ID);
+                relationData.insert("e2ID", e2ID);
+                if(edgeID != -1) {
+                    relationData.insert("edgeID", edgeID);
+                }
+                else {
+                    relationData.insert("edge", rel->edgeLabel);
+                }
+                relationList.append(relationData);
+            }
+        }
+
+        QVariantMap data;
+        data.insert("entities", entityList);
+        data.insert("relations", relationList);
+
+        QJson::Serializer serializer;
+        QByteArray reljson = serializer.serialize(data);
+        QTextStream outrelations(&rfile);
+        outrelations << reljson;
+        rfile.close();
+
+        /** Done **/
+
+        if(_atagger != NULL) {
+            delete _atagger;
+        }
+
+        if (theSarf != NULL) {
+            theSarf->exit();
+            delete theSarf;
+        }
     }
 
-    if (theSarf != NULL) {
-        theSarf->exit();
-        delete theSarf;
-    }
-
-    return  r;
+    return  0;
 }
