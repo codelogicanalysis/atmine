@@ -3,11 +3,12 @@
 #include <QStringList>
 #include <QHash>
 
-GER::GER(QString word, int input, int order) {
+GER::GER(QString word, int input, int order, bool print) {
 
     this->word = word;
     this->input = input;
     this->order = order;
+    this->print = print;
 };
 
 class SDG {
@@ -232,7 +233,7 @@ bool GER::operator ()() {
         iteration++;;
     }
 
-    if(input == 0) {
+    if(print) {
         theSarf->out << "\nThe list of related words for order " << order << " at iteration " << iteration << " are:\n";
         theSarf->out << "\"Stem\"" << '\t' << "\"Source desc_id\"" << '\t' << "\"Source Gloss\"" << '\t' << "\"Gloss Source desc_id\"" << '\t' << "\"Source Gloss of Gloss\"" << '\t' << "\"Source Stem\"" << '\n';
 

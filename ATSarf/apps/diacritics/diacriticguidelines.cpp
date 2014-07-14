@@ -1,5 +1,7 @@
 #include <QStringList>
 #include "diacriticguidelines.h"
+#define TIME_ON
+#include "scTimer.h"
 
 DiacriticGuidelines::DiacriticGuidelines(long number_of_solutions, bool get_all_details) : Enumerator(get_all_details) {
     solution_counter = 1;
@@ -52,12 +54,23 @@ bool DiacriticGuidelines::on_match()
     }
 
     /** Add word to trie **/
+    unsigned long long v2 = 0;
+    unsigned long long v=0;
+    int flags = 3;
+    TIME_IT(v,flags,1,trie->store(unvocalizedWord,index));
+    //bool ret = trie->store(unvocalizedWord,index);
 
-    trie->store(unvocalizedWord,index);
+    //if(!ret) {
+    //    cerr << "word not entered!" << endl;
+    //}
+
+
     index++;
+    v2+=v;
 
     if(solution_counter%10000 == 0) {
-	   cout << solution_counter << endl;
+           cout << solution_counter << "\t|\t" << v2 << endl;
+           v2=0;
 	}
 
     /** Check for number of solutions requested **/

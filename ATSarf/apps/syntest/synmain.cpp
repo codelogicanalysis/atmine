@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
     Sarf::use(&srf);
 
     /** Run Synonymity analysis **/
-    GER ger(word, 0, order);
+    GER ger(word, 0, order, true);
     ger();
 
     /** Close Sarf instance and exit **/

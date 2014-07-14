@@ -46,7 +46,7 @@ public:
 class GER
 {
   public:
-        GER(QString word, int input = 0 ,int order = infinity);
+        GER(QString word, int input = 0 ,int order = infinity, bool print = false);
 	bool operator()();
         /// List to store triplet desc_id, source gloss, source stem
         QVector<IGS> descT;
@@ -56,6 +56,7 @@ class GER
  private:
 	QString word;
         int input;
+        bool print;
 	int order;
         //QStringList wStem;
 };
