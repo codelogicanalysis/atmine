@@ -4,11 +4,11 @@
 #include <QHash>
 
 GER::GER(QString word, int input, int order, bool print) {
-
     this->word = word;
     this->input = input;
     this->order = order;
     this->print = print;
+    wStem = new QSet<QString>();
 };
 
 class SDG {
@@ -76,7 +76,7 @@ bool GER::operator ()() {
         QStringList * stems = gamma.getStems();
 
         for(int i=0; i< stems->count(); i++) {
-            this->wStem.insert(stems->at(i));
+            this->wStem->insert(stems->at(i));
         }
 
         for(int i=0; i<stems->count(); i++) {
@@ -195,9 +195,9 @@ bool GER::operator ()() {
             for(int j=0; j<tempStems.count(); j++) {
 
                 QString id = gloss_id[i];
-                if(!(wStem.contains(tempStems[j]))) {
+                if(!(wStem->contains(tempStems[j]))) {
 
-                    wStem.insert(tempStems[j]);
+                    wStem->insert(tempStems[j]);
                     //QString id = gloss_id[i];
                     QString gloss = idHash.value(id);
                     QString sStem = newGS.value(gloss);

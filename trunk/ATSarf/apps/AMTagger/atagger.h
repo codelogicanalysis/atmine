@@ -23,20 +23,20 @@ class ATagger {
 public:
     ATagger();
     ~ATagger();
-    bool insertTag(const TagType*, int, int, int, Source, Dest);
+    bool insertTag(const TagType*, int, int, int, Source, Dest, int id = -1);
     bool insertTagType(QString, QString, QString, QString, int, bool, bool, bool, Source, Dest);
     bool insertSarfTagType(QString, QVector < Quadruple< QString , QString , QString , QString > > , QString, QString, QString, int, bool, bool, bool, Source, Dest);
-    QByteArray dataInJsonFormat(Data _data);
+    QByteArray dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >* filesHash = NULL, QVector<QString>* textFiles = NULL);
     bool buildNFA();
     bool buildActionFile();
-    bool runSimulator();
+    bool runSimulator(bool isBatch = false);
     Match* simulateNFA(NFA* nfa, QString state, int wordIndex);
     void executeActions(NFA* nfa, int index);
     void constructRelations(int index);
     void constructCrossRelations();
     void drawNFA();
     void updateMatch(Match* match,NFA* nfa, QString state, const Tag* tag=NULL);
-    QMultiHash<int,Tag*> tagHash;
+    QMultiHash<int,Tag*>* tagHash;
     QMultiHash<int,Tag*> compareToTagHash;
     QVector<Match*> simulationVector;
     QVector<RelationM*> crossRelationVector;
@@ -65,6 +65,8 @@ public:
     int wordCount;
     /// Set containing the diacritics
     QSet<QChar> diacriticsSet;
+    /// tag uniqued ID
+    int uniqueID;
 };
 
 #endif // ATAGGER_H

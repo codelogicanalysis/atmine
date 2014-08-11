@@ -16,10 +16,12 @@ using namespace std;
 class Match
 {
 public:
-    Match(Operation op, Match *parent);
+    Match(Operation op, Match *parent, int id, QString sourceText = "");
     Match *parent;
     MSF* msf;
     Operation op;
+    int id;
+    QString sourceText;
     virtual bool setMatch(Match* match)=0;
     virtual bool isUnaryM()=0;
     virtual bool isBinaryM()=0;

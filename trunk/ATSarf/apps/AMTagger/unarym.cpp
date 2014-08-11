@@ -1,6 +1,6 @@
 #include "unarym.h"
 
-UnaryM::UnaryM(Operation op, Match *parent, int limit): Match(op,parent)
+UnaryM::UnaryM(Operation op, int id, Match *parent, int limit): Match(op,parent,id)
 {
     this->limit = limit;
 }
@@ -244,6 +244,7 @@ QVariantMap UnaryM::getJSON() {
     unaryMap.insert("msf",msf->name);
     unaryMap.insert("op",op);
     unaryMap.insert("limit",limit);
+    unaryMap.insert("id",id);
     QVariantList matchList;
     for(int i=matches.count()-1; i>=0; i--) {
         matchList << matches[i]->getJSON();

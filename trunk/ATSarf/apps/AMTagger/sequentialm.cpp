@@ -1,6 +1,6 @@
 #include "sequentialm.h"
 
-SequentialM::SequentialM(Match* parent): Match(SEQUENCE,parent)
+SequentialM::SequentialM(Match* parent, int id): Match(SEQUENCE,parent,id)
 {
 }
 
@@ -222,6 +222,7 @@ QString SequentialM::getParam(QString msfName,QString param, QString* sarfMatche
 QVariantMap SequentialM::getJSON() {
     QVariantMap seqMap;
     seqMap.insert("type","sequential");
+    seqMap.insert("id",id);
     if(msf == NULL) {
         seqMap.insert("msf","_NULL_");
     }

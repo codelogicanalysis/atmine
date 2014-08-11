@@ -7,7 +7,7 @@
 class KeyM : public Match
 {
 public:
-    KeyM(Match* parent, QString key, int pos, int length);
+    KeyM(Match* parent, QString key, int pos, int length, int id);
     QString word;
     QString key;
     int pos;

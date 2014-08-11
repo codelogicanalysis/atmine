@@ -6,7 +6,7 @@
 class BinaryM : public Match
 {
 public:
-    BinaryM(Operation op, Match* parent);
+    BinaryM(Operation op, Match* parent, int id);
     Match *leftMatch;
     Match *rightMatch;
     bool setMatch(Match* match);
