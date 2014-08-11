@@ -8,17 +8,16 @@
 class Tag {
 public:
     Tag();
-    Tag(const TagType*, int, int, int, Source);
+    Tag(const TagType*, int, int, int, Source, int, QString sourceText = "");
 //private:
+    int id;
     const TagType* tagtype;
     int wordIndex;
     int pos;
     int length;
     Source source;
+    QString sourceText;
     bool operator == (const Tag& tag) const;
-    /// This variable will be used in MERF tags only to know the match type:
-    /// STARF, STARL, PLUSF, PLUSL, UPTOF, UPTOL, QUESTIONF, QUESTIONL, ORF, ORL, ANDF, ANDL, SEQF, SEQL
-    QVector<QString> tType;
 };
 
 #endif // TAG_H

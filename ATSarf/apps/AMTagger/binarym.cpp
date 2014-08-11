@@ -1,6 +1,6 @@
 #include "binarym.h"
 
-BinaryM::BinaryM(Operation op, Match *parent): Match(op,parent)
+BinaryM::BinaryM(Operation op, Match *parent, int id): Match(op,parent,id)
 {
     leftMatch = NULL;
     rightMatch = NULL;
@@ -217,6 +217,7 @@ QString BinaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
 
 QVariantMap BinaryM::getJSON() {
     QVariantMap binaryMap;
+    binaryMap.insert("id",id);
     binaryMap.insert("type","binary");
     binaryMap.insert("msf",msf->name);
     binaryMap.insert("op",op);

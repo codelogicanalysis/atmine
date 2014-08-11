@@ -20,7 +20,7 @@ bool AutoTagger::operator ()() {
         //includedNegationFormula
         QHash<QString, QString> iNF;
 
-        int tagCount = _atagger->tagHash.size();
+        int tagCount = _atagger->tagHash->size();
         QString diacriticEmptyWord = removeDiacritics(word.word);
         //&(word.word)
         SarfTag sarftag(word.start, length, &diacriticEmptyWord, synSetHash, &eNF, &iNF);
@@ -42,10 +42,10 @@ bool AutoTagger::operator ()() {
                 }
             }
             */
-            QList<Tag*> values = _atagger->tagHash.values(wordCount);
+            QList<Tag*> values = _atagger->tagHash->values(wordCount);
             /// This is just to check if anything goes wrong with wordIndex/wordPOS
             if(!(values.isEmpty()) && values[0]->pos != word.start) {
-                _atagger->tagHash.clear();
+                _atagger->tagHash->clear();
                 return false;
             }
             for(int i=0; i<values.count(); i++) {
@@ -67,7 +67,7 @@ bool AutoTagger::operator ()() {
         }
         /** End of cleaning **/
 
-        if(_atagger->tagHash.size() == tagCount) {
+        if(_atagger->tagHash->size() == tagCount) {
             /// word didn't have any morphological analysis
             bool ok;
             long number = word.word.toLong(&ok);
@@ -83,7 +83,7 @@ bool AutoTagger::operator ()() {
 
                         if(aTerm->third == "" && aTerm->second.toInt() == 578) {
                             add = true;
-                            QList<Tag*> values = _atagger->tagHash.values(wordCount);
+                            QList<Tag*> values = _atagger->tagHash->values(wordCount);
                             for(int k=0; k<values.count(); k++) {
                                 Tag* t = values[k];
                                 if(t->tagtype->name == stt->name) {
@@ -98,7 +98,7 @@ bool AutoTagger::operator ()() {
                         }
                         else if(aTerm->third == "NOT" && aTerm->second.toInt() != 578) {
                             add = true;
-                            QList<Tag*> values = _atagger->tagHash.values(wordCount);
+                            QList<Tag*> values = _atagger->tagHash->values(wordCount);
                             for(int k=0; k<values.count(); k++) {
                                 Tag* t = values[k];
                                 if(t->tagtype->name == stt->name) {

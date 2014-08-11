@@ -7,7 +7,7 @@
 class UnaryM : public Match
 {
 public:
-    UnaryM(Operation op, Match *parent, int limit=-1);
+    UnaryM(Operation op, int id, Match *parent, int limit=-1);
     QVector<Match*> matches;
     int limit;
     bool setMatch(Match* match);

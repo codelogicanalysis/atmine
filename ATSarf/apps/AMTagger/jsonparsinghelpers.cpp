@@ -506,6 +506,10 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
     QString msfName;
 
     QVariantMap matchData = data.toMap();
+    int id = matchData.value("id").toInt();
+    if(_atagger->uniqueID <= id) {
+        _atagger->uniqueID = id+1;
+    }
     type = matchData.value("type").toString();
     msfName = matchData.value("msf").toString();
 
@@ -515,7 +519,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         QString key = matchData.value("key").toString();
         QString word = matchData.value("word").toString();
         MSF* msf = formula->map.value(msfName);
-        KeyM* keym = new KeyM(parent,key,pos,length);
+        KeyM* keym = new KeyM(parent,key,pos,length,id);
         keym->word = word;
         keym->msf = msf;
         parent->setMatch(keym);
@@ -525,7 +529,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         MSF* msf = formula->map.value(msfName);
         int limit = matchData.value("limit").toInt();
         Operation op = (Operation)(matchData.value("op").toInt());
-        UnaryM* unary = new UnaryM(op,parent,limit);
+        UnaryM* unary = new UnaryM(op,id,parent,limit);
         unary->msf = msf;
         foreach(QVariant unaryMatchData, matchData.value("matches").toList()) {
             if(!(readMatch(formula,unaryMatchData,unary))) {
@@ -538,7 +542,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
     else if(type == "binary") {
         MSF* msf = formula->map.value(msfName);
         Operation op = (Operation)(matchData.value("op").toInt());
-        BinaryM* binary = new BinaryM(op,parent);
+        BinaryM* binary = new BinaryM(op,parent,id);
         binary->msf = msf;
         QVariant leftMatchData = matchData.value("leftMatch");
         if(!(readMatch(formula,leftMatchData,binary))) {
@@ -554,7 +558,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         return true;
     }
     else if(type == "sequential") {
-        SequentialM* seq = new SequentialM(parent);
+        SequentialM* seq = new SequentialM(parent,id);
         if(msfName == "_NULL_") {
             seq->msf = NULL;
         }
@@ -576,6 +580,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         MSF* msf = formula->map.value(msfName);
         merftag->msf = msf;
         QString formulaName = matchData.value("formula").toString();
+        merftag->id = id;
         for(int i=0; i<_atagger->msfVector->count(); i++) {
             if(_atagger->msfVector->at(i)->name == formulaName) {
                 merftag->formula = _atagger->msfVector->at(i);

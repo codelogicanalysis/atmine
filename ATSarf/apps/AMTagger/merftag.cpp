@@ -1,11 +1,11 @@
 #include "merftag.h"
 #include "sequentialm.h"
 
-MERFTag::MERFTag() : Match(NONE,NULL) {
+MERFTag::MERFTag() : Match(NONE,NULL,-1) {
     match = NULL;
 }
 
-MERFTag::MERFTag(MSFormula* formula, Source source) : Match(NONE, NULL) {
+MERFTag::MERFTag(MSFormula* formula, int id, Source source) : Match(NONE, NULL,id) {
     match = NULL;
     this->formula = formula;
     this->source = source;
@@ -174,6 +174,7 @@ QString MERFTag::getParam(QString msfName,QString param, QString* sarfMatches) {
 
 QVariantMap MERFTag::getJSON() {
     QVariantMap merftagMap;
+    merftagMap.insert("id",id);
     merftagMap.insert("type","merftag");
     merftagMap.insert("msf",msf->name);
     merftagMap.insert("formula",formula->name);

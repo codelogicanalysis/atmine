@@ -134,17 +134,27 @@ DiffView::DiffView(QWidget *parent) :
     tVector = new QVector<Tag*>();
     cttVector = new QVector<Tag*>();
 
-    QHashIterator<int, Tag*> iTag(_atagger->tagHash);
+    QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));
     while (iTag.hasNext()) {
         iTag.next();
-        Tag* t = new Tag(iTag.value()->tagtype,iTag.value()->pos,iTag.value()->length,iTag.value()->wordIndex,iTag.value()->source);
+        Tag* t = new Tag(iTag.value()->tagtype,
+                         iTag.value()->pos,
+                         iTag.value()->length,
+                         iTag.value()->wordIndex,
+                         iTag.value()->source,
+                         iTag.value()->id);
         tVector->append(t);
     }
 
     QHashIterator<int, Tag*> iCompareToTag(_atagger->compareToTagHash);
     while (iCompareToTag.hasNext()) {
         iCompareToTag.next();
-        Tag* t = new Tag(iCompareToTag.value()->tagtype,iCompareToTag.value()->pos,iCompareToTag.value()->length,iCompareToTag.value()->wordIndex,iCompareToTag.value()->source);
+        Tag* t = new Tag(iCompareToTag.value()->tagtype,
+                         iCompareToTag.value()->pos,
+                         iCompareToTag.value()->length,
+                         iCompareToTag.value()->wordIndex,
+                         iCompareToTag.value()->source,
+                         iCompareToTag.value()->id);
         cttVector->append(t);
     }
 
@@ -916,7 +926,7 @@ int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source
             break;
         }
     }
-    Tag* tag = new Tag(tagtype,pos,length,wordIndex,source);
+    Tag* tag = new Tag(tagtype,pos,length,wordIndex,source,_atagger->uniqueID);
     if(dest == original) {
         bool insert = true;
         for(int i=0; i<tVector->count(); i++) {
@@ -928,6 +938,7 @@ int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source
         if(insert) {
             tVector->append(tag);
             qSort(tVector->begin(), tVector->end(), compareTags);
+            (_atagger->uniqueID)++;
             return 1;
         }
         else {
@@ -945,6 +956,7 @@ int DiffView::insertTag(QString type, int pos, int length, int wordIndex, Source
         if(insert) {
             cttVector->append(tag);
             qSort(cttVector->begin(), cttVector->end(), compareTags);
+            (_atagger->uniqueID)++;
             return 1;
         }
         else {
@@ -1423,9 +1435,9 @@ void DiffView::closeEvent(QCloseEvent *event) {
 
          switch (ret) {
          case QMessageBox::Save:
-             _atagger->tagHash.clear();
+             _atagger->tagHash->clear();
              for(int i=0; i<tVector->count(); i++) {
-                 _atagger->tagHash.insert(tVector->at(i)->wordIndex,tVector->at(i));
+                 _atagger->tagHash->insert(tVector->at(i)->wordIndex,tVector->at(i));
              }
              _atagger->compareToTagHash.clear();
              for(int i=0; i<cttVector->count(); i++) {

@@ -279,7 +279,7 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         if(wordIndex == 0) {
             return;
         }
-        QList<Tag*> values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> values = _atagger->tagHash->values(wordIndex);
         for(int i=0; i<values.size();i++) {
             tagtypes << values.at(i)->tagtype->name;
         }
@@ -405,13 +405,26 @@ void AMTMainWindow::open() {
     }
     else {
         version = result.value("version").toDouble();
-        if(version<1.0) {
+        if(version<1.1) {
             QMessageBox::warning(this, "Warning", "Tool doesn't support this tag version anymore");
             return;
         }
     }
 
     /** End of Check **/
+
+    /** Check if file is for batch mode **/
+
+    bool isBatch;
+
+    isBatch = result.value("batch").toBool();
+
+    if(isBatch) {
+        QMessageBox::warning(this, "Warning", "Tool doesn't support batch mode files");
+        return;
+    }
+
+    /** Done **/
 
     /** Read text file path **/
 
@@ -539,6 +552,7 @@ void AMTMainWindow::process(QByteArray & json) {
     foreach(QVariant tag, result["TagArray"].toList()) {
 
         QVariantMap tagElements = tag.toMap();
+        int id = tagElements.value("id").toInt();
         int start = tagElements["pos"].toInt();
         int length = tagElements["length"].toInt();
         int wordIndex = tagElements["wordIndex"].toInt();
@@ -558,10 +572,10 @@ void AMTMainWindow::process(QByteArray & json) {
             clearLayout(this->layout());
             return;
         }
-        check = _atagger->insertTag(type,start,length,wordIndex,source,original);
+        check = _atagger->insertTag(type,start,length,wordIndex,source,original,id);
     }
 
-    if(_atagger->tagHash.begin().value()->source == user) {
+    if(_atagger->tagHash->begin().value()->source == user) {
         _atagger->isSarf = false;
     }
     else {
@@ -577,6 +591,7 @@ void AMTMainWindow::process(QByteArray & json) {
             QVariantMap merfTagElements = merfTag.toMap();
             QString formulaName = merfTagElements.value("formula").toString();
             int pos = merfTagElements.value("pos").toInt();
+            int id = merfTagElements.value("id").toInt();
             int length = merfTagElements.value("length").toInt();
             Source source = (Source)(merfTagElements.value("source").toInt());
             MSFormula* formula = NULL;
@@ -592,7 +607,7 @@ void AMTMainWindow::process(QByteArray & json) {
                 clearLayout(this->layout());
                 return;
             }
-            MERFTag* merftag = new MERFTag(formula);
+            MERFTag* merftag = new MERFTag(formula,id);
             merftag->pos = pos;
             merftag->length = length;
             merftag->source = source;
@@ -764,58 +779,6 @@ void AMTMainWindow::process(QByteArray & json) {
                     }
                 }
             }
-            /*
-            if(!(merfTagElements.value("relationMatches").isNull())) {
-                foreach(QVariant relMatch, merfTagElements.value("relationMatches").toList()) {
-                    QVariantMap relmData = relMatch.toMap();
-                    QString relationName = relmData.value("relation").toString();
-                    QString e1Label = relmData.value("e1Label").toString();
-                    QString e2Label = relmData.value("e2Label").toString();
-                    QString edgeLabel = relmData.value("edgeLabel").toString();
-                    Relation* rel = NULL;
-                    for(int i=0; i<merftag->formula->relationVector.count();i++) {
-                        if(merftag->formula->relationVector.at(i)->name == relationName) {
-                            rel = merftag->formula->relationVector[i];
-                        }
-                    }
-                    RelationM* relm = new RelationM(rel,NULL,e1Label,NULL,e2Label,NULL,edgeLabel);
-                    merftag->relationMatchVector.append(relm);
-                }
-            }
-            */
-
-#if 0
-            foreach(QVariant tagData, merfTagElements["tags"].toList()) {
-
-                QVariantMap tagElements = tagData.toMap();
-                QString tagType = tagElements.value("type").toString();
-                int tagpos = tagElements.value("pos").toInt();
-                int taglength = tagElements.value("length").toInt();
-                int wordIndex = tagElements.value("wordIndex").toInt();
-                const TagType* type = NULL;
-                for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
-                    if(_atagger->tagTypeVector->at(i)->name == tagType) {
-                        type = _atagger->tagTypeVector->at(i);
-                        break;
-                    }
-                }
-                if(type == NULL) {
-                    QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
-                    _atagger = new ATagger();
-                    clearLayout(this->layout());
-                    return;
-                }
-                Tag *tag = new Tag(type,tagpos,taglength,wordIndex,sarf);
-
-                if(!(tagElements.value("tagType").isNull())) {
-                    foreach(QVariant tagTypeData, tagElements["tagType"].toList()) {
-                        QString matchInfo = tagTypeData.toString();
-                        tag->tType.append(matchInfo);
-                    }
-                }
-                merftag.tags->append(tag);
-            }
-#endif
 
             _atagger->simulationVector.append(merftag);
         }
@@ -879,9 +842,9 @@ void AMTMainWindow::applyTags(int basic) {
         }
         */
 
-        QList<int> keys = _atagger->tagHash.uniqueKeys();
+        QList<int> keys = _atagger->tagHash->uniqueKeys();
         for(int i=0; i<keys.count(); i++) {
-            QList<Tag*> values = _atagger->tagHash.values(keys[i]);
+            QList<Tag*> values = _atagger->tagHash->values(keys[i]);
             for(int j = 0; j<values.size(); j++) {
                 int start = values.at(j)->pos;
                 int length = values.at(j)->length;
@@ -967,100 +930,6 @@ bool AMTMainWindow::saveFile(const QString &fileName, QByteArray &tagD) {
     outtags << tagD;
     tfile.close();
 
-    /** Output the user-defined relation matches in a file **/
-    if(_atagger->simulationVector.isEmpty()) {
-        return true;
-    }
-    QString path = fileName.left(fileName.lastIndexOf('/')+1);
-    QString relationMatchFile = path + "relation_match.json";
-    QFile rfile(relationMatchFile);
-    if (!rfile.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this,"Warning","Can't open relation match file to Save");
-        return false;
-    }
-
-    QHash<Match*,int> entityHash;
-    QVariantList entityList;
-    QVariantList relationList;
-    int id = 0;
-
-    for(int i=0; i<_atagger->simulationVector.count(); i++) {
-        MERFTag* merftag = (MERFTag*)(_atagger->simulationVector[i]);
-        for(int j=0; j<merftag->relationMatchVector.count(); j++) {
-            RelationM* rel = merftag->relationMatchVector[j];
-            QVariantMap entity1Data;
-            QVariantMap entity2Data;
-            QVariantMap edgeData;
-            QVariantMap relationData;
-
-            int e1ID = -1;
-            if(!entityHash.contains(rel->entity1)) {
-                entity1Data.insert("id",id);
-                e1ID = id;
-                id++;
-                entity1Data.insert("text",rel->e1Label);
-                entity1Data.insert("pos",rel->entity1->getPOS());
-                entityHash.insert(rel->entity1,e1ID);
-                entityList.append(entity1Data);
-            }
-            else {
-                e1ID = entityHash.value(rel->entity1);
-            }
-
-            int e2ID = -1;
-            if(!entityHash.contains(rel->entity2)) {
-                entity2Data.insert("id",id);
-                e2ID = id;
-                id++;
-                entity2Data.insert("text",rel->e2Label);
-                entity2Data.insert("pos",rel->entity2->getPOS());
-                entityHash.insert(rel->entity2,e2ID);
-                entityList.append(entity2Data);
-            }
-            else {
-                e2ID = entityHash.value(rel->entity2);
-            }
-
-            int edgeID = -1;
-            if(rel->edge != NULL) {
-                if(!entityHash.contains(rel->edge)) {
-                    edgeData.insert("id",id);
-                    edgeID = id;
-                    id++;
-                    edgeData.insert("text",rel->edgeLabel);
-                    edgeData.insert("pos",rel->edge->getPOS());
-                    entityHash.insert(rel->edge,edgeID);
-                    entityList.append(edgeData);
-                }
-                else {
-                    edgeID = entityHash.value(rel->edge);
-                }
-            }
-
-            relationData.insert("id", id);
-            id++;
-            relationData.insert("e1ID", e1ID);
-            relationData.insert("e2ID", e2ID);
-            if(edgeID != -1) {
-                relationData.insert("edgeID", edgeID);
-            }
-            else {
-                relationData.insert("edge", rel->edgeLabel);
-            }
-            relationList.append(relationData);
-        }
-    }
-
-    QVariantMap data;
-    data.insert("entities", entityList);
-    data.insert("relations", relationList);
-
-    QJson::Serializer serializer;
-    QByteArray reljson = serializer.serialize(data);
-    QTextStream outrelations(&rfile);
-    outrelations << reljson;
-    rfile.close();
-
     return true;
 }
 
@@ -1085,7 +954,7 @@ void AMTMainWindow::save() {
         return;
     }
 
-    if(_atagger->tagHash.isEmpty()) {
+    if(_atagger->tagHash->isEmpty()) {
         QMessageBox::warning(this,"Warning","No tags to save!");
         return;
     }
@@ -1179,7 +1048,7 @@ void AMTMainWindow::tag(QString tagValue) {
                 return;
             }
             _atagger->insertTag(type, start, length, wordIndex, user, original);
-            QList<Tag*> values = _atagger->tagHash.values(wordIndex);
+            QList<Tag*> values = _atagger->tagHash->values(wordIndex);
 
             QColor bgcolor(values.at(0)->tagtype->bgcolor);
             QColor fgcolor(values.at(0)->tagtype->fgcolor);
@@ -1227,15 +1096,15 @@ void AMTMainWindow::untag(QString tagValue) {
 
     if(_atagger->isTagMBF) {
         /// MBF based tags
-        QList<Tag*> values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> values = _atagger->tagHash->values(wordIndex);
         for(int i=0; i<values.size(); i++) {
             if(values.at(i)->tagtype->name == tagValue) {
                 delete (values[i]);
-                _atagger->tagHash.remove(wordIndex,values[i]);
+                _atagger->tagHash->remove(wordIndex,values[i]);
             }
         }
 
-        QList<Tag*> _values = _atagger->tagHash.values(wordIndex);
+        QList<Tag*> _values = _atagger->tagHash->values(wordIndex);
         if(_values.count() > 0) {
                 QColor bgcolor(_values.at(0)->tagtype->bgcolor);
                 QColor fgcolor(_values.at(0)->tagtype->fgcolor);
@@ -1278,14 +1147,14 @@ void AMTMainWindow::addtagtype() {
 }
 
 void AMTMainWindow::viewMBFTags() {
-    if(_atagger->tagHash.isEmpty()) {
+    if(_atagger->tagHash->isEmpty()) {
         return;
     }
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
 
-    QMultiHash<int,Tag*> & th = _atagger->tagHash;
+    QMultiHash<int,Tag*> & th = *(_atagger->tagHash);
     QMultiHash<int, Tag*>::iterator i = th.begin();
     int lastkey = -1;
     while(i != th.end()) {
@@ -1526,7 +1395,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
      QList<QTreeWidgetItem *> items;
      int wordCountCharCount = QString::number(_atagger->wordCount).size();
      if(basic == 0) {
-         QHashIterator<int, Tag*> iTag(_atagger->tagHash);
+         QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));
          while (iTag.hasNext()) {
              iTag.next();
              QStringList entry;
@@ -2022,7 +1891,7 @@ void AMTMainWindow::sarfTagging(bool color) {
     startTaggingText(_atagger->text);
     scene->clear();
     descBrwsr->clear();
-    _atagger->tagHash.clear();
+    _atagger->tagHash->clear();
 
     error_str = "";
     output_str = "";
@@ -2080,7 +1949,7 @@ void AMTMainWindow::difference() {
     _atagger->compareToTagTypeFile.clear();
     _atagger->compareToTagTypeVector->clear();
     _atagger->compareToTagHash.clear();
-    if(_atagger->tagHash.isEmpty()) {
+    if(_atagger->tagHash->isEmpty()) {
         QMessageBox msgBox;
         msgBox.setText("There are no tags present to compare to");
         return;
@@ -2353,6 +2222,7 @@ void AMTMainWindow::difference() {
     foreach(QVariant tag, result["TagArray"].toList()) {
 
         QVariantMap tagElements = tag.toMap();
+        int id = tagElements.value("id").toInt();
         int start = tagElements["pos"].toInt();
         int length = tagElements["length"].toInt();
         int wordIndex = tagElements["wordIndex"].toInt();
@@ -2372,10 +2242,10 @@ void AMTMainWindow::difference() {
             clearLayout(this->layout());
             return;
         }
-        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo);
+        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo,id);
     }
 
-    if(_atagger->tagHash.begin().value()->source == user) {
+    if(_atagger->tagHash->begin().value()->source == user) {
         _atagger->compareToIsSarf = false;
     }
     else {
@@ -2425,7 +2295,7 @@ void AMTMainWindow::loadText_clicked() {
              return;
          }
 
-         _atagger->tagHash.clear();
+         _atagger->tagHash->clear();
          tagDescription->clear();
          descBrwsr->clear();
 
@@ -2498,7 +2368,7 @@ void AMTMainWindow::loadTagTypes_clicked() {
             return;
         }
 
-        _atagger->tagHash.clear();
+        _atagger->tagHash->clear();
         _atagger->tagTypeVector->clear();
         tagDescription->clear();
         descBrwsr->clear();
@@ -2628,7 +2498,7 @@ void AMTMainWindow::runMERFSimulator() {
     gettimeofday(&tim,NULL);
     double t1=tim.tv_sec+(tim.tv_usec/1000000.0);
     */
-    if(_atagger->tagHash.isEmpty()) {
+    if(_atagger->tagHash->isEmpty()) {
         sarfTagging(false);
     }
 
@@ -2647,6 +2517,13 @@ void AMTMainWindow::runMERFSimulator() {
     if(!(_atagger->runSimulator())) {
         return;
     }
+
+    /** Clean data in MSF vector **/
+    for(int i=0; i<_atagger->msfVector->count();i++) {
+        _atagger->msfVector->at(i)->actionData.clear();
+        _atagger->msfVector->at(i)->functionParametersMap.clear();
+    }
+
     /*
     gettimeofday(&tim, NULL);
     double t2=tim.tv_sec+(tim.tv_usec/1000000.0);
@@ -2774,6 +2651,11 @@ int main(int argc, char *argv[])
 
         /** Sarf Initialized **/
 
+        QVector<QString> textFiles;
+        delete (_atagger->tagHash);
+        QVector<QMultiHash<int,Tag*>* >* filesHash;
+        filesHash = new QVector<QMultiHash<int, Tag*>* >();
+
         /// batch mode
 
         int option;
@@ -2785,7 +2667,10 @@ int main(int argc, char *argv[])
                 batchMode = true;
                 break;
             case 't' :
-                _atagger->textFile = QString::fromUtf8(optarg);
+                optind--;
+                for( ;optind < argc && *argv[optind] != '-'; optind++) {
+                      textFiles.append(QString::fromUtf8(argv[optind]));
+                }
                 break;
             case 's' :
                 _atagger->tagtypeFile = QString::fromUtf8(optarg);
@@ -2807,23 +2692,11 @@ int main(int argc, char *argv[])
             return 0;
         }
 
-        if(_atagger->textFile.isEmpty() || _atagger->tagtypeFile.isEmpty() || _atagger->tagFile.isEmpty()) {
+        if(textFiles.isEmpty() || _atagger->tagtypeFile.isEmpty() || _atagger->tagFile.isEmpty()) {
             cerr << "Missing parameters" << endl;
             print_usage();
             return 0;
         }
-
-        /// Text file
-        QFile tfile(_atagger->textFile);
-        if (!tfile.open(QIODevice::ReadOnly)) {
-            cerr << "Unable to open file" << endl;
-            return 0;
-        }
-
-        QString text = tfile.readAll();
-        _atagger->text = text;
-        processText(&text);
-
 
         /// Sarf Tag Type file
         if(!_atagger->tagtypeFile.endsWith(".stt.json")) {
@@ -2851,26 +2724,59 @@ int main(int argc, char *argv[])
         QString dir = dirList.join("/");
         dir.append('/');
 
-        QString absoluteTFile = QDir(_atagger->textFile).absolutePath();
-        QString tRelativePath = QDir(dir).relativeFilePath(absoluteTFile);
-        _atagger->textFile = tRelativePath;
         QString absoluteTTFile = QDir(_atagger->tagtypeFile).absolutePath();
         QString ttRelativePath = QDir(dir).relativeFilePath(absoluteTTFile);
         _atagger->tagtypeFile = ttRelativePath;
 
         /** Done **/
 
-        /** Run MBF Simulator **/
+        /// Processing Text files
 
-        if(!simulateMBF()) {
-            cerr << "Error in the MBF simulation" << endl;
-            return 0;
+        bool isBatch = false;
+        for(int i=0; i< textFiles.count(); i++) {
+            //QString currentText = textFiles.at(i);
+
+            QFile tfile(textFiles[i]);
+            if (!tfile.open(QIODevice::ReadOnly)) {
+                cerr << "Unable to open text file " << _atagger->textFile.toStdString() << endl;
+                return 0;
+            }
+
+            QString text = tfile.readAll();
+            tfile.close();
+
+            QString absoluteTextFile = QDir(textFiles[i]).absolutePath();
+            QString relativePaths = QDir(dir).relativeFilePath(absoluteTextFile);
+            _atagger->textFile = relativePaths;
+            textFiles[i] = relativePaths;
+
+            _atagger->text = text;
+            processText(&text);
+
+            /** Run MBF Simulator **/
+
+            QMultiHash<int,Tag*>* tempHash = new QMultiHash<int,Tag*>();
+            _atagger->tagHash = tempHash;
+
+            if(!simulateMBF()) {
+                cerr << "Error in the MBF simulation of text file " << _atagger->textFile.toStdString() << endl;
+                return 0;
+            }
+
+            /** Run MRE Simulator **/
+            if(!(_atagger->runSimulator(isBatch))) {
+                cerr << "Error in the MRE simulation" << endl;
+                return 0;
+            }
+            isBatch = true;
+
+            filesHash->append(tempHash);
         }
 
-        /** Run MRE Simulator **/
-        if(!(_atagger->runSimulator())) {
-            cerr << "Error in the MRE simulation" << endl;
-            return 0;
+        /** Clean data in MSF vector **/
+        for(int i=0; i<_atagger->msfVector->count();i++) {
+            _atagger->msfVector->at(i)->actionData.clear();
+            _atagger->msfVector->at(i)->functionParametersMap.clear();
         }
 
         /** Construct cross reference relations **/
@@ -2884,7 +2790,7 @@ int main(int argc, char *argv[])
         /// Save the tags in JSON format
         QByteArray tagData;
         if(_atagger->isSarf) {
-            tagData = _atagger->dataInJsonFormat(sarfTV);
+            tagData = _atagger->dataInJsonFormat(sarfTV,filesHash,&textFiles);
         }
 
         QFile tagfile(_atagger->tagFile);
@@ -2896,98 +2802,6 @@ int main(int argc, char *argv[])
         QTextStream outtags(&tagfile);
         outtags << tagData;
         tagfile.close();
-
-        /** Save the relation matches in JSON format **/
-
-        QString path = _atagger->tagFile.left(_atagger->tagFile.lastIndexOf('/')+1);
-        QString relationMatchFile = path + "relation_match.json";
-        QFile rfile(relationMatchFile);
-        if (!rfile.open(QFile::WriteOnly | QFile::Text)) {
-            cerr << "Can't open relation match file to Save" << endl;
-            return 0;
-        }
-
-        QHash<Match*,int> entityHash;
-        QVariantList entityList;
-        QVariantList relationList;
-        int id = 0;
-
-        for(int i=0; i<_atagger->simulationVector.count(); i++) {
-            MERFTag* merftag = (MERFTag*)(_atagger->simulationVector[i]);
-            for(int j=0; j<merftag->relationMatchVector.count(); j++) {
-                RelationM* rel = merftag->relationMatchVector[j];
-                QVariantMap entity1Data;
-                QVariantMap entity2Data;
-                QVariantMap edgeData;
-                QVariantMap relationData;
-
-                int e1ID = -1;
-                if(!entityHash.contains(rel->entity1)) {
-                    entity1Data.insert("id",id);
-                    e1ID = id;
-                    id++;
-                    entity1Data.insert("text",rel->e1Label);
-                    entity1Data.insert("pos",rel->entity1->getPOS());
-                    entityHash.insert(rel->entity1,e1ID);
-                    entityList.append(entity1Data);
-                }
-                else {
-                    e1ID = entityHash.value(rel->entity1);
-                }
-
-                int e2ID = -1;
-                if(!entityHash.contains(rel->entity2)) {
-                    entity2Data.insert("id",id);
-                    e2ID = id;
-                    id++;
-                    entity2Data.insert("text",rel->e2Label);
-                    entity2Data.insert("pos",rel->entity2->getPOS());
-                    entityHash.insert(rel->entity2,e2ID);
-                    entityList.append(entity2Data);
-                }
-                else {
-                    e2ID = entityHash.value(rel->entity2);
-                }
-
-                int edgeID = -1;
-                if(rel->edge != NULL) {
-                    if(!entityHash.contains(rel->edge)) {
-                        edgeData.insert("id",id);
-                        edgeID = id;
-                        id++;
-                        edgeData.insert("text",rel->edgeLabel);
-                        edgeData.insert("pos",rel->edge->getPOS());
-                        entityHash.insert(rel->edge,edgeID);
-                        entityList.append(edgeData);
-                    }
-                    else {
-                        edgeID = entityHash.value(rel->edge);
-                    }
-                }
-
-                relationData.insert("id", id);
-                id++;
-                relationData.insert("e1ID", e1ID);
-                relationData.insert("e2ID", e2ID);
-                if(edgeID != -1) {
-                    relationData.insert("edgeID", edgeID);
-                }
-                else {
-                    relationData.insert("edge", rel->edgeLabel);
-                }
-                relationList.append(relationData);
-            }
-        }
-
-        QVariantMap data;
-        data.insert("entities", entityList);
-        data.insert("relations", relationList);
-
-        QJson::Serializer serializer;
-        QByteArray reljson = serializer.serialize(data);
-        QTextStream outrelations(&rfile);
-        outrelations << reljson;
-        rfile.close();
 
         /** Done **/
 

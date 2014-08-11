@@ -14,11 +14,14 @@ ATagger::ATagger() {
     compareToTagTypeVector = new QVector<TagType*>();
     msfVector = new QVector<MSFormula*>();
     nfaVector = new QVector<NFA*>();
+    tagHash = new QMultiHash<int,Tag*>();
     isTagMBF = true;
+    uniqueID = 0;
 }
 
 ATagger::~ATagger() {
-    tagHash.clear();
+    tagHash->clear();
+    delete tagHash;
     for(int i=0; i<tagTypeVector->size(); i++) {
         delete (*tagTypeVector)[i];
     }
@@ -37,20 +40,26 @@ ATagger::~ATagger() {
     delete nfaVector;
 }
 
-bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex, Source source, Dest dest) {
+bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex, Source source, Dest dest, int id) {
 
-    Tag* tag = new Tag(type,pos,length,wordIndex,source);
+    Tag* tag;
+    if(id == -1) {
+        tag = new Tag(type,pos,length,wordIndex,source,uniqueID,_atagger->textFile.split('/').last());
+    }
+    else {
+        tag = new Tag(type,pos,length,wordIndex,source,id,_atagger->textFile.split('/').last());
+    }
     if(dest == original) {
         bool insert = true;
         QMultiHash<int,Tag*>::iterator it;
-        for(it=tagHash.begin(); it != tagHash.end(); ++it) {
+        for(it=tagHash->begin(); it != tagHash->end(); ++it) {
             if((it.value()->pos == pos) && (it.value()->tagtype->name == type->name)) {
                 insert = false;
                 break;
             }
         }
         if(insert) {
-            tagHash.insert(wordIndex,tag);
+            tagHash->insert(wordIndex,tag);
         }
         else {
             return false;
@@ -72,24 +81,7 @@ bool ATagger::insertTag(const TagType* type, int pos, int length, int wordIndex,
             return false;
         }
     }
-    /*
-    if(dest == original) {
-        if(!(tagHash.contains(wordIndex,tag))) {
-            tagHash.insert(wordIndex,tag);
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        if(!(compareToTagHash.contains(wordIndex,tag))) {
-            compareToTagHash.insert(wordIndex,tag);
-        }
-        else {
-            return false;
-        }
-    }
-     */
+    uniqueID++;
     return true;
 }
 
@@ -155,7 +147,7 @@ void ATagger::executeActions(NFA* nfa, int index) {
 
     /** Add function calls of each formula to a function named msfName() **/
     MSFormula* formula = (MSFormula*)nfa->formula;
-    formula->actionData.append("extern \"C\" void " + formula->name + "_actions() {\n");
+    formula->actionData.append("extern \"C\" void " + formula->name + "_" + textFile.split('/').last().remove(".txt") + "_actions() {\n");
     for(int i=index; i<simulationVector.count(); i++) {
         MERFTag* mTag = (MERFTag*)(simulationVector.at(i));
         MSFormula* _formula = mTag->formula;
@@ -163,7 +155,7 @@ void ATagger::executeActions(NFA* nfa, int index) {
             mTag->match->executeActions(nfa);
         }
     }
-    formula->actionData.append("}\n");
+    formula->actionData.append("}\n\n");
 
     /** write action functions in .cpp output files, compile shared library, and call them **/
     QString msfName = formula->name;
@@ -190,7 +182,7 @@ void ATagger::executeActions(NFA* nfa, int index) {
     }
 
     if ( fLib ) {
-        QString actionFunction = msfName + "_actions";
+        QString actionFunction = msfName + '_' + textFile.split('/').last().remove(".txt")  + "_actions";
         void (*fn)() = (void (*)()) dlsym ( fLib, actionFunction.toStdString().c_str());
         if (fn) {
             // use function
@@ -366,6 +358,7 @@ void ATagger::constructRelations(int index) {
 
 void ATagger::constructCrossRelations() {
 
+    QHash<QString,QSet<QString>* > synSetHash;
     QVector<QPair<Match*, Match*> > crossRelations;
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
         MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
@@ -386,12 +379,27 @@ void ATagger::constructCrossRelations() {
                     QString r2e1Label = relation2->entity1->getText();
                     QString r2e2Label = relation2->entity2->getText();
 
-                    GER ger1(r1e1Label,0,2);
-                    ger1();
-                    QSet<QString>* set1 = &(ger1.wStem);
-                    GER ger2(r1e2Label,0,2);
-                    ger2();
-                    QSet<QString>* set2 = &(ger2.wStem);
+                    QSet<QString>* set1;
+                    if(synSetHash.contains(r1e1Label)) {
+                        set1 = synSetHash.value(r1e1Label);
+                    }
+                    else {
+                        GER ger1(r1e1Label,0,2);
+                        ger1();
+                        set1 = ger1.wStem;
+                        synSetHash.insert(r1e1Label,set1);
+                    }
+
+                    QSet<QString>* set2;
+                    if(synSetHash.contains(r1e2Label)) {
+                        set2 = synSetHash.value(r1e2Label);
+                    }
+                    else {
+                        GER ger2(r1e2Label,0,2);
+                        ger2();
+                        set2 = ger2.wStem;
+                        synSetHash.insert(r1e2Label,set2);
+                    }
 
                     Gamma gamma1(&r2e1Label);
                     gamma1();
@@ -504,6 +512,14 @@ void ATagger::constructCrossRelations() {
             }
         }
     }
+
+    QHashIterator<QString,QSet<QString>* > i(synSetHash);
+     while (i.hasNext()) {
+         i.next();
+         i.value()->clear();
+         delete i.value();
+     }
+     synSetHash.clear();
 }
 
 void ATagger::drawNFA() {
@@ -539,21 +555,24 @@ void ATagger::drawNFA() {
     }
 }
 
-bool ATagger::runSimulator() {
+bool ATagger::runSimulator(bool isBatch) {
 
     /// Build NFA
-    if(!buildNFA()) {
-        return false;
-    }
+    if(!isBatch) {
+        if(!buildNFA()) {
+            return false;
+        }
 
-    drawNFA();
+        drawNFA();
 
-    if(!buildActionFile()) {
-        return false;
+        if(!buildActionFile()) {
+            return false;
+        }
+
+        simulationVector.clear();
     }
 
     /// Simulate NFAs referring to all the MSFs built
-    simulationVector.clear();
     for(int i=0; i<nfaVector->count(); i++) {
         int lastCount = simulationVector.count();
         /// Simulate current MSF starting from a set of tokens referring to a single word
@@ -563,6 +582,9 @@ bool ATagger::runSimulator() {
                 MERFTag* merftag = (MERFTag*)(match->parent);
                 merftag->pos = merftag->getPOS();
                 merftag->length = merftag->getLength();
+                merftag->id = uniqueID;
+                uniqueID++;
+                merftag->sourceText = textFile.split('/').last();
                 simulationVector.append(merftag);
 
                 /// Skip the words in the match
@@ -583,11 +605,6 @@ bool ATagger::runSimulator() {
         /** Done **/
     }
 
-    /** Clean data in MSF vector **/
-    for(int i=0; i<msfVector->count();i++) {
-        msfVector->at(i)->actionData.clear();
-        msfVector->at(i)->functionParametersMap.clear();
-    }
     return true;
 }
 
@@ -595,7 +612,8 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
         /// initialize a MERFTag and return it
         MERFTag* merftag = new MERFTag((MSFormula*)(nfa->formula),sarf);
-        SequentialM* seq = new SequentialM(merftag);
+        SequentialM* seq = new SequentialM(merftag,uniqueID);
+        uniqueID++;
         merftag->setMatch(seq);
         seq->msf = NULL;
         return seq;
@@ -610,15 +628,16 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
 
     /// Get the tags for word at wordIndex
     QList<Tag*> tokens;
-    if(tagHash.contains(wordIndex)) {
-        tokens = tagHash.values(wordIndex);
+    if(tagHash->contains(wordIndex)) {
+        tokens = tagHash->values(wordIndex);
     }
     else {
         /// Word is tagged by NONE
         int pos = wordIndexMap.key(wordIndex);
         Word word = nextWord(text, pos);
         int length = word.end-word.start+1;
-        Tag* t = new Tag(NULL,pos,length,wordIndex,sarf);
+        Tag* t = new Tag(NULL,pos,length,wordIndex,sarf,uniqueID);
+        uniqueID++;
         tokens.append(t);
     }
 
@@ -659,9 +678,11 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 KeyM* keyMatch = (KeyM*)temp;
                 if(tokens.at(i)->tagtype == NULL) {
                     keyMatch->key = "NONE";
+                    keyMatch->id = tokens.at(i)->id;
                 }
                 else {
                     keyMatch->key = tokens.at(i)->tagtype->name;
+                    keyMatch->id = tokens.at(i)->id;
                 }
                 keyMatch->length = tokens.at(i)->length;
                 keyMatch->pos = tokens.at(i)->pos;
@@ -718,14 +739,15 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 }
                 else {
                     if(msf->isMBF()) {
-                        KeyM* keym = new KeyM(temp,"",-1,-1);
+                        KeyM* keym = new KeyM(temp,"",-1,-1,-1);
                         keym->msf = msf;
                         temp->setMatch(keym);
                         temp = keym;
                     }
                     else if(msf->isUnary()) {
                         UNARYF* unary = (UNARYF*)msf;
-                        UnaryM* unarym = new UnaryM(unary->op,temp,unary->limit);
+                        UnaryM* unarym = new UnaryM(unary->op,uniqueID,temp,unary->limit);
+                        uniqueID++;
                         unarym->msf = msf;
                         temp->setMatch(unarym);
                         temp = unarym;
@@ -734,14 +756,16 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                         /// AND case is resolved down in code
                         BINARYF* binary = (BINARYF*)msf;
                         if(binary->op == OR) {
-                            BinaryM* binarym = new BinaryM(OR,temp);
+                            BinaryM* binarym = new BinaryM(OR,temp,uniqueID);
+                            uniqueID++;
                             binarym->msf = msf;
                             temp->setMatch(binarym);
                             temp = binarym;
                         }
                     }
                     else if(msf->isSequential()) {
-                        SequentialM* seqm = new SequentialM(temp);
+                        SequentialM* seqm = new SequentialM(temp,uniqueID);
+                        uniqueID++;
                         seqm->msf = msf;
                         temp->setMatch(seqm);
                         temp = seqm;
@@ -807,7 +831,8 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 MSF* msf = pair.first;
 
                 Match* parent = matches[2];
-                BinaryM* binarym = new BinaryM(AND,parent);
+                BinaryM* binarym = new BinaryM(AND,parent,uniqueID);
+                uniqueID++;
                 binarym->msf = msf;
                 parent->setMatch(binarym);
                 MERFTag* mt1 = (MERFTag*)(matches[0]);
@@ -950,7 +975,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     return NULL;
 }
 
-QByteArray ATagger::dataInJsonFormat(Data _data) {
+QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >* filesHash, QVector<QString>* textFiles) {
     QByteArray json;
 
     if(_data == sarfTTV) {
@@ -1024,23 +1049,59 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
         /** Convert Tag to JSON **/
 
         QVariantMap tagdata;
-        tagdata.insert("file",_atagger->textFile);
+        if(textFiles == NULL) {
+            tagdata.insert("file",_atagger->textFile);
+            tagdata.insert("batch", false);
+        }
+        else {
+            QVariantList tFiles;
+            for(int i=0; i< textFiles->count(); i++) {
+                tFiles.append(textFiles->at(i));
+            }
+            tagdata.insert("file", tFiles);
+            tagdata.insert("batch", true);
+        }
         tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
         tagdata.insert("textchecksum", _atagger->text.count());
-        tagdata.insert("version", 1.0);
+        tagdata.insert("version", 1.1);
         QVariantList tagset;
-        QHashIterator<int, Tag*> iTag(_atagger->tagHash);
-        while (iTag.hasNext()) {
-            iTag.next();
-            QVariantMap data;
-            data.insert("type",iTag.value()->tagtype->name);
-            data.insert("pos",iTag.value()->pos);
-            data.insert("length",iTag.value()->length);
-            data.insert("wordIndex",iTag.value()->wordIndex);
-            data.insert("source",iTag.value()->source);
-            tagset << data;
+        if(filesHash == NULL) {
+            QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));
+            while (iTag.hasNext()) {
+                iTag.next();
+                QVariantMap data;
+                data.insert("type",iTag.value()->tagtype->name);
+                data.insert("pos",iTag.value()->pos);
+                data.insert("length",iTag.value()->length);
+                data.insert("wordIndex",iTag.value()->wordIndex);
+                data.insert("source",iTag.value()->source);
+                data.insert("id",iTag.value()->id);
+                data.insert("sText", iTag.value()->sourceText);
+                tagset << data;
+            }
+        }
+        else {
+            for(int i=0; i<filesHash->count(); i++) {
+                QHashIterator<int, Tag*> iTag(*(filesHash->at(i)));
+                while (iTag.hasNext()) {
+                    iTag.next();
+                    QVariantMap data;
+                    data.insert("type",iTag.value()->tagtype->name);
+                    data.insert("pos",iTag.value()->pos);
+                    data.insert("length",iTag.value()->length);
+                    data.insert("wordIndex",iTag.value()->wordIndex);
+                    data.insert("source",iTag.value()->source);
+                    data.insert("id",iTag.value()->id);
+                    data.insert("sText", iTag.value()->sourceText);
+                    tagset << data;
+                }
+            }
         }
         tagdata.insert("TagArray",tagset);
+
+        QHash<Match*,int> entityHash;
+        QVariantList entityList;
+        QVariantList relationList;
 
         if(!(_atagger->simulationVector.isEmpty())) {
             QVariantList simulationList;
@@ -1052,28 +1113,96 @@ QByteArray ATagger::dataInJsonFormat(Data _data) {
                 data.insert("pos", mtag->pos);
                 data.insert("length", mtag->length);
                 data.insert("source",mtag->source);
+                data.insert("sText",mtag->sourceText);
                 if(mtag->match != NULL) {
                     data.insert("match",mtag->match->getJSON());
                 }
 
-                /*
-                if(!(mtag->relationMatchVector.isEmpty())) {
-                    QVariantList relMatchList;
-                    for(int j=0; j<mtag->relationMatchVector.count(); j++) {
-                        RelationM* relm = mtag->relationMatchVector[j];
-                        QVariantMap relmData;
-                        relmData.insert("relation",relm->relation->name);
-                        relmData.insert("e1Label",relm->e1Label);
-                        relmData.insert("e2Label",relm->e2Label);
-                        relmData.insert("edgeLabel",relm->edgeLabel);
-                        relMatchList << relmData;
+                for(int j=0; j<mtag->relationMatchVector.count(); j++) {
+                    RelationM* rel = mtag->relationMatchVector[j];
+                    QVariantMap entity1Data;
+                    QVariantMap entity2Data;
+                    QVariantMap edgeData;
+                    QVariantMap relationData;
+
+                    int e1ID = -1;
+                    if(!entityHash.contains(rel->entity1)) {
+                        entity1Data.insert("id",uniqueID);
+                        e1ID = uniqueID;
+                        uniqueID++;
+                        entity1Data.insert("text",rel->e1Label);
+                        entity1Data.insert("pos",rel->entity1->getPOS());
+                        entityHash.insert(rel->entity1,e1ID);
+                        entityList.append(entity1Data);
                     }
-                    data.insert("relationMatches",relMatchList);
+                    else {
+                        e1ID = entityHash.value(rel->entity1);
+                    }
+
+                    int e2ID = -1;
+                    if(!entityHash.contains(rel->entity2)) {
+                        entity2Data.insert("id",uniqueID);
+                        e2ID = uniqueID;
+                        uniqueID++;
+                        entity2Data.insert("text",rel->e2Label);
+                        entity2Data.insert("pos",rel->entity2->getPOS());
+                        entityHash.insert(rel->entity2,e2ID);
+                        entityList.append(entity2Data);
+                    }
+                    else {
+                        e2ID = entityHash.value(rel->entity2);
+                    }
+
+                    int edgeID = -1;
+                    if(rel->edge != NULL) {
+                        if(!entityHash.contains(rel->edge)) {
+                            edgeData.insert("id",uniqueID);
+                            edgeID = uniqueID;
+                            uniqueID++;
+                            edgeData.insert("text",rel->edgeLabel);
+                            edgeData.insert("pos",rel->edge->getPOS());
+                            entityHash.insert(rel->edge,edgeID);
+                            entityList.append(edgeData);
+                        }
+                        else {
+                            edgeID = entityHash.value(rel->edge);
+                        }
+                    }
+
+                    relationData.insert("id", uniqueID);
+                    uniqueID++;
+                    relationData.insert("e1ID", e1ID);
+                    relationData.insert("e2ID", e2ID);
+                    if(edgeID != -1) {
+                        relationData.insert("edgeID", edgeID);
+                    }
+                    else {
+                        relationData.insert("edge", rel->edgeLabel);
+                    }
+                    relationList.append(relationData);
                 }
-                */
+
                 simulationList << data;
             }
             tagdata.insert("simulationTags",simulationList);
+            tagdata.insert("entities", entityList);
+            tagdata.insert("relations", relationList);
+
+            /** Add the cross reference tags **/
+
+            if(!(crossRelationVector.isEmpty())) {
+                QVariantList crossRelList;
+                for(int i=0; i<crossRelationVector.count(); i++) {
+                    RelationM* relM = crossRelationVector[i];
+                    QVariantMap crossRel;
+                    crossRel.insert("id",uniqueID);
+                    uniqueID++;
+                    crossRel.insert("e1ID",relM->entity1->id);
+                    crossRel.insert("e2ID",relM->entity2->id);
+                    crossRelList.append(crossRel);
+                }
+                tagdata.insert("crossRels",crossRelList);
+            }
         }
 
         QJson::Serializer serializer;

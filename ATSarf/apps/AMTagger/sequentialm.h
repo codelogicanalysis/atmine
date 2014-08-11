@@ -7,7 +7,7 @@
 class SequentialM : public Match
 {
 public:
-    SequentialM(Match* parent);
+    SequentialM(Match* parent, int id);
     QVector<Match*> matches;
     bool setMatch(Match* match);
     bool isUnaryM();

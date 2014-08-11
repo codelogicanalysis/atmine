@@ -1,7 +1,7 @@
 #include "keym.h"
 #include "amfiller.h"
 
-KeyM::KeyM(Match *parent, QString key, int pos, int length): Match(KEY,parent)
+KeyM::KeyM(Match *parent, QString key, int pos, int length, int id): Match(KEY,parent,id)
 {
     this->parent = parent;
     this->key = key;
@@ -176,6 +176,7 @@ QVariantMap KeyM::getJSON() {
     keyMap.insert("length",length);
     keyMap.insert("word",word);
     keyMap.insert("msf",msf->name);
+    keyMap.insert("id",id);
     return keyMap;
 }
 

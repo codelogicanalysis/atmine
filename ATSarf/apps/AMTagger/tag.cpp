@@ -1,15 +1,17 @@
 #include "tag.h"
 
 Tag::Tag() {
-    tType.clear();
+    sourceText.clear();
 }
 
-Tag::Tag(const TagType* tagtype, int pos, int length, int wordIndex, Source source) {
+Tag::Tag(const TagType* tagtype, int pos, int length, int wordIndex, Source source, int id, QString sourceText) {
     this->tagtype = tagtype;
     this->pos = pos;
     this->length = length;
     this->wordIndex = wordIndex;
     this->source = source;
+    this->id = id;
+    this->sourceText = sourceText;
 }
 
 bool Tag::operator ==(const Tag& tag) const {

@@ -11,7 +11,7 @@ class MERFTag : public Match
 {
 public:
     MERFTag();
-    MERFTag(MSFormula* formula, Source source=sarf);
+    MERFTag(MSFormula* formula, int id, Source source=sarf);
     bool setMatch(Match* match);
     bool isUnaryM();
     bool isBinaryM();
