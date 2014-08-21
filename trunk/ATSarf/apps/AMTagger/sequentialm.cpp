@@ -224,10 +224,10 @@ QVariantMap SequentialM::getJSON() {
     seqMap.insert("type","sequential");
     seqMap.insert("id",id);
     if(msf == NULL) {
-        seqMap.insert("msf","_NULL_");
+        seqMap.insert("mreid","_NULL_");
     }
     else {
-        seqMap.insert("msf",msf->name);
+        seqMap.insert("mreid",msf->name);
     }
     QVariantList matchList;
     for(int i=matches.count()-1; i>=0; i--) {

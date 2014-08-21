@@ -511,13 +511,13 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         _atagger->uniqueID = id+1;
     }
     type = matchData.value("type").toString();
-    msfName = matchData.value("msf").toString();
+    msfName = matchData.value("mreid").toString();
 
     if(type == "key") {
         int pos = matchData.value("pos").toInt();
         int length = matchData.value("length").toInt();
         QString key = matchData.value("key").toString();
-        QString word = matchData.value("word").toString();
+        QString word = matchData.value("text").toString();
         MSF* msf = formula->map.value(msfName);
         KeyM* keym = new KeyM(parent,key,pos,length,id);
         keym->word = word;
@@ -579,7 +579,7 @@ bool readMatch(MSFormula* formula, QVariant data, Match* parent) {
         MERFTag* merftag = new MERFTag();
         MSF* msf = formula->map.value(msfName);
         merftag->msf = msf;
-        QString formulaName = matchData.value("formula").toString();
+        QString formulaName = matchData.value("type").toString();
         merftag->id = id;
         for(int i=0; i<_atagger->msfVector->count(); i++) {
             if(_atagger->msfVector->at(i)->name == formulaName) {

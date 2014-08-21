@@ -405,7 +405,7 @@ void AMTMainWindow::open() {
     }
     else {
         version = result.value("version").toDouble();
-        if(version<1.1) {
+        if(version<1.2) {
             QMessageBox::warning(this, "Warning", "Tool doesn't support this tag version anymore");
             return;
         }
@@ -585,11 +585,11 @@ void AMTMainWindow::process(QByteArray & json) {
 
     /** Read simulation Tags if found **/
 
-    if(!(result.value("simulationTags").isNull())) {
-        foreach(QVariant merfTag, result["simulationTags"].toList()) {
+    if(!(result.value("MREMatchTrees").isNull())) {
+        foreach(QVariant merfTag, result["MREMatchTrees"].toList()) {
 
             QVariantMap merfTagElements = merfTag.toMap();
-            QString formulaName = merfTagElements.value("formula").toString();
+            QString formulaName = merfTagElements.value("type").toString();
             int pos = merfTagElements.value("pos").toInt();
             int id = merfTagElements.value("id").toInt();
             int length = merfTagElements.value("length").toInt();
@@ -1559,7 +1559,7 @@ void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
             entry << "Description" <<desc;
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
-            entry << "Formula" << type;
+            entry << "Type" << type;
             items.append(new QTreeWidgetItem((QTreeWidget*)0, entry));
             entry.clear();
             entry << "Source" << item->text(3);

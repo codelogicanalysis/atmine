@@ -54,7 +54,7 @@ int MERFTag::getMatchCount() {
 
 void MERFTag::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
     QStringList data;
-    data << "Formula" << formula->name;
+    data << "Type" << formula->name;
     QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
     parentItem = newItem;
 
@@ -176,8 +176,8 @@ QVariantMap MERFTag::getJSON() {
     QVariantMap merftagMap;
     merftagMap.insert("id",id);
     merftagMap.insert("type","merftag");
-    merftagMap.insert("msf",msf->name);
-    merftagMap.insert("formula",formula->name);
+    merftagMap.insert("mreid",msf->name);
+    merftagMap.insert("type",formula->name);
     merftagMap.insert("match",match->getJSON());
     return merftagMap;
 }

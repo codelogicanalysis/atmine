@@ -241,7 +241,7 @@ QString UnaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
 QVariantMap UnaryM::getJSON() {
     QVariantMap unaryMap;
     unaryMap.insert("type","unary");
-    unaryMap.insert("msf",msf->name);
+    unaryMap.insert("mreid",msf->name);
     unaryMap.insert("op",op);
     unaryMap.insert("limit",limit);
     unaryMap.insert("id",id);
