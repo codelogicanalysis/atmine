@@ -219,7 +219,7 @@ QVariantMap BinaryM::getJSON() {
     QVariantMap binaryMap;
     binaryMap.insert("id",id);
     binaryMap.insert("type","binary");
-    binaryMap.insert("msf",msf->name);
+    binaryMap.insert("mreid",msf->name);
     binaryMap.insert("op",op);
     binaryMap.insert("leftMatch",leftMatch->getJSON());
     if(rightMatch != NULL) {

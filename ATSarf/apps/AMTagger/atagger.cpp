@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <QSet>
 
 ATagger * _atagger = NULL;
 
@@ -1063,7 +1064,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
         }
         tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
         tagdata.insert("textchecksum", _atagger->text.count());
-        tagdata.insert("version", 1.1);
+        tagdata.insert("version", 1.2);
         QVariantList tagset;
         if(filesHash == NULL) {
             QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));
@@ -1076,7 +1077,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                 data.insert("wordIndex",iTag.value()->wordIndex);
                 data.insert("source",iTag.value()->source);
                 data.insert("id",iTag.value()->id);
-                data.insert("sText", iTag.value()->sourceText);
+                data.insert("file", iTag.value()->sourceText);
                 tagset << data;
             }
         }
@@ -1092,14 +1093,14 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                     data.insert("wordIndex",iTag.value()->wordIndex);
                     data.insert("source",iTag.value()->source);
                     data.insert("id",iTag.value()->id);
-                    data.insert("sText", iTag.value()->sourceText);
+                    data.insert("file", iTag.value()->sourceText);
                     tagset << data;
                 }
             }
         }
         tagdata.insert("TagArray",tagset);
 
-        QHash<Match*,int> entityHash;
+        QSet<Match*> entitySet;
         QVariantList entityList;
         QVariantList relationList;
 
@@ -1109,11 +1110,11 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                 MERFTag *mtag = (MERFTag*)(_atagger->simulationVector.at(i));
                 MSFormula* formula = mtag->formula;
                 QVariantMap data;
-                data.insert("formula", formula->name);
+                data.insert("type", formula->name);
                 data.insert("pos", mtag->pos);
                 data.insert("length", mtag->length);
                 data.insert("source",mtag->source);
-                data.insert("sText",mtag->sourceText);
+                data.insert("file",mtag->sourceText);
                 if(mtag->match != NULL) {
                     data.insert("match",mtag->match->getJSON());
                 }
@@ -1125,66 +1126,67 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                     QVariantMap edgeData;
                     QVariantMap relationData;
 
-                    int e1ID = -1;
-                    if(!entityHash.contains(rel->entity1)) {
-                        entity1Data.insert("id",uniqueID);
-                        e1ID = uniqueID;
-                        uniqueID++;
+                    if(!entitySet.contains(rel->entity1)) {
+                        entity1Data.insert("id",rel->entity1->id);
                         entity1Data.insert("text",rel->e1Label);
                         entity1Data.insert("pos",rel->entity1->getPOS());
-                        entityHash.insert(rel->entity1,e1ID);
+                        entity1Data.insert("mreid",rel->entity1->msf->name);
+                        Match* parent = rel->entity1;
+                        while(parent->parent != NULL) {
+                            parent = parent->parent;
+                        }
+                        MERFTag* merftag = (MERFTag*)parent;
+                        entity1Data.insert("file",merftag->sourceText);
+                        entitySet.insert(rel->entity1);
                         entityList.append(entity1Data);
                     }
-                    else {
-                        e1ID = entityHash.value(rel->entity1);
-                    }
 
-                    int e2ID = -1;
-                    if(!entityHash.contains(rel->entity2)) {
-                        entity2Data.insert("id",uniqueID);
-                        e2ID = uniqueID;
-                        uniqueID++;
+                    if(!entitySet.contains(rel->entity2)) {
+                        entity2Data.insert("id",rel->entity2->id);
                         entity2Data.insert("text",rel->e2Label);
                         entity2Data.insert("pos",rel->entity2->getPOS());
-                        entityHash.insert(rel->entity2,e2ID);
+                        entity2Data.insert("mreid",rel->entity2->msf->name);
+                        Match* parent = rel->entity2;
+                        while(parent->parent != NULL) {
+                            parent = parent->parent;
+                        }
+                        MERFTag* merftag = (MERFTag*)parent;
+                        entity2Data.insert("file",merftag->sourceText);
+                        entitySet.insert(rel->entity2);
                         entityList.append(entity2Data);
                     }
-                    else {
-                        e2ID = entityHash.value(rel->entity2);
-                    }
 
-                    int edgeID = -1;
                     if(rel->edge != NULL) {
-                        if(!entityHash.contains(rel->edge)) {
-                            edgeData.insert("id",uniqueID);
-                            edgeID = uniqueID;
-                            uniqueID++;
-                            edgeData.insert("text",rel->edgeLabel);
-                            edgeData.insert("pos",rel->edge->getPOS());
-                            entityHash.insert(rel->edge,edgeID);
-                            entityList.append(edgeData);
+                        edgeData.insert("id",rel->edge->id);
+                        edgeData.insert("text",rel->edgeLabel);
+                        edgeData.insert("pos",rel->edge->getPOS());
+                        edgeData.insert("mreid",rel->edge->msf->name);
+                        Match* parent = rel->edge;
+                        while(parent->parent != NULL) {
+                            parent = parent->parent;
                         }
-                        else {
-                            edgeID = entityHash.value(rel->edge);
-                        }
+                        MERFTag* merftag = (MERFTag*)parent;
+                        edgeData.insert("file",merftag->sourceText);
+                        entitySet.insert(rel->edge);
+                        entityList.append(edgeData);
                     }
 
                     relationData.insert("id", uniqueID);
                     uniqueID++;
-                    relationData.insert("e1ID", e1ID);
-                    relationData.insert("e2ID", e2ID);
-                    if(edgeID != -1) {
-                        relationData.insert("edgeID", edgeID);
+                    relationData.insert("source", rel->entity1->id);
+                    relationData.insert("destination", rel->entity2->id);
+                    if(rel->edge != NULL) {
+                        relationData.insert("edge", rel->edge->id);
                     }
                     else {
-                        relationData.insert("edge", rel->edgeLabel);
+                        relationData.insert("edgeLabel", rel->edgeLabel);
                     }
                     relationList.append(relationData);
                 }
 
                 simulationList << data;
             }
-            tagdata.insert("simulationTags",simulationList);
+            tagdata.insert("MREMatchTrees",simulationList);
             tagdata.insert("entities", entityList);
             tagdata.insert("relations", relationList);
 
@@ -1197,8 +1199,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                     QVariantMap crossRel;
                     crossRel.insert("id",uniqueID);
                     uniqueID++;
-                    crossRel.insert("e1ID",relM->entity1->id);
-                    crossRel.insert("e2ID",relM->entity2->id);
+                    crossRel.insert("source",relM->entity1->id);
+                    crossRel.insert("destination",relM->entity2->id);
                     crossRelList.append(crossRel);
                 }
                 tagdata.insert("crossRels",crossRelList);

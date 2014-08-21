@@ -174,8 +174,8 @@ QVariantMap KeyM::getJSON() {
     keyMap.insert("key",key);
     keyMap.insert("pos",pos);
     keyMap.insert("length",length);
-    keyMap.insert("word",word);
-    keyMap.insert("msf",msf->name);
+    keyMap.insert("text",word);
+    keyMap.insert("mreid",msf->name);
     keyMap.insert("id",id);
     return keyMap;
 }
