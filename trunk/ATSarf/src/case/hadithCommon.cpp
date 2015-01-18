@@ -110,8 +110,8 @@ void hadith_initialize() {
 	_2ama.append(alef).append(meem).append(alef);
 	_3ama.append(_3yn).append(meem).append(alef);
 	//abihi.append(alef).append(ba2).append(ya2).append(ha2);
-	abyi.append(alef).append(ba2).append(ya2);
-	suffixNames.append(QString("")+ha2);
+        abyi.append(alef).append(ba2).append(ya2);
+        suffixNames.append(QString("")+ha2);
 	suffixNames.append(QString("")+ha2+meem);
 	suffixNames.append(QString("")+ha2+meem+alef);
 	alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);

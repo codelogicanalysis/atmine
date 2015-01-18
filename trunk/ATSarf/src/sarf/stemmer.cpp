@@ -247,11 +247,11 @@ bool Stemmer::on_match_helper()
 							Suffix->info.start+=count;
 							Stem->info.finish+=count;
 						}
-					}while (Stem->computeNextSolution(S_inf));
+                                        }while (Stem->computeNextSolution(S_inf));
 					delete S_inf;
-				}while (Prefix->computeNextSolution(p_inf));
+                                }while (Prefix->computeNextSolution(p_inf));
 				delete p_inf;
-			}while(Suffix->computeNextSolution(s_inf));
+                        }while(Suffix->computeNextSolution(s_inf));
 			delete s_inf;
 		} else {
 			if (!on_match())

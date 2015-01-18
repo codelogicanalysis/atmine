@@ -365,14 +365,14 @@ bool SarfTag::on_match() {
                     QStringList stem_glosses = getGloss(stem.description());
                     //QStringList second_glosses = getGloss(tag->second);
                     for(int k=0; k<second_glosses.count(); k++) {
-                        if(isA && stem_glosses.contains(second_glosses[k])) {
+                        if(isA && stem_glosses.contains(second_glosses[k],Qt::CaseInsensitive)) {
                             contain = true;
                             break;
                         }
                         else if(!isA) {
                             for(int m=0; m< stem_glosses.count(); m++) {
                                 QString gloss = stem_glosses[m];
-                                if(gloss.contains(second_glosses[k])) {
+                                if(gloss.contains(second_glosses[k],Qt::CaseInsensitive)) {
                                     contain = true;
                                     break;
                                 }

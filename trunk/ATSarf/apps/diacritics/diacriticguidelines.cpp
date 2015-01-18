@@ -1,17 +1,32 @@
 #include <QStringList>
 #include "diacriticguidelines.h"
-#define TIME_ON
-#include "scTimer.h"
 
 DiacriticGuidelines::DiacriticGuidelines(long number_of_solutions, bool get_all_details) : Enumerator(get_all_details) {
     solution_counter = 1;
     this->number_of_solutions = number_of_solutions;
-    index = 0;
-    trie = new VWTrie();
+    //trie = new VWTrie();
 }
 
+/*
 bool DiacriticGuidelines::saveTrie() {
-    trie->save(QString(".vocalizedword_trie_bama.dat").toStdString().data());
+    trie->save(QString("unvocalizedword_trie_bama.dat").toStdString().data());
+    return true;
+}
+*/
+
+bool DiacriticGuidelines::serializeHash() {
+    QString fileName = "unvocalized_words_";
+    if(number_of_solutions == -1) {
+        fileName.append("full.dat");
+    }
+    else {
+        fileName.append(QString::number(number_of_solutions));
+        fileName.append(".dat");
+    }
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    QDataStream out(&file);
+    out << uvWords;
     return true;
 }
 
@@ -53,24 +68,19 @@ bool DiacriticGuidelines::on_match()
         }
     }
 
-    /** Add word to trie **/
-    unsigned long long v2 = 0;
-    unsigned long long v=0;
-    int flags = 3;
-    TIME_IT(v,flags,1,trie->store(unvocalizedWord,index));
-    //bool ret = trie->store(unvocalizedWord,index);
+    ///** Add word to trie **/
+    //bool ret = trie->store(unvocalizedWord,1);
 
-    //if(!ret) {
-    //    cerr << "word not entered!" << endl;
-    //}
-
-
-    index++;
-    v2+=v;
+    if(uvWords.contains(unvocalizedWord)) {
+        qint32 oldValue = uvWords.value(unvocalizedWord);
+        uvWords.insert(unvocalizedWord,oldValue+1);
+    }
+    else {
+        uvWords.insert(unvocalizedWord,1);
+    }
 
     if(solution_counter%10000 == 0) {
-           cout << solution_counter << "\t|\t" << v2 << endl;
-           v2=0;
+           cout << solution_counter << endl;
 	}
 
     /** Check for number of solutions requested **/
