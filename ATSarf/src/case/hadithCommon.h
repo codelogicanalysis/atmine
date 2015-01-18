@@ -113,7 +113,7 @@
 	} StateInfo;
 
 #ifdef REFINEMENTS
-	extern QStringList compound_words, rasoul_words,suffixNames;
+        extern QStringList compound_words, rasoul_words,suffixNames;
 	extern QString alrasoul,abyi;
 #endif
 	extern QString hadath,abid,alrasoul,abyi,_3an,_2ama,_3ama;
@@ -329,9 +329,9 @@
 		#ifndef PREPROCESS_DESCRIPTIONS
 			else if (description=="son")
 		#else
-			else if (familyNMC_descriptions.contains(stem_info->description_id()) &&
+                        else if (familyNMC_descriptions.contains(stem_info->description_id())
 					#ifdef REFINEMENTS
-					 !equal_ignore_diacritics(stem_info->raw_data,_2ama) && !equal_ignore_diacritics(stem_info->raw_data,_3ama)
+                                         && !equal_ignore_diacritics(stem_info->raw_data,_2ama) && !equal_ignore_diacritics(stem_info->raw_data,_3ama)
 					#endif
 				)
 		#endif

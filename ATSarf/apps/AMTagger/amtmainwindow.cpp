@@ -1907,6 +1907,27 @@ void AMTMainWindow::sarfTagging(bool color) {
         fillTreeWidget(sarf);
         finishTaggingText();
     }
+
+    cout << "The total number of tags is: " << _atagger->tagHash->count() << endl;
+    QHash<QString,int> tagCount;
+    QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));
+    while (iTag.hasNext()) {
+        iTag.next();
+        QString tagName = iTag.value()->tagtype->name;
+        if(tagCount.contains(tagName)) {
+            int count = tagCount.value(tagName);
+            tagCount.insert(tagName,count+1);
+        }
+        else {
+            tagCount.insert(tagName,1);
+        }
+    }
+
+    QHashIterator<QString, int> it(tagCount);
+    while (it.hasNext()) {
+        it.next();
+        cout << it.key().toStdString() << ": " << it.value() << endl;
+    }
 }
 
 void AMTMainWindow::customizeSarfTags() {

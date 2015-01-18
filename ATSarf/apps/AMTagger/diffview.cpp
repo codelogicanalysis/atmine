@@ -460,6 +460,58 @@ void DiffView::rbExact_clicked() {
     text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
+    QHash<QString,int> curTagCount;
+    for(int i=0; i< tVector->count(); i++) {
+        QString tagName = tVector->at(i)->tagtype->name;
+        if(curTagCount.contains(tagName)) {
+            int count = curTagCount.value(tagName);
+            curTagCount.insert(tagName,count+1);
+        }
+        else {
+            curTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> refTagCount;
+    for(int i=0; i< cttVector->count(); i++) {
+        QString tagName = cttVector->at(i)->tagtype->name;
+        if(refTagCount.contains(tagName)) {
+            int count = refTagCount.value(tagName);
+            refTagCount.insert(tagName,count+1);
+        }
+        else {
+            refTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> tagCount;
+    for(int i=0; i< commonVector.count(); i++) {
+        QString tagName = commonVector.at(i)->tagtype->name;
+        if(tagCount.contains(tagName)) {
+            int count = tagCount.value(tagName);
+            tagCount.insert(tagName,count+1);
+        }
+        else {
+            tagCount.insert(tagName,1);
+        }
+    }
+
+    text.append("\n\nPrecision, Recall, and F-Measure per Tag Type:\n");
+
+    QHashIterator<QString, int> it(refTagCount);
+    while (it.hasNext()) {
+        it.next();
+
+        double pttprecision = (tagCount.value(it.key()) * 1.0) / it.value();
+        double pttrecall = (tagCount.value(it.key()) * 1.0) / curTagCount.value(it.key());
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
+
+        text.append(it.key() + ":\n");
+        text.append("\tPrecision: " + QString::number(pttprecision) + '\n');
+        text.append("\tRecall: " + QString::number(pttrecall) + '\n');
+        text.append("\tF-Measure: " + QString::number(fmeasure) + '\n');
+    }
+
     txtStats->setText(text);
 }
 
@@ -544,6 +596,58 @@ void DiffView::rbIntersect_clicked() {
     text.append(QString::number(recall));
     text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
+
+    QHash<QString,int> curTagCount;
+    for(int i=0; i< tVector->count(); i++) {
+        QString tagName = tVector->at(i)->tagtype->name;
+        if(curTagCount.contains(tagName)) {
+            int count = curTagCount.value(tagName);
+            curTagCount.insert(tagName,count+1);
+        }
+        else {
+            curTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> refTagCount;
+    for(int i=0; i< cttVector->count(); i++) {
+        QString tagName = cttVector->at(i)->tagtype->name;
+        if(refTagCount.contains(tagName)) {
+            int count = refTagCount.value(tagName);
+            refTagCount.insert(tagName,count+1);
+        }
+        else {
+            refTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> tagCount;
+    for(int i=0; i< commonVector.count(); i++) {
+        QString tagName = commonVector.at(i)->tagtype->name;
+        if(tagCount.contains(tagName)) {
+            int count = tagCount.value(tagName);
+            tagCount.insert(tagName,count+1);
+        }
+        else {
+            tagCount.insert(tagName,1);
+        }
+    }
+
+    text.append("\n\nPrecision, Recall, and F-Measure per Tag Type:\n");
+
+    QHashIterator<QString, int> it(refTagCount);
+    while (it.hasNext()) {
+        it.next();
+
+        double pttprecision = (tagCount.value(it.key()) * 1.0) / it.value();
+        double pttrecall = (tagCount.value(it.key()) * 1.0) / curTagCount.value(it.key());
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
+
+        text.append(it.key() + ":\n");
+        text.append("\tPrecision: " + QString::number(pttprecision) + '\n');
+        text.append("\tRecall: " + QString::number(pttrecall) + '\n');
+        text.append("\tF-Measure: " + QString::number(fmeasure) + '\n');
+    }
 
     txtStats->setText(text);
 }
@@ -630,6 +734,58 @@ void DiffView::rbAContainB_clicked() {
     text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
 
+    QHash<QString,int> curTagCount;
+    for(int i=0; i< tVector->count(); i++) {
+        QString tagName = tVector->at(i)->tagtype->name;
+        if(curTagCount.contains(tagName)) {
+            int count = curTagCount.value(tagName);
+            curTagCount.insert(tagName,count+1);
+        }
+        else {
+            curTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> refTagCount;
+    for(int i=0; i< cttVector->count(); i++) {
+        QString tagName = cttVector->at(i)->tagtype->name;
+        if(refTagCount.contains(tagName)) {
+            int count = refTagCount.value(tagName);
+            refTagCount.insert(tagName,count+1);
+        }
+        else {
+            refTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> tagCount;
+    for(int i=0; i< commonVector.count(); i++) {
+        QString tagName = commonVector.at(i)->tagtype->name;
+        if(tagCount.contains(tagName)) {
+            int count = tagCount.value(tagName);
+            tagCount.insert(tagName,count+1);
+        }
+        else {
+            tagCount.insert(tagName,1);
+        }
+    }
+
+    text.append("\n\nPrecision, Recall, and F-Measure per Tag Type:\n");
+
+    QHashIterator<QString, int> it(refTagCount);
+    while (it.hasNext()) {
+        it.next();
+
+        double pttprecision = (tagCount.value(it.key()) * 1.0) / it.value();
+        double pttrecall = (tagCount.value(it.key()) * 1.0) / curTagCount.value(it.key());
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
+
+        text.append(it.key() + ":\n");
+        text.append("\tPrecision: " + QString::number(pttprecision) + '\n');
+        text.append("\tRecall: " + QString::number(pttrecall) + '\n');
+        text.append("\tF-Measure: " + QString::number(fmeasure) + '\n');
+    }
+
     txtStats->setText(text);
 }
 
@@ -714,6 +870,58 @@ void DiffView::rbBContainA_clicked() {
     text.append(QString::number(recall));
     text.append("\n\nF-Measure: ");
     text.append(QString::number(fmeasure));
+
+    QHash<QString,int> curTagCount;
+    for(int i=0; i< tVector->count(); i++) {
+        QString tagName = tVector->at(i)->tagtype->name;
+        if(curTagCount.contains(tagName)) {
+            int count = curTagCount.value(tagName);
+            curTagCount.insert(tagName,count+1);
+        }
+        else {
+            curTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> refTagCount;
+    for(int i=0; i< cttVector->count(); i++) {
+        QString tagName = cttVector->at(i)->tagtype->name;
+        if(refTagCount.contains(tagName)) {
+            int count = refTagCount.value(tagName);
+            refTagCount.insert(tagName,count+1);
+        }
+        else {
+            refTagCount.insert(tagName,1);
+        }
+    }
+
+    QHash<QString,int> tagCount;
+    for(int i=0; i< commonVector.count(); i++) {
+        QString tagName = commonVector.at(i)->tagtype->name;
+        if(tagCount.contains(tagName)) {
+            int count = tagCount.value(tagName);
+            tagCount.insert(tagName,count+1);
+        }
+        else {
+            tagCount.insert(tagName,1);
+        }
+    }
+
+    text.append("\n\nPrecision, Recall, and F-Measure per Tag Type:\n");
+
+    QHashIterator<QString, int> it(refTagCount);
+    while (it.hasNext()) {
+        it.next();
+
+        double pttprecision = (tagCount.value(it.key()) * 1.0) / it.value();
+        double pttrecall = (tagCount.value(it.key()) * 1.0) / curTagCount.value(it.key());
+        double fmeasure = 2 * (precision * recall) / (precision + recall);
+
+        text.append(it.key() + ":\n");
+        text.append("\tPrecision: " + QString::number(pttprecision) + '\n');
+        text.append("\tRecall: " + QString::number(pttrecall) + '\n');
+        text.append("\tF-Measure: " + QString::number(fmeasure) + '\n');
+    }
 
     txtStats->setText(text);
 }

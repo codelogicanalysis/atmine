@@ -50,9 +50,33 @@ int main(int argc, char *argv[]) {
         cout<<"All Set"<<endl;
     }
 
-    DiacriticGuidelines dg(solutions,true);
-    dg();
-    dg.saveTrie();
+    QString fileName = "unvocalized_words_";
+    if(solutions == -1) {
+        fileName.append("full.dat");
+    }
+    else {
+        fileName.append(QString::number(solutions));
+        fileName.append(".dat");
+    }
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        DiacriticGuidelines dg(solutions,true);
+        dg();
+        //dg.saveTrie();
+        dg.serializeHash();
+    }
+    else {
+        QDataStream in(&file);    // read the data serialized from the file
+        QHash<QString, qint32> hash;
+        in >> hash;
+
+//        QHashIterator<QString, int> i(hash);
+//        while (i.hasNext()) {
+//            i.next();
+//            cout << i.key().toStdString() << ": " << i.value() << endl;
+//        }
+    }
 
     //This function is called after the processing is done in order to close the tool properly.
     srf.exit();
