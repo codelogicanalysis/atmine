@@ -1,7 +1,7 @@
 #include <QStringList>
 #include "worddensity.h"
 
-WordDensity::WordDensity(long max_word_length, bool get_all_details) : Enumerator(get_all_details)
+WordDensity::WordDensity(long max_word_length, enumeration_type enumtype, bool get_all_details) : Enumerator(enumtype, get_all_details)
 {
     this->max_word_length = max_word_length;
     number_of_uvWords = new long long[max_word_length];

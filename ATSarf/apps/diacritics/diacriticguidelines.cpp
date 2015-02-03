@@ -1,9 +1,11 @@
 #include <QStringList>
 #include "diacriticguidelines.h"
 
-DiacriticGuidelines::DiacriticGuidelines(long number_of_solutions, bool get_all_details) : Enumerator(get_all_details) {
+DiacriticGuidelines::DiacriticGuidelines(long number_of_solutions, enumeration_type enum_type, bool get_all_details) :
+        Enumerator(enum_type, get_all_details) {
     solution_counter = 1;
     this->number_of_solutions = number_of_solutions;
+    this->enum_type = enum_type;
     //trie = new VWTrie();
 }
 
@@ -27,6 +29,7 @@ bool DiacriticGuidelines::serializeHash() {
     file.open(QIODevice::WriteOnly);
     QDataStream out(&file);
     out << uvWords;
+    file.close();
     return true;
 }
 

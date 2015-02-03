@@ -28,8 +28,6 @@
 //};
 //extern SarfParameters sarfParameters;
 
-class Enumerator;
-
 class PrefixEnumeratorMachine: public PrefixEnumerate
 {
 public:
@@ -65,6 +63,7 @@ public:
 
         multiply_params multi_p;
         item_types type;
+        enumeration_type enum_type;
         bool get_all_details;
         QVector<minimal_item_info> * prefix_infos;
         minimal_item_info * stem_info;
@@ -74,13 +73,12 @@ public:
         bool called_everything;
 
         PrefixEnumeratorMachine* Prefix;
-
         StemEnumeratorMachine* Stem;
-
         SuffixEnumeratorMachine* Suffix;
 
-        Enumerator(bool get_all_details=true) {
+        Enumerator(enumeration_type enum_type=ENUMALL, bool get_all_details=true) {
                 // Initialize the prefix,stem, and suffix info to null
+                this->enum_type = enum_type;
                 prefix_infos=NULL;
                 stem_info=NULL;
                 suffix_infos=NULL;
@@ -105,17 +103,21 @@ public:
 
         bool operator()(item_types type)//used for detecting all word parts that start at this position; if returns true means there was a match
         {
-                called_everything=false;
-                this->type=type;
-                //total_matches_till_now=0;
-                if (type==PREFIX)
-                        return Prefix->operator ()();
-                else if (type==STEM)
-                        return Stem->operator ()();
-                else if (type==SUFFIX)
-                        return Suffix->operator ()();
-                else
-                        return false;
+            called_everything=false;
+            this->type=type;
+            //total_matches_till_now=0;
+            if (type==PREFIX) {
+                return Prefix->operator ()();
+            }
+            else if(type==STEM) {
+                return Stem->operator ()();
+            }
+            else if (type==SUFFIX) {
+                return Suffix->operator ()();
+            }
+            else {
+                return false;
+            }
         }
         bool on_match_helper();
 

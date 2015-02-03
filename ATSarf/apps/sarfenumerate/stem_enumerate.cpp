@@ -1,10 +1,40 @@
 #include "Search_by_item.h"
 #include "text_handling.h"
 #include "diacritics.h"
-#include "stem_enumerate.h"
+//#include "stem_enumerate.h"
+#include "enumerator.h"
 #include "text_handling.h"
 #include <assert.h>
 #include <QQueue>
+
+StemEnumerate::StemEnumerate(long prefix_category)
+{
+    this->prefix_category=prefix_category;
+    // Setting the trie pointer to the databased extracted data
+    trie=database_info.Stem_Trie;
+    solution=NULL;
+    multi_p=M_ALL;
+}
+
+bool StemEnumerate::operator()()
+{
+    ATTrie::Position pos = trie->startWalk();
+    stop=false;
+    traverse(pos);
+    return !stop;
+}
+
+void StemEnumerate::setSolutionSettings(multiply_params params)
+{
+        multi_p=params;
+}
+
+bool StemEnumerate::isPrefixStemCompatible() const
+{
+    //check rules AB
+    compatibility_rules * cr= database_info.comp_rules;
+    return ((*cr)(prefix_category,category_of_currentmatch));
+}
 
 void StemEnumerate::check_for_terminal(ATTrie::Position pos)
 {
