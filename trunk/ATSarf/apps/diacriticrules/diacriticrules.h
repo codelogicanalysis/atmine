@@ -13,7 +13,7 @@ private:
 
 public:
 
-    DiacriticRules(long number_of_solutions, bool get_all_details=true);
+    DiacriticRules(long number_of_solutions, enumeration_type enum_type=ENUMALL, bool get_all_details=true);
     long getFilteredItems() {return filtered_items;}
     bool on_match();
 };

@@ -15,7 +15,7 @@ private:
     long long *number_of_vWords;
 
 public:
-    WordDensity(long max_word_length, bool get_all_details=true);
+    WordDensity(long max_word_length, enumeration_type type=ENUMALL, bool get_all_details=true);
     void getuvWordStats();
     void getvWordStats();
     bool on_match();

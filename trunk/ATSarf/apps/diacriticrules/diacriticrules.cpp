@@ -2,7 +2,8 @@
 #include "diacriticrules.h"
 #include "wordambiguity.h"
 
-DiacriticRules::DiacriticRules(long number_of_solutions, bool get_all_details) : Enumerator(get_all_details)
+DiacriticRules::DiacriticRules(long number_of_solutions, enumeration_type enum_type, bool get_all_details) :
+        Enumerator(enum_type,get_all_details)
 {
     solution_counter = 1;
     filtered_items = 0;

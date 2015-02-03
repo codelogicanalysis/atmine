@@ -65,6 +65,12 @@ enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
 enum  item_types { PREFIX, STEM, SUFFIX, ITEM_TYPES_LAST_ONE};   // Ask about the last one
 
 /**
+  * @enum   enumeration_type
+  * @brief  This enumerator defines the different types of solutions that the enumerator can generate
+  */
+enum  enumeration_type { ENUMALL, ENUMSTEM};   // Ask about the last one
+
+/**
   * @typedef minimal_item_info
   * @brief The following defines a class type including the minimal information of a match which could be stem or an affix
   */

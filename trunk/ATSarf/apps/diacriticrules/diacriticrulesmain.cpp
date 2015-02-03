@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
         cout<<"All Set"<<endl;
     }
 
-    DiacriticRules dWords(solutions, true);
+    DiacriticRules dWords(solutions,ENUMALL,true);
     dWords();
 
     cout << "Filtered Items are: " << dWords.getFilteredItems() << endl;

@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
         cout<<"All Set"<<endl;
     }
 
-    WordDensity wDensity(solutions, true);
+    WordDensity wDensity(solutions, ENUMALL, true);
     wDensity();
 
     wDensity.getuvWordStats();
