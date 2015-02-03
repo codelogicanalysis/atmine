@@ -211,6 +211,7 @@ int main(int argc, char *argv[]) {
         }
 
         int iterations = 0;
+        int solutionIndex = -1;
         while(!stop) {
             // Selection
             int parent1Index = -1;
@@ -249,6 +250,7 @@ int main(int argc, char *argv[]) {
                 cout << fitness[i] << endl;
                 if(fitness[i] > 0.8) {
                     stop = true;
+                    solutionIndex = i;
                     break;
                 }
             }
@@ -256,6 +258,33 @@ int main(int argc, char *argv[]) {
             iterations++;
             if(iterations == 10000) {
                 stop = true;
+            }
+        }
+
+        if(solutionIndex == -1) {
+            cout << "No solution found with 10000 iterations" << endl;
+        }
+        else {
+            cout << "The solution found is:" << endl;
+            for(int i=0; i<STEM_LENGTH; i++) {
+                if(population[solutionIndex][i] == 1) {
+                    cout << "Stem length: " << i+1 << endl;
+                }
+            }
+            for(int i=STEM_LENGTH; i<STEM_LENGTH + STEM_POS; i++) {
+                if(population[solutionIndex][i] == 1) {
+                    cout << "POS tag: " << listStemPOS[i-STEM_LENGTH].toStdString() << endl;
+                }
+            }
+
+            if(population[solutionIndex][NUM_OF_FEATURES-3] == 1) {
+                cout << "diacritic position at stem start" <<endl;
+            }
+            else if(population[solutionIndex][NUM_OF_FEATURES-2] == 1) {
+                cout << "diacritic position at stem middle" <<endl;
+            }
+            else if(population[solutionIndex][NUM_OF_FEATURES-1] == 1) {
+                cout << "diacritic position at stem end" <<endl;
             }
         }
 //        QHashIterator<QString, int> i(hash);
