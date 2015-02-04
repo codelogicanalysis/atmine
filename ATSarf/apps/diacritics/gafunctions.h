@@ -15,9 +15,9 @@
 bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population, QVector<double>& fitness, QStringList& stemPOSList) {
 
     // Stores the count of high reduction 1-diacritic solutions matching the individuals
-    QVector<int> hRedSol(NUM_OF_SOLUTIONS);
+    QVector<int> hRedSol(population.count());
     // Stores the count of 1-riacritic solutions matching the individuals
-    QVector<int> totalMSol(NUM_OF_SOLUTIONS);
+    QVector<int> totalMSol(population.count());
 
     // reinitialize fitness values
     for(int i=0; i<fitness.count(); i++) {
@@ -179,7 +179,7 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
         }
     }
 
-    for(int i=0; i<NUM_OF_SOLUTIONS; i++) {
+    for(int i=0; i<fitness.count(); i++) {
         if(totalMSol[i] == 0) {
             fitness[i] = 0;
         }
@@ -200,12 +200,12 @@ bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& populati
     if(totalScore == 0) {
         // select two parents randomly
         srand(time(NULL));
-        int bcValue = rand() % NUM_OF_SOLUTIONS;
+        int bcValue = rand() % population.count();
         for(int i=0; i<population.at(bcValue).count(); i++) {
             parents[0][i] = population[bcValue][i];
         }
         parent1Index = bcValue;
-        bcValue = rand() % NUM_OF_SOLUTIONS;
+        bcValue = rand() % population.count();
         for(int i=0; i<population.at(bcValue).count(); i++) {
             parents[1][i] = population[bcValue][i];
         }
@@ -216,10 +216,10 @@ bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& populati
     double low = 0;
     double high = 0;
     for(int i=0; i<2; i++) {
-        double bcValue = rand() / (float)(RAND_MAX+1) * totalScore;
-        for(int j=0; j<NUM_OF_SOLUTIONS; j++) {
+        double bcValue = rand() / (float)RAND_MAX * totalScore;
+        for(int j=0; j<population.count(); j++) {
             high += (fitness.at(j)*100);
-            if(bcValue >= low && bcValue < high) {
+            if(bcValue >= low && bcValue <= high) {
                 // choose this individual in new population
                 for(int k=0; k<NUM_OF_FEATURES; k++) {
                     parents[i][k] = population[j][k];
