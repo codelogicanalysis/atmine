@@ -263,7 +263,7 @@ int main(int argc, char *argv[]) {
 
             // check if any solution reached the target fitness
             for(int i=0; i<fitness.count(); i++) {
-                cout << fitness[i] << endl;
+                cout << fitness[i] << ' ';
                 if(fitness[i] >= 0.8) {
                     stop = true;
                     solutionIndex = i;
