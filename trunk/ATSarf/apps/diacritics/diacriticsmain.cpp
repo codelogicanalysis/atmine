@@ -239,6 +239,13 @@ int main(int argc, char *argv[]) {
                 return 0;
             }
 
+            for(int i=0; i<child.count(); i++) {
+                if(child.at(i) == 1) {
+                    cout << i << ' ';
+                }
+            }
+            cout << endl;
+
             // evaluate child
             QVector<QVector<int> > individual;
             individual.append(child);
