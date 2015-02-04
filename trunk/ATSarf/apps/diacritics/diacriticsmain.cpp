@@ -206,8 +206,8 @@ int main(int argc, char *argv[]) {
         }
 
         bool stop = false;
+        cout << "Initial evaluation..." << endl;
         for(int i=0; i<fitness.count(); i++) {
-            cout << "Initial evaluation..." << endl;
             cout << fitness[i] << ' ';
             if(fitness[i] >= 0.8) {
                 stop = true;
@@ -263,8 +263,8 @@ int main(int argc, char *argv[]) {
             }
 
             // check if any solution reached the target fitness
+            cout << "Fitness at iteration " << iterations+1 << endl;
             for(int i=0; i<fitness.count(); i++) {
-                cout << "Fitness at iteration " << iterations+1 << endl;
                 cout << fitness[i] << ' ';
                 if(fitness[i] >= 0.8) {
                     stop = true;
