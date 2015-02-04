@@ -171,10 +171,10 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
                         }
                     }
                 }
-                else {
-                    cout << "non-of the diacritic positions are set" << endl;
-                    //return false;
-                }
+//                else {
+//                    cout << "non-of the diacritic positions are set" << endl;
+//                    //return false;
+//                }
             }
         }
     }
@@ -192,7 +192,7 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
 }
 
 bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& population, QVector<double>& fitness, int& parent1Index, int& parent2Index) {
-    int totalScore = 0;
+    double totalScore = 0;
     for(int i=0; i< fitness.count(); i++) {
             totalScore += (fitness[i]*100);
     }
@@ -216,7 +216,7 @@ bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& populati
     double low = 0;
     double high = 0;
     for(int i=0; i<2; i++) {
-        double bcValue = rand() / (float)RAND_MAX * totalScore;
+        double bcValue = rand() / (float)(RAND_MAX+1) * totalScore;
         for(int j=0; j<NUM_OF_SOLUTIONS; j++) {
             high += (fitness.at(j)*100);
             if(bcValue >= low && bcValue < high) {
@@ -243,7 +243,7 @@ bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& populati
 bool crossover(QVector<QVector<int> >& parents, QVector<int>& child) {
     srand(time(NULL));
     // randomly select the single point crossover
-    int spc = rand() % NUM_OF_FEATURES;
+    int spc = 1 + (rand() % (NUM_OF_FEATURES-1));
     for(int i=0; i<spc; i++) {
         child[i] = parents[0][i];
     }

@@ -188,23 +188,27 @@ int main(int argc, char *argv[]) {
         QVector<QVector<int> > parents(2, QVector<int>(NUM_OF_FEATURES));
         QVector<double> fitness(NUM_OF_SOLUTIONS);
 
+        // start with random individuals with stem length, step POS, and diacritic position set
         srand(time(NULL));
         for(int i=0; i<NUM_OF_SOLUTIONS; i++ ) {
             int randSL = rand() % STEM_LENGTH;//rand() / (float)RAND_MAX >= 0.5 ? 1:0;
             population[i][randSL] = 1;
-            int randSP = STEM_LENGTH + rand() % STEM_POS;
+            int randSP = STEM_LENGTH + (rand() % STEM_POS);
             population[i][randSP] = 1;
-            int randDP = (STEM_LENGTH + STEM_POS) + rand() % DIAC_POS;
+            int randDP = (STEM_LENGTH + STEM_POS) + (rand() % DIAC_POS);
             population[i][randDP] = 1;
         }
 
         // evaluation(fitness function)
-        evaluation(hash,population,fitness,listStemPOS);
+        if(!evaluation(hash,population,fitness,listStemPOS)) {
+            cout << "Problem in initial evaluation!!\n";
+            return 0;
+        }
 
         bool stop = false;
         for(int i=0; i<fitness.count(); i++) {
             cout << fitness[i] << endl;
-            if(fitness[i] > 0.8) {
+            if(fitness[i] >= 0.8) {
                 stop = true;
                 break;
             }
@@ -216,29 +220,41 @@ int main(int argc, char *argv[]) {
             // Selection
             int parent1Index = -1;
             int parent2Index = -1;
-            selection(parents,population,fitness,parent1Index,parent2Index);
+            if(!selection(parents,population,fitness,parent1Index,parent2Index)) {
+                cout << "Problem in parent selection!!\n";
+                return 0;
+            }
 
             // crossover
             QVector<int> child(NUM_OF_FEATURES);
-            crossover(parents,child);
+            if(!crossover(parents,child)) {
+                cout << "Problem in crossover!!\n";
+                return 0;
+            }
 
             // mutation
-            mutation(child);
+            if(!mutation(child)) {
+                cout << "Problem in mutation!!\n";
+                return 0;
+            }
 
-            // evaluation
+            // evaluate child
             QVector<QVector<int> > individual;
             individual.append(child);
             QVector<double> childFitness(1);
-            evaluation(hash,individual,childFitness,listStemPOS);
+            if(!evaluation(hash,individual,childFitness,listStemPOS)) {
+                cout << "Problem in evaluation!!\n";
+                return 0;
+            }
 
             // replace less fit parent with child if the latter is better
-            if(childFitness[0] >= fitness[parent1Index]) {
+            if(childFitness[0] >= fitness[parent1Index] && fitness[parent1Index] >= fitness[parent2Index]) {
                 fitness[parent1Index] = childFitness[0];
                 for(int i=0; i< NUM_OF_FEATURES; i++) {
                     population[parent1Index][i] = child[i];
                 }
             }
-            else if(childFitness[0] >= fitness[parent2Index]) {
+            else if(childFitness[0] >= fitness[parent2Index] && fitness[parent2Index] > fitness[parent1Index]) {
                 fitness[parent2Index] = childFitness[0];
                 for(int i=0; i< NUM_OF_FEATURES; i++) {
                     population[parent2Index][i] = child[i];
@@ -248,7 +264,7 @@ int main(int argc, char *argv[]) {
             // check if any solution reached the target fitness
             for(int i=0; i<fitness.count(); i++) {
                 cout << fitness[i] << endl;
-                if(fitness[i] > 0.8) {
+                if(fitness[i] >= 0.8) {
                     stop = true;
                     solutionIndex = i;
                     break;
@@ -265,7 +281,8 @@ int main(int argc, char *argv[]) {
             cout << "No solution found with 10000 iterations" << endl;
         }
         else {
-            cout << "The solution found is:" << endl;
+            cout << "The fitness of the solution is: " << fitness.at(solutionIndex) << endl;
+            cout << "The solution is:" << endl;
             for(int i=0; i<STEM_LENGTH; i++) {
                 if(population[solutionIndex][i] == 1) {
                     cout << "Stem length: " << i+1 << endl;
@@ -276,7 +293,6 @@ int main(int argc, char *argv[]) {
                     cout << "POS tag: " << listStemPOS[i-STEM_LENGTH].toStdString() << endl;
                 }
             }
-
             if(population[solutionIndex][NUM_OF_FEATURES-3] == 1) {
                 cout << "diacritic position at stem start" <<endl;
             }
