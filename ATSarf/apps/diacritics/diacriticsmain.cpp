@@ -206,17 +206,17 @@ int main(int argc, char *argv[]) {
         }
 
         bool stop = false;
+        int solutionIndex = -1;
         cout << "Initial evaluation..." << endl;
         for(int i=0; i<fitness.count(); i++) {
             cout << fitness[i] << ' ';
             if(fitness[i] >= 0.8) {
                 stop = true;
-                break;
+                solutionIndex = i;
             }
         }
 
-        int iterations = 0;
-        int solutionIndex = -1;
+        int iterations = 1;
         while(!stop) {
             // Selection
             int parent1Index = -1;
@@ -269,7 +269,6 @@ int main(int argc, char *argv[]) {
                 if(fitness[i] >= 0.8) {
                     stop = true;
                     solutionIndex = i;
-                    break;
                 }
             }
 
