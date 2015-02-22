@@ -161,13 +161,16 @@ int main(int argc, char *argv[]) {
 //            }
 //        }
 
+#if 0
         int tempCount = 0;
         QStringList listStemPOS;
+        QStringList listWeird;
         theSarf->query.exec("SELECT POS FROM stem_category");
         while(theSarf->query.next()) {
             if(!(theSarf->query.value(0).toString().isEmpty())) {
                 QString currentPOS = theSarf->query.value(0).toString();
                 if(currentPOS.contains('+')) {
+                    listWeird << currentPOS;
                     tempCount++;
                     continue;
                 }
@@ -177,145 +180,37 @@ int main(int argc, char *argv[]) {
         }
         listStemPOS.removeDuplicates();
 
+        QFile ofile("out.txt");
+        if (!ofile.open(QIODevice::WriteOnly | QIODevice::Text))
+            return 0;
+
+        QTextStream out(&ofile);
+        for(int i=0; i<listStemPOS.count(); i++) {
+            out << listStemPOS[i] << '\n';
+        }
+        ofile.close();
+
+        QFile wfile("weird.txt");
+        if (!wfile.open(QIODevice::WriteOnly | QIODevice::Text))
+            return 0;
+
+        QTextStream outw(&wfile);
+        for(int i=0; i<listWeird.count(); i++) {
+            outw << listWeird[i] << '\n';
+        }
+        wfile.close();
+#endif
 //        for(int i=0; i<listStemPOS.count(); i++) {
 //            if(listStemPOS.at(i).contains("+")) {
 //                cout << listStemPOS.at(i).toStdString() << endl;
 //            }
 //        }
+#if 0
+        dgGeneticAlgorithm(hash,listStemPOS);
+#else
+        dgApriori(hash);
+#endif
 
-        // Initialization
-        QVector<QVector<int> > population(NUM_OF_SOLUTIONS, QVector<int>(NUM_OF_FEATURES));
-        QVector<QVector<int> > parents(2, QVector<int>(NUM_OF_FEATURES));
-        QVector<double> fitness(NUM_OF_SOLUTIONS);
-
-        // start with random individuals with stem length, step POS, and diacritic position set
-        srand(time(NULL));
-        for(int i=0; i<NUM_OF_SOLUTIONS; i++ ) {
-            int randSL = rand() % STEM_LENGTH;//rand() / (float)RAND_MAX >= 0.5 ? 1:0;
-            population[i][randSL] = 1;
-            int randSP = STEM_LENGTH + (rand() % STEM_POS);
-            population[i][randSP] = 1;
-            int randDP = (STEM_LENGTH + STEM_POS) + (rand() % DIAC_POS);
-            population[i][randDP] = 1;
-        }
-
-        // evaluation(fitness function)
-        if(!evaluation(hash,population,fitness,listStemPOS)) {
-            cout << "Problem in initial evaluation!!\n";
-            return 0;
-        }
-
-        bool stop = false;
-        int solutionIndex = -1;
-        cout << "Initial evaluation..." << endl;
-        for(int i=0; i<fitness.count(); i++) {
-            cout << fitness[i] << ' ';
-            if(fitness[i] >= 0.8) {
-                stop = true;
-                solutionIndex = i;
-            }
-        }
-
-        int iterations = 1;
-        while(!stop) {
-            // Selection
-            int parent1Index = -1;
-            int parent2Index = -1;
-            if(!selection(parents,population,fitness,parent1Index,parent2Index)) {
-                cout << "Problem in parent selection!!\n";
-                return 0;
-            }
-
-            // crossover
-            QVector<int> child(NUM_OF_FEATURES);
-            if(!crossover(parents,child)) {
-                cout << "Problem in crossover!!\n";
-                return 0;
-            }
-
-            // mutation
-            if(!mutation(child)) {
-                cout << "Problem in mutation!!\n";
-                return 0;
-            }
-
-            for(int i=0; i<child.count(); i++) {
-                if(child.at(i) == 1) {
-                    cout << i << ' ';
-                }
-            }
-            cout << endl;
-
-            // evaluate child
-            QVector<QVector<int> > individual;
-            individual.append(child);
-            QVector<double> childFitness(1);
-            if(!evaluation(hash,individual,childFitness,listStemPOS)) {
-                cout << "Problem in evaluation!!\n";
-                return 0;
-            }
-
-            // replace less fit parent with child if the latter is better
-            if(childFitness[0] >= fitness[parent1Index] && fitness[parent1Index] >= fitness[parent2Index]) {
-                fitness[parent1Index] = childFitness[0];
-                for(int i=0; i< NUM_OF_FEATURES; i++) {
-                    population[parent1Index][i] = child[i];
-                }
-            }
-            else if(childFitness[0] >= fitness[parent2Index] && fitness[parent2Index] > fitness[parent1Index]) {
-                fitness[parent2Index] = childFitness[0];
-                for(int i=0; i< NUM_OF_FEATURES; i++) {
-                    population[parent2Index][i] = child[i];
-                }
-            }
-
-            // check if any solution reached the target fitness
-            cout << "Fitness at iteration " << iterations+1 << endl;
-            for(int i=0; i<fitness.count(); i++) {
-                cout << fitness[i] << ' ';
-                if(fitness[i] >= 0.8) {
-                    stop = true;
-                    solutionIndex = i;
-                }
-            }
-
-            iterations++;
-            if(iterations == 10000) {
-                stop = true;
-            }
-        }
-
-        if(solutionIndex == -1) {
-            cout << "No solution found with 10000 iterations" << endl;
-        }
-        else {
-            cout << "The fitness of the solution is: " << fitness.at(solutionIndex) << endl;
-            cout << "The solution is:" << endl;
-            for(int i=0; i<STEM_LENGTH; i++) {
-                if(population[solutionIndex][i] == 1) {
-                    cout << "Stem length: " << i+1 << endl;
-                }
-            }
-            for(int i=STEM_LENGTH; i<STEM_LENGTH + STEM_POS; i++) {
-                if(population[solutionIndex][i] == 1) {
-                    cout << "POS tag: " << listStemPOS[i-STEM_LENGTH].toStdString() << endl;
-                }
-            }
-            if(population[solutionIndex][NUM_OF_FEATURES-3] == 1) {
-                cout << "diacritic position at stem start" <<endl;
-            }
-            else if(population[solutionIndex][NUM_OF_FEATURES-2] == 1) {
-                cout << "diacritic position at stem middle" <<endl;
-            }
-            else if(population[solutionIndex][NUM_OF_FEATURES-1] == 1) {
-                cout << "diacritic position at stem end" <<endl;
-            }
-        }
-//        QHashIterator<QString, int> i(hash);
-//        while (i.hasNext()) {
-//            i.next();
-//            cout << i.key().toStdString() << ": " << i.value() << endl;
-//        }
     }
 
     //This function is called after the processing is done in order to close the tool properly.
