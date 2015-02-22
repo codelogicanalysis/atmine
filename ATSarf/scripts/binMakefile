@@ -27,6 +27,9 @@ include $(TOP)/scripts/macrosMakefile
 DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
 DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
 
+APRIORI_LIB_LDDFLAGS=-L$(TOP)/$(APRIORI)/libs -lapriori
+APRIORI_LIBS=$(TOP)/$(APRIORI)/libs/libapriori.a
+
 QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
 QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
 
@@ -122,12 +125,12 @@ worddensity: $(WORDDENSITY_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(WORDDENSITY_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-DIACRITICS_LIBDIR = $(TOP)/lib/libdiacritics.a $(TOP)/lib/libsarfenumerate.a $(ATSarf_LIBS)
+DIACRITICS_LIBDIR = $(TOP)/lib/libdiacritics.a $(TOP)/lib/libsarfenumerate.a $(ATSarf_LIBS) $(APRIORI_LIBS)
 DIACRITICS_LIBS_LINKFLAGS=-L$(TOP)/lib -ldiacritics -lsarfenumerate $(ATSarf_LIBS_LINKFLAGS4)
 
-diacritics: $(DIACRITICS_LIBDIR)
+diacritics: $(DIACRITICS_LIBDIR) 
 	$(CXX) -o $@ $(LDDFLAGS) $(DIACRITICS_LIBS_LINKFLAGS) \
-		$(THIRD_LIBS_LINKFLAGS)
+		$(THIRD_LIBS_LINKFLAGS) $(APRIORI_LIB_LDDFLAGS)
 
 #clean: 
 #	@rm -rf ATSarfGui ex0 ex1 ex2 case tagger numnorm
