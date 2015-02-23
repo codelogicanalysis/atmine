@@ -487,10 +487,10 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     }
 
                     // suffixes and POS tags
-                    for(int j=0; i<sol.suffixes.count(); i++) {
+                    for(int j=0; j<sol.suffixes.count(); j++) {
                         transaction.append( 'x' + QString::number(j+1) + sol.suffixes[j] + ' ');
                     }
-                    for(int j=0; i<sol.suffixPOSs.count(); i++) {
+                    for(int j=0; j<sol.suffixPOSs.count(); j++) {
                         transaction.append( "xp" + QString::number(j+1) + sol.suffixPOSs[j] + ' ');
                     }
 
@@ -547,6 +547,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     }
                     const char * _transaction = transaction.toStdString().c_str();
                     fprintf(fp, "%s", _transaction);
+                    printf("%s\n", _transaction);
                     rewind(fp);
                     int k = addTransaction();
                     if(k<0) {
@@ -559,6 +560,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             }
         }
     }
+    hash.clear();
     int k = apriori_start("output.rules",80,-1);
     if(k<0) {
         cout << "couldn't run algorithm!!\n";
