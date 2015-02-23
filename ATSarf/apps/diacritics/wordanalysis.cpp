@@ -70,11 +70,11 @@ bool WordAnalysis::on_match()
     }
 
     while(sol.prefixes.count() < 4) {
-        sol.prefixes.prepend("EPRE" + QString::number(sol.prefixes.count()+1));
+        sol.prefixes.prepend("EPRE");
     }
 
     while(sol.prefixPOSs.count() < 4) {
-        sol.prefixPOSs.prepend("EPREPOS" + QString::number(sol.prefixPOSs.count()+1));
+        sol.prefixPOSs.prepend("EPREPOS");
     }
 
     // stem
@@ -105,11 +105,11 @@ bool WordAnalysis::on_match()
     }
 
     while(sol.suffixes.count() < 4) {
-        sol.suffixes.append("ESUF" + QString::number(sol.suffixes.count()+1));
+        sol.suffixes.append("ESUF");
     }
 
     while(sol.suffixPOSs.count() < 4) {
-        sol.suffixPOSs.append("ESUFPOS" + QString::number(sol.suffixPOSs.count()+1));
+        sol.suffixPOSs.append("ESUFPOS");
     }
 
     sol.vWord = vocalizedWord;
