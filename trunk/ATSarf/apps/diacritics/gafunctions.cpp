@@ -178,8 +178,8 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
             int diacritic_Counter = 0;
             QVector<QVector<QChar> > wordDiacritics(sol.length);
             int letterIndex = 0;
-            for(int i=1; i<sol.stem.count(); i++) {
-                QChar currentLetter= sol.stem[i];
+            for(int i=1; i<sol.vStem.count(); i++) {
+                QChar currentLetter= sol.vStem[i];
                 if(isDiacritic(currentLetter)) {
                     wordDiacritics[letterIndex].append(currentLetter);
                     diacritic_Counter++;
@@ -233,13 +233,13 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
                     // diacritic at stem beginning
                     for(int k=0; k< wordDiacritics.first().count(); k++) {
                         // construct the one diacritic stem
-                        QString oneDiacWord = removeDiacritics(sol.stem);
+                        QString oneDiacWord = removeDiacritics(sol.vStem);
                         oneDiacWord.insert(1,wordDiacritics.first().at(k));
 
                         // Iterate over the morpho. solutions and count consistent solutions
                         double oneDiacSols = 0;
                         for(int m=0; m<wa.solutions.count(); m++) {
-                            if(equal(oneDiacWord,wa.solutions.at(m).stem)) {
+                            if(equal(oneDiacWord,wa.solutions.at(m).vStem)) {
                                 oneDiacSols++;
                             }
                         }
@@ -256,13 +256,13 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
                     for(int m=1; m< wordDiacritics.count()-1; m++) {
                         for(int n=0; n< wordDiacritics.at(m).count(); n++) {
                             // construct the one diacritic stem
-                            QString oneDiacWord = removeDiacritics(sol.stem);
+                            QString oneDiacWord = removeDiacritics(sol.vStem);
                             oneDiacWord.insert(m+1,wordDiacritics[m][n]);
 
                             // Iterate over the morpho. solutions and count consistent solutions
                             double oneDiacSols = 0;
                             for(int l=0; l<wa.solutions.count(); l++) {
-                                if(equal(oneDiacWord,wa.solutions.at(l).stem)) {
+                                if(equal(oneDiacWord,wa.solutions.at(l).vStem)) {
                                     oneDiacSols++;
                                 }
                             }
@@ -279,13 +279,13 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
                     // diacritic at stem end
                     for(int k=0; k< wordDiacritics.last().count(); k++) {
                         // construct the one diacritic stem
-                        QString oneDiacWord = removeDiacritics(sol.stem);
+                        QString oneDiacWord = removeDiacritics(sol.vStem);
                         oneDiacWord.append(wordDiacritics.last().at(k));
 
                         // Iterate over the morpho. solutions and count consistent solutions
                         double oneDiacSols = 0;
                         for(int m=0; m<wa.solutions.count(); m++) {
-                            if(equal(oneDiacWord,wa.solutions.at(m).stem)) {
+                            if(equal(oneDiacWord,wa.solutions.at(m).vStem)) {
                                 oneDiacSols++;
                             }
                         }
@@ -400,11 +400,11 @@ bool dgApriori(QHash<QString, qint8>& hash) {
         return 0;
     }
 
-    qDebug() << "number of Arabic stems is: " << hash.count() << endl;
-    long long tcount = 0;
-    int skippedW = 0;
-    int skippedM = 0;
-    int skippedMD = 0;
+    //qDebug() << "number of Arabic stems is: " << hash.count() << endl;
+    //long long tcount = 0;
+    //int skippedW = 0;
+    //int skippedM = 0;
+    //int skippedMD = 0;
     // Iterate over all the Arabic stems in the lexicon
     QHashIterator<QString, qint8> it(hash);
     while (it.hasNext()) {
@@ -415,11 +415,11 @@ bool dgApriori(QHash<QString, qint8>& hash) {
         // Get the morphological solutions of the word
         WordAnalysis wa(&word,&count);
         wa();
-        tcount += wa.getAmbiguity();
+        //tcount += wa.getAmbiguity();
 
         // skip unambiguous words, i.e. single morphological solution
         if(wa.solutions.count() <= 1) {
-            skippedW++;
+            //skippedW++;
             continue;
         }
 
@@ -428,7 +428,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             const Solution& sol = wa.solutions.at(i);
             // skip solutions with '+' in stem POS or containing affixes
             if(!(sol.isValid)) {
-                skippedM++;
+                //skippedM++;
                 continue;
             }
 
@@ -436,8 +436,8 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             int diacritic_Counter = 0;
             QVector<QVector<QChar> > wordDiacritics(sol.length);
             int letterIndex = 0;
-            for(int j=1; j<sol.stem.count(); j++) {
-                QChar currentLetter= sol.stem[j];
+            for(int j=1; j<sol.vWord.count(); j++) {
+                QChar currentLetter= sol.vWord[j];
                 if(isDiacritic(currentLetter)) {
                     wordDiacritics[letterIndex].append(currentLetter);
                     diacritic_Counter++;
@@ -449,7 +449,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
 
             // Skip evaluating this morpho. solution if the stem has no diacritics
             if(diacritic_Counter == 0) {
-                skippedMD++;
+                //skippedMD++;
                 continue;
             }
 
@@ -457,28 +457,80 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             for(int m=0; m< wordDiacritics.count(); m++) {
                 for(int n=0; n< wordDiacritics.at(m).count(); n++) {
                     // construct the one diacritic stem
-                    QString oneDiacWord = removeDiacritics(sol.stem);
+                    QString oneDiacWord = removeDiacritics(sol.vWord);
                     oneDiacWord.insert(m+1,wordDiacritics[m][n]);
 
                     // Iterate over the morpho. solutions and count consistent solutions
                     double oneDiacSols = 0;
                     for(int l=0; l<wa.solutions.count(); l++) {
-                        if(equal(oneDiacWord,wa.solutions.at(l).stem)) {
+                        if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
                             oneDiacSols++;
                         }
                     }
 
                     QString transaction;
-                    transaction.append(QString::number(sol.length) + ' ' + sol.stemPOS + ' ');
-                    if(m == 0) {
-                        transaction.append("stems ");
+                    // word length
+                    transaction.append("wl" + QString::number(sol.length) + ' ');
+                    // number of morphemes
+                    transaction.append("nm" + QString::number(sol.number_of_morphemes) + ' ');
+                    // stem length
+                    transaction.append("sl" + QString::number(sol.stem_length) + ' ');
+                    // stem POS
+                    transaction.append('s' + sol.stemPOS + ' ');
+
+                    // prefixes and POS tags
+                    for(int j=0; j<sol.prefixes.count(); j++) {
+                        transaction.append( 'p' + QString::number(sol.prefixes.count()-j) + sol.prefixes[j] + ' ');
                     }
-                    else if(m == wordDiacritics.count()-1) {
-                        transaction.append("steme ");
+                    for(int j=0; j<sol.prefixPOSs.count(); j++) {
+                        transaction.append( "pp" + QString::number(sol.prefixPOSs.count()-j) + sol.prefixPOSs[j] + ' ');
+                    }
+
+                    // suffixes and POS tags
+                    for(int j=0; i<sol.suffixes.count(); i++) {
+                        transaction.append( 'x' + QString::number(j+1) + sol.suffixes[j] + ' ');
+                    }
+                    for(int j=0; i<sol.suffixPOSs.count(); i++) {
+                        transaction.append( "xp" + QString::number(j+1) + sol.suffixPOSs[j] + ' ');
+                    }
+
+                    // diacritic added
+                    transaction.append( 'd' + wordDiacritics[m][n] + ' ');
+
+                    // diacritic position
+                    QString diacritic_position;
+                    if((sol.prefix_length != 0) && (m == 0)) {
+                        diacritic_position = "dpprefixs";
+                    }
+                    else if((sol.prefix_length != 0) && (m > 0) && (m < (sol.prefix_length-1))) {
+                        diacritic_position = "dpprefixm";
+                    }
+                    else if((sol.prefix_length != 0) && (m == (sol.prefix_length-1))) {
+                        diacritic_position = "dpprefixe";
+                    }
+                    else if(m == sol.prefix_length) {
+                        diacritic_position = "dpstems";
+                    }
+                    else if((m > (sol.prefix_length)) && (m < (sol.prefix_length + sol.stem_length - 1))) {
+                        diacritic_position = "dpstemm";
+                    }
+                    else if(m == (sol.prefix_length + sol.stem_length - 1)) {
+                        diacritic_position = "dpsteme";
+                    }
+                    else if((sol.suffix_length != 0) && (m == (sol.prefix_length + sol.stem_length))) {
+                        diacritic_position = "dpsuffixs";
+                    }
+                    else if((sol.suffix_length != 0) && (m > (sol.prefix_length + sol.stem_length)) && (m < (sol.length - 1))) {
+                        diacritic_position = "dpsuffixm";
+                    }
+                    else if((sol.suffix_length != 0) && (m == (sol.length -1))) {
+                        diacritic_position = "dpsuffixe";
                     }
                     else {
-                        transaction.append("stemm ");
+                        cout << "Couldn't set diacritic position!" << endl;
+                        return false;
                     }
+                    transaction.append(diacritic_position + ' ');
 
                     // calculate morpho. reduction and discretize
                     if((wa.solutions.count()-oneDiacSols)/wa.solutions.count() >= 0.5) {
@@ -494,7 +546,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                         transaction.append("LOW");
                     }
                     const char * _transaction = transaction.toStdString().c_str();
-                    fprintf(fp, _transaction);
+                    fprintf(fp, "%s", _transaction);
                     rewind(fp);
                     int k = addTransaction();
                     if(k<0) {
@@ -512,9 +564,9 @@ bool dgApriori(QHash<QString, qint8>& hash) {
         cout << "couldn't run algorithm!!\n";
         return false;
     }
-    qDebug() << "Number of morphological analyses is " << tcount << endl;
-    qDebug() << "Number of unambiguous stems is " << skippedW << endl;
-    qDebug() << "Number of skipped morphological analyses is " << skippedM << endl;
-    qDebug() << "Number of skipped morphological analyses with no diacritics is " << skippedMD << endl;
+    //qDebug() << "Number of morphological analyses is " << tcount << endl;
+    //qDebug() << "Number of unambiguous stems is " << skippedW << endl;
+    //qDebug() << "Number of skipped morphological analyses is " << skippedM << endl;
+    //qDebug() << "Number of skipped morphological analyses with no diacritics is " << skippedMD << endl;
     return true;
 }
