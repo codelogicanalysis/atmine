@@ -559,7 +559,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             }
         }
     }
-    int k = apriori_start("stem.rules",80,-1);
+    int k = apriori_start("output.rules",80,-1);
     if(k<0) {
         cout << "couldn't run algorithm!!\n";
         return false;
