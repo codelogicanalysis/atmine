@@ -460,13 +460,37 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     QString oneDiacWord = removeDiacritics(sol.vWord);
                     oneDiacWord.insert(m+1,wordDiacritics[m][n]);
 
-                    // Iterate over the morpho. solutions and count consistent solutions
+                    // Count consistent morphological solutions
                     double oneDiacSols = 0;
                     for(int l=0; l<wa.solutions.count(); l++) {
                         if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
                             oneDiacSols++;
                         }
                     }
+
+                    // Count consistent vocalizations
+                    double oneDiacVoc = 0;
+                    QSet<QString> voc;
+                    for(int l=0; l<wa.solutions.count(); l++) {
+                        if(!(voc.contains(wa.solutions.at(l).vWord))) {
+                            voc.insert(wa.solutions.at(l).vWord);
+                            if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                                oneDiacVoc++;
+                            }
+                        }
+                    }
+
+                    // Count consistent glosses
+//                    double oneDiacG = 0;
+//                    QSet<QString> glosses;
+//                    for(int l=0; l<wa.solutions.count(); l++) {
+//                        if(!(glosses.contains(wa.solutions.at(l).vWord))) {
+//                            glosses.insert(wa.solutions.at(l).vWord);
+//                            if(oneDiacWord == wa.solutions.at(l).vWord) {
+//                                oneDiacG++;
+//                            }
+//                        }
+//                    }
 
                     QString transaction;
                     // word length
@@ -533,18 +557,32 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     transaction.append(diacritic_position + ' ');
 
                     // calculate morpho. reduction and discretize
-                    if((wa.solutions.count()-oneDiacSols)/wa.solutions.count() >= 0.5) {
+                    double morphoReduction = (wa.solutions.count()-oneDiacSols)/wa.solutions.count();
+                    if( morphoReduction >= 0.5) {
                         // high reduction
-                        transaction.append("HIGH");
+                        transaction.append("mHIGH ");
                     }
-                    else if((wa.solutions.count()-oneDiacSols)/wa.solutions.count() >= 0.2) {
+                    else if(morphoReduction >= 0.2) {
                         // average reduction
-                        transaction.append("AVRG");
+                        transaction.append("mAVRG ");
                     }
                     else {
                         // low reduction
-                        transaction.append("LOW");
+                        transaction.append("mLOW ");
                     }
+
+                    // calculate vocalization reduction and discretize
+                    double vocReduction = (voc.count()-oneDiacVoc)/voc.count();
+                    if(vocReduction >= 0.5) {
+                        transaction.append("vHIGH");
+                    }
+                    else if(vocReduction >= 0.2) {
+                        transaction.append("vAVRG");
+                    }
+                    else {
+                        transaction.append("vLOW");
+                    }
+
                     const char * _transaction = transaction.toStdString().c_str();
                     fprintf(fp, "%s", _transaction);
                     printf("%s\n", _transaction);
@@ -560,7 +598,9 @@ bool dgApriori(QHash<QString, qint8>& hash) {
             }
         }
     }
+    cout << "Read all the transactions...\n";
     hash.clear();
+    cout << "Starting apriori algorithm...\n";
     int k = apriori_start("output.rules",80,-1);
     if(k<0) {
         cout << "couldn't run algorithm!!\n";
