@@ -9,7 +9,7 @@ class DiacriticGuidelines : public Enumerator
 {
 private:
 //    VWTrie* trie;
-    QHash<QString,qint32> uvWords;
+    QHash<QString,quint8> uvWords;
     long number_of_solutions;
     long solution_counter;
     enumeration_type enum_type;
