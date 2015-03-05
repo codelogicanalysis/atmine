@@ -12,6 +12,7 @@
 #define STEM_LENGTH 16
 #define STEM_POS 38
 #define DIAC_POS 3
+//#define TEST
 
 bool dgGeneticAlgorithm(QHash<QString, qint8>& hash, QStringList& listStemPOS);
 
@@ -24,5 +25,11 @@ bool crossover(QVector<QVector<int> >& parents, QVector<int>& child);
 bool mutation(QVector<int>& individual);
 
 bool dgApriori(QHash<QString, qint8>& hash);
+
+bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double conf);
+
+bool iterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target);
+
+bool generateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf);
 
 #endif // GAEVALUATION_H

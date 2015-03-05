@@ -75,7 +75,7 @@ bool DiacriticGuidelines::on_match()
     //bool ret = trie->store(unvocalizedWord,1);
 
     if(uvWords.contains(unvocalizedWord)) {
-        qint32 oldValue = uvWords.value(unvocalizedWord);
+        quint8 oldValue = uvWords.value(unvocalizedWord);
         uvWords.insert(unvocalizedWord,oldValue+1);
     }
     else {

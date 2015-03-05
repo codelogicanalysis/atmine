@@ -7,11 +7,8 @@
 
 int main(int argc, char *argv[]) {
 
-    if(argc != 3) {
-        cout << "Please enter a number of morphological solutions to consider:\n"
-                << "-1 : Use all generatable solutions\n"
-                << "N > 0 : Use N generatable solutions\n"
-                <<"Also, enter the morpheme type (A-all,P-prefix,S-stem,X-suffix) you want to consider";
+    if(argc != 7) {
+        cout << "Invalid input format!\n";
         return 0;
     }
 
@@ -41,11 +38,27 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    QString target(argv[3]);
+
+    int supp = QString(argv[4]).toLong(&ok);
+    if((!ok) || (supp <= 0)) {
+        cout << "Invalid support!\n";
+        return 0;
+    }
+
+    int conf = QString(argv[5]).toDouble(&ok);
+    if((!ok) || (conf <= 0) || (conf > 100)) {
+        cout << "Invalid confidence!\n";
+        return 0;
+    }
+
+    QString ofName(argv[6]);
+
     /*
      * The following lines define the output files in which the resulting output or error are written.
      * Also, an instance of the progress class MyProgressIFC is initialized.
      */
-    QFile Ofile("output.txt");
+    QFile Ofile(ofName);
     QFile Efile("error.txt");
     Ofile.open(QIODevice::WriteOnly);
     Efile.open(QIODevice::WriteOnly);
@@ -110,7 +123,7 @@ int main(int argc, char *argv[]) {
             ATTrie::Position pos = Stem_Trie->startWalk();
             stem_queue.enqueue(pos);
 
-            QHash<QString, qint8> stemHash;
+            QHash<QString, quint8> stemHash;
 
             while(!stem_queue.isEmpty()) {
                 ATTrie::Position current_pos = stem_queue.dequeue();
@@ -145,7 +158,7 @@ int main(int argc, char *argv[]) {
     }
     else {
         QDataStream in(&file);    // read the data serialized from the file
-        QHash<QString, qint8> hash;
+        QHash<QString, int> hash;
         in >> hash;
 
         /* Implementing the genetic algorithm **/
@@ -199,18 +212,57 @@ int main(int argc, char *argv[]) {
             outw << listWeird[i] << '\n';
         }
         wfile.close();
-#endif
-//        for(int i=0; i<listStemPOS.count(); i++) {
-//            if(listStemPOS.at(i).contains("+")) {
-//                cout << listStemPOS.at(i).toStdString() << endl;
-//            }
-//        }
-#if 0
-        dgGeneticAlgorithm(hash,listStemPOS);
-#else
-        dgApriori(hash);
+//#else
+        //int tempCount = 0;
+        QStringList listStemPOS;
+        //QStringList listWeird;
+        theSarf->query.exec("SELECT POS FROM prefix_category");
+        while(theSarf->query.next()) {
+            if(!(theSarf->query.value(0).toString().isEmpty())) {
+                QStringList stemPOS = theSarf->query.value(0).toString().split('/');
+                listStemPOS << stemPOS.at(1);
+            }
+        }
+        listStemPOS.removeDuplicates();
+
+        QFile ofile("prefix_POS.txt");
+        if (!ofile.open(QIODevice::WriteOnly | QIODevice::Text))
+            return 0;
+
+        QTextStream out(&ofile);
+        for(int i=0; i<listStemPOS.count(); i++) {
+            out << listStemPOS[i] << '\n';
+        }
+        ofile.close();
+//#else
+        QStringList listStemPOS;
+        //QStringList listWeird;
+        theSarf->query.exec("SELECT POS FROM suffix_category");
+        while(theSarf->query.next()) {
+            if(!(theSarf->query.value(0).toString().isEmpty())) {
+                QStringList stemPOS = theSarf->query.value(0).toString().split('/');
+                listStemPOS << stemPOS.at(1);
+            }
+        }
+        listStemPOS.removeDuplicates();
+
+        QFile ofile("suffix_POS.txt");
+        if (!ofile.open(QIODevice::WriteOnly | QIODevice::Text))
+            return 0;
+
+        QTextStream out(&ofile);
+        for(int i=0; i<listStemPOS.count(); i++) {
+            out << listStemPOS[i] << '\n';
+        }
+        ofile.close();
 #endif
 
+#if 0
+        dgGeneticAlgorithm(hash,listStemPOS);
+//#else
+        dgApriori(hash);
+#endif
+        dpIterApriori(hash,target,2,80);
     }
 
     //This function is called after the processing is done in order to close the tool properly.
