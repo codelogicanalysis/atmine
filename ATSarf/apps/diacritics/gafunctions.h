@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <QStack>
+#include <cmath>
 #include "wordanalysis.h"
 
 #define  NUM_OF_FEATURES 57
@@ -13,6 +15,25 @@
 #define STEM_POS 38
 #define DIAC_POS 3
 //#define TEST
+
+class DTNode {
+public:
+    DTNode() {
+        fValue = "";
+        bValue = "";
+        isClass = false;
+        parent = NULL;
+    }
+    bool buildTree(QHash<QString, int>& hash);
+
+    QHash<QString,DTNode*> nextHash;
+    DTNode* parent;
+    bool isClass;
+    // Branch feature value from parent
+    QString bValue;
+    // next feature branch or class
+    QString fValue;
+};
 
 bool dgGeneticAlgorithm(QHash<QString, qint8>& hash, QStringList& listStemPOS);
 
@@ -28,8 +49,13 @@ bool dgApriori(QHash<QString, qint8>& hash);
 
 bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double conf);
 
-bool iterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target);
+bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target);
 
-bool generateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf);
+bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf);
 
+bool dpDecisionTree(QHash<QString, int>& hash);
+
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass);
+
+double information(long, long, long);
 #endif // GAEVALUATION_H

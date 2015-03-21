@@ -628,7 +628,7 @@ bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double c
 
     // iterate first time to build the count of single items
     cout << "Creating 1-itemset patterns...\n";
-    iterateDataSet(hash,currItemCount,prevItemCount,fMap,k,target);
+    iAIterateDataSet(hash,currItemCount,prevItemCount,fMap,k,target);
     k++;
     isDone = currItemCount->isEmpty();
     while(!isDone) {
@@ -640,17 +640,17 @@ bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double c
 
         // iterate over data and create the k'th frequent item sets
         cout << "Creating " << k << "-itemset patterns...\n";
-        iterateDataSet(hash,currItemCount,prevItemCount,fMap,k,target);
+        iAIterateDataSet(hash,currItemCount,prevItemCount,fMap,k,target);
         isDone = currItemCount->isEmpty();
         if(!isDone) {
-            isDone = !(generateRules(currItemCount,prevItemCount,fMap,target,supp,conf));
+            isDone = !(iAGenerateRules(currItemCount,prevItemCount,fMap,target,supp,conf));
         }
         k++;
     }
     return true;
 }
 
-bool iterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target) {
+bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target) {
 #ifndef TEST
     QHashIterator<QString, int> it(hash);
     while (it.hasNext()) {
@@ -1020,7 +1020,7 @@ bool iterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, Q
     return true;
 }
 
-bool generateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf) {
+bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf) {
     bool isFirst = true;
     QHashIterator<QString, int> it(*currItemCount);
     while (it.hasNext()) {
@@ -1084,4 +1084,488 @@ bool generateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prev
         theSarf->out << '(' << itemSetCount << ',' << ruleConf << ')' << endl;
     }
     return !isFirst;
+}
+
+bool dpDecisionTree(QHash<QString, int>& hash) {
+    DTNode* root = new DTNode();
+    root->buildTree(hash);
+    return true;
+}
+
+bool DTNode::buildTree(QHash<QString, int>& hash) {
+    if(this->isClass) {
+        return true;
+    }
+
+    // save path feature values
+    QVector<QString> bValues;
+    DTNode* temp = this;
+    while(temp->parent != NULL) {
+        bValues.append(temp->bValue);
+        temp = temp->parent;
+    }
+
+    // find feature with highest information gain
+    // contains the feature to branch on
+    QString feature;
+    // contains the values of the feature to branch on
+    QVector<QString> fValues;
+    // flag to identify classes
+    bool isClass = false;
+    // call method to iterate over the data set
+    dTIterateDataSet(hash,bValues,fValues,feature,isClass);
+    // add branch nodes for this feature and call buildTree on each
+    if(isClass) {
+        // We reached a class
+        this->isClass = true;
+        this->fValue = feature;
+        return true;
+    }
+    else {
+        // branch
+        this->fValue = feature;
+        for(int i=0; i<fValues.count(); i++) {
+            DTNode* node = new DTNode();
+            node->bValue = fValues[i];
+            node->parent = this;
+            this->nextHash.insert(fValues[i],node);
+        }
+    }
+    QHashIterator<QString, DTNode*> i(this->nextHash);
+     while (i.hasNext()) {
+         i.next();
+         bool good = i.value()->buildTree(hash);
+         if(!good) {
+             return false;
+         }
+     }
+     return true;
+}
+
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass) {
+    // Entries to keep track of total count of low, average, and high reduction tuples
+    long cCount[3] = {0,0,0};
+    // MultiHash to keep track of each feature and its values
+    QMultiHash<QString, QString> fvHash;
+    // Hash to keep track of each feature value's occurence in a high reduction tuple
+    QHash<QString, long> vHHash;
+    // Hash to keep track of each feature value's occurence in an average reduction tuple
+    QHash<QString, long> vAHash;
+    // Hash to keep track of each feature value's occurence in a low reduction tuple
+    QHash<QString, long> vLHash;
+#ifndef TEST
+    QHashIterator<QString, int> it(hash);
+    while (it.hasNext()) {
+        it.next();
+        QString word = it.key();
+        int count = 0;
+
+        // Get the morphological solutions of the word
+        WordAnalysis wa(&word,&count);
+        wa();
+
+        // skip unambiguous words, i.e. single morphological solution
+        if(wa.solutions.count() <= 1) {
+            continue;
+        }
+
+        // Iterate over the morphological analyses of the word
+        for(int i=0; i<wa.solutions.count(); i++) {
+            const Solution& sol = wa.solutions.at(i);
+            // skip solutions with '+' in stem POS or containing affixes
+            if(!(sol.isValid)) {
+                //skippedM++;
+                continue;
+            }
+
+            // Detach diacritics from raw_data and store in separate structure
+            int diacritic_Counter = 0;
+            QVector<QVector<QChar> > wordDiacritics(sol.length);
+            int letterIndex = 0;
+            for(int j=1; j<sol.vWord.count(); j++) {
+                QChar currentLetter= sol.vWord[j];
+                if(isDiacritic(currentLetter)) {
+                    wordDiacritics[letterIndex].append(currentLetter);
+                    diacritic_Counter++;
+                }
+                else {
+                    letterIndex++;
+                }
+            }
+
+            // Skip evaluating this morpho. solution if the stem has no diacritics
+            if(diacritic_Counter == 0) {
+                //skippedMD++;
+                continue;
+            }
+
+            // Process diacritics at first, middle, and end of the stem
+            for(int m=0; m< wordDiacritics.count(); m++) {
+                for(int n=0; n< wordDiacritics.at(m).count(); n++) {
+                    // construct the one diacritic stem
+                    QString oneDiacWord = removeDiacritics(sol.vWord);
+                    oneDiacWord.insert(m+1,wordDiacritics[m][n]);
+
+                    // Count consistent morphological solutions
+                    double oneDiacSols = 0;
+                    for(int l=0; l<wa.solutions.count(); l++) {
+                        if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                            oneDiacSols++;
+                        }
+                    }
+
+                    // Count consistent vocalizations
+                    double oneDiacVoc = 0;
+                    QSet<QString> voc;
+                    for(int l=0; l<wa.solutions.count(); l++) {
+                        if(!(voc.contains(wa.solutions.at(l).vWord))) {
+                            voc.insert(wa.solutions.at(l).vWord);
+                            if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                                oneDiacVoc++;
+                            }
+                        }
+                    }
+
+                    // Here we have a transaction to process
+                    QVector<QString> transaction;
+                    // word length
+                    QString wl = "wl|" + QString::number(sol.length);
+                    transaction.append(wl);
+                    // number of morphemes
+                    QString nm = "nm|" + QString::number(sol.number_of_morphemes);
+                    transaction.append(nm);
+                    // stem length
+                    QString sl = "sl|" + QString::number(sol.stem_length);
+                    transaction.append(sl);
+                    // stem POS
+                    QString s = "s|" + sol.stemPOS;
+                    transaction.append(s);
+
+                    // prefixes and POS tags
+                    for(int j=0; j<sol.prefixes.count(); j++) {
+                        QString p = "p|" + QString::number(sol.prefixes.count()-j) + sol.prefixes[j];
+                        transaction.append(p);
+                    }
+                    for(int j=0; j<sol.prefixPOSs.count(); j++) {
+                        QString pp = "pp|" + QString::number(sol.prefixPOSs.count()-j) + sol.prefixPOSs[j];
+                        transaction.append(pp);
+                    }
+
+                    // suffixes and POS tags
+                    for(int j=0; j<sol.suffixes.count(); j++) {
+                        QString x = "x|" + QString::number(j+1) + sol.suffixes[j];
+                        transaction.append(x);
+                    }
+                    for(int j=0; j<sol.suffixPOSs.count(); j++) {
+                        QString xp = "xp|" + QString::number(j+1) + sol.suffixPOSs[j];
+                        transaction.append(xp);
+                    }
+
+                    // diacritic added
+                    QString d = "d|" +QString(wordDiacritics[m][n]);
+                    transaction.append(d);
+
+                    // diacritic position
+                    QString diacritic_position;
+                    if((sol.prefix_length != 0) && (m == 0)) {
+                        diacritic_position = "dp|prefixs";
+                    }
+                    else if((sol.prefix_length != 0) && (m > 0) && (m < (sol.prefix_length-1))) {
+                        diacritic_position = "dp|prefixm";
+                    }
+                    else if((sol.prefix_length != 0) && (m == (sol.prefix_length-1))) {
+                        diacritic_position = "dp|prefixe";
+                    }
+                    else if(m == sol.prefix_length) {
+                        diacritic_position = "dp|stems";
+                    }
+                    else if((m > (sol.prefix_length)) && (m < (sol.prefix_length + sol.stem_length - 1))) {
+                        diacritic_position = "dp|stemm";
+                    }
+                    else if(m == (sol.prefix_length + sol.stem_length - 1)) {
+                        diacritic_position = "dp|steme";
+                    }
+                    else if((sol.suffix_length != 0) && (m == (sol.prefix_length + sol.stem_length))) {
+                        diacritic_position = "dp|suffixs";
+                    }
+                    else if((sol.suffix_length != 0) && (m > (sol.prefix_length + sol.stem_length)) && (m < (sol.length - 1))) {
+                        diacritic_position = "dp|suffixm";
+                    }
+                    else if((sol.suffix_length != 0) && (m == (sol.length -1))) {
+                        diacritic_position = "dp|suffixe";
+                    }
+                    else {
+                        cout << "Couldn't set diacritic position!" << endl;
+                        return false;
+                    }
+
+                    transaction.append(diacritic_position);
+
+                    // calculate morpho. reduction and discretize
+                    QString mReduction;
+                    double morphoReduction = (wa.solutions.count()-oneDiacSols)/wa.solutions.count();
+                    if( morphoReduction >= 0.5) {
+                        // high reduction
+                        mReduction = "mHIGH";
+                    }
+                    else if(morphoReduction >= 0.2) {
+                        // average reduction
+                        mReduction = "mAVRG";
+                    }
+                    else {
+                        // low reduction
+                        mReduction = "mLOW ";
+                    }
+
+//                    // calculate vocalization reduction and discretize
+//                    QString vReduction;
+//                    double vocReduction = (voc.count()-oneDiacVoc)/voc.count();
+//                    if(vocReduction >= 0.5) {
+//                        vReduction = "vHIGH";
+//                    }
+//                    else if(vocReduction >= 0.2) {
+//                        vReduction = "vAVRG";
+//                    }
+//                    else {
+//                        vReduction = "vLOW";
+//                    }
+
+//                    if(fMap.contains(vReduction)) {
+//                        transaction.append(fMap.value(vReduction));
+//                    }
+//                    else {
+//                        int index = fMap.count();
+//                        fMap.insert(vReduction,index);
+//                        transaction.append(index);
+//                    }
+#else
+    QVector<QVector<QString> > data(10);
+    data[0] << "a" << "b" << "c";
+    data[1] << "a" << "d" << "e";
+    data[2] << "b" << "c" << "d";
+    data[3] << "a" << "b" << "c" << "d";
+    data[4] << "b" << "c";
+    data[5] << "a" << "b" << "d";
+    data[6] << "d" << "e";
+    data[7] << "a" << "b" << "c" << "d";
+    data[8] << "c" << "d" << "e";
+    data[9] << "a" << "b" << "c";
+
+    for(int i=0; i<data.count(); i++) {
+        QVector<int> transaction;
+
+        for(int m=0; m<data.at(i).count(); m++) {
+
+            QString dataItem = data[i][m];
+            if(fMap.contains(dataItem)) {
+                transaction.append(fMap.value(dataItem));
+            }
+            else {
+                int index = fMap.count();
+                fMap.insert(dataItem,index);
+                transaction.append(index);
+            }
+        }
+#endif
+                    /* END */
+        bool skip = false;
+        for(int j=0; j<pathFeatures.count(); j++) {
+            // get feature name and value of current feature on path
+            QString pFName = pathFeatures[j].split('|').at(0);
+            QString pFValue = pathFeatures[j].split('|').at(1);
+
+            for(int k=0; k<transaction.count(); k++) {
+                // get feature name and value of current tupple entries
+                QString tFName = transaction[k].split('|').at(0);
+                QString tFValue = transaction[k].split('|').at(1);
+
+                if(pFName == tFName) {
+                    if(pFValue == tFValue) {
+                        // feature value is already on the path so exclude
+                        transaction.remove(k);
+                        break;
+                    }
+                    else {
+                        // feature value is not on current path so skip tupple
+                        skip = true;
+                        break;
+                    }
+                }
+            }
+            if(skip) {
+                break;
+            }
+        }
+        if(skip) {
+            continue;
+        }
+
+        if(transaction.count() == 0) {
+            continue;
+        }
+
+        for(int j=0; j<transaction.count(); j++) {
+            QString tFName = transaction[j].split('|').at(0);
+            if(!(fvHash.contains(tFName))) {
+                fvHash.insert(tFName,transaction[j]);
+            }
+        }
+
+        if(mReduction == "mLOW") {
+            cCount[0] = cCount[0]+1;
+        }
+        else if(mReduction == "mAVRG") {
+            cCount[1] = cCount[1]+1;
+        }
+        else if(mReduction == "mHIGH") {
+            cCount[2] = cCount[2]+1;
+        }
+        else {
+            cout << "Invalid class detected!\n";
+            return false;
+        }
+
+        for(int j=0; j<transaction.count(); j++) {
+            if(mReduction == "mLOW") {
+                if(vLHash.contains(transaction[j])) {
+                    long tCount = vLHash.value(transaction[j]);
+                    tCount++;
+                    vLHash.insert(transaction[j],tCount);
+                }
+                else {
+                    vLHash.insert(transaction[j],1);
+                }
+            }
+            else if(mReduction == "mAVRG") {
+                if(vAHash.contains(transaction[j])) {
+                    long tCount = vAHash.value(transaction[j]);
+                    tCount++;
+                    vAHash.insert(transaction[j],tCount);
+                }
+                else {
+                    vAHash.insert(transaction[j],1);
+                }
+            }
+            else if(mReduction == "mHIGH") {
+                if(vHHash.contains(transaction[j])) {
+                    long tCount = vHHash.value(transaction[j]);
+                    tCount++;
+                    vHHash.insert(transaction[j],tCount);
+                }
+                else {
+                    vHHash.insert(transaction[j],1);
+                }
+            }
+        }
+#ifdef TEST
+            }
+#else
+                }
+            }
+        }
+    }
+#endif
+    /** Calculate the gain for each feature and choose feature to branch on **/
+    long totalCount = cCount[0] + cCount[1] + cCount[2];
+
+    // Case 1: All the tuples processed belong to the same class
+    if(totalCount == cCount[0]) {
+        isClass = true;
+        feature = "mLOW";
+        return true;
+    }
+    else if(totalCount == cCount[1]) {
+        isClass = true;
+        feature = "mAVRG";
+        return true;
+    }
+    else if(totalCount == cCount[2]) {
+        isClass = true;
+        feature = "mHIGH";
+        return true;
+    }
+
+    // Case 2: We don't have any more features to split on
+    if(fvHash.isEmpty()) {
+        if(cCount[0] >= cCount[1] && cCount[0] >= cCount[2]) {
+            isClass = true;
+            feature = "mLOW";
+            return true;
+        }
+        else if(cCount[1] >= cCount[0] && cCount[1] >= cCount[2]) {
+            isClass = true;
+            feature = "mAVRG";
+            return true;
+        }
+        else {
+            isClass = true;
+            feature = "mHIGH";
+            return true;
+        }
+    }
+
+    // Case 3: We don't have any more samples to use for splitting
+
+    // Calculate the information gain for each feature and choose the one with the highest value
+    long tupleCount = cCount[0] + cCount[1] + cCount[2];
+    double info = information(cCount[0],cCount[1],cCount[2]);
+    QList<QString> features = fvHash.uniqueKeys();
+    double maxGain = -1;
+    QString splitFeature;
+    for(int i=0; i<features.count(); i++) {
+        double infoF = 0;
+        QList<QString> vals = fvHash.values(features[i]);
+        for(int j=0; j<vals.count(); j++) {
+            long vl;
+            if(vLHash.contains(vals[j])) {
+                vl = vLHash.value(vals[j]);
+            }
+            else {
+                vl = 0;
+            }
+
+            long va;
+            if(vAHash.contains(vals[j])) {
+                va = vAHash.value(vals[j]);
+            }
+            else {
+                va = 0;
+            }
+
+            long vh;
+            if(vHHash.contains(vals[j])) {
+                vh = vHHash.value(vals[j]);
+            }
+            else {
+                vh = 0;
+            }
+            infoF += (vl+va+vh)/tupleCount*information(vl,va,vh);
+        }
+
+        double fGain = info - infoF;
+        if(fGain > maxGain) {
+            maxGain = fGain;
+            splitFeature = features[i];
+        }
+    }
+
+    if(maxGain == -1) {
+        cout << "Problem finding feature with maximum gain!!\n";
+        return false;
+    }
+
+    feature = splitFeature;
+    QList<QString> sfValues = fvHash.values(feature);
+    for(int i=0; i<sfValues.count(); i++) {
+        fValues.append(sfValues[i]);
+    }
+    return true;
+}
+
+double information(long class1, long class2, long class3) {
+    long total = class1 + class2 + class3;
+    double v1 = class1/total*log2(class1/total);
+    double v2 = class2/total*log2(class2/total);
+    double v3 = class3/total*log2(class3/total);
+    return (-v1-v2-v3);
 }
