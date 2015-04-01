@@ -29,6 +29,7 @@ public:
     QHash<QString,DTNode*> nextHash;
     DTNode* parent;
     bool isClass;
+    double accuracy;
     // Branch feature value from parent
     QString bValue;
     // next feature branch or class
@@ -55,7 +56,9 @@ bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *pr
 
 bool dpDecisionTree(QHash<QString, int>& hash);
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass);
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double &accuracy);
 
 double information(long, long, long);
+
+void printPathsRecur(DTNode* node, QVector<QString>& path);
 #endif // GAEVALUATION_H

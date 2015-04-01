@@ -1089,6 +1089,8 @@ bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *pr
 bool dpDecisionTree(QHash<QString, int>& hash) {
     DTNode* root = new DTNode();
     root->buildTree(hash);
+    QVector<QString> path;
+    printPathsRecur(root,path);
     return true;
 }
 
@@ -1112,13 +1114,15 @@ bool DTNode::buildTree(QHash<QString, int>& hash) {
     QVector<QString> fValues;
     // flag to identify classes
     bool isClass = false;
+    double accuracy = 0;
     // call method to iterate over the data set
-    dTIterateDataSet(hash,bValues,fValues,feature,isClass);
+    dTIterateDataSet(hash,bValues,fValues,feature,isClass,accuracy);
     // add branch nodes for this feature and call buildTree on each
     if(isClass) {
         // We reached a class
         this->isClass = true;
         this->fValue = feature;
+        this->accuracy = accuracy;
         return true;
     }
     else {
@@ -1142,9 +1146,13 @@ bool DTNode::buildTree(QHash<QString, int>& hash) {
      return true;
 }
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass) {
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy) {
     // Entries to keep track of total count of low, average, and high reduction tuples
+#ifdef TEST
+    long cCount[2] = {0,0};
+#else
     long cCount[3] = {0,0,0};
+#endif
     // MultiHash to keep track of each feature and its values
     QMultiHash<QString, QString> fvHash;
     // Hash to keep track of each feature value's occurence in a high reduction tuple
@@ -1339,33 +1347,32 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
 //                        transaction.append(index);
 //                    }
 #else
-    QVector<QVector<QString> > data(10);
-    data[0] << "a" << "b" << "c";
-    data[1] << "a" << "d" << "e";
-    data[2] << "b" << "c" << "d";
-    data[3] << "a" << "b" << "c" << "d";
-    data[4] << "b" << "c";
-    data[5] << "a" << "b" << "d";
-    data[6] << "d" << "e";
-    data[7] << "a" << "b" << "c" << "d";
-    data[8] << "c" << "d" << "e";
-    data[9] << "a" << "b" << "c";
+    QVector<QVector<QString> > data(14);
+    data[0] << "O|sunny"/* << 85*/ << "H|High" << "W|NotWindy" << "Don't Play";
+    data[1] << "O|sunny"/* << 80*/ << "H|High" << "W|Windy" << "Don't Play";
+    data[2] << "O|overcast"/* << 83*/ << "H|High" << "W|NotWindy" << "Play";
+    data[3] << "O|rain"/* << 70*/ << "H|High" << "W|NotWindy" << "Play";
+    data[4] << "O|rain"/* << 68*/ << "H|High" << "W|NotWindy" << "Play";
+    data[5] << "O|rain"/* << 65*/ << "H|Low" << "W|Windy" << "Don't Play";
+    data[6] << "O|overcast"/* << 64*/ << "H|Low" << "W|Windy" << "Play";
+    data[7] << "O|sunny"/* << 72*/ << "H|High" << "W|NotWindy" << "Don't Play";
+    data[8] << "O|sunny"/* << 69*/ << "H|Low" << "W|NotWindy" << "Play";
+    data[9] << "O|rain"/* << 75*/ << "H|High" << "W|NotWindy" << "Play";
+    data[10] << "O|sunny"/* << 75*/ << "H|Low" << "W|Windy" << "Play";
+    data[11] << "O|overcast"/* << 72*/ << "H|High" << "W|Windy" << "Play";
+    data[12] << "O|overcast"/* << 81*/ << "H|Low" << "W|NotWindy" << "Play";
+    data[13] << "O|rain"/* << 71*/ << "H|High" << "W|Windy" << "Don't Play";
 
     for(int i=0; i<data.count(); i++) {
-        QVector<int> transaction;
+        QVector<QString> transaction;
 
-        for(int m=0; m<data.at(i).count(); m++) {
-
+        for(int m=0; m<data.at(i).count()-1; m++) {
             QString dataItem = data[i][m];
-            if(fMap.contains(dataItem)) {
-                transaction.append(fMap.value(dataItem));
-            }
-            else {
-                int index = fMap.count();
-                fMap.insert(dataItem,index);
-                transaction.append(index);
-            }
+            transaction.append(dataItem);
         }
+
+        // calculate morpho. reduction and discretize
+        QString mReduction = data.at(i).last();
 #endif
                     /* END */
         bool skip = false;
@@ -1406,11 +1413,12 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
 
         for(int j=0; j<transaction.count(); j++) {
             QString tFName = transaction[j].split('|').at(0);
-            if(!(fvHash.contains(tFName))) {
+            if(!(fvHash.contains(tFName,transaction[j]))) {
                 fvHash.insert(tFName,transaction[j]);
             }
         }
 
+#ifndef TEST
         if(mReduction == "mLOW") {
             cCount[0] = cCount[0]+1;
         }
@@ -1424,9 +1432,25 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
             cout << "Invalid class detected!\n";
             return false;
         }
+#else
+        if(mReduction == "Play") {
+            cCount[0] = cCount[0]+1;
+        }
+        else if(mReduction == "Don't Play") {
+            cCount[1] = cCount[1]+1;
+        }
+        else {
+            cout << "Invalid class detected!\n";
+            return false;
+        }
+#endif
 
         for(int j=0; j<transaction.count(); j++) {
+#ifndef TEST
             if(mReduction == "mLOW") {
+#else
+            if(mReduction == "Play") {
+#endif
                 if(vLHash.contains(transaction[j])) {
                     long tCount = vLHash.value(transaction[j]);
                     tCount++;
@@ -1436,7 +1460,11 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     vLHash.insert(transaction[j],1);
                 }
             }
+#ifndef TEST
             else if(mReduction == "mAVRG") {
+#else
+            else if(mReduction == "Don't Play") {
+#endif
                 if(vAHash.contains(transaction[j])) {
                     long tCount = vAHash.value(transaction[j]);
                     tCount++;
@@ -1446,6 +1474,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     vAHash.insert(transaction[j],1);
                 }
             }
+#ifndef TEST
             else if(mReduction == "mHIGH") {
                 if(vHHash.contains(transaction[j])) {
                     long tCount = vHHash.value(transaction[j]);
@@ -1456,9 +1485,10 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     vHHash.insert(transaction[j],1);
                 }
             }
+#endif
         }
 #ifdef TEST
-            }
+        }
 #else
                 }
             }
@@ -1466,49 +1496,94 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
     }
 #endif
     /** Calculate the gain for each feature and choose feature to branch on **/
-    long totalCount = cCount[0] + cCount[1] + cCount[2];
+#ifndef TEST
+    long double totalCount = cCount[0] + cCount[1] + cCount[2];
+#else
+    long double totalCount = cCount[0] + cCount[1];
+#endif
 
     // Case 1: All the tuples processed belong to the same class
+#ifndef TEST
     if(totalCount == cCount[0]) {
         isClass = true;
+        accuracy = 1;
         feature = "mLOW";
         return true;
     }
     else if(totalCount == cCount[1]) {
         isClass = true;
+        accuracy = 1;
         feature = "mAVRG";
         return true;
     }
     else if(totalCount == cCount[2]) {
         isClass = true;
+        accuracy = 1;
         feature = "mHIGH";
         return true;
     }
+#else
+    if(totalCount == cCount[0]) {
+        isClass = true;
+        accuracy = 1;
+        feature = "Play";
+        return true;
+    }
+    else if(totalCount == cCount[1]) {
+        isClass = true;
+        accuracy = 1;
+        feature = "Don't Play";
+        return true;
+    }
+#endif
 
     // Case 2: We don't have any more features to split on
+#ifndef TEST
     if(fvHash.isEmpty()) {
         if(cCount[0] >= cCount[1] && cCount[0] >= cCount[2]) {
             isClass = true;
+            accuracy = cCount[0] / totalCount;
             feature = "mLOW";
             return true;
         }
         else if(cCount[1] >= cCount[0] && cCount[1] >= cCount[2]) {
             isClass = true;
+            accuracy = cCount[1] / totalCount;
             feature = "mAVRG";
             return true;
         }
         else {
             isClass = true;
+            accuracy = cCount[2] / totalCount;
             feature = "mHIGH";
             return true;
         }
     }
+#else
+    if(fvHash.isEmpty()) {
+        if(cCount[0] >= cCount[1]) {
+            isClass = true;
+            accuracy = cCount[0] / totalCount;
+            feature = "Play";
+            return true;
+        }
+        else {
+            isClass = true;
+            accuracy = cCount[1] / totalCount;
+            feature = "Don't Play";
+            return true;
+        }
+    }
+#endif
 
     // Case 3: We don't have any more samples to use for splitting
 
     // Calculate the information gain for each feature and choose the one with the highest value
-    long tupleCount = cCount[0] + cCount[1] + cCount[2];
+#ifndef TEST
     double info = information(cCount[0],cCount[1],cCount[2]);
+#else
+    double info = information(cCount[0],cCount[1],0);
+#endif
     QList<QString> features = fvHash.uniqueKeys();
     double maxGain = -1;
     QString splitFeature;
@@ -1532,6 +1607,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                 va = 0;
             }
 
+#ifndef TEST
             long vh;
             if(vHHash.contains(vals[j])) {
                 vh = vHHash.value(vals[j]);
@@ -1539,7 +1615,10 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
             else {
                 vh = 0;
             }
-            infoF += (vl+va+vh)/tupleCount*information(vl,va,vh);
+            infoF += (vl+va+vh)/totalCount*information(vl,va,vh);
+#else
+            infoF += (vl+va)/totalCount*information(vl,va,0);
+#endif
         }
 
         double fGain = info - infoF;
@@ -1563,9 +1642,63 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
 }
 
 double information(long class1, long class2, long class3) {
-    long total = class1 + class2 + class3;
-    double v1 = class1/total*log2(class1/total);
-    double v2 = class2/total*log2(class2/total);
-    double v3 = class3/total*log2(class3/total);
+#ifndef TEST
+    long double total = class1 + class2 + class3;
+    double v1 = 0;
+    if(class1 != 0) {
+        v1 = class1/total*log2(class1/total);
+    }
+    double v2 = 0;
+    if(class2 != 0) {
+        v2 = class2/total*log2(class2/total);
+    }
+    double v3 = 0;
+    if(class3 != 0) {
+        v3 = class3/total*log2(class3/total);
+    }
     return (-v1-v2-v3);
+#else
+    long double total = class1 + class2;
+    double v1 = 0;
+    if(class1 != 0) {
+        v1 = class1/total*log2(class1/total);
+    }
+    double v2 = 0;
+    if(class2 != 0) {
+        v2 = class2/total*log2(class2/total);
+    }
+    return (-v1-v2);
+#endif
+}
+
+void printPathsRecur(DTNode* node, QVector<QString>& path)
+{
+  if (node==NULL)
+    return;
+
+  /* append this node to the path array */
+  if(!(node->bValue.isEmpty())) {
+    path.append(node->bValue);
+  }
+
+  /* it's a leaf, so print the path that led to here  */
+  if (node->isClass)
+  {
+      theSarf->out << node->fValue << " <- ";
+      for (int i=0; i<path.count(); i++)
+      {
+        theSarf->out << ' ' << path[i];
+      }
+      theSarf->out << " (" << node->accuracy << ")\n";
+  }
+  else
+  {
+    /* otherwise try both subtrees */
+    QHashIterator<QString, DTNode*> i(node->nextHash);
+     while (i.hasNext()) {
+         i.next();
+         printPathsRecur(i.value(), path);
+         path.pop_back();
+     }
+  }
 }

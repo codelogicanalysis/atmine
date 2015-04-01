@@ -262,7 +262,8 @@ int main(int argc, char *argv[]) {
 //#else
         dgApriori(hash);
 #endif
-        dpIterApriori(hash,target,supp,conf);
+        //dpIterApriori(hash,target,supp,conf);
+        dpDecisionTree(hash);
     }
 
     //This function is called after the processing is done in order to close the tool properly.
