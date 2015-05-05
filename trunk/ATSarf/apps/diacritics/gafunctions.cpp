@@ -1698,7 +1698,7 @@ bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos)
         return false;
     }
 
-    int letterPos = 0, i = 0;
+    int letterPos = -1, i = 0;
     while(letterPos != diacLetterPos) {
         if(!isDiacritic(word2[i])) {
             letterPos++;
@@ -1706,9 +1706,9 @@ bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos)
         i++;
     }
 
-    i = letterPos + 1;
     while(isDiacritic(word2[i])) {
         d2.append(word2[i]);
+        i++;
     }
 
     return d1.isConsistent(d2);
