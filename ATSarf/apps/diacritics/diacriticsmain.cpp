@@ -96,6 +96,13 @@ int main(int argc, char *argv[]) {
         fileName.append(QString::number(solutions));
         fileName.append(".dat");
     }
+
+    QString oneDiacWord = "أكَل";
+    QString word = "أُكِلّ";
+    cout << oneDiacConsistency(oneDiacWord,word,1) << endl;
+
+    return 0;
+
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly))
     {
