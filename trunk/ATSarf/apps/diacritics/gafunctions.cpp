@@ -562,11 +562,11 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     double morphoReduction = (wa.solutions.count()-oneDiacSols)/wa.solutions.count();
                     if( morphoReduction >= 0.5) {
                         // high reduction
-                        transaction.append("mHIGH ");
+                        transaction.append("mHIGH");
                     }
                     else if(morphoReduction >= 0.2) {
                         // average reduction
-                        transaction.append("mAVRG ");
+                        transaction.append("mAVRG");
                     }
                     else {
                         // low reduction
