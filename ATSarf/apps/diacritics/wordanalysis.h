@@ -34,9 +34,10 @@ class WordAnalysis : public Stemmer
 private:
     QString *text;
     int *count;
+    bool full;
 public:
 
-    WordAnalysis(QString *text, int *count);
+    WordAnalysis(QString *text, int *count, QString morpheme_type = "A");
     bool on_match();
     int getAmbiguity();
     QVector<Solution> solutions;

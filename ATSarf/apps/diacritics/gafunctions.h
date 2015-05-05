@@ -24,7 +24,7 @@ public:
         isClass = false;
         parent = NULL;
     }
-    bool buildTree(QHash<QString, int>& hash);
+    bool buildTree(QHash<QString, int>& hash, QString morpheme_type);
 
     QHash<QString,DTNode*> nextHash;
     DTNode* parent;
@@ -54,11 +54,13 @@ bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount,
 
 bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf);
 
-bool dpDecisionTree(QHash<QString, int>& hash);
+bool dpDecisionTree(QHash<QString, int>& hash, QString morpheme_type);
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double &accuracy);
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double &accuracy, QString morpheme_type);
 
 double information(long, long, long);
+
+bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos);
 
 void printPathsRecur(DTNode* node, QVector<QString>& path);
 #endif // GAEVALUATION_H
