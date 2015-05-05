@@ -570,7 +570,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
                     }
                     else {
                         // low reduction
-                        transaction.append("mLOW ");
+                        transaction.append("mLOW");
                     }
 
                     // calculate vocalization reduction and discretize
@@ -882,7 +882,7 @@ bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount,
                     }
                     else {
                         // low reduction
-                        mReduction = "mLOW ";
+                        mReduction = "mLOW";
                     }
 
                     if(fMap.contains(mReduction)) {
@@ -1086,15 +1086,15 @@ bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *pr
     return !isFirst;
 }
 
-bool dpDecisionTree(QHash<QString, int>& hash) {
+bool dpDecisionTree(QHash<QString, int>& hash, QString morpheme_type) {
     DTNode* root = new DTNode();
-    root->buildTree(hash);
+    root->buildTree(hash,morpheme_type);
     QVector<QString> path;
     printPathsRecur(root,path);
     return true;
 }
 
-bool DTNode::buildTree(QHash<QString, int>& hash) {
+bool DTNode::buildTree(QHash<QString, int>& hash, QString morpheme_type) {
     if(this->isClass) {
         return true;
     }
@@ -1116,7 +1116,7 @@ bool DTNode::buildTree(QHash<QString, int>& hash) {
     bool isClass = false;
     double accuracy = 0;
     // call method to iterate over the data set
-    dTIterateDataSet(hash,bValues,fValues,feature,isClass,accuracy);
+    dTIterateDataSet(hash,bValues,fValues,feature,isClass,accuracy, morpheme_type);
     // add branch nodes for this feature and call buildTree on each
     if(isClass) {
         // We reached a class
@@ -1138,7 +1138,7 @@ bool DTNode::buildTree(QHash<QString, int>& hash) {
     QHashIterator<QString, DTNode*> i(this->nextHash);
      while (i.hasNext()) {
          i.next();
-         bool good = i.value()->buildTree(hash);
+         bool good = i.value()->buildTree(hash, morpheme_type);
          if(!good) {
              return false;
          }
@@ -1146,7 +1146,7 @@ bool DTNode::buildTree(QHash<QString, int>& hash) {
      return true;
 }
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy) {
+bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy, QString morpheme_type) {
     // Entries to keep track of total count of low, average, and high reduction tuples
 #ifdef TEST
     long cCount[2] = {0,0};
@@ -1169,7 +1169,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
         int count = 0;
 
         // Get the morphological solutions of the word
-        WordAnalysis wa(&word,&count);
+        WordAnalysis wa(&word,&count,morpheme_type);
         wa();
 
         // skip unambiguous words, i.e. single morphological solution
@@ -1217,31 +1217,25 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     // Count consistent morphological solutions
                     double oneDiacSols = 0;
                     for(int l=0; l<wa.solutions.count(); l++) {
-                        if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                        if(oneDiacConsistency(oneDiacWord,wa.solutions[l].vWord,m)) {
                             oneDiacSols++;
                         }
                     }
 
                     // Count consistent vocalizations
-                    double oneDiacVoc = 0;
-                    QSet<QString> voc;
-                    for(int l=0; l<wa.solutions.count(); l++) {
-                        if(!(voc.contains(wa.solutions.at(l).vWord))) {
-                            voc.insert(wa.solutions.at(l).vWord);
-                            if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
-                                oneDiacVoc++;
-                            }
-                        }
-                    }
+//                    double oneDiacVoc = 0;
+//                    QSet<QString> voc;
+//                    for(int l=0; l<wa.solutions.count(); l++) {
+//                        if(!(voc.contains(wa.solutions.at(l).vWord))) {
+//                            voc.insert(wa.solutions.at(l).vWord);
+//                            if(oneDiacConsistency(oneDiacWord,wa.solutions.at(l).vWord,m)) {
+//                                oneDiacVoc++;
+//                            }
+//                        }
+//                    }
 
                     // Here we have a transaction to process
                     QVector<QString> transaction;
-                    // word length
-                    QString wl = "wl|" + QString::number(sol.length);
-                    transaction.append(wl);
-                    // number of morphemes
-                    QString nm = "nm|" + QString::number(sol.number_of_morphemes);
-                    transaction.append(nm);
                     // stem length
                     QString sl = "sl|" + QString::number(sol.stem_length);
                     transaction.append(sl);
@@ -1249,24 +1243,33 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     QString s = "s|" + sol.stemPOS;
                     transaction.append(s);
 
-                    // prefixes and POS tags
-                    for(int j=0; j<sol.prefixes.count(); j++) {
-                        QString p = "p|" + QString::number(sol.prefixes.count()-j) + sol.prefixes[j];
-                        transaction.append(p);
-                    }
-                    for(int j=0; j<sol.prefixPOSs.count(); j++) {
-                        QString pp = "pp|" + QString::number(sol.prefixPOSs.count()-j) + sol.prefixPOSs[j];
-                        transaction.append(pp);
-                    }
+                    if(morpheme_type == "A") {
+                        // word length
+                        QString wl = "wl|" + QString::number(sol.length);
+                        transaction.append(wl);
+                        // number of morphemes
+                        QString nm = "nm|" + QString::number(sol.number_of_morphemes);
+                        transaction.append(nm);
 
-                    // suffixes and POS tags
-                    for(int j=0; j<sol.suffixes.count(); j++) {
-                        QString x = "x|" + QString::number(j+1) + sol.suffixes[j];
-                        transaction.append(x);
-                    }
-                    for(int j=0; j<sol.suffixPOSs.count(); j++) {
-                        QString xp = "xp|" + QString::number(j+1) + sol.suffixPOSs[j];
-                        transaction.append(xp);
+                        // prefixes and POS tags
+                        for(int j=0; j<sol.prefixes.count(); j++) {
+                            QString p = "p|" + QString::number(sol.prefixes.count()-j) + sol.prefixes[j];
+                            transaction.append(p);
+                        }
+                        for(int j=0; j<sol.prefixPOSs.count(); j++) {
+                            QString pp = "pp|" + QString::number(sol.prefixPOSs.count()-j) + sol.prefixPOSs[j];
+                            transaction.append(pp);
+                        }
+
+                        // suffixes and POS tags
+                        for(int j=0; j<sol.suffixes.count(); j++) {
+                            QString x = "x|" + QString::number(j+1) + sol.suffixes[j];
+                            transaction.append(x);
+                        }
+                        for(int j=0; j<sol.suffixPOSs.count(); j++) {
+                            QString xp = "xp|" + QString::number(j+1) + sol.suffixPOSs[j];
+                            transaction.append(xp);
+                        }
                     }
 
                     // diacritic added
@@ -1275,36 +1278,49 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
 
                     // diacritic position
                     QString diacritic_position;
-                    if((sol.prefix_length != 0) && (m == 0)) {
-                        diacritic_position = "dp|prefixs";
-                    }
-                    else if((sol.prefix_length != 0) && (m > 0) && (m < (sol.prefix_length-1))) {
-                        diacritic_position = "dp|prefixm";
-                    }
-                    else if((sol.prefix_length != 0) && (m == (sol.prefix_length-1))) {
-                        diacritic_position = "dp|prefixe";
-                    }
-                    else if(m == sol.prefix_length) {
-                        diacritic_position = "dp|stems";
-                    }
-                    else if((m > (sol.prefix_length)) && (m < (sol.prefix_length + sol.stem_length - 1))) {
-                        diacritic_position = "dp|stemm";
-                    }
-                    else if(m == (sol.prefix_length + sol.stem_length - 1)) {
-                        diacritic_position = "dp|steme";
-                    }
-                    else if((sol.suffix_length != 0) && (m == (sol.prefix_length + sol.stem_length))) {
-                        diacritic_position = "dp|suffixs";
-                    }
-                    else if((sol.suffix_length != 0) && (m > (sol.prefix_length + sol.stem_length)) && (m < (sol.length - 1))) {
-                        diacritic_position = "dp|suffixm";
-                    }
-                    else if((sol.suffix_length != 0) && (m == (sol.length -1))) {
-                        diacritic_position = "dp|suffixe";
+                    if(morpheme_type == "A") {
+                        if((sol.prefix_length != 0) && (m == 0)) {
+                            diacritic_position = "dp|prefixs";
+                        }
+                        else if((sol.prefix_length != 0) && (m > 0) && (m < (sol.prefix_length-1))) {
+                            diacritic_position = "dp|prefixm";
+                        }
+                        else if((sol.prefix_length != 0) && (m == (sol.prefix_length-1))) {
+                            diacritic_position = "dp|prefixe";
+                        }
+                        else if(m == sol.prefix_length) {
+                            diacritic_position = "dp|stems";
+                        }
+                        else if((m > (sol.prefix_length)) && (m < (sol.prefix_length + sol.stem_length - 1))) {
+                            diacritic_position = "dp|stemm";
+                        }
+                        else if(m == (sol.prefix_length + sol.stem_length - 1)) {
+                            diacritic_position = "dp|steme";
+                        }
+                        else if((sol.suffix_length != 0) && (m == (sol.prefix_length + sol.stem_length))) {
+                            diacritic_position = "dp|suffixs";
+                        }
+                        else if((sol.suffix_length != 0) && (m > (sol.prefix_length + sol.stem_length)) && (m < (sol.length - 1))) {
+                            diacritic_position = "dp|suffixm";
+                        }
+                        else if((sol.suffix_length != 0) && (m == (sol.length -1))) {
+                            diacritic_position = "dp|suffixe";
+                        }
+                        else {
+                            cout << "Couldn't set diacritic position!" << endl;
+                            return false;
+                        }
                     }
                     else {
-                        cout << "Couldn't set diacritic position!" << endl;
-                        return false;
+                        if(m == 0) {
+                            diacritic_position = "dp|stems";
+                        }
+                        else if(m == sol.stem_length-1) {
+                            diacritic_position = "dp|steme";
+                        }
+                        else {
+                            diacritic_position = "dp|stemm";
+                        }
                     }
 
                     transaction.append(diacritic_position);
@@ -1322,7 +1338,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString> pathFeatures, 
                     }
                     else {
                         // low reduction
-                        mReduction = "mLOW ";
+                        mReduction = "mLOW";
                     }
 
 //                    // calculate vocalization reduction and discretize
@@ -1669,6 +1685,33 @@ double information(long class1, long class2, long class3) {
     }
     return (-v1-v2);
 #endif
+}
+
+bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos) {
+    Diacritics d1,d2;
+    QChar diac = oneDiacWord[diacLetterPos+1];
+    if(isDiacritic(diac)) {
+        d1.append(diac);
+    }
+    else {
+        cout << "Problem in oneDiacConsistency function!\n";
+        return false;
+    }
+
+    int letterPos = 0, i = 0;
+    while(letterPos != diacLetterPos) {
+        if(!isDiacritic(word2[i])) {
+            letterPos++;
+        }
+        i++;
+    }
+
+    i = letterPos + 1;
+    while(isDiacritic(word2[i])) {
+        d2.append(word2[i]);
+    }
+
+    return d1.isConsistent(d2);
 }
 
 void printPathsRecur(DTNode* node, QVector<QString>& path)

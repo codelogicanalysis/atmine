@@ -1,10 +1,11 @@
 #include "wordanalysis.h"
 
-WordAnalysis::WordAnalysis(QString *text, int *count) : Stemmer(text,0)
+WordAnalysis::WordAnalysis(QString *text, int *count, QString morpheme_type) : Stemmer(text,0)
 {
     this->text = text;
     this->count = count;
     *count = 0;
+    this->full = (morpheme_type == "A");
 }
 
 bool WordAnalysis::on_match()
@@ -113,6 +114,12 @@ bool WordAnalysis::on_match()
     }
 
     sol.vWord = vocalizedWord;
+
+    if(!full) {
+        if(sol.stem_length != sol.length) {
+            sol.isValid = false;
+        }
+    }
 
     solutions.append(sol);
 
