@@ -1706,7 +1706,7 @@ bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos)
         i++;
     }
 
-    while(isDiacritic(word2[i])) {
+    while(isDiacritic(word2[i] && i < word2.count())) {
         d2.append(word2[i]);
         i++;
     }
