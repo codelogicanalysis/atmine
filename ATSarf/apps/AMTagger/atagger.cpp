@@ -357,7 +357,7 @@ void ATagger::constructRelations(int index) {
     }
 }
 
-void ATagger::constructCrossRelations() {
+void ATagger::constructCrossRelations(QString cr) {
 
     QHash<QString,QSet<QString>* > synSetHash;
     QVector<QPair<Match*, Match*> > crossRelations;
@@ -367,6 +367,12 @@ void ATagger::constructCrossRelations() {
             MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
 
             if(merftag1 == merftag2) {
+                continue;
+            }
+            if(cr == "inter" && merftag1->sourceText == merftag2->sourceText) {
+                continue;
+            }
+            else if(cr == "intra" && merftag1->sourceText != merftag2->sourceText) {
                 continue;
             }
 
