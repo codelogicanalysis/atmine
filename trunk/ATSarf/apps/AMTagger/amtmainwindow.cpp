@@ -2566,7 +2566,7 @@ void AMTMainWindow::extractCrossReferenceRelations() {
     /** Construct cross reference relations **/
 
     dirty = true;
-    _atagger->constructCrossRelations();
+    _atagger->constructCrossRelations("all");
 
     CrossReferenceView *crView = new CrossReferenceView(this);
     crView->show();
@@ -2629,7 +2629,7 @@ static struct option long_options[] =
 };
 
 void print_usage() {
-    cout<< "Usage: atagger -b -t [textfile] -s [tagtypefile] -o [outputfile] -c \n" << endl;
+    cout<< "Usage: atagger -b -t [textfiles] -s [tagtypefile] -o [outputfile] -c [inter|intra|all]\n" << endl;
 }
 
 int main(int argc, char *argv[])
@@ -2680,9 +2680,9 @@ int main(int argc, char *argv[])
         /// batch mode
 
         int option;
-        bool crossRelations = false;
+        QString crossRelations;
         bool batchMode = false;
-        while ((option = getopt_long(argc, argv,"bt:s:o:c",long_options,NULL)) != -1) {
+        while ((option = getopt_long(argc, argv,"bt:s:o:c:",long_options,NULL)) != -1) {
             switch (option) {
             case 'b' :
                 batchMode = true;
@@ -2700,7 +2700,12 @@ int main(int argc, char *argv[])
                 _atagger->tagFile = QString::fromUtf8(optarg);
                 break;
             case 'c' :
-                crossRelations = true;
+                crossRelations = QString::fromUtf8(optarg);
+                if(crossRelations != "inter" && crossRelations != "intra" && crossRelations != "all") {
+                    cout << "Incorrect cross relation option!\n";
+                    print_usage();
+                    return 0;
+                }
                 break;
             default:
                 print_usage();
@@ -2802,8 +2807,8 @@ int main(int argc, char *argv[])
 
         /** Construct cross reference relations **/
 
-        if(crossRelations) {
-            _atagger->constructCrossRelations();
+        if(!(crossRelations.isEmpty())) {
+            _atagger->constructCrossRelations(crossRelations);
         }
 
         /** Save Data in output files **/
