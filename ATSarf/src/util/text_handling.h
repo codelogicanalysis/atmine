@@ -13,6 +13,12 @@
 
 enum RelativePos{Beggining, Middle, End};
 
+/**
+  * This method returns an enumerator of the relative position given the current position and size of an item.
+  * @param  pos          position in item
+  * @param  size         size of item
+  * @return enumerator representing relative position
+  */
 inline RelativePos getRelativePos(int pos, int size) {
 	assert((pos>=0 && pos<size) || (pos==size && size==0));
 	if (pos==0)
@@ -23,6 +29,11 @@ inline RelativePos getRelativePos(int pos, int size) {
 		return Middle;
 }
 
+/**
+  * This method returns the possessive form of an input Arabic word.
+  * @param  word          Arabic word
+  * @return QString containing the possessive form of word
+  */
 inline QString get_Possessive_form(QString word) {
 	if (word.length()>=2) {
 		int last_index=getLastLetter_index(word,word.length()-1);
@@ -47,6 +58,13 @@ inline QString get_Possessive_form(QString word) {
 	} else
 		return word.append(ya2);
 }
+
+/**
+  * This method checks if two characters are equal taking into consideration some differences in the Arabic letters.
+  * @param  c1  first character
+  * @param  c2  second character
+  * @return Boolean indicating if the two characters are equal.
+  */
 inline bool equal(const QChar & c1, const QChar & c2) {
 	if (c1==c2)
 		return true;
@@ -56,6 +74,13 @@ inline bool equal(const QChar & c1, const QChar & c2) {
 		return true;
 	return false;
 }
+
+/**
+  * This method checks if two Arabic words are equal while ignoring the diacritics.
+  * @param  word1  first word
+  * @param  word2  second word
+  * @return Boolean indicating if the two words are equal or not.
+  */
 inline bool equal_ignore_diacritics(const QString &word1,const QString &word2) {
 	int length1=word1.length(),length2=word2.length();
 	int i=0,j=0;
@@ -92,8 +117,44 @@ inline bool equal_ignore_diacritics(const QString &word1,const QString &word2) {
 		return false;
 	return true;
 }
+
+/**
+  * This method checks if word1 is contained in word2 with consistent diacritics.
+  * This means that the letters of word1 are contained in word2 and the diacritics of the
+  * corresponding letters are consistent.
+  * @param  word1          first word
+  * @param  word2          second word
+  * @param  i1             returns the index of the letter at which the comparison stopped in word1
+  * @param  i2             returns the index of the letter at which the comparison stopped in word2
+  * @param  force shadde   forces the existence of a shadda in one word if it exists in the other
+  * @return Boolean to indicate if first is contained in the other or not.
+  */
 bool checkIfFirstIsContainedInSecond(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2,bool force_shadde=false); //modifies value of i1 and i2
+
+/**
+  * This method checks if one of the words word1 and word2 is a prefix of the other with consistent diacritics.
+  * This means that the letters of one of the words are the prefix of the other and the diacritics of the
+  * corresponding letters are consistent.
+  * @param  word1          first word
+  * @param  word2          second word
+  * @param  i1             returns the index of the letter at which the comparison stopped in word1
+  * @param  i2             returns the index of the letter at which the comparison stopped in word2
+  * @param  force shadde   forces the existence of a shadda in one word if it exists in the other
+  * @return Boolean to indicate if the smallest word is a prefix of the other or not.
+  */
 bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1,const QStringRef &word2, int & i1, int & i2,bool force_shadde=false); //modifies value of i1 and i2
+
+/**
+  * This method checks if word1 and word2 are equal with consistent diacritics.
+  * This means that the letters of word1 and word2 are the same and the diacritics of the
+  * corresponding letters are consistent.
+  * @param  word1          first word
+  * @param  word2          second word
+  * @param  force shadde   forces the existence of a shadda in one word if it exists in the other
+  * @param  force last     forces any additional dacritics at the end of one word to be consistent
+  *                        with the other word, ex. shadda if forced.
+  * @return Boolean to indicate if the words are equal or not.
+  */
 inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_shadde=false, bool force_last=true) { // is diacritics tolerant and ignores punctuation
 	int i1,i2;
 	int length1=word1.length(),
@@ -135,15 +196,34 @@ inline bool equal(const QStringRef &word1,const QStringRef &word2,bool force_sha
 		return false;
 	return true;
 }
+
 inline bool equal(const QString &word1,const QString &word2,bool force_shadde=false, bool force_last=true) {// is diacritics tolerant
 	return equal(word1.rightRef(-1),word2.rightRef(-1),force_shadde, force_last);//rightRef of <0 returns whole string
 }
+
 inline bool equal(const QStringRef &word1,const QString &word2,bool force_shadde=false, bool force_last=true) { // is diacritics tolerant
 	return equal(word1,word2.rightRef(-1),force_shadde, force_last);//rightRef of <0 returns whole string
 }
+
+/**
+  * This method checks if word1 and word2 are equal with consistent diacritics after removing the diacritics of the last letter in both words.
+  * This means that the letters of word1 and word2 are the same and the diacritics of the
+  * corresponding letters are consistent excluding the diacritics of the last letter from each word.
+  * @param  word1          first word
+  * @param  word2          second word
+  * @return Boolean to indicate if the words are equal or not.
+  */
 inline bool equal_withoutLastDiacritics(const QString &word1,const QString &word2) { // is diacritics tolerant
 	return equal(removeLastDiacritics(word1),removeLastDiacritics(word2));
 }
+
+/**
+  * This method checks if text starts with substring and that the first character after the diacritics of the last matching letter is a delimiter.
+  * @param  text        input text
+  * @param  substring   input substring
+  * @param  finish_pos  contains the end position at which the method stops in text. It includes the diacritics of the last letter.
+  * @return Boolean to indicate if the text starts with the substring.
+  */
 inline bool startsWith(const QStringRef &text,const QString &substring, int & finish_pos){ // is diacritics tolerant checks if a word ends with a delimeter terminated 'subset'
 	int text_length=text.length(), substring_length=substring.length();
 	if(text_length<substring_length)
@@ -163,13 +243,18 @@ inline bool startsWith(const QStringRef &text,const QString &substring, int & fi
 	}
 	return false;
 }
+
 inline bool startsWith(const QString &text,const QString &substring) // is diacritics tolerant checks if a word ends with a delimeter terminated 'subset'
 {
 	int dummy_int;
 	return startsWith(text.rightRef(-1),substring,dummy_int);
 }
 
-
+/**
+  * This method skips the first letter after the current position in the input text
+  * @param  text          pointer to input text
+  * @param  currentPos    reference to current position in text
+  */
 inline void skipOneLetter(const QString * text,long & currentPos) {
 	if (currentPos<text->size()) {
 		currentPos++;
@@ -178,6 +263,12 @@ inline void skipOneLetter(const QString * text,long & currentPos) {
 	}
 }
 
+/**
+  * This method skips "Al" from the beginning of the input Arabic text starting from the current position.
+  * @param  text       pointer to input text
+  * @param  currPos    reference to current position in text
+  * @return Boolean indicating if the method skipped "Al" or not
+  */
 inline bool skipAL(const QString * text, long & currPos) { //just moves currPos
 	if (currPos<text->size()) {
 		QChar l=text->at(currPos);
@@ -197,11 +288,22 @@ inline bool skipAL(const QString * text, long & currPos) { //just moves currPos
 	return false;
 }
 
+/**
+  * This method checks if the input word starts with "Al"
+  * @param  word    reference to an input Arabic word
+  * @return Boolean indicating if the input word starts with "Al"
+  */
 inline bool startsWithAL(const QString & word)//does not take in account cases were Diacritics may be present on the alef and lam of "al"
 {
 	long i=0;
 	return (skipAL(&word,i)); //will not affect word
 }
+
+/**
+  * This method removes "Al" from the input word
+  * @param  word    reference to an input Arabic word
+  * @return Boolean indicating if "Al" was removed or not.
+  */
 inline bool removeAL( QString &word)
 {
 	long i=0;
@@ -210,12 +312,22 @@ inline bool removeAL( QString &word)
 	word=word.mid(i,word.length()); //word.length() is more than needed but no problem will be ignored supposedly
 	return true;
 }
+
+/**
+  * This method removes "Al" from the input word
+  * @param  word    input Arabic word
+  * @return QString without "Al".
+  */
 inline QString withoutAL( QString word)
 {
 	removeAL(word);
 	return word;
 }
 
+/**
+  * This method removes the first word from the input word. It identifies the first word from the first space in s.
+  * @param  s    reference to an input Arabic text
+  */
 inline void removeFirstWord(QString & s) {
 	int l=s.indexOf(' ');
 	if (l>=0)
@@ -223,6 +335,14 @@ inline void removeFirstWord(QString & s) {
 }
 
 
+/**
+  * This method checks of the two intervals have an overlap.
+  * @param  start1  start of first interval
+  * @param  end1    end of first interval
+  * @param  start2  start of second interval
+  * @param  end2    end of second interval
+  * @return Boolean indicating if the two intervals overlap
+  */
 inline bool overLaps(int start1,int end1,int start2,int end2) {
 	assert(start1<=end1 && start2<=end2);
 	if (start1>=start2 && start1<=end2)
@@ -231,16 +351,42 @@ inline bool overLaps(int start1,int end1,int start2,int end2) {
 		return true;
 	return false;
 }
+
+/**
+  * This method checks of interval [start1, end1] is after [start2, end2].
+  * @param  start1  start of first interval
+  * @param  end1    end of first interval
+  * @param  start2  start of second interval
+  * @param  end2    end of second interval
+  * @return Boolean indicating if the first interval comes after the second
+  */
 inline bool after(int start1,int end1,int start2,int end2) {
 	assert(start1<=end1 && start2<=end2);
 	if (start1>=end2)
 		return true;
 	return false;
 }
+
+/**
+  * This method checks of interval [start1, end1] is before [start2, end2].
+  * @param  start1  start of first interval
+  * @param  end1    end of first interval
+  * @param  start2  start of second interval
+  * @param  end2    end of second interval
+  * @return Boolean indicating if the first interval comes before the second
+  */
 inline bool before(int start1,int end1,int start2,int end2) {
 	return after(start2,end2,start1,end1);
 }
 
+/**
+  * This method counts the number of words in text between start and end.
+  * @param  text                pointer to the input text
+  * @param  start               start position
+  * @param  end                 end position
+  * @param  hasParagraphPunc    pointer to a Boolean which is set by the method to indicate if the input text has full stop and newline in the specified interval.
+  * @return integer containing the number of words
+  */
 inline int countWords(QString * text, int start,int end, bool * hasParagraphPunc=NULL) {
 	if (hasParagraphPunc!=NULL)
 		*hasParagraphPunc=false;
@@ -265,12 +411,26 @@ inline int countWords(QString * text, const QPair<int,int> & st, bool * hasParag
 	return countWords(text,start,end,hasParagraphPunc);
 }
 
+/**
+  * This method counts the number of words in text present in the common interval between st1 and st2.
+  * @param  text                pointer to the input text
+  * @param  st1                 QPair defining the first interval
+  * @param  st2                 QPair defining the second interval
+  * @return integer containing the number of words
+  */
 inline int commonWords(QString * text, const QPair<int,int> & st1,const QPair<int,int> & st2) {
 	int start=max(st1.first,st2.first),
 		end=min(st1.second,st2.second);
 	return countWords(text,start,end);
 }
 
+/**
+  * This method counts the number of words in text between multiple intervals.
+  * @param  text                pointer to the input text
+  * @param  st                  list which contains a set of pairs indicating start and end of each interval.
+  * @param  hasParagraphPunc    pointer to a Boolean which is set by the method to indicate if the input text has full stop and newline in the specified interval.
+  * @return integer containing the number of words
+  */
 inline int countWords(QString * text, const QList<QPair<int,int> > & st, bool * hasParagraphPunc=NULL) {
 	int count=0;
 	for (int i=0;i<st.size();i++) {
@@ -294,8 +454,5 @@ inline int commonWords(QString * text, const QList< QPair<int,int> > & st1,const
 	}
 	return count;
 }
-
-
-
 
 #endif // _TEXT_HANDLING_H
