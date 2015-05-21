@@ -1148,11 +1148,7 @@ bool DTNode::buildTree(QHash<QString, int>& hash, QString morpheme_type) {
 
 bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy, QString morpheme_type) {
     // Entries to keep track of total count of low, average, and high reduction tuples
-#ifdef TEST
-    long cCount[2] = {0,0};
-#else
     long cCount[3] = {0,0,0};
-#endif
     // MultiHash to keep track of each feature and its values
     QMultiHash<QString, QString> fvHash;
     // Hash to keep track of each feature value's occurence in a high reduction tuple
@@ -1161,12 +1157,12 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
     QHash<QString, long> vAHash;
     // Hash to keep track of each feature value's occurence in a low reduction tuple
     QHash<QString, long> vLHash;
-#ifndef TEST
     QHashIterator<QString, int> it(hash);
     while (it.hasNext()) {
         it.next();
         QString word = it.key();
         int count = 0;
+        int letterCount = word.count();
 
         // Get the morphological solutions of the word
         WordAnalysis wa(&word,&count,morpheme_type);
@@ -1177,63 +1173,34 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
             continue;
         }
 
+        int** diacCMap = new int*[letterCount];
+        for(int i=0; i<letterCount; i++) {
+            diacCMap[i] = new int[5];
+            for(int j=0; j< 5; j++) {
+                diacCMap[i][j] = 0;
+            }
+        }
+
+
+        if(!oneDiacConMap(diacCMap,wa)) {
+            return false;
+        }
+
         // Iterate over the morphological analyses of the word
         for(int i=0; i<wa.solutions.count(); i++) {
             const Solution& sol = wa.solutions.at(i);
             // skip solutions with '+' in stem POS or containing affixes
-            if(!(sol.isValid)) {
+            if(!(sol.isValid) || sol.length == sol.vWord.count()) {
                 //skippedM++;
                 continue;
             }
 
             // Detach diacritics from raw_data and store in separate structure
-            int diacritic_Counter = 0;
-            QVector<QVector<QChar> > wordDiacritics(sol.length);
             int letterIndex = 0;
             for(int j=1; j<sol.vWord.count(); j++) {
-                QChar currentLetter= sol.vWord[j];
+                char currentLetter= sol.vWord[j].toAscii();
                 if(isDiacritic(currentLetter)) {
-                    wordDiacritics[letterIndex].append(currentLetter);
-                    diacritic_Counter++;
-                }
-                else {
-                    letterIndex++;
-                }
-            }
-
-            // Skip evaluating this morpho. solution if the stem has no diacritics
-            if(diacritic_Counter == 0) {
-                //skippedMD++;
-                continue;
-            }
-
-            // Process diacritics at first, middle, and end of the stem
-            for(int m=0; m< wordDiacritics.count(); m++) {
-                for(int n=0; n< wordDiacritics.at(m).count(); n++) {
-                    // construct the one diacritic stem
-                    QString oneDiacWord = removeDiacritics(sol.vWord);
-                    oneDiacWord.insert(m+1,wordDiacritics[m][n]);
-
-                    // Count consistent morphological solutions
-                    double oneDiacSols = 0;
-                    for(int l=0; l<wa.solutions.count(); l++) {
-                        if(oneDiacConsistency(oneDiacWord,wa.solutions[l].vWord,m)) {
-                            oneDiacSols++;
-                        }
-                    }
-
-                    // Count consistent vocalizations
-//                    double oneDiacVoc = 0;
-//                    QSet<QString> voc;
-//                    for(int l=0; l<wa.solutions.count(); l++) {
-//                        if(!(voc.contains(wa.solutions.at(l).vWord))) {
-//                            voc.insert(wa.solutions.at(l).vWord);
-//                            if(oneDiacConsistency(oneDiacWord,wa.solutions.at(l).vWord,m)) {
-//                                oneDiacVoc++;
-//                            }
-//                        }
-//                    }
-
+                    int diacIndex = currentLetter - 'َ';
                     // Here we have a transaction to process
                     QVector<QString> transaction;
                     // stem length
@@ -1253,57 +1220,57 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
 
                         // prefixes and POS tags
                         for(int j=0; j<sol.prefixes.count(); j++) {
-                            QString p = "p|" + QString::number(sol.prefixes.count()-j) + sol.prefixes[j];
+                            QString p = 'p' + QString::number(sol.prefixes.count()-j) + '|' + sol.prefixes[j];
                             transaction.append(p);
                         }
                         for(int j=0; j<sol.prefixPOSs.count(); j++) {
-                            QString pp = "pp|" + QString::number(sol.prefixPOSs.count()-j) + sol.prefixPOSs[j];
+                            QString pp = "pp" + QString::number(sol.prefixPOSs.count()-j) + '|' + sol.prefixPOSs[j];
                             transaction.append(pp);
                         }
 
                         // suffixes and POS tags
                         for(int j=0; j<sol.suffixes.count(); j++) {
-                            QString x = "x|" + QString::number(j+1) + sol.suffixes[j];
+                            QString x = 'x' + QString::number(j+1) + '|' +sol.suffixes[j];
                             transaction.append(x);
                         }
                         for(int j=0; j<sol.suffixPOSs.count(); j++) {
-                            QString xp = "xp|" + QString::number(j+1) + sol.suffixPOSs[j];
+                            QString xp = "xp" + QString::number(j+1) + '|' + sol.suffixPOSs[j];
                             transaction.append(xp);
                         }
                     }
 
                     // diacritic added
-                    QString d = "d|" +QString(wordDiacritics[m][n]);
+                    QString d = "d|" + QString(currentLetter);
                     transaction.append(d);
 
                     // diacritic position
                     QString diacritic_position;
                     if(morpheme_type == "A") {
-                        if((sol.prefix_length != 0) && (m == 0)) {
+                        if((sol.prefix_length != 0) && (letterIndex == 0)) {
                             diacritic_position = "dp|prefixs";
                         }
-                        else if((sol.prefix_length != 0) && (m > 0) && (m < (sol.prefix_length-1))) {
+                        else if((sol.prefix_length != 0) && (letterIndex > 0) && (letterIndex < (sol.prefix_length-1))) {
                             diacritic_position = "dp|prefixm";
                         }
-                        else if((sol.prefix_length != 0) && (m == (sol.prefix_length-1))) {
+                        else if((sol.prefix_length != 0) && (letterIndex == (sol.prefix_length-1))) {
                             diacritic_position = "dp|prefixe";
                         }
-                        else if(m == sol.prefix_length) {
+                        else if(letterIndex == sol.prefix_length) {
                             diacritic_position = "dp|stems";
                         }
-                        else if((m > (sol.prefix_length)) && (m < (sol.prefix_length + sol.stem_length - 1))) {
+                        else if((letterIndex > (sol.prefix_length)) && (letterIndex < (sol.prefix_length + sol.stem_length - 1))) {
                             diacritic_position = "dp|stemm";
                         }
-                        else if(m == (sol.prefix_length + sol.stem_length - 1)) {
+                        else if(letterIndex == (sol.prefix_length + sol.stem_length - 1)) {
                             diacritic_position = "dp|steme";
                         }
-                        else if((sol.suffix_length != 0) && (m == (sol.prefix_length + sol.stem_length))) {
+                        else if((sol.suffix_length != 0) && (letterIndex == (sol.prefix_length + sol.stem_length))) {
                             diacritic_position = "dp|suffixs";
                         }
-                        else if((sol.suffix_length != 0) && (m > (sol.prefix_length + sol.stem_length)) && (m < (sol.length - 1))) {
+                        else if((sol.suffix_length != 0) && (letterIndex > (sol.prefix_length + sol.stem_length)) && (letterIndex < (sol.length - 1))) {
                             diacritic_position = "dp|suffixm";
                         }
-                        else if((sol.suffix_length != 0) && (m == (sol.length -1))) {
+                        else if((sol.suffix_length != 0) && (letterIndex == (sol.length -1))) {
                             diacritic_position = "dp|suffixe";
                         }
                         else {
@@ -1312,10 +1279,10 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
                         }
                     }
                     else {
-                        if(m == 0) {
+                        if(letterIndex == 0) {
                             diacritic_position = "dp|stems";
                         }
-                        else if(m == sol.stem_length-1) {
+                        else if(letterIndex == sol.stem_length-1) {
                             diacritic_position = "dp|steme";
                         }
                         else {
@@ -1327,7 +1294,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
 
                     // calculate morpho. reduction and discretize
                     QString mReduction;
-                    double morphoReduction = (wa.solutions.count()-oneDiacSols)/wa.solutions.count();
+                    double morphoReduction = (wa.solutions.count()-diacCMap[letterIndex][diacIndex])/wa.solutions.count();
                     if( morphoReduction >= 0.5) {
                         // high reduction
                         mReduction = "mHIGH";
@@ -1362,164 +1329,108 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
 //                        fMap.insert(vReduction,index);
 //                        transaction.append(index);
 //                    }
-#else
-    QVector<QVector<QString> > data(14);
-    data[0] << "O|sunny"/* << 85*/ << "H|High" << "W|NotWindy" << "Don't Play";
-    data[1] << "O|sunny"/* << 80*/ << "H|High" << "W|Windy" << "Don't Play";
-    data[2] << "O|overcast"/* << 83*/ << "H|High" << "W|NotWindy" << "Play";
-    data[3] << "O|rain"/* << 70*/ << "H|High" << "W|NotWindy" << "Play";
-    data[4] << "O|rain"/* << 68*/ << "H|High" << "W|NotWindy" << "Play";
-    data[5] << "O|rain"/* << 65*/ << "H|Low" << "W|Windy" << "Don't Play";
-    data[6] << "O|overcast"/* << 64*/ << "H|Low" << "W|Windy" << "Play";
-    data[7] << "O|sunny"/* << 72*/ << "H|High" << "W|NotWindy" << "Don't Play";
-    data[8] << "O|sunny"/* << 69*/ << "H|Low" << "W|NotWindy" << "Play";
-    data[9] << "O|rain"/* << 75*/ << "H|High" << "W|NotWindy" << "Play";
-    data[10] << "O|sunny"/* << 75*/ << "H|Low" << "W|Windy" << "Play";
-    data[11] << "O|overcast"/* << 72*/ << "H|High" << "W|Windy" << "Play";
-    data[12] << "O|overcast"/* << 81*/ << "H|Low" << "W|NotWindy" << "Play";
-    data[13] << "O|rain"/* << 71*/ << "H|High" << "W|Windy" << "Don't Play";
 
-    for(int i=0; i<data.count(); i++) {
-        QVector<QString> transaction;
+                    bool skip = false;
+                    for(int j=0; j<pathFeatures.count(); j++) {
+                        // get feature name and value of current feature on path
+                        QString pFName = pathFeatures[j].split('|').at(0);
+                        QString pFValue = pathFeatures[j].split('|').at(1);
 
-        for(int m=0; m<data.at(i).count()-1; m++) {
-            QString dataItem = data[i][m];
-            transaction.append(dataItem);
-        }
+                        for(int k=0; k<transaction.count(); k++) {
+                            // get feature name and value of current tupple entries
+                            QString tFName = transaction[k].split('|').at(0);
+                            QString tFValue = transaction[k].split('|').at(1);
 
-        // calculate morpho. reduction and discretize
-        QString mReduction = data.at(i).last();
-#endif
-                    /* END */
-        bool skip = false;
-        for(int j=0; j<pathFeatures.count(); j++) {
-            // get feature name and value of current feature on path
-            QString pFName = pathFeatures[j].split('|').at(0);
-            QString pFValue = pathFeatures[j].split('|').at(1);
+                            if(pFName == tFName) {
+                                if(pFValue == tFValue) {
+                                    // feature value is already on the path so exclude
+                                    transaction.remove(k);
+                                    break;
+                                }
+                                else {
+                                    // feature value is not on current path so skip tupple
+                                    skip = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if(skip) {
+                            break;
+                        }
+                    }
+                    if(skip) {
+                        continue;
+                    }
 
-            for(int k=0; k<transaction.count(); k++) {
-                // get feature name and value of current tupple entries
-                QString tFName = transaction[k].split('|').at(0);
-                QString tFValue = transaction[k].split('|').at(1);
+                    if(transaction.count() == 0) {
+                        continue;
+                    }
 
-                if(pFName == tFName) {
-                    if(pFValue == tFValue) {
-                        // feature value is already on the path so exclude
-                        transaction.remove(k);
-                        break;
+                    for(int j=0; j<transaction.count(); j++) {
+                        QString tFName = transaction[j].split('|').at(0);
+                        if(!(fvHash.contains(tFName,transaction[j]))) {
+                            fvHash.insert(tFName,transaction[j]);
+                        }
+                    }
+
+                    if(mReduction == "mLOW") {
+                        cCount[0] = cCount[0]+1;
+                    }
+                    else if(mReduction == "mAVRG") {
+                        cCount[1] = cCount[1]+1;
+                    }
+                    else if(mReduction == "mHIGH") {
+                        cCount[2] = cCount[2]+1;
                     }
                     else {
-                        // feature value is not on current path so skip tupple
-                        skip = true;
-                        break;
+                        cout << "Invalid class detected!\n";
+                        return false;
+                    }
+
+                    for(int j=0; j<transaction.count(); j++) {
+                        if(mReduction == "mLOW") {
+                            if(vLHash.contains(transaction[j])) {
+                                long tCount = vLHash.value(transaction[j]);
+                                tCount++;
+                                vLHash.insert(transaction[j],tCount);
+                            }
+                            else {
+                                vLHash.insert(transaction[j],1);
+                            }
+                        }
+                        else if(mReduction == "mAVRG") {
+                            if(vAHash.contains(transaction[j])) {
+                                long tCount = vAHash.value(transaction[j]);
+                                tCount++;
+                                vAHash.insert(transaction[j],tCount);
+                            }
+                            else {
+                                vAHash.insert(transaction[j],1);
+                            }
+                        }
+                        else if(mReduction == "mHIGH") {
+                            if(vHHash.contains(transaction[j])) {
+                                long tCount = vHHash.value(transaction[j]);
+                                tCount++;
+                                vHHash.insert(transaction[j],tCount);
+                            }
+                            else {
+                                vHHash.insert(transaction[j],1);
+                            }
+                        }
                     }
                 }
-            }
-            if(skip) {
-                break;
-            }
-        }
-        if(skip) {
-            continue;
-        }
-
-        if(transaction.count() == 0) {
-            continue;
-        }
-
-        for(int j=0; j<transaction.count(); j++) {
-            QString tFName = transaction[j].split('|').at(0);
-            if(!(fvHash.contains(tFName,transaction[j]))) {
-                fvHash.insert(tFName,transaction[j]);
-            }
-        }
-
-#ifndef TEST
-        if(mReduction == "mLOW") {
-            cCount[0] = cCount[0]+1;
-        }
-        else if(mReduction == "mAVRG") {
-            cCount[1] = cCount[1]+1;
-        }
-        else if(mReduction == "mHIGH") {
-            cCount[2] = cCount[2]+1;
-        }
-        else {
-            cout << "Invalid class detected!\n";
-            return false;
-        }
-#else
-        if(mReduction == "Play") {
-            cCount[0] = cCount[0]+1;
-        }
-        else if(mReduction == "Don't Play") {
-            cCount[1] = cCount[1]+1;
-        }
-        else {
-            cout << "Invalid class detected!\n";
-            return false;
-        }
-#endif
-
-        for(int j=0; j<transaction.count(); j++) {
-#ifndef TEST
-            if(mReduction == "mLOW") {
-#else
-            if(mReduction == "Play") {
-#endif
-                if(vLHash.contains(transaction[j])) {
-                    long tCount = vLHash.value(transaction[j]);
-                    tCount++;
-                    vLHash.insert(transaction[j],tCount);
-                }
                 else {
-                    vLHash.insert(transaction[j],1);
-                }
-            }
-#ifndef TEST
-            else if(mReduction == "mAVRG") {
-#else
-            else if(mReduction == "Don't Play") {
-#endif
-                if(vAHash.contains(transaction[j])) {
-                    long tCount = vAHash.value(transaction[j]);
-                    tCount++;
-                    vAHash.insert(transaction[j],tCount);
-                }
-                else {
-                    vAHash.insert(transaction[j],1);
-                }
-            }
-#ifndef TEST
-            else if(mReduction == "mHIGH") {
-                if(vHHash.contains(transaction[j])) {
-                    long tCount = vHHash.value(transaction[j]);
-                    tCount++;
-                    vHHash.insert(transaction[j],tCount);
-                }
-                else {
-                    vHHash.insert(transaction[j],1);
-                }
-            }
-#endif
-        }
-#ifdef TEST
-        }
-#else
+                    letterIndex++;
                 }
             }
         }
     }
-#endif
+
     /** Calculate the gain for each feature and choose feature to branch on **/
-#ifndef TEST
     long double totalCount = cCount[0] + cCount[1] + cCount[2];
-#else
-    long double totalCount = cCount[0] + cCount[1];
-#endif
 
     // Case 1: All the tuples processed belong to the same class
-#ifndef TEST
     if(totalCount == cCount[0]) {
         isClass = true;
         accuracy = 1;
@@ -1538,23 +1449,8 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
         feature = "mHIGH";
         return true;
     }
-#else
-    if(totalCount == cCount[0]) {
-        isClass = true;
-        accuracy = 1;
-        feature = "Play";
-        return true;
-    }
-    else if(totalCount == cCount[1]) {
-        isClass = true;
-        accuracy = 1;
-        feature = "Don't Play";
-        return true;
-    }
-#endif
 
     // Case 2: We don't have any more features to split on
-#ifndef TEST
     if(fvHash.isEmpty()) {
         if(cCount[0] >= cCount[1] && cCount[0] >= cCount[2]) {
             isClass = true;
@@ -1575,31 +1471,11 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
             return true;
         }
     }
-#else
-    if(fvHash.isEmpty()) {
-        if(cCount[0] >= cCount[1]) {
-            isClass = true;
-            accuracy = cCount[0] / totalCount;
-            feature = "Play";
-            return true;
-        }
-        else {
-            isClass = true;
-            accuracy = cCount[1] / totalCount;
-            feature = "Don't Play";
-            return true;
-        }
-    }
-#endif
 
     // Case 3: We don't have any more samples to use for splitting
 
     // Calculate the information gain for each feature and choose the one with the highest value
-#ifndef TEST
     double info = information(cCount[0],cCount[1],cCount[2]);
-#else
-    double info = information(cCount[0],cCount[1],0);
-#endif
     QList<QString> features = fvHash.uniqueKeys();
     double maxGain = -1;
     QString splitFeature;
@@ -1623,7 +1499,6 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
                 va = 0;
             }
 
-#ifndef TEST
             long vh;
             if(vHHash.contains(vals[j])) {
                 vh = vHHash.value(vals[j]);
@@ -1632,9 +1507,6 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
                 vh = 0;
             }
             infoF += (vl+va+vh)/totalCount*information(vl,va,vh);
-#else
-            infoF += (vl+va)/totalCount*information(vl,va,0);
-#endif
         }
 
         double fGain = info - infoF;
@@ -1658,7 +1530,6 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
 }
 
 double information(long class1, long class2, long class3) {
-#ifndef TEST
     long double total = class1 + class2 + class3;
     double v1 = 0;
     if(class1 != 0) {
@@ -1673,18 +1544,6 @@ double information(long class1, long class2, long class3) {
         v3 = class3/total*log2(class3/total);
     }
     return (-v1-v2-v3);
-#else
-    long double total = class1 + class2;
-    double v1 = 0;
-    if(class1 != 0) {
-        v1 = class1/total*log2(class1/total);
-    }
-    double v2 = 0;
-    if(class2 != 0) {
-        v2 = class2/total*log2(class2/total);
-    }
-    return (-v1-v2);
-#endif
 }
 
 bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos) {
@@ -1712,6 +1571,86 @@ bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos)
     }
 
     return d1.isConsistent(d2);
+}
+
+bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
+
+    for(int i=0; i<wa.solutions.count(); i++) {
+        int letterIndex = 0;
+        const Solution& sol = wa.solutions.at(i);
+        QString raw_data = sol.vWord;
+        // skip solutions with '+' in stem POS or containing affixes
+        if(!(sol.isValid)) {
+            //skippedM++;
+            continue;
+        }
+
+        int rdCount = raw_data.count();
+        bool noDiac = true;
+        for(int j=1; j<rdCount; j++) {
+            if(isDiacritic(raw_data[j])) {
+                noDiac = false;
+                char currentLetter= raw_data[j].toAscii();
+                int code = currentLetter - 'َ';
+                if(j+1 < rdCount && isDiacritic(raw_data[j+1])) {
+                    j++;
+                    char nextLetter= raw_data[j].toAscii();
+                    int nextCode = nextLetter - 'َ';
+                    if(code != 3 || nextCode == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
+                        cout << "Weird diacritics!!: " << raw_data.toStdString() << endl;
+                        return false;
+                    }
+                    code  = code + nextCode + 2;
+                }
+                switch(code) {
+                case 0:
+                    diacCMap[letterIndex][0] += 1;
+                    break;
+                case 1:
+                    diacCMap[letterIndex][1] += 1;
+                    break;
+                case 2:
+                    diacCMap[letterIndex][2] += 1;
+                    break;
+                case 3:
+                    diacCMap[letterIndex][0] += 1;
+                    diacCMap[letterIndex][1] += 1;
+                    diacCMap[letterIndex][2] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    break;
+                case 4:
+                    diacCMap[letterIndex][4] += 1;
+                    break;
+                case 5:
+                    diacCMap[letterIndex][0] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    break;
+                case 6:
+                    diacCMap[letterIndex][1] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    break;
+                case 7:
+                    diacCMap[letterIndex][2] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    break;
+                default:
+                    cout << "Invalid code!!: " << code << ' ' << raw_data.toStdString() << endl;
+                }
+            }
+            else {
+                if(noDiac) {
+                    diacCMap[letterIndex][0] += 1;
+                    diacCMap[letterIndex][1] += 1;
+                    diacCMap[letterIndex][2] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    diacCMap[letterIndex][4] += 1;
+                }
+                letterIndex++;
+                noDiac = true;
+            }
+        }
+    }
+    return true;
 }
 
 void printPathsRecur(DTNode* node, QVector<QString>& path)
