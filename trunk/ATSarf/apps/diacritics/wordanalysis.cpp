@@ -113,6 +113,12 @@ bool WordAnalysis::on_match()
         sol.suffixPOSs.append("ESUFPOS");
     }
 
+    // remove tanween since it is useless in problem at hand
+    QChar last = vocalizedWord[vocalizedWord.count()-1];
+    if(last == 'ً' || last == 'ٍ' || last == 'ٌ') {
+        vocalizedWord.remove(vocalizedWord.count()-1,1);
+    }
+
     sol.vWord = vocalizedWord;
 
     if(!full) {

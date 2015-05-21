@@ -141,7 +141,7 @@ public:
 };
 
 inline bool isDiacritic(const QChar & letter) {
-	if (letter==shadde || letter==shadde || letter==fatha || letter==damma || letter==kasra ||
+        if (letter==shadde || letter==fatha || letter==damma || letter==kasra ||
 			letter==sukun || letter==kasratayn || letter==dammatayn || letter==fathatayn ||
 			letter==aleft_superscript|| letter==shadde_alef_above||letter==madda)
 		return true;

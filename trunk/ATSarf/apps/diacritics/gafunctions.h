@@ -14,7 +14,6 @@
 #define STEM_LENGTH 16
 #define STEM_POS 38
 #define DIAC_POS 3
-//#define TEST
 
 class DTNode {
 public:
@@ -61,6 +60,8 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
 double information(long, long, long);
 
 bool oneDiacConsistency(QString& oneDiacWord, QString& word2, int diacLetterPos);
+
+bool oneDiacConMap(int** diacCMap,WordAnalysis& wa);
 
 void printPathsRecur(DTNode* node, QVector<QString>& path);
 #endif // GAEVALUATION_H
