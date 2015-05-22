@@ -264,6 +264,10 @@ int main(int argc, char *argv[]) {
         dgApriori(hash);
 #endif
         //dpIterApriori(hash,target,supp,conf);
+        QChar as = aleft_superscript;
+        QChar saa = shadde_alef_above;
+        QChar mad = madda;
+        return 0;
         dpDecisionTree(hash, morpheme_type);
     }
 

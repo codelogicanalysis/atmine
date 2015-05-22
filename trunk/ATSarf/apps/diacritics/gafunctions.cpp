@@ -1181,7 +1181,6 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
             }
         }
 
-
         if(!oneDiacConMap(diacCMap,wa)) {
             return false;
         }
@@ -1425,6 +1424,11 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
                 }
             }
         }
+
+        for(int i=0; i<letterCount; i++) {
+            delete[] diacCMap[i];
+        }
+        delete[] diacCMap;
     }
 
     /** Calculate the gain for each feature and choose feature to branch on **/
@@ -1598,7 +1602,7 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
                     int nextCode = nextLetter - 'َ';
                     if(code != 3 || nextCode == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
                         cout << "Weird diacritics!!: " << raw_data.toStdString() << endl;
-                        return false;
+                        continue;
                     }
                     code  = code + nextCode + 2;
                 }
