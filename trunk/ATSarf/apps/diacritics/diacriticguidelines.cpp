@@ -58,7 +58,7 @@ bool DiacriticGuidelines::on_match()
     }
 
     unvocalizedWord = removeDiacritics(vocalizedWord);
-    if(unvocalizedWord.isEmpty()) {
+    if(unvocalizedWord.isEmpty() || unvocalizedWord.count() > 15) {
         if(number_of_solutions == -1) {
             return true;
         }
@@ -75,7 +75,7 @@ bool DiacriticGuidelines::on_match()
     //bool ret = trie->store(unvocalizedWord,1);
 
     if(uvWords.contains(unvocalizedWord)) {
-        int oldValue = uvWords.value(unvocalizedWord);
+        quint8 oldValue = uvWords.value(unvocalizedWord);
         uvWords.insert(unvocalizedWord,oldValue+1);
     }
     else {

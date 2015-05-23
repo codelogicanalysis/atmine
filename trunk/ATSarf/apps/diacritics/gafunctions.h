@@ -23,7 +23,7 @@ public:
         isClass = false;
         parent = NULL;
     }
-    bool buildTree(QHash<QString, int>& hash, QString morpheme_type);
+    bool buildTree(QHash<QString, quint8>& hash, QString morpheme_type);
 
     QHash<QString,DTNode*> nextHash;
     DTNode* parent;
@@ -35,9 +35,9 @@ public:
     QString fValue;
 };
 
-bool dgGeneticAlgorithm(QHash<QString, qint8>& hash, QStringList& listStemPOS);
+bool dgGeneticAlgorithm(QHash<QString, quint8>& hash, QStringList& listStemPOS);
 
-bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population, QVector<double>& fitness, QStringList& stemPOSList);
+bool evaluation(QHash<QString, quint8>& hash, QVector<QVector<int> >& population, QVector<double>& fitness, QStringList& stemPOSList);
 
 bool selection(QVector<QVector<int> >& parents, QVector<QVector<int> >& population, QVector<double>& fitness, int& parent1Index, int& parent2Index);
 
@@ -45,17 +45,17 @@ bool crossover(QVector<QVector<int> >& parents, QVector<int>& child);
 
 bool mutation(QVector<int>& individual);
 
-bool dgApriori(QHash<QString, qint8>& hash);
+bool dgApriori(QHash<QString, quint8>& hash);
 
-bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double conf);
+bool dpIterApriori(QHash<QString, quint8>& hash, QString target, int supp, double conf);
 
-bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target);
+bool iAIterateDataSet(QHash<QString, quint8>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target);
 
 bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, QString target, int supp, double conf);
 
-bool dpDecisionTree(QHash<QString, int>& hash, QString morpheme_type);
+bool dpDecisionTree(QHash<QString, quint8>& hash, QString morpheme_type);
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double &accuracy, QString morpheme_type);
+bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double &accuracy, QString morpheme_type);
 
 double information(long, long, long);
 
