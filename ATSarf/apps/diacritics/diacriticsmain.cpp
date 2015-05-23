@@ -4,6 +4,7 @@
 #include"logger.h"
 #include "diacriticguidelines.h"
 #include "gafunctions.h"
+#include <ctime>
 
 int main(int argc, char *argv[]) {
 
@@ -158,10 +159,12 @@ int main(int argc, char *argv[]) {
         }
     }
     else {
+        cout << "Reading hash of all words...\n";
         QDataStream in(&file);    // read the data serialized from the file
-        QHash<QString, int> hash;
+        QHash<QString, quint8> hash;
         in >> hash;
 
+        cout << "Done reading hash of words...\n";
         /* Implementing the genetic algorithm **/
 
 //        QSet<int> wLength;
@@ -263,8 +266,11 @@ int main(int argc, char *argv[]) {
 //#else
         dgApriori(hash);
 #endif
+        clock_t start_t = clock_t();
         //dpIterApriori(hash,target,supp,conf);
         dpDecisionTree(hash, morpheme_type);
+        clock_t end_t = clock_t();
+        cout << double(end_t - start_t) / CLOCKS_PER_SEC << endl;
     }
 
     //This function is called after the processing is done in order to close the tool properly.

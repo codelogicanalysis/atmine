@@ -8,7 +8,7 @@ extern "C" {
 #include "stdlib.h"
 #include "gafunctions.h"
 
-bool dgGeneticAlgorithm(QHash<QString, qint8>& hash, QStringList& listStemPOS) {
+bool dgGeneticAlgorithm(QHash<QString, quint8>& hash, QStringList& listStemPOS) {
     // Initialization
     QVector<QVector<int> > population(NUM_OF_SOLUTIONS, QVector<int>(NUM_OF_FEATURES));
     QVector<QVector<int> > parents(2, QVector<int>(NUM_OF_FEATURES));
@@ -140,7 +140,7 @@ bool dgGeneticAlgorithm(QHash<QString, qint8>& hash, QStringList& listStemPOS) {
     return true;
 }
 
-bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population, QVector<double>& fitness, QStringList& stemPOSList) {
+bool evaluation(QHash<QString, quint8>& hash, QVector<QVector<int> >& population, QVector<double>& fitness, QStringList& stemPOSList) {
 
     // Stores the count of high reduction 1-diacritic solutions matching the individuals
     QVector<int> hRedSol(population.count());
@@ -153,7 +153,7 @@ bool evaluation(QHash<QString, qint8>& hash, QVector<QVector<int> >& population,
     }
 
     // Iterate over all the Arabic stems in the lexicon
-    QHashIterator<QString, qint8> it(hash);
+    QHashIterator<QString, quint8> it(hash);
     while (it.hasNext()) {
         it.next();
         QString word = it.key();
@@ -393,7 +393,7 @@ bool mutation(QVector<int>& individual) {
     return true;
 }
 
-bool dgApriori(QHash<QString, qint8>& hash) {
+bool dgApriori(QHash<QString, quint8>& hash) {
 
     FILE *fp = NULL;
     fp = apriori_initialize("transaction.tab", "rules");
@@ -408,7 +408,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
     //int skippedM = 0;
     //int skippedMD = 0;
     // Iterate over all the Arabic stems in the lexicon
-    QHashIterator<QString, qint8> it(hash);
+    QHashIterator<QString, quint8> it(hash);
     while (it.hasNext()) {
         it.next();
         QString word = it.key();
@@ -603,7 +603,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
     cout << "Read all the transactions...\n";
     hash.clear();
     cout << "Starting apriori algorithm...\n";
-    int k = apriori_start("output.rules",80,-1);
+    int k = apriori_start("output.rules",80,-1000);
     if(k<0) {
         cout << "couldn't run algorithm!!\n";
         return false;
@@ -615,7 +615,7 @@ bool dgApriori(QHash<QString, qint8>& hash) {
     return true;
 }
 
-bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double conf) {
+bool dpIterApriori(QHash<QString, quint8>& hash, QString target, int supp, double conf) {
 
     // Define hashes to use for k and k-1 frequent items
     QHash<QString, int> *currItemCount = new QHash<QString, int>();
@@ -650,9 +650,9 @@ bool dpIterApriori(QHash<QString, int>& hash, QString target, int supp, double c
     return true;
 }
 
-bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target) {
+bool iAIterateDataSet(QHash<QString, quint8>& hash, QHash<QString, int> *itemCount, QHash<QString, int> *prevItemCount, QHash<QString, int> &fMap, int k, QString target) {
 #ifndef TEST
-    QHashIterator<QString, int> it(hash);
+    QHashIterator<QString, quint8> it(hash);
     while (it.hasNext()) {
         it.next();
         QString word = it.key();
@@ -707,7 +707,7 @@ bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount,
                     // Count consistent morphological solutions
                     double oneDiacSols = 0;
                     for(int l=0; l<wa.solutions.count(); l++) {
-                        if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                        if(oneDiacConsistency(oneDiacWord,wa.solutions[l].vWord,m)) {
                             oneDiacSols++;
                         }
                     }
@@ -718,7 +718,7 @@ bool iAIterateDataSet(QHash<QString, int>& hash, QHash<QString, int> *itemCount,
                     for(int l=0; l<wa.solutions.count(); l++) {
                         if(!(voc.contains(wa.solutions.at(l).vWord))) {
                             voc.insert(wa.solutions.at(l).vWord);
-                            if(equal(oneDiacWord,wa.solutions.at(l).vWord)) {
+                            if(oneDiacConsistency(oneDiacWord,wa.solutions[l].vWord,m)) {
                                 oneDiacVoc++;
                             }
                         }
@@ -1086,7 +1086,7 @@ bool iAGenerateRules(QHash<QString, int> *currItemCount, QHash<QString, int> *pr
     return !isFirst;
 }
 
-bool dpDecisionTree(QHash<QString, int>& hash, QString morpheme_type) {
+bool dpDecisionTree(QHash<QString, quint8>& hash, QString morpheme_type) {
     DTNode* root = new DTNode();
     root->buildTree(hash,morpheme_type);
     QVector<QString> path;
@@ -1094,7 +1094,7 @@ bool dpDecisionTree(QHash<QString, int>& hash, QString morpheme_type) {
     return true;
 }
 
-bool DTNode::buildTree(QHash<QString, int>& hash, QString morpheme_type) {
+bool DTNode::buildTree(QHash<QString, quint8>& hash, QString morpheme_type) {
     if(this->isClass) {
         return true;
     }
@@ -1146,7 +1146,7 @@ bool DTNode::buildTree(QHash<QString, int>& hash, QString morpheme_type) {
      return true;
 }
 
-bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy, QString morpheme_type) {
+bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatures, QVector<QString>& fValues, QString& feature, bool& isClass, double& accuracy, QString morpheme_type) {
     // Entries to keep track of total count of low, average, and high reduction tuples
     long cCount[3] = {0,0,0};
     // MultiHash to keep track of each feature and its values
@@ -1157,7 +1157,7 @@ bool dTIterateDataSet(QHash<QString, int>& hash, QVector<QString>& pathFeatures,
     QHash<QString, long> vAHash;
     // Hash to keep track of each feature value's occurence in a low reduction tuple
     QHash<QString, long> vLHash;
-    QHashIterator<QString, int> it(hash);
+    QHashIterator<QString, quint8> it(hash);
     while (it.hasNext()) {
         it.next();
         QString word = it.key();
