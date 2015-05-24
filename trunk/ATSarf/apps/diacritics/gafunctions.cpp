@@ -1197,7 +1197,7 @@ bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatur
             // Detach diacritics from raw_data and store in separate structure
             int letterIndex = 0;
             for(int j=1; j<sol.vWord.count(); j++) {
-                QChar currentLetter= sol.vWord[j].toAscii();
+                QChar currentLetter= sol.vWord[j];
                 if(isDiacritic(currentLetter)) {
                     int diacIndex = currentLetter.unicode() - fatha.unicode();
                     if(diacIndex < 0 || diacIndex > 4) {
