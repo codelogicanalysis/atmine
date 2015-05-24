@@ -1638,7 +1638,6 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
                     break;
                 default:
                     cout << "Invalid code!!: " << code << ' ' << raw_data.toStdString() << endl;
-                    return 0;
                 }
             }
             else {
