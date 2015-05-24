@@ -1200,6 +1200,9 @@ bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatur
                 QChar currentLetter= sol.vWord[j].toAscii();
                 if(isDiacritic(currentLetter)) {
                     int diacIndex = currentLetter.unicode() - fatha.unicode();
+                    if(diacIndex < 0 || diacIndex > 4) {
+                        continue;
+                    }
                     // Here we have a transaction to process
                     QVector<QString> transaction;
                     // stem length
