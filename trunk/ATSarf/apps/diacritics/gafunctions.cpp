@@ -1595,11 +1595,11 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
             if(isDiacritic(raw_data[j])) {
                 noDiac = false;
                 char currentLetter= raw_data[j].toAscii();
-                int code = currentLetter - 'َ';
+                int code = currentLetter - fatha.toAscii();
                 if(j+1 < rdCount && isDiacritic(raw_data[j+1])) {
                     j++;
                     char nextLetter= raw_data[j].toAscii();
-                    int nextCode = nextLetter - 'َ';
+                    int nextCode = nextLetter - fatha.toAscii();
                     if(code != 3 || nextCode == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
                         cout << "Weird diacritics!!: " << raw_data.toStdString() << endl;
                         continue;
@@ -1639,6 +1639,7 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
                     break;
                 default:
                     cout << "Invalid code!!: " << code << ' ' << raw_data.toStdString() << endl;
+                    return 0;
                 }
             }
             else {

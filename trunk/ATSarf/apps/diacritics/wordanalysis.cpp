@@ -115,7 +115,7 @@ bool WordAnalysis::on_match()
 
     // remove tanween since it is useless in problem at hand
     QChar last = vocalizedWord[vocalizedWord.count()-1];
-    if(last == 'ً' || last == 'ٍ' || last == 'ٌ') {
+    if(last == fathatayn || last == dammatayn || last == kasratayn) {
         vocalizedWord.remove(vocalizedWord.count()-1,1);
     }
 
