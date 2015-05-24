@@ -1197,9 +1197,9 @@ bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatur
             // Detach diacritics from raw_data and store in separate structure
             int letterIndex = 0;
             for(int j=1; j<sol.vWord.count(); j++) {
-                char currentLetter= sol.vWord[j].toAscii();
+                QChar currentLetter= sol.vWord[j].toAscii();
                 if(isDiacritic(currentLetter)) {
-                    int diacIndex = currentLetter - 'َ';
+                    int diacIndex = currentLetter.unicode() - fatha.unicode();
                     // Here we have a transaction to process
                     QVector<QString> transaction;
                     // stem length
@@ -1239,7 +1239,8 @@ bool dTIterateDataSet(QHash<QString, quint8>& hash, QVector<QString>& pathFeatur
                     }
 
                     // diacritic added
-                    QString d = "d|" + QString(currentLetter);
+                    QString d = "d|";
+                    d.append(currentLetter);
                     transaction.append(d);
 
                     // diacritic position
@@ -1594,12 +1595,10 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
         for(int j=1; j<rdCount; j++) {
             if(isDiacritic(raw_data[j])) {
                 noDiac = false;
-                char currentLetter= raw_data[j].toAscii();
-                int code = currentLetter - fatha.toAscii();
+                int code = raw_data[j].unicode() - fatha.unicode();
                 if(j+1 < rdCount && isDiacritic(raw_data[j+1])) {
                     j++;
-                    char nextLetter= raw_data[j].toAscii();
-                    int nextCode = nextLetter - fatha.toAscii();
+                    int nextCode = raw_data[j].unicode() - fatha.unicode();
                     if(code != 3 || nextCode == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
                         cout << "Weird diacritics!!: " << raw_data.toStdString() << endl;
                         continue;
