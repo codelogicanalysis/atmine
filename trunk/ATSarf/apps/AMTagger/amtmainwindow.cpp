@@ -11,6 +11,7 @@
 #include <getopt.h>
 #include <sys/time.h>
 #include "crossreferenceview.h"
+#include "usercrossrelationview.h"
 #include "Triplet.h"
 #include "jsonparsinghelpers.h"
 
@@ -470,7 +471,9 @@ void AMTMainWindow::open() {
     if(!_atagger->text.isEmpty()) {
         sarfAct->setEnabled(true);
         simulatorAct->setEnabled(true);
-        crossRefAct->setEnabled(true);
+        edituserCrossRefAct->setEnabled(true);
+        userCrossRefAct->setEnabled(true);
+        defaultCrossRefAct->setEnabled(true);
     }
     edittagtypesAct->setEnabled(true);
     sarftagsAct->setEnabled(true);
@@ -1280,9 +1283,17 @@ void AMTMainWindow::createActions()
     simulatorAct->setEnabled(false);
     connect(simulatorAct, SIGNAL(triggered()), this, SLOT(runMERFSimulator()));
 
-    crossRefAct = new QAction(tr("Extract Cross-Reference Relations"), this);
-    crossRefAct->setEnabled(false);
-    connect(crossRefAct, SIGNAL(triggered()), this, SLOT(extractCrossReferenceRelations()));
+    edituserCrossRefAct = new QAction(tr("User-defined Cross-Relations..."), this);
+    edituserCrossRefAct->setEnabled(false);
+    connect(edituserCrossRefAct, SIGNAL(triggered()), this, SLOT(editUserCrossRelations()));
+
+    userCrossRefAct = new QAction(tr("Extract User-defined cross-Relations"), this);
+    userCrossRefAct->setEnabled(false);
+    connect(userCrossRefAct, SIGNAL(triggered()), this, SLOT(extractUserCrossRelations()));
+
+    defaultCrossRefAct = new QAction(tr("Extract default cross-Relations"), this);
+    defaultCrossRefAct->setEnabled(false);
+    connect(defaultCrossRefAct, SIGNAL(triggered()), this, SLOT(extractDefaultCrossRelations()));
 
     diffAct = new QAction(tr("diff..."),this);
     diffAct->setEnabled(false);
@@ -1349,7 +1360,10 @@ void AMTMainWindow::createMenus()
     sarfMenu->addSeparator();
     sarfMenu->addAction(editMSFAct);
     sarfMenu->addAction(simulatorAct);
-    sarfMenu->addAction(crossRefAct);
+    sarfMenu->addSeparator();
+    sarfMenu->addAction(edituserCrossRefAct);
+    sarfMenu->addAction(userCrossRefAct);
+    sarfMenu->addAction(defaultCrossRefAct);
 
     analyseMenu = menuBar()->addMenu(tr("Analyse"));
     analyseMenu->addAction(diffAct);
@@ -1934,7 +1948,9 @@ void AMTMainWindow::customizeSarfTags() {
     if(!_atagger->textFile.isEmpty()) {
         sarfAct->setEnabled(true);
         simulatorAct->setEnabled(true);
-        crossRefAct->setEnabled(true);
+        edituserCrossRefAct->setEnabled(true);
+        userCrossRefAct->setEnabled(true);
+        defaultCrossRefAct->setEnabled(true);
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
@@ -2323,7 +2339,9 @@ void AMTMainWindow::loadText_clicked() {
          lineEditTFName->setText(fileName);
          sarfAct->setEnabled(true);
          simulatorAct->setEnabled(true);
-         crossRefAct->setEnabled(true);
+         edituserCrossRefAct->setEnabled(true);
+         userCrossRefAct->setEnabled(true);
+         defaultCrossRefAct->setEnabled(true);
          //btnTFName->setEnabled(false);
          QString text = file.readAll();
 
@@ -2382,7 +2400,9 @@ void AMTMainWindow::loadTagTypes_clicked() {
             _atagger->tagtypeFile = relativePaths;
             sarfAct->setEnabled(true);
             simulatorAct->setEnabled(true);
-            crossRefAct->setEnabled(true);
+            edituserCrossRefAct->setEnabled(true);
+            userCrossRefAct->setEnabled(true);
+            defaultCrossRefAct->setEnabled(true);
         }
         else {
             QMessageBox::warning(this,"Warning","The selected file doesn't have the correct extension!");
@@ -2473,7 +2493,9 @@ void AMTMainWindow::customizeMSFs() {
 
     if(!_atagger->textFile.isEmpty()) {
         simulatorAct->setEnabled(true);
-        crossRefAct->setEnabled(true);
+        edituserCrossRefAct->setEnabled(true);
+        userCrossRefAct->setEnabled(true);
+        defaultCrossRefAct->setEnabled(true);
     }
 
     if(_atagger->tagtypeFile.isEmpty()) {
@@ -2558,7 +2580,16 @@ void AMTMainWindow::runMERFSimulator() {
     finishTaggingText();
 }
 
-void AMTMainWindow::extractCrossReferenceRelations() {
+void AMTMainWindow::editUserCrossRelations() {
+    UserCrossRelationView* ucrv = new UserCrossRelationView();
+    ucrv->show();
+}
+
+void AMTMainWindow::extractUserCrossRelations() {
+
+}
+
+void AMTMainWindow::extractDefaultCrossRelations() {
     if(_atagger->simulationVector.isEmpty()) {
         return;
     }
