@@ -16,6 +16,7 @@
 #include "sequentialm.h"
 #include "keym.h"
 #include "commonS.h"
+#include "amfiller.h"
 
 class ATagger;
 
@@ -34,6 +35,8 @@ public:
     void executeActions(NFA* nfa, int index);
     void constructRelations(int index);
     void constructCrossRelations(QString cr);
+    void constructUserDefCrossRelations(QString cr);
+    bool executeUserCrossRel(Match* entity1, Match* entity2);
     void drawNFA();
     void updateMatch(Match* match,NFA* nfa, QString state, const Tag* tag=NULL);
     QMultiHash<int,Tag*>* tagHash;
@@ -51,6 +54,7 @@ public:
     QString compareToTagFile;
     QString tagtypeFile;
     QString compareToTagTypeFile;
+    QString userCrossRelation;
     bool isSarf;
     bool compareToIsSarf;
     /// This boolean keeps track of whether the current tags are MBF based or MSF based

@@ -6,14 +6,16 @@
 #include <QLabel>
 #include <QTextEdit>
 #include <QGridLayout>
+#include "global.h"
 
 class UserCrossRelationView : public QMainWindow
 {
     Q_OBJECT
 public:
-    UserCrossRelationView();
+    UserCrossRelationView(bool* dirty);
 
 private:
+    bool* dirty;
     QLabel* lblEntity1;
     QLabel* lblEntity2;
     QLabel* lblUserRelation;
@@ -43,6 +45,8 @@ private slots:
     void btnPositionE2_clicked();
     void btnLengthE2_clicked();
     void btnNumberE2_clicked();
+
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // USERCROSSRELATIONVIEW_H
