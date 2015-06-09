@@ -360,15 +360,12 @@ void ATagger::constructRelations(int index) {
 void ATagger::constructCrossRelations(QString cr) {
 
     QHash<QString,QSet<QString>* > synSetHash;
-    QVector<QPair<Match*, Match*> > crossRelations;
+    QSet<QString> crossRelations;
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
         MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
-        for(int j=0; j<_atagger->simulationVector.count(); j++) {
+        for(int j=i+1; j<_atagger->simulationVector.count(); j++) {
             MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
 
-            if(merftag1 == merftag2) {
-                continue;
-            }
             if(cr == "inter" && merftag1->sourceText == merftag2->sourceText) {
                 continue;
             }
@@ -418,14 +415,12 @@ void ATagger::constructCrossRelations(QString cr) {
                     /// Relation1 entity 1 with relation 2 entity1
                     if(relation1->entity1 != relation2->entity1) {
                         bool skip = false;
-                        for(int l=0; l<crossRelations.count(); l++) {
-                            if((relation1->entity1 == crossRelations.at(l).first &&
-                               relation2->entity1 == crossRelations.at(l).second) ||
-                               (relation2->entity1 == crossRelations.at(l).first &&
-                                relation1->entity1 == crossRelations.at(l).second)) {
-                                skip = true;
-                                break;
-                            }
+                        QString r1e1;
+                        r1e1.sprintf("%08p", relation1->entity1);
+                        QString r2e1;
+                        r2e1.sprintf("%08p", relation2->entity1);
+                        if(crossRelations.contains(r1e1 + '|' + r2e1)) {
+                            skip = true;
                         }
                         if(!skip) {
                             for(int l=0; l<stems1->count(); l++) {
@@ -437,20 +432,18 @@ void ATagger::constructCrossRelations(QString cr) {
                                     break;
                                 }
                             }
-                            crossRelations.append(QPair<Match*,Match*>(relation1->entity1,relation2->entity1));
+                            crossRelations.insert(r1e1 + '|' + r2e1);
                         }
                     }
                     /// Relation1 entity 1 with relation 2 entity2
                     if(relation1->entity1 != relation2->entity2) {
                         bool skip = false;
-                        for(int l=0; l<crossRelations.count(); l++) {
-                            if((relation1->entity1 == crossRelations.at(l).first &&
-                               relation2->entity2 == crossRelations.at(l).second) ||
-                               (relation2->entity2 == crossRelations.at(l).first &&
-                                relation1->entity1 == crossRelations.at(l).second)) {
-                                skip = true;
-                                break;
-                            }
+                        QString r1e1;
+                        r1e1.sprintf("%08p", relation1->entity1);
+                        QString r2e2;
+                        r2e2.sprintf("%08p", relation2->entity2);
+                        if(crossRelations.contains(r1e1 + '|' + r2e2)) {
+                            skip = true;
                         }
                         if(!skip) {
                             for(int l=0; l<stems2->count(); l++) {
@@ -462,20 +455,18 @@ void ATagger::constructCrossRelations(QString cr) {
                                     break;
                                 }
                             }
-                            crossRelations.append(QPair<Match*,Match*>(relation1->entity1,relation2->entity2));
+                            crossRelations.insert(r1e1 + '|' + r2e2);
                         }
                     }
                     /// Relation1 entity 2 with relation 2 entity1
                     if(relation1->entity2 != relation2->entity1) {
                         bool skip = false;
-                        for(int l=0; l<crossRelations.count(); l++) {
-                            if((relation1->entity2 == crossRelations.at(l).first &&
-                               relation2->entity1 == crossRelations.at(l).second) ||
-                               (relation2->entity1 == crossRelations.at(l).first &&
-                                relation1->entity2 == crossRelations.at(l).second)) {
-                                skip = true;
-                                break;
-                            }
+                        QString r1e2;
+                        r1e2.sprintf("%08p", relation1->entity2);
+                        QString r2e1;
+                        r2e1.sprintf("%08p", relation2->entity1);
+                        if(crossRelations.contains(r1e2 + '|' + r2e1)) {
+                            skip = true;
                         }
                         if(!skip) {
                             for(int l=0; l<stems1->count(); l++) {
@@ -487,20 +478,18 @@ void ATagger::constructCrossRelations(QString cr) {
                                     break;
                                 }
                             }
-                            crossRelations.append(QPair<Match*,Match*>(relation1->entity2,relation2->entity1));
+                            crossRelations.insert(r1e2 + '|' + r2e1);
                         }
                     }
                     /// Relation1 entity 2 with relation 2 entity2
                     if(relation1->entity2 != relation2->entity2) {
                         bool skip = false;
-                        for(int l=0; l<crossRelations.count(); l++) {
-                            if((relation1->entity2 == crossRelations.at(l).first &&
-                               relation2->entity2 == crossRelations.at(l).second) ||
-                               (relation2->entity2 == crossRelations.at(l).first &&
-                                relation1->entity2 == crossRelations.at(l).second)) {
-                                skip = true;
-                                break;
-                            }
+                        QString r1e2;
+                        r1e2.sprintf("%08p", relation1->entity2);
+                        QString r2e2;
+                        r2e2.sprintf("%08p", relation2->entity2);
+                        if(crossRelations.contains(r1e2 + '|' + r2e2)) {
+                            skip = true;
                         }
                         if(!skip) {
                             for(int l=0; l<stems2->count(); l++) {
@@ -512,7 +501,7 @@ void ATagger::constructCrossRelations(QString cr) {
                                     break;
                                 }
                             }
-                            crossRelations.append(QPair<Match*,Match*>(relation1->entity2,relation2->entity2));
+                            crossRelations.insert(r1e2 + '|' + r2e2);
                         }
                     }
                 }
@@ -527,6 +516,267 @@ void ATagger::constructCrossRelations(QString cr) {
          delete i.value();
      }
      synSetHash.clear();
+}
+
+void ATagger::constructUserDefCrossRelations(QString cr) {
+
+    QSet<QString> crossRelations;
+    for(int i=0; i<_atagger->simulationVector.count(); i++) {
+        MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
+        for(int j=i+1; j<_atagger->simulationVector.count(); j++) {
+            MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
+
+            if(cr == "inter" && merftag1->sourceText == merftag2->sourceText) {
+                continue;
+            }
+            else if(cr == "intra" && merftag1->sourceText != merftag2->sourceText) {
+                continue;
+            }
+
+            for(int m=0; m<merftag1->relationMatchVector.count(); m++) {
+                RelationM* relation1 = merftag1->relationMatchVector[m];
+                for(int n=0; n<merftag2->relationMatchVector.count(); n++) {
+                    RelationM* relation2 = merftag2->relationMatchVector[n];
+
+                    QString r1e1Label = relation1->entity1->getText();
+                    QString r1e2Label = relation1->entity2->getText();
+                    QString r2e1Label = relation2->entity1->getText();
+                    QString r2e2Label = relation2->entity2->getText();
+
+                    /// Relation1 entity 1 with relation 2 entity1
+                    if(relation1->entity1 != relation2->entity1) {
+                        bool skip = false;
+                        QString r1e1;
+                        r1e1.sprintf("%08p", relation1->entity1);
+                        QString r2e1;
+                        r2e1.sprintf("%08p", relation2->entity1);
+                        if(crossRelations.contains(r1e1 + '|' + r2e1)) {
+                            skip = true;
+                        }
+                        if(!skip) {
+                            bool rValue = executeUserCrossRel(relation1->entity1, relation2->entity1);
+                            if(rValue) {
+                                RelationM* rel = new RelationM(NULL,relation1->entity1,
+                                                               r1e1Label,relation2->entity1,
+                                                               r2e1Label,NULL,"cross-reference");
+                                crossRelationVector.append(rel);
+                            }
+                            crossRelations.insert(r1e1 + '|' + r2e1);
+                        }
+                    }
+                    /// Relation1 entity 1 with relation 2 entity2
+                    if(relation1->entity1 != relation2->entity2) {
+                        bool skip = false;
+                        QString r1e1;
+                        r1e1.sprintf("%08p", relation1->entity1);
+                        QString r2e2;
+                        r2e2.sprintf("%08p", relation2->entity2);
+                        if(crossRelations.contains(r1e1 + '|' + r2e2)) {
+                            skip = true;
+                        }
+                        if(!skip) {
+
+                            bool rValue = executeUserCrossRel(relation1->entity1, relation2->entity2);
+                            if(rValue) {
+                                RelationM* rel = new RelationM(NULL,relation1->entity1,
+                                                               r1e1Label,relation2->entity2,
+                                                               r2e2Label,NULL,"cross-reference");
+                                crossRelationVector.append(rel);
+                            }
+                            crossRelations.insert(r1e1 + '|' + r2e2);
+                        }
+                    }
+                    /// Relation1 entity 2 with relation 2 entity1
+                    if(relation1->entity2 != relation2->entity1) {
+                        bool skip = false;
+                        QString r1e2;
+                        r1e2.sprintf("%08p", relation1->entity2);
+                        QString r2e1;
+                        r2e1.sprintf("%08p", relation2->entity1);
+                        if(crossRelations.contains(r1e2 + '|' + r2e1)) {
+                            skip = true;
+                        }
+                        if(!skip) {
+                            bool rValue = executeUserCrossRel(relation1->entity2, relation2->entity1);
+                            if(rValue) {
+                                RelationM* rel = new RelationM(NULL,relation1->entity2,
+                                                               r1e2Label,relation2->entity1,
+                                                               r2e1Label,NULL,"cross-reference");
+                                crossRelationVector.append(rel);
+                            }
+                            crossRelations.insert(r1e2 + '|' + r2e1);
+                        }
+                    }
+                    /// Relation1 entity 2 with relation 2 entity2
+                    if(relation1->entity2 != relation2->entity2) {
+                        bool skip = false;
+                        QString r1e2;
+                        r1e2.sprintf("%08p", relation1->entity2);
+                        QString r2e2;
+                        r2e2.sprintf("%08p", relation2->entity2);
+                        if(crossRelations.contains(r1e2 + '|' + r2e2)) {
+                            skip = true;
+                        }
+                        if(!skip) {
+
+                            bool rValue = executeUserCrossRel(relation1->entity2, relation2->entity2);
+                            if(rValue) {
+                                RelationM* rel = new RelationM(NULL,relation1->entity2,
+                                                               r1e2Label,relation2->entity2,
+                                                               r2e2Label,NULL,"cross-reference");
+                                crossRelationVector.append(rel);
+                            }
+                            crossRelations.insert(r1e2 + '|' + r2e2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    crossRelations.clear();
+}
+
+bool ATagger::executeUserCrossRel(Match* entity1, Match* entity2) {
+    QString code;
+    code.append("#include <iostream>\n");
+    code.append("#include <string>\n");
+    code.append("#include <vector>\n");
+    code.append("using namespace std;\n\n");
+    code.append("struct Match { \n"
+            "string prefix[3];\n"
+            "string stem;\n"
+            "string suffix[3];\n"
+
+            "\nstring prefixPOS[3];\n"
+            "string stemPOS;\n"
+            "string suffixPOS[3];\n"
+
+            "\nstring prefixGloss[3];\n"
+            "string stemGloss;\n"
+            "string suffixGloss[3];\n"
+           "};\n\n");
+    code.append("extern \"C\" bool crossRelation() {\n");
+    QString crossFunc = userCrossRelation;
+
+    bool getE1Matches = true;
+    bool getE2Matches = true;
+    while(true) {
+        int dollarIndex = crossFunc.indexOf("$", 0);
+        if(dollarIndex == -1) {
+            break;
+        }
+
+        Match* entity = NULL;
+        QString eName = crossFunc.mid(dollarIndex+1).section('.',0,0);
+        if(eName != "e1" && eName != "e2") {
+            cout << "Invalid entity name in user-defined cross-reference relation!!\n";
+            return 0;
+        }
+        else if(eName == "e1") {
+            entity = entity1;
+        }
+        else {
+            entity = entity2;
+        }
+
+        int afterDotPosition = crossFunc.indexOf('.', dollarIndex) +1;
+        QRegExp sep("[^a-zA-Z]");
+        QString attribute = crossFunc.mid(afterDotPosition).section(sep, 0, 0);
+        if(attribute != "text" && attribute != "pos" && attribute != "number" && attribute != "length" && attribute != "matches") {
+            cout << "Invalid attribute in user-defined cross-reference relation!!\n";
+            return 0;
+        }
+        crossFunc = crossFunc.remove(dollarIndex, 4 + attribute.length());
+
+        if(attribute.compare("text") == 0) {
+            crossFunc.insert(dollarIndex, '\"' + entity->getText() + '\"');
+        }
+        else if(attribute.compare("number") == 0) {
+            QString text = entity->getText();
+            NumNorm nn(&text);
+            nn();
+            int number = NULL;
+            if(nn.extractedNumbers.count()!=0) {
+                number = nn.extractedNumbers[0].getNumber();
+                crossFunc.insert(dollarIndex, QString::number(number));
+            }
+            else {
+                crossFunc.insert(dollarIndex, "NULL");
+            }
+        }
+        else if(attribute.compare("position") == 0) {
+            crossFunc.insert(dollarIndex, QString::number(entity->getPOS()));
+        }
+
+        else if(attribute.compare("length") == 0) {
+            crossFunc.insert(dollarIndex, QString::number(entity->getLength()));
+        }
+        else if(attribute.compare("matches") == 0) {
+            QString mvName = eName + '_' + attribute;
+            QString sarfMatches;
+            QString word;
+            if(eName == "e1" && getE1Matches) {
+                word = entity1->getText();
+                AMFiller filler(word,&sarfMatches,mvName);
+                filler();
+                code.append(sarfMatches);
+                getE1Matches = false;
+            }
+            else if(eName == "e2" && getE2Matches) {
+                word = entity2->getText();
+                AMFiller filler(word,&sarfMatches,mvName);
+                filler();
+                code.append(sarfMatches);
+                getE2Matches = false;
+            }
+            crossFunc.insert(dollarIndex, eName + "_matches");
+        }
+    }
+
+    code.append(crossFunc);
+    code.append("\n}");
+
+    theSarf->out << code << "\n\n\n\n\n";
+
+    /** compile and run code **/
+
+    QString path = tagFile.left(tagFile.lastIndexOf('/')+1);
+    QString cppFile = path;
+    cppFile.append("crossrelation.cpp");
+    QFile f(cppFile);
+    if(!f.open(QIODevice::ReadWrite|QIODevice::Truncate|QIODevice::Text)) {
+        cout << "Can't open cross-relation file!\n";
+        return false;
+    }
+    QTextStream out(&f);
+    out.flush();
+    out << code;
+
+    f.close();
+
+    // create library
+    QString command = "/usr/bin/g++ -fPIC -shared " + cppFile + " -o " + path + "libcrossrelation.so";
+    system (command.toStdString().c_str());
+
+    // load library
+    QString sharedLib = path + "libcrossrelation.so";
+    void * fLib = dlopen ( sharedLib.toStdString().c_str(), RTLD_LAZY );
+    if ( !fLib ) {
+        cerr << "Cannot open library: " << dlerror() << '\n';
+        return false;
+    }
+
+    bool rValue = false;
+    if ( fLib ) {
+        bool (*fn)() = (bool (*)()) dlsym ( fLib, "crossRelation");
+        if (fn) {
+            // use function
+            rValue = (*fn)();
+        }
+        dlclose(fLib);
+    }
+
+    return rValue;
 }
 
 void ATagger::drawNFA() {
@@ -1071,6 +1321,9 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
         tagdata.insert("TagTypeFile",_atagger->tagtypeFile);
         tagdata.insert("textchecksum", _atagger->text.count());
         tagdata.insert("version", 1.2);
+        if(!(userCrossRelation.isEmpty())) {
+            tagdata.insert("userDefCrossRelation",userCrossRelation);
+        }
         QVariantList tagset;
         if(filesHash == NULL) {
             QHashIterator<int, Tag*> iTag(*(_atagger->tagHash));

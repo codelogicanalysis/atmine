@@ -12,7 +12,9 @@ AMFiller::AMFiller(QString text, QString *sarfMatches, QString mVName)
 
 bool AMFiller::on_match() {
 
-    QString mName = "_match" + QString::number(count);
+    QString mName = mVName;
+    mName.chop(2);
+    mName.append(QString::number(count));
     sarfMatches->append("Match " + mName + ";\n");
 
     /** Getting stem features **/
@@ -48,6 +50,7 @@ bool AMFiller::on_match() {
 
     /** Add match solution to vector **/
     sarfMatches->append(mVName + ".push_back(" + mName + ");\n");
+    count++;
 
     return true;
 }

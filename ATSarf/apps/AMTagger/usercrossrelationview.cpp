@@ -1,7 +1,9 @@
 #include "usercrossrelationview.h"
 
-UserCrossRelationView::UserCrossRelationView()
+UserCrossRelationView::UserCrossRelationView(bool* dirty)
 {
+    this->dirty = dirty;
+
     QGridLayout *grid = new QGridLayout();
 
     lblEntity1 = new QLabel(tr("Entity 1:"));
@@ -39,6 +41,10 @@ UserCrossRelationView::UserCrossRelationView()
     widget->setLayout(grid);
     setCentralWidget(widget);
     setWindowTitle("User-defined Cross Relation");
+
+    if(!(_atagger->userCrossRelation.isEmpty())) {
+        editCrossRelation->setText(_atagger->userCrossRelation);
+    }
 
     connect_Signals();
 }
@@ -113,4 +119,12 @@ void UserCrossRelationView::connect_Signals() {
     connect(btnPosE2, SIGNAL(clicked()), this, SLOT(btnPositionE2_clicked()));
     connect(btnLengthE2, SIGNAL(clicked()), this, SLOT(btnLengthE2_clicked()));
     connect(btnNumberE2, SIGNAL(clicked()), this, SLOT(btnNumberE2_clicked()));
+}
+
+void UserCrossRelationView::closeEvent(QCloseEvent *event) {
+    QString userDefRel = editCrossRelation->toPlainText();
+    if(userDefRel != _atagger->userCrossRelation) {
+        _atagger->userCrossRelation = editCrossRelation->toPlainText();
+        *dirty = true;
+    }
 }

@@ -468,6 +468,11 @@ void AMTMainWindow::open() {
     process(Tags);
     finishTaggingText();
 
+    /** get user-defined cross-reference relation if it exists **/
+    if(!(result.value("userDefCrossRelation").isNull())) {
+        _atagger->userCrossRelation = result.value("userDefCrossRelation").toString();
+    }
+
     if(!_atagger->text.isEmpty()) {
         sarfAct->setEnabled(true);
         simulatorAct->setEnabled(true);
@@ -597,6 +602,7 @@ void AMTMainWindow::process(QByteArray & json) {
             int id = merfTagElements.value("id").toInt();
             int length = merfTagElements.value("length").toInt();
             Source source = (Source)(merfTagElements.value("source").toInt());
+            QString sourceText = merfTagElements.value("file").toString();
             MSFormula* formula = NULL;
             for(int i=0; i<_atagger->msfVector->count(); i++) {
                 if(_atagger->msfVector->at(i)->name == formulaName) {
@@ -614,6 +620,7 @@ void AMTMainWindow::process(QByteArray & json) {
             merftag->pos = pos;
             merftag->length = length;
             merftag->source = source;
+            merftag->sourceText = sourceText;
             if(!(merfTagElements.value("match").isNull())) {
                 if(!(readMatch(formula,merfTagElements.value("match"),merftag))) {
                     QMessageBox::warning(this,"warning","Something went wrong in tag file processing!");
@@ -2581,12 +2588,21 @@ void AMTMainWindow::runMERFSimulator() {
 }
 
 void AMTMainWindow::editUserCrossRelations() {
-    UserCrossRelationView* ucrv = new UserCrossRelationView();
+    UserCrossRelationView* ucrv = new UserCrossRelationView(&dirty);
     ucrv->show();
 }
 
 void AMTMainWindow::extractUserCrossRelations() {
+    if(_atagger->simulationVector.isEmpty()) {
+        return;
+    }
 
+    /** Construct user-defined cross reference relations **/
+    dirty = true;
+    _atagger->constructUserDefCrossRelations("all");
+
+    CrossReferenceView *crView = new CrossReferenceView(this);
+    crView->show();
 }
 
 void AMTMainWindow::extractDefaultCrossRelations() {
