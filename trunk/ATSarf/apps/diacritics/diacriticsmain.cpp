@@ -4,7 +4,6 @@
 #include"logger.h"
 #include "diacriticguidelines.h"
 #include "gafunctions.h"
-#include <ctime>
 
 int main(int argc, char *argv[]) {
 
@@ -266,11 +265,20 @@ int main(int argc, char *argv[]) {
 //#else
         dgApriori(hash);
 #endif
-        clock_t start_t = clock_t();
+//        int codefatha = fatha.unicode() - fatha.unicode();
+//        int codedamma = damma.unicode() - fatha.unicode();
+//        int codekasra = kasra.unicode() - fatha.unicode();
+//        int codeshadde = shadde.unicode() - fatha.unicode();
+//        int codesukun = sukun.unicode() - fatha.unicode();
+//        int codefathatayn = fathatayn.unicode() - fatha.unicode();
+//        int codedammatayn = dammatayn.unicode() - fatha.unicode();
+//        int codekasratayn = kasratayn.unicode() - fatha.unicode();
+//        int codeshadde_alef_above = shadde_alef_above.unicode() - fatha.unicode();
+//        int codemadda = madda.unicode() - fatha.unicode();
+//        int codealeft_superscript = aleft_superscript.unicode() - fatha.unicode();
+
         //dpIterApriori(hash,target,supp,conf);
         dpDecisionTree(hash, morpheme_type);
-        clock_t end_t = clock_t();
-        cout << double(end_t - start_t) / CLOCKS_PER_SEC << endl;
     }
 
     //This function is called after the processing is done in order to close the tool properly.

@@ -1598,15 +1598,16 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
         for(int j=1; j<rdCount; j++) {
             if(isDiacritic(raw_data[j])) {
                 noDiac = false;
-                int code = raw_data[j].unicode() - fatha.unicode();
+                int code;
+                int code1 = raw_data[j].unicode() - fatha.unicode();
                 if(j+1 < rdCount && isDiacritic(raw_data[j+1])) {
                     j++;
-                    int nextCode = raw_data[j].unicode() - fatha.unicode();
-                    if(code != 3 || nextCode == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
-                        cout << "Weird diacritics!!: " << raw_data.toStdString() << endl;
+                    int code2 = raw_data[j].unicode() - fatha.unicode();
+                    if(code1 != 3 || code2 == 3 || (j+1 < rdCount && isDiacritic(raw_data[j+1]))) {
+                        theSarf->out << "Weird diacritics!!: " << raw_data << ' ' << code1 << ' ' << code2 << endl;
                         continue;
                     }
-                    code  = code + nextCode + 2;
+                    code  = code1 + code2 + 2;
                 }
                 switch(code) {
                 case 0:
@@ -1628,6 +1629,9 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
                     diacCMap[letterIndex][4] += 1;
                     break;
                 case 5:
+                    if(code1 == 5) {
+                        continue;
+                    }
                     diacCMap[letterIndex][0] += 1;
                     diacCMap[letterIndex][3] += 1;
                     break;
@@ -1639,8 +1643,15 @@ bool oneDiacConMap(int** diacCMap, WordAnalysis& wa) {
                     diacCMap[letterIndex][2] += 1;
                     diacCMap[letterIndex][3] += 1;
                     break;
+                case 34:
+                    diacCMap[letterIndex][0] += 1;
+                    break;
+                case 62997:
+                    diacCMap[letterIndex][0] += 1;
+                    diacCMap[letterIndex][3] += 1;
+                    break;
                 default:
-                    cout << "Invalid code!!: " << code << ' ' << raw_data.toStdString() << endl;
+                    theSarf->out << "Invalid code!!: " << raw_data << ' ' << code  << ' ' << code1 << endl;
                 }
             }
             else {
