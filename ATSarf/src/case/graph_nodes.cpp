@@ -168,8 +168,7 @@ void ChainNarratorNode::serializeHelper(QDataStream &chainOut, NarratorGraph & g
     //assert(pInt>0 || nInt>0); //at least one not null
     if(!(pInt>0 || nInt>0))
         qDebug()<<toString();
-    chainOut<<pInt
-        <<nInt;
+    chainOut << pInt << nInt;
 
     chainOut<<graph.getHadithStringSerializationEquivalent(narrator->hadith_text);
     narrator->serialize(chainOut);

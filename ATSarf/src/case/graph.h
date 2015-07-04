@@ -660,7 +660,7 @@ class NarratorGraph{
             return n->getId();
         }
         int allocateSerializationNodeEquivalent(NarratorNodeIfc * n) {
-            return n->getId();
+            return n != NULL ? n->getId() : 0;
         }
         NarratorNodeIfc * getDeserializationIntEquivalent(int num) {
             if (num>=0 && num<all_nodes.size())
@@ -1861,8 +1861,11 @@ class NarratorGraph{
             streamOut<<total;
 #endif
             for (int i=0;i<allSize;i++) {
-                NarratorNodeIfc & n= (*all_nodes[i]);
-                if (n.isActualNode()||(n.isGroupNode() && n.getCorrespondingNarratorNode().isChainNode())) {
+                NarratorNodeIfc * n= all_nodes[i];
+                if (n == NULL) {
+                    continue;
+                }
+                if (n->isActualNode()||(n->isGroupNode() && n->getCorrespondingNarratorNode().isChainNode())) {
                     //TODO: check why do we need the check that corresponding node is NULL, must not be the case
                     int eq=allocateSerializationNodeEquivalent(all_nodes[i]);
                     assert(eq==i);
