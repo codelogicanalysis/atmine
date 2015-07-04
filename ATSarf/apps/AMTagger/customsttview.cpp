@@ -1142,8 +1142,7 @@ void CustomSTTView::tagName_changed(QString name) {
     connect_Signals();
 }
 
-void CustomSTTView::tagName_Edited(QString name) {
-
+void CustomSTTView::tagName_Edited(QString /*name*/) {
 }
 
 /*
@@ -1239,7 +1238,7 @@ void CustomSTTView::btnClose_clicked() {
     this->close();
 }
 
-void CustomSTTView::closeEvent(QCloseEvent *event) {
+void CustomSTTView::closeEvent(QCloseEvent * /*event*/) {
 
     if(dirty) {
         QMessageBox msgBox;

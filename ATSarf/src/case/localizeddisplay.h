@@ -171,7 +171,7 @@ class LocalizedDisplay:public QMainWindow,public ATMProgressIFC{
                 DetectedNodesMap & map;
             public:
                 ColorNarratorsAction(DetectedNodesMap & m):map(m) { }
-                virtual void action(const QString & s, GroupNode * node, double v) {
+                virtual void action(const QString & /*s*/, GroupNode * node, double v) {
                     NarratorNodeIfc * n=&node->getCorrespondingNarratorNode();
                     DetectedNodesMap::iterator i = map.find(n);
 #ifdef NARRATORHASH_DEBUG

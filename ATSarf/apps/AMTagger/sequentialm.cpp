@@ -169,7 +169,7 @@ void SequentialM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString SequentialM::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString SequentialM::getParam(QString msfName, QString param, QString* /*sarfMatches*/) {
     if(msf == NULL) {
         for(int i=0; i<matches.count(); i++) {
             QString paramValue = matches.at(i)->getParam(msfName,param);

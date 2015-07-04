@@ -106,9 +106,9 @@ SO_LIBS=$(patsubst %,$(TOP)/lib/lib%.so, $(SO_DIRS))
 #	@echo $(SO_DIRS)
 
 #Macros to control the C/C++ compiler flags
-CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall -Werror
-CFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall -Werror
-LDDFLAGS=-L$(TOP)/lib -fPIC -ldl -Wall -Werror
+CXXFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall -Werror -Wextra
+CFLAGS= $(INCLUDEFLAGS) -c -fPIC -Wall -Werror -Wextra
+LDDFLAGS=-L$(TOP)/lib -fPIC -ldl -Wall -Werror -Wextra
 ifneq ($(findstring opt,$(MAKECMDGOALS)),opt)
     OPT_DEBUG=-g
 else

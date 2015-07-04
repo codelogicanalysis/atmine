@@ -203,7 +203,7 @@ void HadithTaggerDialog::addEqualityEntries_clicked() {
     refreshEqualityTableModel();
 }
 
-void HadithTaggerDialog::tableEquality_changedSelection(const QModelIndex & current,const QModelIndex & previous) {
+void HadithTaggerDialog::tableEquality_changedSelection(const QModelIndex & current,const QModelIndex & /*previous*/) {
     const QModelIndex & index=current;
     if (!index.isValid()) {
         narratorsEqualAct->setEnabled(false);

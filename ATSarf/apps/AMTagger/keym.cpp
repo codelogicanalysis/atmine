@@ -9,7 +9,7 @@ KeyM::KeyM(Match *parent, QString key, int pos, int length, int id): Match(KEY,p
     this->length = length;
 }
 
-bool KeyM::setMatch(Match *match) {
+bool KeyM::setMatch(Match * /*match*/) {
     return true;
 }
 
@@ -49,7 +49,7 @@ int KeyM::getMatchCount() {
     return 1;
 }
 
-void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
+void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node, Agedge_t* /*edge*/, QMap<Agnode_t *,Agnode_t *>* parentNodeMap, QTreeWidgetItem* /*parentItem*/, int& id) {
     QStringList data;
     data << key << word;
     //QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);

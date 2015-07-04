@@ -138,7 +138,7 @@ void MERFTag::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString MERFTag::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString MERFTag::getParam(QString msfName, QString param, QString* /*sarfMatches*/) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();

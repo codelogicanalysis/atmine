@@ -121,7 +121,7 @@ void UserCrossRelationView::connect_Signals() {
     connect(btnNumberE2, SIGNAL(clicked()), this, SLOT(btnNumberE2_clicked()));
 }
 
-void UserCrossRelationView::closeEvent(QCloseEvent *event) {
+void UserCrossRelationView::closeEvent(QCloseEvent * /*event*/) {
     QString userDefRel = editCrossRelation->toPlainText();
     if(userDefRel != _atagger->userCrossRelation) {
         _atagger->userCrossRelation = editCrossRelation->toPlainText();

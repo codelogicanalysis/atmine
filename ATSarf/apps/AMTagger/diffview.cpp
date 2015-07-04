@@ -1625,7 +1625,7 @@ void DiffView::untagReverse(QString tagValue) {
     }
 }
 
-void DiffView::closeEvent(QCloseEvent *event) {
+void DiffView::closeEvent(QCloseEvent * /*event*/) {
 
     if(dirty) {
         QMessageBox msgBox;

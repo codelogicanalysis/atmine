@@ -1407,7 +1407,7 @@ void AMTMainWindow::createUntagMenu() {
     connect(signalMapperUM, SIGNAL(mapped(const QString &)), this, SLOT(untag(QString)));
 }
 
-void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
+void AMTMainWindow::fillTreeWidget(Source /*Data*/, int basic) {
     tagDescription->clear();
      QList<QTreeWidgetItem *> items;
      int wordCountCharCount = QString::number(_atagger->wordCount).size();
@@ -1475,7 +1475,7 @@ void AMTMainWindow::fillTreeWidget(Source Data, int basic) {
      tagDescription->sortByColumn(0,Qt::AscendingOrder);
 }
 
-void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item ,int i) {
+void AMTMainWindow::itemSelectionChanged(QTreeWidgetItem* item , int /*i*/) {
     descBrwsr->clear();
     scene->clear();
     relationScene->clear();
@@ -2624,15 +2624,15 @@ QString AMTMainWindow::getFileName() {
     return "";
 }
 
-void AMTMainWindow::tag(int start, int length,QColor color, bool textcolor=true) {
+void AMTMainWindow::tag(int /*start*/, int /*length*/, QColor /*color*/, bool /*textcolor=true*/) {
 
 }
 
-void AMTMainWindow::setCurrentAction(const QString & s) {
+void AMTMainWindow::setCurrentAction(const QString & /*s*/) {
 
 }
 
-void AMTMainWindow::report(int value) {
+void AMTMainWindow::report(int /*value*/) {
 
 }
 

@@ -198,7 +198,7 @@ void UnaryM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString UnaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString UnaryM::getParam(QString msfName, QString param, QString* /*sarfMatches*/) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();

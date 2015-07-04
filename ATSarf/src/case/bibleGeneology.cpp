@@ -1323,7 +1323,7 @@ class GeneStemmer: public Stemmer {
             }
             //}
         }
-        void GeneTree::fillNullGraph(Name & name) {
+        void GeneTree::fillNullGraph(Name & /*name*/) {
         }
 
         bool GeneTree::isRepresentativeOf(const MainSelectionList &list) { //very basic assumption for now

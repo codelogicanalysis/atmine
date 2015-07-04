@@ -172,7 +172,7 @@ void BinaryM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString BinaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString BinaryM::getParam(QString msfName, QString param, QString * /*sarfMatches*/) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();

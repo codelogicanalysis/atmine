@@ -813,7 +813,7 @@ class NarratorDetector {
                 FindIndiciesAction(NarratorNodeIfc * node, IndexLists & indexLists): lists(indexLists){
                     this->node=node;
                 }
-                void action(const QString &, GroupNode *gnode, int index, double similarity) {
+                void action(const QString &, GroupNode *gnode, int index, double /*similarity*/) {
                     NarratorNodeIfc * n=&gnode->getCorrespondingNarratorNode();
                     assert(n!=NULL);
                     if (n==this->node) {
@@ -1017,7 +1017,7 @@ class NarratorDetector {
             }
             assert(nodes.size()>0);
         }
-        virtual bool checkBiography(NodeGroups & list) {
+        virtual bool checkBiography(NodeGroups & /*list*/) {
             return true;
         }
         virtual void additionalCheck(StateInfo & s) {
@@ -1032,7 +1032,7 @@ class NarratorDetector {
 #endif
 
 #endif
-        bool tagNarrator(const Narrator * n, bool isReal=true) {
+        bool tagNarrator(const Narrator * n, bool /*isReal=true*/) {
 #ifdef TAG_BIOGRAPHY
             if (n->m_narrator.size()==0) {
                 return false;
@@ -1506,7 +1506,7 @@ class NarratorDetector {
                 }
 
 #ifdef TEST_BIOGRAPHIES
-                BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg, int nodeID) {
+                BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg, int /*nodeID*/) {
                     input_str=input_str.split("\n")[0];
 #ifdef BIOGRAPHY_SEGMENT
                     BiographySegmenter s(graph);

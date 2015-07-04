@@ -98,7 +98,7 @@ QPainterPath GraphNode::shape() const
     return path;
 }
 
-void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
+void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget *)
 {
     /** Draw text rectangle **/
     QRect textrect(-10,-10,20,20);

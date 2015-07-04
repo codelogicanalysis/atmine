@@ -62,8 +62,8 @@ class Tree2Dot: public TreeVisitor<NodeType, EdgeType> {
             delete file;
             file=NULL;
         }
-        virtual QString getExtraEdgeLayout(Node<NodeType, EdgeType> * node1, int edgeIndex) {return "";}
-        virtual QString getExtraNodeLayout(Node<NodeType, EdgeType> * node) {return "";}
+        virtual QString getExtraEdgeLayout(Node<NodeType, EdgeType> * /*node1*/, int /*edgeIndex*/) {return "";}
+        virtual QString getExtraNodeLayout(Node<NodeType, EdgeType> * /*node*/) {return "";}
     public:
         Tree2Dot(QString file):fileName(file) { this->file=NULL;dot_out=NULL;}
 #undef d_out

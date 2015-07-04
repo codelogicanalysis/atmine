@@ -9,7 +9,7 @@ SarfTag::SarfTag(int start, int length, QString *text,
                  QHash< QString, QSet<QString> > * synSetHash,
                  QSet<QString> *eNF,
                  QHash<QString, QString>* iNF,
-                 QWidget *parent)
+                 QWidget * /*parent*/)
     : Stemmer(text,0)
 {
     this->text = *text;

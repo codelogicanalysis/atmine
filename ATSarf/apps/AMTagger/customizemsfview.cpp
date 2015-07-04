@@ -1748,7 +1748,7 @@ void CustomizeMSFView::connect_Signals() {
     //connect(cbcurrentMSF, SIGNAL(currentIndexChanged(QString)), this, SLOT(cbcurrentMSF_changed(QString)));
 }
 
-void CustomizeMSFView::closeEvent(QCloseEvent *event) {
+void CustomizeMSFView::closeEvent(QCloseEvent * /*event*/) {
 
     if(isDirty) {
         QMessageBox msgBox;
