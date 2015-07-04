@@ -3,7 +3,7 @@
 
 #include <QList>
 #include <QString>
-#include "Tree.h"
+#include "templated_tree.h"
 #include "ATMProgressIFC.h"
 #include "distinguishingLargeFileIterator.h"
 

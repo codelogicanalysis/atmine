@@ -271,7 +271,7 @@ bool start_connection(ATMProgressIFC * p_ifc) //and do other initializations
     theSarf->db.setHostName("localhost");
     theSarf->db.setDatabaseName("atm");
     theSarf->db.setUserName("root");
-    theSarf->db.setPassword("");
+    theSarf->db.setPassword("root");
     bool ok = theSarf->db.open();
     if (ok)
     {

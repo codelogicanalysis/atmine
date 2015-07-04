@@ -52,7 +52,7 @@ int KeyM::getMatchCount() {
 void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_t *,Agnode_t *>* parentNodeMap,QTreeWidgetItem* parentItem, int& id) {
     QStringList data;
     data << key << word;
-    QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
+    //QTreeWidgetItem* newItem = new QTreeWidgetItem(parentItem,data);
 
     QString text = key + '\n' + word;
     char * writable = strdup(text.toStdString().c_str());
@@ -76,7 +76,8 @@ void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_
         Agnode_t * newNode = agnode(G,nodeID, 1);
         id = id+1;
         agset(newNode,const_cast<char *>("label"),writable);
-        edge = agedge(G, node, newNode, 0, 1);
+        //edge = agedge(G, node, newNode, 0, 1);
+        agedge(G, node, newNode, 0, 1);
         parentNodeMap->insert(newNode, node);
 
     }
@@ -84,7 +85,7 @@ void KeyM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agnode_
 }
 
 void KeyM::executeActions(NFA* nfa) {
-    MSFormula* formula = (MSFormula*)(nfa->formula);
+    MSFormula* formula = static_cast<MSFormula *>(nfa->formula);
 
     /** pre match **/
     QString preMatch = msf->name;
@@ -144,9 +145,8 @@ QString KeyM::getParam(QString msfName,QString param, QString* sarfMatches) {
         else if(param == "number") {
             NumNorm nn(&word);
             nn();
-            int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
-                number = nn.extractedNumbers[0].getNumber();
+                int number = nn.extractedNumbers[0].getNumber();
                 return QString::number(number);
             }
             else {

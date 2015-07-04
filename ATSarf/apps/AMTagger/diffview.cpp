@@ -1061,7 +1061,7 @@ void DiffView::createActions() {
 
 void DiffView::showContextMenuCommon(const QPoint &pt) {
     int pos;
-    int length;
+    //int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
@@ -1090,11 +1090,11 @@ void DiffView::showContextMenuCommon(const QPoint &pt) {
         muTags->setEnabled(true);
     }
     pos = myTC.selectionStart();
-    length = myTC.selectionEnd() - myTC.selectionStart();
+    //length = myTC.selectionEnd() - myTC.selectionStart();
 
     QStringList tagtypes;
     for(int i=0; i < commonVector.count(); i++) {
-        const Tag * t = (Tag*)(commonVector.at(i));
+        const Tag * t = static_cast<const Tag *>(commonVector.at(i));
         if(t->pos == pos) {
             tagtypes << t->tagtype->name;
         }
@@ -1318,7 +1318,7 @@ void DiffView::untagCommon(QString tagValue) {
 void DiffView::showContextMenuForward(const QPoint &pt) {
 
     int pos;
-    int length;
+    //int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
@@ -1346,11 +1346,11 @@ void DiffView::showContextMenuForward(const QPoint &pt) {
         muTags->setEnabled(true);
     }
     pos = myTC.selectionStart();
-    length = myTC.selectionEnd() - myTC.selectionStart();
+    //length = myTC.selectionEnd() - myTC.selectionStart();
 
     QStringList tagtypes;
     for(int i=0; i < forwardVector.count(); i++) {
-        const Tag * t = (Tag*)(forwardVector.at(i));
+        const Tag * t = static_cast<const Tag *>(forwardVector.at(i));
         if(t->pos == pos) {
             tagtypes << t->tagtype->name;
         }
@@ -1476,7 +1476,7 @@ void DiffView::untagForward(QString tagValue) {
 void DiffView::showContextMenuReverse(const QPoint &pt) {
 
     int pos;
-    int length;
+    //int length;
     signalMapper = new QSignalMapper(this);
     QMenu * menu = new QMenu();
     QMenu * mTags;
@@ -1504,11 +1504,11 @@ void DiffView::showContextMenuReverse(const QPoint &pt) {
         muTags->setEnabled(true);
     }
     pos = myTC.selectionStart();
-    length = myTC.selectionEnd() - myTC.selectionStart();
+    //length = myTC.selectionEnd() - myTC.selectionStart();
 
     QStringList tagtypes;
     for(int i=0; i < reverseVector.count(); i++) {
-        const Tag * t = (Tag*)(reverseVector.at(i));
+        const Tag * t = static_cast<const Tag *>(reverseVector.at(i));
         if(t->pos == pos) {
             tagtypes << t->tagtype->name;
         }

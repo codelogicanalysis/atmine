@@ -55,7 +55,7 @@ DAT_CLEAN_TARGETS=${wildcard .*.dat}
 
 $(APPLICATION): $(ATSarfGui_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
-		$(THIRD_LIBS_LINKFLAGS) \
+		$(THIRD_LIBS_LINKFLAGS)
 
 all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm diacriticrules worddensity diacritics
 

@@ -147,10 +147,10 @@ bool ATagger::buildActionFile() {
 void ATagger::executeActions(NFA* nfa, int index) {
 
     /** Add function calls of each formula to a function named msfName() **/
-    MSFormula* formula = (MSFormula*)nfa->formula;
+    MSFormula* formula = static_cast<MSFormula *>(nfa->formula);
     formula->actionData.append("extern \"C\" void " + formula->name + "_" + textFile.split('/').last().remove(".txt") + "_actions() {\n");
     for(int i=index; i<simulationVector.count(); i++) {
-        MERFTag* mTag = (MERFTag*)(simulationVector.at(i));
+        MERFTag* mTag = static_cast<MERFTag *>(simulationVector.at(i));
         MSFormula* _formula = mTag->formula;
         if(_formula->name == formula->name) {
             mTag->match->executeActions(nfa);
@@ -196,8 +196,8 @@ void ATagger::executeActions(NFA* nfa, int index) {
 void ATagger::constructRelations(int index) {
 
     for(int i=index; i<simulationVector.count(); i++) {
-        MERFTag* merftag = (MERFTag*)(simulationVector[i]);
-        MSFormula* formula = (MSFormula*)(merftag->formula);
+        MERFTag* merftag = static_cast<MERFTag *>(simulationVector[i]);
+        MSFormula* formula = static_cast<MSFormula *>(merftag->formula);
         for(int j=0; j<formula->relationVector.count(); j++) {
             Relation* relation = formula->relationVector[j];
             QVector<Match*> entity1;
@@ -243,10 +243,9 @@ void ATagger::constructRelations(int index) {
                             QString text = edge.at(k)->getText();
                             NumNorm nn(&text);
                             nn();
-                            int number = NULL;
                             if(nn.extractedNumbers.count()!=0) {
-                                number = nn.extractedNumbers[0].getNumber();
-                                 edgeLabel.append(QString::number(number) + ", ");
+                                int number = nn.extractedNumbers[0].getNumber();
+                                edgeLabel.append(QString::number(number) + ", ");
                             }
                         }
                         if(!(edgeLabel.isEmpty())) {
@@ -362,9 +361,9 @@ void ATagger::constructCrossRelations(QString cr) {
     QHash<QString,QSet<QString>* > synSetHash;
     QSet<QString> crossRelations;
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
-        MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
+        MERFTag* merftag1 = static_cast<MERFTag *>(simulationVector[i]);
         for(int j=i+1; j<_atagger->simulationVector.count(); j++) {
-            MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
+            MERFTag* merftag2 = static_cast<MERFTag *>(simulationVector[j]);
 
             if(cr == "inter" && merftag1->sourceText == merftag2->sourceText) {
                 continue;
@@ -416,9 +415,9 @@ void ATagger::constructCrossRelations(QString cr) {
                     if(relation1->entity1 != relation2->entity1) {
                         bool skip = false;
                         QString r1e1;
-                        r1e1.sprintf("%08p", relation1->entity1);
+                        r1e1.sprintf("%8p", relation1->entity1);
                         QString r2e1;
-                        r2e1.sprintf("%08p", relation2->entity1);
+                        r2e1.sprintf("%8p", relation2->entity1);
                         if(crossRelations.contains(r1e1 + '|' + r2e1)) {
                             skip = true;
                         }
@@ -439,9 +438,9 @@ void ATagger::constructCrossRelations(QString cr) {
                     if(relation1->entity1 != relation2->entity2) {
                         bool skip = false;
                         QString r1e1;
-                        r1e1.sprintf("%08p", relation1->entity1);
+                        r1e1.sprintf("%8p", relation1->entity1);
                         QString r2e2;
-                        r2e2.sprintf("%08p", relation2->entity2);
+                        r2e2.sprintf("%8p", relation2->entity2);
                         if(crossRelations.contains(r1e1 + '|' + r2e2)) {
                             skip = true;
                         }
@@ -462,9 +461,9 @@ void ATagger::constructCrossRelations(QString cr) {
                     if(relation1->entity2 != relation2->entity1) {
                         bool skip = false;
                         QString r1e2;
-                        r1e2.sprintf("%08p", relation1->entity2);
+                        r1e2.sprintf("%8p", relation1->entity2);
                         QString r2e1;
-                        r2e1.sprintf("%08p", relation2->entity1);
+                        r2e1.sprintf("%8p", relation2->entity1);
                         if(crossRelations.contains(r1e2 + '|' + r2e1)) {
                             skip = true;
                         }
@@ -485,9 +484,9 @@ void ATagger::constructCrossRelations(QString cr) {
                     if(relation1->entity2 != relation2->entity2) {
                         bool skip = false;
                         QString r1e2;
-                        r1e2.sprintf("%08p", relation1->entity2);
+                        r1e2.sprintf("%8p", relation1->entity2);
                         QString r2e2;
-                        r2e2.sprintf("%08p", relation2->entity2);
+                        r2e2.sprintf("%8p", relation2->entity2);
                         if(crossRelations.contains(r1e2 + '|' + r2e2)) {
                             skip = true;
                         }
@@ -522,9 +521,9 @@ void ATagger::constructUserDefCrossRelations(QString cr) {
 
     QSet<QString> crossRelations;
     for(int i=0; i<_atagger->simulationVector.count(); i++) {
-        MERFTag* merftag1 = (MERFTag*)(simulationVector[i]);
+        MERFTag* merftag1 = static_cast<MERFTag *>(simulationVector[i]);
         for(int j=i+1; j<_atagger->simulationVector.count(); j++) {
-            MERFTag* merftag2 = (MERFTag*)(simulationVector[j]);
+            MERFTag* merftag2 = static_cast<MERFTag *>(simulationVector[j]);
 
             if(cr == "inter" && merftag1->sourceText == merftag2->sourceText) {
                 continue;
@@ -547,9 +546,9 @@ void ATagger::constructUserDefCrossRelations(QString cr) {
                     if(relation1->entity1 != relation2->entity1) {
                         bool skip = false;
                         QString r1e1;
-                        r1e1.sprintf("%08p", relation1->entity1);
+                        r1e1.sprintf("%8p", relation1->entity1);
                         QString r2e1;
-                        r2e1.sprintf("%08p", relation2->entity1);
+                        r2e1.sprintf("%8p", relation2->entity1);
                         if(crossRelations.contains(r1e1 + '|' + r2e1)) {
                             skip = true;
                         }
@@ -568,9 +567,9 @@ void ATagger::constructUserDefCrossRelations(QString cr) {
                     if(relation1->entity1 != relation2->entity2) {
                         bool skip = false;
                         QString r1e1;
-                        r1e1.sprintf("%08p", relation1->entity1);
+                        r1e1.sprintf("%8p", relation1->entity1);
                         QString r2e2;
-                        r2e2.sprintf("%08p", relation2->entity2);
+                        r2e2.sprintf("%8p", relation2->entity2);
                         if(crossRelations.contains(r1e1 + '|' + r2e2)) {
                             skip = true;
                         }
@@ -590,9 +589,9 @@ void ATagger::constructUserDefCrossRelations(QString cr) {
                     if(relation1->entity2 != relation2->entity1) {
                         bool skip = false;
                         QString r1e2;
-                        r1e2.sprintf("%08p", relation1->entity2);
+                        r1e2.sprintf("%8p", relation1->entity2);
                         QString r2e1;
-                        r2e1.sprintf("%08p", relation2->entity1);
+                        r2e1.sprintf("%8p", relation2->entity1);
                         if(crossRelations.contains(r1e2 + '|' + r2e1)) {
                             skip = true;
                         }
@@ -611,9 +610,9 @@ void ATagger::constructUserDefCrossRelations(QString cr) {
                     if(relation1->entity2 != relation2->entity2) {
                         bool skip = false;
                         QString r1e2;
-                        r1e2.sprintf("%08p", relation1->entity2);
+                        r1e2.sprintf("%8p", relation1->entity2);
                         QString r2e2;
-                        r2e2.sprintf("%08p", relation2->entity2);
+                        r2e2.sprintf("%8p", relation2->entity2);
                         if(crossRelations.contains(r1e2 + '|' + r2e2)) {
                             skip = true;
                         }
@@ -695,9 +694,8 @@ bool ATagger::executeUserCrossRel(Match* entity1, Match* entity2) {
             QString text = entity->getText();
             NumNorm nn(&text);
             nn();
-            int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
-                number = nn.extractedNumbers[0].getNumber();
+                int number = nn.extractedNumbers[0].getNumber();
                 crossFunc.insert(dollarIndex, QString::number(number));
             }
             else {
@@ -836,7 +834,7 @@ bool ATagger::runSimulator(bool isBatch) {
         for(int j=1; j<=wordCount; j++) {
             Match* match = simulateNFA(nfaVector->at(i), nfaVector->at(i)->start, j);
             if(match != NULL && match->getLength() > 0) {
-                MERFTag* merftag = (MERFTag*)(match->parent);
+                MERFTag* merftag = static_cast<MERFTag *>(match->parent);
                 merftag->pos = merftag->getPOS();
                 merftag->length = merftag->getLength();
                 merftag->id = uniqueID;
@@ -868,7 +866,7 @@ bool ATagger::runSimulator(bool isBatch) {
 Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
     if((state == nfa->accept) || (nfa->andAccept.contains(state))) {
         /// initialize a MERFTag and return it
-        MERFTag* merftag = new MERFTag((MSFormula*)(nfa->formula),sarf);
+        MERFTag* merftag = new MERFTag(static_cast<MSFormula *>(nfa->formula),sarf);
         SequentialM* seq = new SequentialM(merftag,uniqueID);
         uniqueID++;
         merftag->setMatch(seq);
@@ -911,7 +909,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             int nextWordIndex = wordIndex;
 
             /** check if end of statement based on full stop or punctuation criteria **/
-            if(((MSFormula*)(nfa->formula))->isFullStop) {
+            if((static_cast<MSFormula *>(nfa->formula))->isFullStop) {
                 if(_atagger->isStatementEndFSSet.contains(wordIndex)) {
                     nextWordIndex = (_atagger->wordCount) + 1;
                 }
@@ -932,7 +930,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             Match* temp = simulateNFA(nfa, nstates.at(j), nextWordIndex);
             if(temp != NULL) {
                 /** Update Match **/
-                KeyM* keyMatch = (KeyM*)temp;
+                KeyM* keyMatch = static_cast<KeyM *>(temp);
                 if(tokens.at(i)->tagtype == NULL) {
                     keyMatch->key = "NONE";
                     keyMatch->id = tokens.at(i)->id;
@@ -969,7 +967,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                         Match* tmp = temp;
                         temp = temp->parent;
                         if(temp->isSequentialM()) {
-                            SequentialM* seq = (SequentialM*)temp;
+                            SequentialM* seq = static_cast<SequentialM *>(temp);
                             /// Remove empty match from parent if parent sequential
                             for(int i=0; i<seq->matches.count(); i++) {
                                 if(seq->matches.at(i) == tmp) {
@@ -978,7 +976,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                             }
                         }
                         else if(temp->isBinaryM()) {
-                            BinaryM* binary = (BinaryM*)temp;
+                            BinaryM* binary = static_cast<BinaryM *>(temp);
                             /// Remove empty solution from parent if parent binary
                             if(binary->leftMatch == tmp) {
                                 binary->leftMatch = NULL;
@@ -1002,7 +1000,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                         temp = keym;
                     }
                     else if(msf->isUnary()) {
-                        UNARYF* unary = (UNARYF*)msf;
+                        UNARYF* unary = static_cast<UNARYF *>(msf);
                         UnaryM* unarym = new UnaryM(unary->op,uniqueID,temp,unary->limit);
                         uniqueID++;
                         unarym->msf = msf;
@@ -1011,7 +1009,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                     }
                     else if(msf->isBinary()) {
                         /// AND case is resolved down in code
-                        BINARYF* binary = (BINARYF*)msf;
+                        BINARYF* binary = static_cast<BINARYF *>(msf);
                         if(binary->op == OR) {
                             BinaryM* binarym = new BinaryM(OR,temp,uniqueID);
                             uniqueID++;
@@ -1038,7 +1036,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
         }
     }
 
-    bool isSpecial = false;
+    //bool isSpecial = false;
     MSFormula* formula = NULL;
     /** check for formula transition **/
     if(!done) {
@@ -1048,8 +1046,8 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
             }
             QList<QString> nstates = nfa->transitions.values(state + '|' + nfaVector->at(i)->formula->name);
             for(int j = 0; j < nstates.size(); j++) {
-                isSpecial = true;
-                formula = (MSFormula*)(nfaVector->at(i)->formula);
+                //isSpecial = true;
+                formula = static_cast<MSFormula*>(nfaVector->at(i)->formula);
                 Match* temp = simulateNFA(nfaVector->at(i),nfaVector->at(i)->start,wordIndex);
                 if(temp != NULL) {
                     matches.append(temp);
@@ -1065,7 +1063,7 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
         /** check if we have AND formula **/
         if(nfa->transitions.contains(state + "|*AND*")) {
 
-            isSpecial = true;
+            //isSpecial = true;
             if((matches.count() == 2) && (matches.at(0)->getMatchCount() == matches.at(1)->getMatchCount())) {
                 /// We have two matches referring to the two AND paths and both of same length
 
@@ -1092,8 +1090,8 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                 uniqueID++;
                 binarym->msf = msf;
                 parent->setMatch(binarym);
-                MERFTag* mt1 = (MERFTag*)(matches[0]);
-                SequentialM* seq1 = (SequentialM*)(mt1->match);
+                MERFTag* mt1 = static_cast<MERFTag *>(matches[0]);
+                SequentialM* seq1 = static_cast<SequentialM *>(mt1->match);
                 if(seq1->matches.count()>1) {
                     binarym->setMatch(seq1);
                     seq1->parent = binarym;
@@ -1102,8 +1100,8 @@ Match* ATagger::simulateNFA(NFA* nfa, QString state, int wordIndex) {
                     binarym->setMatch(seq1->matches[0]);
                     seq1->matches[0]->parent = binarym;
                 }
-                MERFTag* mt2 = (MERFTag*)(matches[1]);
-                SequentialM* seq2 = (SequentialM*)(mt2->match);
+                MERFTag* mt2 = static_cast<MERFTag *>(matches[1]);
+                SequentialM* seq2 = static_cast<SequentialM *>(mt2->match);
                 if(seq2->matches.count()>1) {
                     binarym->setMatch(seq2);
                     seq2->parent = binarym;
@@ -1240,7 +1238,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
         QVariantList sarftagtypeset;
         for( int i=0; i < _atagger->tagTypeVector->count(); i++) {
             QVariantMap data;
-            SarfTagType* tagtype = (SarfTagType*)(tagTypeVector->at(i));
+            SarfTagType* tagtype = static_cast<SarfTagType *>(tagTypeVector->at(i));
             data.insert("Tag",tagtype->name);
             data.insert("Description",tagtype->description);
             data.insert("foreground_color",tagtype->fgcolor);
@@ -1366,7 +1364,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
         if(!(_atagger->simulationVector.isEmpty())) {
             QVariantList simulationList;
             for(int i=0; i<_atagger->simulationVector.count(); i++) {
-                MERFTag *mtag = (MERFTag*)(_atagger->simulationVector.at(i));
+                MERFTag *mtag = static_cast<MERFTag *>(_atagger->simulationVector.at(i));
                 MSFormula* formula = mtag->formula;
                 QVariantMap data;
                 data.insert("type", formula->name);
@@ -1394,7 +1392,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                         while(parent->parent != NULL) {
                             parent = parent->parent;
                         }
-                        MERFTag* merftag = (MERFTag*)parent;
+                        MERFTag* merftag = static_cast<MERFTag *>(parent);
                         entity1Data.insert("file",merftag->sourceText);
                         entitySet.insert(rel->entity1);
                         entityList.append(entity1Data);
@@ -1409,7 +1407,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                         while(parent->parent != NULL) {
                             parent = parent->parent;
                         }
-                        MERFTag* merftag = (MERFTag*)parent;
+                        MERFTag* merftag = static_cast<MERFTag *>(parent);
                         entity2Data.insert("file",merftag->sourceText);
                         entitySet.insert(rel->entity2);
                         entityList.append(entity2Data);
@@ -1424,7 +1422,7 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
                         while(parent->parent != NULL) {
                             parent = parent->parent;
                         }
-                        MERFTag* merftag = (MERFTag*)parent;
+                        MERFTag* merftag = static_cast<MERFTag *>(parent);
                         edgeData.insert("file",merftag->sourceText);
                         entitySet.insert(rel->edge);
                         entityList.append(edgeData);

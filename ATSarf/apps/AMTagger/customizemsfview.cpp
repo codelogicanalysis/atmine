@@ -303,7 +303,7 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     tagtypes.append("NONE");
 
     if(_atagger->tempMSFVector->count() != 0) {
-        currentF = (MSFormula*)(_atagger->tempMSFVector->at(0));
+        currentF = static_cast<MSFormula*>(_atagger->tempMSFVector->at(0));
         for(int i=0; i<_atagger->tempMSFVector->count(); i++) {
             tagtypes.append(_atagger->tempMSFVector->at(i)->name);
             cbMSF->addItem(_atagger->tempMSFVector->at(i)->name);
@@ -377,15 +377,15 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Check parent type and add accordingly **/
         if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
+            MSFormula* prnt = static_cast<MSFormula *>(parent);
             prnt->addMSF(mbf);
         }
         else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
+            UNARYF* prnt = static_cast<UNARYF *>(parent);
             prnt->setMSF(mbf);
         }
         else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
+            BINARYF* prnt = static_cast<BINARYF *>(parent);
             if(prnt->leftMSF == NULL) {
                 prnt->setLeftMSF(mbf);
             }
@@ -394,7 +394,7 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
             }
         }
         else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
+            SequentialF* prnt = static_cast<SequentialF *>(parent);
             prnt->addMSF(mbf);
         }
         else {
@@ -441,15 +441,15 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Check parent type and add accordingly **/
         if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
+            MSFormula* prnt = static_cast<MSFormula *>(parent);
             prnt->addMSF(uf);
         }
         else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
+            UNARYF* prnt = static_cast<UNARYF *>(parent);
             prnt->setMSF(uf);
         }
         else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
+            BINARYF* prnt = static_cast<BINARYF *>(parent);
             if(prnt->leftMSF == NULL) {
                 prnt->setLeftMSF(uf);
             }
@@ -458,7 +458,7 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
             }
         }
         else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
+            SequentialF* prnt = static_cast<SequentialF *>(parent);
             prnt->addMSF(uf);
         }
         else {
@@ -492,15 +492,15 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Check parent type and add accordingly **/
         if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
+            MSFormula* prnt = static_cast<MSFormula *>(parent);
             prnt->addMSF(bif);
         }
         else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
+            UNARYF* prnt = static_cast<UNARYF *>(parent);
             prnt->setMSF(bif);
         }
         else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
+            BINARYF* prnt = static_cast<BINARYF *>(parent);
             if(prnt->leftMSF == NULL) {
                 prnt->setLeftMSF(bif);
             }
@@ -509,7 +509,7 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
             }
         }
         else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
+            SequentialF* prnt = static_cast<SequentialF *>(parent);
             prnt->addMSF(bif);
         }
         else {
@@ -538,15 +538,15 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
 
         /** Check parent type and add accordingly **/
         if(parent->isFormula()) {
-            MSFormula* prnt = (MSFormula*)parent;
+            MSFormula* prnt = static_cast<MSFormula *>(parent);
             prnt->addMSF(sf);
         }
         else if(parent->isUnary()) {
-            UNARYF* prnt = (UNARYF*)parent;
+            UNARYF* prnt = static_cast<UNARYF *>(parent);
             prnt->setMSF(sf);
         }
         else if(parent->isBinary()) {
-            BINARYF* prnt = (BINARYF*)parent;
+            BINARYF* prnt = static_cast<BINARYF *>(parent);
             if(prnt->leftMSF == NULL) {
                 prnt->setLeftMSF(sf);
             }
@@ -555,7 +555,7 @@ bool CustomizeMSFView::readMSF(MSFormula* formula, QVariant data, MSF *parent) {
             }
         }
         else if(parent->isSequential()) {
-            SequentialF* prnt = (SequentialF*)parent;
+            SequentialF* prnt = static_cast<SequentialF *>(parent);
             prnt->addMSF(sf);
         }
         else {
@@ -777,7 +777,7 @@ void CustomizeMSFView::btnSelect_clicked() {
 
                 QStringList data;
                 data << name << bf << QString();
-                QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
+                //QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
                 editFormula->setText(currentF->print());
                 isDirty = true;
                 return;
@@ -793,7 +793,7 @@ void CustomizeMSFView::btnSelect_clicked() {
 
         QStringList data;
         data << name << bf << QString();
-        QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
+        //QTreeWidgetItem* tItem = new QTreeWidgetItem(treeMSF, data);
         editFormula->setText(currentF->print());
         isDirty = true;
     }
@@ -836,7 +836,7 @@ void CustomizeMSFView::btnUnselect_clicked() {
                 return;
             }
 
-            SequentialF* parent = (SequentialF*)msf;
+            SequentialF* parent = static_cast<SequentialF *>(msf);
             if(parent->vector.count() < 2) {
                 QMessageBox::warning(this, "Warning", "Invalid Move: Can't remove this item!");
                 return;
@@ -1584,7 +1584,7 @@ void CustomizeMSFView::listMBF_itemclicked(QListWidgetItem *item) {
     QString tagtype = item->text();
     for(int i=0; i<_atagger->tagTypeVector->count(); i++) {
         if(_atagger->tagTypeVector->at(i)->name == tagtype && _atagger->tagTypeVector->at(i)->source == sarf) {
-            SarfTagType* stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+            SarfTagType* stt = static_cast<SarfTagType *>(_atagger->tagTypeVector->at(i));
             for(int j=0; j<stt->tags.count(); j++) {
                 QStringList list;
                 if(stt->tags.at(j).first != "Category") {

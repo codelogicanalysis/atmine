@@ -49,23 +49,24 @@ AMTMainWindow::AMTMainWindow(QWidget *parent) :
     bool all_set = theSarf->start(&output_str, &error_str, this);
     if(!all_set) {
         QMessageBox::warning(this,"Warning","Can't set up the Sarf Tool");
-        return;QMessageBox msgBox;
-        msgBox.setText("The document has been modified.");
-        msgBox.setInformativeText("Do you want to save your changes?");
-        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Open);
-        msgBox.button(QMessageBox::Save)->setText("New");
-        msgBox.setDefaultButton(QMessageBox::Save);
-        int ret = msgBox.exec();
+        return;
+        //QMessageBox msgBox;
+        //msgBox.setText("The document has been modified.");
+        //msgBox.setInformativeText("Do you want to save your changes?");
+        //msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Open);
+        //msgBox.button(QMessageBox::Save)->setText("New");
+        //msgBox.setDefaultButton(QMessageBox::Save);
+        //int ret = msgBox.exec();
 
-        switch (ret) {
-            case QMessageBox::Save:
-                _new();
-            case QMessageBox::Open:
-                open();
-            default:
-                _new();
-                break;
-        }
+        //switch (ret) {
+            //case QMessageBox::Save:
+                //_new();
+            //case QMessageBox::Open:
+                //open();
+            //default:
+                //_new();
+                //break;
+        //}
     }
     Sarf::use(theSarf);
     initialize_other();
@@ -249,7 +250,7 @@ void AMTMainWindow::relationScaleView(qreal scaleFactor)
 void AMTMainWindow::showContextMenu(const QPoint &pt) {
 
     int pos;
-    int length;
+    //int length;
     if(txtBrwsr->textCursor().selectedText().isEmpty()) {
         if(!(_atagger->isTagMBF)) {
             QMessageBox::warning(this,"Warning","No text selected");
@@ -272,7 +273,7 @@ void AMTMainWindow::showContextMenu(const QPoint &pt) {
         umTags->setEnabled(true);
     }
     pos = myTC.selectionStart();
-    length = myTC.selectionEnd() - myTC.selectionStart();
+    //length = myTC.selectionEnd() - myTC.selectionStart();
 
     QStringList tagtypes;
     if(_atagger->isTagMBF) {
@@ -566,7 +567,7 @@ void AMTMainWindow::process(QByteArray & json) {
         int wordIndex = tagElements["wordIndex"].toInt();
         QString tagtype = tagElements["type"].toString();
         Source source = (Source)(tagElements["source"].toInt());
-        bool check;
+        //bool check;
         const TagType* type = NULL;
         for(int i=0;i<_atagger->tagTypeVector->count(); i++) {
             if(_atagger->tagTypeVector->at(i)->name == tagtype) {
@@ -580,7 +581,8 @@ void AMTMainWindow::process(QByteArray & json) {
             clearLayout(this->layout());
             return;
         }
-        check = _atagger->insertTag(type,start,length,wordIndex,source,original,id);
+        //check = _atagger->insertTag(type,start,length,wordIndex,source,original,id);
+        _atagger->insertTag(type, start, length, wordIndex, source, original, id);
     }
 
     if(_atagger->tagHash->begin().value()->source == user) {
@@ -678,7 +680,7 @@ void AMTMainWindow::process(QByteArray & json) {
                                 QString text = edge.at(k)->getText();
                                 NumNorm nn(&text);
                                 nn();
-                                int number = NULL;
+                                int number = 0;
                                 if(nn.extractedNumbers.count()!=0) {
                                     number = nn.extractedNumbers[0].getNumber();
                                      edgeLabel.append(QString::number(number) + ", ");
@@ -2272,7 +2274,7 @@ void AMTMainWindow::difference() {
         int wordIndex = tagElements["wordIndex"].toInt();
         QString tagtype = tagElements["type"].toString();
         Source source = (Source)(tagElements["source"].toInt());
-        bool check;
+        //bool check;
         const TagType* type = NULL;
         for(int i=0;i<_atagger->compareToTagTypeVector->count(); i++) {
             if(_atagger->compareToTagTypeVector->at(i)->name == tagtype) {
@@ -2286,7 +2288,8 @@ void AMTMainWindow::difference() {
             clearLayout(this->layout());
             return;
         }
-        check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo,id);
+        //check = _atagger->insertTag(type,start,length,wordIndex,source,compareTo,id);
+        _atagger->insertTag(type,start,length,wordIndex,source,compareTo,id);
     }
 
     if(_atagger->tagHash->begin().value()->source == user) {
