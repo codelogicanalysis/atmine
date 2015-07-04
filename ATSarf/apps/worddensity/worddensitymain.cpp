@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 
 
     if(argc != 2) {
-        cout << "Please enter the maximum length of a word to consider:\n"
+        std::cout << "Please enter the maximum length of a word to consider:" << std::endl
                 << "-1 : Use words of all length\n"
                 << "N > 0 : Use words of maximum length N\n";
         return 0;
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     bool ok;
     long solutions = solutions_string.toLong(&ok);
     if((!ok) || (solutions<-1) || (solutions == 0)) {
-        cout << "Please enter the maximum length of a word to consider:\n"
+        std::cout << "Please enter the maximum length of a word to consider:\n"
                 << "-1 : Use words of all length\n"
                 << "N > 0 : Use words of maximum length N\n";
         return 0;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     Sarf::use(&srf);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error << "Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;

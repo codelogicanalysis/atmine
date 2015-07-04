@@ -512,7 +512,7 @@ int calculateStatistics(QString filename){
         out	>> tags;
         file.close();
     } else {
-        error << "Annotation File does not exist\n";
+        _error << "Annotation File does not exist\n";
 #ifndef SUBMISSION
         if (file.open(QIODevice::WriteOnly)) {
             /*for (int i=0;i<timeVector->size();i++) {
@@ -521,7 +521,7 @@ int calculateStatistics(QString filename){
             QDataStream out(&file);   // we will serialize the data into the file
             out << *timeVector;
             file.close();
-            error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
+            _error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
         }
 #endif
         return -1;

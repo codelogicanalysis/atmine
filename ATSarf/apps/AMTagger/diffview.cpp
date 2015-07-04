@@ -207,8 +207,6 @@ DiffView::DiffView(QWidget *parent) :
 }
 
 void DiffView::startTaggingText(QString & text) {
-    if (this==NULL)
-        return;
     QTextBrowser * taggedBox=txtCommon;
     taggedBox->clear();
     taggedBox->setLayoutDirection(Qt::RightToLeft);
@@ -243,13 +241,11 @@ void DiffView::startTaggingText(QString & text) {
     taggedBox->setText(text);
 }
 
-void DiffView::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int font, bool underline, bool italic, bool bold, DestText dt){
-    if (this==NULL)
-        return;
+void DiffView::tagWord(int start, int length, QColor fcolor, QColor  bcolor, int font, bool underline, bool italic, bool bold, DestText dt){
     QTextBrowser * taggedBox;
     if(dt == common) {
         taggedBox = txtCommon;
-    } else if(dt == forward) {
+    } else if (dt == ::forward) {
         taggedBox = txtForwardDiff;
     }
     else {
@@ -271,8 +267,6 @@ void DiffView::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int 
 }
 
 void DiffView::finishTaggingText() {
-    if (this==NULL)
-        return;
     QTextBrowser * taggedBox= txtCommon;
     QTextCursor c=taggedBox->textCursor();
     c.movePosition(QTextCursor::End,QTextCursor::MoveAnchor);
@@ -998,7 +992,7 @@ void DiffView::addTags(QVector<const Tag*> & commonVector, QVector<const Tag*> &
         }
         bool bold = t->tagtype->bold;
         bool italic = t->tagtype->italic;
-        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,forward);
+        tagWord(start,length,fgcolor,bgcolor,font,underline,italic,bold,::forward);
                 //break;
             //}
         //}

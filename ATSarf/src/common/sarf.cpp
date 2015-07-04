@@ -23,7 +23,7 @@ Sarf::start(QString * output_str, QString * error_str, ATMProgressIFC * pIFC) {
         database_info.fill(pIFC);
 
     } catch(const char * ex)  {
-            error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
+            _error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
             return false;
     }
     return true;
@@ -63,7 +63,7 @@ Sarf::start(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC) {
         generate_bit_order("category",abstract_category_ids,"abstract");
         database_info.fill(pIFC);
     } catch(const char * ex)  {
-            error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
+            _error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
             rc = false;
     }
     if (oldSarf != NULL)
@@ -98,7 +98,7 @@ Sarf::exit() {
 */
         //TODO: must destroy the db before calling the following
     } catch(const char * ex)  {
-        error<<"Fail to exit tool. Exception is "<<ex<<'.'<<endl;
+        _error<<"Fail to exit tool. Exception is "<<ex<<'.'<<endl;
         return false;
     }
     return true;

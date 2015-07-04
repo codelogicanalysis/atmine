@@ -105,8 +105,6 @@ class Name {
             return *this;
         }
         bool isMarriageCompatible(const Name & n) const {
-            if (this==NULL)
-                return false;
             return (n.male!=male);
         }
         bool operator ==(const Name & n) const {
@@ -164,30 +162,22 @@ class AbstractGeneNode {
 
     virtual bool isSpouse() const{ return false;}
     GeneNode * getParent(){
-        if (this==NULL)
-            return NULL;
         return parent;
     }
     void setEdgeText(QString edge) {
-        if (this==NULL)
-            return;
         edgeText.clear();
         edgeText.append(edge);
     }
     void copyEdgeText(AbstractGeneNode * node) {
-        if (this==NULL || node==NULL)
+        if (node==NULL)
             return;
         edgeText=node->edgeText;
     }
     void addEdgeText(QString edge) {
-        if (this==NULL)
-            return;
         edgeText.append(edge);
     }
     QString getEdgeText() const{
 #define MAX_SIZE 20
-        if (this==NULL)
-            return "NULL";
         QString edge;
         for (int i=0;i<edgeText.size();i++) {
             edge+=(i==0?"":"/")+edgeText[i].left(MAX_SIZE);
@@ -198,8 +188,6 @@ class AbstractGeneNode {
 #undef MAX_SIZE
     }
     QString getFullEdgeText() const {
-        if (this==NULL)
-            return "NULL";
         QString edge;
         for (int i=0;i<edgeText.size();i++) {
             edge+=(i==0?"":"/")+edgeText[i];
@@ -211,13 +199,9 @@ class AbstractGeneNode {
         return name;
     }
     QString getGender() const {
-        if (this==NULL)
-            return "-";
         return (name.isMale()?"M":"F");
     }
     QString getString() const {
-        if (this==NULL)
-            return "NULL";
         return name.getString();
     }
     virtual int getGraphHeight() const=0;
@@ -254,8 +238,6 @@ class GeneNode: public AbstractGeneNode {
             }
         }
         void deleteSubTree() {
-            if (this==NULL)
-                return;
             for (int i=0;i<children.size();i++) {
                 children[i]->deleteSubTree();
             }
@@ -265,8 +247,6 @@ class GeneNode: public AbstractGeneNode {
             delete this;
         }
         GeneNode * getNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
-            if (this==NULL)
-                return NULL;
             AbstractGeneNode * node=getAbstractNodeInSubTree(word,checkSpouses,maxDepth);
             if (node==NULL)
                 return NULL;
@@ -277,8 +257,6 @@ class GeneNode: public AbstractGeneNode {
             }
         }
         AbstractGeneNode * getAbstractNodeInSubTree(QString word,bool checkSpouses=false, int maxDepth=-1) {
-            if (this==NULL)
-                return NULL;
             if (!ignoreInSearch && equalNames(word,name.getString()))
                 return this;
             if (checkSpouses) {
@@ -299,9 +277,6 @@ class GeneNode: public AbstractGeneNode {
             return NULL;
         }
         void printTree(int indentation) {
-            if (this==NULL)
-                theSarf->out<<"NULL";
-            else {
                 QString sp="";
                 if (spouses.size()>0) {
                     sp+="[";
@@ -314,7 +289,6 @@ class GeneNode: public AbstractGeneNode {
                 for (int i=0;i<children.size();i++) {
                     children[i]->printTree(indentation+1);
                 }
-            }
         }
 
         GeneNode():AbstractGeneNode(){}
@@ -336,42 +310,34 @@ class GeneNode: public AbstractGeneNode {
         virtual ~GeneNode() {}
 
         GeneNode * addChild(GeneNode * n) { //return itself
-            if (this!=NULL) {
-                if (n!=NULL) {
-                    children.append(n);
-                    n->parent=this;
-                    n->setParentHeight(n->height+1);
-                }
-                return this;
-            } else
-                return n;
+            if (n!=NULL) {
+                children.append(n);
+                n->parent=this;
+                n->setParentHeight(n->height+1);
+            }
+            return this;
         }
         GeneNode * addParent(GeneNode * n) { //return new parent
-            if (this!=NULL) {
-                if (n!=NULL) {
-                    if (parent!=NULL) {
-                        parent->addSpouse(n->name);
-                        //n->name.parent=parent;
-                        for (int i=0;i<n->spouses.size();i++) {
-                            parent->addSpouse(n->spouses[i]);
-                        }
-                        /*for (int i=0;i<parent->spouses.size();i++) {
-                          parent->spouses[i].parent=parent;
-                          }*/
-                        return parent;
-                    } else {
-                        n->addChild(this);
-                        //name.parent=n;
-                        return n;
+            if (n!=NULL) {
+                if (parent!=NULL) {
+                    parent->addSpouse(n->name);
+                    //n->name.parent=parent;
+                    for (int i=0;i<n->spouses.size();i++) {
+                        parent->addSpouse(n->spouses[i]);
                     }
+                    /*for (int i=0;i<parent->spouses.size();i++) {
+                      parent->spouses[i].parent=parent;
+                      }*/
+                    return parent;
+                } else {
+                    n->addChild(this);
+                    //name.parent=n;
+                    return n;
                 }
-                return this;
-            } else
-                return n;
+            }
+            return this;
         }
         bool hasSpouse(const Name & n, bool checkWithMain=false) const {
-            if (this==NULL)
-                return false;
             if (checkWithMain && equalNames(n.getString(),name.getString()))
                 return true;
             for (int i=0;i<spouses.size();i++) {
@@ -381,8 +347,6 @@ class GeneNode: public AbstractGeneNode {
             return false;
         }
         bool hasChild(const Name & n) const {
-            if (this==NULL)
-                return false;
             for (int i=0;i<children.size();i++) {
                 if (equalNames(n.getString(),children[i]->toString()))
                     return true;
@@ -390,31 +354,24 @@ class GeneNode: public AbstractGeneNode {
             return false;
         }
         GeneNode * addSpouse(const Name & n) { //return itself
-            if (this!=NULL) {
-                SpouseGeneNode * spouse=new SpouseGeneNode(n,this);
-                spouses.append(spouse);
-            }
+            SpouseGeneNode * spouse=new SpouseGeneNode(n,this);
+            spouses.append(spouse);
             return this;
         }
         GeneNode * addSpouse(SpouseGeneNode * spouse) { //return itself
-            if (this!=NULL) {
-                spouse->parent=this;
-                spouses.append(new SpouseGeneNode(*spouse));
-            }
+            spouse->parent=this;
+            spouses.append(new SpouseGeneNode(*spouse));
             return this;
         }
         GeneNode * addSibling(GeneNode * n) { //return itself
-            if (this!=NULL) {
-                if (parent!=NULL) {
-                    parent->children.append(n);
-                    if (n!=NULL) {
-                        n->parent=parent;
-                        parent->setParentHeight(n->height+1);
-                    }
+            if (parent!=NULL) {
+                parent->children.append(n);
+                if (n!=NULL) {
+                    n->parent=parent;
+                    parent->setParentHeight(n->height+1);
                 }
-                return this;
-            } else
-                return n;
+            }
+            return this;
         }
         bool isLeaf() {
             return children.size()==0;
@@ -423,8 +380,6 @@ class GeneNode: public AbstractGeneNode {
             return getSubTreeCount(NULL,countSpouses);
         }
         int getSubTreeCount(QSet<Name> * visited,bool countSpouses=false) const  {
-            if (this==NULL)
-                return 0;
             int count=0;
             if (visited==NULL) {
                 count=1;
@@ -487,11 +442,11 @@ class GeneTree: public AbstractGraph {
         void init(GeneNode * root);
         virtual AbstractGraph * readFromStreamHelper(QDataStream &in);
     public:
-        GeneTree() : AbstractGraph() {
+        explicit GeneTree() : AbstractGraph() {
             root=NULL;
             mergeVisitor=NULL;
         }
-        GeneTree(GeneNode * root) : AbstractGraph() {
+        explicit GeneTree(GeneNode * root) : AbstractGraph() {
             this->root=root;
             mergeVisitor=NULL;
         }
@@ -501,21 +456,16 @@ class GeneTree: public AbstractGraph {
             root=node;
         }
         GeneNode * getRoot() {
-            if (this==NULL)
-                return NULL;
             return root;
         }
+        // TODO: Is suicide safe here?
         void deleteGraph() {
-            if (this==NULL)
-                return;
             //out<<"\n{deleting}\n";
             //root->printTree(0);
             //root->deleteSubTree();
             delete this;
         }
         void updateRoot() {
-            if (this==NULL)
-                return;
             if (root==NULL)
                 return;
             while (root->parent!=NULL)
@@ -523,38 +473,25 @@ class GeneTree: public AbstractGraph {
         }
         void outputTree() {
             //out<<"{Output}\n";
-            if (this==NULL)
-                theSarf->out<<"NULL";
-            else
-                root->printTree(0);
+            root->printTree(0);
             theSarf->out<<"\n";
         }
         int getTreeLevels() {
-            if (this==NULL)
-                return 0;
             if (root==NULL)
                 return 0;
             return root->height+1;
         }
         int getTreeNodesCount(bool countSpouses=false) {
-            if (this==NULL)
-                return 0;
             return root->getSubTreeCount(countSpouses);
         }
         int getTreeDistinctNodesCount(bool countSpouses=false) {
-            if (this==NULL)
-                return 0;
             QSet<Name> visited;
             return root->getSubTreeCount(&visited,countSpouses);
         }
         GeneNode * findTreeNode(QString word, bool checkSpouses=false) {
-            if (this==NULL)
-                return NULL;
             return root->getNodeInSubTree(word,checkSpouses);
         }
         AbstractGeneNode * findAbstractTreeNode(QString word, bool checkSpouses=false) {
-            if (this==NULL)
-                return NULL;
             return root->getAbstractNodeInSubTree(word,checkSpouses);
         }
         void compareToStandardTree(GeneTree * standard,GraphStatistics & stats);
@@ -611,7 +548,7 @@ class FillTextVisitor:public GeneVisitor {
     private:
         QString * text;
     public:
-        FillTextVisitor(QString * text) {
+        explicit FillTextVisitor(QString * text) {
             this->text=text;
         }
         void visit(GeneNode * node,int ) {
@@ -639,21 +576,17 @@ inline QDataStream &operator>>(QDataStream &in, Name &t) {
     return in;
 }
 inline QDataStream &operator<<(QDataStream &out, const GeneNode &t) {
-    if (&t!=NULL) {
-        out <<false
-            <<t.name
-            <<t.height
-            <<t.ignoreInSearch
-            <<t.children.size();
-        for (int i=0;i<t.children.size();i++) {
-            out<<*(t.children[i]);
-        }
-        out<<t.spouses.size();
-        for (int i=0;i<t.spouses.size();i++) {
-            out<<t.spouses[i]->getName();
-        }
-    } else {
-        out<<true;
+    out <<false
+        <<t.name
+        <<t.height
+        <<t.ignoreInSearch
+        <<t.children.size();
+    for (int i=0;i<t.children.size();i++) {
+        out<<*(t.children[i]);
+    }
+    out<<t.spouses.size();
+    for (int i=0;i<t.spouses.size();i++) {
+        out<<t.spouses[i]->getName();
     }
     return out;
 }
@@ -662,9 +595,9 @@ inline QDataStream &operator>>(QDataStream &in, GeneNode &t) {
     int childrenCount = 0;
     int spouseCount = 0;
     in >> t.name
-       >> t.height
-       >> t.ignoreInSearch
-       >> childrenCount;
+        >> t.height
+        >> t.ignoreInSearch
+        >> childrenCount;
     t.parent=NULL;
 
     for (int i = 0; i < childrenCount; i++) {
@@ -686,10 +619,7 @@ inline QDataStream &operator>>(QDataStream &in, GeneNode &t) {
 }
 
 inline QDataStream &operator<<(QDataStream &out, const GeneTree &t) {
-    if (&t == NULL) //assume null tree equivalent to a tree with a null node
-        out << *(GeneNode *)NULL;
-    else
-        out << *t.root;
+    out << *t.root;
     return out;
 }
 inline QDataStream &operator>>(QDataStream &in, GeneTree &t) {

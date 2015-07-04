@@ -75,7 +75,7 @@ void GraphNode::calculateForces()
     newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10));
 }
 
-bool GraphNode::advance()
+bool GraphNode::posAdvance()
 {
     if (newPos == pos())
         return false;

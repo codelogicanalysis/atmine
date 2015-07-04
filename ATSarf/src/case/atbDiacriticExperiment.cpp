@@ -99,24 +99,25 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
     QString line;
     int total=0;
     const int maxDiacritics=6;
-    int no_voc_total[ambiguitySize]={0},voc_total[ambiguitySize]={0};
-    int voc_ambiguity[maxDiacritics][ambiguitySize]={0};
-    int no_voc_ambiguity[maxDiacritics][ambiguitySize]={0};
-    int total_count[maxDiacritics][ambiguitySize]={0};
+    int no_voc_total[ambiguitySize]={0};
+    int voc_total[ambiguitySize]={0};
+    int voc_ambiguity[maxDiacritics][ambiguitySize]={{0}};
+    int no_voc_ambiguity[maxDiacritics][ambiguitySize]={{0}};
+    int total_count[maxDiacritics][ambiguitySize]={{0}};
     int full_vocalized[ambiguitySize]={0};
 #ifdef RANDOM_DIACRITICS
     int random_voc_ambiguity[maxDiacritics][ambiguitySize]={0};
     int random_total_count[maxDiacritics][ambiguitySize]={0};
     int random_full_vocalized[ambiguitySize]={0};
 #else
-    double other_ambiguity[maxDiacritics][ambiguitySize]={0};
-    int other_best_ambiguity[maxDiacritics][ambiguitySize]={0};
-    int other_worst_ambiguity[maxDiacritics][ambiguitySize]={0};
-    int other_count[maxDiacritics][ambiguitySize]={0};
+    double other_ambiguity[maxDiacritics][ambiguitySize]={{0}};
+    int other_best_ambiguity[maxDiacritics][ambiguitySize]={{0}};
+    int other_worst_ambiguity[maxDiacritics][ambiguitySize]={{0}};
+    int other_count[maxDiacritics][ambiguitySize]={{0}};
 
-    int partial_best[maxDiacritics][ambiguitySize]={0};
-    int partial_worst[maxDiacritics][ambiguitySize]={0};
-    double partial_average[maxDiacritics][ambiguitySize]={0};
+    int partial_best[maxDiacritics][ambiguitySize]={{0}};
+    int partial_worst[maxDiacritics][ambiguitySize]={{0}};
+    double partial_average[maxDiacritics][ambiguitySize]={{0}};
     int partial_best_total[ambiguitySize]={0};
     int partial_worst_total[ambiguitySize]={0};
     double partial_average_total[ambiguitySize]={0};

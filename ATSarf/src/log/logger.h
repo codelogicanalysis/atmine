@@ -17,11 +17,11 @@ extern bool warn_about_automatic_insertion;
 extern bool display_errors;
 extern bool display_warnings;
 
-#define error \
-        if (theSarf!= NULL && display_errors)  theSarf->displayed_error << "ERROR! "
-			//... pay attention to put such statements between {..} in if-else structures, otherwise next else would be to this if and not as intended
+#define _error \
+    if (theSarf!= NULL && display_errors)  theSarf->displayed_error << "ERROR! "
+//... pay attention to put such statements between {..} in if-else structures, otherwise next else would be to this if and not as intended
 #define _warning \
-        if (theSarf!= NULL && display_errors && display_warnings) theSarf->displayed_error << "WARNING! "
-		//...
+    if (theSarf!= NULL && display_errors && display_warnings) theSarf->displayed_error << "WARNING! "
+//...
 
 #endif /*_LOGGER */

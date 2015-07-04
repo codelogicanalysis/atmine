@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     Sarf::use(&srf);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error<<"Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;

@@ -188,8 +188,8 @@ DescentConnectors descentConnectors;
 DescentConnectorGroup landDesc;
 
 class GeneStemmer: public Stemmer {
-    private:
-        bool place;
+    //private:
+    //bool place;
     public:
         long finish_pos;
         bool name:1;
@@ -403,7 +403,7 @@ class GeneStemmer: public Stemmer {
                 file.close();
             }
             else
-                error <<"Unexpected Error: Unable to write PreProcessed Genealogy Descriptions to file\n";
+                _error <<"Unexpected Error: Unable to write PreProcessed Genealogy Descriptions to file\n";
         }
 
         void readFromFilePreprocessedGenealogyDescriptions() {
@@ -414,8 +414,8 @@ class GeneStemmer: public Stemmer {
             if (file.open(QIODevice::ReadOnly))
             {
                 QDataStream in(&file);    // read the data serialized from the file
-                in	>> descentConnectors
-                    >> landDesc;
+                in >> descentConnectors
+                   >> landDesc;
                 file.close();
             }
             else
@@ -790,7 +790,7 @@ class GeneStemmer: public Stemmer {
                 virtual void visit(GeneNode * node, int ) {
                     finalizeMatch();
                     if (equalNames(node->toString(),nameToMatch.getString()) ||node->hasSpouse(nameToMatch,false)){
-                        currMatch= (GeneNode *)node;
+                        currMatch = static_cast<GeneNode *>(node);
                     } else {
                         currMatch= NULL;
                     }
@@ -1167,12 +1167,10 @@ class GeneStemmer: public Stemmer {
                 mergeVisitor->tryPerformingUnperformedNodes();
         }
         void GeneTree::displayGraph( ATMProgressIFC * prg) {
-            if (this!=NULL) {
-                GeneDisplayVisitor * d=new GeneDisplayVisitor();
-                (*d)(this);
-                delete d;
-                prg->displayGraph(this);
-            }
+            GeneDisplayVisitor * d=new GeneDisplayVisitor();
+            (*d)(this);
+            delete d;
+            prg->displayGraph(this);
         }
         bool GeneTree::buildFromText(QString text, TwoLevelSelection * sel,QString *fileText,AbstractTwoLevelAnnotator * tagger) {
             QStringList lines=text.split("\n",QString::SkipEmptyParts);
@@ -1326,11 +1324,8 @@ class GeneStemmer: public Stemmer {
             //}
         }
         void GeneTree::fillNullGraph(Name & name) {
-            if (this==NULL) {
-                GeneNode *root=new GeneNode(name,NULL);
-                init(root);
-            }
         }
+
         bool GeneTree::isRepresentativeOf(const MainSelectionList &list) { //very basic assumption for now
             int count=getTreeNodesCount(true);
             return count==list.size();
@@ -1385,8 +1380,7 @@ class GeneStemmer: public Stemmer {
 
         }
         void GeneTree::addNameToGraph(Name & name) {
-            bool null=(this==NULL ||isEmpty());
-            if (null) {
+            if (isEmpty()) {
                 fillNullGraph(name);
             } else {
                 root->addChild(new GeneNode(name,NULL));
@@ -1462,7 +1456,7 @@ class GeneStemmer: public Stemmer {
                             land=false;
                             lastType=OTHER;
                         }
-                        StateInfo(): unProcessedName(text,-1,-1) {
+                        StateInfo(): unProcessedName(NULL,-1,-1) {
                             initialize(NULL);
                         }
                 };
@@ -1634,6 +1628,8 @@ class GeneStemmer: public Stemmer {
                             if (currentData.last->getParent()!=NULL)
                                 currentData.outputData->addName(name);
                             return;
+                        default:
+                            break;
                     }
                     if (stateInfo.descentDirection!=UNDEFINED_DIRECTION && currentData.last!=NULL)
                         currentData.outputData->addName(name);
@@ -2193,7 +2189,7 @@ if (file.open(QIODevice::ReadOnly))	{
     in >>*globalTree;
     file.close();
 } else {
-    error << "Annotation File does not exist\n";
+    _error << "Annotation File does not exist\n";
 #ifndef SUBMISSION
     if (file.open(QIODevice::WriteOnly)) {				/*for (int i=0;i<timeVector->size();i++) {
                                                           tags.append(TimeTaggerDialog::Selection(timeVector->));
@@ -2201,7 +2197,7 @@ if (file.open(QIODevice::ReadOnly))	{
         QDataStream out(&file);   // we will serialize the data into the file
         out << outputList;
         file.close();
-        error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
+        _error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
     }
 #endif
     return -1;

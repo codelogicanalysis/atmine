@@ -494,8 +494,6 @@ void AMTMainWindow::open() {
 }
 
 void AMTMainWindow::startTaggingText(QString & text) {
-    if (this==NULL)
-        return;
     QTextBrowser * taggedBox=txtBrwsr;
     taggedBox->clear();
     taggedBox->setLayoutDirection(Qt::RightToLeft);
@@ -887,8 +885,6 @@ void AMTMainWindow::applyTags(int basic) {
 }
 
 void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor,int font, bool underline, bool italic, bool bold){
-    if (this==NULL)
-        return;
     QTextBrowser * taggedBox= txtBrwsr;
     QTextCursor c=taggedBox->textCursor();
 #if 0
@@ -922,8 +918,6 @@ void AMTMainWindow::tagWord(int start, int length, QColor fcolor, QColor  bcolor
 }
 
 void AMTMainWindow::finishTaggingText() {
-    if (this==NULL)
-        return;
     QTextBrowser * taggedBox= txtBrwsr;
     //QTextEdit * taggedBox = txtBrwsr;
     QTextCursor c=taggedBox->textCursor();

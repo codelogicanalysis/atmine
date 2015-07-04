@@ -81,7 +81,7 @@ void readFromDatabasePreProcessedHadithDescriptions() {
         file.close();
     }
     else
-        error <<"Unexpected Error: Unable to write PreProcessed Descriptions to file\n";
+        _error <<"Unexpected Error: Unable to write PreProcessed Descriptions to file\n";
 }
 void readFromFilePreprocessedHadithDescriptions() {
 #ifndef LOAD_FROM_FILE
@@ -399,6 +399,8 @@ inline void fillStructure(StateInfo &  stateInfo,const Structure & currentStruct
                                              delete structures->narratorConnectorPrim;
                                              structures->narratorConnectorPrim=NULL;
                                          }
+                                         break;
+                                     default:
                                          break;
                                  }
                                  break;
@@ -1962,19 +1964,19 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
 
                 }
                 if ( names && annotatedNames.size()==0) {
-                    error << "Annotation Names File does not exist\n";
+                    _error << "Annotation Names File does not exist\n";
 #ifndef SUBMISSION
                     QFile file(QString("%1.names").arg(fileName).toStdString().data());
                     if (file.open(QIODevice::WriteOnly)) {
                         QDataStream out(&file);   // we will serialize the data into the file
                         out << knownNames;
                         file.close();
-                        error << "Annotation File has been written from current known names, Correct it before use.\n";
+                        _error << "Annotation File has been written from current known names, Correct it before use.\n";
                     }
 #endif
                 }
                 if (annotatedNarrators.size()==0){
-                    error << "Annotation Narrator File does not exist\n";
+                    _error << "Annotation Narrator File does not exist\n";
 #ifndef SUBMISSION
                     QFile file(QString("%1.narr").arg(fileName).toStdString().data());
                     if (file.open(QIODevice::WriteOnly)) {
@@ -1983,7 +1985,7 @@ bool getNextState(StateInfo &  stateInfo,HadithData *structures, StateData & cur
                             nonContextNarrators.append(contextNarrators);
                         out<<nonContextNarrators;
                         file.close();
-                        error << "Annotation File has been written from current known narrators, Correct it before use.\n";
+                        _error << "Annotation File has been written from current known narrators, Correct it before use.\n";
                     }
 #endif
                 }

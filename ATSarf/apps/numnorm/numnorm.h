@@ -24,10 +24,10 @@ public:
     int numberEnd;
 
     QHash<QString, long> hashGlossInt;
-    QHash<QString, int> hashFlexible;
+    QHash<QString, double> hashFlexible;
     QVector<NumSolution> extractedNumbers;
 
-    NumNorm(QString*);
+    explicit NumNorm(QString*);
     void numberFound();
     void digitsTensActions(long val);
     void keyActions(long val);

@@ -19,7 +19,6 @@ public:
     bool on_match();
 
 private:
-    QWidget *parent;
     QString text;
     QString RelatedW;
     int start;

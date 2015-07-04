@@ -41,7 +41,7 @@ class TwoLevelSelection {
     void removeExtraNames();
 
     public:
-    TwoLevelSelection(AbstractGraph * graph);
+    explicit TwoLevelSelection(AbstractGraph * graph);
     TwoLevelSelection(AbstractGraph * graph,QString * text,int start,int end);
     virtual ~TwoLevelSelection() {}
     virtual void addName(int start,int end);
@@ -56,7 +56,7 @@ class TwoLevelSelection {
         return graph->buildFromText(text,this,NULL,NULL);
     }
     virtual QString getText(){
-        if (this!=NULL && graph!=NULL)
+        if (graph!=NULL)
             return graph->getText();
         else
             return "NULL";

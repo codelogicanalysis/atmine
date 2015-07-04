@@ -5,7 +5,7 @@
 
 class RegressionTree2Dot: public Tree2Dot<RegressionNodeType, RegressionEdgeType> {
     protected:
-        virtual QString getExtraNodeLayout(Node<RegressionNodeType, RegressionEdgeType> * & node) {
+        virtual QString getExtraNodeLayout(Node<RegressionNodeType, RegressionEdgeType> * node) {
             if (node->isLeaf()) {
                 return "style=filled, shape=box, fillcolor=gray";
             }

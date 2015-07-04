@@ -14,7 +14,7 @@ class MSF;
 class NFA
 {
 public:
-    NFA(MSF* formula);
+    explicit NFA(MSF* formula);
     MSF* formula;
     QString start;
     QStringList states;

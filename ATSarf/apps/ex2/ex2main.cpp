@@ -53,7 +53,7 @@ int glossSFRExampleWithInterface() {
     bool all_set = srf.start(&Ofile,&Efile, pIFC);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error << "Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;

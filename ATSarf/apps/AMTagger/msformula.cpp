@@ -12,7 +12,7 @@ bool MSFormula::addMSF(MSF * msf) {
     map.insert(msf->name,msf);
     vector.append(msf);
     if(msf->isFormula()) {
-        MBF* mbf = (MBF*)msf;
+        MBF* mbf = static_cast<MBF *>(msf);
         for(int j=0; j<_atagger->msfVector->count(); j++) {
             if(_atagger->msfVector->at(j)->name == mbf->bf) {
                 _atagger->msfVector->at(j)->usedCount++;
@@ -46,7 +46,7 @@ bool MSFormula::removeMSF(QString parent, QString msfName) {
     }
 
     if(map.find(parent) != map.end()) {
-        SequentialF* sf = (SequentialF*)(map.value(parent));
+        SequentialF* sf = static_cast<SequentialF *>(map.value(parent));
         if(!(map.remove(msfName) == 1)) {
             return false;
         }
@@ -65,7 +65,7 @@ bool MSFormula::removeMSF(QString parent, QString msfName) {
 bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
     if(this->name == parent) {
         map.insert(msf->name, msf);
-        MSF* childMSF;
+        MSF* childMSF = NULL;
         int j;
         for(j=0; j< vector.count(); j++) {
             if(vector.at(j)->name == child) {
@@ -74,7 +74,9 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
             }
         }
         msf->msf = childMSF;
-        childMSF->parent = msf;
+        if (childMSF != NULL) {
+            childMSF->parent = msf;
+        }
         vector.replace(j, msf);
         i++;
         return true;
@@ -87,7 +89,7 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
         if(parentF->isBinary()) {
             /// Parent is binary formula
 
-            BINARYF* parentMSF = (BINARYF*)parentF;
+            BINARYF* parentMSF = static_cast<BINARYF *>(parentF);
             msf->msf = childMSF;
             childMSF->parent = msf;
             if(childMSF->name == parentMSF->leftMSF->name) {
@@ -100,7 +102,7 @@ bool MSFormula::updateMSF(QString parent, QString child, UNARYF *msf) {
         else if(parentF->isSequential()) {
             /// Parent is sequential formula
 
-            SequentialF* sf = (SequentialF*)parentF;
+            SequentialF* sf = static_cast<SequentialF *>(parentF);
             int j;
             for(j=0; j<sf->vector.count(); j++) {
                 if(sf->vector.at(j)->name == child) {
@@ -156,7 +158,7 @@ bool MSFormula::updateMSF(QString parent, QString fchild, QString schild, BINARY
         if(parentF->isSequential()) {
             /// Parent is sequential formula
 
-            SequentialF* sf = (SequentialF*)parentF;
+            SequentialF* sf = static_cast<SequentialF*>(parentF);
             int m,n;
             for(int j=0; j<sf->vector.count(); j++) {
                 if(sf->vector.at(j)->name == fchild) {
@@ -216,7 +218,7 @@ bool MSFormula::updateMSF(QString parent, QVector<QString> *children, Sequential
         /// The parent should be a sequential formula
         if(map.value(parent)->isSequential()) {
 
-            SequentialF* parentF = (SequentialF*)(map.value(parent));
+            SequentialF* parentF = static_cast<SequentialF *>(map.value(parent));
             MSF* fchild = map.value(children->at(0));
 
             for(int m=0; m<children->count(); m++) {

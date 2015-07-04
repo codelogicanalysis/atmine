@@ -8,7 +8,6 @@ AddTagView::AddTagView(QTextBrowser *txtBrwsr, QWidget *parent) :
 {
     //start = _start;
     //end = _end;
-    parent = parent;
     this->txtBrwsr = txtBrwsr;
     lblType = new QLabel(this);
     lblPOS = new QLabel(this);

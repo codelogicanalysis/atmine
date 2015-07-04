@@ -695,23 +695,24 @@ void CustomSTTView::btnUnselect_clicked() {
 
     qDeleteAll(listSelectedTags->selectedItems());
 
-    SarfTagType * stt;
-    for(int i=0; i<sttVector->count(); i++) {
+    SarfTagType * stt = NULL;
+    for(int i = 0; i < sttVector->count(); i++) {
         if(sttVector->at(i)->name == cbTagName->currentText()) {
             stt = (SarfTagType*)((*(sttVector))[i]);
             break;
         }
     }
 
-    stt->tags.clear();
-
-    for(int i=0; i<listSelectedTags->topLevelItemCount(); i++) {
-        QString data1 = listSelectedTags->topLevelItem(i)->text(0);
-        QString data2 = listSelectedTags->topLevelItem(i)->text(1);
-        QString data3 = listSelectedTags->topLevelItem(i)->text(2);
-        QString data4 = listSelectedTags->topLevelItem(i)->text(3);
-        Quadruple< QString , QString , QString , QString > quad(data2, data4, data1, data3);
-        stt->tags.append(quad);
+    if(stt != NULL) {
+        stt->tags.clear();
+        for(int i=0; i<listSelectedTags->topLevelItemCount(); i++) {
+            QString data1 = listSelectedTags->topLevelItem(i)->text(0);
+            QString data2 = listSelectedTags->topLevelItem(i)->text(1);
+            QString data3 = listSelectedTags->topLevelItem(i)->text(2);
+            QString data4 = listSelectedTags->topLevelItem(i)->text(3);
+            Quadruple< QString , QString , QString , QString > quad(data2, data4, data1, data3);
+            stt->tags.append(quad);
+        }
     }
 }
 

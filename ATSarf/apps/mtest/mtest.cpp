@@ -1,9 +1,9 @@
 /**
-  * @file ex0main.cpp
-  * @author Ameen Jaber
-  * @brief  This file implements the main of an example to illustrate the basic use of the morphological analyzer. In this example,
-  * we pass an arabic text file to the program which is analyzed using the tool.
-  */
+ * @file ex0main.cpp
+ * @author Ameen Jaber
+ * @brief  This file implements the main of an example to illustrate the basic use of the morphological analyzer. In this example,
+ * we pass an arabic text file to the program which is analyzed using the tool.
+ */
 #include <iostream>
 #include <QFile>
 #include <sarf.h>
@@ -14,24 +14,24 @@ using namespace std;
 
 
 /**
-  * This method runs an instance of the class defined and triggers the pracket operator in it to start the tool
-  * @param input This is a string representing the input string to be processed
-  */
+ * This method runs an instance of the class defined and triggers the pracket operator in it to start the tool
+ * @param input This is a string representing the input string to be processed
+ */
 void run_process(QString & input) {
 
     QStringList list = input.split(' ', QString::SkipEmptyParts);
     for(int i=0; i<list.size(); i++) {
         QString * inString = &(list[i]);
         Stemmer stemmer(inString,0);
-	stemmer();
+        stemmer();
     }
 }
 
 
 /**
-  * This tests a default version of the stemmer example where no destination is specified for the output and error by the user.
-  * @return The function returns 0 if successful, else -1.
-  */
+ * This tests a default version of the stemmer example where no destination is specified for the output and error by the user.
+ * @return The function returns 0 if successful, else -1.
+ */
 int stemmerExampleDefault(const char * filename) {
 
     /*
@@ -44,7 +44,7 @@ int stemmerExampleDefault(const char * filename) {
     Sarf::use(&srf);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error << "Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;
@@ -53,8 +53,8 @@ int stemmerExampleDefault(const char * filename) {
     // The input file name is passed to a QFile which implements an interface for reading from and writing to files
     QFile Ifile(filename);
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-       cerr << "error opening file." << endl;
-       return -1;
+        cerr << "error opening file." << endl;
+        return -1;
     }
 
 
@@ -77,10 +77,10 @@ int stemmerExampleDefault(const char * filename) {
 
 int main(int argc, char *argv[]) {
 
-	if(argc < 2) {
-		cerr<<"Usage: mtest filename"<<endl;
-		return -1;
-	}
+    if(argc < 2) {
+        cerr<<"Usage: mtest filename"<<endl;
+        return -1;
+    }
     //theSarf = new Sarf();
     int test;
 #if 1
