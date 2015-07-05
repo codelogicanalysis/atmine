@@ -75,7 +75,7 @@ void GraphNode::calculateForces()
     newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10));
 }
 
-bool GraphNode::advance()
+bool GraphNode::posAdvance()
 {
     if (newPos == pos())
         return false;
@@ -98,7 +98,7 @@ QPainterPath GraphNode::shape() const
     return path;
 }
 
-void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
+void GraphNode::paint(QPainter *painter, const QStyleOptionGraphicsItem * /*option*/, QWidget *)
 {
     /** Draw text rectangle **/
     QRect textrect(-10,-10,20,20);

@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     bool all_set = srf.start(&Ofile,&Efile, pIFC);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error << "Can't Set up Project";
         return 0;
     }
     else {

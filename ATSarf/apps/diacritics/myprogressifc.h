@@ -17,16 +17,16 @@ public:
         cout<<"Progress is "<<value<<'.'<<endl;
     }
 
-    virtual void startTaggingText(QString & text) {
+    virtual void startTaggingText(QString & /*text*/) {
     }
 
-    virtual void tag(int start, int length,QColor color, bool textcolor=true) {
+    virtual void tag(int /*start*/, int /*length*/, QColor /*color*/, bool /*textcolor=true*/) {
     }
 
     virtual void finishTaggingText() {
     }
 
-    virtual void setCurrentAction(const QString & s) {
+    virtual void setCurrentAction(const QString & /*s*/) {
     }
 
     virtual void resetActionDisplay() {

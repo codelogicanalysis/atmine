@@ -24,22 +24,24 @@ endif
 
 include $(TOP)/scripts/macrosMakefile
 
-DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
-DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
+#DATRIE_LIB_LDDFLAGS=-L$(TOP)/$(DATRIE)/datrie/.libs -ldatrie
+#DATRIE_LIBS=$(TOP)/$(DATRIE)/datrie/.libs/libdatrie.a
 
 APRIORI_LIB_LDDFLAGS=-L$(TOP)/$(APRIORI)/libs -lapriori
 APRIORI_LIBS=$(TOP)/$(APRIORI)/libs/libapriori.a
 
-QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
-QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
+#QJSON_LIB_LDDFLAGS=-L$(TOP)/third/qjson/build/lib -lqjson
+#QJSON_LIBS=$(TOP)/third/qjson/build/lib/libqjson.so
 
-GRAPHVIZ_CGRAPH_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/cgraph/.libs -lcgraph
+#GRAPHVIZ_CGRAPH_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/cgraph/.libs -lcgraph
 #GRAPHVIZ_CGRAPH_LIBS=$(TOP)/third/graphviz/lib/cgraph/.libs/libcgraph.so
+GRAPHVIZ_CGRAPH_LIB_LDDFLAGS:=$(shell pkg-config --libs libcgraph)
 
-GRAPHVIZ_GVC_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/gvc/.libs -lgvc
+#GRAPHVIZ_GVC_LIB_LDDFLAGS=-L$(TOP)/third/graphviz/lib/gvc/.libs -lgvc
 #GRAPHVIZ_GVC_LIBS=$(TOP)/third/graphviz/lib/gvc/.libs/libgvc.so
+GRAPHVIZ_GVC_LIB_LDDFLAGS:=$(shell pkg-config --libs libgvc)
 
-THIRD_LIBS_LINKFLAGS= $(QT_LIBS_LDDFLAGS) $(DATRIE_LIB_LDDFLAGS)
+THIRD_LIBS_LINKFLAGS= $(QT_LIBS_LDDFLAGS) $(DATRIE_LDDFLAGS)
 
 #ATSarf_LIBS+=$(ANTLR_LIBS)
 #ATSarf_LIBS_LINKFLAGS+=$(ANTLR_LIB_LDDFLAGS)
@@ -87,13 +89,14 @@ mtest: $(MTEST_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(MTEST_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(TOP)/lib/libsyn.a  $(TOP)/lib/libnumnorm.a $(ATSarf_LIBS) $(QJSON_LIBS) $(GRAPHVIZ_CGRAPH_LIBS) $(GRAPHVIZ_GVC_LIBS)
+TAGGER_LIBDIR = $(TOP)/lib/libAMTagger.a $(TOP)/lib/libsyn.a  $(TOP)/lib/libnumnorm.a $(ATSarf_LIBS) $(GRAPHVIZ_CGRAPH_LIBS) $(GRAPHVIZ_GVC_LIBS)
 TAGGER_LIBS_LINKFLAGS=-L$(TOP)/lib -lAMTagger -lsyn -lnumnorm $(ATSarf_LIBS_LINKFLAGS4) -ldl
 
 tagger: $(TAGGER_LIBDIR)
 	$(CXX) -o $@ $(LDDFLAGS) $(TAGGER_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS) \
-		$(QJSON_LIB_LDDFLAGS) \
+		$(QJSON_LDDFLAGS) \
+		$(DATRIE_LDDFLAGS) \
 		$(GRAPHVIZ_CGRAPH_LIB_LDDFLAGS) \
 		$(GRAPHVIZ_GVC_LIB_LDDFLAGS)
 

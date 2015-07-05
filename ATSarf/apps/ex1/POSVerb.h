@@ -25,7 +25,7 @@ public:
      * This is the constructor of the POSVerb class
      * @param text This is the input text to be processed
      */
-    POSVerb(QString * text/*, QTextStream & r*/);
+    explicit POSVerb(QString * text/*, QTextStream & r*/);
 
     /**
      * This is the function called by the tool upon finding a possible solution for the input. By implementing this method, we control the accepted solutions that meet

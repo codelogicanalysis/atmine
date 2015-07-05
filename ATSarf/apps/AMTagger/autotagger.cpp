@@ -70,13 +70,13 @@ bool AutoTagger::operator ()() {
         if(_atagger->tagHash->size() == tagCount) {
             /// word didn't have any morphological analysis
             bool ok;
-            long number = word.word.toLong(&ok);
+            word.word.toLong(&ok);
             if(ok) {
                 for(int i=0; i< (_atagger->tagTypeVector->count()); i++) {
                     if(_atagger->tagTypeVector->at(i)->source != sarf) {
                         continue;
                     }
-                    SarfTagType* stt = (SarfTagType*)(_atagger->tagTypeVector->at(i));
+                    SarfTagType* stt = static_cast<SarfTagType *>(_atagger->tagTypeVector->at(i));
                     for(int j=0; j < (stt->tags.count()); j++) {
                         bool add = false;
                         const Quadruple< QString , QString , QString , QString > * aTerm = &(stt->tags.at(j));

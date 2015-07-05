@@ -43,16 +43,16 @@ QString MBF::printwithNames() {
     return value;
 }
 
-void MBF::buildTree(QTreeWidgetItem* parent) {
+void MBF::buildTree(QTreeWidgetItem* /*parent*/) {
     QStringList data;
     data << name << bf << QString();
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    //QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
 }
 
-void MBF::buildTree(QTreeWidget* parent) {
+void MBF::buildTree(QTreeWidget* /*parent*/) {
     QStringList data;
     data << name << bf << QString();
-    QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
+    //QTreeWidgetItem* item = new QTreeWidgetItem(parent, data);
 }
 
 bool MBF::buildActionFile(QString &actionsData, QMultiMap<QString, QPair<QString,QString> > *functionParametersMap) {

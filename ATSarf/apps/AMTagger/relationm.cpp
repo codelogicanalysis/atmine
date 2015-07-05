@@ -28,10 +28,9 @@ RelationM::RelationM(Relation *relation, Match *entity1, Match *entity2, Match *
         QString text = entity1->getText();
         NumNorm nn(&text);
         nn();
-        int number = NULL;
         if(nn.extractedNumbers.count()!=0) {
-            number = nn.extractedNumbers[0].getNumber();
-             this->e1Label = QString::number(number);
+            int number = nn.extractedNumbers[0].getNumber();
+            this->e1Label = QString::number(number);
         }
         else {
             this->e1Label = "";
@@ -51,10 +50,9 @@ RelationM::RelationM(Relation *relation, Match *entity1, Match *entity2, Match *
         QString text = entity2->getText();
         NumNorm nn(&text);
         nn();
-        int number = NULL;
         if(nn.extractedNumbers.count()!=0) {
-            number = nn.extractedNumbers[0].getNumber();
-             this->e2Label = QString::number(number);
+            int number = nn.extractedNumbers[0].getNumber();
+            this->e2Label = QString::number(number);
         }
         else {
             this->e2Label = "";
@@ -78,10 +76,9 @@ RelationM::RelationM(Relation *relation, Match *entity1, Match *entity2, Match *
             QString text = edge->getText();
             NumNorm nn(&text);
             nn();
-            int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
-                number = nn.extractedNumbers[0].getNumber();
-                 this->edgeLabel = QString::number(number);
+                int number = nn.extractedNumbers[0].getNumber();
+                this->edgeLabel = QString::number(number);
             }
             else {
                 this->edgeLabel = "";

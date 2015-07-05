@@ -54,7 +54,7 @@ int verbPOSExampleWithInterface() {
     Sarf::use(&srf);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error <<"Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;
@@ -107,7 +107,7 @@ int verbPOSExampleDefault() {
     Sarf::use(&srf);
 
     if(!all_set) {
-        error<<"Can't Set up Project";
+        _error << "Can't Set up Project";
     }
     else {
         cout<<"All Set"<<endl;
@@ -143,7 +143,7 @@ int verbPOSExampleDefault() {
     return 0;
 }
 
-int main(int argc, char *argv[]) {
+int main(int /*argc*/, char ** /*argv[]*/) {
 
     //theSarf = new Sarf();
     int test;

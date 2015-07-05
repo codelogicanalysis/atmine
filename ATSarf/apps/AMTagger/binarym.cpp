@@ -118,7 +118,7 @@ void BinaryM::buildMatchTree(Agraph_t* G,Agnode_t* node,Agedge_t* edge,QMap<Agno
 }
 
 void BinaryM::executeActions(NFA* nfa) {
-    MSFormula* formula = (MSFormula*)(nfa->formula);
+    MSFormula* formula = static_cast<MSFormula *>(nfa->formula);
 
     /** pre match **/
     QString preMatch = msf->name;
@@ -172,7 +172,7 @@ void BinaryM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString BinaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString BinaryM::getParam(QString msfName, QString param, QString * /*sarfMatches*/) {
     if(msf->name == msfName) {
         if(param  == "text") {
             return getText();
@@ -184,9 +184,8 @@ QString BinaryM::getParam(QString msfName,QString param, QString* sarfMatches) {
             QString text = getText();
             NumNorm nn(&text);
             nn();
-            int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
-                number = nn.extractedNumbers[0].getNumber();
+                int number = nn.extractedNumbers[0].getNumber();
                 return QString::number(number);
             }
             else {

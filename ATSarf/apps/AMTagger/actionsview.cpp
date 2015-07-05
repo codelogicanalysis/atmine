@@ -43,7 +43,7 @@ ActionsView::ActionsView(MSFormula *currentF, QString msfName, bool *isDirty, QW
     btnDeclarations = new QPushButton(tr("Declarations"), this);
     btnIncludes = new QPushButton(tr("Includes"), this);
 
-    MSF* msf = currentF->map.value(msfName);
+    //MSF* msf = currentF->map.value(msfName);
     /*
     if(!(msf->isMBF())) {
         btnText->setEnabled(false);

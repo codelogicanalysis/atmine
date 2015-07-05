@@ -32,8 +32,6 @@ private:
     QScrollArea *scrollArea;
     QGridLayout * grid;
     QTextBrowser *txtBrwsr;
-    QWidget * parent;
-
 };
 
 #endif // ADDTAGVIEW_H

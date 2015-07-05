@@ -343,7 +343,7 @@ void RelationsView::connect_Signals() {
     connect(cbE2Label, SIGNAL(editTextChanged(QString)), this, SLOT(cbE2Label_changed(QString)));
 }
 
-void RelationsView::closeEvent(QCloseEvent *event) {
+void RelationsView::closeEvent(QCloseEvent * /*event*/) {
 
     if(*(isDirty)) {
         QMessageBox msgBox;

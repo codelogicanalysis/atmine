@@ -28,7 +28,7 @@ CrossReferenceView::CrossReferenceView(QWidget *parent) :
         We use this graph to create the ER graph
         and calculate the coordinates of each node for better visualization **/
     GVC_t* gvc = gvContext();
-    Agedge_t *edge = NULL;
+    //Agedge_t *edge = NULL;
     char* args[] = {
     const_cast<char *>("dot"),
     const_cast<char *>("-Tsvg"),    /* svg output */
@@ -91,7 +91,8 @@ CrossReferenceView::CrossReferenceView(QWidget *parent) :
                 rmnHash.insert(e2ID,node2);
             }
 
-            edge = agedge(G, node1, node2, 0, 1);
+            //edge = agedge(G, node1, node2, 0, 1);
+            agedge(G, node1, node2, 0, 1);
             Triplet<Agnode_t*,Agnode_t*,QString>* triplet = new Triplet<Agnode_t*,Agnode_t*,QString>(node1,node2,relMatch->edgeLabel);
             nodeedgeSet.insert(triplet);
             //edgesMap.insert(node1,node2);
@@ -140,7 +141,8 @@ CrossReferenceView::CrossReferenceView(QWidget *parent) :
             rmnHash.insert(e2ID,node2);
         }
 
-        edge = agedge(G, node1, node2, 0, 1);
+        //edge = agedge(G, node1, node2, 0, 1);
+        agedge(G, node1, node2, 0, 1);
         Triplet<Agnode_t*,Agnode_t*,QString>* triplet = new Triplet<Agnode_t*,Agnode_t*,QString>(node1,node2,relMatch->edgeLabel);
         nodeedgeSet.insert(triplet);
         //edgesMap.insert(node1,node2);

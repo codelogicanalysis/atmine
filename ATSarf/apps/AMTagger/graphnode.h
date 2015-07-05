@@ -20,7 +20,7 @@ public:
      int type() const { return Type; }
 
      void calculateForces();
-     bool advance();
+     bool posAdvance();
 
      QRectF boundingRect() const;
      QPainterPath shape() const;

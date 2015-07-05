@@ -116,7 +116,7 @@ void SequentialM::executeActions(NFA* nfa) {
         return;
     }
 
-    MSFormula* formula = (MSFormula*)(nfa->formula);
+    MSFormula* formula = static_cast<MSFormula *>(nfa->formula);
 
     /** pre match **/
     QString preMatch = msf->name;
@@ -169,7 +169,7 @@ void SequentialM::executeActions(NFA* nfa) {
     /** Done **/
 }
 
-QString SequentialM::getParam(QString msfName,QString param, QString* sarfMatches) {
+QString SequentialM::getParam(QString msfName, QString param, QString* /*sarfMatches*/) {
     if(msf == NULL) {
         for(int i=0; i<matches.count(); i++) {
             QString paramValue = matches.at(i)->getParam(msfName,param);
@@ -191,9 +191,8 @@ QString SequentialM::getParam(QString msfName,QString param, QString* sarfMatche
             QString text = getText();
             NumNorm nn(&text);
             nn();
-            int number = NULL;
             if(nn.extractedNumbers.count()!=0) {
-                number = nn.extractedNumbers[0].getNumber();
+                int number = nn.extractedNumbers[0].getNumber();
                 return QString::number(number);
             }
             else {

@@ -1,7 +1,12 @@
 TOP=$(PWD)
+LIB_DIR=${TOP}/lib
 
 DIRECTORIES=$(filter-out %cscope.out %makefile %.h, ${wildcard src/*})
 APPS_DIRECTORIES=$(filter-out %cscope.out %makefile %.h, ${wildcard apps/*})
+
+MKDIR_P = mkdir -p
+
+.PHONY: directories
 
 #DIRECTORIES+=bin
 
@@ -13,10 +18,15 @@ ifeq ($(findstring 64,$(MAKECMDGOALS)),64)
     MAKEARGS+=64
 endif
 
-all: src apps 
+all: directories src apps
 	@echo "building binaries..."
 	@echo $(MAKECMDGOALS)
 	cd bin; $(MAKE) $(MAKECMDGOALS); cd $(TOP);
+
+directories: ${LIB_DIR}
+
+${LIB_DIR}:
+	${MKDIR_P} ${LIB_DIR}
 
 %stamp:
 	@touch $@
@@ -76,3 +86,5 @@ cscope: cscope.files
 
 
 opt 32 64 cyg mtest ex0 ex1 ex2 ATSarf tagger numnorm: all
+
+

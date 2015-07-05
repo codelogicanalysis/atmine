@@ -12,8 +12,8 @@ class QFileDialog;
 class MainWindow : public QMainWindow,public ATMProgressIFC {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = 0);
+    virtual ~MainWindow();
 	virtual void report(int value);
 	virtual void tag(int start, int length,QColor color, bool textcolor);
 	virtual void startTaggingText(QString & text);
