@@ -18,10 +18,15 @@ endif
 
 
 #programs needed to generate code
-QTMOC:=moc
-QTUIC:=uic
-QTMOC_BIN:= $(shell which $(QTMOC))
-QTUIC_BIN:= $(shell which $(QTUIC))
+ifndef USE_SYSTEM_LIBS
+	QTMOC_BIN:=$(TOP)/$(QTDIR)/bin/moc
+	QTUIC_BIN:=$(TOP)/$(QTDIR)/bin/uic
+else
+	QTMOC:=moc
+	QTUIC:=uic
+	QTMOC_BIN:=$(shell which $(QTMOC))
+	QTUIC_BIN:=$(shell which $(QTUIC))
+endif
 
 #libraries and linking flags
 #QT_LIBS=QtHelp QtSvg QtAssistantClient QtMultimedia QtTest \
@@ -29,9 +34,13 @@ QTUIC_BIN:= $(shell which $(QTUIC))
 #        QtXmlPatterns QtDesignerComponents QtScript \
 #        QtXml QtDesigner QtScriptTools QtGui QtSql
 QT_LIBS=QtCore QtGui QtSql
-#QT_LIB_DIR=$(shell pkg-config --libs-only-L $(QT_LIBS))
-QT_LIBS_LDDFLAGS:= $(shell pkg-config --libs $(QT_LIBS))
-#QT_LIBS_LDDFLAGS+=$(patsubst %,-l%,$(QT_LIBS))
+ifndef USE_SYSTEM_LIBS
+	QT_LIB_DIR:=$(TOP)/$(QTDIR)/lib
+	QT_LIBS_LDDFLAGS:=-L$(QT_LIB_DIR)
+	QT_LIBS_LDDFLAGS+=$(patsubst %, -l%,$(QT_LIBS))
+else
+	QT_LIBS_LDDFLAGS:=$(shell pkg-config --libs $(QT_LIBS))
+endif
 
 #original source code
 QTMOC_H_FILES:= ${shell grep -l Q_OBJECT *.h}
@@ -56,9 +65,13 @@ QTUIC_H_FILES:= ${wildcard *.ui}
 
 # add the Qt include directories to INCLUDEDIRS where appropriate
 #ifneq ($(strip $(QTMOC_SOURCES)),)
-QT_INCLUDEDIRS:= $(shell pkg-config --cflags-only-I $(QT_LIBS))
-#QT_INCLUDEDIRS+= $(patsubst %,$(QTDIR)/include/%,$(QT_LIBS))
+ifndef USE_SYSTEM_LIBS
+	QT_INCLUDEDIRS:=$(QTDIR)/include $(QTDIR)/include/Qt
+	QT_INCLUDEDIRS+=$(patsubst %,$(QTDIR)/include/%,$(QT_LIBS))
+	INCLUDEDIRS+=$(QT_INCLUDEDIRS)
+else
+	QT_INCLUDEDIRS:=$(shell pkg-config --cflags-only-I $(QT_LIBS))
+endif
 #endif
-#INCLUDEDIRS+=$(QT_INCLUDEDIRS)
 
 QT_MOCFLAGS:= $(INCLUDEFLAGS) -nw

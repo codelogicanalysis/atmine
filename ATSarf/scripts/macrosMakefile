@@ -18,20 +18,21 @@ BASE:=$(shell pwd | xargs basename)
 #echobase:
 #	@echo $(BASE)
 
-#ifneq ($(findstring cyg,$(MAKECMDGOALS)),cyg)
-#    DATRIE=third/datrie
-#else
-#    DATRIE=third/wdatrie
-#endif
-
-DATRIE:= datrie-0.2
-
-DATRIE_INCLUDEDIRS:= $(shell pkg-config --cflags-only-I $(DATRIE))
-DATRIE_LDDFLAGS:= $(shell pkg-config --libs $(DATRIE))
-
-QJSON=QJson
-QJSON_INCLUDEDIRS:= $(shell pkg-config --cflags-only-I $(QJSON))
-QJSON_LDDFLAGS:= $(shell pkg-config --libs $(QJSON))
+ifndef USE_SYSTEM_LIBS
+	ifneq ($(findstring cyg,$(MAKECMDGOALS)),cyg)
+		DATRIE:=third/datrie
+	else
+		DATRIE:=third/wdatrie
+	endif
+	QJSON:=third/qjson
+else
+	DATRIE:=datrie-0.2
+	QJSON:=QJson
+	DATRIE_INCLUDEDIRS:= $(shell pkg-config --cflags-only-I $(DATRIE))
+	DATRIE_LIB_LDDFLAGS:= $(shell pkg-config --libs $(DATRIE))
+	QJSON_INCLUDEDIRS:= $(shell pkg-config --cflags-only-I $(QJSON))
+	QJSON_LDDFLAGS:= $(shell pkg-config --libs $(QJSON))
+endif
 
 GRAPHVIZ=third/graphviz/lib
 APRIORI= third/apriori
@@ -40,8 +41,10 @@ INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build 
 INCLUDEDIRS+= apps/gui apps/syn apps/syntest apps/numnorm apps/sarfenumerate apps/diacriticrules apps/worddensity apps/diacritics
 INCLUDEDIRS+= include
-#INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
-#INCLUDEDIRS+= $(QJSON)
+ifndef USE_SYSTEM_LIBS
+	INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
+	INCLUDEDIRS+= $(QJSON)
+endif
 #INCLUDEDIRS+= $(APRIORI)/apriori
 #INCLUDEDIRS+= $(APRIORI)/math
 #INCLUDEDIRS+= $(APRIORI)/tract
@@ -50,9 +53,11 @@ INCLUDEDIRS+= $(APRIORI)
 INCLUDEDIRS+= $(GRAPHVIZ)/cgraph $(GRAPHVIZ)/gvc
 INCLUDEFLAGS= -I.
 INCLUDEFLAGS+= $(patsubst %,-I$(TOP)/%, $(INCLUDEDIRS))
-INCLUDEFLAGS+= $(QT_INCLUDEDIRS)
-INCLUDEFLAGS+= $(DATRIE_INCLUDEDIRS)
-INCLUDEFLAGS+= $(QJSON_INCLUDEDIRS)
+ifdef USE_SYSTEM_LIBS
+	INCLUDEFLAGS+= $(QT_INCLUDEDIRS)
+	INCLUDEFLAGS+= $(DATRIE_INCLUDEDIRS)
+	INCLUDEFLAGS+= $(QJSON_INCLUDEDIRS)
+endif
 
 #echoinclude:
 #	@echo $(INCLUDEFLAGS)
