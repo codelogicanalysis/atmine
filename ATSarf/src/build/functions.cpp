@@ -108,9 +108,7 @@ void findCategoryIds(item_types type,QString expression,QList<long> & category_i
         //}
     }
     theSarf->out<<">\n";
-#ifdef INSERT_ONLY_SUFFIXES
-    if (type==SUFFIX)
-#elif defined(INSERT_ONLY_PREFIXES)
+#ifdef(INSERT_ONLY_PREFIXES)
         if (type==PREFIX)
 #endif
             assert(category_ids.size()>0);
@@ -247,12 +245,8 @@ int insert_buckwalter()
     const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
 
     for (int j=0;j<num_files_items;j++)	{
-#if defined(INSERT_ONLY_SUFFIXES) || defined(INSERT_ONLY_PREFIXES) || defined(INSERT_ONLY_AFFIXES)
+#if defined(INSERT_ONLY_PREFIXES) || defined(INSERT_ONLY_AFFIXES)
         if (types[j]==STEM)
-            continue;
-#endif
-#ifdef INSERT_ONLY_SUFFIXES
-        if (types[j]==PREFIX)
             continue;
 #endif
 #ifdef INSERT_ONLY_PREFIXES
@@ -428,12 +422,10 @@ int insert_buckwalter()
                     }
                 }
             }
-            //#ifdef INSERT_ONLY_SUFFIXES
             else {
                 assert (insert_category(cat1,(rule[j]==AB ||rule[j]==AC ?PREFIX:STEM),source_id,false)>=0); //if not AB or AC => BC
                 assert (insert_category(cat2,(rule[j]==AC ||rule[j]==BC?SUFFIX:STEM),source_id,false)>=0);  ////if not AC or BC => AB
             }
-            //#endif
             if (insert_compatibility_rules(rule[j],cat1,cat2,resCat,inflectionRule,source_id)<0)
             {
                 theSarf->out<<"Error at line "<<line_num<<": '"<<line<<"'\n";
