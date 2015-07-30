@@ -1,0 +1,100 @@
+# @author: Toplica Tanasković
+# @brief: Atmine styleguide; simply place it under $HOME
+#
+# Requires astyle >= 2.04
+# - Download and then change to build/gcc sub folder
+# - sudo make install
+#
+# For option details read here:
+#     http://astyle.sourceforge.net/astyle.html
+#
+# Ways to use it:
+#
+# a) astyle file.ext                           <= does modify the file
+# b) astyle < file.ext > file_modified.ext     <= does not modify original
+#
+#
+
+# style formatting uses attached brackets:
+--style=java
+
+# which is the default for astyle anyway:
+--indent=spaces=4
+
+# entire block of a class is indented
+--indent-classes
+
+# entire content of switches is indented
+--indent-switches
+
+# entire content of cases is indented
+# (cases with no block are NOT indented)
+--indent-cases
+
+# Indent preprocessor conditional statements to the same level as the source code.
+--indent-preproc-cond
+
+# number of indents for conditions written into multiple lines
+--min-conditional-indent=1
+
+# Set the  maximum of # spaces to indent a continuation line
+--max-instatement-indent=50
+
+# Pad empty lines around header blocks (e.g. 'if', 'for', 'while'...).
+--break-blocks
+
+# Insert space padding around operators. Any end of line comments will remain in the original column,
+# if possible. Note that there is no option to unpad. Once padded, they stay padded.
+--pad-oper
+
+# Remove extra space padding around parenthesis on the inside and outside. Any end of line comments
+# will remain in the original column, if possible.
+--unpad-paren
+
+# Insert space padding after paren headers only (e.g. 'if', 'for', 'while'...). Any end of line
+# # comments will remain in the original column, if possible
+--pad-header
+
+# Delete empty lines within a function or method. Empty lines outside of functions or
+# methods are NOT deleted.
+--delete-empty-lines
+
+# Attach a pointer or reference operator (*, &, or ^) to either the variable type (left) or variable
+# name (right), or place it between the type and name (middle). The spacing between the type and name
+# will be preserved, if possible.
+--align-pointer=name
+
+# This option will align references separate from pointers. Pointers are not changes by this option.
+# If pointers and references are to be aligned the same, use the previous align-pointer option.
+# The option align-reference=none will not change the reference alignment. The other options are the
+# same as for align-pointer. 
+--align-reference=name
+
+# Add brackets to unbracketed one line conditional statements (e.g. 'if', 'for', 'while'...).
+# The statement must be on a single line. The brackets will be added according to the currently
+# requested predefined style or bracket type. If no style or bracket type is requested the brackets
+# will be attached. If --add-one-line-brackets is also used the result will be one line brackets.
+--add-brackets
+
+# Converts tabs into spaces in the non-indentation part of the line. The number of spaces inserted will
+# maintain the spacing of the tab. The current setting for spaces per tab is used. It may not produce
+# the expected results if convert-tabs is used when changing spaces per tab. Tabs are not replaced
+# in quotes. 
+--convert-tabs
+
+# The option max‑code‑length will break a line if the code exceeds # characters. The valid values are
+# 50 thru 200. Lines without logical conditionals will break on a logical conditional (||, &&, ...),
+# comma, paren, semicolon, or space. 
+--max-code-length=120
+
+# By default logical conditionals will be placed first on the new line. The option break‑after‑logical
+# will cause the logical conditionals to be placed last on the previous line. This option has no effect
+# without max‑code‑length.
+--break-after-logical
+
+# Force use of the specified line end style. Valid options are windows (CRLF), linux (LF), and macold (CR).
+# MacOld style is the format for Mac OS 9 and earlier. OS X uses the Linux style. If one of these options
+# is not used the line ends will be determined automatically from the input file.
+--lineend=linux
+
+
