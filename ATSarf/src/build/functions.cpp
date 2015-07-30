@@ -108,10 +108,7 @@ void findCategoryIds(item_types type,QString expression,QList<long> & category_i
         //}
     }
     theSarf->out<<">\n";
-#ifdef(INSERT_ONLY_PREFIXES)
-        if (type==PREFIX)
-#endif
-            assert(category_ids.size()>0);
+    assert(category_ids.size()>0);
 }
 
 int insertRuleAccordingToExpression(item_types type,QString cat1,QString cat2,QString resCat,QString inflections,int source_id) {
@@ -245,12 +242,8 @@ int insert_buckwalter()
     const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
 
     for (int j=0;j<num_files_items;j++)	{
-#if defined(INSERT_ONLY_PREFIXES) || defined(INSERT_ONLY_AFFIXES)
+#if defined(INSERT_ONLY_AFFIXES)
         if (types[j]==STEM)
-            continue;
-#endif
-#ifdef INSERT_ONLY_PREFIXES
-        if (types[j]==SUFFIX)
             continue;
 #endif
         int num_entries=6;
