@@ -3,6 +3,10 @@
 *.narr
 *.names
 *.tags
+*.o
+*.d
+lib/
+moc_*.cpp
 .GenealogyPreProcessedDescriptions
 .HadithPreProcessedDescriptions
 .chainOutput
@@ -18,4 +22,4 @@ ATSarf/bin/numnorm
 ATSarf/bin/syn
 ATSarf/bin/tagger
 ATSarf/bin/worddensity
-
+ATSarf/bin/ATSarfGui

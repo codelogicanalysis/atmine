@@ -59,7 +59,7 @@ $(APPLICATION): $(ATSarfGui_LIBS)
 	$(CXX) -o $@ $(LDDFLAGS) $(ATSarfGui_LIBS_LINKFLAGS) \
 		$(THIRD_LIBS_LINKFLAGS)
 
-all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm diacriticrules worddensity diacritics
+all: $(APPLICATION) ex0 ex1 ex2 mtest tagger syn numnorm diacriticrules worddensity 
 
 EX0_LIBDIR = $(TOP)/lib/libex0.a $(ATSarf_LIBS)
 EX0_LIBS_LINKFLAGS=-L$(TOP)/lib -lex0 $(ATSarf_LIBS_LINKFLAGS4)
