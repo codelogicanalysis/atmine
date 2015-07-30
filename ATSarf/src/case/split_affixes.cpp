@@ -467,13 +467,7 @@ void SplitDialog::split_clicked() {
                 QString affix2=affix1.mid(affix.size());
                 QString raw_data2=raw_data1.mid(raw_data.size());
                 QString pos2=pos1.mid(pos.size());
-#ifdef SAMA
-                if (pos1.size()>pos.size() && pos1.at(pos.size())=='+')
-                    pos2=pos1.mid(pos.size()+1);
-                int size_of_gloss_seperator=3; //always ' + '
-#else
                 int size_of_gloss_seperator=(t==PREFIX?3:1); //' + ' or ' '
-#endif
                 QString description2;
                 if (canBeEmpty && !description1.startsWith(description))
                     description2=description1;

@@ -45,10 +45,6 @@ private:
 					dbitvec d=itr.value().first;
 					QString pos2=itr.value().third;
 					QString pos=POS;
-				#ifdef SAMA
-					if (!POS.isEmpty() && !pos2.isEmpty() && appendEnabled )
-						pos+="+";
-				#endif
 					applyPOSInflections(inflectionRule,pos2);
 					applyPOSInflections(inflectionRule,pos,true);
 					pos=appendToField(pos,pos2);
@@ -57,17 +53,11 @@ private:
 					applyDescriptionInflections(inflectionRule,description,true);
 					QString desc;
 					if (type==SUFFIX){
-					#ifdef SAMA
-						QString suffix_delimitor=" + ";
-					#else
 						QString suffix_delimitor=" ";
-					#endif
 						bool r=isReverseDirection(d);
 						//qDebug()<<raw_data<<" "<<r;
-					#ifndef SAMA
 						if (description[0]=='[' && description.size()>0 && description[description.size()-1]==']' && !added_desc.isEmpty())
 							description="";
-					#endif
 						if (description.contains("%1"))
 							desc=description.arg(added_desc+(added_desc=="" || description=="%1"?"":suffix_delimitor));
 						else {

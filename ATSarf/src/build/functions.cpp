@@ -225,11 +225,7 @@ int insert_buckwalter()
 {
     int source_id=insert_source("Buckwalter Dictionaries","modifying aramorph.pl + insert_buckwalter() c++ code fragment","Jad Makhlouta");
     //items
-#ifdef SAMA
-    const QString folder="../../src/sama_3_1/unicode/";
-#else
     const QString folder="../../src/buckwalter scripts/";
-#endif
     QString tag;
 
     const int num_files_items=3;

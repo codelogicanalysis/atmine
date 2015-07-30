@@ -365,17 +365,11 @@ bool Stemmer::on_match() {
             //qDebug()<< "{"<<suffix_infos->at(i).POS<<"}";
             QString desc=suffix_infos->at(i).description();
             if (count>0) {
-#ifdef SAMA
-                out << " + ";
-#else
                 out << " ";
-#endif
             } else {// (count==0)
-#ifdef SAMA
                 if (suffix_infos->size()>1 && desc[0]=='[' && desc.size()>0 && desc[desc.size()-1]==']') {
                     desc="";
                 }
-#endif
             }
             count++;
             if (later_part=="" && suffix_infos->count()>i+1 && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
