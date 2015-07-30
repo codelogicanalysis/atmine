@@ -242,10 +242,6 @@ int insert_buckwalter()
     const item_types types[num_files_items] ={ PREFIX, SUFFIX,STEM};
 
     for (int j=0;j<num_files_items;j++)	{
-#if defined(INSERT_ONLY_AFFIXES)
-        if (types[j]==STEM)
-            continue;
-#endif
         int num_entries=6;
         QFile input(item_files[j]);
         if (!input.open(QIODevice::ReadWrite)) {
