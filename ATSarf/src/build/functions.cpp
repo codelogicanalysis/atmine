@@ -231,9 +231,6 @@ int insert_buckwalter()
     const QString folder="../../src/buckwalter scripts/";
 #endif
     QString tag;
-#ifdef AUGMENT_ORIGINAL
-    tag="_original";
-#endif
 
     const int num_files_items=3;
     const QString item_files[num_files_items]= {	folder+"list_of_prefixes"+tag+".txt",
@@ -478,12 +475,7 @@ int insert_propernames()
                 else if (line_num==3)
                 {
                     source_id=insert_source(source,normalization_process,line);
-#if 0
-                    if (ab=="Compound Names")
-                        abstract_category_id=insert_category("Male Names",STEM,source_id,true);
-                    else
-#endif
-                        abstract_category_id=insert_category(ab,STEM,source_id,true);
+                    abstract_category_id=insert_category(ab,STEM,source_id,true);
                     continue;
                 }
                 if (line.isNull())
@@ -494,10 +486,8 @@ int insert_propernames()
                 if (line.isEmpty()) //ignore empty lines if they exist
                     continue;
                 QList<long> * abstract_categories=new QList<long>();
-#if 1
                 if (ab!="eNarrator Names")
                     abstract_categories->append(abstract_Noun_Prop_id);
-#endif
                 abstract_categories->append(abstract_category_id);
                 abstract_categories->append(abstract_people_names);
                 QStringList entries=line.split("\t");
