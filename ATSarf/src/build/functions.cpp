@@ -463,11 +463,7 @@ int insert_propernames()
     foreach (file_name,folder.entryList())
     {
         QString ab=file_name.split(".").at(0);
-#ifdef INSERT_ONLY_NAMES
-        if (!file_name.contains("Hebrew")) {
-#else
             if (file_name=="all_n.txt")	{
-#endif
                 theSarf->out << "Ignored "+file_name +" file\n";
                 continue;
             }
