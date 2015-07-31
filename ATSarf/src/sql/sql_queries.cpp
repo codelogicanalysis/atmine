@@ -447,8 +447,7 @@ dbitvec addAbstractCategory(QString primary_condition, int abstract_category_id)
 }
 bool addAbstractCategory(QString name, QString raw_data, QString category, int source_id, QList<long> *abstract_ids,
                          QString description, QString POS) {
-    #if 1 //if alef is first word and different form of alef the rawdata dont insert
-
+    // if alef is first word and different form of alef the rawdata dont insert
     if (raw_data.length() < name.length()) {
         raw_data = name;
     }
@@ -457,7 +456,6 @@ bool addAbstractCategory(QString name, QString raw_data, QString category, int s
         int i = 0;
 
         do {
-            //qDebug()<<"o:"<<name;
             if (alefs.contains(name[i])) {
                 QString corresponding_part = getDiacriticword(i, i, raw_data); //must be one letter
                 assert(corresponding_part.length() > 0);
@@ -473,12 +471,9 @@ bool addAbstractCategory(QString name, QString raw_data, QString category, int s
                     name[i] = corresponding_part[0];
                 }
             }
-
-            //qDebug()<<"n:"<<name;
         } while ((i = name.indexOf(' ', i) + 1) > 0 && i < name.length());
     }
 
-    #endif
     QString table = "stem";
     QString item_category = QString("%1_category").arg(table);
 
@@ -735,8 +730,7 @@ long long insert_description(QString name, item_types type) {
 //note: lemmaID for prefix and suffix means 'reverse_description' understood as 0 or 1
 long insert_item(item_types type, QString name, QString raw_data, QString category, int source_id,
                  QList<long> *abstract_ids, QString description, QString POS, QString grammar_stem, QString lemma_ID) {
-    #if 1 //if alef is first word and different form of alef the rawdata dont insert
-
+    //if alef is first word and different form of alef the rawdata dont insert
     if (raw_data.length() < name.length()) {
         raw_data = name;
     }
@@ -766,9 +760,6 @@ long insert_item(item_types type, QString name, QString raw_data, QString catego
         } while ((i = name.indexOf(' ', i) + 1) > 0 && i < name.length());
     }
 
-    #endif
-    #if 1
-
     if (!equal(name, raw_data)) {
         _error << "Conflict Lexicon:\t" << name << "\t" << raw_data;
 
@@ -785,7 +776,6 @@ long insert_item(item_types type, QString name, QString raw_data, QString catego
         theSarf->displayed_error << " Corrected to:\t" << name << "\t" << raw_data << "\n";
     }
 
-    #endif
     QString table = interpret_type(type);
     QString item_category = QString("%1_category").arg(table);
 
@@ -830,7 +820,6 @@ long insert_item(item_types type, QString name, QString raw_data, QString catego
     long long description_id = getID("description", description, QString("type=%1").arg((int)(type)));
 
     //update sources of category or insert it altogether if not there
-    //bool new_category=false;
     if (category_id == -1) {
         int bit_index = get_bitindex(source_id, source_ids);
 
@@ -924,13 +913,10 @@ long insert_item(item_types type, QString name, QString raw_data, QString catego
 
     if (existsEntry(item_category, -1, primary_condition, false)) {
         sources = addSource(item_category, source_id, -1, primary_condition, false);
-        #if 0
 
-        if (type == STEM)
-        #endif
-            for (int i = 0; i < abstract_ids->count(); i++) {
-                abstract_categories = addAbstractCategory(primary_condition, abstract_ids->at(i));
-            }
+        for (int i = 0; i < abstract_ids->count(); i++) {
+            abstract_categories = addAbstractCategory(primary_condition, abstract_ids->at(i));
+        }
 
         assert(sources !=
                INVALID_BITSET /*|| abstract_categories!=INVALID_BITSET*//*check this change*/); //assumed to mean row was modified
