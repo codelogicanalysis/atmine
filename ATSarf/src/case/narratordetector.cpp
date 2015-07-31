@@ -1135,9 +1135,7 @@ class NarratorDetector {
             stateInfo.lastEndPos=0;
             stateInfo.startPos=0;
             stateInfo.processedStructure=INITIALIZE;
-#ifdef PUNCTUATION
             stateInfo.previousPunctuationInfo.fullstop=true;
-#endif
             while(stateInfo.startPos<text->length() && isDelimiter(text->at(stateInfo.startPos)))
                 stateInfo.startPos++;
 #ifdef PROGRESSBAR
@@ -1184,7 +1182,6 @@ class NarratorDetector {
                     stateInfo.currentState=stateInfo.nextState;
                     stateInfo.startPos=stateInfo.nextPos;
                     stateInfo.lastEndPos=stateInfo.endPos;
-#ifdef PUNCTUATION
                     stateInfo.previousPunctuationInfo=stateInfo.currentPunctuationInfo;
                     if (stateInfo.number) {
                         stateInfo.previousPunctuationInfo.fullstop=true;
@@ -1199,7 +1196,6 @@ class NarratorDetector {
                       }*/
 
 
-#endif
 #ifdef PROGRESSBAR
                     prg->report((double)stateInfo.startPos/text_size*100+0.5);
 #endif

@@ -653,9 +653,7 @@
 			nrcStartIndex=0;
 			nrcEndIndex=0;
 			bio_nrcCount=0;
-		#ifdef PUNCTUATION
 			nrcPunctuation=false;
-		#endif
 		}
 
 	} StateData;

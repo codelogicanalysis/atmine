@@ -29,7 +29,6 @@
 //#define SHOW_VERBOSE_RANKS
 //#define STATS
 //#define HADITHDEBUG  //just for additional debugging statements displayed
-#define PUNCTUATION
 #define TRYTOLEARN
 //#define ADD_ENARRATOR_NAMES
 #define IBN_START
