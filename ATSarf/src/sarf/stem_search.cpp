@@ -42,129 +42,101 @@ void StemSearch::traverse(int letter_index, ATTrie::Position pos) {
     int length = info.text->length();
 
     for (int i = max(letter_index, 0); i < length && !stop; i++) {
-                QChar current_letter = info.text->at(i);
+        QChar current_letter = info.text->at(i);
 
-                //qDebug()<<"s:"<<current_letter;
-                if (isDiacritic(current_letter)) {
-                    continue;
-                }
+        //qDebug()<<"s:"<<current_letter;
+        if (isDiacritic(current_letter)) {
+            continue;
+        }
 
-                #ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
-                    int lastNonDiacriticLetterIndex = getLastLetter_index(*info.text, i - 1);
+        #ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
+        int lastNonDiacriticLetterIndex = getLastLetter_index(*info.text, i - 1);
 
-                    if (lastNonDiacriticLetterIndex >= 0) {
-                        QChar ch = info.text->at(lastNonDiacriticLetterIndex);
+        if (lastNonDiacriticLetterIndex >= 0) {
+            QChar ch = info.text->at(lastNonDiacriticLetterIndex);
 
-                        if (isNonConnectingLetter(ch)) {
-                            if (trie->isWalkable(pos, ' ')) {
-                                ATTrie::Position pos2 = trie->clonePosition(pos);
-                                trie->walk(pos2, ' ');
+            if (isNonConnectingLetter(ch)) {
+                if (trie->isWalkable(pos, ' ')) {
+                    ATTrie::Position pos2 = trie->clonePosition(pos);
+                    trie->walk(pos2, ' ');
 
-                                if (!check_for_terminal(i - 1, pos2)) {
-                                    break;
-                                }
-
-                                traverse(i, pos2); //stay at same position bc it is previous nonConnectingLetter effect and not a new letter
-                                trie->freePosition(pos2);
-
-                                if (stop) {
-                                    break;    // to stop in case the previous traversal was required to stop
-                                }
-                            }
-                        }
-                    }
-
-                #endif
-
-                if (current_letter != alef) { //(!alefs.contains(current_letter) || info.start!=letter_index) { //
-                    if (!trie->walk(pos, current_letter)) {
+                    if (!check_for_terminal(i - 1, pos2)) {
                         break;
                     }
 
-                    if (!check_for_terminal(i, pos)) {
-                        break;
+                    traverse(i, pos2); //stay at same position bc it is previous nonConnectingLetter effect and not a new letter
+                    trie->freePosition(pos2);
+
+                    if (stop) {
+                        break;    // to stop in case the previous traversal was required to stop
                     }
-                } else  {
-                    for (int j = 0; j < alefs.size(); j++) {
-                        if (!stop && trie->isWalkable(pos, alefs[j])) {
-                            ATTrie::Position pos2 = trie->clonePosition(pos);
-                            trie->walk(pos2, alefs[j]);
-
-                            if (!check_for_terminal(i, pos2)) {
-                                break;
-                            }
-
-                            traverse(i + 1, pos2);
-                            trie->freePosition(pos2);
-                        }
-                    }
-
-                    break;
-                }
-
-}
-}
-
-bool StemSearch::on_match_helper(int last_letter_index, Search_StemNode &s1) {
-    #ifdef REDUCE_THRU_DIACRITICS
-            int last;
-            QStringRef subword = addlastDiacritics(info.start, last_letter_index, info.text, last);
-            currentMatchPos = last > 0 ? last - 1 : 0;
-            info.finish = currentMatchPos;
-
-        //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
-        while (s1.retrieve(category_of_currentmatch, possible_raw_datas)) {
-            if (isPrefixStemCompatible()) {
-                if (!reduce_thru_diacritics) {
-                    if (!onMatch()) {
-                        return false;
-                    }
-                } else {
-                    for (int i = 0; i < possible_raw_datas.count(); i++) {
-                        #ifdef DEBUG
-                            out << subword.toString() << "-" << possible_raw_datas[i] << "\n";
-                        #endif
-
-                        if (!equal(subword, possible_raw_datas[i], true, false)) { //force_shadde=true
-                            possible_raw_datas.remove(i);
-                            i--;
-                        }
-                    }
-
-                    if (possible_raw_datas.count() > 0)
-                        if (!onMatch()) {
-                            return false;
-                        }
                 }
             }
         }
 
-    #else
-    long cat_id;
+        #endif
 
-    //long cat_id = -1; // FADI: this should be initialized appropriately
-    while (s1.retrieve(cat_id)) {
-        if (shouldcall_onmatch(last_letter_index)) {
-            category_of_currentmatch = cat_id;
-            currentMatchPos = i - 1;
-
-            /*if (info->called_everything)
-            {
-                if (!onMatch())
-                    return false;
+        if (current_letter != alef) { //(!alefs.contains(current_letter) || info.start!=letter_index) { //
+            if (!trie->walk(pos, current_letter)) {
+                break;
             }
-            else
-            {
-                if (!info->on_match_helper())
+
+            if (!check_for_terminal(i, pos)) {
+                break;
+            }
+        } else  {
+            for (int j = 0; j < alefs.size(); j++) {
+                if (!stop && trie->isWalkable(pos, alefs[j])) {
+                    ATTrie::Position pos2 = trie->clonePosition(pos);
+                    trie->walk(pos2, alefs[j]);
+
+                    if (!check_for_terminal(i, pos2)) {
+                        break;
+                    }
+
+                    traverse(i + 1, pos2);
+                    trie->freePosition(pos2);
+                }
+            }
+
+            break;
+        }
+    }
+}
+
+bool StemSearch::on_match_helper(int last_letter_index, Search_StemNode &s1) {
+    int last;
+    QStringRef subword = addlastDiacritics(info.start, last_letter_index, info.text, last);
+    currentMatchPos = last > 0 ? last - 1 : 0;
+    info.finish = currentMatchPos;
+
+    //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
+    while (s1.retrieve(category_of_currentmatch, possible_raw_datas)) {
+        if (isPrefixStemCompatible()) {
+            if (!reduce_thru_diacritics) {
+                if (!onMatch()) {
                     return false;
-            }*/
-            if (!onMatch()) {
-                return false;
+                }
+            } else {
+                for (int i = 0; i < possible_raw_datas.count(); i++) {
+                    #ifdef DEBUG
+                    out << subword.toString() << "-" << possible_raw_datas[i] << "\n";
+                    #endif
+
+                    if (!equal(subword, possible_raw_datas[i], true, false)) { //force_shadde=true
+                        possible_raw_datas.remove(i);
+                        i--;
+                    }
+                }
+
+                if (possible_raw_datas.count() > 0)
+                    if (!onMatch()) {
+                        return false;
+                    }
             }
         }
     }
 
-    #endif
     return true;
 }
 

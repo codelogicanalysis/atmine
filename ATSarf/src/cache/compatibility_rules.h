@@ -1,5 +1,5 @@
-#ifndef _COMPATIBILITY_RULES_H
-#define _COMPATIBILITY_RULES_H
+#ifndef COMPATIBILITY_RULES_H
+#define COMPATIBILITY_RULES_H
 
 #include <QMap>
 #include <QPair>

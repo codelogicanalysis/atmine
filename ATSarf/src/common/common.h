@@ -13,15 +13,10 @@
 //#define USE_ORIGINAL
 #define USE_BAMA
 
-//#define MEMORY_EXHAUSTIVE //not yet completely implemented
-#define REDUCE_THRU_DIACRITICS
 #define MULTIPLICATION
 
 #define IGNORE_EXEC_TIMESTAMP
 
-#ifdef REDUCE_THRU_DIACRITICS
-#undef MEMORY_EXHAUSTIVE
-#endif
 #define TIMESTAMP
 
 #define RUNON_WORDS

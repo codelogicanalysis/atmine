@@ -11,25 +11,14 @@
 #include <assert.h>
 #include <QDebug>
 
-#ifdef REDUCE_THRU_DIACRITICS
 inline QString cache_version() {
     return "RD";
 }
-#else
-inline QString cache_version() {
-    return "ND";
-}
-#endif
 
 void database_info_block::readTrieFromDatabaseAndBuildFile() {
     QSqlQuery query(theSarf->db);
-    #ifdef REDUCE_THRU_DIACRITICS
     QString stmt =
         QString("SELECT stem.id, stem.name, stem_category.category_id, stem_category.raw_data FROM stem, stem_category WHERE stem.id=stem_category.stem_id ORDER BY stem.id ASC");
-    #else
-    QString stmt =
-        QString("SELECT stem.id, stem.name, stem_category.category_id FROM stem, stem_category WHERE stem.id=stem_category.stem_id ORDER BY stem.id ASC");
-    #endif
     QString name, raw_data;
     long long last_id;
 
@@ -37,7 +26,6 @@ void database_info_block::readTrieFromDatabaseAndBuildFile() {
         return;
     }
 
-    //out<<QDateTime::currentDateTime().time().toString()<<"\n";
     StemNode *node = NULL;
     int index = 0;
     last_id = -1;
@@ -68,12 +56,8 @@ void database_info_block::readTrieFromDatabaseAndBuildFile() {
 
         name = query.value(1).toString();
         category_id = query.value(2).toLongLong();
-        #ifdef REDUCE_THRU_DIACRITICS
         raw_data = query.value(3).toString();
         node->add_info(category_id, raw_data);
-        #else
-        node->add_info(category_id);
-        #endif
         current++;
 
         if (prgsIFC != NULL) {
@@ -119,7 +103,6 @@ void database_info_block::buildTrie() {
             }
 
             input.close();
-            //const char * fPath = trie_path.toLatin1();
             QString fPath = trie_path;
 
             try {
@@ -127,8 +110,6 @@ void database_info_block::buildTrie() {
             }  catch (const char *ex) {
                 _error << "Fail to build stem trie from file " << fPath << ". Exception is " << ex << '.' << endl;
             }
-
-            //out<<QDateTime::currentDateTime().time().toString()<<"\n";
         }
     } else {
         readTrieFromDatabaseAndBuildFile();
@@ -332,5 +313,4 @@ database_info_block::~database_info_block() {
 }
 
 database_info_block database_info;
-
 
