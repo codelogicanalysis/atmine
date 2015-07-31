@@ -1198,8 +1198,6 @@ int insert_compatibility_rules(rules rule, long id1, long id2, long result_id, Q
                 insert_rule = false;
                 break;
             } else {
-                #ifndef ALLOW_MULTIPLE_RESULTING_CATEGORIES
-
                 if (KEEP_OLD) {
                     _warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). KEPT resulting_category_id %3 instead of %4\n").arg(
                                  id1).arg(id2).arg(old_result_id).arg(result_id);
@@ -1221,19 +1219,13 @@ int insert_compatibility_rules(rules rule, long id1, long id2, long result_id, Q
                     _warning << QString("RESULTING CATEGORY CONFLICT at rule=(%1,%2). REPLACED resulting_category_id %4 by %3\n").arg(
                                  id1).arg(id2).arg(old_result_id).arg(result_id);
                 }
-
-                #endif
             }
         }
-
-        #ifdef ALLOW_MULTIPLE_RESULTING_CATEGORIES
 
         if (insert_rule) {
             _warning << QString("MULTIPLE RESULTING CATEGORY at rule=(%1,%2)\n").arg(id1).arg(id2);
             goto insert;
         }
-
-        #endif
     } else {
 insert:
         dbitvec sources(max_sources);
