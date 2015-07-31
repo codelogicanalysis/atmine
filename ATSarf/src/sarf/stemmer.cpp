@@ -87,8 +87,6 @@ SuffixMachine::SuffixMachine(Stemmer *controller, int start, long prefix_categor
  * @return It returns true if a prefix match is found, else false
  */
 bool SuffixMachine::onMatch() {
-    #ifdef RUNON_WORDS
-
     if (sarfParameters.enableRunonwords) {
         int index = controller->machines.size() - 1;
 
@@ -107,13 +105,12 @@ bool SuffixMachine::onMatch() {
         }
     }
 
-    #endif
     return controller->on_match_helper();
 }
 
 
 bool SuffixMachine::shouldcall_onmatch(int position) {
-    #if defined(RUNON_WORDS) && defined(REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS) //TODO:support for diacritics
+    #if defined(REMOVE_ONE_LETTER_ABBREVIATIONS_FROM_BEING_IN_RUNONWORDS) //TODO:support for diacritics
 
     if (sarfParameters.enableRunonwords)
         if (position - controller->Prefix->info.start == 1 && controller->machines.size() > 0 &&
@@ -133,8 +130,6 @@ bool SuffixMachine::shouldcall_onmatch(int position) {
         return true;
     }
 
-    #ifdef RUNON_WORDS
-
     if (sarfParameters.enableRunonwords) {
         int lastLetterIndex = getLastLetter_index(*info.text, position - 1);
 
@@ -152,7 +147,6 @@ bool SuffixMachine::shouldcall_onmatch(int position) {
         }
     }
 
-    #endif
     return false;
 }
 
@@ -172,7 +166,6 @@ void Stemmer::removeLastMachines() {
 bool Stemmer::on_match_helper() {
     // Set the finish index of the input as the finish index returned by the Suffix machine
     info.finish = Suffix->info.finish;
-    #ifdef RUNON_WORDS
 
     // check if run on words is set
     if (sarfParameters.enableRunonwords)
@@ -190,8 +183,6 @@ bool Stemmer::on_match_helper() {
             Stem = m.Stem;
             Suffix = m.Suffix;
         }
-
-    #endif
 
         if (get_all_details) {
             solution_position *s_inf = Suffix->computeFirstSolution();
@@ -279,8 +270,6 @@ bool Stemmer::on_match_helper() {
                 return false;
             }
         }
-
-        #ifdef RUNON_WORDS
     }
 
     if (sarfParameters.enableRunonwords) {
@@ -288,7 +277,6 @@ bool Stemmer::on_match_helper() {
     }
 
     return true;
-        #endif
 }
 
 /**

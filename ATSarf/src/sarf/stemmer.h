@@ -129,7 +129,6 @@ class SuffixMachine: public SuffixSearch {
         virtual ~SuffixMachine() {}
 };
 
-#ifdef RUNON_WORDS
 /**
   * @class  SubMachines
   * @author Jad Makhlouta
@@ -161,7 +160,6 @@ class SubMachines {
         }
 
 };
-#endif
 
 /**
   * @class  Stemmer
@@ -193,15 +191,12 @@ class Stemmer {
         QStringRef getString() {
             return info.text->midRef(info.start, info.finish - info.start + 1);
         }
-        #ifdef RUNON_WORDS
-//This part is declared if we are in RUNON_WORDS mode where multiple words can be input simultaneously
     private:
         int runwordIndex;
         QList<SubMachines> machines;
         friend class SuffixMachine;
     private:
         void removeLastMachines();
-        #endif
     public:
         /// Boolean indicating whether all machines are called or not based on user input
         bool called_everything;
@@ -238,14 +233,11 @@ class Stemmer {
             Stem = NULL; // Set Stem machine to NULL
             Suffix = NULL;  //  Set Suffix machone to NULL
             multi_p = M_ALL;
-            #ifdef RUNON_WORDS
             runwordIndex = 0;
 
             if (!sarfParameters.enableRunonwords) {
                 machines.append(SubMachines(NULL, NULL, NULL));    //just to fill it with anything so that in on_match machine.size()==1
             }
-
-            #endif
         }
 
         /**
