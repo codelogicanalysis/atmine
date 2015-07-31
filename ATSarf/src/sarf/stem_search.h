@@ -65,11 +65,6 @@ class StemSearch {
             trie = database_info.Stem_Trie;
             solution = NULL;
             multi_p = M_ALL;
-            #if 0
-            multi_p.description = false;
-            multi_p.raw_data = false;
-            multi_p.POS = false;
-            #endif
         }
 
         /**
