@@ -49,7 +49,6 @@ void StemSearch::traverse(int letter_index, ATTrie::Position pos) {
             continue;
         }
 
-        #ifdef ENABLE_RUNON_WORD_INSIDE_COMPOUND_WORD
         int lastNonDiacriticLetterIndex = getLastLetter_index(*info.text, i - 1);
 
         if (lastNonDiacriticLetterIndex >= 0) {
@@ -73,8 +72,6 @@ void StemSearch::traverse(int letter_index, ATTrie::Position pos) {
                 }
             }
         }
-
-        #endif
 
         if (current_letter != alef) { //(!alefs.contains(current_letter) || info.start!=letter_index) { //
             if (!trie->walk(pos, current_letter)) {
