@@ -277,7 +277,6 @@ bool Stemmer::on_match_helper() {
  * This method is called upon finding a match for the input word
  */
 bool Stemmer::on_match() {
-    #ifdef MORPHEME_TOKENIZE
     theSarf->out << "ALTERNATIVE:\t";
     QString word;
 
@@ -342,110 +341,5 @@ bool Stemmer::on_match() {
 
     assert(pos - 1 == Suffix->info.finish);
     theSarf->out << "\n";
-    #else
-    int count = 0;
-
-    if (called_everything || type == PREFIX) {
-        theSarf->out << QString(runwordIndex, '\t');
-        theSarf->out << "(";
-
-        for (int i = 0; i < prefix_infos->count(); i++) {
-            if (count > 0) {
-                theSarf->out << " + ";
-            }
-
-            count++;
-            const minimal_item_info &rmii = prefix_infos->at(i);
-            theSarf->out <</*Prefix->sub_positionsOFCurrentMatch[i]<<" "<<*/ rmii.description();
-        }
-
-        theSarf->out << ")-";
-    }
-
-    if (called_everything || type == STEM) {
-        theSarf->out << "-(";
-        count = 0;
-
-        if (count > 0) {
-            theSarf->out << " OR ";
-        }
-
-        count++;
-        theSarf->out <</*Stem->startingPos-1<<" "<<*/ stem_info->description();
-        theSarf->out << " [ ";
-
-        for (unsigned int i = 0; i < stem_info->abstract_categories.length(); i++)
-            if (stem_info->abstract_categories[i]) {
-                int abstract_id = database_info.comp_rules->getAbstractCategoryID(i);
-
-                if (abstract_id >= 0) {
-                    theSarf->out << database_info.comp_rules->getCategoryName(abstract_id) << " ";
-                }
-            }
-
-        theSarf->out << "]";
-        theSarf->out << ")-";
-    }
-
-    if (called_everything || type == SUFFIX) {
-        QString later_part = "";
-        out << "-(";
-        count = 0;
-
-        for (int i = 0; i < suffix_infos->size(); i++) {
-            //qDebug()<< "{"<<suffix_infos->at(i).POS<<"}";
-            QString desc = suffix_infos->at(i).description();
-
-            if (count > 0) {
-                out << " ";
-            } else {// (count==0)
-                if (suffix_infos->size() > 1 && desc[0] == '[' && desc.size() > 0 && desc[desc.size() - 1] == ']') {
-                    desc = "";
-                }
-            }
-
-            count++;
-
-            if (later_part == "" && suffix_infos->count() > i + 1 && isReverseDirection(suffix_infos->at(i).abstract_categories)) {
-                later_part = desc;
-                //out<< "{"<<suffix_infos->at(i).POS<<"}";
-                count = 0;
-                continue;
-            } else {
-                later_part = "";
-            }
-
-            if (desc.isEmpty()) {
-                count = 0;
-            }
-
-            out <</*Suffix->sub_positionsOFCurrentMatch[i]<<" "<<*/ desc << later_part;
-            //out<< "{"<<suffix_infos->at(i).POS<<"}";
-        }
-
-        out << ")";
-    }
-
-    if (called_everything) {
-        QString word;
-
-        for (int i = 0; i < prefix_infos->size(); i++) {
-            word.append(prefix_infos->at(i).raw_data);
-        }
-
-        word.append(stem_info->raw_data);
-
-        for (int i = 0; i < suffix_infos->size(); i++) {
-            word.append(suffix_infos->at(i).raw_data);
-        }
-
-        //QString suff;
-        //for (int i=0;i<suffix_infos->count();i++)
-        //  suff.append("-").append(suffix_infos->at(i).raw_data);
-        out << " " << word; //<<" "<<"["<<suff<<"]";
-    }
-
-    out << " " << Prefix->info.start + 1 << "," << Suffix->info.finish + 1 << "\n";
-    #endif
     return true;
 }
