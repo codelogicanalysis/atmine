@@ -176,9 +176,6 @@ bool TreeSearch::on_match_helper() {
 
     if (reduce_thru_diacritics) {
         int count = sub_positionsOFCurrentMatch.count();
-        #ifdef DEBUG
-        out << "<" << position << ">\n";
-        #endif
 
         for (int k = 0; k < count; k++) {
             subpos = sub_positionsOFCurrentMatch[k]; //getLastDiacritic(position-1,info.text)-1);
@@ -195,9 +192,6 @@ bool TreeSearch::on_match_helper() {
                     QStringRef diacritics_of_word = getDiacriticsBeforePosition(startPos, info.text),
                                diacritics_of_rawdata = (rawdata.size() > 0 ? addlastDiacritics(0, 0,
                                                         &rawdata) : QStringRef()); //to get first couple of diacritics of raw_data without letters
-                    #ifdef DEBUG
-                    qDebug() << diacritics_of_word << "\t" << diacritics_of_rawdata;
-                    #endif
 
                     if (!equal(diacritics_of_word, diacritics_of_rawdata, true)) { //force_shadde
                         possible_raw_datasOFCurrentMatch[k].removeAt(j);
@@ -205,11 +199,6 @@ bool TreeSearch::on_match_helper() {
                         continue;
                     }
                 }
-
-                #ifdef DEBUG
-                out << "p-S:" << k << "<" << sub_positionsOFCurrentMatch[k] << ">" << "\t" << subword.toString() << "\t" <<
-                    possible_raw_datasOFCurrentMatch[k][j].getActual() << "\n";
-                #endif
 
                 if (!equal(subword, rawdata, true)) { //force_shadde
                     possible_raw_datasOFCurrentMatch[k].removeAt(j);

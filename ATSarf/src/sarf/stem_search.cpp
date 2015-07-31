@@ -119,10 +119,6 @@ bool StemSearch::on_match_helper(int last_letter_index, Search_StemNode &s1) {
                 }
             } else {
                 for (int i = 0; i < possible_raw_datas.count(); i++) {
-                    #ifdef DEBUG
-                    out << subword.toString() << "-" << possible_raw_datas[i] << "\n";
-                    #endif
-
                     if (!equal(subword, possible_raw_datas[i], true, false)) { //force_shadde=true
                         possible_raw_datas.remove(i);
                         i--;
