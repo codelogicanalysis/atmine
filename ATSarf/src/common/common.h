@@ -14,7 +14,6 @@
 #define USE_BAMA
 
 #define LOAD_FROM_FILE
-#define USE_TRIE_WALK
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 #define MULTIPLICATION

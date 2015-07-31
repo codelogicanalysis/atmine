@@ -108,9 +108,6 @@ bool TreeSearch::operator ()()
 				nodes_per_level=queue.count();
 			}
 		}
-	#ifndef USE_TRIE_WALK
-		QChar future_letter=info.text->at(position);
-	#else
 		QChar future_letter;
 		if (position==info.text->length())
 			future_letter='\0';
@@ -128,7 +125,6 @@ bool TreeSearch::operator ()()
 					future_letter=info.text->at(position);
 			}
 		}
-	#endif
 
 		bool added_to_main_queue=addLetterToQueue(queue,queue_emptyCharacters,current_node,future_letter);
 		if (added_to_main_queue && wait_for_dequeue)

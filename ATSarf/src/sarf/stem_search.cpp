@@ -10,7 +10,6 @@
 #include "text_handling.h"
 #include <assert.h>
 
-#ifdef USE_TRIE_WALK
 bool StemSearch::check_for_terminal(int letter_index, ATTrie::Position pos) {
     const StemNode *node = NULL;
     Search_StemNode s1;
@@ -38,13 +37,11 @@ bool StemSearch::check_for_terminal(int letter_index, ATTrie::Position pos) {
 
     return true;
 }
-#endif
 
 void StemSearch::traverse(int letter_index, ATTrie::Position pos) {
     int length = info.text->length();
 
     for (int i = max(letter_index, 0); i < length && !stop; i++) {
-            #ifdef USE_TRIE_WALK
                 QChar current_letter = info.text->at(i);
 
                 //qDebug()<<"s:"<<current_letter;
@@ -105,115 +102,43 @@ void StemSearch::traverse(int letter_index, ATTrie::Position pos) {
                     break;
                 }
 
-            #else
-                QString name = info.text.mid(starting_pos, i - starting_pos);
-                const StemNode *node = NULL;
-                trie->retreive(name, &node);
-
-                if (node == NULL) {
-                    if (!alefs.contains(name[i])) {
-                        bool matched = false;
-
-                        for (int j = 0; j < alefs.size(); j++) {
-                            trie->retreive(alefs[j] + name.mid(1), &node);
-
-                            if (node != NULL) {
-                                matched = true;
-                                break;
-                            }
-                        }
-
-                        if (!matched) {
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                }
-
-                id_of_currentmatch = node->stem_id;
-                Search_StemNode s1(node);
-            #endif
-       #ifndef USE_TRIE_WALK
-
-        if (!on_match_helper(i, s1)) {
-            false_returned = true;
-        }
-
-        #endif
 }
 }
 
 bool StemSearch::on_match_helper(int last_letter_index, Search_StemNode &s1) {
     #ifdef REDUCE_THRU_DIACRITICS
-    #ifndef USE_TRIE_WALK
-    currentMatchPos = i - 1;
-    QString subword = getDiacriticword(i - 1, starting_pos, *info.text);
-    #else
-    int last;
-    QStringRef subword = addlastDiacritics(info.start, last_letter_index, info.text, last);
-    currentMatchPos = last > 0 ? last - 1 : 0;
-    info.finish = currentMatchPos;
-    #endif
-    #if 0
-    possible_raw_datas.clear();
-    StemNode_info inf;
-    category_of_currentmatch = -1;
+            int last;
+            QStringRef subword = addlastDiacritics(info.start, last_letter_index, info.text, last);
+            currentMatchPos = last > 0 ? last - 1 : 0;
+            info.finish = currentMatchPos;
 
-    while (s1.retrieve(inf)) {
-        if (category_of_currentmatch !=
-            inf.category_id) { //based on fact that results of same ctaegory are displayed consecutively
-            if (category_of_currentmatch != -1)
-                if (possible_raw_datas.count() > 0)
+        //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
+        while (s1.retrieve(category_of_currentmatch, possible_raw_datas)) {
+            if (isPrefixStemCompatible()) {
+                if (!reduce_thru_diacritics) {
                     if (!onMatch()) {
                         return false;
                     }
+                } else {
+                    for (int i = 0; i < possible_raw_datas.count(); i++) {
+                        #ifdef DEBUG
+                            out << subword.toString() << "-" << possible_raw_datas[i] << "\n";
+                        #endif
 
-            category_of_currentmatch = inf.category_id;
-            possible_raw_datas.clear();
+                        if (!equal(subword, possible_raw_datas[i], true, false)) { //force_shadde=true
+                            possible_raw_datas.remove(i);
+                            i--;
+                        }
+                    }
+
+                    if (possible_raw_datas.count() > 0)
+                        if (!onMatch()) {
+                            return false;
+                        }
+                }
+            }
         }
 
-        if (isPrefixStemCompatible())
-            if (!reduce_thru_diacritics || (reduce_thru_diacritics && equal(subword, inf.raw_data))) {
-                possible_raw_datas.append(inf.raw_data);
-            }
-    }
-
-    if (category_of_currentmatch != -1)
-        if (possible_raw_datas.count() > 0)
-            if (!onMatch()) {
-                return false;
-            }
-
-    #else //I think this is a more efficient implementation, less copying happening in this type of "retrieve"
-
-    while (s1.retrieve(category_of_currentmatch, possible_raw_datas)) {
-        if (isPrefixStemCompatible()) {
-            if (!reduce_thru_diacritics) {
-                if (!onMatch()) {
-                    return false;
-                }
-            } else {
-                for (int i = 0; i < possible_raw_datas.count(); i++) {
-                    #ifdef DEBUG
-                    out << subword.toString() << "-" << possible_raw_datas[i] << "\n";
-                    #endif
-
-                    if (!equal(subword, possible_raw_datas[i], true, false)) { //force_shadde=true
-                        possible_raw_datas.remove(i);
-                        i--;
-                    }
-                }
-
-                if (possible_raw_datas.count() > 0)
-                    if (!onMatch()) {
-                        return false;
-                    }
-            }
-        }
-    }
-
-    #endif
     #else
     long cat_id;
 
@@ -380,6 +305,4 @@ bool StemSearch::computeNextSolution(solution_position *current) { //compute nex
     }
 
     return true;
-}
-}
 }

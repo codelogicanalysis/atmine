@@ -3,8 +3,8 @@
   * @brief  this header file contains the definition of the StemSearch class which extracts the possible stems for an input string
   * @author Jad Makhlouta
   */
-#ifndef _STEM_SEARCH_H
-#define _STEM_SEARCH_H
+#ifndef STEM_SEARCH_H
+#define STEM_SEARCH_H
 
 #include "atmTrie.h"
 #include "common.h"
@@ -83,9 +83,7 @@ class StemSearch {
             trie->freePosition(pos);
             return !stop;
         }
-        #ifdef USE_TRIE_WALK
         bool check_for_terminal(int letter_index, ATTrie::Position pos);
-        #endif
         void traverse(int letter_index, ATTrie::Position pos);
         bool on_match_helper(int last_letter_index, Search_StemNode &s1);
 
@@ -121,4 +119,4 @@ class StemSearch {
         #endif
 };
 
-#endif  /* _STEM_SEARCH_H *//
+#endif 
