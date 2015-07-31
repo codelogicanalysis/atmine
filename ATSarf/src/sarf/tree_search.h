@@ -4,8 +4,8 @@
   * @brief  This file includes the declaration of the TreeSearch class which is the base class for prefix
   * and suffix search
   */
-#ifndef _TREE_SEARCH_H
-#define _TREE_SEARCH_H
+#ifndef TREE_SEARCH_H
+#define TREE_SEARCH_H
 
 #include <assert.h>
 #include <QVector>
@@ -222,12 +222,10 @@ class TreeSearch {
         fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
         virtual bool onMatch() = 0;// returns true to continue, false to abort
         virtual ~TreeSearch() {
-
             if (result_nodes != NULL) {
                 delete result_nodes;
             }
-
         }
 };
 
-#endif // TREE_SEARCH_H
+#endif
