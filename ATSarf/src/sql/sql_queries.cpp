@@ -197,16 +197,14 @@ void check_for_staleness() {
 
     while (theSarf->query.next()) {
         QDateTime d = theSarf->query.value(12).toDateTime();
-        #ifndef IGNORE_EXEC_TIMESTAMP
 
-        if (d > executable_timestamp || d > cache_time)
-        #else
-        if (d > cache_time)
-        #endif
-        {
+        if (d > cache_time) {
             QString s, files;
-            foreach(s, cacheFileList)
-            files += s + " ";
+
+            foreach (s, cacheFileList) {
+                files += s + " ";
+            }
+
             system(QString(QString("rm ") + files).toStdString().data());
             return;
         }

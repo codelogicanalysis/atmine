@@ -15,8 +15,6 @@
 
 #define MULTIPLICATION
 
-#define IGNORE_EXEC_TIMESTAMP
-
 #define TIMESTAMP
 
 #define RUNON_WORDS

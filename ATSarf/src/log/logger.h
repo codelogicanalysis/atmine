@@ -1,5 +1,5 @@
-#ifndef _LOGGER_
-#define _LOGGER_
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <sarf.h>
 #include <QTextStream>
@@ -24,4 +24,4 @@ extern bool display_warnings;
     if (theSarf!= NULL && display_errors && display_warnings) theSarf->displayed_error << "WARNING! "
 //...
 
-#endif /*_LOGGER */
+#endif
