@@ -3,11 +3,9 @@
   * @author Jad Makhlouta and documented by Ameen Jaber
   * @brief  This file implements common structures and enums used by the different classes and routines defined
   */
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
-//#include <QFile>
-//#include "ATMProgressIFC.h"
 #include <QString>
 #include <QStringList>
 #include "dbitvec.h"
@@ -15,21 +13,13 @@
 //#define USE_ORIGINAL
 #define USE_BAMA
 
-#define USE_TRIE
 #define LOAD_FROM_FILE
 #define USE_TRIE_WALK
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 #define MULTIPLICATION
 
-//#define DEBUG
-
 #define IGNORE_EXEC_TIMESTAMP
-
-#ifndef USE_TRIE
-#undef USE_TRIE_WALK
-#undef LOAD_FROM_FILE
-#endif
 
 #ifdef REDUCE_THRU_DIACRITICS
 #undef MEMORY_EXHAUSTIVE
@@ -56,7 +46,7 @@ void initialize_other(); //must be called at start but after datastructures load
   * @enum   rules
   * @brief  This enumerator defines the different rule classes for the matching different solutions
   */
-enum rules { AA,AB,AC,BC,CC, RULES_LAST_ONE };
+enum rules { AA, AB, AC, BC, CC, RULES_LAST_ONE };
 
 /**
   * @enum   item_types
@@ -74,51 +64,49 @@ enum  enumeration_type { ENUMALL, ENUMSTEM};   // Ask about the last one
   * @typedef minimal_item_info
   * @brief The following defines a class type including the minimal information of a match which could be stem or an affix
   */
-typedef class minimal_item_info_
-{
-private:
+typedef class minimal_item_info_ {
+    private:
         /// This includes the description of a matching prefix/stem/suffix which is the gloss
         QString desc;
-	long desc_id;
-public:
+        long desc_id;
+    public:
         /// The type of the item being prefix, suffix, or stem
         item_types type;
         long category_id;
-	dbitvec abstract_categories; //only for STEMS
+        dbitvec abstract_categories; //only for STEMS
         /// This string holds the root or stem of the input string
         QString raw_data;
         /// This string saves the part of speech of the match
         QString POS;
-public:
+    public:
 
-	void setDescription(long desc_id) {
-		desc="";
-		this->desc_id=desc_id;
-	}
-	void setDescription(QString desc) {
-		this->desc=desc;
-		desc_id=-1;
-	}
-	long description_id() const {
-		return desc_id;
-	}
-	QString description();
+        void setDescription(long desc_id) {
+            desc = "";
+            this->desc_id = desc_id;
+        }
+        void setDescription(QString desc) {
+            this->desc = desc;
+            desc_id = -1;
+        }
+        long description_id() const {
+            return desc_id;
+        }
+        QString description();
 
-	minimal_item_info_() {
-		abstract_categories.resize(max_sources);
-	}
+        minimal_item_info_() {
+            abstract_categories.resize(max_sources);
+        }
 } minimal_item_info;
 
-typedef class all_item_info_ : public minimal_item_info_
-{
-public:
-	unsigned long long item_id;
-	dbitvec sources;
-	QString lemma_ID; //only for STEMs
+typedef class all_item_info_ : public minimal_item_info_ {
+    public:
+        unsigned long long item_id;
+        dbitvec sources;
+        QString lemma_ID; //only for STEMs
 
-	all_item_info_():minimal_item_info_(){
-		sources.resize(max_sources);
-	}
+        all_item_info_(): minimal_item_info_() {
+            sources.resize(max_sources);
+        }
 } all_item_info;
 
 /**
@@ -126,15 +114,14 @@ public:
   * @brief  The following defines a structure for the text information which is passed to different parts of the stemmer.
   * It includes a pointer to the text and start/finish indixes
   */
-typedef struct text_info_
-{
-	QString *text;
-        long start, finish;
-        QString getString(){
-            //TODO: solve bug in inconsistent start when diacritics exist
-            unsigned int len = finish - start + 1;
-            return text->mid(start, len);
-        }
+typedef struct text_info_ {
+    QString *text;
+    long start, finish;
+    QString getString() {
+        //TODO: solve bug in inconsistent start when diacritics exist
+        unsigned int len = finish - start + 1;
+        return text->mid(start, len);
+    }
 } text_info;
 
 /**
@@ -142,68 +129,62 @@ typedef struct text_info_
   * @brief  This class defines the different parameter settings for the solution extracted. Based on the required
   * details of the solution required, the booleans within are set.
   */
-class multiply_params
-{
-public:
-	bool raw_data:1;
-	bool description:1;
-	bool POS:1;
-	bool abstract_category:1;
+class multiply_params {
+    public:
+        bool raw_data: 1;
+        bool description: 1;
+        bool POS: 1;
+        bool abstract_category: 1;
 
-	void setAll()
-	{
-		raw_data=true;
-		description=true;
-		POS=true;
-		abstract_category=true;
-	}
-	bool raw_dataONLY()
-	{
-		return (raw_data && !description && !POS && !abstract_category);
-	}
-	bool NONE()
-	{
-		return (!raw_data && !description && !POS && !abstract_category);
-	}
-	bool ALL()
-	{
-		return (raw_data && description && POS && abstract_category);
-	}
+        void setAll() {
+            raw_data = true;
+            description = true;
+            POS = true;
+            abstract_category = true;
+        }
+        bool raw_dataONLY() {
+            return (raw_data && !description && !POS && !abstract_category);
+        }
+        bool NONE() {
+            return (!raw_data && !description && !POS && !abstract_category);
+        }
+        bool ALL() {
+            return (raw_data && description && POS && abstract_category);
+        }
 
         /**
           * This method is the constructor of the class multiply params
           */
-	multiply_params()
-	{
-		setAll();
-	}
+        multiply_params() {
+            setAll();
+        }
 };
 
 static multiply_params M_ALL;
 
 #ifndef SUBMISSION
-static const QString databaseFileName="../../src/sql design/atm_filled.sql";
+static const QString databaseFileName = "../../src/sql design/atm_filled.sql";
 #else
-static const  QString databaseFileName=".atm_filled.sql";
+static const  QString databaseFileName = ".atm_filled.sql";
 #endif
 
 #ifdef LOAD_FROM_FILE
 #ifdef USE_ORIGINAL
-static const QString tag="_original";
+static const QString tag = "_original";
 #elif defined(USE_BAMA)
-static const QString tag="_bama";
+static const QString tag = "_bama";
 #else
-static const QString tag="";
+static const QString tag = "";
 #endif
-static const QString trie_path=".stem_trie"+tag+".dat";
-static const QString trie_list_path=".stem_list"+tag+".dat";
-static const QString compatibility_rules_path= ".compatibility"+tag+".dat";
-static const QString prefix_tree_path=".prefix_tree"+tag+".dat";
-static const QString suffix_tree_path=".suffix_tree"+tag+".dat";
-static const QString description_path=".descriptions"+tag+".dat";
-static const QString prefix_info_path=".prefix_info"+tag+".dat";
-static const QString suffix_info_path=".suffix_info"+tag+".dat";
-static const QString stem_info_path=".stem_info"+tag+".dat";
+static const QString trie_path = ".stem_trie" + tag + ".dat";
+static const QString trie_list_path = ".stem_list" + tag + ".dat";
+static const QString compatibility_rules_path = ".compatibility" + tag + ".dat";
+static const QString prefix_tree_path = ".prefix_tree" + tag + ".dat";
+static const QString suffix_tree_path = ".suffix_tree" + tag + ".dat";
+static const QString description_path = ".descriptions" + tag + ".dat";
+static const QString prefix_info_path = ".prefix_info" + tag + ".dat";
+static const QString suffix_info_path = ".suffix_info" + tag + ".dat";
+static const QString stem_info_path = ".stem_info" + tag + ".dat";
 #endif
 
 //reverse_descriotion
@@ -215,3 +196,5 @@ static const QString stem_info_path=".stem_info"+tag+".dat";
 #define absVal(v) (v>=0?v:-v)
 
 #endif
+
+
