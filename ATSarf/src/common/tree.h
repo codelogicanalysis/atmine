@@ -8,7 +8,6 @@
 #include "Retrieve_Template.h"
 
 class tree {
-#ifdef LOAD_FROM_FILE
 	private:
 		typedef QMap<node *,int>  IDMap;
 		typedef QMap<int,node *>  ReverseIDMap;
@@ -19,7 +18,6 @@ class tree {
 		int generateNodeID(node* n);
 		node* getNodeID(int num);
 		void setNodeID(int num, node * n);
-#endif
 	protected:
 		node* base;
 		int letter_nodes, result_nodes;

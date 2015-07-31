@@ -11,7 +11,6 @@
 #include <assert.h>
 #include <QDebug>
 
-#ifdef LOAD_FROM_FILE
 #ifdef REDUCE_THRU_DIACRITICS
 inline QString cache_version() {
     return "RD";
@@ -82,8 +81,6 @@ void database_info_block::readTrieFromDatabaseAndBuildFile() {
         }
     }
 
-    #ifdef LOAD_FROM_FILE
-    //out<<QDateTime::currentDateTime().time().toString()<<"\n";
     database_info.Stem_Trie->save(trie_path.toStdString().data());
     QFile file(trie_list_path.toStdString().data());
 
@@ -95,15 +92,9 @@ void database_info_block::readTrieFromDatabaseAndBuildFile() {
     } else {
         _error << "Unexpected Error: Unable to write TRIE to file\n";
     }
-
-    #endif
 }
 
 void database_info_block::buildTrie() {
-    //out<<QDateTime::currentDateTime().time().toString()<<"\n";
-    #ifndef LOAD_FROM_FILE
-    readTrieFromDatabaseAndBuildFile();
-    #else
     QFile file(trie_list_path);
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -142,10 +133,7 @@ void database_info_block::buildTrie() {
     } else {
         readTrieFromDatabaseAndBuildFile();
     }
-
-    #endif
 }
-#endif
 
 void database_info_block::fillMap(item_types type, ItemCatRaw2AbsDescPosMap *map) {
     QSqlQuery query(theSarf->db);
@@ -190,7 +178,6 @@ void database_info_block::fillMap(item_types type, ItemCatRaw2AbsDescPosMap *map
         }
     }
 
-    #ifdef LOAD_FROM_FILE
     QString fileName;
 
     if (type == PREFIX) {
@@ -210,14 +197,9 @@ void database_info_block::fillMap(item_types type, ItemCatRaw2AbsDescPosMap *map
     } else {
         _error << "Unexpected Error: Unable to write DESCRIPTION to file\n";
     }
-
-    #endif
 }
 
 void database_info_block::buildMap(item_types type, ItemCatRaw2AbsDescPosMap *map) {
-    #ifndef LOAD_FROM_FILE
-    fillMap(type, map);
-    #else
     QString fileName;
 
     if (type == PREFIX) {
@@ -237,8 +219,6 @@ void database_info_block::buildMap(item_types type, ItemCatRaw2AbsDescPosMap *ma
     } else {
         fillMap(type, map);
     }
-
-    #endif
 }
 
 database_info_block::database_info_block() {
@@ -302,7 +282,6 @@ void database_info_block::readDescriptionsFromDatabaseAndBuildFile() {
         }
     }
 
-    #ifdef LOAD_FROM_FILE
     QFile file(description_path.toStdString().data());
 
     if (file.open(QIODevice::WriteOnly)) {
@@ -312,15 +291,9 @@ void database_info_block::readDescriptionsFromDatabaseAndBuildFile() {
     } else {
         _error << "Unexpected Error: Unable to write DESCRIPTION to file\n";
     }
-
-    #endif
 }
 
 void database_info_block::buildDescriptions() {
-    //out<<QDateTime::currentDateTime().time().toString()<<"\n";
-    #ifndef LOAD_FROM_FILE
-    readDescriptionsFromDatabaseAndBuildFile();
-    #else
     QFile file(description_path.toStdString().data());
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -330,8 +303,6 @@ void database_info_block::buildDescriptions() {
     } else {
         readDescriptionsFromDatabaseAndBuildFile();
     }
-
-    #endif
 }
 
 void database_info_block::fill(ATMProgressIFC *p) {
@@ -361,3 +332,5 @@ database_info_block::~database_info_block() {
 }
 
 database_info_block database_info;
+
+

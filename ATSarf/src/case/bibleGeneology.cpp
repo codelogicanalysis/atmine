@@ -407,9 +407,6 @@ class GeneStemmer: public Stemmer {
         }
 
         void readFromFilePreprocessedGenealogyDescriptions() {
-#ifndef LOAD_FROM_FILE
-            readFromDatabasePreProcessedGenealogyDescriptions();
-#else
             QFile file(preProcessedGenealogyDescriptionsFileName.toStdString().data());
             if (file.open(QIODevice::ReadOnly))
             {
@@ -420,7 +417,6 @@ class GeneStemmer: public Stemmer {
             }
             else
                 readFromDatabasePreProcessedGenealogyDescriptions();
-#endif
         }
 #endif
 
@@ -429,15 +425,6 @@ class GeneStemmer: public Stemmer {
             long abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Hebrew Bible Names");
             int bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
             bits_gene_NAME.append(bit_NAME);
-#if 0
-            abstract_NAME=database_info.comp_rules->getAbstractCategoryID("christian names");
-            bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-            bits_gene_NAME.append(bit_NAME);
-
-            abstract_NAME=database_info.comp_rules->getAbstractCategoryID("Male Names");
-            bit_NAME=database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
-            bits_gene_NAME.append(bit_NAME);
-#endif
 
             readFromFilePreprocessedGenealogyDescriptions();
 

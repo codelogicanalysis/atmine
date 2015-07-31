@@ -11,25 +11,22 @@
 #include "Retrieve_Template.h"
 #include "inflections.h"
 
-
-#ifdef LOAD_FROM_FILE
-#ifdef REDUCE_THRU_DIACRITICS
-inline QString cache_version()
-{
-    return "RD";
-}
-#elif defined(MEMORY_EXHAUSTIVE)
-inline QString cache_version()
-{
-    return "ME";
-}
-#else
-inline QString cache_version()
-{
-    return "ND";
-}
-#endif
-#endif
+    #ifdef REDUCE_THRU_DIACRITICS
+        inline QString cache_version()
+        {
+            return "RD";
+        }
+    #elif defined(MEMORY_EXHAUSTIVE)
+        inline QString cache_version()
+        {
+            return "ME";
+        }
+    #else
+        inline QString cache_version()
+        {
+            return "ND";
+        }
+    #endif
 
 inline bool hasCompatibleAffixes(item_types type,long cat_r_id) {
     bool hasComp=false;
@@ -114,18 +111,16 @@ int tree::build_helper(item_types type, long cat_id1, int size, node * current)
                 raw_data.remove(" ");
 #endif
             assert (current->isLetterNode() || equal(letters,inflected_raw_data));
-#ifdef LOAD_FROM_FILE
             if (file!=NULL)
             {
                 (*file)<<letters<<affix_id<<category_id<<resulting_category_id<<isAccept
-#if defined (REDUCE_THRU_DIACRITICS)
+    #if defined (REDUCE_THRU_DIACRITICS)
                     <<raw_data<<inflected_raw_data<<descriptionInflectionRule
-#elif defined (MEMORY_EXHAUSTIVE)
+    #elif defined (MEMORY_EXHAUSTIVE)
                     <<raw_data<<description
-#endif
+    #endif
                     <<generateNodeID(current);
             }
-#endif
             //pre-condition: assumes category_id is added to the right place and results in the appropraite resulting_category
             QChar current_letter;
             //QList<letter_node *>* current_letter_children;
@@ -133,10 +128,8 @@ int tree::build_helper(item_types type, long cat_id1, int size, node * current)
             if (current->isLetterNode() && current!=base) {
 #if 1
                 _error << "Unexpected Error: provided node was a letter node and not a result one\n";
-#ifdef LOAD_FROM_FILE
                 if (file!=NULL)
                     (*file)<<generateNodeID(NULL);
-#endif
                 return NULL;
 #else
                 current_letter='\0';
@@ -194,10 +187,8 @@ result:
                     old_result->add_raw_data(raw_data, inflected_raw_data);
                     old_result->setInflectionRule(descriptionInflectionRule);
 #endif
-#ifdef LOAD_FROM_FILE
                     if (file!=NULL)
                         (*file)<<generateNodeID(old_result);
-#endif
                     return old_result;
                 }
             }
@@ -212,10 +203,8 @@ result:
             current->addChild(result);
             current=result;
             result_nodes++;
-#ifdef LOAD_FROM_FILE
             if (file!=NULL)
                 (*file)<<generateNodeID(current);
-#endif
             return current;
             //post-condition: returns node of resulting category reached after addition
         }
@@ -226,9 +215,7 @@ result:
         letter_nodes=1;
         result_nodes=0;
         isAffix=false;
-#ifdef LOAD_FROM_FILE
         file=NULL;
-#endif
     }
     tree::tree(item_types type)
     {
@@ -236,9 +223,7 @@ result:
         letter_nodes=1;
         result_nodes=0;
         isAffix=true;
-#ifdef LOAD_FROM_FILE
         file=NULL;
-#endif
         build_affix_tree(type);
     }
     bool tree::getAffixType(item_types &type)
@@ -306,7 +291,7 @@ result:
         isAffix=false;
     }
 #endif
-#ifdef LOAD_FROM_FILE
+
     int tree::generateNodeID(node *n)
     {
         int curr_id;
@@ -344,13 +329,9 @@ result:
         else
             assert(n==it.value());
     }
-#endif
+
     int tree::build_affix_tree_from_file(item_types type)
     {
-        //out<<QDateTime::currentDateTime().time().toString()<<"\n";
-#ifndef LOAD_FROM_FILE
-        return build_affix_tree(type);
-#else
         file=NULL;
         reset();
         isAffix=true;
@@ -371,26 +352,26 @@ result:
             {
                 int num1,num2;
                 QString letters; long affix_id;long category_id; long resulting_category_id;bool isAccept;
-#if defined (REDUCE_THRU_DIACRITICS)
+    #if defined (REDUCE_THRU_DIACRITICS)
                 QString raw_data,inflected_raw_data,descriptionInflectionRule;
-#elif defined (MEMORY_EXHAUSTIVE)
+    #elif defined (MEMORY_EXHAUSTIVE)
                 QString raw_data;QString description;
-#endif
+    #endif
                 while(!in.atEnd())
                 {
                     in>>letters>>affix_id>>category_id>>resulting_category_id>>isAccept
-#if defined (REDUCE_THRU_DIACRITICS)
+    #if defined (REDUCE_THRU_DIACRITICS)
                         >>raw_data>>inflected_raw_data>>descriptionInflectionRule
-#elif defined (MEMORY_EXHAUSTIVE)
+    #elif defined (MEMORY_EXHAUSTIVE)
                         >>raw_data>>description
-#endif
+    #endif
                         >>num1>>num2;
                     node * n=addElement(letters,affix_id,category_id,resulting_category_id,isAccept,
-#if defined (REDUCE_THRU_DIACRITICS)
+    #if defined (REDUCE_THRU_DIACRITICS)
                             raw_data,inflected_raw_data,descriptionInflectionRule,
-#elif defined (MEMORY_EXHAUSTIVE)
+    #elif defined (MEMORY_EXHAUSTIVE)
                             raw_data,description,
-#endif
+    #endif
                             getNodeID(num1));
                     setNodeID(num2,n);
                 }
@@ -405,7 +386,6 @@ result:
         }
         else
             return build_affix_tree(type);
-#endif
     }
     int tree::build_affix_tree(item_types type)
     {
@@ -413,7 +393,6 @@ result:
         isAffix=true;
         this->type=type;
         database_info.prgsIFC->setCurrentAction(interpret_type(type).toUpper()+" TREE");
-#ifdef LOAD_FROM_FILE
         QString fileName;
         if (type==PREFIX)
             fileName=prefix_tree_path;
@@ -433,7 +412,6 @@ result:
             _error <<"Unexpected Error: Unable to write AFFIX Table to file\n";
             file=NULL;
         }
-#endif
         QSqlQuery query(theSarf->db);
         QString stmt=QString("SELECT id, name FROM %1").arg(interpret_type(type));
         QString name;
@@ -486,12 +464,10 @@ result:
             i++;
             database_info.prgsIFC->report((double)i/size*100+0.5);
         }
-#ifdef LOAD_FROM_FILE
         rawFile.close();
         if (file!=NULL)
             delete file;
         file=NULL;
-#endif
         return 0;
     }
     void tree::print_tree()

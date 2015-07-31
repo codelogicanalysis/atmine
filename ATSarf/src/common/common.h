@@ -13,7 +13,6 @@
 //#define USE_ORIGINAL
 #define USE_BAMA
 
-#define LOAD_FROM_FILE
 //#define MEMORY_EXHAUSTIVE //not yet completely implemented
 #define REDUCE_THRU_DIACRITICS
 #define MULTIPLICATION
@@ -167,24 +166,22 @@ static const QString databaseFileName = "../../src/sql design/atm_filled.sql";
 static const  QString databaseFileName = ".atm_filled.sql";
 #endif
 
-#ifdef LOAD_FROM_FILE
-#ifdef USE_ORIGINAL
-static const QString tag = "_original";
-#elif defined(USE_BAMA)
-static const QString tag = "_bama";
-#else
-static const QString tag = "";
-#endif
-static const QString trie_path = ".stem_trie" + tag + ".dat";
-static const QString trie_list_path = ".stem_list" + tag + ".dat";
-static const QString compatibility_rules_path = ".compatibility" + tag + ".dat";
-static const QString prefix_tree_path = ".prefix_tree" + tag + ".dat";
-static const QString suffix_tree_path = ".suffix_tree" + tag + ".dat";
-static const QString description_path = ".descriptions" + tag + ".dat";
-static const QString prefix_info_path = ".prefix_info" + tag + ".dat";
-static const QString suffix_info_path = ".suffix_info" + tag + ".dat";
-static const QString stem_info_path = ".stem_info" + tag + ".dat";
-#endif
+    #ifdef USE_ORIGINAL
+        static const QString tag = "_original";
+    #elif defined(USE_BAMA)
+        static const QString tag = "_bama";
+    #else
+        static const QString tag = "";
+    #endif
+    static const QString trie_path = ".stem_trie" + tag + ".dat";
+    static const QString trie_list_path = ".stem_list" + tag + ".dat";
+    static const QString compatibility_rules_path = ".compatibility" + tag + ".dat";
+    static const QString prefix_tree_path = ".prefix_tree" + tag + ".dat";
+    static const QString suffix_tree_path = ".suffix_tree" + tag + ".dat";
+    static const QString description_path = ".descriptions" + tag + ".dat";
+    static const QString prefix_info_path = ".prefix_info" + tag + ".dat";
+    static const QString suffix_info_path = ".suffix_info" + tag + ".dat";
+    static const QString stem_info_path = ".stem_info" + tag + ".dat";
 
 //reverse_descriotion
 #define REVERSEDESCBIT max_sources-2

@@ -132,7 +132,6 @@ void compatibility_rules::fill() {
 
 void compatibility_rules::readFromDatabaseAndBuildFile() {
     fill();
-    #ifdef LOAD_FROM_FILE
     QFile file(compatibility_rules_path.toStdString().data());
 
     if (file.open(QIODevice::WriteOnly)) {
@@ -144,16 +143,9 @@ void compatibility_rules::readFromDatabaseAndBuildFile() {
     } else {
         _error << "Unexpected Error: Unable to write COMPATIBILITY TABLES to file\n";
     }
-
-    #endif
 }
 
 void compatibility_rules::buildFromFile() {
-    //out<<QDateTime::currentDateTime().time().toString()<<"\n";
-    #ifndef LOAD_FROM_FILE
-    readFromDatabaseAndBuildFile();
-    fillMap();
-    #else
     QFile file(compatibility_rules_path.toStdString().data());
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -167,7 +159,6 @@ void compatibility_rules::buildFromFile() {
     }
 
     fillMap();
-    #endif
 }
 
 void compatibility_rules::fillMap() {

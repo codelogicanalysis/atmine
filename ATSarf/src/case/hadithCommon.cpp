@@ -84,9 +84,6 @@ void readFromDatabasePreProcessedHadithDescriptions() {
         _error <<"Unexpected Error: Unable to write PreProcessed Descriptions to file\n";
 }
 void readFromFilePreprocessedHadithDescriptions() {
-#ifndef LOAD_FROM_FILE
-    readFromDatabasePreProcessedHadithDescriptions();
-#else
     QFile file(preProcessedDescriptionsFileName.toStdString().data());
     if (file.open(QIODevice::ReadOnly))
     {
@@ -100,7 +97,6 @@ void readFromFilePreprocessedHadithDescriptions() {
     }
     else
         readFromDatabasePreProcessedHadithDescriptions();
-#endif
 }
 #endif
 
