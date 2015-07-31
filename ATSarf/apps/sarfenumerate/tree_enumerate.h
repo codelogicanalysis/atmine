@@ -1,5 +1,5 @@
-#ifndef _TREE_ENUMERATE_H
-#define _TREE_ENUMERATE_H
+#ifndef TREE_ENUMERATE_H
+#define TREE_ENUMERATE_H
 
 #include <assert.h>
 #include <QVector>
@@ -60,7 +60,6 @@ class TreeEnumerate {
         long getFinalResultingCategory() {
             return resulting_category_idOFCurrentMatch;
         }
-        #ifdef MULTIPLICATION
     private:
         void initializeAffixInfo(solution_position *sol_pos,
                                  int start_index); //zero and initialize solutions till 'last_index' exclusive
@@ -89,7 +88,6 @@ class TreeEnumerate {
             bool val = increment(current, possible_raw_datasOFCurrentMatch.count() - 1);
             return val;
         }
-        #endif
         QList<QList <RawData > > possible_raw_datasOFCurrentMatch;
         tree *Tree;
 
@@ -118,22 +116,18 @@ class TreeEnumerate {
             }
 
             multi_p = M_ALL;
-            #ifdef MULTIPLICATION
             result_nodes = NULL;
-            #endif
         }
         virtual bool operator()();
         /*virtual*/ void fill_details();
         virtual bool onMatch() = 0;// returns true to continue, false to abort
         virtual ~TreeEnumerate() {
-            #ifdef MULTIPLICATION
 
             if (result_nodes != NULL) {
                 delete result_nodes;
             }
 
-            #endif
         }
 };
 
-#endif // TREE_SEARCH_H
+#endif

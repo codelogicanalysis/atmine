@@ -35,10 +35,6 @@ class TreeSearch {
         /// This structure holds the settings required for the final result returned
         multiply_params multi_p;
         QList<int> sub_positionsOFCurrentMatch;//end of last split
-        #ifndef MULTIPLICATION
-        QList<long> catsOFCurrentMatch;
-        QList<long> idsOFCurrentMatch;
-        #else
         /// Vector containing the affix solutions found
         AffixSolutionVector affix_info;
 
@@ -49,7 +45,6 @@ class TreeSearch {
         ItemCatRaw2AbsDescPosMap *map;
         friend class Stemmer;
     public:
-        #endif
         /// Holds the category_id of the current affix match
         long resulting_category_idOFCurrentMatch;
     public:
@@ -139,7 +134,6 @@ class TreeSearch {
         long getFinalResultingCategory() {
             return resulting_category_idOFCurrentMatch;
         }
-        #ifdef MULTIPLICATION
     private:
         void initializeAffixInfo(solution_position *sol_pos,
                                  int start_index); //zero and initialize solutions till 'last_index' exclusive
@@ -169,7 +163,6 @@ class TreeSearch {
             //current->print_positions();
             return val;
         }
-        #endif
         QList<QList <RawData > > possible_raw_datasOFCurrentMatch;
         tree *Tree;
 
@@ -222,22 +215,18 @@ class TreeSearch {
             }
 
             multi_p = M_ALL;
-            #ifdef MULTIPLICATION
             result_nodes = NULL;
-            #endif
         }
         virtual bool operator()();
         /*virtual*/ void
         fill_details(); //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
         virtual bool onMatch() = 0;// returns true to continue, false to abort
         virtual ~TreeSearch() {
-            #ifdef MULTIPLICATION
 
             if (result_nodes != NULL) {
                 delete result_nodes;
             }
 
-            #endif
         }
 };
 

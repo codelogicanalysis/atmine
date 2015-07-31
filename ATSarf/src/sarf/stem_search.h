@@ -108,10 +108,9 @@ class StemSearch {
         void setSolutionSettings(multiply_params params) {
             multi_p = params;
         }
-        #ifdef MULTIPLICATION
         solution_position *computeFirstSolution();
-        bool computeNextSolution(solution_position *current); //compute next posibility
-        #endif
+        // compute next possibility
+        bool computeNextSolution(solution_position *current);
 };
 
-#endif 
+#endif

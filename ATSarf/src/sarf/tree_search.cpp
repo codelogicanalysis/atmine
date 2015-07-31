@@ -20,12 +20,6 @@
 void TreeSearch::fill_details() { //this function fills the public member functions such as QList<int> sub_positionsOFCurrentMatch & QList<long> catsOFCurrentMatch;
     if (!filled_details) {
         sub_positionsOFCurrentMatch.clear();
-        #ifndef MULTIPLICATION
-        catsOFCurrentMatch.clear();
-        idsOFCurrentMatch.clear();
-        catsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_previous_category_id());
-        idsOFCurrentMatch.insert(0, ((result_node *)reached_node)->get_affix_id());
-        #endif
         possible_raw_datasOFCurrentMatch.clear();
         possible_raw_datasOFCurrentMatch.prepend(((result_node *)reached_node)->raw_datas);
         //qDebug()<<position<<":"<<((result_node *)reached_node)->raw_datas[0];
@@ -43,10 +37,6 @@ void TreeSearch::fill_details() { //this function fills the public member functi
                     index--;
                 }
             } else {
-                #ifndef MULTIPLICATION
-                catsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_previous_category_id());
-                idsOFCurrentMatch.insert(0, ((result_node *)current_parent)->get_affix_id());//was : reached_node
-                #endif
                 sub_positionsOFCurrentMatch.prepend(index);
                 possible_raw_datasOFCurrentMatch.prepend(((result_node *)current_parent)->raw_datas);
                 //qDebug()<<position-count<<":"<<((result_node *)current_parent)->raw_datas[0];

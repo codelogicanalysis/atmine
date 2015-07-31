@@ -13,8 +13,6 @@
 //#define USE_ORIGINAL
 #define USE_BAMA
 
-#define MULTIPLICATION
-
 #define TIMESTAMP
 
 #define RUNON_WORDS
