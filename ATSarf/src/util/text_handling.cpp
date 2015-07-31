@@ -19,10 +19,6 @@ Notes:
 -asma2 el mourakaba according to last word
   */
 // *INDENT-ON*
-//#define COUNT_RUNON
-#ifdef COUNT_RUNON
-extern bool runon;
-#endif
 
 inline bool equal(Diacritics &list1, Diacritics &list2, bool forceShadde = false) {
     bool l = list1.isConsistent(list2, forceShadde);
@@ -88,17 +84,11 @@ bool checkIfSmallestIsPrefixOfLargest(const QStringRef &word1, const QStringRef 
             } else {
                 if (letter1 == ' ') {
                     i2--;//bc will be incremented later so this in effect only moves i1 and keeps i2 in its place
-                    #ifdef COUNT_RUNON
-                    runon = true;
-                    #endif
                     continue;
                 }
 
                 if (letter2 == ' ') {
                     i1--;//bc will be incremented later so this in effect only moves i2 and keeps i1 in its place
-                    #ifdef COUNT_RUNON
-                    runon = true;
-                    #endif
                     continue;
                 }
 
@@ -179,17 +169,11 @@ bool checkIfFirstIsContainedInSecond(const QStringRef &word1, const QStringRef &
             } else {
                 if (letter1 == ' ') {
                     i2--;//bc will be incremented later so this in effect only moves i1 and keeps i2 in its place
-                    #ifdef COUNT_RUNON
-                    runon = true;
-                    #endif
                     continue;
                 }
 
                 if (letter2 == ' ') {
                     i1--;//bc will be incremented later so this in effect only moves i2 and keeps i1 in its place
-                    #ifdef COUNT_RUNON
-                    runon = true;
-                    #endif
                     continue;
                 }
 

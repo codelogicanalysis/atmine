@@ -26,10 +26,6 @@ QString PhrasesFileName=".phrases";
 QString StopwordsFileName=".stop_words";
 #endif
 
-#ifdef COUNT_RUNON
-bool runon;
-#endif
-
 QString hadath,abid,alrasoul,abyi,_3an,_2ama,_3ama;
 int bit_POSSESSIVE, bit_PLACE,bit_CITY,bit_COUNTRY,bit_NOUN_PROP,bit_ENARRATOR_NAMES;
 QList<int> bits_NAME;

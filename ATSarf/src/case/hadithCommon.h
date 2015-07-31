@@ -80,10 +80,6 @@
 	enum Structure { INITIALIZE, NAME_CONNECTOR, NARRATOR_CONNECTOR, NAME_PRIM, RASOUL_WORD, UNDETERMINED_STRUCTURE};
 #endif
 
-#ifdef COUNT_RUNON
-	extern bool runon;
-#endif
-
 	typedef struct  {
 		long lastEndPos;
 		long startPos;
@@ -406,13 +402,6 @@
 								learnedName=false;
 							finishStem=Stem->info.finish;
 							startStem=Stem->info.start;
-						#ifdef COUNT_RUNON
-							runon=false;
-							if (equal(Stem->info.getString(),stem_info->raw_data)) {
-								if (runon)
-									error<<Stem->info.getString()<<"-"<<stem_info->raw_data<<"\n";
-							}
-						#endif
 						#endif
 						#ifdef GET_WAW
 							checkForWaw();
