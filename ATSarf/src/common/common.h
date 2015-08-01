@@ -10,8 +10,6 @@
 #include <QStringList>
 #include "dbitvec.h"
 
-#define USE_BAMA
-
 #define TIMESTAMP
 
 using namespace std;
@@ -151,20 +149,16 @@ static const QString databaseFileName = "../../src/sql design/atm_filled.sql";
 static const  QString databaseFileName = ".atm_filled.sql";
 #endif
 
-    #if defined(USE_BAMA)
-        static const QString tag = "_bama";
-    #else
-        static const QString tag = "";
-    #endif
-    static const QString trie_path = ".stem_trie" + tag + ".dat";
-    static const QString trie_list_path = ".stem_list" + tag + ".dat";
-    static const QString compatibility_rules_path = ".compatibility" + tag + ".dat";
-    static const QString prefix_tree_path = ".prefix_tree" + tag + ".dat";
-    static const QString suffix_tree_path = ".suffix_tree" + tag + ".dat";
-    static const QString description_path = ".descriptions" + tag + ".dat";
-    static const QString prefix_info_path = ".prefix_info" + tag + ".dat";
-    static const QString suffix_info_path = ".suffix_info" + tag + ".dat";
-    static const QString stem_info_path = ".stem_info" + tag + ".dat";
+static const QString tag = "_bama";
+static const QString trie_path = ".stem_trie" + tag + ".dat";
+static const QString trie_list_path = ".stem_list" + tag + ".dat";
+static const QString compatibility_rules_path = ".compatibility" + tag + ".dat";
+static const QString prefix_tree_path = ".prefix_tree" + tag + ".dat";
+static const QString suffix_tree_path = ".suffix_tree" + tag + ".dat";
+static const QString description_path = ".descriptions" + tag + ".dat";
+static const QString prefix_info_path = ".prefix_info" + tag + ".dat";
+static const QString suffix_info_path = ".suffix_info" + tag + ".dat";
+static const QString stem_info_path = ".stem_info" + tag + ".dat";
 
 //reverse_descriotion
 #define REVERSEDESCBIT max_sources-2
