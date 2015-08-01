@@ -179,7 +179,6 @@ bool AbstractTwoLevelAgreement::readAnnotations() {
     annotatedGraph=newGraph(true);
     if (!readAnnotation(fileName+".tags",tags,annotatedGraph)){
         _error << "Annotation File does not exist\n";
-#ifndef SUBMISSION
         QFile file(QString("%1.tags").arg(fileName).toStdString().data());
         if (file.open(QIODevice::WriteOnly)) {
             QDataStream out(&file);   // we will serialize the data into the file
@@ -188,7 +187,6 @@ bool AbstractTwoLevelAgreement::readAnnotations() {
             file.close();
             _error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
         }
-#endif
         return false;
     }
     return true;

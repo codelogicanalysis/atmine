@@ -6,7 +6,6 @@
 #include "ATMProgressIFC.h"
 
 
-//#define SUBMISSION //Dont forget to do so when u want to compile for submission to account for change in filename path
 #define WRITE_POR
 #if 1
 #define BIOGRAPHY_SEGMENT

@@ -143,11 +143,7 @@ class multiply_params {
 
 static multiply_params M_ALL;
 
-#ifndef SUBMISSION
 static const QString databaseFileName = "../../src/sql design/atm_filled.sql";
-#else
-static const  QString databaseFileName = ".atm_filled.sql";
-#endif
 
 static const QString tag = "_bama";
 static const QString trie_path = ".stem_trie" + tag + ".dat";

@@ -1473,14 +1473,12 @@ class NarratorDetector {
                                 file.close();
                             } else {
                                 _error << "Annotation File does not exist\n";
-                                //#ifndef SUBMISSION
                                 if (file.open(QIODevice::WriteOnly)) {
                                     QDataStream out(&file);   // we will serialize the data into the file
                                     out << generatedTags;
                                     file.close();
                                     _error << "Annotation File has been written from current detected expressions, Correct it before use.\n";
                                 }
-                                //#endif
                                 return -1;
                             }
                             OneLevelAgreement o(text,tags,generatedTags);

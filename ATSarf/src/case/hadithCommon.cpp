@@ -16,13 +16,8 @@ QString chainDataStreamFileName = ".chainOutput";
 #ifdef PREPROCESS_DESCRIPTIONS
 QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
 #endif
-#ifndef SUBMISSION
 QString PhrasesFileName = "../src/case/phrases";
 QString StopwordsFileName = "../src/case/stop_words";
-#else
-QString PhrasesFileName = ".phrases";
-QString StopwordsFileName = ".stop_words";
-#endif
 
 QString hadath, abid, alrasoul, abyi, _3an, _2ama, _3ama;
 int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRATOR_NAMES;
@@ -42,7 +37,6 @@ QTextStream *myoutPtr;
 long total_solutions = 0;
 long stemmings = 0;
 #endif
-
 
 #ifdef PREPROCESS_DESCRIPTIONS
 void readFromDatabasePreProcessedHadithDescriptions() {
@@ -2043,7 +2037,6 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
         QSet<Name>::iterator itr;
 
         if (annotatedNames.size() > 0) {
-            #ifndef SUBMISSION
             itr = commonContextNames.begin();
             theSarf->displayed_error << "Contextually-Detected Correct Names:\n";
 
@@ -2079,7 +2072,6 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
                 theSarf->displayed_error << itr->getString() << "\n";
             }
 
-            #endif
             contextRecall = (double)commonContextNames.size() / annotatedNames.size();
             contextPrecision = (double)commonContextNames.size() / contextNames.size();
             allRecall = (double)commonNonContextNames.size() / annotatedNames.size();
@@ -2159,7 +2151,6 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
 
     if (names && annotatedNames.size() == 0) {
         _error << "Annotation Names File does not exist\n";
-        #ifndef SUBMISSION
         QFile file(QString("%1.names").arg(fileName).toStdString().data());
 
         if (file.open(QIODevice::WriteOnly)) {
@@ -2168,13 +2159,10 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
             file.close();
             _error << "Annotation File has been written from current known names, Correct it before use.\n";
         }
-
-        #endif
     }
 
     if (annotatedNarrators.size() == 0) {
         _error << "Annotation Narrator File does not exist\n";
-        #ifndef SUBMISSION
         QFile file(QString("%1.narr").arg(fileName).toStdString().data());
 
         if (file.open(QIODevice::WriteOnly)) {
@@ -2188,8 +2176,6 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
             file.close();
             _error << "Annotation File has been written from current known narrators, Correct it before use.\n";
         }
-
-        #endif
     }
 }
 

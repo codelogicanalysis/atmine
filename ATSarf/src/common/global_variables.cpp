@@ -1,11 +1,10 @@
-//#include <QFile>
 #include <QString>
 #include <bitset>
 #include <QSqlDatabase>
 #include <QTextStream>
 #include <QTextCodec>
 #include <QDateTime>
-#include "hadith.h" //just to propagate Directives such as SUBMISSION
+#include "hadith.h" 
 #include "database_info_block.h"
 #include "letters.h"
 #include "sql_queries.h"
@@ -14,13 +13,7 @@
 
 dbitvec INVALID_BITSET(max_sources);
 
-//QSqlDatabase db;
-
-//QTextStream out;
-//QTextStream in;
-//QTextStream displayed_error;
 QTextStream hadith_out;
-//QTextStream chainOut;
 
 bool KEEP_OLD = true;
 bool warn_about_automatic_insertion = false;
@@ -48,7 +41,6 @@ void initialize_variables() {
                                               "]")).remove('-').remove('[').remove(']').remove(':');
     INVALID_BITSET.reset();
     INVALID_BITSET.setBit(max_sources - 1, true);
-    //INVALID_BITSET.show();
 }
 
 void initialize_other() {
