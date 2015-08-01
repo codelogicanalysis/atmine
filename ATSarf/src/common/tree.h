@@ -1,5 +1,5 @@
-#ifndef _TREE_H
-#define _TREE_H
+#ifndef TREE_H
+#define TREE_H
 
 #include "node.h"
 #include "letter_node.h"

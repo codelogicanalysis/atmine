@@ -8,7 +8,6 @@
 #include "common.h"
 #include "Ptr.h"
 
-#define EXTENSIVE_TREE
 
 inline int getLetterIndex(const QChar &letter) {
     int unicode = letter.unicode();
@@ -35,15 +34,11 @@ class result_node;
 class node {
     private:
         QList<result_node *> *result_children;
-        #if defined(EXTENSIVE_TREE)
         QVector<letter_node *> *letter_children;
-        #endif
         void removeChildren();
         void initialize(const node &n) {
             parent = n.parent;
-            #if defined(EXTENSIVE_TREE)
             letter_children = new QVector<letter_node *>(*n.letter_children);
-            #endif
             result_children = new QList<result_node *>(*n.result_children);
         }
     public:
@@ -53,9 +48,7 @@ class node {
         }
         node(): parent(NULL) {
             result_children = new QList<result_node *>;
-            #if defined(EXTENSIVE_TREE)
             letter_children = new QVector<letter_node *>(37);
-            #endif
         }
         node(const node &n) {
             initialize(n);
@@ -73,12 +66,9 @@ class node {
             return result_children;
         }
         QVector<letter_node * > getLetterChildren() { //inefficient copy constructor, this function's use should be avoided
-            #if defined(EXTENSIVE_TREE)
             return *letter_children; //must be changed later to filter empty nodes
-            #endif
         }
         letter_node *getLetterChild(QChar &letter) {
-            #if defined(EXTENSIVE_TREE)
             int i = getLetterIndex(letter);
 
             if (i >= 0) {
@@ -86,16 +76,11 @@ class node {
             } else {
                 return NULL;
             }
-
-            #endif
         }
         void addChild(node *child);
         void resetChildren() {
             removeChildren();
             result_children->clear();
-            #ifndef EXTENSIVE_TREE
-            letter_children->clear();
-            #endif
         }
         virtual ~node() {
             delete letter_children;
@@ -103,4 +88,4 @@ class node {
         }
 };
 
-#endif 
+#endif

@@ -13,7 +13,6 @@ void node::removeChildren() {
         delete result_children->at(i);
     }
 
-    #if defined(EXTENSIVE_TREE)
     length = letter_children->count();
 
     for (int i = 0; i < length; i++) {
@@ -24,16 +23,12 @@ void node::removeChildren() {
             delete child;
         }
     }
-
-    #endif
 }
 
 void node::addChild(node *child) {
     if (child->isLetterNode()) {
         letter_node *l = (letter_node *)child;
-        #if defined(EXTENSIVE_TREE)
         (*letter_children)[getLetterIndex(l->getLetter())] = l;
-        #endif
     } else {
         result_children->append((result_node *)child);
     }
