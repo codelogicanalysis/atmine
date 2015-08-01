@@ -13,16 +13,7 @@ void node::removeChildren() {
         delete result_children->at(i);
     }
 
-    #if defined(HASH_TABLE)
-    QList<letter_node *> lett_chil = letter_children->values();
-    length = lett_chil.count();
-
-    for (int i = 0; i < length; i++) {
-        lett_chil[i]->removeChildren();
-        delete lett_chil[i];
-    }
-
-    #elif defined(EXTENSIVE_TREE)
+    #if defined(EXTENSIVE_TREE)
     length = letter_children->count();
 
     for (int i = 0; i < length; i++) {
@@ -40,9 +31,7 @@ void node::removeChildren() {
 void node::addChild(node *child) {
     if (child->isLetterNode()) {
         letter_node *l = (letter_node *)child;
-        #if defined(HASH_TABLE)
-        letter_children->insert(l->getLetter(), l);
-        #elif defined(EXTENSIVE_TREE)
+        #if defined(EXTENSIVE_TREE)
         (*letter_children)[getLetterIndex(l->getLetter())] = l;
         #endif
     } else {

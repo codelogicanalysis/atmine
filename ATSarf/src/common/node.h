@@ -1,5 +1,5 @@
-#ifndef _NODE_H
-#define _NODE_H
+#ifndef NODE_H
+#define NODE_H
 
 #include <QList>
 #include <QString>
@@ -8,7 +8,6 @@
 #include "common.h"
 #include "Ptr.h"
 
-//#define HASH_TABLE
 #define EXTENSIVE_TREE
 
 inline int getLetterIndex(const QChar &letter) {
@@ -36,17 +35,13 @@ class result_node;
 class node {
     private:
         QList<result_node *> *result_children;
-        #if defined(HASH_TABLE)
-        QHash<QChar, letter_node *> *letter_children;
-        #elif defined(EXTENSIVE_TREE)
+        #if defined(EXTENSIVE_TREE)
         QVector<letter_node *> *letter_children;
         #endif
         void removeChildren();
         void initialize(const node &n) {
             parent = n.parent;
-            #if defined(HASH_TABLE)
-            letter_children = new QHash<QChar, letter_node *>(*n.letter_children);
-            #elif defined(EXTENSIVE_TREE)
+            #if defined(EXTENSIVE_TREE)
             letter_children = new QVector<letter_node *>(*n.letter_children);
             #endif
             result_children = new QList<result_node *>(*n.result_children);
@@ -58,9 +53,7 @@ class node {
         }
         node(): parent(NULL) {
             result_children = new QList<result_node *>;
-            #if defined(HASH_TABLE)
-            letter_children = new QHash<QChar, letter_node *>();
-            #elif defined(EXTENSIVE_TREE)
+            #if defined(EXTENSIVE_TREE)
             letter_children = new QVector<letter_node *>(37);
             #endif
         }
@@ -80,16 +73,12 @@ class node {
             return result_children;
         }
         QVector<letter_node * > getLetterChildren() { //inefficient copy constructor, this function's use should be avoided
-            #if defined(HASH_TABLE)
-            return letter_children->values().toVector();
-            #elif defined(EXTENSIVE_TREE)
+            #if defined(EXTENSIVE_TREE)
             return *letter_children; //must be changed later to filter empty nodes
             #endif
         }
         letter_node *getLetterChild(QChar &letter) {
-            #if defined(HASH_TABLE)
-            return letter_children->value(letter, NULL);
-            #elif defined(EXTENSIVE_TREE)
+            #if defined(EXTENSIVE_TREE)
             int i = getLetterIndex(letter);
 
             if (i >= 0) {
@@ -109,13 +98,9 @@ class node {
             #endif
         }
         virtual ~node() {
-            //removeChildren();
             delete letter_children;
             delete result_children;
         }
 };
 
-
-
-
-#endif // _NODE_H
+#endif 

@@ -3,8 +3,8 @@
   * @brief  this header file contains the definition of the ATTrie structure, which is the trie storing the stem data
   * @author Jad Makhlouta
   */
-#ifndef _ATM_TRIE_H
-#define	_ATM_TRIE_H
+#ifndef ATM_TRIE_H
+#define ATM_TRIE_H
 
 
 #include <QString>
@@ -14,31 +14,6 @@
 #include "StemNode.h"
 
 class ATTrieData;
-/*
-class ATTrieEnumerator {
-public:
-    void * UserData;
-	//virtual bool enumerator(const QString & key, StemNode * node) = 0;
-	virtual bool enumerator(const QString & key, int index) = 0;
-};
-*/
-#if 0
-class ATTrieEnumeratorExample : public ATTrieEnumerator {
-public:
-    ATTrieEnumeratorExample(int * i) {
-        UserData = (void*)i;
-    }
-
-    virtual bool enumerator(const QString & key, StemNode * node)
-    {
-        // we can cast and use UserData as needed here
-        fprintf(stderr,"This is an example!\n");
-        fprintf(stderr,"Node is %x\n", node);
-        fprintf(stderr,"key is %s\n", key);
-        return true;
-    }
-};
-#endif
 
 typedef QVector<StemNode> StemNodesList;
 
@@ -49,23 +24,23 @@ typedef QVector<StemNode> StemNodesList;
   */
 class ATTrie {
     private:
-        ATTrieData * data;
+        ATTrieData *data;
     public:
-		StemNodesList * nodes;
+        StemNodesList *nodes;
 
         ATTrie();
-        ATTrie(const char * path);
+        ATTrie(const char *path);
         ~ATTrie() ;
 
-        void save(const char * path);
-                //bool store(const QString & key, StemNode * node) ;
-        bool retreive(const QString & key, const StemNode ** node) ;
-        bool retreive(const QString & key, int* index);
-        bool store(const QString & key, int index) ;
-        bool remove(const QString & key);
+        void save(const char *path);
+        //bool store(const QString & key, StemNode * node) ;
+        bool retreive(const QString &key, const StemNode **node) ;
+        bool retreive(const QString &key, int *index);
+        bool store(const QString &key, int index) ;
+        bool remove(const QString &key);
         bool isDirty() const;
 
-        typedef void * Position;
+        typedef void *Position;
 
         /**
           * This method starts the walk and returns a position pointer to be used in the walk
@@ -122,12 +97,12 @@ class ATTrie {
 
         //given a terminal position
         // returns the node associated with the position
-		int getData(Position pos,bool integer);
-		const StemNode* getData(Position pos);
+        int getData(Position pos, bool integer);
+        const StemNode *getData(Position pos);
 
         // you need to implement the abstract class ATTrieEnumerator
         // to enumerate all stems in the trie
-		//bool enumerate(ATTrieEnumerator* e);
+        //bool enumerate(ATTrieEnumerator* e);
 };
 
 #endif
