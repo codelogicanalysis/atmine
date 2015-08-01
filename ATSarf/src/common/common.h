@@ -10,7 +10,6 @@
 #include <QStringList>
 #include "dbitvec.h"
 
-//#define USE_ORIGINAL
 #define USE_BAMA
 
 #define TIMESTAMP
@@ -152,9 +151,7 @@ static const QString databaseFileName = "../../src/sql design/atm_filled.sql";
 static const  QString databaseFileName = ".atm_filled.sql";
 #endif
 
-    #ifdef USE_ORIGINAL
-        static const QString tag = "_original";
-    #elif defined(USE_BAMA)
+    #if defined(USE_BAMA)
         static const QString tag = "_bama";
     #else
         static const QString tag = "";
