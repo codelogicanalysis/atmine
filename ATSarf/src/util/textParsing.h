@@ -1,5 +1,6 @@
 #ifndef TEXTPARSING_H
 #define TEXTPARSING_H
+
 #include "hadith.h"
 #include "letters.h"
 #include "diacritics.h"
@@ -103,13 +104,6 @@ inline long getLastLetter_IN_previousWord(QString *text, long start_letter_curre
 
 inline long getLastLetter_IN_currentWord(QString *text, long start_letter_current_word) {
     int size = text->length();
-    #if 0
-
-    if (!isDelimiter(text->at(start_letter_current_word))) {
-        start_letter_current_word++;
-    }
-
-    #endif
     bool first = true;
 
     while (start_letter_current_word < size) {
@@ -143,7 +137,8 @@ inline bool isNumber(QString *text, long &currentPos, long &finish) {
         }
     }
 
-    finish = i; //means (still number and text finished) or did not enter the loop at all
+    //means (still number and text finished) or did not enter the loop at all
+    finish = i;
     return ret_val;
 }
 
@@ -165,4 +160,4 @@ inline QString getLastNWords(QString s, int N) {
     return s.mid(l - 1);
 }
 
-#endif // TEXTPARSING_H
+#endif
