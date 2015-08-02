@@ -152,18 +152,14 @@ class HadithSegmentor {
 
             QDataStream tester(&chainOutput);
             int tester_Counter = 1;
-#ifdef TEST_NARRATOR_GRAPH
             ChainsContainer chains;
             chains.clear();
-#endif
             prg->startTaggingText(*text);
 
             while (!tester.atEnd()) {
                 Chain *s = new Chain(text);
                 s->deserialize(tester);
-#ifdef TEST_NARRATOR_GRAPH
                 chains.append(s);
-#endif
 
                 for (int j = 0; j < s->m_chain.size(); j++) {
                     ChainPrim *curr_struct = s->m_chain[j];
@@ -205,9 +201,7 @@ class HadithSegmentor {
 
             chainOutput.close();
             f.close();
-#ifdef TEST_NARRATOR_GRAPH
             (*functionUsingChains)(chains, prg, fileName);
-#endif
 #endif
             prg->finishTaggingText();
 #endif
