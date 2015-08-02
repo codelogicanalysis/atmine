@@ -116,7 +116,7 @@ inline void display(QString t) {
 #endif
 
 #ifdef PREPROCESS_DESCRIPTIONS
-QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
+    QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
 #endif
 
 class DescentConnectors;
@@ -222,10 +222,10 @@ class GeneStemmer: public Stemmer {
         DescentDirection descentDir: 3;
         bool pluralDescent: 1;
         bool relativeSuffix;
-        #ifdef GET_WAW
+#ifdef GET_WAW
         bool has_waw: 1;
         bool has_li: 1;
-        #endif
+#endif
         long startStem, finishStem, wawStart, wawEnd;
 
         GeneStemmer(QString *word, int start)
@@ -246,19 +246,19 @@ class GeneStemmer: public Stemmer {
             finishStem = start;
             relativeSuffix = false;
             male = true;
-            #ifdef GET_WAW
+#ifdef GET_WAW
             wawStart = start;
             wawEnd = start;
             has_waw = false;
             has_li = false;
-            #endif
+#endif
         }
         bool on_match() {
             solution_position *S_inf = Stem->computeFirstSolution();
 
             do {
                 stem_info = Stem->solution;
-                #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
                 solution_position *p_inf = Prefix->computeFirstSolution();
 
                 do {
@@ -267,44 +267,44 @@ class GeneStemmer: public Stemmer {
 
                     do {
                         suffix_infos = &Suffix->affix_info;
-                #endif
+#endif
 
                         if (!analyze()) {
                             return false;
                         }
 
-                        #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
                     } while (Suffix->computeNextSolution(s_inf));
 
                     delete s_inf;
                 } while (Prefix->computeNextSolution(p_inf));
 
                 delete p_inf;
-                        #endif
+#endif
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
             return true;
         }
 
-        #ifdef GET_WAW
+#ifdef GET_WAW
         void checkForWaw() {
             has_waw = false;
             has_li = false;
-            #ifndef GET_AFFIXES_ALSO
+#ifndef GET_AFFIXES_ALSO
             solution_position *p_inf = Prefix->computeFirstSolution();
 
             do {
                 prefix_infos = &Prefix->affix_info;
-            #endif
-                #ifndef REDUCE_AFFIX_SEARCH
+#endif
+#ifndef REDUCE_AFFIX_SEARCH
 
                 for (int i = 0; i < prefix_infos->size(); i++) {
-                #else
+#else
 
                 if (prefix_infos->size() > 0) {
                     int i = 0;
-                #endif
+#endif
                     has_waw = prefix_infos->at(i).POS == "wa/CONJ+";
 
                     if (!has_waw) {
@@ -322,16 +322,16 @@ class GeneStemmer: public Stemmer {
                     break;
                 }
 
-                #ifndef GET_AFFIXES_ALSO
+#ifndef GET_AFFIXES_ALSO
             }
 
             while (Prefix->computeNextSolution(p_inf));
 
             delete p_inf;
-                #endif
+#endif
         }
 
-        #endif
+#endif
 
         bool analyze()  {
             if (info.finish > info.start) { //more than one letter to be tested for being a name
@@ -395,13 +395,13 @@ class GeneStemmer: public Stemmer {
                             }
                         }
 
-                        #ifdef GET_WAW
+#ifdef GET_WAW
 
                         if (info.finish == finish_pos && !has_waw && !has_li) {
                             checkForWaw();
                         }
 
-                        #endif
+#endif
                         return true;
                     }
                 }
@@ -598,13 +598,13 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                 return node;
             } else {
                 GeneNode *node = topMostNode->getNodeInSubTree(name.getString(), checkSpouses);
-                #if 0
+#if 0
 
                 if (node == NULL) {
                     node = mainTree->findTreeNode(name.getString(), checkSpouses);
                 }
 
-                #endif
+#endif
                 return node;
             }
         }
@@ -686,7 +686,7 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                             appendEdgeName(n1, n1->spouses.last(), delimitersStart, delimitersEnd);
                         }
                     } else {
-                        #if 0
+#if 0
                         //try merging spouses 2 nodes if possible
                         GeneNode *main = n1;
 
@@ -720,16 +720,16 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                         }
 
                         n2->ignoreInSearch = true;
-                        #endif
+#endif
                     }
                 }
             } else {
                 if (n1 == n2) {
                     if (n1 != NULL) {
-                        #ifdef SHOW_MERGING_ERRORS
+#ifdef SHOW_MERGING_ERRORS
                         error << "Conflict (" << n1->toString() << "," << n2->toString() << ") old relationship is spouse, new is child.\n";
                         //conflict but trust old (this means the nodes correspond to spouses)
-                        #endif
+#endif
                     } else {
                         addUnPerformedEdge(node1, node2, isSpouse);
                     }
@@ -748,11 +748,11 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                         }
                     } else {
                         if (n2->getParent() != n1) {
-                            #ifdef SHOW_MERGING_ERRORS
+#ifdef SHOW_MERGING_ERRORS
                             //conflict but trust old
                             error << "Conflict (" << n1->toString() << "," << n2->toString() <<
                                   ") newly must be child relationship but previously is not.\n";
-                            #endif
+#endif
                         } else {
                             n1->name = name1; //so that we add a new edge when calling appendEdgeName(..)
                             n2->name = name2; //so that we add a new edge when calling appendEdgeName(..)
@@ -1193,60 +1193,6 @@ class GeneDisplayVisitor: public GeneVisitor {
             getAndInitializeDotNode(n->getName(), false);
         }
         virtual void finish() {
-            #ifdef FORCE_RANKS
-            QString s;
-            int startingRank = (parameters.display_chain_num ? 0 : 1);
-            int currRank = startingRank, lastRank = startingRank;
-
-            if (ranksList.size() > 0) {
-                while (ranksList[currRank].size() == 0) {
-                    currRank++;
-                }
-
-                d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                d_out << "{ rank = source;";
-
-                foreach (s, ranksList[currRank]) {
-                    d_out << s << ";";
-                }
-
-                d_out << QString("r%1;").arg(lastRank);
-                d_out << "}\n";
-                lastRank++;
-            }
-
-            for (int rank = currRank + 1; rank < ranksList.size() - 1; rank++) {
-                if (ranksList[rank].size() > 0) {
-                    d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                    d_out << QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank - 1);
-                    d_out << "{ rank = same;";
-
-                    foreach (s, ranksList[rank]) {
-                        d_out << s << ";";
-                    }
-
-                    d_out << QString("r%1;").arg(lastRank);
-                    d_out << "}\n";
-                    lastRank++;
-                }
-            }
-
-            int rank = ranksList.size() - 1;
-
-            if (rank > startingRank) {
-                d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                d_out << QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank - 1);
-                d_out << "{ rank = sink;";
-
-                foreach (s, ranksList[rank]) {
-                    d_out << s << ";";
-                }
-
-                d_out << QString("r%1;").arg(lastRank);
-                d_out << "}\n";
-            }
-
-            #endif
             d_out << "}\n";
             delete dot_out;
             file->close();
@@ -1776,10 +1722,10 @@ class GenealogySegmentor {
                 currentData.outputData->setGraph(new GeneTree());
                 stateInfo.nextState = TEXT_S;
             } else {
-                #if 0
+#if 0
                 currentData.last = NULL;
                 stateInfo.nextState = NAME_S;
-                #else
+#else
 
                 if (conditionToOutput()) {
                     outputAndTag();
@@ -1794,7 +1740,7 @@ class GenealogySegmentor {
                     stateInfo.nextState = NAME_S;
                 }
 
-                #endif
+#endif
             }
 
             stateInfo.descentDirection = UNDEFINED_DIRECTION;
@@ -1802,10 +1748,10 @@ class GenealogySegmentor {
         }
         inline bool doActionNewNameAndNullLast(Name &name) {
             bool ret_value = true;
-            #ifdef TRUST_OLD
+#ifdef TRUST_OLD
 
             if (currentData.tree->getTreeNodesCount() == 0) {
-            #endif
+#endif
                 DescentDirection dir = stateInfo.descentDirection;
                 ret_value = doParaCheck(); //nameList is cleared here, if needed
 
@@ -1835,7 +1781,7 @@ class GenealogySegmentor {
                     stateInfo.nextState = NAME_S;
                 }
 
-                #ifdef TRUST_OLD
+#ifdef TRUST_OLD
             } else {
                 currentData.last = currentData.tree->findTreeNode(currentData.lastName);
 
@@ -1847,7 +1793,7 @@ class GenealogySegmentor {
                 stateInfo.nextState = NAME_S;
             }
 
-                #endif
+#endif
             return ret_value;
         }
         inline void addToTree(Name &name) {
@@ -1904,10 +1850,10 @@ class GenealogySegmentor {
             display("dir: ");
             display(stateInfo.descentDirection);
             display("\n");
-            #ifdef GENEOLOGYDEBUG
+#ifdef GENEOLOGYDEBUG
             currentData.tree->outputTree();
             display("\n");
-            #endif
+#endif
             bool ret_val = true;
             Name name(stateInfo.text, stateInfo.startPos, stateInfo.endPos, stateInfo.male);
 
@@ -1940,9 +1886,9 @@ class GenealogySegmentor {
                     break;
 
                 case NAME_S:
-                    #ifdef BIRTH_LI
+#ifdef BIRTH_LI
                     if (!geneologyParameters.refined || !stateInfo.preceededByLi) {
-                    #endif
+#endif
 
                         switch (stateInfo.currentType) {
                             case DC:
@@ -2067,12 +2013,12 @@ class GenealogySegmentor {
                                                 currentData.i0 = 0;
                                                 stateInfo.nextState = NAME_S;
                                             } else {
-                                                #ifndef TRUST_OLD_L
+#ifndef TRUST_OLD_L
                                                 doActionNewNameAndNullLast(name); //choses also nextState
-                                                #else
+#else
                                                 assert(stateInfo.descentDirection == UNDEFINED_DIRECTION);
                                                 stateInfo.nextState = NAME_S;
-                                                #endif
+#endif
                                             }
                                         }
                                     }
@@ -2122,15 +2068,15 @@ class GenealogySegmentor {
                         }
 
                         break;
-                        #ifdef BIRTH_LI
+#ifdef BIRTH_LI
                     } //in this way, code applies to both NAME_S and SONS_S bc we dont reach break
 
-                        #endif
+#endif
 
                 case SONS_S:
-                    #ifdef BIRTH_LI
+#ifdef BIRTH_LI
                     if (!geneologyParameters.refined || !stateInfo.preceededByLi) {
-                    #endif
+#endif
 
                         switch (stateInfo.currentType) {
                             /*case DC:
@@ -2189,7 +2135,7 @@ class GenealogySegmentor {
                         }
 
                         break;
-                        #ifdef BIRTH_LI
+#ifdef BIRTH_LI
                     } else {
                         if (stateInfo.preceededBygaveBirth) {
                             if (currentData.last != NULL) {
@@ -2213,7 +2159,7 @@ class GenealogySegmentor {
                         break;
                     }
 
-                        #endif
+#endif
 
                 default:
                     assert(false);
@@ -2286,7 +2232,7 @@ class GenealogySegmentor {
                 }
             } else if (s.name) {
                 long nextpos = stateInfo.nextPos;
-                #ifdef GET_WAW
+#ifdef GET_WAW
                 PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
 
                 if ((s.has_waw || s.has_li) && (stateInfo.currentState == NAME_S || stateInfo.currentState == SONS_S)) {
@@ -2318,7 +2264,7 @@ class GenealogySegmentor {
                 }
 
                 stateInfo.currentPunctuationInfo = copyPunc;
-                #endif
+#endif
                 stateInfo.startPos = s.startStem;
                 stateInfo.endPos = s.finishStem;
                 stateInfo.nextPos = nextpos;
@@ -2370,18 +2316,18 @@ class GenealogySegmentor {
                     return false;
                 }
 
-                #ifdef SINGULAR_DESCENT
+#ifdef SINGULAR_DESCENT
 
                 if (type == NEW_NAME && stateInfo.singularDescent) {
                     stateInfo.singularDescent = false;
                     stateInfo.descentDirection = stateInfo.lastDescentDirection;
                 }
 
-                #endif
+#endif
                 currentData.lastName = word;
             } else if (s.descentDir != UNDEFINED_DIRECTION) {
                 stateInfo.land = false;
-                #ifdef SINGULAR_DESCENT
+#ifdef SINGULAR_DESCENT
 
                 if (!stateInfo.singularDescent) {
                     stateInfo.lastDescentDirection = stateInfo.descentDirection;
@@ -2390,7 +2336,7 @@ class GenealogySegmentor {
                 }
 
                 stateInfo.singularDescent = !s.pluralDescent;
-                #endif
+#endif
                 stateInfo.descentDirection = s.descentDir;
 
                 if (s.descentDir == FATHER /*&& s.pluralDescent*/ && stateInfo.preceededBygaveBirth) {
@@ -2462,9 +2408,9 @@ class GenealogySegmentor {
             prg->tag(geneStart, geneEnd - geneStart + 1, Qt::darkYellow, false);
             GeneTagVisitor v(prg);
             v(currentData.tree);
-            #ifdef DISPLAY_INDIVIDUAL
+#ifdef DISPLAY_INDIVIDUAL
             displayTree(currentData.globalTree);
-            #endif
+#endif
 
             if (currentData.globalTree == NULL) {
                 currentData.tree->outputTree();
@@ -2779,11 +2725,11 @@ class GenealogySegmentor {
             GeneTree::GraphStatistics globalStats;
             currentData.globalTree->compareToStandardTree(globalTree, globalStats);
             globalTree->displayGraph(prg);
-            #if 1 //will be deleted after they are finished display
+#if 1 //will be deleted after they are finished display
             currentData.globalTree->deleteGraph();
             globalTree->deleteGraph();
-            #endif
-            #ifdef DETAILED_DISPLAY
+#endif
+#ifdef DETAILED_DISPLAY
             theSarf->displayed_error << "-------------------------\n"
                                      << "Segmentation:\n"
                                      << "\trecall=\t\t" << commonCount << "/" << tags.size() << "=\t" << segmentationRecall << "\n"
@@ -2852,18 +2798,18 @@ class GenealogySegmentor {
                                      << " Global Graph Size (Annotation - Output):\n"
                                      << "\tAnnotation=\t" << graphTagsSize << "\n"
                                      << "\tOutput=\t\t" << graphMergedSize << "\n";
-            #else
+#else
             displayed_error << tags.size() << "\t" << detectionRecall << "\t" << detectionPrecision
                             << "\t" << boundaryRecall << "\t" << boundaryPrecision
                             << "\t" << graphFound     << "\t" << graphSimilarContext << "\n";
-            #endif
-            #if 0
+#endif
+#if 0
 
             for (int i = 0; i < tags.size(); i++) {
                 displayed_error << text->mid(tags[i].getMainStart(), tags[i].getMainEnd() - tags[i].getMainStart()) << "\n";
             }
 
-            #endif
+#endif
 
             for (int i = 0; i < tags.size(); i++) {
                 tags[i].getGraph()->deleteGraph();

@@ -413,83 +413,8 @@ class DisplayNodeVisitor: public NodeVisitor {
             }
 
             theSarf->out << "]\n";
-#if 0
-
-            do {
-                if (controller->parentStack.isEmpty()) {
-                    break;
-                }
-
-                controller->parentStack.pop();
-                QString s = current->CanonicalName();
-                out << s << ",";
-
-                //qDebug()<<s<<",";
-                if (controller->parentStack.isEmpty()) {
-                    break;
-                }
-
-                current = controller->parentStack.top();
-            } while (current != &n && !current->isNull());
-
-            out << "]\n";
-#endif
         }
         virtual void finish() {
-#ifdef FORCE_RANKS
-            QString s;
-            int startingRank = (parameters.display_chain_num ? 0 : 1);
-            int currRank = startingRank, lastRank = startingRank;
-
-            if (ranksList.size() > 0) {
-                while (ranksList[currRank].size() == 0) {
-                    currRank++;
-                }
-
-                d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                d_out << "{ rank = source;";
-
-                foreach (s, ranksList[currRank]) {
-                    d_out << s << ";";
-                }
-
-                d_out << QString("r%1;").arg(lastRank);
-                d_out << "}\n";
-                lastRank++;
-            }
-
-            for (int rank = currRank + 1; rank < ranksList.size() - 1; rank++) {
-                if (ranksList[rank].size() > 0) {
-                    d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                    d_out << QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank - 1);
-                    d_out << "{ rank = same;";
-
-                    foreach (s, ranksList[rank]) {
-                        d_out << s << ";";
-                    }
-
-                    d_out << QString("r%1;").arg(lastRank);
-                    d_out << "}\n";
-                    lastRank++;
-                }
-            }
-
-            int rank = ranksList.size() - 1;
-
-            if (rank > startingRank) {
-                d_out << QString("r%1 [label=\"%1\"];\n").arg(lastRank);
-                d_out << QString("r%2 -> r%1 [style=invis];\n").arg(lastRank).arg(lastRank - 1);
-                d_out << "{ rank = sink;";
-
-                foreach (s, ranksList[rank]) {
-                    d_out << s << ";";
-                }
-
-                d_out << QString("r%1;").arg(lastRank);
-                d_out << "}\n";
-            }
-
-#endif
             d_out << "}\n";
             delete dot_out;
             file->close();
@@ -1207,23 +1132,14 @@ class NarratorGraph {
 
             if (!graph1 && !graph2) {
                 GraphNarratorNode *g = new GraphNarratorNode(*this, n1, n2);
-#if 0
-                out << g->toString() << "\n";
-#endif
                 return *g;
             } else if (graph1 && !graph2) {
                 //assert(&n2==&narr2);
                 ((GraphNarratorNode &)narr1).addChainNode(this, n2);
-#if 0
-                out << narr1.toString() << "\n";
-#endif
                 return (GraphNarratorNode &)narr1;
             } else if (!graph1 && graph2) {
                 //assert(&n1==&narr1);
                 ((GraphNarratorNode &)narr2).addChainNode(this, n1);
-#if 0
-                out << narr2.toString() << "\n";
-#endif
                 return (GraphNarratorNode &)narr2;
             } else if (&narr1 != &narr2) {
                 //assert(narr1.isGraphNode() && narr2.isGraphNode());
