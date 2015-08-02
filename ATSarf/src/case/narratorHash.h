@@ -424,7 +424,6 @@ class NarratorHash {
         }
         void serialize(QDataStream &streamOut);
         void deserialize(QDataStream &streamIn);
-#if defined(EQUALITY_REFINEMENTS) //does not work otherwise, instead of doing different versions for combinations of them on/off
         void addNode(GroupNode *node, int index = -1) {
 #ifdef NARRATORHASH_DEBUG
             qDebug() << node->CanonicalName();
@@ -446,19 +445,7 @@ class NarratorHash {
             DebuggingVisitor d;
             generateAllPosibilities(group, d);
 #endif
-#if 0
-            double val = v.getEqualityValue();
-            double maxEquality = hadithParameters.equality_threshold * hadithParameters.equality_threshold;
-
-            if (val >= maxEquality) {
-                return c;
-            } else {
-                return NULL;
-            }
-
-#else
             return c;
-#endif
         }
         void performActionToAllCorrespondingNodes(GraphNodeItem *node, Action &visitor) {
             FindAllVisitor v(this, visitor);
@@ -492,8 +479,7 @@ class NarratorHash {
             DeleteVisitor v(this);
             generateAllPosibilities(node, v);
         }
-#endif
 };
 
 
-#endif // NARRATORHASH_H
+#endif

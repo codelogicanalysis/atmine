@@ -438,9 +438,7 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
     double dist = max_distance, delta = hadithParameters.equality_delta;
     QList<NamePrim > Names1, Names2;
     QList<NameConnectorPrim > Conns1, Conns2;
-#ifdef EQUALITY_REFINEMENTS
     bool first_ibn1 = false, first_ibn2 = false; //means that the corresponding chain starts with ibn before any name
-#endif
 
     for (int i = 0; i < n1.m_narrator.count(); i++)
         if (n1.m_narrator[i]->isNamePrim()) {
@@ -448,14 +446,12 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
         } else {
             NameConnectorPrim &c = *(NameConnectorPrim *)n1.m_narrator[i];
             Conns1.append(c);
-#ifdef EQUALITY_REFINEMENTS
 
             if (Names1.size() == 0) {
-                if (c.isIbn())
+                if (c.isIbn()) {
                     first_ibn1 = true;
+                }
             }
-
-#endif
         }
 
     for (int i = 0; i < n2.m_narrator.count(); i++)
@@ -464,14 +460,12 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
         } else {
             NameConnectorPrim &c = *(NameConnectorPrim *)n2.m_narrator[i];
             Conns2.append(c);
-#ifdef EQUALITY_REFINEMENTS
 
             if (Names2.size() == 0) {
-                if (c.isIbn())
+                if (c.isIbn()) {
                     first_ibn2 = true;
+                }
             }
-
-#endif
         }
 
 #ifdef EQUALITYDEBUG
@@ -485,8 +479,9 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
 
     for (int i = 0; i < Names1.count(); i++) {
         for (int j = 0; j < Names2.count(); j++) {
-            if (equal_ignore_diacritics(Names1[i].getString(), Names2[j].getString()))
+            if (equal_ignore_diacritics(Names1[i].getString(), Names2[j].getString())) {
                 equal_names.append(EqualNamesStruct(Names1[i], Names2[j], Int2(i, j)));
+            }
         }
     }
 
@@ -496,23 +491,18 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
 
     if (equal_names.count() == min(Names1.count(), Names2.count())) {
         display(QString("%1,%2,%3").arg(equal_names.count()).arg(Names1.count()).arg(Names2.count()));
-        display("equal names \\ ");//may be wrong will be refined later when we used EQUALITY_REFINEMENTS
+        display("equal names \\ ");
         dist -= delta;
     }
 
-#ifdef EQUALITY_REFINEMENTS
     int number_skipped_names = equal_names[0].third.difference(); //start by number of skipped items
-#endif
 
     for (int i = 1; i < equal_names.count(); i++) {
-#ifdef EQUALITY_REFINEMENTS
         int diff = equal_names[i].third.difference();
 
         if (diff != number_skipped_names) {
             number_skipped_names = -1;
         }
-
-#endif
 
         if (equal_names[i - 1].third.second > equal_names[i].third.second) {
             return dist;
@@ -522,9 +512,7 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
     display("same order of names \\ ");
     dist -= delta; //if reaches here it means names are in correct order, otherwise it would have returned before
     QList<EqualConnsStruct> equal_conns;
-#ifdef EQUALITY_REFINEMENTS
     int num_ibn1 = 0, num_ibn2 = 0;
-#endif
 
     for (int i = 0; i < Conns1.count(); i++) {
         IbnStemsDetector stemsD1(Conns1[i].hadith_text, Conns1[i].m_start, Conns1[i].m_end);
@@ -532,9 +520,7 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
 
         if (stemsD1.ibn) {
             Conns1.removeAt(i);
-#ifdef EQUALITY_REFINEMENTS
             num_ibn1++;
-#endif
             i--;
         }
 
@@ -545,9 +531,7 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
 
             if (stemsD2.ibn) {
                 Conns2.removeAt(j);
-#ifdef EQUALITY_REFINEMENTS
                 num_ibn2++;
-#endif
                 j--;
             }
 
@@ -599,7 +583,6 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
         }
     }
 
-#ifdef EQUALITY_REFINEMENTS
     int min_names = min(Names1.count(), Names2.count()),
         min_ibn_cnt = min(num_ibn1, num_ibn2);
     bool one_ibn_first = ((!first_ibn1 && first_ibn2) || (!first_ibn2 && first_ibn1));
@@ -623,8 +606,6 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
             dist += delta;
         }
     }
-
-#endif
 
     if (Conns1.count() == 0 || Conns2.count() == 0) {
         display("No connectors \\ ");
