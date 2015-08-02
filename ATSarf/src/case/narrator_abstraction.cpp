@@ -11,14 +11,7 @@
 #include "graph.h"
 #include "biographyGraphUtilities.h"
 
-#ifdef EQUALITYDEBUG
-inline void display(QString t) {
-    out << t;
-    //qDebug() <<t;
-}
-#else
 #define display(c) ;
-#endif
 
 qint8 getType(const NarratorPrim *) {
     return 'n';
@@ -468,13 +461,6 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
             }
         }
 
-#ifdef EQUALITYDEBUG
-    display("<");
-    display(n1.getString());
-    display(" VS ");
-    display(n2.getString());
-    display(">\n");
-#endif
     QList<EqualNamesStruct> equal_names;
 
     for (int i = 0; i < Names1.count(); i++) {
@@ -614,14 +600,6 @@ inline double getdistance(const Narrator &n1, const Narrator &n2) {
 
     if (equal_conns.count() > 0) {
         display(QString("%1 identical connectors :{ ").arg(equal_conns.count()));
-#ifdef EQUALITYDEBUG
-
-        for (int i = 0; i < equal_conns.count(); i++) {
-            display(equal_conns[i].first.getString() + " - ");
-        }
-
-        display("} \\");
-#endif
         dist -= delta * equal_conns.count(); //reward as much as there are identical connectors other than ibn
     }
 
