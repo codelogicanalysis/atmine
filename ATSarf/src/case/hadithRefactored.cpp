@@ -25,11 +25,9 @@ inline QString type_to_text(WordType t) {
 
         case NMC:
             return "NMC";
-#ifdef REFINEMENTS
 
         case STOP_WORD:
             return "STOP_WORD";
-#endif
 
         default:
             return "UNDEFINED-TYPE";
@@ -48,11 +46,9 @@ inline QString type_to_text(StateType t) {
 
         case NRC_S:
             return "NRC_S";
-#ifdef REFINEMENTS
 
         case STOP_WORD_S:
             return "STOP_WORD_S";
-#endif
 
         default:
             return "UNDEFINED-TYPE";

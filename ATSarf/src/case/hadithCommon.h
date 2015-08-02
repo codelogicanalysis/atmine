@@ -68,16 +68,11 @@ extern QString chainDataStreamFileName;
 extern QString PhrasesFileName;
 extern QString StopwordsFileName;
 
-#ifndef REFINEMENTS
-enum WordType { NAME, NRC, NMC};
-enum StateType { TEXT_S , NAME_S, NMC_S , NRC_S};
-#else
 #define GET_WAW
 
 enum WordType { NAME, NRC, NMC, STOP_WORD};
 enum StateType { TEXT_S , NAME_S, NMC_S , NRC_S, STOP_WORD_S};
 enum Structure { INITIALIZE, NAME_CONNECTOR, NARRATOR_CONNECTOR, NAME_PRIM, RASOUL_WORD, UNDETERMINED_STRUCTURE};
-#endif
 
 typedef struct  {
     long lastEndPos;
@@ -123,10 +118,8 @@ typedef struct  {
     }
 } StateInfo;
 
-#ifdef REFINEMENTS
-    extern QStringList compound_words, rasoul_words, suffixNames;
-    extern QString alrasoul, abyi;
-#endif
+extern QStringList compound_words, rasoul_words, suffixNames;
+extern QString alrasoul, abyi;
 extern QString hadath, abid, alrasoul, abyi, _3an, _2ama, _3ama;
 extern int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRATOR_NAMES;
 extern QList<int> bits_NAME;
@@ -139,7 +132,7 @@ extern QList<int> bits_NAME;
     extern QHash<long, bool> OM_descriptions;
 
 #endif
-    extern QTextStream *myoutPtr;
+extern QTextStream *myoutPtr;
 #ifdef COUNT_AVERAGE_SOLUTIONS
     extern long total_solutions;
     extern long stemmings;
@@ -185,17 +178,14 @@ class hadith_stemmer: public Stemmer {
 #ifdef GET_WAW
         bool has_waw: 1, is3an: 1;
 #endif
-#ifdef REFINEMENTS
         bool tryToLearnNames: 1, learnedName: 1;
         long startStem, finishStem, wawStart, wawEnd;
-#endif
 #ifdef STATS
         QString stem;
         QList<QString> stems;
 #endif
         hadith_stemmer(QString *word, int start)
-            : Stemmer(word, start, false)
-        {
+            : Stemmer(word, start, false) {
             setSolutionSettings(M_ALL);
             init(start);
         }
@@ -215,13 +205,11 @@ class hadith_stemmer: public Stemmer {
             stopword = false;
             finish_pos = start;
             numSolutions = 0;
-#ifdef REFINEMENTS
             tryToLearnNames = false;
             learnedName = false;
             is3an = false;
             startStem = start;
             finishStem = start;
-#endif
 #ifdef GET_WAW
             wawStart = start;
             wawEnd = start;
@@ -243,7 +231,7 @@ class hadith_stemmer: public Stemmer {
 
             do {
                 stem_info = Stem->solution;
-    #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
                 solution_position *p_inf = Prefix->computeFirstSolution();
 
                 do {
@@ -252,46 +240,46 @@ class hadith_stemmer: public Stemmer {
 
                     do {
                         suffix_infos = &Suffix->affix_info;
-    #endif
-    #ifdef COUNT_AVERAGE_SOLUTIONS
+#endif
+#ifdef COUNT_AVERAGE_SOLUTIONS
                         total_solutions++;
-    #endif
-    #ifndef TEST_WITHOUT_SKIPPING
+#endif
+#ifndef TEST_WITHOUT_SKIPPING
 
                         if (!analyze()) {
                             return false;
                         }
 
-        #else
+#else
 
                         if (!finished && !analyze()) {
                             finished = true;
                         }
 
-    #endif
-    #ifdef GET_AFFIXES_ALSO
+#endif
+#ifdef GET_AFFIXES_ALSO
                     } while (Suffix->computeNextSolution(s_inf));
 
                     delete s_inf;
                 } while (Prefix->computeNextSolution(p_inf));
 
                 delete p_inf;
-        #endif
+#endif
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
             return true;
         }
 
-    #ifdef GET_WAW
+#ifdef GET_WAW
         void checkForWaw() {
             has_waw = false;
-        #ifndef GET_AFFIXES_ALSO
+#ifndef GET_AFFIXES_ALSO
             solution_position *p_inf = Prefix->computeFirstSolution();
 
             do {
                 prefix_infos = &Prefix->affix_info;
-        #endif
+#endif
 
                 for (int i = 0; i < prefix_infos->size(); i++)
                     if (prefix_infos->at(i).POS == "wa/CONJ+") {
@@ -301,50 +289,45 @@ class hadith_stemmer: public Stemmer {
                         break;
                     }
 
-        #ifndef GET_AFFIXES_ALSO
+#ifndef GET_AFFIXES_ALSO
             } while (Prefix->computeNextSolution(p_inf));
 
             delete p_inf;
-        #endif
+#endif
         }
-    #endif
+#endif
 
         bool analyze() {
             numSolutions++;
-    #ifdef STATS
+#ifdef STATS
             QString temp_stem = removeDiacritics(info.text->mid(Stem->starting_pos,
                                                  Suffix->info.start - Stem->starting_pos)); //removeDiacritics(stem_info->raw_data);
-    #endif
-    #ifndef PREPROCESS_DESCRIPTIONS
+#endif
+#ifndef PREPROCESS_DESCRIPTIONS
             QString description = stem_info->description();
-    #endif
-    #ifdef REFINEMENTS
+#endif
             _3abid = (equal_ignore_diacritics(stem_info->raw_data, abid));
-    #endif
 
             if (equal_ignore_diacritics(stem_info->raw_data, hadath)) {
-    #ifdef STATS
+#ifdef STATS
                 stem = temp_stem;
-    #endif
+#endif
                 nrc = true;
                 finish_pos = info.finish;
                 return false;
             }
 
-    #ifndef PREPROCESS_DESCRIPTIONS
+#ifndef PREPROCESS_DESCRIPTIONS
             else if (description == "son")
-        #else
+#else
             else if (familyNMC_descriptions.contains(stem_info->description_id())
-            #ifdef REFINEMENTS
                      && !equal_ignore_diacritics(stem_info->raw_data, _2ama) && !equal_ignore_diacritics(stem_info->raw_data, _3ama)
-            #endif
                     )
-    #endif
+#endif
             {
-    #ifdef STATS
+#ifdef STATS
                 stem = temp_stem;
-    #endif
-    #ifdef REFINEMENTS
+#endif
                 familyNMC = true;
 
                 if (IBN_descriptions.contains(stem_info->description_id())) {
@@ -361,27 +344,25 @@ class hadith_stemmer: public Stemmer {
 
                 finishStem = Stem->info.finish;
                 startStem = Stem->info.start;
-    #endif
-    #ifdef GET_WAW
+#ifdef GET_WAW
                 checkForWaw();
-    #endif
+#endif
                 nmc = true;
                 finish_pos = info.finish;
                 return false;
             }
 
-    #ifndef PREPROCESS_DESCRIPTIONS
+#ifndef PREPROCESS_DESCRIPTIONS
             else if (description == "said" || description == "say" || description == "notify/communicate" ||
                      description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") ||
                      description.contains("narrate"))
-        #else
+#else
             else if (NRC_descriptions.contains(stem_info->description_id()))
-    #endif
+#endif
             {
-    #ifdef STATS
+#ifdef STATS
                 stem = temp_stem;
-    #endif
-    #ifdef REFINEMENTS
+#endif
 
                 if (equal_ignore_diacritics(stem_info->raw_data, _3an)) {
                     is3an = true;
@@ -389,42 +370,30 @@ class hadith_stemmer: public Stemmer {
                     finishStem = Stem->info.finish;
                 }
 
-    #endif
                 nrc = true;
                 finish_pos = info.finish;
                 return false;
             }
 
             if (info.finish > info.start) { //more than one letter to be tested for being a name
-    #ifdef REFINEMENTS
                 if (tryToLearnNames) {
                     bits_NAME.append(bit_NOUN_PROP);
                 }
 
-    #endif
                 int bitsNamesSize = bits_NAME.size();
 
                 for (int i = 0; i < bitsNamesSize; i++) {
                     if (stem_info->abstract_categories.getBit(bits_NAME[i])
-    #ifdef REFINEMENTS
                         && Suffix->info.finish - Suffix->info.start < 0 &&
-                        Stem->info.finish > Stem->info.start) //i.e. has no suffix and stem > a letter
-        #else
-                       )
-    #endif
-                    {
-    #ifdef REFINEMENTS
-
+                        Stem->info.finish > Stem->info.start) { //i.e. has no suffix and stem > a letter
                         if (removeDiacritics(Stem->info.getString()).count() < 3) { //bit_NOUN_PROP==bits_NAME[i] &&
                             continue;
                         }
 
-    #endif
                         name = true;
 
                         if (info.finish > finish_pos) {
                             finish_pos = info.finish;
-    #ifdef REFINEMENTS
 
                             if (bit_NOUN_PROP == bits_NAME[i]) {
                                 learnedName = true;
@@ -434,17 +403,13 @@ class hadith_stemmer: public Stemmer {
 
                             finishStem = Stem->info.finish;
                             startStem = Stem->info.start;
-    #endif
-    #ifdef GET_WAW
+#ifdef GET_WAW
                             checkForWaw();
-    #endif
-    #ifdef STATS
+#endif
+#ifdef STATS
                             stem = temp_stem;
-    #endif
-                        }
-
-    #ifdef REFINEMENTS
-                        else if (info.finish == finish_pos && bit_NOUN_PROP != bits_NAME[i]) {
+#endif
+                        } else if (info.finish == finish_pos && bit_NOUN_PROP != bits_NAME[i]) {
                             learnedName = false;
                         }
 
@@ -452,38 +417,32 @@ class hadith_stemmer: public Stemmer {
                             bits_NAME.removeLast();
                         }
 
-    #endif
                         return true;
                     }
                 }
 
-    #ifdef REFINEMENTS
-
                 if (tryToLearnNames) {
                     bits_NAME.removeLast();
                 }
-
-    #endif
 
                 if (stem_info->abstract_categories.getBit(bit_ENARRATOR_NAMES)) {
                     numSolutions--;
                 }
             }
 
-    #ifndef JUST_BUCKWALTER
+#ifndef JUST_BUCKWALTER
 
             if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) && stem_info->abstract_categories.getBit(bit_PLACE)) {
                 possessive = true;
                 place = true;
-        #ifdef STATS
+#ifdef STATS
                 stem = temp_stem;
-        #endif
+#endif
                 nmc = true;
                 finish_pos = info.finish;
                 return false;
             }
 
-        #ifdef REFINEMENTS
             QString c;
 
             foreach (c, rasoul_words) {
@@ -500,12 +459,10 @@ class hadith_stemmer: public Stemmer {
                 }
             }
 
-        #endif
-    #endif
-
-    #ifdef STATS
+#endif
+#ifdef STATS
             stems.append(temp_stem);
-    #endif
+#endif
             return true;
         }
 };
