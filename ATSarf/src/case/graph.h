@@ -896,7 +896,6 @@ class NarratorGraph {
             //postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
             //               chains and top_nodes stores the link to the first node of each chain
         }
-#ifdef HASH_GRAPH_BUILDING
         static bool mustMerge(GroupNode *g_node, ChainNarratorNode *c_node) {
             //TODO: we must add also another check that makes sure no nodes in chains of this group have been merged after this possible merge (but very expensive)
             int chainNum = c_node->getChainNum();
@@ -946,13 +945,9 @@ class NarratorGraph {
                     return dynamic_cast<GroupNode *>(node);
                 }
                 bool isTotalEquality(double val) {
-#if 0
-                    return (val == 1.0);
-#else
                     double a = absVal(1.0 - val);
                     assert(a >= 0);
                     return a < 0.0001;
-#endif
                 }
             public:
                 BuildAction(GraphNodeItem *aNode, NarratorGraph *graph, QList<NarratorNodeIfc *> *toDelete = NULL) {
@@ -964,11 +959,7 @@ class NarratorGraph {
 
                 virtual void action(const QString &, GroupNode *hashedNode, double val) {
                     if (
-#if 0
-                        isTotalEquality(val)
-#else
                         node->getKey() == hashedNode->getKey()
-#endif
                         && !merged) {
                         assert(isTotalEquality(val));
 
@@ -1031,18 +1022,6 @@ class NarratorGraph {
 
                             if (group == NULL) {
                                 group = new GroupNode(*graph, NULL, cn());
-#if 0
-                                NarratorNodeIfc &n = hashedNode->getCorrespondingNarratorNode();
-
-                                if (n.isGraphNode()) {
-                                    GraphNarratorNode &g = (GraphNarratorNode &)n;
-
-                                    for (int i = 0; i < g.size(); i++) {
-                                        assert(g[i].getKey() != node->getKey());
-                                    }
-                                }
-
-#endif
                             }
 
                             assert(group->getKey() != hashedNode->getKey());
@@ -1105,48 +1084,7 @@ class NarratorGraph {
             colorGuard.unUse(bit);
             prg->report(100);
         }
-#else
-        GraphNarratorNode &mergeNodes(ChainNarratorNode &n1, ChainNarratorNode &n2) {
-            //assert(!((NarratorNodeIfc &)n1).isGraphNode());
-            //assert(!((NarratorNodeIfc &)n2).isGraphNode());
-            NarratorNodeIfc &narr1 = n1.getCorrespondingNarratorNode(),
-                             & narr2 = n2.getCorrespondingNarratorNode();
-            bool graph1 = narr1.isGraphNode(),
-                 graph2 = narr2.isGraphNode();
-
-            if (!graph1 && !graph2) {
-                GraphNarratorNode *g = new GraphNarratorNode(*this, n1, n2);
-                return *g;
-            } else if (graph1 && !graph2) {
-                //assert(&n2==&narr2);
-                ((GraphNarratorNode &)narr1).addChainNode(this, n2);
-                return (GraphNarratorNode &)narr1;
-            } else if (!graph1 && graph2) {
-                //assert(&n1==&narr1);
-                ((GraphNarratorNode &)narr2).addChainNode(this, n1);
-                return (GraphNarratorNode &)narr2;
-            } else if (&narr1 != &narr2) {
-                //assert(narr1.isGraphNode() && narr2.isGraphNode());
-                GraphNarratorNode &g_node = (GraphNarratorNode &)narr2;
-                GraphNarratorNode *dlt_g_node = &(GraphNarratorNode &)narr1;
-                ChainNodeIterator itr = narr1.begin();
-
-                for (; !itr.isFinished(); ++itr) {
-                    ChainNarratorNode &c_node = *itr;
-                    g_node.addChainNode(this, c_node);
-                }
-
-                //assert(&n1.getCorrespondingNarratorNode()!=&narr1);
-                removeNode(dlt_g_node);
-                delete dlt_g_node;
-                return g_node;
-            } else {
-                return (GraphNarratorNode &)narr1;
-            }
-        }
-#endif
         void buildGraph(int split = -1) {
-#ifdef HASH_GRAPH_BUILDING
             int num_chains = top_nodes.size();
             prg->setCurrentAction("Merging Nodes");
             prg->report(0);
@@ -1189,80 +1127,6 @@ class NarratorGraph {
             }
 
             prg->report(100);
-#else
-            //note: compares chain by chain then moves to another
-            //TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
-            int radius = hadithParameters.equality_radius;
-            double threshold = hadithParameters.equality_threshold;
-            int num_chains = top_nodes.size();
-            prg->setCurrentAction("Merging Nodes");
-            prg->report(0);
-            int maxChains = num_chains;
-
-            if (split > 0) {
-                maxChains = split;
-            }
-
-            for (int i = 0; i < maxChains; i++) {
-                //assert(!top_nodes[i]->isGraphNode());
-                ChainNarratorNode &c1 = *(ChainNarratorNode *)top_nodes[i]; //since at this stage all are ChainNode's
-                int minChains = i + 1;
-
-                if (split > 0) {
-                    minChains = split + 1;    //TODO: check if must start from 'split'
-                }
-
-                for (int k = minChains; k < num_chains; k++) {
-                    ChainNarratorNode &c2 = *(ChainNarratorNode *)top_nodes[k];
-                    int needle = 0;
-                    ChainNarratorNode *n1 = &c1; //start from beginning of c1
-                    int u = 0, offset = -1;
-
-                    for (; !n1->isNull(); n1 = &(n1->nextInChain())) {
-                        NarratorNodeIfc &g_node =
-                            n1->getCorrespondingNarratorNode(); //get the graph node corresponding to n1, or n1 if no such exists
-                        ChainNarratorNode &lastMergedNode  //the node we should start comparing from after it
-                            = g_node.getChainNodeInChain(k); //return the chain k node in the graph node if it exists
-
-                        if (!lastMergedNode.isNull())
-                            offset = max(offset, //previous offset which may be also increased since 2 were found equal
-                                         lastMergedNode.getIndex());//index of lastMergedNode, which we must skip
-
-                        u = max(offset + 1, needle - radius); //the iterator over nodes of chain[k] for comparison
-                        u = u > 0 ? u : 0;
-                        bool match = false;
-                        int increment = u - offset; //increment that we should add to start at u
-                        ChainNarratorNode *n2 = (lastMergedNode.isNull()
-                                                 ? & (c2 + u) //start iteration at u (from beginning +u)
-                                                 : & (lastMergedNode + increment)); //start iteration at u ( lastNode+(u-index(lastNode)) )
-
-                        for (; u < needle + radius &&
-                             !n2->isNull();
-                             u++, n2 = &(n2->nextInChain())) { //we are within bound of radius and of the chain size (if null => finished)
-                            Narrator &n1_ref = n1->getNarrator();
-                            Narrator &n2_ref = n2->getNarrator();
-                            double eq_val = equal(n1_ref, n2_ref);
-
-                            if (eq_val >= threshold) {
-                                mergeNodes(*n1, *n2);
-                                offset = u; //this is matched, we must skip it in search for match for next node in c1
-                                needle = u + 1; //since the node is matched, we move to match the next
-                                match = true;
-                                break;
-                            }
-                        }
-
-                        if (!match) {
-                            needle++;
-                        }
-                    }
-                }
-
-                prg->report(100.0 * i / maxChains);
-            }
-
-            prg->report(100);
-#endif
         }
         void computeRanks() {
             RankCorrectorNodeVisitor r;
@@ -1495,11 +1359,9 @@ class NarratorGraph {
         }
 
         void init(int split = -1) {
-#ifdef HASH_GRAPH_BUILDING
-
-            if (split < 0)
-#endif
+            if (split < 0) {
                 buildGraph(split);
+            }
 
             correctTopNodesList();
 
@@ -1790,9 +1652,7 @@ class NarratorGraph {
                 setFileName(key, fileName);
             }
 
-#ifdef HASH_GRAPH_BUILDING
             mergeGraphs(graph2->hash);
-#endif
             init(numChain1);
             graph2->clearStructures();
         }
