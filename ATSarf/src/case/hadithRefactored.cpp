@@ -1,7 +1,6 @@
 #if 1
 #include "hadith.h"
 
-#ifdef GENERAL_HADITH
 #include <QTextBrowser>
 #include <assert.h>
 
@@ -87,7 +86,6 @@ class HadithSegmentor {
 #ifdef CHAIN_BUILDING
                         currentChain->chain->serialize(chainOut);
                         //currentChain->chain->serialize(displayed_error);
-#endif
 #endif
                         hadith_Counter++;
                     }
