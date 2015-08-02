@@ -210,7 +210,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
 #endif
             }
             void colorBiography_clicked() {
-#ifdef DISPLAY_BIOGRAPHY_GRAPH
 
                 if (graph->size() < MAX_DISPLAYABLE_SIZE) {
                     int num = biographyNum->currentText().toInt();
@@ -234,10 +233,8 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
 #endif
                 }
 
-#endif
             }
             void colorNarrators_clicked() {
-#ifdef DISPLAY_BIOGRAPHY_GRAPH
 
                 if (graph->size() < MAX_DISPLAYABLE_SIZE) {
                     QList<QTableWidgetSelectionRange>  selection = narratorListDisplay->selectedRanges();
@@ -273,7 +270,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
 #endif
                 }
 
-#endif
             }
             void browse_clicked() {
                 QString fileName = graph->prg->getFileName();
@@ -295,7 +291,6 @@ private:
             }
 
             void displayUncoloredGraph() {
-#ifdef DISPLAY_BIOGRAPHY_GRAPH
 
                 if (graph->size() < MAX_DISPLAYABLE_SIZE) {
                     DisplayNodeVisitor visitor;
@@ -314,7 +309,6 @@ private:
 #endif
                 }
 
-#endif
             }
 
             class ColorBiographiesAction: public NarratorHash::FoundAction {

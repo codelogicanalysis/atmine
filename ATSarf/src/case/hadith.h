@@ -28,7 +28,6 @@
 #define HASH_GRAPH_BUILDING
 #define TAG_BIOGRAPHY
 
-#define DISPLAY_BIOGRAPHY_GRAPH
 #define MAX_DISPLAYABLE_SIZE 3000
 
 int hadithHelper(QString input_str, ATMProgressIFC *prgs);
