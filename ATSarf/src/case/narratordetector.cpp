@@ -940,9 +940,7 @@ class NarratorDetector {
                 stateInfo.startPos++;
             }
 
-#ifdef PROGRESSBAR
             prg->setCurrentAction("Parsing Biography");
-#endif
 
             for (; stateInfo.startPos < text_size;) {
                 if ((proceedInStateMachine(stateInfo, currentBiography, currentData) == false) ||
@@ -996,16 +994,7 @@ class NarratorDetector {
                     stateInfo.previousPunctuationInfo.has_punctuation = true;
                 }
 
-                /*if (stateInfo.previousPunctuationInfo.has_punctuation)
-                  stateInfo.previousPunctuationInfo.fullstop=true;*/
-                /*if (stateInfo.previousPunctuationInfo.fullstop) {
-                  if (currentBiography->biography!=NULL)
-                  delete currentBiography->biography;
-                  currentBiography->biography=new Biography(graph,text,stateInfo.startPos);
-                  }*/
-#ifdef PROGRESSBAR
                 prg->report((double)stateInfo.startPos / text_size * 100 + 0.5);
-#endif
 
                 if (stateInfo.startPos == text_size - 1) {
                     break;
@@ -1102,16 +1091,12 @@ class NarratorDetector {
 #ifdef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
         }
 
-#ifdef PROGRESSBAR
         prg->setCurrentAction("Looking up Biographies");
         prg->report((double)i / nodesSize * 100 + 0.5);
-#endif
 }
 
-#ifdef PROGRESSBAR
 prg->report(100);
 prg->setCurrentAction("Complete");
-#endif
 #else
             chainOutput.close();
 #endif

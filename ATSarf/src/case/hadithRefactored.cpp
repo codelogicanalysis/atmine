@@ -67,9 +67,7 @@ class HadithSegmentor {
                 stateInfo.startPos++;
             }
 
-#ifdef PROGRESSBAR
             prg->setCurrentAction("Parsing Hadith");
-#endif
 
             for (; stateInfo.startPos < text_size;) {
                 if ((proceedInStateMachine(stateInfo, currentChain, currentData) == false)) {
@@ -109,16 +107,12 @@ class HadithSegmentor {
                     stateInfo.previousPunctuationInfo.fullstop = true;
                 }
 
-#ifdef PROGRESSBAR
                 prg->report((double)stateInfo.startPos / text_size * 100 + 0.5);
 
                 if (stateInfo.startPos == text_size - 1) {
                     break;
                 }
-
-#endif
             }
-
 
             if (!currentChain->segmentNarrators) {
                 currentChain->learningEvaluator.displayNameLearningStatistics();
