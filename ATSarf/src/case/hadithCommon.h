@@ -149,9 +149,6 @@ class hadith_stemmer: public Stemmer {
         //TODO: seperate ibn from possessive from 3abid and later seperate between ibn and bin
     private:
         bool place;
-#ifdef TEST_WITHOUT_SKIPPING
-        bool finished;
-#endif
     public:
         long finish_pos;
         int numSolutions;
@@ -192,9 +189,6 @@ class hadith_stemmer: public Stemmer {
             wawEnd = start;
             has_waw = false;
 #endif
-#ifdef TEST_WITHOUT_SKIPPING
-            finished = false;
-#endif
         }
         bool on_match() {
             solution_position *S_inf = Stem->computeFirstSolution();
@@ -211,19 +205,11 @@ class hadith_stemmer: public Stemmer {
                     do {
                         suffix_infos = &Suffix->affix_info;
 #endif
-#ifndef TEST_WITHOUT_SKIPPING
 
                         if (!analyze()) {
                             return false;
                         }
 
-#else
-
-                        if (!finished && !analyze()) {
-                            finished = true;
-                        }
-
-#endif
 #ifdef GET_AFFIXES_ALSO
                     } while (Suffix->computeNextSolution(s_inf));
 
