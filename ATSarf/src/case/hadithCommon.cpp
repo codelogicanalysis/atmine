@@ -124,13 +124,6 @@ void hadith_initialize() {
     bit_NOUN_PROP = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
     long abstract_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
     bit_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
-#ifdef ADD_ENARRATOR_NAMES
-
-    if (bit_ENARRATOR_NAMES >= 0) {
-        bits_NAME.append(bit_ENARRATOR_NAMES);
-    }
-
-#endif
 #elif defined(JUST_BUCKWALTER)
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
 #else
