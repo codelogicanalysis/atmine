@@ -2216,7 +2216,6 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
     }
 
     QString allName = fileName;
-#if  defined(WRITE_POR)
     QFile file(fileName.remove(".txt") + ".por");
     file.remove();
 
@@ -2227,7 +2226,6 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
     QDataStream fileStream(&file);
     graph->serialize(fileStream);
     file.close();
-#endif
     prg->setCurrentAction("Completed");
     prg->report(100);
     calculateStatisticsOrAnotate(chains, graph, text, allName);

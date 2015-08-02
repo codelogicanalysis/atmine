@@ -5,8 +5,6 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-
-#define WRITE_POR
 #define BIOGRAPHY_SEGMENT
 #define SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 #define FAST_NEIGHBOR_CHECK
