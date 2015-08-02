@@ -114,17 +114,17 @@ class GraphVisitorController {
 
     public:
 
-        #ifdef DEFAULT_MERGE_NODES
+#ifdef DEFAULT_MERGE_NODES
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, unsigned int visitIndex, unsigned int finishIndex,
                                bool keep_track_of_edges = true, bool merged_edges_as_one = true);
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, bool keep_track_of_edges = true,
                                bool merged_edges_as_one = true);
-        #else
+#else
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, unsigned int visitIndex, unsigned int finishIndex,
                                bool keep_track_of_edges = false, bool merged_edges_as_one = false);
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, bool keep_track_of_edges = false,
                                bool merged_edges_as_one = false);
-        #endif
+#endif
         bool isPreviouslyVisited(NarratorNodeIfc &node) {
             if (!keep_track_of_nodes) {
                 return false;
@@ -332,16 +332,16 @@ class DisplayNodeVisitor: public NodeVisitor {
 
                 if (n.isGraphNode()) {
                     d_out << QString("g") << curr_id << " [label=\"" << n.CanonicalName().replace('\n', "");
-                    #ifdef SHOW_RANKS
+#ifdef SHOW_RANKS
                     d_out << n.rank2String();
-                    #endif
+#endif
                     d_out << "\",shape=box" << getOtherAttributes(n) << "];\n";
                     name = QString("g%1").arg(curr_id);
                 } else {
                     d_out << QString("c") << curr_id << " [label=\"" << n.CanonicalName().replace('\n', "");
-                    #ifdef SHOW_RANKS
+#ifdef SHOW_RANKS
                     d_out << n.rank2String();
-                    #endif
+#endif
                     d_out << "\"" << getOtherAttributes(n) << "]" << ";\n";
                     name = QString("c%1").arg(curr_id);
                 }
@@ -382,13 +382,13 @@ class DisplayNodeVisitor: public NodeVisitor {
         virtual bool visit(NarratorNodeIfc &n) { //this is enough
             QString s = getAndInitializeDotNode(n);
             displayChainNumsEndingJustAfter(n, s);
-            #ifdef DISPLAY_GRAPHNODES_CONTENT
+#ifdef DISPLAY_GRAPHNODES_CONTENT
 
             if (n.isGraphNode()) {
                 theSarf->out << n.toString() << "\n";
             }
 
-            #endif
+#endif
             return true;
         }
         virtual void finishVisit(NarratorNodeIfc &) {}
@@ -413,7 +413,7 @@ class DisplayNodeVisitor: public NodeVisitor {
             }
 
             theSarf->out << "]\n";
-            #if 0
+#if 0
 
             do {
                 if (controller->parentStack.isEmpty()) {
@@ -433,10 +433,10 @@ class DisplayNodeVisitor: public NodeVisitor {
             } while (current != &n && !current->isNull());
 
             out << "]\n";
-            #endif
+#endif
         }
         virtual void finish() {
-            #ifdef FORCE_RANKS
+#ifdef FORCE_RANKS
             QString s;
             int startingRank = (parameters.display_chain_num ? 0 : 1);
             int currRank = startingRank, lastRank = startingRank;
@@ -489,7 +489,7 @@ class DisplayNodeVisitor: public NodeVisitor {
                 d_out << "}\n";
             }
 
-            #endif
+#endif
             d_out << "}\n";
             delete dot_out;
             file->close();
@@ -529,9 +529,9 @@ class DisplayNodeVisitorColoredNarrator: public DisplayNodeVisitor {
                 r = r.darker(min(v * 1000, 100.0));
                 unsigned int color = r.toRgb().rgba();
                 QByteArray text = QByteArray::number(color, 16);
-                #ifdef NARRATORHASH_DEBUG
+#ifdef NARRATORHASH_DEBUG
                 qDebug() << "[" << n.CanonicalName() << "\t" << v << "]";
-                #endif
+#endif
                 return QString(",style=filled, fillcolor=\"#").append(text.data()).append("\"");
             } else {
                 return "";
@@ -703,10 +703,10 @@ class NarratorGraph {
         NarratorHash hash;
         bool built; //needed to check if we are to fillNodes
 
-        #if 0
+#if 0
         Node2IntMap node2IntMap;
         Int2NodeMap int2NodeMap;
-        #endif
+#endif
         unsigned int nodesCount;
         String2IntMap hadith2IntMap;
         Int2StringMap int2HadithMap;
@@ -987,7 +987,7 @@ class NarratorGraph {
             //postcondition: Narrator's are transformed to ChainNarratorNode's and linked into
             //               chains and top_nodes stores the link to the first node of each chain
         }
-        #ifdef HASH_GRAPH_BUILDING
+#ifdef HASH_GRAPH_BUILDING
         static bool mustMerge(GroupNode *g_node, ChainNarratorNode *c_node) {
             //TODO: we must add also another check that makes sure no nodes in chains of this group have been merged after this possible merge (but very expensive)
             int chainNum = c_node->getChainNum();
@@ -1037,13 +1037,13 @@ class NarratorGraph {
                     return dynamic_cast<GroupNode *>(node);
                 }
                 bool isTotalEquality(double val) {
-                    #if 0
+#if 0
                     return (val == 1.0);
-                    #else
+#else
                     double a = absVal(1.0 - val);
                     assert(a >= 0);
                     return a < 0.0001;
-                    #endif
+#endif
                 }
             public:
                 BuildAction(GraphNodeItem *aNode, NarratorGraph *graph, QList<NarratorNodeIfc *> *toDelete = NULL) {
@@ -1055,11 +1055,11 @@ class NarratorGraph {
 
                 virtual void action(const QString &, GroupNode *hashedNode, double val) {
                     if (
-                    #if 0
+#if 0
                         isTotalEquality(val)
-                    #else
+#else
                         node->getKey() == hashedNode->getKey()
-                    #endif
+#endif
                         && !merged) {
                         assert(isTotalEquality(val));
 
@@ -1122,7 +1122,7 @@ class NarratorGraph {
 
                             if (group == NULL) {
                                 group = new GroupNode(*graph, NULL, cn());
-                                #if 0
+#if 0
                                 NarratorNodeIfc &n = hashedNode->getCorrespondingNarratorNode();
 
                                 if (n.isGraphNode()) {
@@ -1133,7 +1133,7 @@ class NarratorGraph {
                                     }
                                 }
 
-                                #endif
+#endif
                             }
 
                             assert(group->getKey() != hashedNode->getKey());
@@ -1196,7 +1196,7 @@ class NarratorGraph {
             colorGuard.unUse(bit);
             prg->report(100);
         }
-        #else
+#else
         GraphNarratorNode &mergeNodes(ChainNarratorNode &n1, ChainNarratorNode &n2) {
             //assert(!((NarratorNodeIfc &)n1).isGraphNode());
             //assert(!((NarratorNodeIfc &)n2).isGraphNode());
@@ -1207,23 +1207,23 @@ class NarratorGraph {
 
             if (!graph1 && !graph2) {
                 GraphNarratorNode *g = new GraphNarratorNode(*this, n1, n2);
-                #if 0
+#if 0
                 out << g->toString() << "\n";
-                #endif
+#endif
                 return *g;
             } else if (graph1 && !graph2) {
                 //assert(&n2==&narr2);
                 ((GraphNarratorNode &)narr1).addChainNode(this, n2);
-                #if 0
+#if 0
                 out << narr1.toString() << "\n";
-                #endif
+#endif
                 return (GraphNarratorNode &)narr1;
             } else if (!graph1 && graph2) {
                 //assert(&n1==&narr1);
                 ((GraphNarratorNode &)narr2).addChainNode(this, n1);
-                #if 0
+#if 0
                 out << narr2.toString() << "\n";
-                #endif
+#endif
                 return (GraphNarratorNode &)narr2;
             } else if (&narr1 != &narr2) {
                 //assert(narr1.isGraphNode() && narr2.isGraphNode());
@@ -1236,9 +1236,9 @@ class NarratorGraph {
                     g_node.addChainNode(this, c_node);
                 }
 
-                #if 0
+#if 0
                 out << g_node.toString() << "\n";
-                #endif
+#endif
                 //assert(&n1.getCorrespondingNarratorNode()!=&narr1);
                 removeNode(dlt_g_node);
                 delete dlt_g_node;
@@ -1247,9 +1247,9 @@ class NarratorGraph {
                 return (GraphNarratorNode &)narr1;
             }
         }
-        #endif
+#endif
         void buildGraph(int split = -1) {
-            #ifdef HASH_GRAPH_BUILDING
+#ifdef HASH_GRAPH_BUILDING
             int num_chains = top_nodes.size();
             prg->setCurrentAction("Merging Nodes");
             prg->report(0);
@@ -1267,9 +1267,9 @@ class NarratorGraph {
 
                 for (; !n1->isNull(); n1 = &(n1->nextInChain())) {
                     //check if there is a group node equal to it fully and merge them together.
-                    #ifdef DEBUG_BUILDGRAPH
+#ifdef DEBUG_BUILDGRAPH
                     qDebug() << n1->toString();
-                    #endif
+#endif
                     BuildAction bAction(n1, this);
                     performActionToExactCorrespondingNodes(n1, bAction); //search for matches for this key only
 
@@ -1295,7 +1295,7 @@ class NarratorGraph {
             }
 
             prg->report(100);
-            #else
+#else
             //note: compares chain by chain then moves to another
             //TODO: check how to remove duplication when it occurs in the contents of a graph node, if not taken care when inserting
             int radius = hadithParameters.equality_radius;
@@ -1348,15 +1348,15 @@ class NarratorGraph {
                             Narrator &n1_ref = n1->getNarrator();
                             Narrator &n2_ref = n2->getNarrator();
                             double eq_val = equal(n1_ref, n2_ref);
-                            #ifdef DEBUG_BUILDGRAPH
+#ifdef DEBUG_BUILDGRAPH
                             qDebug() << n1_ref.getString() << "[" << i << "," << n1->getIndex() << "]Versus[" << n2_ref.getString() << "[" << k <<
                                      "," << n2->getIndex() << "]\t" << eq_val << "\n";
-                            #endif
+#endif
 
                             if (eq_val >= threshold) {
-                                #ifdef DEBUG_BUILDGRAPH
+#ifdef DEBUG_BUILDGRAPH
                                 qDebug() << "\t=>merge\n";
-                                #endif
+#endif
                                 mergeNodes(*n1, *n2);
                                 offset = u; //this is matched, we must skip it in search for match for next node in c1
                                 needle = u + 1; //since the node is matched, we move to match the next
@@ -1375,10 +1375,10 @@ class NarratorGraph {
             }
 
             prg->report(100);
-            #endif
+#endif
         }
         void computeRanks() {
-            #if 0
+#if 0
 
             for (int trials = 0; trials < 2; trials++) {
                 for (int i = 0; i < top_nodes.size(); i++) {
@@ -1408,7 +1408,7 @@ class NarratorGraph {
                 }
             }
 
-            #else
+#else
             RankCorrectorNodeVisitor r;
             GraphVisitorController c(&r, this);
             prg->setCurrentAction("Computing Ranks");
@@ -1418,7 +1418,7 @@ class NarratorGraph {
             BFS_traverse(c);
             prg->report(100);
             highest_rank = r.getHighestRank();
-            #endif
+#endif
         }
         void breakManageableCycles() {
             const double step = hadithParameters.equality_delta;
@@ -1427,9 +1427,9 @@ class NarratorGraph {
             prg->report(0);
 
             for (int i = 1; i <= num_steps; i++) {
-                #ifdef DISPLAY_NODES_BEING_BROKEN
+#ifdef DISPLAY_NODES_BEING_BROKEN
                 qDebug() << "--";
-                #endif
+#endif
                 double threshold = hadithParameters.equality_threshold + i * step;
                 //qDebug()<<"---Break----";
                 LoopBreakingVisitor l(threshold);
@@ -1643,10 +1643,10 @@ class NarratorGraph {
         }
 
         void init(int split = -1) {
-            #ifdef HASH_GRAPH_BUILDING
+#ifdef HASH_GRAPH_BUILDING
 
             if (split < 0)
-            #endif
+#endif
                 buildGraph(split);
 
             correctTopNodesList();
@@ -1716,7 +1716,7 @@ class NarratorGraph {
                 }
             }
 
-            #if 1 //TODO: not equal always => top_nodes not totally correct
+#if 1 //TODO: not equal always => top_nodes not totally correct
 
             //qDebug()<<"top= "<<top_nodes.size()<<"\tlargest+1="<<largestChainNum+1;
             if (top_nodes.size() != largestChainNum + 1) {
@@ -1726,7 +1726,7 @@ class NarratorGraph {
             }
 
             return top_nodes.size();
-            #endif
+#endif
             //post-condition: top_nodes contains the chain nodes instead of the graph nodes (i.e. opposite of correctTopNodes() )
             // return value=new size of top_nodes
         }
@@ -1803,20 +1803,20 @@ class NarratorGraph {
                 int maxLevels;
             private:
                 inline void continueTraversal(NarratorNodeIfc &n, int levelsLeft = -1) {
-                    #if 0
+#if 0
 
                     if (!all_nodes.contains(&n)) {
                         all_nodes.append(&n);
                         qDebug() << "[" << n.CanonicalName() << "]";
                     }
 
-                    #elif 0
+#elif 0
                     assert(all_nodes.contains(&n));
-                    #endif
-                    #ifdef DEBUG_DFS_TRAVERSAL
+#endif
+#ifdef DEBUG_DFS_TRAVERSAL
                     int size = n.size();
                     qDebug() << "parent:" << n.toString() << " " << size << "\n";
-                    #endif
+#endif
                     //n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
                     NodeIterator itr = (direction > 0 ? n.childrenBegin() : n.parentsBegin());
 
@@ -1831,10 +1831,10 @@ class NarratorGraph {
                             i = itr.getIndex();
                         }
 
-                        #ifdef DEBUG_DFS_TRAVERSAL
+#ifdef DEBUG_DFS_TRAVERSAL
                         qDebug() << n.CanonicalName() << ".child(" << i << "," << j << "):" << (!c.isNull() ? c.CanonicalName() : "null") <<
                                  "\n";
-                        #endif
+#endif
 
                         if (!c.isNull() && !visitor.isPreviouslyVisited(n, c, i, j)) {
                             bool prev_visited = visitor.isPreviouslyVisited(c);
@@ -1957,9 +1957,9 @@ class NarratorGraph {
                 setFileName(key, fileName);
             }
 
-            #ifdef HASH_GRAPH_BUILDING
+#ifdef HASH_GRAPH_BUILDING
             mergeGraphs(graph2->hash);
-            #endif
+#endif
             init(numChain1);
             graph2->clearStructures();
         }
@@ -2035,10 +2035,6 @@ class NarratorGraph {
                         continue;
                     }
 
-                    #ifdef DEBUG_BFS_TRAVERSAL
-                    int size = n.size();
-                    qDebug() << (direction > 0 ? "parent:" : "child:") << n.toString() << " " << size << "\n";
-                    #endif
                     NodeIterator itr = (direction > 0 ? n.childrenBegin() : n.parentsBegin());
 
                     for (; !itr.isFinished(); ++itr) {
@@ -2052,15 +2048,8 @@ class NarratorGraph {
                             i = itr.getIndex();
                         }
 
-                        #ifdef DEBUG_BFS_TRAVERSAL
-                        qDebug() << n.CanonicalName() << (direction > 0 ? ".child(" : ".parent(") << i << "," << j << "):" <<
-                                 (!c.isNull() ? c.CanonicalName() : "null") << "\n";
-                        #endif
 
                         if (!c.isNull() && !visitor.isPreviouslyVisited(n, c, i, j)) {
-                            #ifdef DEBUG_BFS_TRAVERSAL
-                            qDebug() << "\t-->traversed\n";
-                            #endif
                             bool prev_visited = visitor.isPreviouslyVisited(c);
                             visitor.visit(n, c, i, j);
 
@@ -2077,32 +2066,7 @@ class NarratorGraph {
             visitor.finish();
         }
         GraphNodeItem *getNodeMatching(Narrator &n) {
-            #if 0
-            double highest_equality = 0;
-            ChainNarratorNode *correspondingNode = NULL;
-
-            for (int i = 0; i < all_nodes.size(); i++) {
-                for (int j = 0; j < all_nodes[i]->size(); j++) {
-                    ChainNarratorNode *c = &(*all_nodes.at(i))[j];
-                    Narrator *n2 = &c->getNarrator();
-                    double curr_equality = equal(n, *n2);
-
-                    if (curr_equality > highest_equality) {
-                        highest_equality = curr_equality;
-                        correspondingNode = c; //all_nodes[i];
-                    }
-                }
-            }
-
-            if (highest_equality >= hadithParameters.equality_threshold) {
-                return correspondingNode;
-            } else {
-                return NULL;
-            }
-
-            #else
             return hash.findCorrespondingNode(&n);
-            #endif
         }
         void performActionToAllCorrespondingNodes(Narrator *n, NarratorHash::FoundAction &visitor) {
             hash.performActionToAllCorrespondingNodes(n, visitor);
@@ -2144,13 +2108,13 @@ class NarratorGraph {
                 hadithFileList[i].serialize(streamOut);
             }
 
-            #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Serializing");
             prg->report(0);
             int allSize = all_nodes.size();
             int total = allSize + top_nodes.size();
             streamOut << total;
-            #endif
+#endif
 
             for (int i = 0; i < allSize; i++) {
                 NarratorNodeIfc *n = all_nodes[i];
@@ -2167,9 +2131,9 @@ class NarratorGraph {
                     all_nodes[i]->serialize(streamOut, *this);
                 }
 
-                #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
                 prg->report(i / total * 100 + 0.5);
-                #endif
+#endif
             }
 
             streamOut << SERIALIZE_STOP;
@@ -2179,16 +2143,16 @@ class NarratorGraph {
             for (int i = 0; i < size; i++) {
                 int eq = getSerializationNodeEquivalent(top_nodes[i]);;
                 streamOut << eq;
-                #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
                 prg->report((i + allSize) / total * 100 + 0.5);
-                #endif
+#endif
             }
 
             hash.serialize(streamOut);
-            #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Completed");
             prg->report(100);
-            #endif
+#endif
         }
         NarratorGraph(QDataStream &streamIn, ATMProgressIFC *prg): hash(this) { //equivalent of deserialize
             built = true; //since all nodes are already built but we are reading them
@@ -2217,13 +2181,13 @@ class NarratorGraph {
                 setHadithStringSerializationEquivalent(text, i);
             }
 
-            #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
             int total;
             streamIn >> total;
             prg->setCurrentAction("De-Serializing");
             prg->report(0);
             int counter = 0;
-            #endif
+#endif
 
             if (total > 0) {
                 int n;
@@ -2237,10 +2201,10 @@ class NarratorGraph {
                         setDeserializationIntEquivalent(cInt, node);
                     }
 
-                    #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
                     counter++;
                     prg->report(counter / total * 100 + 0.5);
-                    #endif
+#endif
                     streamIn >> n; //get next number
                 }
 
@@ -2252,18 +2216,18 @@ class NarratorGraph {
                     NarratorNodeIfc *n = getDeserializationIntEquivalent(cInt);
                     assert(n != NULL);
                     top_nodes.append(n);
-                    #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
                     counter++;
                     prg->report(counter / total * 100 + 0.5);
-                    #endif
+#endif
                 }
             }
 
             hash.deserialize(streamIn);
-            #ifdef PROGRESS_SERIALZATION
+#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Completed");
             prg->report(100);
-            #endif
+#endif
             //printChains();
             //printAllNodesList();
             //checkAllGroupHaveCorresponding();
@@ -2300,7 +2264,7 @@ class NarratorGraph {
                 }
             }
 
-            #if 0
+#if 0
 
             for (int i = 0; i < all_nodes.size(); i++) {
                 NarratorNodeIfc *node = all_nodes[i];
@@ -2330,7 +2294,7 @@ class NarratorGraph {
                 }
             }
 
-            #endif
+#endif
         }
 
         ChainNarratorNode *getChainNode(int chain_num, int narrator_num) {
@@ -2420,7 +2384,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
     }
 
     QString allName = fileName;
-    #if  defined(WRITE_POR)
+#if  defined(WRITE_POR)
     QFile file(fileName.remove(".txt") + ".por");
     file.remove();
 
@@ -2431,7 +2395,7 @@ inline int test_GraphFunctionalities(ChainsContainer &chains, ATMProgressIFC *pr
     QDataStream fileStream(&file);
     graph->serialize(fileStream);
     file.close();
-    #endif
+#endif
     prg->setCurrentAction("Completed");
     prg->report(100);
     calculateStatisticsOrAnotate(chains, graph, text, allName);
