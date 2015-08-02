@@ -169,15 +169,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                     Biography &b = *(*biographyList)[i];
 
                     if (b.isReal(j)) {
-#ifndef COLOR_ALL
-                        Narrator *n = b[j];
-                        ChainNarratorNode *c = graph->getNodeMatching(*n);
-
-                        if (c != NULL) {
-                            c->addBiographyIndex(i);
-                        }
-
-#else
                         Narrator *n = b[j];
                         narratorListDisplay->setRowCount(count + 1);
                         narratorListDisplay->setItem(count, 0, new QTableWidgetItem(n->getString()));
@@ -189,195 +180,187 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                         graph->performActionToAllCorrespondingNodes(n, c);
 #endif
                     }
-
-#endif
-                    }
-
-                    biographyNum->addItem(QString("%1").arg(i));
                 }
 
-                displayUncoloredGraph();
+                biographyNum->addItem(QString("%1").arg(i));
+            }
+
+            displayUncoloredGraph();
+            errors->setText(*errors_text);
+            errors_text->clear();
+#endif
+        }
+        void colorBiography_clicked() {
+            if (graph->size() < MAX_DISPLAYABLE_SIZE) {
+                int num = biographyNum->currentText().toInt();
+                setCurrentAction("Display Graph");
+                report(0);
+                DisplayNodeVisitorColoredBiography visitor(num);
+                GraphVisitorController c(&visitor, graph, true, true);
+                graph->DFS_traverse(c);
+                setCurrentAction("Completed");
+                report(100);
+
+                try {
+                    system("dot -Tsvg graph.dot -o graph.svg");
+                    pic->setPixmap(QPixmap("./graph.svg"));
+                    subScrollArea->setWidget(pic);
+                } catch (...) {}
+
                 errors->setText(*errors_text);
                 errors_text->clear();
-#endif
             }
-            void colorBiography_clicked() {
+        }
+        void colorNarrators_clicked() {
+            if (graph->size() < MAX_DISPLAYABLE_SIZE) {
+                QList<QTableWidgetSelectionRange>  selection = narratorListDisplay->selectedRanges();
+                ColorNarratorsAction::DetectedNodesMap map;
+                ColorNarratorsAction action(map);
 
-                if (graph->size() < MAX_DISPLAYABLE_SIZE) {
-                    int num = biographyNum->currentText().toInt();
-                    setCurrentAction("Display Graph");
-                    report(0);
-                    DisplayNodeVisitorColoredBiography visitor(num);
-                    GraphVisitorController c(&visitor, graph, true, true);
-                    graph->DFS_traverse(c);
-                    setCurrentAction("Completed");
-                    report(100);
+                for (int i = 0; i < selection.size(); i++) {
+                    int topRow = selection[i].topRow();
 
-                    try {
-                        system("dot -Tsvg graph.dot -o graph.svg");
-                        pic->setPixmap(QPixmap("./graph.svg"));
-                        subScrollArea->setWidget(pic);
-                    } catch (...) {}
-
-                    errors->setText(*errors_text);
-                    errors_text->clear();
-                }
-
-            }
-            void colorNarrators_clicked() {
-
-                if (graph->size() < MAX_DISPLAYABLE_SIZE) {
-                    QList<QTableWidgetSelectionRange>  selection = narratorListDisplay->selectedRanges();
-                    ColorNarratorsAction::DetectedNodesMap map;
-                    ColorNarratorsAction action(map);
-
-                    for (int i = 0; i < selection.size(); i++) {
-                        int topRow = selection[i].topRow();
-
-                        for (int j = 0; j < selection[i].rowCount(); j++) {
-                            int row = topRow + j;
-                            Narrator *n = narratorList[row];
-                            graph->performActionToAllCorrespondingNodes(n, action);
-                        }
+                    for (int j = 0; j < selection[i].rowCount(); j++) {
+                        int row = topRow + j;
+                        Narrator *n = narratorList[row];
+                        graph->performActionToAllCorrespondingNodes(n, action);
                     }
-
-                    report(0);
-                    DisplayNodeVisitorColoredNarrator visitor(map);
-                    GraphVisitorController c(&visitor, graph, true, true);
-                    graph->DFS_traverse(c);
-                    setCurrentAction("Completed");
-                    report(100);
-
-                    try {
-                        system("dot -Tsvg graph.dot -o graph.svg");
-                        pic->setPixmap(QPixmap("./graph.svg"));
-                        subScrollArea->setWidget(pic);
-                    } catch (...) {}
-
-                    errors->setText(*errors_text);
-                    errors_text->clear();
                 }
 
-            }
-            void browse_clicked() {
-                QString fileName = graph->prg->getFileName();
+                report(0);
+                DisplayNodeVisitorColoredNarrator visitor(map);
+                GraphVisitorController c(&visitor, graph, true, true);
+                graph->DFS_traverse(c);
+                setCurrentAction("Completed");
+                report(100);
 
-                if (!fileName.isEmpty()) {
-                    input->setText(fileName);
+                try {
+                    system("dot -Tsvg graph.dot -o graph.svg");
+                    pic->setPixmap(QPixmap("./graph.svg"));
+                    subScrollArea->setWidget(pic);
+                } catch (...) {}
+
+                errors->setText(*errors_text);
+                errors_text->clear();
+            }
+        }
+        void browse_clicked() {
+            QString fileName = graph->prg->getFileName();
+
+            if (!fileName.isEmpty()) {
+                input->setText(fileName);
+            }
+        }
+
+    private:
+        virtual void report(int value);
+        virtual void tag(int start, int length, QColor color, bool textcolor);
+        virtual void startTaggingText(QString &text);
+        virtual void finishTaggingText();
+        virtual void setCurrentAction(const QString &s);
+        virtual void resetActionDisplay();
+        virtual QString getFileName() {
+            return "";
+        }
+
+        void displayUncoloredGraph() {
+            if (graph->size() < MAX_DISPLAYABLE_SIZE) {
+                DisplayNodeVisitor visitor;
+                GraphVisitorController c(&visitor, graph, true, true);
+                graph->DFS_traverse(c);
+
+                try {
+                    system("dot -Tsvg graph.dot -o graph.svg");
+                    pic->setPixmap(QPixmap("./graph.svg"));
+                    subScrollArea->setWidget(pic);
+                } catch (...) {}
+
+                errors->setText(*errors_text);
+                errors_text->clear();
+            }
+        }
+
+        class ColorBiographiesAction: public NarratorHash::FoundAction {
+            private:
+                int biographyIndex;
+            public:
+                ColorBiographiesAction(int biographyIndex) {
+                    this->biographyIndex = biographyIndex;
                 }
-            }
-
-private:
-            virtual void report(int value);
-            virtual void tag(int start, int length, QColor color, bool textcolor);
-            virtual void startTaggingText(QString &text);
-            virtual void finishTaggingText();
-            virtual void setCurrentAction(const QString &s);
-            virtual void resetActionDisplay();
-            virtual QString getFileName() {
-                return "";
-            }
-
-            void displayUncoloredGraph() {
-
-                if (graph->size() < MAX_DISPLAYABLE_SIZE) {
-                    DisplayNodeVisitor visitor;
-                    GraphVisitorController c(&visitor, graph, true, true);
-                    graph->DFS_traverse(c);
-
-                    try {
-                        system("dot -Tsvg graph.dot -o graph.svg");
-                        pic->setPixmap(QPixmap("./graph.svg"));
-                        subScrollArea->setWidget(pic);
-                    } catch (...) {}
-
-                    errors->setText(*errors_text);
-                    errors_text->clear();
+                virtual void action(const QString &, GroupNode *node, double) {
+                    node->addBiographyIndex(biographyIndex);
                 }
+        };
+        class ColorNarratorsAction: public NarratorHash::FoundAction {
+            public:
+                typedef QMap<NarratorNodeIfc *, double> DetectedNodesMap;
+            private:
+                DetectedNodesMap &map;
+            public:
+                ColorNarratorsAction(DetectedNodesMap &m): map(m) { }
+                virtual void action(const QString & /*s*/, GroupNode *node, double v) {
+                    NarratorNodeIfc *n = &node->getCorrespondingNarratorNode();
+                    DetectedNodesMap::iterator i = map.find(n);
 
-            }
+                    if (i != map.end()) {
+                        double oldSimilarity = *i;
 
-            class ColorBiographiesAction: public NarratorHash::FoundAction {
-                private:
-                    int biographyIndex;
-                public:
-                    ColorBiographiesAction(int biographyIndex) {
-                        this->biographyIndex = biographyIndex;
-                    }
-                    virtual void action(const QString &, GroupNode *node, double) {
-                        node->addBiographyIndex(biographyIndex);
-                    }
-            };
-            class ColorNarratorsAction: public NarratorHash::FoundAction {
-                public:
-                    typedef QMap<NarratorNodeIfc *, double> DetectedNodesMap;
-                private:
-                    DetectedNodesMap &map;
-                public:
-                    ColorNarratorsAction(DetectedNodesMap &m): map(m) { }
-                    virtual void action(const QString & /*s*/, GroupNode *node, double v) {
-                        NarratorNodeIfc *n = &node->getCorrespondingNarratorNode();
-                        DetectedNodesMap::iterator i = map.find(n);
-
-                        if (i != map.end()) {
-                            double oldSimilarity = *i;
-
-                            if (oldSimilarity < v) {
-                                map[n] = v;
-                            }
-                        } else {
+                        if (oldSimilarity < v) {
                             map[n] = v;
                         }
+                    } else {
+                        map[n] = v;
                     }
-            };
-
-private:
-            int nodeId;
-            QPushButton *parse, *colorBiography, *browse, *colorNarrators;
-            QLabel *nmc_label, *nrc_label, *narr_label, *reachability_label;
-            QTextEdit *nmc_max, *nrc_max, *narr_min, *reachability_radius;
-            QTextBrowser *text;
-            QScrollArea *scrollArea, * subScrollArea;
-            QTextEdit *input;
-            QComboBox *biographyNum;
-            QLabel *pic;
-            QProgressBar *progressBar;
-            QTableWidget *narratorListDisplay;
-            QList<Narrator *> narratorList;
-            QTextBrowser *errors;
-            QString *errors_text;
-            QGridLayout *grid;
-
-            NarratorGraph *graph;
-            BiographyList *biographyList;
-
-            ~BiographiesWindow() {
-                delete parse;
-                delete colorBiography;
-                delete browse;
-                delete text;
-                delete input;
-                delete biographyNum;
-                delete scrollArea;
-                delete subScrollArea;
-                delete pic;
-                delete progressBar;
-                delete narratorListDisplay;
-                delete colorNarrators;
-                delete nmc_label;
-                delete nrc_label;
-                delete narr_label;
-                delete nmc_max;
-                delete nrc_max;
-                delete narr_min;
-                delete errors;
-                delete errors_text;
-                delete grid;
-                delete graph;
-
-                if (biographyList != NULL) {
-                    delete biographyList;
                 }
-            }
         };
-#endif 
+
+    private:
+        int nodeId;
+        QPushButton *parse, *colorBiography, *browse, *colorNarrators;
+        QLabel *nmc_label, *nrc_label, *narr_label, *reachability_label;
+        QTextEdit *nmc_max, *nrc_max, *narr_min, *reachability_radius;
+        QTextBrowser *text;
+        QScrollArea *scrollArea, * subScrollArea;
+        QTextEdit *input;
+        QComboBox *biographyNum;
+        QLabel *pic;
+        QProgressBar *progressBar;
+        QTableWidget *narratorListDisplay;
+        QList<Narrator *> narratorList;
+        QTextBrowser *errors;
+        QString *errors_text;
+        QGridLayout *grid;
+
+        NarratorGraph *graph;
+        BiographyList *biographyList;
+
+        ~BiographiesWindow() {
+            delete parse;
+            delete colorBiography;
+            delete browse;
+            delete text;
+            delete input;
+            delete biographyNum;
+            delete scrollArea;
+            delete subScrollArea;
+            delete pic;
+            delete progressBar;
+            delete narratorListDisplay;
+            delete colorNarrators;
+            delete nmc_label;
+            delete nrc_label;
+            delete narr_label;
+            delete nmc_max;
+            delete nrc_max;
+            delete narr_min;
+            delete errors;
+            delete errors_text;
+            delete grid;
+            delete graph;
+
+            if (biographyList != NULL) {
+                delete biographyList;
+            }
+        }
+};
+#endif
