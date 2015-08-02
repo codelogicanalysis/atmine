@@ -28,8 +28,6 @@
 
 using namespace std;
 
-#define ERRORS_BIO
-
 class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
         Q_OBJECT
     public:
@@ -119,18 +117,14 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
             setWindowTitle("Biographies");
             this->resize(1100, 700);
             biographyList = NULL;
-#ifdef ERRORS_BIO
             errors = new QTextBrowser(this);
             errors->resize(errors->width(), 50);
             errors_text = new QString();
             grid->addWidget(errors, 6, 0, 1, 12);
             theSarf->displayed_error.setString(errors_text);
             theSarf->out.setString(errors_text);
-#endif
             displayUncoloredGraph();
-#ifdef ERRORS_BIO
             errors->setText(*errors_text);
-#endif
         }
 
     public slots:
@@ -203,10 +197,8 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                 }
 
                 displayUncoloredGraph();
-#ifdef ERRORS_BIO
                 errors->setText(*errors_text);
                 errors_text->clear();
-#endif
 #endif
             }
             void colorBiography_clicked() {
@@ -227,10 +219,8 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                         subScrollArea->setWidget(pic);
                     } catch (...) {}
 
-#ifdef ERRORS_BIO
                     errors->setText(*errors_text);
                     errors_text->clear();
-#endif
                 }
 
             }
@@ -264,10 +254,8 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                         subScrollArea->setWidget(pic);
                     } catch (...) {}
 
-#ifdef ERRORS_BIO
                     errors->setText(*errors_text);
                     errors_text->clear();
-#endif
                 }
 
             }
@@ -303,10 +291,8 @@ private:
                         subScrollArea->setWidget(pic);
                     } catch (...) {}
 
-#ifdef ERRORS_BIO
                     errors->setText(*errors_text);
                     errors_text->clear();
-#endif
                 }
 
             }
@@ -358,10 +344,8 @@ private:
             QProgressBar *progressBar;
             QTableWidget *narratorListDisplay;
             QList<Narrator *> narratorList;
-#ifdef ERRORS_BIO
             QTextBrowser *errors;
             QString *errors_text;
-#endif
             QGridLayout *grid;
 
             NarratorGraph *graph;
@@ -386,10 +370,8 @@ private:
                 delete nmc_max;
                 delete nrc_max;
                 delete narr_min;
-#ifdef ERRORS_BIO
                 delete errors;
                 delete errors_text;
-#endif
                 delete grid;
                 delete graph;
 
@@ -398,4 +380,4 @@ private:
                 }
             }
         };
-#endif // BIOGRAPHIES_H
+#endif 
