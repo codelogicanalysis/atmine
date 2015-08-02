@@ -1204,10 +1204,6 @@ class BiographySegmenter: protected NarratorDetector {
                         this->similarity = similarity;
                         list.clear();
                         list.append(node);
-#ifdef BIOGRAPHY_ALL_MATCHING_NODES
-                    } else if (absVal(similarity - this->similarity) < 0.01) {
-                        list.append(node);
-#endif
                     }
                 }
                 QString getGroupNodeKey() {
