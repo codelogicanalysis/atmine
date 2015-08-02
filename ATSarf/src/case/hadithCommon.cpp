@@ -1501,7 +1501,7 @@ inline bool result(WordType t, StateInfo   &stateInfo, HadithData *currentChain,
     #endif
     return val;
 }
-#ifndef BUCKWALTER_INTERFACE
+
 bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                            StateData &currentData) { //does not fill stateInfo.currType
     hadith_stemmer s(structures->text, stateInfo.startPos);
@@ -1521,36 +1521,25 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     stateInfo.resetCurrentWordInfo();
     long  finish;
     stateInfo.possessivePlace = false;
-    #if 0
-    static hadith_stemmer *s_p = NULL;
-
-    if (s_p == NULL) {
-        s_p = new hadith_stemmer(structures->text, stateInfo.startPos);
-    } else {
-        s_p->init(stateInfo.startPos);
-    }
-
-    hadith_stemmer &s = *s_p;
-    #endif
     #ifdef REFINEMENTS
-    #ifdef TRYTOLEARN
-    bool nrcLearning = false;
+        #ifdef TRYTOLEARN
+        bool nrcLearning = false;
 
-    if (stateInfo.currentState == NRC_S && currentData.nrcCount <= 1
-        && !stateInfo.nrcIsPunctuation
-       ) {
-        nrcLearning = true;
-        s.tryToLearnNames = true;
-    }
+        if (stateInfo.currentState == NRC_S && currentData.nrcCount <= 1
+            && !stateInfo.nrcIsPunctuation
+           ) {
+            nrcLearning = true;
+            s.tryToLearnNames = true;
+        }
 
-    #endif
-    #ifdef NONCONTEXT_LEARNING
+        #endif
+        #ifdef NONCONTEXT_LEARNING
 
-    if (stateInfo.nrcPreviousType) {
-        nameLearner.tryToLearnNames = true;
-    }
+        if (stateInfo.nrcPreviousType) {
+            nameLearner.tryToLearnNames = true;
+        }
 
-    #endif
+        #endif
 
     //assert(!s.tryToLearnNames || nameLearner.tryToLearnNames);
     if (isNumber(structures->text, stateInfo.startPos, finish)) {
@@ -1568,7 +1557,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     bool stop_word = false;
 
     foreach (c, rasoul_words) {
-        #if 1
         int pos;
 
         if (startsWith(structures->text->midRef(stateInfo.startPos), c, pos)) {
@@ -1581,42 +1569,12 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             #endif
             break;
         }
-
-        #else
-        found = true;
-        int pos = current_pos;
-
-        for (int i = 0; i < c.length();) {
-            if (!isDiacritic(structures->text->at(pos))) {
-                if (!equal(c[i], structures->text->at(pos))) {
-                    found = false;
-                    break;
-                }
-
-                i++;
-            }
-
-            pos++;
-        }
-
-        if (found) {
-            stop_word = true;
-            finish = pos - 1;
-            #ifdef STATS
-            current_stem = c;
-            current_exact = c;
-            #endif
-            break;
-        }
-
-        #endif
     }
 
     QStringRef startText = structures->text->midRef(stateInfo.startPos);
 
     if (!stop_word) { //TODO: maybe modified to be set as a utility function, and just called from here
         foreach (c, compound_words) {
-            #if 1
             int pos;
 
             if (startsWith(startText, c, pos)) {
@@ -1629,45 +1587,11 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 #endif
                 break;
             }
-
-            #else
-            found = true;
-            int pos = stateInfo.startPos;
-
-            for (int i = 0; i < c.length();) {
-                if (!isDiacritic(structures->text->at(pos))) {
-                    if (!equal(c[i], structures->text->at(pos))) {
-                        found = false;
-                        break;
-                    }
-
-                    i++;
-                }
-
-                pos++;
-            }
-
-            while (isDiacritic(structures->text->at(pos))) {
-                pos++;
-            }
-
-            if (isDiacritic(structures->text->at(pos)))
-                if (found) {
-                    phrase = true;
-                    finish = pos - 1;
-                    #ifdef STATS
-                    current_stem = c;
-                    current_exact = c;
-                    #endif
-                    break;
-                }
-
-            #endif
         }
     }
 
     if (!stop_word && !phrase) {
-    #endif
+    #endif // REFINEMENTS
         s();
         #ifdef TRYTOLEARN
         QString n = s.getString().toString();
@@ -1839,43 +1763,10 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         #ifdef REFINEMENTS
 
         if (s.is3an) {
-            #if 0
-            PunctuationInfo copyPunc = stateInfo.punctuationInfo;
-            display(" [An] ");
-            stateInfo._3an = true;
-            stateInfo.startPos = s.startStem;
-            stateInfo.endPos = s.finishStem;
-            stateInfo.punctuationInfo.reset();
-
-            if (s.finishStem < finish) {
-                stateInfo.nextPos = s.finishStem + 1;
-            } else {
-                stateInfo.punctuationInfo = copyPunc;
-            }
-
-            if (!result(NRC, stateInfo, currentChain)) {
-                return false;
-            }
-
-            stateInfo.currentState = stateInfo.nextState;
-            stateInfo.lastEndPos = stateInfo.endPos;
-
-            if (s.finishStem < finish) {
-                stateInfo._3an = false;
-                stateInfo.startPos = s.finishStem + 1;
-                stateInfo.endPos = finish;
-                return result(NAME, stateInfo, currentChain);
-            }
-
-            return true;
-            #else
-
             if (s.finishStem == finish) {
                 display(" [An] ");
                 stateInfo._3an = true;
             }
-
-            #endif
         }
 
         #endif
@@ -2011,7 +1902,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     }
 }
 
-#endif
 
 #ifdef NONCONTEXT_LEARNING
 bool NameLearningEvaluator::equalNames(QString *, int start1, int end1, int start2, int end2) {

@@ -113,22 +113,12 @@ class HadithSegmentor {
 
             QDataStream chainOut(&chainOutput);
             #endif
-            #ifdef BUCKWALTER_INTERFACE
-            timeval tim;
-            gettimeofday(&tim, NULL);
-            double t1 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-            #endif
 
             if (text == NULL) {
                 return -1;
             }
 
             long text_size = min(text->size(), end + 1);
-            #ifdef BUCKWALTER_INTERFACE
-            gettimeofday(&tim, NULL);
-            double t2 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-            out << "=" << t2 - t1 << "-";
-            #endif
             #ifdef COUNT_AVERAGE_SOLUTIONS
             total_solutions = 0;
             stemmings = 0;
@@ -156,16 +146,11 @@ class HadithSegmentor {
             stateInfo.nrcPreviousType = false;
             stateInfo.processedStructure = INITIALIZE;
             stateInfo.previousPunctuationInfo.fullstop = true;
-            #ifndef BUCKWALTER_INTERFACE
 
             while (stateInfo.startPos < text_size && isDelimiter(text->at(stateInfo.startPos))) {
                 stateInfo.startPos++;
             }
 
-            #else
-            QString line = getnext(); //just for first line
-            assert(line == "");
-            #endif
             #ifdef PROGRESSBAR
             prg->setCurrentAction("Parsing Hadith");
             #endif
@@ -589,125 +574,6 @@ int adjective_detector(QString input_str) {
 
     return 0;
 }
-#endif
-
-#ifdef BUCKWALTER_INTERFACE //i dont think this code functional anymore
-class machine_info {
-    public:
-        bool name: 1;
-        bool nrc: 1;
-        bool nmc: 1;
-
-        machine_info() {
-            name = false;
-            nrc = false;
-            nmc = false;
-        }
-};
-
-inline QString getnext() {
-    long next_pos = text->indexOf('\n', current_pos);
-    QString line = text->mid(current_pos, next_pos - current_pos);
-    current_pos = next_pos + 1;
-    //qDebug()<<line;
-    return line;
-}
-#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
-#define check(n) ;
-#else
-#define check(n) assert(n)
-#endif
-machine_info readNextWord() {
-    machine_info info;
-    QString line;
-    line = getnext();
-
-    if (line == "") {
-        current_pos = text->size();
-        return info;
-    }
-
-    check(line.contains("INPUT STRING"));
-    line = getnext();
-
-    if (line.contains("Non-Alphabetic Data")) {
-        line = getnext();
-        check(line == "");
-        return info;
-    }
-
-    check(line.contains("LOOK-UP WORD"));
-
-    while (1) {
-        line = getnext();
-
-        if (line == "") {
-            break;
-        }
-
-        while (line.contains("NOT FOUND")) {
-            line = getnext();
-
-            if (line == "") {
-                return info;
-            } else if (line.contains("ALTERNATIVE")) {
-                line = getnext();
-
-                if (line == "") {
-                    return info;
-                }
-            }
-        }
-
-        check(line.contains("SOLUTION"));
-        QString raw_data = line.split('(').at(1).split(')').at(0);
-
-        /*line=getnext();
-          check(line.startsWith(']'));*/
-        if (line.contains("NOUN_PROP")) {
-            info.name = true;
-        }
-
-        line = getnext();
-        check(line.contains("(GLOSS)"));
-        QString description = line.split(" + ").at(1);
-
-        if (raw_data.contains("Hdv")) {
-            info.nrc = true;
-        } else if (description == "son") {
-            info.nmc = true;
-        } else if (description == "said" || description == "say" || description == "notify/communicate" ||
-                   description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") ||
-                   description.contains("narrate")) {
-            info.nrc = true;
-        }
-    }
-
-    return info;
-}
-
-wordType getWordType(bool &isBinOrPossessive, bool &possessive, long &next_pos) {
-    isBinOrPossessive = false;
-    possessive = false;
-    machine_info s = readNextWord();
-    next_pos = current_pos;
-
-    if (s.nrc) {
-        return result(NRC);
-    } else if (s.nmc) {
-        display("NMC-Bin/Pos ");
-        isBinOrPossessive = true;
-        return NMC;
-    } else if (s.name) {
-        return result(NAME);
-    } else {
-        return result(NMC);
-    }
-}
-#ifdef OPTIMIZED_BUCKWALTER_TEST_CASE
-#undef check
-#endif
-#include <sys/time.h>
 #endif
 
 int hadithHelper(QString input_str, ATMProgressIFC *prg) {
