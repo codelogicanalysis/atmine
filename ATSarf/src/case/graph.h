@@ -325,16 +325,10 @@ class DisplayNodeVisitor: public NodeVisitor {
 
                 if (n.isGraphNode()) {
                     d_out << QString("g") << curr_id << " [label=\"" << n.CanonicalName().replace('\n', "");
-#ifdef SHOW_RANKS
-                    d_out << n.rank2String();
-#endif
                     d_out << "\",shape=box" << getOtherAttributes(n) << "];\n";
                     name = QString("g%1").arg(curr_id);
                 } else {
                     d_out << QString("c") << curr_id << " [label=\"" << n.CanonicalName().replace('\n', "");
-#ifdef SHOW_RANKS
-                    d_out << n.rank2String();
-#endif
                     d_out << "\"" << getOtherAttributes(n) << "]" << ";\n";
                     name = QString("c%1").arg(curr_id);
                 }
