@@ -7,11 +7,9 @@
 
 class NarratorGraph;
 
-typedef QList<Biography*> BiographyList;
+typedef QList<Biography *> BiographyList;
 
-int biographyHelper(QString input_str,ATMProgressIFC *prg);
-#ifdef TEST_BIOGRAPHIES
-BiographyList * getBiographies(QString input_str,NarratorGraph* graph,ATMProgressIFC *prg, int nodeId=-1);
+int biographyHelper(QString input_str, ATMProgressIFC *prg);
+BiographyList *getBiographies(QString input_str, NarratorGraph *graph, ATMProgressIFC *prg, int nodeId = -1);
+
 #endif
-
-#endif // NARRATORDETECTOR_H

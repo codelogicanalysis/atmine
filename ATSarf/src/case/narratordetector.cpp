@@ -1017,10 +1017,8 @@ class NarratorDetector {
 #endif
 #ifdef CHAIN_BUILDING
             int tester_Counter = 1;
-#ifdef TEST_BIOGRAPHIES
             biographies = new BiographyList;
             biographies->clear();
-#endif
 #ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
             if (!chainOutput.open(QIODevice::ReadWrite)) {
@@ -1037,9 +1035,7 @@ class NarratorDetector {
             while (!tester.atEnd()) {
                 Biography *s = new Biography(graph, text);
                 s->deserialize(tester);
-#ifdef TEST_BIOGRAPHIES
                 biographies->append(s);
-#endif
 
                 for (int j = 0; j < s->size(); j++) {
                     const Narrator *n = (*s)[j];
@@ -1314,13 +1310,10 @@ int biographyHelper(QString input_str, ATMProgressIFC *prg) {
     input_str = input_str.split("\n")[0];
     NarratorDetector s;
     s.lookup(input_str, prg);
-#ifdef TEST_BIOGRAPHIES
     s.freeMemory();
-#endif
     return 0;
 }
 
-#ifdef TEST_BIOGRAPHIES
 BiographyList *getBiographies(QString input_str, NarratorGraph *graph, ATMProgressIFC *prg, int /*nodeID*/) {
     input_str = input_str.split("\n")[0];
 #ifdef BIOGRAPHY_SEGMENT
@@ -1344,4 +1337,3 @@ BiographyList *getBiographies(QString input_str, NarratorGraph *graph, ATMProgre
 #endif
     return s.biographies;
 }
-#endif

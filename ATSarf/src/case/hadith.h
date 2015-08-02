@@ -17,8 +17,6 @@
 //#define JUST_BUCKWALTER
 //#define GET_AFFIXES_ALSO
 
-#define TEST_BIOGRAPHIES
-
 #define MAX_DISPLAYABLE_SIZE 3000
 
 int hadithHelper(QString input_str, ATMProgressIFC *prgs);

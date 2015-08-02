@@ -129,7 +129,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
 
     public slots:
         void parse_clicked() {
-#ifdef TEST_BIOGRAPHIES
             bool v1, v2, v3, v4;
 #ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
             hadithParameters.bio_narr_min = narr_min->toPlainText().toInt(&v1);
@@ -188,7 +187,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
             displayUncoloredGraph();
             errors->setText(*errors_text);
             errors_text->clear();
-#endif
         }
         void colorBiography_clicked() {
             if (graph->size() < MAX_DISPLAYABLE_SIZE) {
