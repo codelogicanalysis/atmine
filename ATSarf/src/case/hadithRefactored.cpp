@@ -279,79 +279,9 @@ class HadithSegmentor {
         }
 };
 
-#ifdef IMAN_CODE
-class adjective_stemmer: public Stemmer {
-    public:
-        bool adj ;
-        long finish_pos;
-
-        adjective_stemmer(QString *word, int start): Stemmer(word, start/*,false*/) {
-            adj = false;
-            finish_pos = start;
-        }
-        bool on_match() {
-            for (unsigned int i = 0; i < stem_info->abstract_categories.length(); i++)
-                if (stem_info->abstract_categories[i] && get_abstractCategory_id(i) >= 0) {
-                    if (getColumn("category", "name", get_abstractCategory_id(i)) == "ADJ") {
-                        adj = true;
-                        finish_pos = info.finish;
-                        return false;
-                    }
-                }
-
-            return true;
-        }
-};
-
-int adjective_detector(QString input_str) {
-    QFile input(input_str);
-
-    if (!input.open(QIODevice::ReadWrite)) {
-        out << "File not found\n";
-        return 1;
-    }
-
-    QTextStream file(&input);
-    file.setCodec("utf-8");
-    text = new QString(file.readAll());
-
-    if (text->isNull()) {
-        out << "file error:" << input.errorString() << "\n";
-        return 1;
-    }
-
-    if (text->isEmpty()) { //ignore empty files
-        out << "empty file\n";
-        return 0;
-    }
-
-    long text_size = text->size();
-
-    while (current_pos < text->length() && delimiters.contains(text->at(current_pos))) {
-        current_pos++;
-    }
-
-    for (; current_pos < text_size;) {
-        adjective_stemmer s(text, current_pos);
-        s();
-        long finish = max(s.info.finish, s.finish_pos);
-
-        if (s.adj) {
-            out << text->mid(current_pos, finish - current_pos + 1) + ":ADJECTIVE\n";
-        }
-
-        current_pos = next_positon(finish);; //here current_pos is changed
-    }
-
-    return 0;
-}
-#endif
 
 int hadithHelper(QString input_str, ATMProgressIFC *prg) {
     input_str = input_str.split("\n")[0];
-#ifdef IMAN_CODE
-    return adjective_detector(input_str);
-#endif
     HadithSegmentor s;
     s.segment(input_str, &test_GraphFunctionalities, prg);
     return 0;
