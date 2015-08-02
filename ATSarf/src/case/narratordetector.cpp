@@ -724,9 +724,6 @@ class NarratorDetector {
 
             for (int i = 0; i < centerIndicies.size(); i++) {
                 int centerIndex = centerIndicies[i];
-#ifdef BOUNDING_PARAGRAPH
-                IndexPair boundary = getBoundingParagraph(centerIndex);
-#endif
                 ScoredSet set(0);
                 set.setBioNarrIndicies.insert(centerIndex);
 
@@ -737,11 +734,7 @@ class NarratorDetector {
                     for (int i = 0; i < 2; i++) {
                         if (itr != neighboringIndicies.end()) {
                             int neighborIndex = *itr;
-#ifdef BOUNDING_PARAGRAPH
-                            bool condition = isInsideBound(boundary, neighborIndex);
-#else
                             bool condition = areNear(centerIndex, neighborIndex);
-#endif
 
                             if (condition) {
                                 if (!set.setBioNarrIndicies.contains(neighborIndex)) {
@@ -1100,11 +1093,6 @@ class NarratorDetector {
 #ifdef TAG_BIOGRAPHY
                         int start = bio->getStart();
                         int end = bio->getEnd();
-#ifdef BOUNDING_PARAGRAPH
-                        IndexPair p = getBoundingParagraph(start, end);
-                        start = p.first;
-                        end = p.second;
-#endif
                         prg->tag(start, end - start + 1, Qt::darkGray, false);
 #endif
                         itr = topSets[k].setBioNarrIndicies.begin();
@@ -1289,11 +1277,6 @@ class BiographySegmenter: protected NarratorDetector {
             }
 
             //2-do necessary checks and add to List of biographyRegions if appropriate
-#ifdef BOUNDING_PARAGRAPH
-            IndexPair boundary = getBoundingParagraph(start, end);
-            start = boundary.first;
-            end = boundary.second;
-#endif
             Region currRegion(start, end);
             RegionList::iterator itr = qLowerBound(biographyRegions.begin(), biographyRegions.end(), currRegion);
             //RegionList::iterator uitr=qUpperBound(biographyRegions.begin(),biographyRegions.end(),currRegion);
