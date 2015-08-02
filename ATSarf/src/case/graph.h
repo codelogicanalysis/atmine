@@ -1803,20 +1803,6 @@ class NarratorGraph {
                 int maxLevels;
             private:
                 inline void continueTraversal(NarratorNodeIfc &n, int levelsLeft = -1) {
-#if 0
-
-                    if (!all_nodes.contains(&n)) {
-                        all_nodes.append(&n);
-                        qDebug() << "[" << n.CanonicalName() << "]";
-                    }
-
-#elif 0
-                    assert(all_nodes.contains(&n));
-#endif
-#ifdef DEBUG_DFS_TRAVERSAL
-                    int size = n.size();
-                    qDebug() << "parent:" << n.toString() << " " << size << "\n";
-#endif
                     //n.size() instead of saved variable bc in case LoopBreakingVisitor does change thru the traversal
                     NodeIterator itr = (direction > 0 ? n.childrenBegin() : n.parentsBegin());
 
@@ -1830,11 +1816,6 @@ class NarratorGraph {
                         } else {
                             i = itr.getIndex();
                         }
-
-#ifdef DEBUG_DFS_TRAVERSAL
-                        qDebug() << n.CanonicalName() << ".child(" << i << "," << j << "):" << (!c.isNull() ? c.CanonicalName() : "null") <<
-                                 "\n";
-#endif
 
                         if (!c.isNull() && !visitor.isPreviouslyVisited(n, c, i, j)) {
                             bool prev_visited = visitor.isPreviouslyVisited(c);
@@ -2047,7 +2028,6 @@ class NarratorGraph {
                         } else {
                             i = itr.getIndex();
                         }
-
 
                         if (!c.isNull() && !visitor.isPreviouslyVisited(n, c, i, j)) {
                             bool prev_visited = visitor.isPreviouslyVisited(c);
