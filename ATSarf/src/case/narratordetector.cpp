@@ -823,8 +823,6 @@ class NarratorDetector {
 
 #endif
         bool tagNarrator(const Narrator *n, bool /*isReal=true*/) {
-#ifdef TAG_BIOGRAPHY
-
             if (n->m_narrator.size() == 0) {
                 return false;
             }
@@ -854,7 +852,6 @@ class NarratorDetector {
                 }
             }
 
-#endif
             return true;
         }
     public:
@@ -1022,10 +1019,8 @@ class NarratorDetector {
             if (biographyStart < 0) {
                 out << "no biography found\n";
                 chainOutput.close();
-#if defined(TAG_BIOGRAPHY)
                 prg->startTaggingText(*text);
                 prg->finishTaggingText();
-#endif
                 return 2;
             }
 
@@ -1047,9 +1042,7 @@ class NarratorDetector {
 #else
             modifyNodes();
 #endif
-#if defined(TAG_BIOGRAPHY)
             prg->startTaggingText(*text);
-#endif
 #ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
             while (!tester.atEnd()) {
@@ -1087,11 +1080,9 @@ class NarratorDetector {
                             bio->addRealNarrator(n);//addNarrator(n);
                         }
 
-#ifdef TAG_BIOGRAPHY
                         int start = bio->getStart();
                         int end = bio->getEnd();
                         prg->tag(start, end - start + 1, Qt::darkGray, false);
-#endif
                         itr = topSets[k].setBioNarrIndicies.begin();
 
                         for (; itr != topSets[k].setBioNarrIndicies.end(); itr++) {
@@ -1125,11 +1116,7 @@ prg->setCurrentAction("Complete");
             chainOutput.close();
 #endif
 #endif
-#ifndef TAG_BIOGRAPHY
-//prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
-#else
 prg->finishTaggingText();
-#endif
 
 if (currentBiography != NULL) {
     delete currentBiography;
