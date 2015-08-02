@@ -194,61 +194,7 @@ void hadith_initialize() {
 #endif
 }
 
-#if defined(HADITHDEBUG)
-inline QString type_to_text(WordType t) {
-    switch (t) {
-        case NAME:
-            return "NAME";
-
-        case NRC:
-            return "NRC";
-
-        case NMC:
-            return "NMC";
-
-        case STOP_WORD:
-            return "STOP_WORD";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline QString type_to_text(StateType t) {
-    switch (t) {
-        case TEXT_S:
-            return "TEXT_S";
-
-        case NAME_S:
-            return "NAME_S";
-
-        case NMC_S:
-            return "NMC_S";
-
-        case NRC_S:
-            return "NRC_S";
-
-        case STOP_WORD_S:
-            return "STOP_WORD_S";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline void display(WordType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t)<<" ";
-}
-inline void display(StateType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t);
-}
-inline void display(QString t) {
-    out << t;
-    //qDebug() <<t;
-}
-#else
 #define display(c)
-#endif
 
 inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStructure, HadithData *structures,
                           StateData  &currentData, bool punc = false, bool ending_punc = false) {

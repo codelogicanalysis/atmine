@@ -17,7 +17,6 @@
 //#define DISPLAY_NODES_BEING_BROKEN
 //#define SHOW_RANKS
 //#define SHOW_VERBOSE_RANKS
-//#define HADITHDEBUG  //just for additional debugging statements displayed
 #define TRYTOLEARN
 //#define ADD_ENARRATOR_NAMES
 #define IBN_START
