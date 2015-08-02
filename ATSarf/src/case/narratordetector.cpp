@@ -53,9 +53,6 @@ class NarratorDetector {
                     if (!found) {
                         if (&n == target) {
                             found = true;
-#ifdef DEBUG_BIOGRAPHY_CLUSTERING
-                            qDebug() << "<found>";
-#endif
                         }
                     }
 
