@@ -194,7 +194,7 @@ void hadith_initialize() {
 #endif
 }
 
-#if defined(HADITHDEBUG) || defined(NARRATORDEBUG)
+#if defined(HADITHDEBUG)
 inline QString type_to_text(WordType t) {
     switch (t) {
         case NAME:
