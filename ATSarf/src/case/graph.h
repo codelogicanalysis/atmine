@@ -1265,37 +1265,6 @@ class NarratorGraph {
 #endif
         }
         void computeRanks() {
-#if 0
-
-            for (int trials = 0; trials < 2; trials++) {
-                for (int i = 0; i < top_nodes.size(); i++) {
-                    for (int j = 0; j < top_nodes[i]->size(); j++) {
-                        ChainNarratorNode *last = &(*top_nodes[i])[j];
-
-                        for (ChainNarratorNode *current = last; !current->isNull(); current = &current->nextInChain()) {
-                            int rank1 = last->getCorrespondingNarratorNode().getAutomaticRank(),
-                                rank2 = current->getCorrespondingNarratorNode().getAutomaticRank();
-
-                            if (rank1 >= rank2) {
-                                rank2 = rank1 + 1;
-                            }
-
-                            current->setRank(rank2);
-                            //current->getCorrespondingNarratorNode().setRank(rank2);
-                            //last->getCorrespondingNarratorNode().setRank(rank1);
-                            last->setRank(rank1);
-
-                            if (rank2 > highest_rank) {
-                                highest_rank = rank2;
-                            }
-
-                            last = current;
-                        }
-                    }
-                }
-            }
-
-#else
             RankCorrectorNodeVisitor r;
             GraphVisitorController c(&r, this);
             prg->setCurrentAction("Computing Ranks");
@@ -1305,7 +1274,6 @@ class NarratorGraph {
             BFS_traverse(c);
             prg->report(100);
             highest_rank = r.getHighestRank();
-#endif
         }
         void breakManageableCycles() {
             const double step = hadithParameters.equality_delta;
@@ -1314,9 +1282,6 @@ class NarratorGraph {
             prg->report(0);
 
             for (int i = 1; i <= num_steps; i++) {
-#ifdef DISPLAY_NODES_BEING_BROKEN
-                qDebug() << "--";
-#endif
                 double threshold = hadithParameters.equality_threshold + i * step;
                 //qDebug()<<"---Break----";
                 LoopBreakingVisitor l(threshold);
