@@ -1236,9 +1236,6 @@ class NarratorGraph {
                     g_node.addChainNode(this, c_node);
                 }
 
-#if 0
-                out << g_node.toString() << "\n";
-#endif
                 //assert(&n1.getCorrespondingNarratorNode()!=&narr1);
                 removeNode(dlt_g_node);
                 delete dlt_g_node;
@@ -1267,9 +1264,6 @@ class NarratorGraph {
 
                 for (; !n1->isNull(); n1 = &(n1->nextInChain())) {
                     //check if there is a group node equal to it fully and merge them together.
-#ifdef DEBUG_BUILDGRAPH
-                    qDebug() << n1->toString();
-#endif
                     BuildAction bAction(n1, this);
                     performActionToExactCorrespondingNodes(n1, bAction); //search for matches for this key only
 
@@ -1348,15 +1342,8 @@ class NarratorGraph {
                             Narrator &n1_ref = n1->getNarrator();
                             Narrator &n2_ref = n2->getNarrator();
                             double eq_val = equal(n1_ref, n2_ref);
-#ifdef DEBUG_BUILDGRAPH
-                            qDebug() << n1_ref.getString() << "[" << i << "," << n1->getIndex() << "]Versus[" << n2_ref.getString() << "[" << k <<
-                                     "," << n2->getIndex() << "]\t" << eq_val << "\n";
-#endif
 
                             if (eq_val >= threshold) {
-#ifdef DEBUG_BUILDGRAPH
-                                qDebug() << "\t=>merge\n";
-#endif
                                 mergeNodes(*n1, *n2);
                                 offset = u; //this is matched, we must skip it in search for match for next node in c1
                                 needle = u + 1; //since the node is matched, we move to match the next

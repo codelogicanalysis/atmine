@@ -162,9 +162,6 @@ class NarratorHash {
                 }
                 void visit(const QString &s, GraphNodeItem *c, int value, int total) {
                     GroupNode *node = dynamic_cast<GroupNode *>(c);
-#ifdef DEBUG_BUILDGRAPH
-                    qDebug() << "\t" << s; //node->toString();
-#endif
                     hash->hashTable.insert(s, HashValue(node, index, value, total));
 
                     if (index < 0) {
@@ -180,10 +177,6 @@ class NarratorHash {
                     this->hash = hash;
                 }
                 void initialize(GraphNodeItem * /*node*/) {
-#if 0
-                    GroupNode *n = dynamic_cast<GroupNode *>(node);
-                    assert(!n->allKeys.isEmpty()); //removed because causing problem when merging 2 nodes and removing this node from hash
-#endif
                 }
                 void visit(const QString &s, GraphNodeItem *c, int value, int total) {
                     GroupNode *node = dynamic_cast<GroupNode *>(c);
