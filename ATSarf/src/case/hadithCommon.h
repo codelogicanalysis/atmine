@@ -133,10 +133,6 @@ extern QList<int> bits_NAME;
 
 #endif
 extern QTextStream *myoutPtr;
-#ifdef COUNT_AVERAGE_SOLUTIONS
-    extern long total_solutions;
-    extern long stemmings;
-#endif
 
 typedef QList<NameConnectorPrim *> TempConnectorPrimList;
 
@@ -199,9 +195,6 @@ class hadith_stemmer: public Stemmer {
 #ifdef TEST_WITHOUT_SKIPPING
             finished = false;
 #endif
-#ifdef COUNT_AVERAGE_SOLUTIONS
-            stemmings++;
-#endif
         }
         bool on_match() {
             solution_position *S_inf = Stem->computeFirstSolution();
@@ -217,9 +210,6 @@ class hadith_stemmer: public Stemmer {
 
                     do {
                         suffix_infos = &Suffix->affix_info;
-#endif
-#ifdef COUNT_AVERAGE_SOLUTIONS
-                        total_solutions++;
 #endif
 #ifndef TEST_WITHOUT_SKIPPING
 

@@ -41,10 +41,6 @@ class HadithSegmentor {
             }
 
             long text_size = min(text->size(), end + 1);
-#ifdef COUNT_AVERAGE_SOLUTIONS
-            total_solutions = 0;
-            stemmings = 0;
-#endif
             long  newHadithStart = -1;
             currentData.initialize();
 #ifdef CHAIN_BUILDING
@@ -229,10 +225,6 @@ class HadithSegmentor {
 #else
             prg->finishTaggingText();
 #endif
-#endif
-#ifdef COUNT_AVERAGE_SOLUTIONS
-            displayed_error << (double)(total_solutions / (long double)stemmings) << "\n"
-                            << stemmings << "\n";
 #endif
             //delete text;
             /*if (currentChain!=NULL)

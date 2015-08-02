@@ -29,10 +29,6 @@ QList<int> bits_NAME;
     QHash<long, bool> AB_descriptions;
 #endif
 QTextStream *myoutPtr;
-#ifdef COUNT_AVERAGE_SOLUTIONS
-    long total_solutions = 0;
-    long stemmings = 0;
-#endif
 
 #ifdef PREPROCESS_DESCRIPTIONS
 void readFromDatabasePreProcessedHadithDescriptions() {
