@@ -10,8 +10,6 @@
 #include <QStringList>
 #include "dbitvec.h"
 
-#define TIMESTAMP
-
 using namespace std;
 
 #define max_sources 256

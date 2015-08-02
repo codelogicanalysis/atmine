@@ -280,7 +280,6 @@ int mergeGraphs(QString fileName1, QString fileName2, ATMProgressIFC *prg) {
     file2.close();
     graph1->mergeWith(graph2);
     delete graph2;
-#ifdef SAVE_MERGED_GRAPH_ONLY
     QFile file(fileName1.remove(".por") + "Merged.por");
 
     if (!file.open(QIODevice::ReadWrite)) {
@@ -291,9 +290,6 @@ int mergeGraphs(QString fileName1, QString fileName2, ATMProgressIFC *prg) {
     graph1->serialize(fileStream);
     file.close();
     delete graph1;
-#else
-    biographies(graph1);
-#endif
     return 0;
 }
 

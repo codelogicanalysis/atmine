@@ -35,12 +35,6 @@
 #define MAX_DISPLAYABLE_SIZE 3000
 #define TAG_HADITH
 
-#define SAVE_MERGED_GRAPH_ONLY
-#define DESERIALIZE_POR
-
-#define INTER_ANNOTATION_AGREEMENT
-
-
 int hadithHelper(QString input_str, ATMProgressIFC *prgs);
 void hadith_initialize();
 
