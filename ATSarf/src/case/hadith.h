@@ -7,15 +7,12 @@
 
 
 #define WRITE_POR
-#if 1
 #define BIOGRAPHY_SEGMENT
-//#define SEGMENT_BIO_ALGORITHM
 #define SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 #define FAST_NEIGHBOR_CHECK
 //#define BIOGRAPHY_ALL_MATCHING_NODES
 #define SEGMENT_BIOGRAPHY_USING_POR
 //#define BOUNDING_PARAGRAPH
-#endif
 
 //#define DEBUG_BFS_TRAVERSAL
 //#define DEBUG_DFS_TRAVERSAL
@@ -68,7 +65,7 @@
 #define INTER_ANNOTATION_AGREEMENT
 
 
-int hadithHelper(QString input_str,ATMProgressIFC *prgs);
+int hadithHelper(QString input_str, ATMProgressIFC *prgs);
 void hadith_initialize();
 
-#endif // HADITH_H
+#endif
