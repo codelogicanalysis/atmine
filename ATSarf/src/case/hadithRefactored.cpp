@@ -25,11 +25,11 @@ inline QString type_to_text(WordType t) {
 
         case NMC:
             return "NMC";
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         case STOP_WORD:
             return "STOP_WORD";
-            #endif
+#endif
 
         default:
             return "UNDEFINED-TYPE";
@@ -48,11 +48,11 @@ inline QString type_to_text(StateType t) {
 
         case NRC_S:
             return "NRC_S";
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         case STOP_WORD_S:
             return "STOP_WORD_S";
-            #endif
+#endif
 
         default:
             return "UNDEFINED-TYPE";
@@ -83,27 +83,16 @@ class HadithSegmentor {
         QString *text;
         //long current_pos;
 
-        #ifdef STATS
+#ifdef STATS
         QVector<map_entry *> temp_nrc_s, temp_nmc_s;
         int temp_nrc_count, temp_nmc_count;
         statistics stat;
         int temp_names_per_narrator;
         QString current_exact, current_stem;
-        #endif
+#endif
 
         int segmentHelper(QString *text, int start, int end, functionUsingChains_t functionUsingChains, ATMProgressIFC *prg,
                           bool segmentNarrators) {
-            #ifdef COMPARE_TO_BUCKWALTER
-            QFile myfile("output");
-            myfile.remove();
-
-            if (!myfile.open(QIODevice::ReadWrite)) {
-                return 1;
-            }
-
-            QByteArray output_to_file;
-            myoutPtr = new QTextStream(&output_to_file);
-            #else
             QFile chainOutput(chainDataStreamFileName);
             chainOutput.remove();
 
@@ -112,31 +101,28 @@ class HadithSegmentor {
             }
 
             QDataStream chainOut(&chainOutput);
-            #endif
 
             if (text == NULL) {
                 return -1;
             }
 
             long text_size = min(text->size(), end + 1);
-            #ifdef COUNT_AVERAGE_SOLUTIONS
+#ifdef COUNT_AVERAGE_SOLUTIONS
             total_solutions = 0;
             stemmings = 0;
-            #endif
-            #ifndef COMPARE_TO_BUCKWALTER
+#endif
             long  newHadithStart = -1;
             currentData.initialize();
-            #ifdef CHAIN_BUILDING
+#ifdef CHAIN_BUILDING
             HadithData *currentChain = new HadithData(text, true, NULL, fileName);
             currentChain->initialize(text);
             currentChain->segmentNarrators = segmentNarrators;
             display(QString("\ninit0\n"));
-            #else
+#else
             chainData *currentChain = NULL;
-            #endif
+#endif
             long  sanadEnd;
             int hadith_Counter = 1;
-            #endif
             StateInfo stateInfo;
             stateInfo.resetCurrentWordInfo();
             stateInfo.currentState = TEXT_S;
@@ -151,20 +137,18 @@ class HadithSegmentor {
                 stateInfo.startPos++;
             }
 
-            #ifdef PROGRESSBAR
+#ifdef PROGRESSBAR
             prg->setCurrentAction("Parsing Hadith");
-            #endif
+#endif
 
             for (; stateInfo.startPos < text_size;) {
-                #ifndef COMPARE_TO_BUCKWALTER
-
                 if ((proceedInStateMachine(stateInfo, currentChain, currentData) == false)) {
                     assert(currentChain->narrator == NULL);
 
                     if (currentData.narratorCount >= hadithParameters.narr_min) {
                         if (!segmentNarrators) {
                             sanadEnd = currentData.narratorEndIndex;
-                            #ifdef DISPLAY_HADITH_OVERVIEW
+#ifdef DISPLAY_HADITH_OVERVIEW
                             newHadithStart = currentData.mainStructureStartIndex;
                             //long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
                             //long end=stateInfo.endPos;
@@ -172,13 +156,13 @@ class HadithSegmentor {
                             theSarf->out << "sanad end: " << text->mid(sanadEnd - display_letters + 1, display_letters) << endl << endl;
                         }
 
-                        #ifdef CHAIN_BUILDING
+#ifdef CHAIN_BUILDING
                         currentChain->chain->serialize(chainOut);
                         //currentChain->chain->serialize(displayed_error);
-                        #endif
-                            #endif
+#endif
+#endif
                         hadith_Counter++;
-                        #ifdef STATS
+#ifdef STATS
                         int additional_names = temp_names_per_narrator;
                         temp_names_per_narrator = 0;
 
@@ -233,9 +217,9 @@ class HadithSegmentor {
 
                         temp_nrc_s.clear();
                         temp_nrc_count = 0;
-                        #endif
+#endif
                     } else {
-                        #ifdef STATS
+#ifdef STATS
                         int additional_names = temp_names_per_narrator;
                         temp_names_per_narrator = 0;
 
@@ -261,7 +245,7 @@ class HadithSegmentor {
                         temp_nrc_s.clear();
                         temp_nmc_count = 0;
                         temp_nrc_count = 0;
-                        #endif
+#endif
                     }
                 }
 
@@ -279,37 +263,26 @@ class HadithSegmentor {
                     stateInfo.previousPunctuationInfo.fullstop = true;
                 }
 
-                #else
-                hadith_stemmer s(text, stateInfo.startPos);
-                s();
-                long finish = max(s.info.finish, s.finish_pos);
-
-                if (finish == current_pos) {
-                    finish = getLastLetter_IN_currentWord(stateInfo.startPos);
-                }
-
-                stateInfo.startPos = next_positon(finish);
-                #endif
-                #ifdef PROGRESSBAR
+#ifdef PROGRESSBAR
                 prg->report((double)stateInfo.startPos / text_size * 100 + 0.5);
 
                 if (stateInfo.startPos == text_size - 1) {
                     break;
                 }
 
-                #endif
+#endif
             }
 
-            #ifdef NONCONTEXT_LEARNING
+#ifdef NONCONTEXT_LEARNING
 
             if (!currentChain->segmentNarrators) {
                 currentChain->learningEvaluator.displayNameLearningStatistics();
                 currentChain->learningEvaluator.resetLearnedNames();
             }
 
-            #endif
+#endif
             prg->report(100);
-            #if !defined(COMPARE_TO_BUCKWALTER) && defined(DISPLAY_HADITH_OVERVIEW)
+#if defined(DISPLAY_HADITH_OVERVIEW)
 
             if (!segmentNarrators && newHadithStart < 0) {
                 theSarf->out << "no hadith found\n";
@@ -318,8 +291,8 @@ class HadithSegmentor {
             }
 
             chainOutput.close();
-            #endif
-            #ifdef CHAIN_BUILDING //just for testing deserialize
+#endif
+#ifdef CHAIN_BUILDING //just for testing deserialize
             QFile f("hadith_chains.txt");
 
             if (!f.open(QIODevice::WriteOnly)) {
@@ -335,21 +308,21 @@ class HadithSegmentor {
 
             QDataStream tester(&chainOutput);
             int tester_Counter = 1;
-            #ifdef TEST_NARRATOR_GRAPH
+#ifdef TEST_NARRATOR_GRAPH
             ChainsContainer chains;
             chains.clear();
-            #endif
-            #if defined(TAG_HADITH)
+#endif
+#if defined(TAG_HADITH)
             prg->startTaggingText(*text);
-            #endif
+#endif
 
             while (!tester.atEnd()) {
                 Chain *s = new Chain(text);
                 s->deserialize(tester);
-                #ifdef TEST_NARRATOR_GRAPH
+#ifdef TEST_NARRATOR_GRAPH
                 chains.append(s);
-                #endif
-                #if defined(TAG_HADITH)
+#endif
+#if defined(TAG_HADITH)
 
                 for (int j = 0; j < s->m_chain.size(); j++) {
                     ChainPrim *curr_struct = s->m_chain[j];
@@ -385,29 +358,29 @@ class HadithSegmentor {
                     }
                 }
 
-                #else
+#else
                 hadith_out << tester_Counter << " ";
                 s->serialize(hadith_out);
-                #endif
+#endif
                 tester_Counter++;
                 s->serialize(file_hadith);
             }
 
             chainOutput.close();
             f.close();
-            #ifdef TEST_NARRATOR_GRAPH
+#ifdef TEST_NARRATOR_GRAPH
             (*functionUsingChains)(chains, prg, fileName);
-            #endif
-            #endif
-            #ifndef TAG_HADITH
-            #if 0
-            prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
-            #endif
-            #else
-            prg->finishTaggingText();
-            #endif
 #endif
-            #ifdef STATS
+#endif
+#ifndef TAG_HADITH
+#if 0
+            prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
+#endif
+#else
+            prg->finishTaggingText();
+#endif
+#endif
+#ifdef STATS
             double avg_narrators_per_chain = average(stat.narrator_per_chain);
             double avg_names_per_narrator = average(stat.name_per_narrator);
             displayed_error << "Chains=\t\t" << stat.chains << "\n"
@@ -455,14 +428,11 @@ class HadithSegmentor {
                 delete temp[i];
             }
 
-            #endif
-            #ifdef COMPARE_TO_BUCKWALTER
-            myfile.write(output_to_file);
-            #endif
-            #ifdef COUNT_AVERAGE_SOLUTIONS
+#endif
+#ifdef COUNT_AVERAGE_SOLUTIONS
             displayed_error << (double)(total_solutions / (long double)stemmings) << "\n"
                             << stemmings << "\n";
-            #endif
+#endif
             //delete text;
             /*if (currentChain!=NULL)
               delete currentChain;*/
@@ -578,9 +548,9 @@ int adjective_detector(QString input_str) {
 
 int hadithHelper(QString input_str, ATMProgressIFC *prg) {
     input_str = input_str.split("\n")[0];
-    #ifdef IMAN_CODE
+#ifdef IMAN_CODE
     return adjective_detector(input_str);
-    #endif
+#endif
     HadithSegmentor s;
     s.segment(input_str, &test_GraphFunctionalities, prg);
     return 0;

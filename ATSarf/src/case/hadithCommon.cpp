@@ -8,13 +8,13 @@
 HadithParameters hadithParameters;
 
 #ifdef REFINEMENTS
-QStringList rasoul_words;
-QStringList compound_words, suffixNames;
+    QStringList rasoul_words;
+    QStringList compound_words, suffixNames;
 #endif
 
 QString chainDataStreamFileName = ".chainOutput";
 #ifdef PREPROCESS_DESCRIPTIONS
-QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
+    QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
 #endif
 QString PhrasesFileName = "../src/case/phrases";
 QString StopwordsFileName = "../src/case/stop_words";
@@ -24,18 +24,16 @@ int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRAT
 QList<int> bits_NAME;
 
 #ifdef PREPROCESS_DESCRIPTIONS
-QHash<long, bool> familyNMC_descriptions;
-QHash<long, bool> NRC_descriptions;
-QHash<long, bool> IBN_descriptions;
-QHash<long, bool> OM_descriptions;
-QHash<long, bool> AB_descriptions;
+    QHash<long, bool> familyNMC_descriptions;
+    QHash<long, bool> NRC_descriptions;
+    QHash<long, bool> IBN_descriptions;
+    QHash<long, bool> OM_descriptions;
+    QHash<long, bool> AB_descriptions;
 #endif
-#ifdef COMPARE_TO_BUCKWALTER
-QTextStream *myoutPtr;
-#endif
+    QTextStream *myoutPtr;
 #ifdef COUNT_AVERAGE_SOLUTIONS
-long total_solutions = 0;
-long stemmings = 0;
+    long total_solutions = 0;
+    long stemmings = 0;
 #endif
 
 #ifdef PREPROCESS_DESCRIPTIONS
@@ -115,7 +113,7 @@ void hadith_initialize() {
     suffixNames.append(QString("") + ha2 + meem + alef);
     alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
     _3an.append(_3yn).append(noon);
-    #if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
+#if defined(REFINEMENTS) && !defined(JUST_BUCKWALTER)
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("Male Names");
     long abstract_COMPOUND_NAMES = database_info.comp_rules->getAbstractCategoryID("Compound Names");
     int bit_COMPOUND_NAMES = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
@@ -128,19 +126,19 @@ void hadith_initialize() {
     bit_NOUN_PROP = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
     long abstract_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
     bit_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
-    #ifdef ADD_ENARRATOR_NAMES
+#ifdef ADD_ENARRATOR_NAMES
 
     if (bit_ENARRATOR_NAMES >= 0) {
         bits_NAME.append(bit_ENARRATOR_NAMES);
     }
 
-    #endif
-    #elif defined(JUST_BUCKWALTER)
+#endif
+#elif defined(JUST_BUCKWALTER)
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
-    #else
+#else
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("Name of Person");
-    #endif
-    #ifndef JUST_BUCKWALTER
+#endif
+#ifndef JUST_BUCKWALTER
     long abstract_POSSESSIVE = database_info.comp_rules->getAbstractCategoryID("POSSESSIVE");
     long abstract_PLACE = database_info.comp_rules->getAbstractCategoryID("Name of Place");
     long abstract_CITY = database_info.comp_rules->getAbstractCategoryID("City/Town");
@@ -149,19 +147,19 @@ void hadith_initialize() {
     bit_PLACE = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_PLACE);
     bit_CITY = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_CITY);
     bit_COUNTRY = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COUNTRY);
-    #else
+#else
     abstract_POSSESSIVE = -1;
     abstract_PLACE = -1;
     abstract_CITY = -1;
     abstract_COUNTRY = -1;
-    #endif
+#endif
     int bit_NAME = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
 
     if (bit_NAME >= 0) {
         bits_NAME.append(bit_NAME);
     }
 
-    #ifdef REFINEMENTS
+#ifdef REFINEMENTS
     QFile input(PhrasesFileName);    //contains compound words or phrases
 
     //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
@@ -194,18 +192,18 @@ void hadith_initialize() {
     }
 
     rasoul_words = stopwords.split("\n", QString::SkipEmptyParts);
-    #endif
-    #ifdef STATS
+#endif
+#ifdef STATS
     stat.chains = 0;
     stat.names_in = 0;
     stat.names_out = 0;
     stat.narrators = 0;
     stat.name_per_narrator.clear();
     stat.narrator_per_chain.clear();
-    #endif
-    #ifdef PREPROCESS_DESCRIPTIONS
+#endif
+#ifdef PREPROCESS_DESCRIPTIONS
     readFromFilePreprocessedHadithDescriptions();
-    #endif
+#endif
 }
 
 #if defined(HADITHDEBUG) || defined(NARRATORDEBUG)
@@ -219,11 +217,11 @@ inline QString type_to_text(WordType t) {
 
         case NMC:
             return "NMC";
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         case STOP_WORD:
             return "STOP_WORD";
-            #endif
+#endif
 
         default:
             return "UNDEFINED-TYPE";
@@ -242,11 +240,11 @@ inline QString type_to_text(StateType t) {
 
         case NRC_S:
             return "NRC_S";
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         case STOP_WORD_S:
             return "STOP_WORD_S";
-            #endif
+#endif
 
         default:
             return "UNDEFINED-TYPE";
@@ -270,7 +268,7 @@ inline void display(QString t) {
 
 inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStructure, HadithData *structures,
                           StateData  &currentData, bool punc = false, bool ending_punc = false) {
-    #ifdef CHAIN_BUILDING
+#ifdef CHAIN_BUILDING
 #define addNarrator(narrator) \
     if (structures->hadith) { \
         structures->chain->m_chain.append(narrator); \
@@ -473,9 +471,9 @@ inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStruct
                     }
 
                     structures->namePrim->m_end = stateInfo.endPos;
-                    #ifdef REFINEMENTS
+#ifdef REFINEMENTS
                     structures->namePrim->learnedName = stateInfo.learnedName;
-                    #endif
+#endif
 
                     if (structures->narrator == NULL) {
                         structures->narrator = new Narrator(structures->text);
@@ -504,7 +502,7 @@ inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStruct
                     }
 
                     structures->nameConnectorPrim->m_end = stateInfo.endPos;
-                    #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
                     if (stateInfo.familyNMC) {
                         assert(structures->nameConnectorPrim->isOther());
@@ -522,7 +520,7 @@ inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStruct
                         structures->nameConnectorPrim->setPossessive();
                     }
 
-                    #endif
+#endif
 
                     if (stateInfo.isFamilyConnectorOrPossessivePlace()) {
                         if (structures->narrator == NULL) {
@@ -647,10 +645,10 @@ inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStruct
 
     stateInfo.processedStructure = currentStructure;
 #undef addNarrator
-    #endif
+#endif
 }
 inline int removeLastSpuriousNarrators(HadithData *structures) { // returns number of narrators removed
-    #ifdef CHAIN_BUILDING
+#ifdef CHAIN_BUILDING
     if (structures->hadith) {
         assert(structures->chain != NULL);
         ChainPrim *c;
@@ -684,13 +682,13 @@ inline int removeLastSpuriousNarrators(HadithData *structures) { // returns numb
         return 0;
     }
 
-    #endif
+#endif
 }
 
 inline void assertStructure(StateInfo &stateInfo, const Structure s) {
-    #ifdef CHAIN_BUILDING
+#ifdef CHAIN_BUILDING
     assert(stateInfo.processedStructure == s);
-    #endif
+#endif
 }
 
 bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &currentData) {
@@ -720,10 +718,10 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
     int nrc_max = (structures->hadith ? hadithParameters.nrc_max : hadithParameters.bio_nrc_max);
     int nmc_max = (structures->hadith ? hadithParameters.nmc_max : hadithParameters.bio_nmc_max);
-    #ifdef TRYTOLEARN
+#ifdef TRYTOLEARN
     stateInfo.nrcIsPunctuation = false;
-    #endif
-    #ifdef REFINEMENTS
+#endif
+#ifdef REFINEMENTS
     bool reachedRasoul = (stateInfo.currentType == STOP_WORD &&
                           !stateInfo.familyConnectorOr3abid()); //stop_word not preceeded by 3abid or ibn
 
@@ -731,7 +729,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
         stateInfo.currentType = NAME;
     }
 
-    #endif
+#endif
     bool return_value = true;
 
     switch (stateInfo.currentState) {
@@ -759,9 +757,9 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 currentData.mainStructureStartIndex = stateInfo.startPos;
                 currentData.narratorStartIndex = stateInfo.startPos;
                 fillStructure(stateInfo, NAME_PRIM, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
                 temp_names_per_narrator = 1;
-                #endif
+#endif
 
                 if (stateInfo.currentPunctuationInfo.has_punctuation) {
                     display("<punc1>");
@@ -770,9 +768,9 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0; //punctuation is zero
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-                    #ifdef TRYTOLEARN
+#ifdef TRYTOLEARN
                     stateInfo.nrcIsPunctuation = true;
-                    #endif
+#endif
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -789,7 +787,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 stateInfo.nextState = NRC_S;
                 currentData.nrcCount = 1;
                 fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
                 temp_nrc_s.clear();
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
@@ -797,8 +795,8 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 entry->frequency = 1;
                 temp_nrc_s.append(entry);
                 temp_nrc_count = 1;
-                #endif
-                #ifdef REFINEMENTS
+#endif
+#ifdef REFINEMENTS
 
                 if (stateInfo._3an) {
                     currentData.nrcCount = 1;
@@ -808,7 +806,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     stateInfo.nextState = NAME_S;
                 }
 
-                #endif
+#endif
 
                 if (ending_punc) {
                     currentData.narratorEndIndex = stateInfo.endPos;
@@ -817,7 +815,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             }
 
-            #ifdef IBN_START//needed in case a hadith starts by familyConnector such as "ibn yousef qal..."
+#ifdef IBN_START//needed in case a hadith starts by familyConnector such as "ibn yousef qal..."
             else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
                 if (!stateInfo.previousPunctuationInfo.fullstop) {
                     stateInfo.nextState = TEXT_S;
@@ -833,7 +831,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 stateInfo.nextState = NMC_S;
                 currentData.nmcValid = true;
                 fillStructure(stateInfo, NAME_CONNECTOR, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
                 temp_nmc_s.clear();
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
@@ -841,7 +839,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 entry->frequency = 1;
                 temp_nmc_s.append(entry);
                 temp_nmc_count = 1;
-                #endif
+#endif
 
                 if (ending_punc) {
                     stateInfo.nextState = TEXT_S;
@@ -853,7 +851,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             }
 
-            #endif
+#endif
             else {
                 stateInfo.nextState = TEXT_S;
             }
@@ -862,7 +860,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
         case NAME_S:
             assertStructure(stateInfo, NAME_PRIM);
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
             if (reachedRasoul) {
                 display("<STOP1>");
@@ -870,7 +868,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 currentData.narratorCount++;
                 fillStructure(stateInfo, RASOUL_WORD, structures, currentData);
                 currentData.narratorEndIndex = stateInfo.endPos;
-                #ifdef STATS
+#ifdef STATS
 
                 for (int i = temp_nmc_s.count() - temp_nmc_count; i < temp_nmc_s.count(); i++) {
                     delete temp_nmc_s[i];
@@ -884,12 +882,12 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                 temp_nmc_count = 0;
                 temp_nrc_count = 0;
-                #endif
+#endif
                 //return_value= false;
                 break;
             }
 
-            #endif
+#endif
 
             if (stateInfo.currentType == NMC) {
                 stateInfo.nextState = NMC_S;
@@ -898,14 +896,14 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 currentData.nmcStartIndex = stateInfo.startPos;
                 //check why in previous implementation, were clearing currentChain->temp_nameConnectors without adding them in even if NMC was ibn or possessive
                 fillStructure(stateInfo, NAME_CONNECTOR, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
                 entry->stem = current_stem;
                 entry->frequency = 1;
                 temp_nmc_s.append(entry);
                 temp_nmc_count++;
-                #endif
+#endif
 
                 if (stateInfo.currentPunctuationInfo.has_punctuation) {
                     /*added all this now*/
@@ -929,13 +927,13 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             } else if (stateInfo.currentType == NRC) {
                 stateInfo.nextState = NRC_S;
-                #ifdef GET_WAW
+#ifdef GET_WAW
 
                 if (!stateInfo.isWaw) //so as not to affect the count for tolerance and lead to false positives, just used for accuracy
-                #endif
+#endif
                     currentData.narratorCount++;
 
-                #ifdef STATS
+#ifdef STATS
                 stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
                 temp_names_per_narrator = 0;
                 map_entry *entry = new map_entry;
@@ -945,13 +943,13 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 temp_nrc_s.append(entry);
                 temp_nrc_count = 1;
                 temp_nmc_count = 0;
-                #endif
+#endif
                 display(QString("counter%1\n").arg(currentData.narratorCount));
                 currentData.nrcCount = 1;
                 currentData.narratorEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
                 currentData.nrcStartIndex = stateInfo.startPos;
                 fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData);
-                #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
                 if (stateInfo._3an) {
                     currentData.nrcCount = 1;
@@ -961,7 +959,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     stateInfo.nextState = NAME_S;
                 }
 
-                #endif
+#endif
 
                 if (ending_punc) {
                     currentData.narratorEndIndex = stateInfo.endPos;
@@ -969,13 +967,13 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     return_value = false;
                 }
             } else {
-                #ifdef STATS
+#ifdef STATS
 
                 if (currentType == NAME) {
                     temp_names_per_narrator++;//found another name name
                 }
 
-                #endif
+#endif
                 stateInfo.nextState = NAME_S;
                 fillStructure(stateInfo, NAME_PRIM, structures, currentData);
 
@@ -1000,13 +998,13 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
         case NMC_S:
             assertStructure(stateInfo, NAME_CONNECTOR);
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
             if (reachedRasoul) {
                 display("<STOP2>");
                 //1-finish old narrator and use last nmc as nrc
                 currentData.narratorCount++;
-                #ifdef STATS
+#ifdef STATS
                 stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
                 temp_names_per_narrator = 0;
                 map_entry *entry = new map_entry;
@@ -1016,7 +1014,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 temp_nrc_s.append(entry);
                 temp_nrc_count = 0;
                 temp_nmc_count = 0;
-                #endif
+#endif
                 display(QString("counter%1\n").arg(currentData.narratorCount));
                 currentData.nrcCount = 0;
                 stateInfo.nextState = NRC_S;
@@ -1028,7 +1026,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 stateInfo.nextState = STOP_WORD_S;
                 currentData.narratorCount++;
                 fillStructure(stateInfo, RASOUL_WORD, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
 
                 for (int i = temp_nmc_s.count() - temp_nmc_count; i < temp_nmc_s.count(); i++) {
                     delete temp_nmc_s[i];
@@ -1042,16 +1040,16 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                 temp_nmc_count = 0;
                 temp_nrc_count = 0;
-                #endif
+#endif
                 //return_value= false;
                 break;
             }
 
-            #endif
+#endif
 
             if (stateInfo.currentType == NRC) {
                 currentData.narratorCount++;
-                #ifdef STATS
+#ifdef STATS
                 stat.name_per_narrator.append(temp_names_per_narrator);//found 1 name
                 temp_names_per_narrator = 0;
                 map_entry *entry = new map_entry;
@@ -1061,7 +1059,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 temp_nrc_s.append(entry);
                 temp_nrc_count = 1;
                 temp_nmc_count = 0;
-                #endif
+#endif
                 display(QString("counter%1\n").arg(currentData.narratorCount));
                 currentData.nmcCount = 0;
                 currentData.nrcCount = 1;
@@ -1069,7 +1067,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 currentData.narratorEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
                 currentData.nrcStartIndex = stateInfo.startPos;
                 fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData);
-                #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
                 if (stateInfo._3an) {
                     currentData.nrcCount = 1;
@@ -1079,7 +1077,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     stateInfo.nextState = NAME_S;
                 }
 
-                #endif
+#endif
 
                 if (ending_punc) {
                     currentData.narratorEndIndex = stateInfo.endPos;
@@ -1090,9 +1088,9 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 currentData.nmcCount = 0;
                 stateInfo.nextState = NAME_S;
                 fillStructure(stateInfo, NAME_PRIM, structures, currentData);
-                #ifdef STATS
+#ifdef STATS
                 temp_names_per_narrator++;//found another name name
-                #endif
+#endif
 
                 if (stateInfo.currentPunctuationInfo.has_punctuation) {
                     display("<punc3>");
@@ -1156,7 +1154,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                     // TODO: added this later to the code, check if really is in correct place, but seemed necessary
                     currentData.narratorCount++;
-                    #ifdef STATS
+#ifdef STATS
 
                     for (int i = temp_nmc_s.count() - temp_nmc_count; i < temp_nmc_s.count(); i++) {
                         delete temp_nmc_s[i];
@@ -1170,7 +1168,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                     temp_nmc_count = 0;
                     temp_nrc_count = 0;
-                    #endif
+#endif
                     //till here was added later
                     display("{check}");
                     currentData.narratorEndIndex = stateInfo.lastEndPos; //TODO: find a better representation
@@ -1187,14 +1185,14 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
 
                 stateInfo.nextState = NMC_S;
-                #ifdef STATS
+#ifdef STATS
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
                 entry->stem = current_stem;
                 entry->frequency = 1;
                 temp_nmc_s.append(entry);
                 temp_nmc_count++;
-                #endif
+#endif
 
                 if (ending_punc) {
                     stateInfo.nextState = TEXT_S;
@@ -1211,27 +1209,27 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
         case NRC_S:
             assertStructure(stateInfo, NARRATOR_CONNECTOR);
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
             if (reachedRasoul) {
                 display("<STOP3>");
                 fillStructure(stateInfo, RASOUL_WORD, structures, currentData);
                 currentData.nrcEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
                 currentData.nmcCount = 1;
-                #ifdef STATS
+#ifdef STATS
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
                 entry->stem = current_stem;
                 entry->frequency = 1;
                 temp_nmc_s.append(entry);
                 temp_nmc_count++;
-                #endif
+#endif
                 currentData.narratorStartIndex = stateInfo.startPos;
                 currentData.nmcStartIndex = stateInfo.startPos;
                 stateInfo.nextState = STOP_WORD_S;
                 currentData.narratorCount++;
                 currentData.narratorEndIndex = stateInfo.endPos;
-                #ifdef STATS
+#ifdef STATS
 
                 for (int i = temp_nmc_s.count() - temp_nmc_count; i < temp_nmc_s.count(); i++) {
                     delete temp_nmc_s[i];
@@ -1245,24 +1243,24 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                 temp_nmc_count = 0;
                 temp_nrc_count = 0;
-                #endif
+#endif
                 //return_value= false;
                 break;
             }
 
-            #endif
+#endif
 
             if (structures->hadith && (stateInfo.currentType == NAME || stateInfo.currentType == NRC)) {
                 currentData.nrcPunctuation = false;
             }
 
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
             if (stateInfo.currentType == NAME || stateInfo.possessivePlace) {
-            #else
+#else
 
             if (stateInfo.currentType == NAME) {
-            #endif
+#endif
                 stateInfo.nextState = NAME_S;
                 currentData.nrcCount = 1;
                 currentData.narratorStartIndex = stateInfo.startPos;
@@ -1276,9 +1274,9 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 fillStructure(stateInfo, (stateInfo.currentType == NAME ? NAME_PRIM : NAME_CONNECTOR), structures, currentData);
                 stateInfo.processedStructure = NAME_PRIM; //to have consistency with nextState in case it was NAME_CONNECTOR
                 currentData.nrcEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
-                #ifdef STATS
+#ifdef STATS
                 temp_names_per_narrator++;//found another name
-                #endif
+#endif
 
                 if (stateInfo.currentPunctuationInfo.has_punctuation) {
                     display("<punc4>");
@@ -1303,21 +1301,21 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             }
 
-            #ifdef IBN_START
+#ifdef IBN_START
             else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
                 display("<Family3>");
                 fillStructure(stateInfo, NAME_CONNECTOR, structures, currentData);
                 currentData.nrcEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
                 currentData.nmcValid = true;
                 currentData.nmcCount = 1;
-                #ifdef STATS
+#ifdef STATS
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
                 entry->stem = current_stem;
                 entry->frequency = 1;
                 temp_nmc_s.append(entry);
                 temp_nmc_count++;
-                #endif
+#endif
                 currentData.narratorStartIndex = stateInfo.startPos;
                 currentData.nmcStartIndex = stateInfo.startPos;
                 stateInfo.nextState = NMC_S;
@@ -1329,9 +1327,9 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0;
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-                    #ifdef TRYTOLEARN
+#ifdef TRYTOLEARN
                     stateInfo.nrcIsPunctuation = true;
-                    #endif
+#endif
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -1345,13 +1343,13 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             }
 
-            #endif
+#endif
             else if ((structures->hadith ? currentData.nrcCount : currentData.bio_nrcCount) >= nrc_max ||
                      currentData.nrcPunctuation || stateInfo.number) {
                 //if in biography mode bio_nrcCount has meaning else is zero
                 //if not in refinements mode stateInfo.number will always remain false
                 stateInfo.nextState = TEXT_S;
-                #ifdef STATS
+#ifdef STATS
 
                 for (int i = temp_nmc_s.count() - temp_nmc_count; i < temp_nmc_s.count(); i++) {
                     delete temp_nmc_s[i];
@@ -1365,7 +1363,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                 temp_nmc_count = 0;
                 temp_nrc_count = 0;
-                #endif
+#endif
                 fillStructure(stateInfo, INITIALIZE, structures, currentData, true, true); //just to delete dangling NARRATOR_CONNECTOR
                 return_value = false;
                 break;
@@ -1373,14 +1371,14 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 stateInfo.nextState = NRC_S;
                 fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData);
                 currentData.nrcCount++;
-                #ifdef STATS
+#ifdef STATS
                 map_entry *entry = new map_entry;
                 entry->exact = current_exact;
                 entry->stem = current_stem;
                 entry->frequency = 1;
                 temp_nrc_s.append(entry);
                 temp_nrc_count++;
-                #endif
+#endif
 
                 if (ending_punc) {
                     stateInfo.nextState = TEXT_S;
@@ -1391,7 +1389,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     break;
                 }
 
-                #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
                 if (stateInfo._3an) {
                     currentData.nrcCount = 1;
@@ -1402,7 +1400,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     break;
                 }
 
-                #endif
+#endif
             }
 
             if (structures->hadith && stateInfo.currentPunctuationInfo.has_punctuation && stateInfo.nextState == NRC_S &&
@@ -1411,7 +1409,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
             }
 
             break;
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         case STOP_WORD_S:
             assertStructure(stateInfo, RASOUL_WORD);
@@ -1439,16 +1437,16 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
             }
 
             break;
-            #endif
+#endif
 
         default:
             break;
     }
 
     display("\n");
-    #ifdef REFINEMENTS
+#ifdef REFINEMENTS
     currentData.ibn_or_3abid = stateInfo.familyConnectorOr3abid(); //for it to be saved for next time use
-    #endif
+#endif
 
     if (!return_value /*&& stateInfo.processedStructure!=INITIALIZE*/) {
         fillStructure(stateInfo, INITIALIZE, structures, currentData);
@@ -1464,7 +1462,7 @@ inline bool result(WordType t, StateInfo   &stateInfo, HadithData *currentChain,
     display(t);
     stateInfo.currentType = t;
     bool val = getNextState(stateInfo, currentChain, currentData);
-    #ifdef NONCONTEXT_LEARNING
+#ifdef NONCONTEXT_LEARNING
 
     if (!val) {
         if (currentChain->hadith && !currentChain->segmentNarrators &&
@@ -1498,48 +1496,48 @@ inline bool result(WordType t, StateInfo   &stateInfo, HadithData *currentChain,
         }
     }
 
-    #endif
+#endif
     return val;
 }
 
 bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                            StateData &currentData) { //does not fill stateInfo.currType
     hadith_stemmer s(structures->text, stateInfo.startPos);
-    #ifdef NONCONTEXT_LEARNING
+#ifdef NONCONTEXT_LEARNING
     hadith_stemmer nameLearner(structures->text, stateInfo.startPos);
-    #endif
+#endif
     bool family = false;
 
     if (stateInfo.familyNMC) {
         s.tryToLearnNames = true;
-        #ifdef NONCONTEXT_LEARNING
+#ifdef NONCONTEXT_LEARNING
         nameLearner.tryToLearnNames = true;
-        #endif
+#endif
         family = true;
     }
 
     stateInfo.resetCurrentWordInfo();
     long  finish;
     stateInfo.possessivePlace = false;
-    #ifdef REFINEMENTS
-        #ifdef TRYTOLEARN
-        bool nrcLearning = false;
+#ifdef REFINEMENTS
+#ifdef TRYTOLEARN
+    bool nrcLearning = false;
 
-        if (stateInfo.currentState == NRC_S && currentData.nrcCount <= 1
-            && !stateInfo.nrcIsPunctuation
-           ) {
-            nrcLearning = true;
-            s.tryToLearnNames = true;
-        }
+    if (stateInfo.currentState == NRC_S && currentData.nrcCount <= 1
+        && !stateInfo.nrcIsPunctuation
+       ) {
+        nrcLearning = true;
+        s.tryToLearnNames = true;
+    }
 
-        #endif
-        #ifdef NONCONTEXT_LEARNING
+#endif
+#ifdef NONCONTEXT_LEARNING
 
-        if (stateInfo.nrcPreviousType) {
-            nameLearner.tryToLearnNames = true;
-        }
+    if (stateInfo.nrcPreviousType) {
+        nameLearner.tryToLearnNames = true;
+    }
 
-        #endif
+#endif
 
     //assert(!s.tryToLearnNames || nameLearner.tryToLearnNames);
     if (isNumber(structures->text, stateInfo.startPos, finish)) {
@@ -1563,10 +1561,10 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             stop_word = true;
             //found=true;
             finish = pos + stateInfo.startPos;
-            #ifdef STATS
+#ifdef STATS
             current_stem = c;
             current_exact = c;
-            #endif
+#endif
             break;
         }
     }
@@ -1581,19 +1579,19 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 phrase = true;
                 //found=true;
                 finish = pos + stateInfo.startPos;
-                #ifdef STATS
+#ifdef STATS
                 current_stem = c;
                 current_exact = c;
-                #endif
+#endif
                 break;
             }
         }
     }
 
     if (!stop_word && !phrase) {
-    #endif // REFINEMENTS
+#endif // REFINEMENTS
         s();
-        #ifdef TRYTOLEARN
+#ifdef TRYTOLEARN
         QString n = s.getString().toString();
 
         if (!s.tryToLearnNames && (stateInfo.currentType == NRC || stateInfo.currentType == NAME) && startsWithAL(n) &&
@@ -1604,19 +1602,19 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             s();
         }
 
-        #endif
-        #ifdef NONCONTEXT_LEARNING
+#endif
+#ifdef NONCONTEXT_LEARNING
 
         if (nameLearner.tryToLearnNames) {
             nameLearner();
         }
 
-        #endif
+#endif
         finish = max(s.info.finish, s.finish_pos);
 
         if (s.numSolutions == 0/*finish==stateInfo.startPos*/) {
             finish = getLastLetter_IN_currentWord(structures->text, stateInfo.startPos);
-            #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
             if (s.tryToLearnNames &&
                 removeDiacritics(structures->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1)).count() >= 3) {
@@ -1638,8 +1636,8 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 s.learnedName = true;
             }
 
-            #endif
-            #ifdef NONCONTEXT_LEARNING
+#endif
+#ifdef NONCONTEXT_LEARNING
 
             if (!structures->segmentNarrators && nameLearner.tryToLearnNames &&
                 removeDiacritics(structures->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1)).count() >= 3) {
@@ -1648,10 +1646,10 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 structures->learningEvaluator.addNonContextLearnedName(p);
             }
 
-            #endif
+#endif
         }
 
-        #ifdef STATS
+#ifdef STATS
         current_exact = removeDiacritics(s.info->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1));
         current_stem = s.stem;
 
@@ -1663,15 +1661,15 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             current_stem = current_exact;
         }
 
-        #endif
-        #ifdef REFINEMENTS
+#endif
+#ifdef REFINEMENTS
     }
 
-        #endif
+#endif
     stateInfo.endPos = finish;
     stateInfo.nextPos = next_positon(structures->text, finish, stateInfo.currentPunctuationInfo);
     display(structures->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1) + ":");
-    #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
     if (stop_word || s.stopword) {
         return result(STOP_WORD, stateInfo, structures, currentData);
@@ -1684,9 +1682,9 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     }
 
     stateInfo._3abid = s._3abid;
-    #endif
+#endif
     stateInfo.possessivePlace = s.possessive;
-    #ifdef TRYTOLEARN
+#ifdef TRYTOLEARN
 
     if (!s.name && !s.nmc && !s.nrc && !s.stopword) {
         QString word = s.getString().toString();
@@ -1724,8 +1722,8 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         }
     }
 
-    #endif
-    #ifdef NONCONTEXT_LEARNING
+#endif
+#ifdef NONCONTEXT_LEARNING
 
     if (!structures->segmentNarrators && !nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&
         !nameLearner.stopword) {
@@ -1755,12 +1753,12 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         structures->learningEvaluator.addKnownName(p, false);
     }
 
-    #endif
+#endif
     stateInfo.nrcPreviousType = false;
 
     //displayed_error<<"-";
     if (s.nrc) {
-        #ifdef REFINEMENTS
+#ifdef REFINEMENTS
 
         if (s.is3an) {
             if (s.finishStem == finish) {
@@ -1769,16 +1767,16 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             }
         }
 
-        #endif
+#endif
         stateInfo.nrcPreviousType = true;
         //displayed_error<<"p"<<s.getString().toString();
         return result(NRC, stateInfo, structures, currentData);
     } else if (s.nmc) {
         if (s.familyNMC) {
-            #if defined(GET_WAW) || defined(REFINEMENTS)
+#if defined(GET_WAW) || defined(REFINEMENTS)
             PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
-            #endif
-            #ifdef GET_WAW
+#endif
+#ifdef GET_WAW
             long nextpos = stateInfo.nextPos;
 
             if (s.has_waw && (stateInfo.currentState == NAME_S || stateInfo.currentState == NRC_S)) {
@@ -1798,8 +1796,8 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 stateInfo.lastEndPos = stateInfo.endPos;
             }
 
-            #endif
-            #ifdef REFINEMENTS
+#endif
+#ifdef REFINEMENTS
             display("FamilyNMC ");
             stateInfo.familyNMC = true;
 
@@ -1847,9 +1845,9 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             }
 
             return true;
-            #else
+#else
             return result(NMC, stateInfo, currentChain);
-            #endif
+#endif
         }
 
         if (s.possessive) {
@@ -1859,7 +1857,7 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
 
         return result(NMC, stateInfo, structures, currentData);
     } else if (s.name) {
-        #ifdef GET_WAW
+#ifdef GET_WAW
         long nextpos = stateInfo.nextPos;
         PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
 
@@ -1881,21 +1879,21 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         }
 
         stateInfo.currentPunctuationInfo = copyPunc;
-        #endif
-        #ifdef REFINEMENTS
+#endif
+#ifdef REFINEMENTS
         stateInfo.learnedName = s.learnedName;
         stateInfo.startPos = s.startStem;
         stateInfo.endPos = s.finishStem;
         stateInfo.nextPos = nextpos;
-        #endif
-        #ifdef NONCONTEXT_LEARNING
+#endif
+#ifdef NONCONTEXT_LEARNING
 
         if (!structures->segmentNarrators) {
             Name p(structures->text, s.startStem, s.finishStem);
             structures->learningEvaluator.addKnownName(p, s.learnedName);
         }
 
-        #endif
+#endif
         return result(NAME, stateInfo, structures, currentData);
     } else {
         return result(NMC, stateInfo, structures, currentData);
