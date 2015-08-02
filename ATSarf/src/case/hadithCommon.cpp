@@ -706,10 +706,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     stateInfo.nextState = TEXT_S;
                     return_value = false;
                 }
-            }
-
-#ifdef IBN_START//needed in case a hadith starts by familyConnector such as "ibn yousef qal..."
-            else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
+            } else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
                 if (!stateInfo.previousPunctuationInfo.fullstop) {
                     stateInfo.nextState = TEXT_S;
                     break;
@@ -727,16 +724,14 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                 if (ending_punc) {
                     stateInfo.nextState = TEXT_S;
+//futureStructure=INITIALIZE will reset the structure for next time and will not hurt flow since anyways resetting here
                     fillStructure(stateInfo, INITIALIZE, structures, currentData, true,
-                                  true); //futureStructure=INITIALIZE will reset the structure for next time and will not hurt flow since anyways resetting here
+                                  true);
                     currentData.narratorCount++;
                     currentData.narratorEndIndex = stateInfo.endPos;
                     return_value = false;
                 }
-            }
-
-#endif
-            else {
+            } else {
                 stateInfo.nextState = TEXT_S;
             }
 
@@ -1026,10 +1021,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                     break;
                 }
-            }
-
-#ifdef IBN_START
-            else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
+            } else if (stateInfo.currentType == NMC && stateInfo.familyNMC) {
                 display("<Family3>");
                 fillStructure(stateInfo, NAME_CONNECTOR, structures, currentData);
                 currentData.nrcEndIndex = stateInfo.lastEndPos; //getLastLetter_IN_previousWord(stateInfo.startPos);
@@ -1058,11 +1050,8 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
                     break;
                 }
-            }
-
-#endif
-            else if ((structures->hadith ? currentData.nrcCount : currentData.bio_nrcCount) >= nrc_max ||
-                     currentData.nrcPunctuation || stateInfo.number) {
+            } else if ((structures->hadith ? currentData.nrcCount : currentData.bio_nrcCount) >= nrc_max ||
+                       currentData.nrcPunctuation || stateInfo.number) {
                 //if in biography mode bio_nrcCount has meaning else is zero
                 //if not in refinements mode stateInfo.number will always remain false
                 stateInfo.nextState = TEXT_S;
@@ -1212,7 +1201,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         nameLearner.tryToLearnNames = true;
     }
 
-
     //assert(!s.tryToLearnNames || nameLearner.tryToLearnNames);
     if (isNumber(structures->text, stateInfo.startPos, finish)) {
         display("Number ");
@@ -1266,7 +1254,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             s();
         }
 
-
         if (nameLearner.tryToLearnNames) {
             nameLearner();
         }
@@ -1296,14 +1283,12 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 s.learnedName = true;
             }
 
-
             if (!structures->segmentNarrators && nameLearner.tryToLearnNames &&
                 removeDiacritics(structures->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1)).count() >= 3) {
                 nameLearner.name = true;
                 Name p(structures->text, stateInfo.startPos, finish);
                 structures->learningEvaluator.addNonContextLearnedName(p);
             }
-
         }
     }
 
@@ -1359,7 +1344,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             }
         }
     }
-
 
     if (!structures->segmentNarrators && !nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&
         !nameLearner.stopword) {
