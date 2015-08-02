@@ -142,21 +142,6 @@ typedef QList<NameConnectorPrim *> TempConnectorPrimList;
 
 #define display_letters 30
 
-#ifdef STATS
-typedef struct map_entry_ {
-    int frequency;
-    QString exact;
-    QString stem;
-} map_entry;
-typedef struct statistics_ {
-    int names_in, names_out, chains, narrators;
-    QVector<int> narrator_per_chain, name_per_narrator;
-    QHash <QString, map_entry *>  nrc_exact, nmc_exact;
-    QHash <QString, int> nrc_stem, nmc_stem;
-} statistics;
-#endif
-
-
 #ifdef PREPROCESS_DESCRIPTIONS
     void readFromDatabasePreProcessedHadithDescriptions();
     void readFromFilePreprocessedHadithDescriptions();
@@ -180,10 +165,6 @@ class hadith_stemmer: public Stemmer {
 #endif
         bool tryToLearnNames: 1, learnedName: 1;
         long startStem, finishStem, wawStart, wawEnd;
-#ifdef STATS
-        QString stem;
-        QList<QString> stems;
-#endif
         hadith_stemmer(QString *word, int start)
             : Stemmer(word, start, false) {
             setSolutionSettings(M_ALL);
@@ -214,10 +195,6 @@ class hadith_stemmer: public Stemmer {
             wawStart = start;
             wawEnd = start;
             has_waw = false;
-#endif
-#ifdef STATS
-            stem = "";
-            stems.clear();
 #endif
 #ifdef TEST_WITHOUT_SKIPPING
             finished = false;
@@ -299,19 +276,12 @@ class hadith_stemmer: public Stemmer {
 
         bool analyze() {
             numSolutions++;
-#ifdef STATS
-            QString temp_stem = removeDiacritics(info.text->mid(Stem->starting_pos,
-                                                 Suffix->info.start - Stem->starting_pos)); //removeDiacritics(stem_info->raw_data);
-#endif
 #ifndef PREPROCESS_DESCRIPTIONS
             QString description = stem_info->description();
 #endif
             _3abid = (equal_ignore_diacritics(stem_info->raw_data, abid));
 
             if (equal_ignore_diacritics(stem_info->raw_data, hadath)) {
-#ifdef STATS
-                stem = temp_stem;
-#endif
                 nrc = true;
                 finish_pos = info.finish;
                 return false;
@@ -325,9 +295,6 @@ class hadith_stemmer: public Stemmer {
                     )
 #endif
             {
-#ifdef STATS
-                stem = temp_stem;
-#endif
                 familyNMC = true;
 
                 if (IBN_descriptions.contains(stem_info->description_id())) {
@@ -360,10 +327,6 @@ class hadith_stemmer: public Stemmer {
             else if (NRC_descriptions.contains(stem_info->description_id()))
 #endif
             {
-#ifdef STATS
-                stem = temp_stem;
-#endif
-
                 if (equal_ignore_diacritics(stem_info->raw_data, _3an)) {
                     is3an = true;
                     startStem = Stem->info.start;
@@ -406,9 +369,6 @@ class hadith_stemmer: public Stemmer {
 #ifdef GET_WAW
                             checkForWaw();
 #endif
-#ifdef STATS
-                            stem = temp_stem;
-#endif
                         } else if (info.finish == finish_pos && bit_NOUN_PROP != bits_NAME[i]) {
                             learnedName = false;
                         }
@@ -435,9 +395,6 @@ class hadith_stemmer: public Stemmer {
             if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) && stem_info->abstract_categories.getBit(bit_PLACE)) {
                 possessive = true;
                 place = true;
-#ifdef STATS
-                stem = temp_stem;
-#endif
                 nmc = true;
                 finish_pos = info.finish;
                 return false;
@@ -460,9 +417,6 @@ class hadith_stemmer: public Stemmer {
             }
 
 #endif
-#ifdef STATS
-            stems.append(temp_stem);
-#endif
             return true;
         }
 };
@@ -481,22 +435,6 @@ inline QString choose_stem(QList<QString> stems) { //rule can be modified later
 
     return result;
 }
-
-#ifdef STATS
-inline void show_according_to_frequency(QList<int> freq, QList<QString> words) {
-    QList<QPair<int, QString> > l;
-
-    for (int i = 0; i < freq.size() && i < words.size(); i++) {
-        l.append(QPair<int, QString>(freq[i], words[i]));
-    }
-
-    qSort(l.begin(), l.end());
-
-    for (int i = l.size() - 1; i >= 0; i--) {
-        displayed_error << "(" << l[i].first << ") " << l[i].second << "\n";
-    }
-}
-#endif
 
 inline bool isRelativeNarrator(const Narrator &n) {  //needed in equality and narrator Hash
     QString n_str = n.getString();
