@@ -454,9 +454,6 @@ class DisplayNodeVisitorColoredNarrator: public DisplayNodeVisitor {
                 r = r.darker(min(v * 1000, 100.0));
                 unsigned int color = r.toRgb().rgba();
                 QByteArray text = QByteArray::number(color, 16);
-#ifdef NARRATORHASH_DEBUG
-                qDebug() << "[" << n.CanonicalName() << "\t" << v << "]";
-#endif
                 return QString(",style=filled, fillcolor=\"#").append(text.data()).append("\"");
             } else {
                 return "";

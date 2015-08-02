@@ -234,19 +234,8 @@ class NarratorHash {
                         Narrator &narr2 = (dynamic_cast<ChainNarratorNode &>((*v.node)[0])).getNarrator();
                         double similarity = equal(narr1, narr2);
                         //double similarity=(double)(v.value)/v.total*value/total;
-#ifdef NARRATORHASH_DEBUG
-                        //qDebug()<<s<<"\t("<<v.value<<"/"<<v.total<<")\t("<<value<<"/"<<total<<")\t"<<similarity;
-#endif
 
                         if (similarity > 0.0001) {
-#if 0
-
-                            if (node->getKey() == v.node->getKey() && similarity < 1) {
-                                similarity = equal(narr1, narr2);
-                            }
-
-#endif
-
                             if (visitor.isFoundAction()) {
                                 assert(v.index < 0);
                                 dynamic_cast<FoundAction &>(visitor).action(s, v.node, similarity);
@@ -269,13 +258,6 @@ class NarratorHash {
 
         void generateAllPosibilities(GraphNodeItem *node,
                                      Visitor &v) {   //can be ChainNode only if we are searching, not if we are inserting
-#if 0
-#ifdef NARRATORHASH_DEBUG
-            qDebug() << node->getNarrator().getString();
-#endif
-            double max_equality = hadithParameters.equality_threshold * 2,
-                   delta = hadithParameters.equality_delta;
-#endif
             v.initialize(node);
 
             if (node->isGroupNode()) { //if we are searching and isGroupNode, use its keys
@@ -397,9 +379,6 @@ class NarratorHash {
                             for (int f = 0; f < result.size(); f++) {
                                 if (result[f].size() > 0) { //at least one level not empty
                                     QString key = getKey(result);
-#ifdef NARRATORHASH_DEBUG
-                                    qDebug() << "\t" << key << "\t" << value;
-#endif
                                     v.visit(key, node, value);
                                     break;
                                 }
@@ -418,11 +397,6 @@ class NarratorHash {
         void serialize(QDataStream &streamOut);
         void deserialize(QDataStream &streamIn);
         void addNode(GroupNode *node, int index = -1) {
-#ifdef NARRATORHASH_DEBUG
-            qDebug() << node->CanonicalName();
-            DebuggingVisitor d;
-            generateAllPosibilities(node, d);
-#endif
             InsertVisitor v(this, index);
             generateAllPosibilities(node, v);
         }
@@ -433,11 +407,6 @@ class NarratorHash {
             generateAllPosibilities(node, v);
             delete node;
             GraphNodeItem *c = v.getCorrespondingNode();
-#ifdef NARRATORHASH_DEBUG
-            qDebug() << n->getString();
-            DebuggingVisitor d;
-            generateAllPosibilities(group, d);
-#endif
             return c;
         }
         void performActionToAllCorrespondingNodes(GraphNodeItem *node, Action &visitor) {
