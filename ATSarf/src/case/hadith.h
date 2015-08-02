@@ -33,7 +33,6 @@
 
 #define DISPLAY_BIOGRAPHY_GRAPH
 #define MAX_DISPLAYABLE_SIZE 3000
-#define TAG_HADITH
 
 int hadithHelper(QString input_str, ATMProgressIFC *prgs);
 void hadith_initialize();

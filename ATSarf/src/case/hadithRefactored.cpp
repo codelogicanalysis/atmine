@@ -156,9 +156,7 @@ class HadithSegmentor {
             ChainsContainer chains;
             chains.clear();
 #endif
-#if defined(TAG_HADITH)
             prg->startTaggingText(*text);
-#endif
 
             while (!tester.atEnd()) {
                 Chain *s = new Chain(text);
@@ -166,7 +164,6 @@ class HadithSegmentor {
 #ifdef TEST_NARRATOR_GRAPH
                 chains.append(s);
 #endif
-#if defined(TAG_HADITH)
 
                 for (int j = 0; j < s->m_chain.size(); j++) {
                     ChainPrim *curr_struct = s->m_chain[j];
@@ -202,10 +199,6 @@ class HadithSegmentor {
                     }
                 }
 
-#else
-                hadith_out << tester_Counter << " ";
-                s->serialize(hadith_out);
-#endif
                 tester_Counter++;
                 s->serialize(file_hadith);
             }
@@ -216,13 +209,7 @@ class HadithSegmentor {
             (*functionUsingChains)(chains, prg, fileName);
 #endif
 #endif
-#ifndef TAG_HADITH
-#if 0
-            prg->startTaggingText(*hadith_out.string()); //we will not tag but this will force a text to be written there
-#endif
-#else
             prg->finishTaggingText();
-#endif
 #endif
             //delete text;
             /*if (currentChain!=NULL)
