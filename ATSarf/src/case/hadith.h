@@ -35,7 +35,6 @@
 
 //#define COUNT_RASOUL
 #define TEST_BIOGRAPHIES
-//#define DEFAULT_MERGE_NODES
 #define HASH_TOTAL_VALUES
 #define COLOR_ALL
 #define EQUAL_NEW

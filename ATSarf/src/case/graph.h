@@ -114,17 +114,10 @@ class GraphVisitorController {
 
     public:
 
-#ifdef DEFAULT_MERGE_NODES
-        GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, unsigned int visitIndex, unsigned int finishIndex,
-                               bool keep_track_of_edges = true, bool merged_edges_as_one = true);
-        GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, bool keep_track_of_edges = true,
-                               bool merged_edges_as_one = true);
-#else
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, unsigned int visitIndex, unsigned int finishIndex,
                                bool keep_track_of_edges = false, bool merged_edges_as_one = false);
         GraphVisitorController(NodeVisitor *visitor, NarratorGraph *graph, bool keep_track_of_edges = false,
                                bool merged_edges_as_one = false);
-#endif
         bool isPreviouslyVisited(NarratorNodeIfc &node) {
             if (!keep_track_of_nodes) {
                 return false;
