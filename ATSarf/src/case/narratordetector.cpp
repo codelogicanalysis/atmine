@@ -914,14 +914,10 @@ class NarratorDetector {
             currentData.initialize();
             biographies = new BiographyList;
             biographies->clear();
-#ifdef CHAIN_BUILDING
             HadithData *currentBiography = new HadithData(text, false, graph, input_str);
             currentBiography->initialize(text);
             currentBiography->learningEvaluator.resetLearnedNames();
             //display(QString("\ninit%1\n").arg(currentBiography->narrator->m_narrator.size()));
-#else
-            chainData *currentBiography = NULL;
-#endif
 #if !defined(SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY)
             long  biographyStart = -1;
             long  biographyEnd;
@@ -967,11 +963,9 @@ class NarratorDetector {
                         //long end=stateInfo.endPos;
                         out << "\n" << biography_Counter << " new biography start: " << text->mid(biographyStart, display_letters) << endl;
                         out << "sanad end: " << text->mid(biographyEnd - display_letters + 1, display_letters) << endl << endl;
-#ifdef CHAIN_BUILDING
                         currentBiography->biography->serialize(chainOut);
                         currentBiography->biography->setStart(stateInfo.nextPos);
                         //currentChain->chain->serialize(displayed_error);
-#endif
 #endif
                         biography_Counter++;
                     } else {
@@ -1015,22 +1009,21 @@ class NarratorDetector {
 
             chainOutput.close();
 #endif
-#ifdef CHAIN_BUILDING
             int tester_Counter = 1;
             biographies = new BiographyList;
             biographies->clear();
-#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
+    #ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
             if (!chainOutput.open(QIODevice::ReadWrite)) {
                 return 1;
             }
 
             QDataStream tester(&chainOutput);
-#else
+        #else
             modifyNodes();
-#endif
+    #endif
             prg->startTaggingText(*text);
-#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
+    #ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
 
             while (!tester.atEnd()) {
                 Biography *s = new Biography(graph, text);
@@ -1040,7 +1033,7 @@ class NarratorDetector {
                 for (int j = 0; j < s->size(); j++) {
                     const Narrator *n = (*s)[j];
                     bool isReal = s->isReal(j);
-#else
+        #else
             int nodesSize = nodes.size();
 
             for (int i = 0; i < nodesSize; i++) {
@@ -1074,7 +1067,7 @@ class NarratorDetector {
                             Narrator *n = narratorList[*itr];
                             j++;
                             bool isReal = true;
-#endif
+    #endif
 
                     if (!tagNarrator(n, isReal)) {
                         theSarf->out << "found a problem an empty narrator in (" << tester_Counter << "," << j << ")\n";
@@ -1084,7 +1077,7 @@ class NarratorDetector {
                 tester_Counter++;
             }
 
-#ifdef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
+    #ifdef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
         }
 
         prg->setCurrentAction("Looking up Biographies");
@@ -1093,10 +1086,9 @@ class NarratorDetector {
 
 prg->report(100);
 prg->setCurrentAction("Complete");
-#else
+        #else
             chainOutput.close();
-#endif
-#endif
+    #endif
 prg->finishTaggingText();
 
 if (currentBiography != NULL) {

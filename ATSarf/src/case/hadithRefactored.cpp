@@ -42,14 +42,10 @@ class HadithSegmentor {
             long text_size = min(text->size(), end + 1);
             long  newHadithStart = -1;
             currentData.initialize();
-#ifdef CHAIN_BUILDING
             HadithData *currentChain = new HadithData(text, true, NULL, fileName);
             currentChain->initialize(text);
             currentChain->segmentNarrators = segmentNarrators;
             display(QString("\ninit0\n"));
-#else
-            chainData *currentChain = NULL;
-#endif
             long  sanadEnd;
             int hadith_Counter = 1;
             StateInfo stateInfo;
@@ -83,10 +79,8 @@ class HadithSegmentor {
                             theSarf->out << "sanad end: " << text->mid(sanadEnd - display_letters + 1, display_letters) << endl << endl;
                         }
 
-#ifdef CHAIN_BUILDING
                         currentChain->chain->serialize(chainOut);
                         //currentChain->chain->serialize(displayed_error);
-#endif
                         hadith_Counter++;
                     }
                 }
@@ -118,7 +112,6 @@ class HadithSegmentor {
             }
 
             prg->report(100);
-#if defined(DISPLAY_HADITH_OVERVIEW)
 
             if (!segmentNarrators && newHadithStart < 0) {
                 theSarf->out << "no hadith found\n";
@@ -127,8 +120,6 @@ class HadithSegmentor {
             }
 
             chainOutput.close();
-#endif
-#ifdef CHAIN_BUILDING //just for testing deserialize
             QFile f("hadith_chains.txt");
 
             if (!f.open(QIODevice::WriteOnly)) {
@@ -194,7 +185,6 @@ class HadithSegmentor {
             chainOutput.close();
             f.close();
             (*functionUsingChains)(chains, prg, fileName);
-#endif
             prg->finishTaggingText();
 #endif
             //delete text;

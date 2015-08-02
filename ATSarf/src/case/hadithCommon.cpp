@@ -179,7 +179,6 @@ void hadith_initialize() {
 
 inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStructure, HadithData *structures,
                           StateData  &currentData, bool punc = false, bool ending_punc = false) {
-#ifdef CHAIN_BUILDING
 #define addNarrator(narrator) \
     if (structures->hadith) { \
         structures->chain->m_chain.append(narrator); \
@@ -551,10 +550,8 @@ inline void fillStructure(StateInfo   &stateInfo, const Structure &currentStruct
 
     stateInfo.processedStructure = currentStructure;
 #undef addNarrator
-#endif
 }
 inline int removeLastSpuriousNarrators(HadithData *structures) { // returns number of narrators removed
-#ifdef CHAIN_BUILDING
     if (structures->hadith) {
         assert(structures->chain != NULL);
         ChainPrim *c;
@@ -587,14 +584,10 @@ inline int removeLastSpuriousNarrators(HadithData *structures) { // returns numb
     } else {
         return 0;
     }
-
-#endif
 }
 
 inline void assertStructure(StateInfo &stateInfo, const Structure s) {
-#ifdef CHAIN_BUILDING
     assert(stateInfo.processedStructure == s);
-#endif
 }
 
 bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &currentData) {
