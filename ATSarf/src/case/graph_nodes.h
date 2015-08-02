@@ -456,11 +456,7 @@ class ChainNarratorNode: public GraphNodeItem {
             return chainContext.getIndex();
         }
         virtual QString rank2String() const {
-#ifdef SHOW_VERBOSE_RANKS
-            return QString("[%1](%2)").arg(getAutomaticRank()).arg(getSavedRank());
-#else
             return QString("(%1)").arg(getSavedRank());
-#endif
         }
         virtual int getChainNum() const {
             return chainContext.getChainNum();
@@ -722,15 +718,6 @@ class GroupNode: public GraphNodeItem {
 
         virtual QString rank2String() const {
             QString ranks;
-#ifdef SHOW_VERBOSE_RANKS
-            ranks = "[";
-
-            for (int i = 0; i < list.size(); i++) {
-                ranks += QString("%1,").arg(list[i]->getAutomaticRank());
-            }
-
-            ranks += "]";
-#endif
             ranks += QString("(%1)").arg(getSavedRank());
             return ranks;
         }
@@ -942,15 +929,6 @@ class GraphNarratorNode: public NarratorNodeIfc {
         }
         virtual QString rank2String() const {
             QString ranks;
-#ifdef SHOW_VERBOSE_RANKS
-            ranks = "[";
-
-            for (int i = 0; i < groupList.size(); i++) {
-                ranks += QString("%1,").arg(groupList[i]->getAutomaticRank());
-            }
-
-            ranks += "]";
-#endif
             ranks += QString("(%1)").arg(getSavedRank());
             return ranks;
         }
