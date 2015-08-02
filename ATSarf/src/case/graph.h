@@ -1800,13 +1800,11 @@ class NarratorGraph {
                 hadithFileList[i].serialize(streamOut);
             }
 
-#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Serializing");
             prg->report(0);
             int allSize = all_nodes.size();
             int total = allSize + top_nodes.size();
             streamOut << total;
-#endif
 
             for (int i = 0; i < allSize; i++) {
                 NarratorNodeIfc *n = all_nodes[i];
@@ -1823,9 +1821,7 @@ class NarratorGraph {
                     all_nodes[i]->serialize(streamOut, *this);
                 }
 
-#ifdef PROGRESS_SERIALZATION
                 prg->report(i / total * 100 + 0.5);
-#endif
             }
 
             streamOut << SERIALIZE_STOP;
@@ -1835,16 +1831,12 @@ class NarratorGraph {
             for (int i = 0; i < size; i++) {
                 int eq = getSerializationNodeEquivalent(top_nodes[i]);;
                 streamOut << eq;
-#ifdef PROGRESS_SERIALZATION
                 prg->report((i + allSize) / total * 100 + 0.5);
-#endif
             }
 
             hash.serialize(streamOut);
-#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Completed");
             prg->report(100);
-#endif
         }
         NarratorGraph(QDataStream &streamIn, ATMProgressIFC *prg): hash(this) { //equivalent of deserialize
             built = true; //since all nodes are already built but we are reading them
@@ -1873,13 +1865,11 @@ class NarratorGraph {
                 setHadithStringSerializationEquivalent(text, i);
             }
 
-#ifdef PROGRESS_SERIALZATION
             int total;
             streamIn >> total;
             prg->setCurrentAction("De-Serializing");
             prg->report(0);
             int counter = 0;
-#endif
 
             if (total > 0) {
                 int n;
@@ -1893,10 +1883,8 @@ class NarratorGraph {
                         setDeserializationIntEquivalent(cInt, node);
                     }
 
-#ifdef PROGRESS_SERIALZATION
                     counter++;
                     prg->report(counter / total * 100 + 0.5);
-#endif
                     streamIn >> n; //get next number
                 }
 
@@ -1908,22 +1896,15 @@ class NarratorGraph {
                     NarratorNodeIfc *n = getDeserializationIntEquivalent(cInt);
                     assert(n != NULL);
                     top_nodes.append(n);
-#ifdef PROGRESS_SERIALZATION
                     counter++;
                     prg->report(counter / total * 100 + 0.5);
-#endif
                 }
             }
 
             hash.deserialize(streamIn);
-#ifdef PROGRESS_SERIALZATION
             prg->setCurrentAction("Completed");
             prg->report(100);
-#endif
-            //printChains();
-            //printAllNodesList();
-            //checkAllGroupHaveCorresponding();
-            //qDebug()<<"\n";
+
 #undef SERIALIZE_STOP
         }
         void fillChainContainer() {
