@@ -11,9 +11,7 @@ QStringList rasoul_words;
 QStringList compound_words, suffixNames;
 
 QString chainDataStreamFileName = ".chainOutput";
-#ifdef PREPROCESS_DESCRIPTIONS
-    QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
-#endif
+QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
 QString PhrasesFileName = "../src/case/phrases";
 QString StopwordsFileName = "../src/case/stop_words";
 
@@ -21,16 +19,13 @@ QString hadath, abid, alrasoul, abyi, _3an, _2ama, _3ama;
 int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRATOR_NAMES;
 QList<int> bits_NAME;
 
-#ifdef PREPROCESS_DESCRIPTIONS
-    QHash<long, bool> familyNMC_descriptions;
-    QHash<long, bool> NRC_descriptions;
-    QHash<long, bool> IBN_descriptions;
-    QHash<long, bool> OM_descriptions;
-    QHash<long, bool> AB_descriptions;
-#endif
+QHash<long, bool> familyNMC_descriptions;
+QHash<long, bool> NRC_descriptions;
+QHash<long, bool> IBN_descriptions;
+QHash<long, bool> OM_descriptions;
+QHash<long, bool> AB_descriptions;
 QTextStream *myoutPtr;
 
-#ifdef PREPROCESS_DESCRIPTIONS
 void readFromDatabasePreProcessedHadithDescriptions() {
     Retrieve_Template nrc_s("description", "id",
                             "name='said' OR name='say' OR name='notify/communicate' OR name LIKE '%/listen' OR name LIKE 'listen/%' OR name LIKE 'listen %' OR name LIKE '% listen' OR name = 'listen' OR name LIKE '%/inform' OR name LIKE 'inform/%' OR name LIKE 'inform %' OR name LIKE '% inform' OR name = 'inform' OR name LIKE '%from/about%' OR name LIKE '%narrate%'");
@@ -93,7 +88,6 @@ void readFromFilePreprocessedHadithDescriptions() {
         readFromDatabasePreProcessedHadithDescriptions();
     }
 }
-#endif
 
 void hadith_initialize() {
     hadath.append(_7a2).append(dal).append(tha2);
@@ -178,9 +172,7 @@ void hadith_initialize() {
     }
 
     rasoul_words = stopwords.split("\n", QString::SkipEmptyParts);
-#ifdef PREPROCESS_DESCRIPTIONS
     readFromFilePreprocessedHadithDescriptions();
-#endif
 }
 
 #define display(c)

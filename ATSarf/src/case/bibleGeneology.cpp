@@ -115,9 +115,7 @@ inline void display(QString t) {
 #define display(c)
 #endif
 
-#ifdef PREPROCESS_DESCRIPTIONS
-    QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
-#endif
+QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
 
 class DescentConnectors;
 class DescentConnectorGroup {
@@ -411,7 +409,6 @@ class GeneStemmer: public Stemmer {
         }
 };
 
-#ifdef PREPROCESS_DESCRIPTIONS
 void readFromDatabasePreProcessedGenealogyDescriptions() {
     DescentConnectorGroup spouse(SPOUSE);
     Retrieve_Template d_spouse("description", "id", "name='woman' OR name LIKE '%spouse%' OR name='concubine'");
@@ -501,8 +498,6 @@ void readFromFilePreprocessedGenealogyDescriptions() {
         readFromDatabasePreProcessedGenealogyDescriptions();
     }
 }
-#endif
-
 
 void geneology_initialize() {
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("Hebrew Bible Names");

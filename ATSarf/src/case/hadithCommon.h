@@ -62,9 +62,7 @@ extern HadithParameters hadithParameters;
 extern QString chainDataStreamFileName;
 
 extern QString chainDataStreamFileName;
-#ifdef PREPROCESS_DESCRIPTIONS
-    extern QString preProcessedDescriptionsFileName;
-#endif
+extern QString preProcessedDescriptionsFileName;
 extern QString PhrasesFileName;
 extern QString StopwordsFileName;
 
@@ -124,24 +122,20 @@ extern QString hadath, abid, alrasoul, abyi, _3an, _2ama, _3ama;
 extern int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRATOR_NAMES;
 extern QList<int> bits_NAME;
 
-#ifdef PREPROCESS_DESCRIPTIONS
-    extern QHash<long, bool> familyNMC_descriptions;
-    extern QHash<long, bool> NRC_descriptions;
-    extern QHash<long, bool> IBN_descriptions;
-    extern QHash<long, bool> AB_descriptions;
-    extern QHash<long, bool> OM_descriptions;
+extern QHash<long, bool> familyNMC_descriptions;
+extern QHash<long, bool> NRC_descriptions;
+extern QHash<long, bool> IBN_descriptions;
+extern QHash<long, bool> AB_descriptions;
+extern QHash<long, bool> OM_descriptions;
 
-#endif
 extern QTextStream *myoutPtr;
 
 typedef QList<NameConnectorPrim *> TempConnectorPrimList;
 
 #define display_letters 30
 
-#ifdef PREPROCESS_DESCRIPTIONS
-    void readFromDatabasePreProcessedHadithDescriptions();
-    void readFromFilePreprocessedHadithDescriptions();
-#endif
+void readFromDatabasePreProcessedHadithDescriptions();
+void readFromFilePreprocessedHadithDescriptions();
 
 void hadith_initialize();
 
@@ -252,25 +246,15 @@ class hadith_stemmer: public Stemmer {
 
         bool analyze() {
             numSolutions++;
-#ifndef PREPROCESS_DESCRIPTIONS
-            QString description = stem_info->description();
-#endif
             _3abid = (equal_ignore_diacritics(stem_info->raw_data, abid));
 
             if (equal_ignore_diacritics(stem_info->raw_data, hadath)) {
                 nrc = true;
                 finish_pos = info.finish;
                 return false;
-            }
-
-#ifndef PREPROCESS_DESCRIPTIONS
-            else if (description == "son")
-#else
-            else if (familyNMC_descriptions.contains(stem_info->description_id())
-                     && !equal_ignore_diacritics(stem_info->raw_data, _2ama) && !equal_ignore_diacritics(stem_info->raw_data, _3ama)
-                    )
-#endif
-            {
+            } else if (familyNMC_descriptions.contains(stem_info->description_id())
+                       && !equal_ignore_diacritics(stem_info->raw_data, _2ama) && !equal_ignore_diacritics(stem_info->raw_data, _3ama)
+                      ) {
                 familyNMC = true;
 
                 if (IBN_descriptions.contains(stem_info->description_id())) {
@@ -293,16 +277,7 @@ class hadith_stemmer: public Stemmer {
                 nmc = true;
                 finish_pos = info.finish;
                 return false;
-            }
-
-#ifndef PREPROCESS_DESCRIPTIONS
-            else if (description == "said" || description == "say" || description == "notify/communicate" ||
-                     description.split(QRegExp("[ /]")).contains("listen") || description.contains("from/about") ||
-                     description.contains("narrate"))
-#else
-            else if (NRC_descriptions.contains(stem_info->description_id()))
-#endif
-            {
+            } else if (NRC_descriptions.contains(stem_info->description_id())) {
                 if (equal_ignore_diacritics(stem_info->raw_data, _3an)) {
                     is3an = true;
                     startStem = Stem->info.start;
@@ -610,8 +585,7 @@ class HadithData {
             }
         }
         HadithData(QString *text, bool hadith, NarratorGraph *graph, QString fileName)
-            : learningEvaluator(fileName, text, hadith)
-        {
+            : learningEvaluator(fileName, text, hadith) {
             this->text = text;
             this->hadith = hadith;
             this->graph = graph;
@@ -628,4 +602,4 @@ class HadithData {
 
 bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures, StateData &currentData) ;
 
-#endif 
+#endif

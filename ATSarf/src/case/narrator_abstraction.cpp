@@ -46,10 +46,6 @@ NarratorPrim::NarratorPrim(QString *hadith_text, int m_start) {
     this->hadith_text = hadith_text;
 }
 
-//
-//Narrator::Narrator(){
-//m_narrator=new  QList <NarratorPrim *> ();
-//}
 Narrator::Narrator(QString *hadith_text): ChainPrim(hadith_text) {
     isRasoul = false;
 }
@@ -348,13 +344,7 @@ class IbnStemsDetector: public Stemmer {
                     solution_position *stem_sol = Stem->computeFirstSolution();
 
                     do {
-#ifdef PREPROCESS_DESCRIPTIONS
-
-                        if (IBN_descriptions.contains(Stem->solution->description_id()))
-#else
-                        if (Stem->solution->description() == "son")
-#endif
-                        {
+                        if (IBN_descriptions.contains(Stem->solution->description_id())) {
                             ibn = true;
                             break;
                         } else if (Stem->solution->abstract_categories.getBit(bit_PLACE)) {
