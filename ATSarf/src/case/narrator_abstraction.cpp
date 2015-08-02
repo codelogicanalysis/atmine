@@ -670,14 +670,7 @@ inline double equalNew(const Narrator &n1, const Narrator &n2) {
 
 
 double equal(const Narrator &n1, const  Narrator   &n2) {
-#ifdef EQUAL_NEW
     return equalNew(n1, n2);
-#else
-    double max_distance = hadithParameters.equality_threshold * 2;
-    double val = max_distance - getdistance(n1, n2);
-    //out<<n1.getString()<<"{"<<val<<"}"<<n2.getString()<<"\n";
-    return val;
-#endif
 }
 
 double Narrator::equals(const Narrator &rhs) const {

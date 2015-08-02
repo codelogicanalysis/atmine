@@ -20,7 +20,6 @@
 #define TEST_BIOGRAPHIES
 #define HASH_TOTAL_VALUES
 #define COLOR_ALL
-#define EQUAL_NEW
 
 #define MAX_DISPLAYABLE_SIZE 3000
 

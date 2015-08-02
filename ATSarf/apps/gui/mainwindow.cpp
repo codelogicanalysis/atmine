@@ -16,9 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), browseFileDlg(NULL), m_ui(new Ui::MainWindow) {
     m_ui->setupUi(this);
     m_ui->pushButton->setVisible(false);
-    #ifdef EQUAL_NEW
     m_ui->EQ_threshold->setText("0.1");
-    #endif
 }
 
 MainWindow::~MainWindow() {
