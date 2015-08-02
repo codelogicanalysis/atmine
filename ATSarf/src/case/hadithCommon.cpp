@@ -632,9 +632,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
 
     int nrc_max = (structures->hadith ? hadithParameters.nrc_max : hadithParameters.bio_nrc_max);
     int nmc_max = (structures->hadith ? hadithParameters.nmc_max : hadithParameters.bio_nmc_max);
-#ifdef TRYTOLEARN
     stateInfo.nrcIsPunctuation = false;
-#endif
     bool reachedRasoul = (stateInfo.currentType == STOP_WORD &&
                           !stateInfo.familyConnectorOr3abid()); //stop_word not preceeded by 3abid or ibn
 
@@ -677,9 +675,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0; //punctuation is zero
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-#ifdef TRYTOLEARN
                     stateInfo.nrcIsPunctuation = true;
-#endif
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -894,9 +890,6 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0;
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-                    /*#ifdef TRYTOLEARN
-                      stateInfo.nrcIsPunctuation=true;
-                    #endif*/
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -1022,9 +1015,6 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0;
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-                    /*#ifdef TRYTOLEARN
-                      stateInfo.nrcIsPunctuation=true;
-                    #endif*/
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -1056,9 +1046,7 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                     currentData.nrcCount = 0;
                     currentData.narratorEndIndex = stateInfo.endPos;
                     currentData.nrcStartIndex = stateInfo.nextPos; //next_positon(stateInfo.endPos,stateInfo.followedByPunctuation);
-#ifdef TRYTOLEARN
                     stateInfo.nrcIsPunctuation = true;
-#endif
                     fillStructure(stateInfo, NARRATOR_CONNECTOR, structures, currentData, true);
 
                     if (ending_punc) {
@@ -1211,7 +1199,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     stateInfo.resetCurrentWordInfo();
     long  finish;
     stateInfo.possessivePlace = false;
-#ifdef TRYTOLEARN
     bool nrcLearning = false;
 
     if (stateInfo.currentState == NRC_S && currentData.nrcCount <= 1
@@ -1220,8 +1207,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         nrcLearning = true;
         s.tryToLearnNames = true;
     }
-
-#endif
 
     if (stateInfo.nrcPreviousType) {
         nameLearner.tryToLearnNames = true;
@@ -1271,7 +1256,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
 
     if (!stop_word && !phrase) {
         s();
-#ifdef TRYTOLEARN
         QString n = s.getString().toString();
 
         if (!s.tryToLearnNames && (stateInfo.currentType == NRC || stateInfo.currentType == NAME) && startsWithAL(n) &&
@@ -1282,7 +1266,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
             s();
         }
 
-#endif
 
         if (nameLearner.tryToLearnNames) {
             nameLearner();
@@ -1340,7 +1323,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
 
     stateInfo._3abid = s._3abid;
     stateInfo.possessivePlace = s.possessive;
-#ifdef TRYTOLEARN
 
     if (!s.name && !s.nmc && !s.nrc && !s.stopword) {
         QString word = s.getString().toString();
@@ -1378,7 +1360,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         }
     }
 
-#endif
 
     if (!structures->segmentNarrators && !nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&
         !nameLearner.stopword) {
