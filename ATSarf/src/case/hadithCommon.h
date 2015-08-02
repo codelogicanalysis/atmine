@@ -432,7 +432,6 @@ inline bool isRelativeNarrator(const Narrator &n) {  //needed in equality and na
     return false;
 }
 
-#ifdef NONCONTEXT_LEARNING
 #include "bibleGeneology.h"
 #include "timeManualTagger.h"
 class NameLearningEvaluator {
@@ -520,10 +519,7 @@ class NameLearningEvaluator {
         }
         void displayNameLearningStatistics();
 };
-#endif
 
-
-#if 1
 typedef struct StateData_ {
     long  mainStructureStartIndex;
     long narratorStartIndex, narratorEndIndex, nrcStartIndex, nrcEndIndex, nameStartIndex, nmcStartIndex;
@@ -558,9 +554,7 @@ class HadithData {
         QString *text;
         NarratorGraph *graph;
         bool hadith: 1, segmentNarrators: 1;
-#ifdef NONCONTEXT_LEARNING
         NameLearningEvaluator learningEvaluator;
-#endif
 
         NamePrim *namePrim;
         NameConnectorPrim *nameConnectorPrim;
@@ -616,9 +610,7 @@ class HadithData {
             }
         }
         HadithData(QString *text, bool hadith, NarratorGraph *graph, QString fileName)
-#ifdef NONCONTEXT_LEARNING
             : learningEvaluator(fileName, text, hadith)
-#endif
         {
             this->text = text;
             this->hadith = hadith;
@@ -636,6 +628,4 @@ class HadithData {
 
 bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures, StateData &currentData) ;
 
-#endif
-
-#endif // HADITHCOMMON_H
+#endif 

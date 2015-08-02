@@ -1160,7 +1160,6 @@ inline bool result(WordType t, StateInfo   &stateInfo, HadithData *currentChain,
     display(t);
     stateInfo.currentType = t;
     bool val = getNextState(stateInfo, currentChain, currentData);
-#ifdef NONCONTEXT_LEARNING
 
     if (!val) {
         if (currentChain->hadith && !currentChain->segmentNarrators &&
@@ -1194,23 +1193,18 @@ inline bool result(WordType t, StateInfo   &stateInfo, HadithData *currentChain,
         }
     }
 
-#endif
     return val;
 }
 
 bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                            StateData &currentData) { //does not fill stateInfo.currType
     hadith_stemmer s(structures->text, stateInfo.startPos);
-#ifdef NONCONTEXT_LEARNING
     hadith_stemmer nameLearner(structures->text, stateInfo.startPos);
-#endif
     bool family = false;
 
     if (stateInfo.familyNMC) {
         s.tryToLearnNames = true;
-#ifdef NONCONTEXT_LEARNING
         nameLearner.tryToLearnNames = true;
-#endif
         family = true;
     }
 
@@ -1228,13 +1222,11 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     }
 
 #endif
-#ifdef NONCONTEXT_LEARNING
 
     if (stateInfo.nrcPreviousType) {
         nameLearner.tryToLearnNames = true;
     }
 
-#endif
 
     //assert(!s.tryToLearnNames || nameLearner.tryToLearnNames);
     if (isNumber(structures->text, stateInfo.startPos, finish)) {
@@ -1291,13 +1283,11 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         }
 
 #endif
-#ifdef NONCONTEXT_LEARNING
 
         if (nameLearner.tryToLearnNames) {
             nameLearner();
         }
 
-#endif
         finish = max(s.info.finish, s.finish_pos);
 
         if (s.numSolutions == 0/*finish==stateInfo.startPos*/) {
@@ -1323,7 +1313,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 s.learnedName = true;
             }
 
-#ifdef NONCONTEXT_LEARNING
 
             if (!structures->segmentNarrators && nameLearner.tryToLearnNames &&
                 removeDiacritics(structures->text->mid(stateInfo.startPos, finish - stateInfo.startPos + 1)).count() >= 3) {
@@ -1332,7 +1321,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 structures->learningEvaluator.addNonContextLearnedName(p);
             }
 
-#endif
         }
     }
 
@@ -1391,7 +1379,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     }
 
 #endif
-#ifdef NONCONTEXT_LEARNING
 
     if (!structures->segmentNarrators && !nameLearner.name && !nameLearner.nmc && !nameLearner.nrc &&
         !nameLearner.stopword) {
@@ -1421,7 +1408,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         structures->learningEvaluator.addKnownName(p, false);
     }
 
-#endif
     stateInfo.nrcPreviousType = false;
 
     //displayed_error<<"-";
@@ -1543,14 +1529,12 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         stateInfo.startPos = s.startStem;
         stateInfo.endPos = s.finishStem;
         stateInfo.nextPos = nextpos;
-#ifdef NONCONTEXT_LEARNING
 
         if (!structures->segmentNarrators) {
             Name p(structures->text, s.startStem, s.finishStem);
             structures->learningEvaluator.addKnownName(p, s.learnedName);
         }
 
-#endif
         return result(NAME, stateInfo, structures, currentData);
     } else {
         return result(NMC, stateInfo, structures, currentData);
@@ -1558,7 +1542,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
 }
 
 
-#ifdef NONCONTEXT_LEARNING
 bool NameLearningEvaluator::equalNames(QString *, int start1, int end1, int start2, int end2) {
     return overLaps(start1, end1, start2, end2);
 }
@@ -1724,4 +1707,3 @@ void NameLearningEvaluator::displayNameLearningStatistics() {
     }
 }
 
-#endif

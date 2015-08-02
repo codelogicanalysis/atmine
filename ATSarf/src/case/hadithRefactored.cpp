@@ -119,14 +119,12 @@ class HadithSegmentor {
 #endif
             }
 
-#ifdef NONCONTEXT_LEARNING
 
             if (!currentChain->segmentNarrators) {
                 currentChain->learningEvaluator.displayNameLearningStatistics();
                 currentChain->learningEvaluator.resetLearnedNames();
             }
 
-#endif
             prg->report(100);
 #if defined(DISPLAY_HADITH_OVERVIEW)
 
