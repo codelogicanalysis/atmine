@@ -290,25 +290,16 @@ class NarratorHash {
             PossessiveList possessives;
             n->preProcessForEquality(names, possessives);
             int levelSize = names.size();
-#if 1
             assert(levelSize > 0);
             bool possAvailable = possessives.count() > 0,
                  levelOneEmpty = names.at(0).size() == 0;
-#ifdef HASH_TOTAL_VALUES
             int total = (possAvailable ? (levelSize - 1) * 2 : levelSize - 1) + (!levelOneEmpty ?
                         (possAvailable ? levelSize * 2 : levelSize) : 0);
-#else
-            int total = (possAvailable ? levelSize * 2 : levelSize) - (levelOneEmpty ? (possAvailable ? 2 : 1) : 0);
-#endif
             int minLevel = (levelOneEmpty ? 2 : 1);
             int value;
 
             for (int level = levelSize; level >= minLevel; level--) {
-#ifdef HASH_TOTAL_VALUES
                 value = (level - minLevel + 1) * (!levelOneEmpty ? 2 : 1) + (minLevel - 2);
-#else
-                value = level - minLevel + 1;
-#endif
                 v.visit(getKey(names, possessives, level, false, false), node, value, total);
 
                 if (possAvailable) {
@@ -326,69 +317,6 @@ class NarratorHash {
                     }
                 }
             }
-
-#else
-            int possSize = possessives.size();
-
-            for (int poss_count = 0; poss_count <= possSize; poss_count++) {
-                for (int level_count = 1; level_count <= levelSize + 1; level_count++) {
-                    int level_min = (level_count <= levelSize ? 0 : 1);
-                    int level_max = (level_count <= levelSize ? level_count : names.size());
-
-                    if (level_min == 1) {
-                        if (0 == levelSize || names[0].size() == 0) {
-                            continue;
-                        }
-                    }
-
-                    for (int names_count = 1; names_count <= 1/*names[level_count].size()*/; names_count++) {
-                        NamePrimHierarchy result;
-                        int actualLevelCount = 0;
-
-                        if (level_min == 1) {
-                            result.append(NamePrimList());
-                        }
-
-                        for (int j = level_min; j < level_max; j++) {
-                            NamePrimList nameList;
-
-                            for (int k = 0; k < names_count && k < names[j].count(); k++) {
-                                nameList.append(names[j][k]);
-                            }
-
-                            result.append(nameList);
-
-                            if (nameList.size() > 0) {
-                                actualLevelCount++;
-                            }
-                        }
-
-                        NamePrimList possessiveList;
-
-                        for (int i = 0; i < poss_count; i++) {
-                            possessiveList.append(possessives[i]);
-                        }
-
-                        if (possessiveList.size() > 0) {
-                            result.append(possessiveList);
-                        }
-
-                        double value = poss_count * delta / 2 + actualLevelCount * max_equality / levelSize / 2;
-
-                        if (result.size() > 0) {
-                            for (int f = 0; f < result.size(); f++) {
-                                if (result[f].size() > 0) { //at least one level not empty
-                                    QString key = getKey(result);
-                                    v.visit(key, node, value);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-#endif
         }
     public:
         NarratorHash(NarratorGraph *graph) {
