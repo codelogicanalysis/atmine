@@ -7,8 +7,6 @@
 #include "diacriticDisambiguation.h"
 #include "ambiguity.h"
 
-#define MAX_FOR_UNDERVOCALIZED
-
 class AmbCombStat {
     public:
         QString voc;

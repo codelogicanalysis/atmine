@@ -90,10 +90,8 @@ void getStatDiacriticAssignment(QString voc, int numDiacritics, AmbiguityStatLis
     VocalizedCombinationsGenerator c(voc, numDiacritics);
 
     if (c.isUnderVocalized()) {
-#ifdef MAX_FOR_UNDERVOCALIZED
         QString s = voc;
         getStatDiacriticAssignmentHelper(s, stats);
-#endif
     } else {
         for (c.begin(); !c.isFinished(); ++c) {
             QString s = c.getString();
