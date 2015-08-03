@@ -52,22 +52,12 @@ int word_sarf_test(QString input_str) {
 }
 
 int augment() {
-    #if !defined(INSERT_ONLY_TIME)
-
     if (insert_buckwalter() < 0) {
         return -1;
     }
 
-    #endif
-    #ifndef JUST_BUCKWALTER
-    #ifndef INSERT_ONLY_TIME
-
-    if (insert_propernames() < 0) {
-        return -1;
-    }
-
-    #endif
-    #endif
+#ifndef JUST_BUCKWALTER
+#endif
     return 0;
 }
 /**
@@ -97,11 +87,11 @@ int hadith(QString input_str, ATMProgressIFC *prg) {
 
         gettimeofday(&tim, NULL);
         double t2 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-        #if REPETITIONS<2
+#if REPETITIONS<2
         theSarf->out << "elapsed time=" << t2 - t1 << "s\n";
-        #else
+#else
         theSarf->out << t2 - t1 << "\n";
-        #endif
+#endif
     }
 
     return 0;
