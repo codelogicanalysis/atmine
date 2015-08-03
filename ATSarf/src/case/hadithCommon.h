@@ -183,29 +183,10 @@ class hadith_stemmer: public Stemmer {
 
             do {
                 stem_info = Stem->solution;
-#ifdef GET_AFFIXES_ALSO
-                solution_position *p_inf = Prefix->computeFirstSolution();
 
-                do {
-                    prefix_infos = &Prefix->affix_info;
-                    solution_position *s_inf = Suffix->computeFirstSolution();
-
-                    do {
-                        suffix_infos = &Suffix->affix_info;
-#endif
-
-                        if (!analyze()) {
-                            return false;
-                        }
-
-#ifdef GET_AFFIXES_ALSO
-                    } while (Suffix->computeNextSolution(s_inf));
-
-                    delete s_inf;
-                } while (Prefix->computeNextSolution(p_inf));
-
-                delete p_inf;
-#endif
+                if (!analyze()) {
+                    return false;
+                }
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
@@ -214,12 +195,10 @@ class hadith_stemmer: public Stemmer {
 
         void checkForWaw() {
             has_waw = false;
-#ifndef GET_AFFIXES_ALSO
             solution_position *p_inf = Prefix->computeFirstSolution();
 
             do {
                 prefix_infos = &Prefix->affix_info;
-#endif
 
                 for (int i = 0; i < prefix_infos->size(); i++)
                     if (prefix_infos->at(i).POS == "wa/CONJ+") {
@@ -228,12 +207,9 @@ class hadith_stemmer: public Stemmer {
                         has_waw = true;
                         break;
                     }
-
-#ifndef GET_AFFIXES_ALSO
             } while (Prefix->computeNextSolution(p_inf));
 
             delete p_inf;
-#endif
         }
 
         bool analyze() {
@@ -352,6 +328,7 @@ class hadith_stemmer: public Stemmer {
                     }
                 }
             }
+
             return true;
         }
 };

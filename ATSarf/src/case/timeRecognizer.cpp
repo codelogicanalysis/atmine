@@ -9,14 +9,6 @@
 #include <QVector>
 #include <QDataStream>
 
-
-#ifdef TIME_REFINEMENTS
-    #define GET_AFFIXES_ALSO
-#else
-    #undef GET_AFFIXES_ALSO
-#endif
-
-
 TimeParameters timeParameters;
 QList<unsigned int> bits_ABSOLUTE_TIME;
 unsigned int bit_TIME_PREPOSITION, bit_NUMBER, bit_DAY_NAME, bit_TIME_UNIT, bit_TIME_ATTRIBUTE;
@@ -307,7 +299,6 @@ class time_stemmer: public Stemmer {
 
             do {
                 stem_info = Stem->solution;
-#ifdef GET_AFFIXES_ALSO
                 solution_position *p_inf = Prefix->computeFirstSolution();
 
                 do {
@@ -316,20 +307,16 @@ class time_stemmer: public Stemmer {
 
                     do {
                         suffix_infos = &Suffix->affix_info;
-#endif
 
                         if (!analyze()) {
                             return false;
                         }
-
-#ifdef GET_AFFIXES_ALSO
                     } while (Suffix->computeNextSolution(s_inf));
 
                     delete s_inf;
                 } while (Prefix->computeNextSolution(p_inf));
 
                 delete p_inf;
-#endif
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
@@ -339,8 +326,6 @@ class time_stemmer: public Stemmer {
         bool analyze() {
             for (int i = 0; i < bits_ABSOLUTE_TIME.count(); i++) {
                 if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])) {
-#ifdef GET_AFFIXES_ALSO
-
                     if (bits_ABSOLUTE_TIME[i] == bit_DAY_NAME) {
                         for (int j = 0; j < prefix_infos->size(); j++) {
                             if (prefix_infos->at(j).POS == "Al/DET+") {
@@ -353,7 +338,6 @@ class time_stemmer: public Stemmer {
                         return true;
                     }
 
-#endif
                     absoluteTime = true;
                     finish_pos = info.finish;
                     isTimeUnit = (equal(stem_info->raw_data, QString("") + tha2 + alef + noon + ya2) ||
@@ -566,14 +550,9 @@ wordType getWordType(TimeStateInfo   &stateInfo) {
         return result(ABS_T);
     } else if (s.number) {
         return result(NUM);
-    } else if (s.attribute)
-#ifdef TIME_REFINEMENTS
+    } else if (s.attribute) {
         return result(T_ATTR);
-
-#else
-        return result(PREP_T);
-#endif
-    else {
+    } else {
         return result(OTHER);
     }
 }
@@ -581,8 +560,6 @@ wordType getWordType(TimeStateInfo   &stateInfo) {
 inline TimeTaggerDialog::Selection overLappingPart(int start1, int end1, int start2, int end2) {
     return TimeTaggerDialog::Selection(max(start1, start2), min(end1, end2));
 }
-
-
 
 int calculateStatistics(QString filename) {
     TimeTaggerDialog::SelectionList tags;
@@ -742,10 +719,8 @@ int timeRecognizeHelper(QString input_str, ATMProgressIFC *prg) {
 
         if (timeVector->size() > timeVectorSize) {
             TimeEntity &t = (*timeVector)[timeVectorSize];
-#ifdef TIME_REFINEMENTS
 
             if (!(stateInfo.hasTimeUnit && !t.getString().contains(' '))) {
-#endif
                 theSarf->out << t.getString() << "\n";
                 prg->tag(t.getStart(), t.getLength(), Qt::darkYellow, false); //Qt::gray
                 const TimeEntityVector &absolute = t.getAbsoluteParts();
@@ -765,13 +740,9 @@ int timeRecognizeHelper(QString input_str, ATMProgressIFC *prg) {
                 for (int j = 0; j < numbers.size(); j++) {
                     prg->tag(numbers[j].getStart(), numbers[j].getLength(), Qt::darkMagenta, true);
                 }
-
-#ifdef TIME_REFINEMENTS
             } else {
                 timeVector->remove(timeVectorSize);
             }
-
-#endif
         }
 
         stateInfo.currentState = stateInfo.nextState;

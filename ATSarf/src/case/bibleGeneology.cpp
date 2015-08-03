@@ -164,29 +164,10 @@ class GeneStemmer: public Stemmer {
 
             do {
                 stem_info = Stem->solution;
-#ifdef GET_AFFIXES_ALSO
-                solution_position *p_inf = Prefix->computeFirstSolution();
 
-                do {
-                    prefix_infos = &Prefix->affix_info;
-                    solution_position *s_inf = Suffix->computeFirstSolution();
-
-                    do {
-                        suffix_infos = &Suffix->affix_info;
-#endif
-
-                        if (!analyze()) {
-                            return false;
-                        }
-
-#ifdef GET_AFFIXES_ALSO
-                    } while (Suffix->computeNextSolution(s_inf));
-
-                    delete s_inf;
-                } while (Prefix->computeNextSolution(p_inf));
-
-                delete p_inf;
-#endif
+                if (!analyze()) {
+                    return false;
+                }
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
@@ -196,12 +177,10 @@ class GeneStemmer: public Stemmer {
         void checkForWaw() {
             has_waw = false;
             has_li = false;
-#ifndef GET_AFFIXES_ALSO
             solution_position *p_inf = Prefix->computeFirstSolution();
 
             do {
                 prefix_infos = &Prefix->affix_info;
-#endif
 
                 if (prefix_infos->size() > 0) {
                     int i = 0;
@@ -221,12 +200,9 @@ class GeneStemmer: public Stemmer {
                 if (has_waw || has_li) {
                     break;
                 }
-
-#ifndef GET_AFFIXES_ALSO
             } while (Prefix->computeNextSolution(p_inf));
 
             delete p_inf;
-#endif
         }
 
 
