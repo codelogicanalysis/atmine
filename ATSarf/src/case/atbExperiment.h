@@ -11,13 +11,6 @@
 #include "logger.h"
 #include "stemmer.h"
 
-//#define AMBIGUITY_REFINED
-
-#define ATB_DIACRITICS
-
-#define ATB_PRINT_ALL
-
-
 class AtbStemmer: public Stemmer {
     public:
         enum Status {EQ, D_GL, D_VOC, D_ALL};

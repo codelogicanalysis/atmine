@@ -313,39 +313,6 @@ inline QString removeDiacriticPOS(QString pos) {
 
 bool AtbStemmerContextFree::on_match() {
     num_solutions++;
-#ifndef ATB_DIACRITICS
-    QString pos, desc;
-
-    for (int i = 0; i < prefix_infos->size(); i++) {
-        minimal_item_info &pre = (*prefix_infos)[i];
-
-        if (pre.POS.isEmpty() && pre.raw_data.isEmpty()) {
-            continue;
-        }
-
-        desc += pre.description() + " + ";
-        pos += pre.POS + "+";
-    }
-
-    minimal_item_info &stem = *stem_info;
-    desc += stem.description() + " + ";
-    pos += stem.POS + "+";
-
-    for (int i = 0; i < suffix_infos->size(); i++) {
-        minimal_item_info &suff = (*suffix_infos)[i];
-
-        if (suff.POS.isEmpty() && suff.raw_data.isEmpty()) {
-            continue;
-        }
-
-        desc += suff.description() + " + ";
-        pos += suff.POS + "+";
-    }
-
-    (*f_out) << desc << "\t" << pos << "\n";
-    QString modifiedPOS = removeDiacriticPOS(pos);
-    modifiedPOSList.insert(modifiedPOS);
-#endif
     return true;
 }
 inline QString readField(QStringList entries, QString field) {
@@ -496,59 +463,6 @@ int atb(QString inputString, ATMProgressIFC *prg) {
     conf.close();
     morph_file.close();
     theSarf->out << correct << "/" << all << "=" << ((double)correct) / all;
-#ifndef ATB_DIACRITICS
-    int total = found + notFound;
-    int other = notFound - notFoundGloss - notFoundVoc;
-    int tokenized = found - skipTokenize;
-    double miss = ((double)notFound) / total;
-    double missGloss = ((double)notFoundGloss) / total;
-    double missVoc = ((double)notFoundVoc) / total;
-    double missOther = miss - missGloss - missVoc;
-    double appendedRatio = ((double)appended) / all_count;
-    double correctTokenization = ((double)correctTokenize) / tokenized;
-    double skipTokenization = ((double)skipTokenize) / found;
-    double vocConflictRatio = ((double)voc_conflict) / found;
-    displayed_error << "Gloss Missing Rate=\t\t" << notFoundGloss << "/" << total << " =\t" << missGloss << "\n"
-                    << "Vocalization Missing Rate=\t" << notFoundVoc << "/" << total << " =\t" << missVoc << "\n"
-                    << "Other Missing Rate=\t\t" << other << "/" << total << " =\t" << missOther << "\n"
-                    << "Total Missing Rate=\t\t" << notFound << "/" << total << " =\t" << miss << "\n"
-                    << "Augmented Ratio=\t\t" << appended << "/" << all_count << "=\t" << appendedRatio << "\n"
-                    << "Correct Tokenization Ratio=\t" << correctTokenize << "/" << tokenized << "=\t" << correctTokenization << "\n"
-                    << "Skipped Tokenization Ratio=\t" << skipTokenize << "/" << found << "=\t" << skipTokenization << "\n"
-                    << "Vocalization Conflict Ratio=\t" << voc_conflict << "/" << found << "=\t" << vocConflictRatio << "\n";
-    displayed_error << "\n";
-
-    for (int i = 0; i < 10; i++) {
-        double a = ((double)ambiguity_sum[i]) / ambiguity_count[i];
-        displayed_error << "AMB\t" << i << "\t" << a << "\n";
-    }
-
-    displayed_error << "\n";
-
-    for (int i = 0; i < 10; i++) {
-        double a = ((double)ambiguity_POS_sum[i]) / ambiguity_count[i];
-        displayed_error << "AMB POS\t" << i << "\t" << a << "\n";
-    }
-
-    displayed_error << "\n";
-
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4; j++) {
-            double a = ((double)(ambiguity_sum_detail[i][j])) / ambiguity_count_detail[i][j];
-            displayed_error << "AMB\t" << i << "," << j << "\t" << a << "\n";
-        }
-    }
-
-    displayed_error << "\n";
-
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4; j++) {
-            double a = ((double)(ambiguity_POS_sum_detail[i][j])) / ambiguity_count_detail[i][j];
-            displayed_error << "AMB POS\t" << i << "," << j << "\t" << a << "\n";
-        }
-    }
-
-#else
     int c = 0;
 
     for (int i = 1; i < max_diacritics; i++) {
@@ -559,7 +473,6 @@ int atb(QString inputString, ATMProgressIFC *prg) {
 
     double a = ((double)c) / all_count;
     theSarf->displayed_error << "Diacritics\t*\t" << c << "\t" << a << "\n";
-#endif
     theSarf->displayed_error << "\n";
     return 0;
 }
