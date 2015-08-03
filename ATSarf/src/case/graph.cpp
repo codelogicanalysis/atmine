@@ -6,8 +6,6 @@
 #include "hadithInterAnnotatorAgreement.h"
 #include "Math_functions.h"
 
-#define DETAILED_DISPLAY
-
 void ColorIndices::unUse(unsigned int bit) { //unuse and clear color bit for all nodes in graph
     assert(bit < maxBits());
     usedBits &= (~(1 << bit));

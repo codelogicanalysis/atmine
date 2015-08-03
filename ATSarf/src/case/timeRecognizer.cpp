@@ -680,7 +680,6 @@ int calculateStatistics(QString filename) {
            detectionPrecision = (double)commonCount / timeVector->size(),
            boundaryRecall = average(boundaryRecallList),
            boundaryPrecision = average(boundaryPrecisionList);
-#ifdef DETAILED_DISPLAY
     theSarf->displayed_error << "-------------------------\n"
                              << "Detection:\n"
                              << "\trecall=\t" << commonCount << "/" << tags.size() << "=\t" << detectionRecall << "\n"
@@ -688,10 +687,6 @@ int calculateStatistics(QString filename) {
                              << "Boundary:\n"
                              << "\trecall=\t\t" << boundaryRecall << "\n"
                              << "\tprecision=\t\t" << boundaryPrecision << "\n";
-#else
-    displayed_error << tags.size() << "\t" << detectionRecall << "\t" << detectionPrecision << "\t" << boundaryRecall <<
-                    "\t" << boundaryPrecision << "\n";
-#endif
     return 0;
 }
 

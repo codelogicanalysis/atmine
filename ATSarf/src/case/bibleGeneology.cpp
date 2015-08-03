@@ -21,9 +21,6 @@
 #include "Retrieve_Template.h"
 #include "genealogyItem.h"
 
-
-#define DETAILED_DISPLAY
-
 enum WordType { NEW_NAME, CORE_NAME, LEAF_NAME, DC, ENDING_PUNC, PARA_PUNC, COLON_PUNC, OTHER};
 enum DescentDirection {SPOUSE, SON, FATHER, SIBLING, UNDEFINED_DIRECTION};
 enum StateType { TEXT_S , NAME_S, SONS_S};
@@ -2518,7 +2515,6 @@ class GenealogySegmentor {
             globalTree->displayGraph(prg);
             currentData.globalTree->deleteGraph();
             globalTree->deleteGraph();
-#ifdef DETAILED_DISPLAY
             theSarf->displayed_error << "-------------------------\n"
                                      << "Segmentation:\n"
                                      << "\trecall=\t\t" << commonCount << "/" << tags.size() << "=\t" << segmentationRecall << "\n"
@@ -2587,11 +2583,6 @@ class GenealogySegmentor {
                                      << " Global Graph Size (Annotation - Output):\n"
                                      << "\tAnnotation=\t" << graphTagsSize << "\n"
                                      << "\tOutput=\t\t" << graphMergedSize << "\n";
-#else
-            displayed_error << tags.size() << "\t" << detectionRecall << "\t" << detectionPrecision
-                            << "\t" << boundaryRecall << "\t" << boundaryPrecision
-                            << "\t" << graphFound     << "\t" << graphSimilarContext << "\n";
-#endif
 
             for (int i = 0; i < tags.size(); i++) {
                 tags[i].getGraph()->deleteGraph();
