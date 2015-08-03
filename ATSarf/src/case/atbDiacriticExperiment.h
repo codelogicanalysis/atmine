@@ -9,32 +9,29 @@
 
 #define MAX_FOR_UNDERVOCALIZED
 //#define THEORETICAL_DIACRITICS
-#define CHECK_ALL
 #define RECALL_DIACRITICS
 
 class AmbCombStat {
-public:
-	QString voc;
-	QString bestComb;
-	QString worstComb;
-	int bestAmbiguity;
-	int worstAmbiguity;
-	int countComb;
-	int totalAmbiguity;
-public:
-	AmbCombStat(QString voc) { reset(voc);}
-	AmbCombStat(QString voc, QString bestComb, QString worstCom, int bestAmbiguity, int worstAmbiguity,
-						  int countComb, int totalAmbiguity);
-	void reset(QString voc);
-	void augmentStats(QString comb, int ambiguity);
+    public:
+        QString voc;
+        QString bestComb;
+        QString worstComb;
+        int bestAmbiguity;
+        int worstAmbiguity;
+        int countComb;
+        int totalAmbiguity;
+    public:
+        AmbCombStat(QString voc) {
+            reset(voc);
+        }
+        AmbCombStat(QString voc, QString bestComb, QString worstCom, int bestAmbiguity, int worstAmbiguity,
+                    int countComb, int totalAmbiguity);
+        void reset(QString voc);
+        void augmentStats(QString comb, int ambiguity);
 };
-
-/*class EmpiricalDiacriticDisambiguation {
-public:
-};*/
 
 typedef QList<AmbCombStat> AmbiguityStatList;
 
 int atbDiacritic(QString inputString, ATMProgressIFC *prg);
 
-#endif // ATBDIACRITICEXPERIMENT_H
+#endif
