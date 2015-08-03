@@ -13,13 +13,6 @@
 #include "transliteration.h"
 #include "diacritics.h"
 
-
-#ifdef SAVE_CONFLICTS
-    #undef TOKENIZE
-    #undef SPECIAL_TOKENIZE
-    #undef READ_CONFLICTS
-#endif
-
 AtbStemmer::Status AtbStemmer::updateSimilarFields(Status oldStat, Status currentStat, QString currGloss,
         QString currVoc, int old_pos) {
     assert(oldStat != D_ALL);
@@ -382,10 +375,6 @@ int atb(QString inputString, ATMProgressIFC *prg) {
     }
 
     QTextStream conflicts(&conf);
-#ifdef READ_CONFLICTS
-    int conflict_index = -1;
-    int conflictsSkipped = 0;
-#endif
     QFile morph_file("morph.txt");
 
     if (!morph_file.open(QIODevice::ReadWrite)) {
