@@ -369,13 +369,11 @@ class DisplayNodeVisitor: public NodeVisitor {
         virtual bool visit(NarratorNodeIfc &n) { //this is enough
             QString s = getAndInitializeDotNode(n);
             displayChainNumsEndingJustAfter(n, s);
-#ifdef DISPLAY_GRAPHNODES_CONTENT
 
             if (n.isGraphNode()) {
                 theSarf->out << n.toString() << "\n";
             }
 
-#endif
             return true;
         }
         virtual void finishVisit(NarratorNodeIfc &) {}
@@ -1904,7 +1902,6 @@ class NarratorGraph {
             hash.deserialize(streamIn);
             prg->setCurrentAction("Completed");
             prg->report(100);
-
 #undef SERIALIZE_STOP
         }
         void fillChainContainer() {

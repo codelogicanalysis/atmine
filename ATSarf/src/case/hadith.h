@@ -5,10 +5,6 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-#define FAST_NEIGHBOR_CHECK
-
-#define DISPLAY_GRAPHNODES_CONTENT
-#define DISPLAY_HADITH_OVERVIEW
 //#define JUST_BUCKWALTER
 //#define GET_AFFIXES_ALSO
 

@@ -71,7 +71,6 @@ class HadithSegmentor {
                     if (currentData.narratorCount >= hadithParameters.narr_min) {
                         if (!segmentNarrators) {
                             sanadEnd = currentData.narratorEndIndex;
-#ifdef DISPLAY_HADITH_OVERVIEW
                             newHadithStart = currentData.mainStructureStartIndex;
                             //long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
                             //long end=stateInfo.endPos;
@@ -186,7 +185,6 @@ class HadithSegmentor {
             f.close();
             (*functionUsingChains)(chains, prg, fileName);
             prg->finishTaggingText();
-#endif
             //delete text;
             /*if (currentChain!=NULL)
               delete currentChain;*/
