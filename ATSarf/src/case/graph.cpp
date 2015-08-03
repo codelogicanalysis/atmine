@@ -249,7 +249,7 @@ int deserializeGraph(QString fileName, ATMProgressIFC *prg) {
     graph->serialize(fileStream2);
     file2.close();
     delete graph;
-#elif !defined(SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY) || defined(BIOGRAPHY_SEGMENT)
+#elif defined(BIOGRAPHY_SEGMENT)
     biographies(graph);
 #else
     localizedDisplay(graph);

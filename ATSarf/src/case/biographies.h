@@ -39,11 +39,7 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
             colorBiography = new QPushButton("Color &Biography", this);
             colorNarrators = new QPushButton("Color &Narrators", this);
             nmc_label = new QLabel("NMC max", this);
-#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
-            nrc_label = new QLabel("NRC max", this);
-#else
             nrc_label = new QLabel("POS max", this);
-#endif
             narr_label = new QLabel("NARR min", this);
             reachability_label = new QLabel("REACH max", this);
             nmc_max = new QTextEdit("1", this);
@@ -130,11 +126,7 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
     public slots:
         void parse_clicked() {
             bool v1, v2, v3, v4;
-#ifndef SEGMENT_AFTER_PROCESSING_ALL_BIOGRAPHY
-            hadithParameters.bio_narr_min = narr_min->toPlainText().toInt(&v1);
-#else
             hadithParameters.bio_threshold = narr_min->toPlainText().toDouble(&v1);
-#endif
             hadithParameters.bio_nmc_max = nmc_max->toPlainText().toInt(&v2);
             hadithParameters.bio_nrc_max = nrc_max->toPlainText().toInt(&v3);
             hadithParameters.bio_max_reachability = reachability_radius->toPlainText().toInt(&v4);
