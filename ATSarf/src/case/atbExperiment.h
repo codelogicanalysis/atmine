@@ -11,9 +11,6 @@
 #include "logger.h"
 #include "stemmer.h"
 
-#define TOKENIZE
-#define SPECIAL_TOKENIZE
-
 //#define AMBIGUITY_REFINED
 
 #define ATB_DIACRITICS

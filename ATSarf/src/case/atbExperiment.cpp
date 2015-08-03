@@ -223,7 +223,6 @@ bool AtbStemmer::on_match() {
             found = true;
             this->stat = EQ;
             stemPos = stem.POS;
-#ifdef TOKENIZE
             //tokenize
             int j = 0;
             int o = info.start;
@@ -238,7 +237,6 @@ bool AtbStemmer::on_match() {
                 }
 
                 int p = splits[j];
-#ifdef SPECIAL_TOKENIZE
 
                 if (j + 1 < splitVoc.size() && splitVoc[j + 1].size() > 0 && splitVoc[j].size() > 0) {
                     bool eq = false;
@@ -264,7 +262,6 @@ bool AtbStemmer::on_match() {
                     }
                 }
 
-#endif
                 QString inp = info.text->mid(o, p - o + 1);
 
                 if (inp != input_after[i]) {
@@ -276,7 +273,6 @@ bool AtbStemmer::on_match() {
                 o = p + 1;
             }
 
-#endif
             return false;
         }
     } else {
