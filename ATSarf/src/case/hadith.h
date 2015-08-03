@@ -5,7 +5,6 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-#define BIOGRAPHY_SEGMENT
 #define FAST_NEIGHBOR_CHECK
 
 #define DISPLAY_GRAPHNODES_CONTENT

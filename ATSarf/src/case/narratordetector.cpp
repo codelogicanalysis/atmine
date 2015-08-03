@@ -778,21 +778,8 @@ int biographyHelper(QString input_str, ATMProgressIFC *prg) {
 
 BiographyList *getBiographies(QString input_str, NarratorGraph *graph, ATMProgressIFC *prg, int /*nodeID*/) {
     input_str = input_str.split("\n")[0];
-#ifdef BIOGRAPHY_SEGMENT
     BiographySegmenter s(graph);
     s.segment(input_str, prg);
-#else
-    NarratorDetector s(graph);
-
-    if (nodeID >= 0) {
-        NarratorNodeIfc *n = graph->getNode(nodeID);
-        NarratorNodesList list;
-        list.append(n);
-        s.nodes.append(list);
-    }
-
-    s.lookup(input_str, prg);
-#endif
     return s.biographies;
 }
 

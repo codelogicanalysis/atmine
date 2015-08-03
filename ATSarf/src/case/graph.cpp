@@ -238,22 +238,7 @@ int deserializeGraph(QString fileName, ATMProgressIFC *prg) {
     QDataStream fileStream(&file);
     NarratorGraph *graph = new NarratorGraph(fileStream, prg);
     file.close();
-#if 0
-    QFile file2("graph2.dat");
-
-    if (!file2.open(QIODevice::ReadWrite)) {
-        return -1;
-    }
-
-    QDataStream fileStream2(&file2);
-    graph->serialize(fileStream2);
-    file2.close();
-    delete graph;
-#elif defined(BIOGRAPHY_SEGMENT)
     biographies(graph);
-#else
-    localizedDisplay(graph);
-#endif
     return 0;
 }
 
@@ -337,20 +322,6 @@ int calculateStatisticsOrAnotate(ChainsContainer &generatedChains, NarratorGraph
         h.displayStatistics();
     }
 
-#if 0
-
-    for (int i = 0; i < tags.size(); i++) {
-        displayed_error << text->mid(tags[i].getMainStart(), tags[i].getMainEnd() - tags[i].getMainStart()) << "\n";
-    }
-
-#endif
-#if 0
-
-    for (int i = 0; i < outputList.size(); i++) {
-        outputList[i].getGraph()->deleteGraph();
-    }
-
-#endif
     return 0;
 #undef NULL_CORRECT
 #undef NULL_DETECTED
