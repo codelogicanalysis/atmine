@@ -162,10 +162,6 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
                         narratorListDisplay->setItem(count, 1, new QTableWidgetItem(QString("%1").arg(i)));
                         narratorList.append(n);
                         count++;
-#ifdef DISPLAY_BIOGRAPHY_GRAPHY
-                        ColorBiographiesAction c(i);
-                        graph->performActionToAllCorrespondingNodes(n, c);
-#endif
                     }
                 }
 
