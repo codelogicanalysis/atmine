@@ -1796,12 +1796,7 @@ class GenealogySegmentor {
                                                 currentData.i0 = 0;
                                                 stateInfo.nextState = NAME_S;
                                             } else {
-#ifndef TRUST_OLD_L
                                                 doActionNewNameAndNullLast(name); //choses also nextState
-#else
-                                                assert(stateInfo.descentDirection == UNDEFINED_DIRECTION);
-                                                stateInfo.nextState = NAME_S;
-#endif
                                             }
                                         }
                                     }

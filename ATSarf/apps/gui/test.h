@@ -5,15 +5,7 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-#define AUGMENT_DICTIONARY
-
-//#define DIACRITIC_DISAMBIGUATION
-//#define ATB
-//#define ATB2
-//#define ATB_DIACRITIC
 #define REPETITIONS 1
-
-
 
 int morphology(QString input_str,ATMProgressIFC * prg);
 int hadith(QString input_str,ATMProgressIFC * prg);
@@ -33,4 +25,4 @@ int genealogy_agreement(QString input_str,ATMProgressIFC *prg);
 int narrator_annotation(QString input_str,ATMProgressIFC *prg);
 int narrator_equality_comparision(QString input_str, ATMProgressIFC *prg);
 
-#endif // TEST_H
+#endif 
