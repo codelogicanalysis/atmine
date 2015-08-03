@@ -11,7 +11,6 @@
 #include "abstractGraph.h"
 
 
-//#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
 
 class GeneologyParameters {

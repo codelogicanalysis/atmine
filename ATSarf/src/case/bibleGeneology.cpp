@@ -28,92 +28,7 @@ enum WordType { NEW_NAME, CORE_NAME, LEAF_NAME, DC, ENDING_PUNC, PARA_PUNC, COLO
 enum DescentDirection {SPOUSE, SON, FATHER, SIBLING, UNDEFINED_DIRECTION};
 enum StateType { TEXT_S , NAME_S, SONS_S};
 
-#ifdef GENEOLOGYDEBUG
-inline QString type_to_text(WordType t) {
-    switch (t) {
-        case NEW_NAME:
-            return "NEW_NAME";
-
-        case LEAF_NAME:
-            return "LEAF_NAME";
-
-        case CORE_NAME:
-            return "CORE_NAME";
-
-        case DC:
-            return "DC";
-
-        case OTHER:
-            return "OTHER";
-
-        case ENDING_PUNC:
-            return "ENDING_PUNC";
-
-        case PARA_PUNC:
-            return "PARA_PUNC";
-
-        case COLON_PUNC:
-            return "COLON_PUNC";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline QString type_to_text(StateType t) {
-    switch (t) {
-        case TEXT_S:
-            return "TEXT_S";
-
-        case NAME_S:
-            return "NAME_S";
-
-        case SONS_S:
-            return "SONS_S";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline QString type_to_text(DescentDirection t) {
-    switch (t) {
-        case SPOUSE:
-            return "SPOUSE";
-
-        case SON:
-            return "SON";
-
-        case FATHER:
-            return "FATHER";
-
-        case SIBLING:
-            return "SIBLING";
-
-        case UNDEFINED_DIRECTION:
-            return "UNDEFINED_DIRECTION";
-
-        default:
-            return "UNDEFINED";
-    }
-}
-inline void display(WordType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t)<<" ";
-}
-inline void display(StateType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t);
-}
-inline void display(DescentDirection t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t);
-}
-inline void display(QString t) {
-    out << t;
-    //qDebug() <<t;
-}
-#else
 #define display(c)
-#endif
 
 QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
 
@@ -1752,10 +1667,6 @@ class GenealogySegmentor {
             display("dir: ");
             display(stateInfo.descentDirection);
             display("\n");
-#ifdef GENEOLOGYDEBUG
-            currentData.tree->outputTree();
-            display("\n");
-#endif
             bool ret_val = true;
             Name name(stateInfo.text, stateInfo.startPos, stateInfo.endPos, stateInfo.male);
 
