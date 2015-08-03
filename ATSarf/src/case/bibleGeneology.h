@@ -11,7 +11,6 @@
 #include "abstractGraph.h"
 
 
-//#define TRUST_OLD
 #define SINGULAR_DESCENT
 //#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL

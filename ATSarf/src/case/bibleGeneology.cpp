@@ -1685,10 +1685,6 @@ class GenealogySegmentor {
         }
         inline bool doActionNewNameAndNullLast(Name &name) {
             bool ret_value = true;
-#ifdef TRUST_OLD
-
-            if (currentData.tree->getTreeNodesCount() == 0) {
-#endif
                 DescentDirection dir = stateInfo.descentDirection;
                 ret_value = doParaCheck(); //nameList is cleared here, if needed
 
@@ -1718,19 +1714,6 @@ class GenealogySegmentor {
                     stateInfo.nextState = NAME_S;
                 }
 
-#ifdef TRUST_OLD
-            } else {
-                currentData.last = currentData.tree->findTreeNode(currentData.lastName);
-
-                if (currentData.last != NULL) {
-                    addToTree(name);
-                }
-
-                currentData.i0 = 0;
-                stateInfo.nextState = NAME_S;
-            }
-
-#endif
             return ret_value;
         }
         inline void addToTree(Name &name) {
