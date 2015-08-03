@@ -6,13 +6,11 @@
 HadithInterAnnotatorAgreement::HadithInterAnnotatorAgreement(QString *text, QString fileName,
         AbstractGraph *generatedGraph, OutputDataList &generatedTags, bool displayPORstatistics)
     : AbstractTwoLevelAgreement(text, fileName, generatedGraph, generatedTags) {
-#ifdef GRAPH_COMPARE
     nodeCorrect = NULL;
     nodeDetected = NULL;
     countCommon = 0;
     mergesRecallALL = mergesPrecisionALL = mergesRecallNew = mergesPrecisionNew = 0;
     this->displayPORstatistics = displayPORstatistics;
-#endif
 }
 
 int HadithInterAnnotatorAgreement::equalNames(QString *, int start1, int end1, int start2, int end2) {
@@ -58,7 +56,6 @@ void HadithInterAnnotatorAgreement::displayStatistics() {
 }
 
 void HadithInterAnnotatorAgreement::initializeAuxiliaryCountersLists() {
-#ifdef GRAPH_COMPARE
     chainNodesMapCO.clear();
     chainNodesMapCO.clear();
     nodesMap.clear();
@@ -66,11 +63,9 @@ void HadithInterAnnotatorAgreement::initializeAuxiliaryCountersLists() {
     graphCorrect->getGraph()->fillChainContainer();
     HadithDagGraph *graphGenerated = dynamic_cast<HadithDagGraph *>(generatedGraph);
     graphGenerated->getGraph()->fillChainContainer();
-#endif
 }
 
 void HadithInterAnnotatorAgreement::startNamesOverLap(int i, int j, int k, int h, int commonCount) {
-#ifdef GRAPH_COMPARE
     HadithDagGraph *graphCorrect = dynamic_cast<HadithDagGraph *>(annotatedGraph);
     nodeCorrect = graphCorrect->getGraph()->getChainNode(i, k);
     HadithDagGraph *graphGenerated = dynamic_cast<HadithDagGraph *>(generatedGraph);
@@ -98,11 +93,9 @@ void HadithInterAnnotatorAgreement::startNamesOverLap(int i, int j, int k, int h
 
     assert(nodeCorrect != NULL && nodeDetected != NULL);
     this->countCommon = commonCount;
-#endif
 }
 
 void HadithInterAnnotatorAgreement::anotherTagOverLapPreviousOutputName(int /*i*/, int /*j*/, int /*k*/, int /*h*/) {
-#ifdef GRAPH_COMPARE
     assert(nodeDetected != NULL && nodeCorrect != NULL);
     ChainNodeCorrespondanceMap::iterator itr = chainNodesMapOC.find(nodeDetected);
     assert(itr != chainNodesMapOC.end());
@@ -115,11 +108,9 @@ void HadithInterAnnotatorAgreement::anotherTagOverLapPreviousOutputName(int /*i*
         chainNodesMapCO[nodeCorrect] = ChainNodeIntPair(nodeDetected, countCommon);
     }
 
-#endif
 }
 
 void HadithInterAnnotatorAgreement::anotherOutputOverLapPreviousTagName(int /*i*/, int /*j*/, int /*k*/, int /*h*/) {
-#ifdef GRAPH_COMPARE
     assert(nodeDetected != NULL && nodeCorrect != NULL);
     ChainNodeCorrespondanceMap::iterator itr = chainNodesMapCO.find(nodeCorrect);
     assert(itr != chainNodesMapCO.end());
@@ -131,20 +122,15 @@ void HadithInterAnnotatorAgreement::anotherOutputOverLapPreviousTagName(int /*i*
         chainNodesMapOC[nodeDetected] = ChainNodeIntPair(nodeCorrect, countCommon);
         chainNodesMapCO[nodeCorrect] = ChainNodeIntPair(nodeDetected, countCommon);
     }
-
-#endif
 }
 
 void HadithInterAnnotatorAgreement::firstNameOverLap(int /*i*/, int /*j*/, int /*k*/, int /*h*/) {
-#ifdef GRAPH_COMPARE
     assert(nodeCorrect != NULL && nodeDetected != NULL);
     chainNodesMapOC[nodeDetected] = ChainNodeIntPair(nodeCorrect, countCommon);
     chainNodesMapCO[nodeCorrect] = ChainNodeIntPair(nodeDetected, countCommon);
-#endif
 }
 
 void HadithInterAnnotatorAgreement::beforeMovingToNextTagName(int i, int /*j*/, int k, int /*h*/) {
-#ifdef GRAPH_COMPARE
     HadithDagGraph *graphCorrect = dynamic_cast<HadithDagGraph *>(annotatedGraph);
     ChainNarratorNode *nodeCorrect = graphCorrect->getGraph()->getChainNode(i, k);
     ChainNodeCorrespondanceMap::iterator itr = chainNodesMapCO.find(nodeCorrect);
@@ -158,12 +144,9 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextTagName(int i, int /*j*/, 
     if (itr == chainNodesMapCO.end()) {
         chainNodesMapCO[nodeCorrect] = ChainNodeIntPair(NULL, 0);
     }
-
-#endif
 }
 
 void HadithInterAnnotatorAgreement::beforeMovingToNextOutputName(int i, int j, int /*k*/, int h) {
-#ifdef GRAPH_COMPARE
     HadithDagGraph *graphGenerated = dynamic_cast<HadithDagGraph *>(generatedGraph);
     ChainNarratorNode *nodeDetected = graphGenerated->getGraph()->getChainNode(j, h);
     ChainNodeCorrespondanceMap::iterator itr = chainNodesMapOC.find(nodeDetected);
@@ -177,12 +160,9 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextOutputName(int i, int j, i
     if (itr == chainNodesMapOC.end()) {
         chainNodesMapOC[nodeDetected] = ChainNodeIntPair(NULL, 0);
     }
-
-#endif
 }
 
 void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int /*j*/) {
-#ifdef GRAPH_COMPARE
     HadithDagGraph *graphCorrect = dynamic_cast<HadithDagGraph *>(annotatedGraph);
 
     for (int k = 0; true; k++) {
@@ -207,12 +187,9 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextTag(int i, int /*j*/) {
             break;
         }
     }
-
-#endif
 }
 
 void HadithInterAnnotatorAgreement::beforeMovingToNextOutput(int /*i*/, int j) {
-#ifdef GRAPH_COMPARE
     HadithDagGraph *graphGenerated = dynamic_cast<HadithDagGraph *>(generatedGraph);
 
     for (int h = 0; true; h++) {
@@ -228,8 +205,6 @@ void HadithInterAnnotatorAgreement::beforeMovingToNextOutput(int /*i*/, int j) {
             break;
         }
     }
-
-#endif
 }
 
 void HadithInterAnnotatorAgreement::compareGlobalGraphs(AbstractGraph * /*correctGraph*/,
