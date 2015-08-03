@@ -88,6 +88,12 @@ class LocalizedDisplay: public QMainWindow, public ATMProgressIFC {
             hadith_text = new QString();
             hadith_out.setString(hadith_text);
             theSarf->out.setString(hadith_text);
+            errors = new QTextBrowser(this);
+            errors->resize(errors->width(), 50);
+            errors_text = new QString();
+            grid->addWidget(errors, 6, 0, 1, 11);
+            theSarf->displayed_error.setString(errors_text);
+            errors->setText(*errors_text);
         }
 
     public slots:
@@ -195,6 +201,8 @@ class LocalizedDisplay: public QMainWindow, public ATMProgressIFC {
         QProgressBar *progressBar;
         QTableWidget *narratorListDisplay;
         QList<NarratorNodeIfc *> nodeList;
+        QTextBrowser *errors;
+        QString *errors_text, *hadith_text;
         QGridLayout *grid;
 
         NarratorGraph *graph;
@@ -211,6 +219,8 @@ class LocalizedDisplay: public QMainWindow, public ATMProgressIFC {
             delete progressBar;
             delete narratorListDisplay;
             delete hadith_text;
+            delete errors;
+            delete errors_text;
             delete grid;
             delete graph;
         }
@@ -218,4 +228,4 @@ class LocalizedDisplay: public QMainWindow, public ATMProgressIFC {
 
 void localizedDisplay(NarratorGraph *graph);
 
-#endif
+#endif // LOCALIZEDDISPLAY_H
