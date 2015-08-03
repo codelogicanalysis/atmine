@@ -15,9 +15,7 @@ const static QString biographyTagMax = QString("") + alef_hamza_below + ba2 + ra
 
 class NarratorDetector {
     protected:
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
         typedef Biography::MatchingNode MatchingNode;
-#endif
         typedef QList<NarratorNodesList> DoubleNarratorNodesList;
         typedef QPair<int, int> IndexPair;
 
@@ -35,7 +33,6 @@ class NarratorDetector {
 
     protected:
 
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
         typedef QList<Narrator *> NarratorList;
         NarratorHash hash;
         NarratorList narratorList;
@@ -399,8 +396,6 @@ class NarratorDetector {
             }
         }
 
-
-#endif
         bool tagNarrator(const Narrator *n, bool /*isReal=true*/) {
             if (n->m_narrator.size() == 0) {
                 return false;
@@ -428,7 +423,6 @@ class NarratorDetector {
             return true;
         }
     public:
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
         NarratorDetector(NarratorGraph *graph)
             : hash(graph) {
             this->graph = graph;
@@ -438,12 +432,6 @@ class NarratorDetector {
             : hash(NULL) {
             biographies = NULL;
         }
-#else
-        NarratorDetector() {
-            graph = NULL;
-            biographies = NULL;
-        }
-#endif
         int lookup(QString input_str, ATMProgressIFC *prg)  {
             this->prg = prg;
             QFile chainOutput(chainDataStreamFileName);
@@ -500,43 +488,10 @@ class NarratorDetector {
             for (; stateInfo.startPos < text_size;) {
                 if ((proceedInStateMachine(stateInfo, currentBiography, currentData) == false) ||
                     (stateInfo.nextPos >= text_size - 1)) {
-#if defined(SEGMENT_BIOGRAPHY_USING_POR)
                     addNarrators(currentBiography->biography);
-#else
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
-                    Biography::NarratorNodeGroups &realNarrators = currentBiography->biography->nodeGroups;
-                    int num = getLargestClusterSize(realNarrators);
-
-                    if (num >= hadithParameters.bio_narr_min) {
-#else
-
-                    if (currentData.narratorCount >= hadithParameters.bio_narr_min) {
-#endif
-                        //biographyEnd=currentData.narratorEndIndex;
-                        biographyEnd = stateInfo.endPos;
-                        currentBiography->biography->setEnd(biographyEnd);
-#ifdef DISPLAY_HADITH_OVERVIEW
-                        //biographyStart=currentData.biographyStartIndex;
-                        biographyStart = currentBiography->biography->getStart();
-                        //long end=text->indexOf(QRegExp(delimiters),sanadEnd);//sanadEnd is first letter of last word in sanad
-                        //long end=stateInfo.endPos;
-                        out << "\n" << biography_Counter << " new biography start: " << text->mid(biographyStart, display_letters) << endl;
-                        out << "sanad end: " << text->mid(biographyEnd - display_letters + 1, display_letters) << endl << endl;
-                        currentBiography->biography->serialize(chainOut);
-                        currentBiography->biography->setStart(stateInfo.nextPos);
-                        //currentChain->chain->serialize(displayed_error);
-#endif
-                        biography_Counter++;
-                    } else {
-                        delete currentBiography->biography;
-                    }
-
-#endif
                 }
 
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
                 additionalCheck(stateInfo);
-#endif
                 stateInfo.currentState = stateInfo.nextState;
                 stateInfo.startPos = stateInfo.nextPos;
                 stateInfo.lastEndPos = stateInfo.endPos;
@@ -827,11 +782,7 @@ BiographyList *getBiographies(QString input_str, NarratorGraph *graph, ATMProgre
     BiographySegmenter s(graph);
     s.segment(input_str, prg);
 #else
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
     NarratorDetector s(graph);
-#else
-    NarratorDetector s;
-#endif
 
     if (nodeID >= 0) {
         NarratorNodeIfc *n = graph->getNode(nodeID);

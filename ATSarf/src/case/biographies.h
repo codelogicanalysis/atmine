@@ -137,11 +137,7 @@ class BiographiesWindow: public QMainWindow, public ATMProgressIFC {
             }
 
             QString fileName = input->toPlainText();
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
             biographyList = getBiographies(fileName, graph, this, nodeId);
-#else
-            biographyList = getBiographies(fileName, NULL, this);
-#endif
 
             if (biographyList == NULL) {
                 return;

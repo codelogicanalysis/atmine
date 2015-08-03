@@ -3,7 +3,6 @@
 
 #include "narratorHash.h"
 
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
 class RealNarratorAction: public NarratorHash::FoundAction {
     private:
         Biography::NarratorNodeList &list;
@@ -31,7 +30,6 @@ class RealNarratorAction: public NarratorHash::FoundAction {
         }
 };
 bool isRealNarrator(NarratorGraph *graph, Narrator *n, Biography::NarratorNodeList &list);
-#endif
 
 class BiographySegmenterAlgorithm {
     public:

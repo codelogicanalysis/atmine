@@ -701,7 +701,6 @@ void Biography::serialize(QDataStream &chainOut) const {
     for (int i = 0; i < narrators.size(); i++) {
         narrators[i]->narrator->serialize(chainOut);
         chainOut << narrators[i]->isRealNarrator;
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
         chainOut << nodeGroups.size();
 
         for (int j = 0; j < nodeGroups.size(); j++) {
@@ -714,7 +713,6 @@ void Biography::serialize(QDataStream &chainOut) const {
             }
         }
 
-#endif
     }
 }
 void Biography::deserialize(QDataStream &chainIn) {
@@ -730,7 +728,6 @@ void Biography::deserialize(QDataStream &chainIn) {
         BiographyNarrator *bio_narr = new BiographyNarrator(n);
         chainIn >> bio_narr->isRealNarrator;
         narrators.append(bio_narr);
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
         int size;
         chainIn >> size;
 
@@ -750,7 +747,6 @@ void Biography::deserialize(QDataStream &chainIn) {
             }
         }
 
-#endif
     }
 }
 void Biography::serialize(QTextStream &chainOut) const {
@@ -761,7 +757,6 @@ void Biography::serialize(QTextStream &chainOut) const {
     }
 }
 
-#ifdef SEGMENT_BIOGRAPHY_USING_POR
 bool Biography::isRealNarrator(Narrator *n) {
     int i;
 
@@ -790,5 +785,4 @@ bool Biography::isRealNarrator(Narrator *n) {
     }
 }
 
-#endif
 
