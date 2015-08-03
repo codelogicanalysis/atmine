@@ -284,11 +284,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry, const AmbiguityS
                 totalCombinations[amb]++;
             }
 
-#ifndef REDUCED_EQ_AMBIGUIOUS
-            bool reduced = valid_ratio[All_Ambiguity] < 1;
-#else
             bool reduced = currSolutions[Vocalization].size() > 1;
-#endif
             bool display = ((numDia == diacriticsCount || diacriticsCount == -1) && !suppressOutput && reduced);
 
             for (int i = 0; i < 2; i++) {

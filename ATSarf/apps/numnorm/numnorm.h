@@ -1,5 +1,5 @@
-#ifndef H_NUMNORM
-#define H_NUMNORM
+#ifndef NUMNORM_H
+#define NUMNORM_H
 #include <number.h>
 #include <numsolution.h>
 #include <iostream>

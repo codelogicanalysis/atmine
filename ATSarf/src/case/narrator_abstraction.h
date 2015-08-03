@@ -1,5 +1,5 @@
-#ifndef _NarrAbs_h
-#define _NarrAbs_h
+#ifndef NARRATOR_ABSTRACTION_H
+#define NARRATOR_ABSTRACTION_H
 
 #include <QList>
 #include <QTextStream>
