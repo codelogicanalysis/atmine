@@ -2204,18 +2204,14 @@ class GenealogySegmentor {
                     return false;
                 }
 
-#ifdef SINGULAR_DESCENT
-
                 if (type == NEW_NAME && stateInfo.singularDescent) {
                     stateInfo.singularDescent = false;
                     stateInfo.descentDirection = stateInfo.lastDescentDirection;
                 }
 
-#endif
                 currentData.lastName = word;
             } else if (s.descentDir != UNDEFINED_DIRECTION) {
                 stateInfo.land = false;
-#ifdef SINGULAR_DESCENT
 
                 if (!stateInfo.singularDescent) {
                     stateInfo.lastDescentDirection = stateInfo.descentDirection;
@@ -2224,7 +2220,6 @@ class GenealogySegmentor {
                 }
 
                 stateInfo.singularDescent = !s.pluralDescent;
-#endif
                 stateInfo.descentDirection = s.descentDir;
 
                 if (s.descentDir == FATHER /*&& s.pluralDescent*/ && stateInfo.preceededBygaveBirth) {
