@@ -15,7 +15,6 @@
 //#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
 #define REDUCE_AFFIX_SEARCH
-//#define SHOW_MERGING_ERRORS
 
 class GeneologyParameters {
     public:

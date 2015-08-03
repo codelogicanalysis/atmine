@@ -668,12 +668,7 @@ class GeneStemmer: public Stemmer {
                                 }
                             } else {
                                 if (n1 == n2) {
-                                    if (n1 != NULL) {
-#ifdef SHOW_MERGING_ERRORS
-                                        error << "Conflict (" << n1->toString() << "," << n2->toString() << ") old relationship is spouse, new is child.\n";
-                                        //conflict but trust old (this means the nodes correspond to spouses)
-#endif
-                                    } else {
+                                    if (n1 == NULL) {
                                         addUnPerformedEdge(node1, node2, isSpouse);
                                     }
                                 } else {
@@ -691,11 +686,6 @@ class GeneStemmer: public Stemmer {
                                         }
                                     } else {
                                         if (n2->getParent() != n1) {
-#ifdef SHOW_MERGING_ERRORS
-                                            //conflict but trust old
-                                            error << "Conflict (" << n1->toString() << "," << n2->toString() <<
-                                                  ") newly must be child relationship but previously is not.\n";
-#endif
                                         } else {
                                             n1->name = name1; //so that we add a new edge when calling appendEdgeName(..)
                                             n2->name = name2; //so that we add a new edge when calling appendEdgeName(..)
