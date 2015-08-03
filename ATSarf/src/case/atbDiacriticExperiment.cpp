@@ -136,12 +136,8 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
     int countReduced = 0, countEquivalent = 0, countEquivalentTanween = 0, countReducedTanween = 0, countTanween = 0;
     QTextStream file(&diacritics_file);
     int filePos = 0;
-#ifdef THEORETICAL_DIACRITICS
-    long fileSize = diacritics_file.size();
-#else
     long fileSize = file.readAll().size();
     file.seek(0);
-#endif
 
     while (!file.atEnd()) {
         line = file.readLine(0);
@@ -153,15 +149,10 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 
         total++;
         QStringList entries = line.split("\t", QString::KeepEmptyParts);
-#ifndef THEORETICAL_DIACRITICS
         QString voc = entries[0];
         QString partial_voc = entries[1];
         QString no_voc = removeDiacritics(partial_voc);
         int c = entries[2].toInt();
-#else
-        QString voc = Buckwalter::convertFrom(entries[0]);
-        QString no_voc = Buckwalter::convertFrom(entries[1]);
-#endif
         QString ignore;
 #ifdef RECALL_DIACRITICS
         ignore = (entries.size() == 4 ? entries[3] : "");
@@ -171,11 +162,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
         }
 
 #endif
-#ifdef THEORETICAL_DIACRITICS
-        {
-            for (int amb = 0; amb < ambiguitySize; amb++) {
-                {
-#else
         AmbiguityStemmer stemmer(partial_voc);
         stemmer();
         AmbiguityStemmer stemmer2(no_voc);
@@ -240,154 +226,138 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
 
             if (equal(partial_voc, voc, true)) {
                 correctly_detected[amb]++;
-#endif
-#ifndef THEORETICAL_DIACRITICS
 
-                    if (ambiguity == All_Ambiguity) {
-#endif
+                if (ambiguity == All_Ambiguity) {
+                    for (int i = 0; i < maxDiacritics; i++) {
+                        AmbiguityStatList d;
+                        getStatDiacriticAssignment(voc, i, d);
 
-                        for (int i = 0; i < maxDiacritics; i++) {
-                            AmbiguityStatList d;
-                            getStatDiacriticAssignment(voc, i, d);
+                        for (int amb = 0; amb < ambiguitySize; amb++) {
+                            if (d[amb].countComb > 0) {
+                                double average = ((double)d[amb].totalAmbiguity) / d[amb].countComb;
+                                int best = d[amb].bestAmbiguity;
+                                int worst = d[amb].worstAmbiguity;
+                                other_ambiguity[i][amb] += average;
+                                other_best_ambiguity[i][amb] += best;
+                                other_worst_ambiguity[i][amb] += worst;
+                                other_count[i][amb]++;
 
-                            for (int amb = 0; amb < ambiguitySize; amb++) {
-                                if (d[amb].countComb > 0) {
-                                    double average = ((double)d[amb].totalAmbiguity) / d[amb].countComb;
-                                    int best = d[amb].bestAmbiguity;
-                                    int worst = d[amb].worstAmbiguity;
-                                    other_ambiguity[i][amb] += average;
-                                    other_best_ambiguity[i][amb] += best;
-                                    other_worst_ambiguity[i][amb] += worst;
-                                    other_count[i][amb]++;
-#ifndef THEORETICAL_DIACRITICS
+                                if (c == i) {
+                                    partial_average[i][amb] += average;
+                                    partial_best[i][amb] += best;
+                                    partial_worst[i][amb] += worst;
+                                    partial_average_total[amb] += average;
+                                    partial_best_total[amb] += best;
+                                    partial_worst_total[amb] += worst;
 
-                                    if (c == i) {
-                                        partial_average[i][amb] += average;
-                                        partial_best[i][amb] += best;
-                                        partial_worst[i][amb] += worst;
-                                        partial_average_total[amb] += average;
-                                        partial_best_total[amb] += best;
-                                        partial_worst_total[amb] += worst;
-
-                                        if (!partial_voc.contains(fathatayn) && c == 1) {
-                                            partial_average[0][amb] += average;
-                                            partial_best[0][amb] += best;
-                                            partial_worst[0][amb] += worst;
-                                        }
+                                    if (!partial_voc.contains(fathatayn) && c == 1) {
+                                        partial_average[0][amb] += average;
+                                        partial_best[0][amb] += best;
+                                        partial_worst[0][amb] += worst;
                                     }
-
-#endif
                                 }
                             }
                         }
                     }
                 }
-
-                countEquivalent++;
-#ifndef THEORETICAL_DIACRITICS
-
-                if (Has_Tanween) {
-                    countEquivalentTanween++;
-                }
-
-#endif
             }
 
-#ifndef THEORETICAL_DIACRITICS
+            countEquivalent++;
 
             if (Has_Tanween) {
-                countTanween++;
-            }
-
-#endif
-
-            if (prg != NULL) {
-                prg->report(((double)filePos) / fileSize * 100 + 0.5);
+                countEquivalentTanween++;
             }
         }
 
-        for (int amb = 0; amb < ambiguitySize; amb++) {
-            theSarf->displayed_error << interpret((Ambiguity)amb) << ":\n";
-#ifndef RECALL_DIACRITICS
-            int total_equivalent = total;
-            double full_voc_ratio = ((double)full_vocalized[amb]) / total_equivalent;
-#ifndef THEORETICAL_DIACRITICS
-
-            for (int i = 0; i < maxDiacritics; i++) {
-                double  voc_ratio = ((double)voc_ambiguity[i][amb]) / total_count[i][amb],
-                        no_voc_ratio = ((double)no_voc_ambiguity[i][amb]) / total_count[i][amb],
-                        average_ratio = ((double)partial_average[i][amb]) / total_count[i][amb],
-                        best_ratio = ((double)partial_best[i][amb]) / total_count[i][amb],
-                        worst_ratio = ((double)partial_worst[i][amb]) / total_count[i][amb];
-                QString num = QString("%1").arg(i);
-
-                if (i == 0) {
-                    int t = total_count[1][amb] - total_count[0][amb];
-                    double  voc_ratio1 = ((double)voc_ambiguity[1][amb] - voc_ambiguity[0][amb]) / t,
-                            no_voc_ratio1 = ((double)no_voc_ambiguity[1][amb] - no_voc_ambiguity[0][amb]) / t,
-                            average_ratio1 = ((double)partial_average[1][amb] - partial_average[0][amb]) / t,
-                            best_ratio1 = ((double)partial_best[1][amb] - partial_best[0][amb]) / t,
-                            worst_ratio1 = ((double)partial_worst[1][amb] - partial_worst[0][amb]) / t;
-                    num = QString("1 ( ") + fathatayn + "  )";
-                    displayed_error << "\tDiacritics\t" << num << "\t" << no_voc_ratio1 << "\t" << voc_ratio1
-                                    << "->\t" << average_ratio1 << "\t(" << best_ratio1 << ",\t" << worst_ratio1 << ")\n";
-                    num = QString("1 (- ") + fathatayn + "  )";
-                }
-
-                displayed_error << "\tDiacritics\t" << num << "\t" << no_voc_ratio << "\t" << voc_ratio
-                                << "->\t" << average_ratio << "\t(" << best_ratio << ",\t" << worst_ratio << ")\n";
-            }
-
-            double  voc_ratio = ((double)voc_total[amb]) / total_equivalent,
-                    no_voc_ratio = ((double)no_voc_total[amb]) / total_equivalent,
-                    average_ratio = ((double)partial_average_total[amb]) / total_equivalent,
-                    best_ratio = ((double)partial_best_total[amb]) / total_equivalent,
-                    worst_ratio = ((double)partial_worst_total[amb]) / total_equivalent;
-            displayed_error << "\tDiacritics\t+\t" << no_voc_ratio << "\t" << voc_ratio
-                            << "->\t" << average_ratio << "\t(" << best_ratio << ",\t" << worst_ratio << ")\n";
-            int t = total_equivalent + total_count[0][amb] - total_count[1][amb];
-            double  voc_ratio1 = ((double)voc_total[amb] + voc_ambiguity[0][amb] - voc_ambiguity[1][amb]) / t,
-                    no_voc_ratio1 = ((double)no_voc_total[amb] + no_voc_ambiguity[0][amb] - no_voc_ambiguity[1][amb]) / t,
-                    average_ratio1 = ((double)partial_average_total[amb] + partial_average[0][amb] - partial_average[1][amb]) / t,
-                    best_ratio1 = ((double)partial_best_total[amb] + partial_best[0][amb] - partial_best[1][amb]) / t,
-                    worst_ratio1 = ((double)partial_worst_total[amb] + partial_worst[0][amb] - partial_worst[1][amb]) / t;
-            displayed_error << "\tDiacritics\t+ (- " << fathatayn << " )\t" << no_voc_ratio1 << "\t" << voc_ratio1
-                            << "->\t" << average_ratio1 << "\t(" << best_ratio1 << ",\t" << worst_ratio1 << ")\n";
-            displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n\n\n";
-#endif
-
-            for (int i = 0; i < maxDiacritics; i++) {
-                double  ratio = ((double)other_ambiguity[i][amb]) / other_count[i][amb];
-                double  best_ratio = ((double)other_best_ambiguity[i][amb]) / other_count[i][amb];
-                double  worst_ratio = ((double)other_worst_ambiguity[i][amb]) / other_count[i][amb];
-                theSarf->displayed_error << "\tDiacritics\t" << i << "\t" << ratio << "\t(" << best_ratio << ",\t" << worst_ratio <<
-                                         ")\n";
-            }
-
-            theSarf->displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n";
-#else
-            theSarf->displayed_error    << "\tRecall=\t" << correctly_detected[amb] << "/" << correctly_detectedNoDiacritics[amb] <<
-                                        "=\t" << correctly_detected[amb] / ((double)correctly_detectedNoDiacritics[amb]) << "\n"
-                                        << "\tPrecision=\t" << correctly_detected[amb] << "/" << voc_total[amb] << "=\t" << correctly_detected[amb] / ((
-                                                    double)voc_total[amb]) << "\n\n";
-            theSarf->displayed_error    << "\tRecall (no)=\t" << correctly_detectedNoDiacritics[amb] << "/" <<
-                                        correctly_detectedNoDiacritics[amb] << "=\t" << 1.0 << "\n"
-                                        << "\tPrecision (no)=\t" << correctly_detectedNoDiacritics[amb] << "/" << no_voc_total[amb] << "=\t" <<
-                                        correctly_detectedNoDiacritics[amb] / ((double)no_voc_total[amb]) << "\n\n";
-#endif
+        if (Has_Tanween) {
+            countTanween++;
         }
 
-        theSarf->displayed_error << "\nEquivalent Factor:\t" << countEquivalent << "/" << total << "=\t" << ((
-                                     double)countEquivalent) / total << "\n";
-        theSarf->displayed_error << "Reduction Factor:\t" << countReduced << "/" << countEquivalent << "=\t" << ((
-                                     double)countReduced) / countEquivalent << "\n";
-        theSarf->displayed_error << "\nEquivalent Tanween Factor:\t" << countEquivalentTanween << "/" << countTanween << "=\t"
-                                 << ((double)countEquivalentTanween) / countTanween << "\n";
-        theSarf->displayed_error << "Reduction Tanween Factor:\t" << countReducedTanween << "/" << countEquivalentTanween <<
-                                 "=\t" << ((double)countReducedTanween) / countEquivalentTanween << "\n";
-        int countNonReduced = countReduced - countReducedTanween;
-        int countNonEquivalent = countEquivalent - countEquivalentTanween;
-        theSarf->displayed_error << "Reduction Non-Tanween Factor:\t" << countNonReduced << "/" << countNonEquivalent << "=\t"
-                                 << ((double)countNonReduced) / countNonEquivalent << "\n";
-        return 0;
+        if (prg != NULL) {
+            prg->report(((double)filePos) / fileSize * 100 + 0.5);
+        }
     }
+
+    for (int amb = 0; amb < ambiguitySize; amb++) {
+        theSarf->displayed_error << interpret((Ambiguity)amb) << ":\n";
+#ifndef RECALL_DIACRITICS
+        int total_equivalent = total;
+        double full_voc_ratio = ((double)full_vocalized[amb]) / total_equivalent;
+
+        for (int i = 0; i < maxDiacritics; i++) {
+            double  voc_ratio = ((double)voc_ambiguity[i][amb]) / total_count[i][amb],
+                    no_voc_ratio = ((double)no_voc_ambiguity[i][amb]) / total_count[i][amb],
+                    average_ratio = ((double)partial_average[i][amb]) / total_count[i][amb],
+                    best_ratio = ((double)partial_best[i][amb]) / total_count[i][amb],
+                    worst_ratio = ((double)partial_worst[i][amb]) / total_count[i][amb];
+            QString num = QString("%1").arg(i);
+
+            if (i == 0) {
+                int t = total_count[1][amb] - total_count[0][amb];
+                double  voc_ratio1 = ((double)voc_ambiguity[1][amb] - voc_ambiguity[0][amb]) / t,
+                        no_voc_ratio1 = ((double)no_voc_ambiguity[1][amb] - no_voc_ambiguity[0][amb]) / t,
+                        average_ratio1 = ((double)partial_average[1][amb] - partial_average[0][amb]) / t,
+                        best_ratio1 = ((double)partial_best[1][amb] - partial_best[0][amb]) / t,
+                        worst_ratio1 = ((double)partial_worst[1][amb] - partial_worst[0][amb]) / t;
+                num = QString("1 ( ") + fathatayn + "  )";
+                displayed_error << "\tDiacritics\t" << num << "\t" << no_voc_ratio1 << "\t" << voc_ratio1
+                                << "->\t" << average_ratio1 << "\t(" << best_ratio1 << ",\t" << worst_ratio1 << ")\n";
+                num = QString("1 (- ") + fathatayn + "  )";
+            }
+
+            displayed_error << "\tDiacritics\t" << num << "\t" << no_voc_ratio << "\t" << voc_ratio
+                            << "->\t" << average_ratio << "\t(" << best_ratio << ",\t" << worst_ratio << ")\n";
+        }
+
+        double  voc_ratio = ((double)voc_total[amb]) / total_equivalent,
+                no_voc_ratio = ((double)no_voc_total[amb]) / total_equivalent,
+                average_ratio = ((double)partial_average_total[amb]) / total_equivalent,
+                best_ratio = ((double)partial_best_total[amb]) / total_equivalent,
+                worst_ratio = ((double)partial_worst_total[amb]) / total_equivalent;
+        displayed_error << "\tDiacritics\t+\t" << no_voc_ratio << "\t" << voc_ratio
+                        << "->\t" << average_ratio << "\t(" << best_ratio << ",\t" << worst_ratio << ")\n";
+        int t = total_equivalent + total_count[0][amb] - total_count[1][amb];
+        double  voc_ratio1 = ((double)voc_total[amb] + voc_ambiguity[0][amb] - voc_ambiguity[1][amb]) / t,
+                no_voc_ratio1 = ((double)no_voc_total[amb] + no_voc_ambiguity[0][amb] - no_voc_ambiguity[1][amb]) / t,
+                average_ratio1 = ((double)partial_average_total[amb] + partial_average[0][amb] - partial_average[1][amb]) / t,
+                best_ratio1 = ((double)partial_best_total[amb] + partial_best[0][amb] - partial_best[1][amb]) / t,
+                worst_ratio1 = ((double)partial_worst_total[amb] + partial_worst[0][amb] - partial_worst[1][amb]) / t;
+        displayed_error << "\tDiacritics\t+ (- " << fathatayn << " )\t" << no_voc_ratio1 << "\t" << voc_ratio1
+                        << "->\t" << average_ratio1 << "\t(" << best_ratio1 << ",\t" << worst_ratio1 << ")\n";
+        displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n\n\n";
+
+        for (int i = 0; i < maxDiacritics; i++) {
+            double  ratio = ((double)other_ambiguity[i][amb]) / other_count[i][amb];
+            double  best_ratio = ((double)other_best_ambiguity[i][amb]) / other_count[i][amb];
+            double  worst_ratio = ((double)other_worst_ambiguity[i][amb]) / other_count[i][amb];
+            theSarf->displayed_error << "\tDiacritics\t" << i << "\t" << ratio << "\t(" << best_ratio << ",\t" << worst_ratio <<
+                                     ")\n";
+        }
+
+        theSarf->displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n";
+#else
+        theSarf->displayed_error    << "\tRecall=\t" << correctly_detected[amb] << "/" << correctly_detectedNoDiacritics[amb] <<
+                                    "=\t" << correctly_detected[amb] / ((double)correctly_detectedNoDiacritics[amb]) << "\n"
+                                    << "\tPrecision=\t" << correctly_detected[amb] << "/" << voc_total[amb] << "=\t" << correctly_detected[amb] / ((
+                                                double)voc_total[amb]) << "\n\n";
+        theSarf->displayed_error    << "\tRecall (no)=\t" << correctly_detectedNoDiacritics[amb] << "/" <<
+                                    correctly_detectedNoDiacritics[amb] << "=\t" << 1.0 << "\n"
+                                    << "\tPrecision (no)=\t" << correctly_detectedNoDiacritics[amb] << "/" << no_voc_total[amb] << "=\t" <<
+                                    correctly_detectedNoDiacritics[amb] / ((double)no_voc_total[amb]) << "\n\n";
+#endif
+    }
+
+    theSarf->displayed_error << "\nEquivalent Factor:\t" << countEquivalent << "/" << total << "=\t" << ((
+                                 double)countEquivalent) / total << "\n";
+    theSarf->displayed_error << "Reduction Factor:\t" << countReduced << "/" << countEquivalent << "=\t" << ((
+                                 double)countReduced) / countEquivalent << "\n";
+    theSarf->displayed_error << "\nEquivalent Tanween Factor:\t" << countEquivalentTanween << "/" << countTanween << "=\t"
+                             << ((double)countEquivalentTanween) / countTanween << "\n";
+    theSarf->displayed_error << "Reduction Tanween Factor:\t" << countReducedTanween << "/" << countEquivalentTanween <<
+                             "=\t" << ((double)countReducedTanween) / countEquivalentTanween << "\n";
+    int countNonReduced = countReduced - countReducedTanween;
+    int countNonEquivalent = countEquivalent - countEquivalentTanween;
+    theSarf->displayed_error << "Reduction Non-Tanween Factor:\t" << countNonReduced << "/" << countNonEquivalent << "=\t"
+                             << ((double)countNonReduced) / countNonEquivalent << "\n";
+    return 0;
+}

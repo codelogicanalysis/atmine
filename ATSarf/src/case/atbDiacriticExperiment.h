@@ -8,7 +8,6 @@
 #include "ambiguity.h"
 
 #define MAX_FOR_UNDERVOCALIZED
-//#define THEORETICAL_DIACRITICS
 #define RECALL_DIACRITICS
 
 class AmbCombStat {
