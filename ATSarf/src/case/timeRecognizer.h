@@ -3,8 +3,6 @@
 
 #include "ATMProgressIFC.h"
 
-//#define TIMEDEBUG
-
 class TimeParameters {
     public:
         unsigned int num_before_absolute: 5;

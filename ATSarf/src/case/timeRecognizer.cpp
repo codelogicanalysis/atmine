@@ -195,58 +195,7 @@ QString *time_text = NULL;
 long currentPos;
 TimeEntityVector *timeVector = NULL;
 
-#ifdef TIMEDEBUG
-inline QString type_to_text(wordType t) {
-    switch (t) {
-        case ABS_T:
-            return "ABS_T";
-
-        case PREP_T:
-            return "PREP_T";
-
-        case NUM:
-            return "NUM";
-
-        case OTHER:
-            return "OTHER";
-
-        case T_ATTR:
-            return "T_ATTR";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline QString type_to_text(stateType t) {
-    switch (t) {
-        case NOTHING_S:
-            return "NOTHING_S";
-
-        case MAYBE_TIME_S:
-            return "MAYBE_TIME_S";
-
-        case TIME_S:
-            return "TIME_S";
-
-        default:
-            return "UNDEFINED-TYPE";
-    }
-}
-inline void display(wordType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t)<<" ";
-}
-inline void display(stateType t) {
-    out << type_to_text(t) << " ";
-    //qDebug() <<type_to_text(t);
-}
-inline void display(QString t) {
-    out << t;
-    //qDebug() <<t;
-}
-#else
-#define display(c)
-#endif
+#define display(c) ;
 
 void time_initialize() {
     QList<QString> abs, rel;
