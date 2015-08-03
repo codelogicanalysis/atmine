@@ -28,7 +28,7 @@ enum WordType { NEW_NAME, CORE_NAME, LEAF_NAME, DC, ENDING_PUNC, PARA_PUNC, COLO
 enum DescentDirection {SPOUSE, SON, FATHER, SIBLING, UNDEFINED_DIRECTION};
 enum StateType { TEXT_S , NAME_S, SONS_S};
 
-#define display(c)
+#define display(c) ;
 
 QString preProcessedGenealogyDescriptionsFileName = ".GenealogyPreProcessedDescriptions";
 
@@ -2202,9 +2202,6 @@ class GenealogySegmentor {
             prg->tag(geneStart, geneEnd - geneStart + 1, Qt::darkYellow, false);
             GeneTagVisitor v(prg);
             v(currentData.tree);
-#ifdef DISPLAY_INDIVIDUAL
-            displayTree(currentData.globalTree);
-#endif
 
             if (currentData.globalTree == NULL) {
                 currentData.tree->outputTree();
