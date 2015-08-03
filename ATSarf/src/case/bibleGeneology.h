@@ -16,7 +16,6 @@
 //#define DISPLAY_INDIVIDUAL
 #define REDUCE_AFFIX_SEARCH
 //#define SHOW_MERGING_ERRORS
-#define BIRTH_LI
 
 class GeneologyParameters {
     public:
