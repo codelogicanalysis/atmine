@@ -6,7 +6,6 @@
 #include "ATMProgressIFC.h"
 
 #define AUGMENT_DICTIONARY
-#define JUST_BUCKWALTER
 
 //#define DIACRITIC_DISAMBIGUATION
 #define REDUCED_EQ_AMBIGUIOUS

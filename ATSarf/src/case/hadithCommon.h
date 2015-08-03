@@ -329,8 +329,6 @@ class hadith_stemmer: public Stemmer {
                 }
             }
 
-#ifndef JUST_BUCKWALTER
-
             if (stem_info->abstract_categories.getBit(bit_POSSESSIVE) && stem_info->abstract_categories.getBit(bit_PLACE)) {
                 possessive = true;
                 place = true;
@@ -354,8 +352,6 @@ class hadith_stemmer: public Stemmer {
                     }
                 }
             }
-
-#endif
             return true;
         }
 };

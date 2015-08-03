@@ -101,7 +101,6 @@ void hadith_initialize() {
     suffixNames.append(QString("") + ha2 + meem + alef);
     alrasoul.append(alef).append(lam).append(ra2).append(seen).append(waw).append(lam);
     _3an.append(_3yn).append(noon);
-#if !defined(JUST_BUCKWALTER)
     long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("Male Names");
     long abstract_COMPOUND_NAMES = database_info.comp_rules->getAbstractCategoryID("Compound Names");
     int bit_COMPOUND_NAMES = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COMPOUND_NAMES);
@@ -114,12 +113,6 @@ void hadith_initialize() {
     bit_NOUN_PROP = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NOUN_PROP);
     long abstract_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryID("eNarrator Names");
     bit_ENARRATOR_NAMES = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_ENARRATOR_NAMES);
-#elif defined(JUST_BUCKWALTER)
-    long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("NOUN_PROP");
-#else
-    long abstract_NAME = database_info.comp_rules->getAbstractCategoryID("Name of Person");
-#endif
-#ifndef JUST_BUCKWALTER
     long abstract_POSSESSIVE = database_info.comp_rules->getAbstractCategoryID("POSSESSIVE");
     long abstract_PLACE = database_info.comp_rules->getAbstractCategoryID("Name of Place");
     long abstract_CITY = database_info.comp_rules->getAbstractCategoryID("City/Town");
@@ -128,12 +121,6 @@ void hadith_initialize() {
     bit_PLACE = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_PLACE);
     bit_CITY = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_CITY);
     bit_COUNTRY = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_COUNTRY);
-#else
-    abstract_POSSESSIVE = -1;
-    abstract_PLACE = -1;
-    abstract_CITY = -1;
-    abstract_COUNTRY = -1;
-#endif
     int bit_NAME = database_info.comp_rules->getAbstractCategoryBitIndex(abstract_NAME);
 
     if (bit_NAME >= 0) {

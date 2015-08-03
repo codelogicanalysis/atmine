@@ -5,7 +5,6 @@
 #include "common.h"
 #include "ATMProgressIFC.h"
 
-//#define JUST_BUCKWALTER
 //#define GET_AFFIXES_ALSO
 
 #define MAX_DISPLAYABLE_SIZE 3000
