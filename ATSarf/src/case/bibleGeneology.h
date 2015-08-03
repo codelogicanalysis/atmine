@@ -14,7 +14,6 @@
 #define SINGULAR_DESCENT
 //#define GENEOLOGYDEBUG
 //#define DISPLAY_INDIVIDUAL
-#define REDUCE_AFFIX_SEARCH
 
 class GeneologyParameters {
     public:
