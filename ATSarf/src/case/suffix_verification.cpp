@@ -70,7 +70,6 @@ void drawAffixGraph(item_types type) {
                 d_out << "n" << getGraphID(map, last_id, &n)
                       << "->" << "r" << getGraphID(map, last_id, &n) << "_" << i << ";\n";
             }
-
         }
 
         QVector<letter_node *> l_nodes = n.getLetterChildren();
@@ -102,19 +101,7 @@ void drawAffixGraph(item_types type) {
     file.close();
 
     try {
-#ifdef DISPLAY
-        system(QString("dot -Tsvg %1.dot -o %1.svg").arg(t).toStdString().data());
-        QMainWindow *mw = new QMainWindow(NULL);
-        mw->setWindowTitle(QString("%1 Tree").arg(t));
-        QScrollArea *sa = new QScrollArea(mw);
-        mw->setCentralWidget(sa);
-        QLabel *pic = new QLabel(sa);
-        pic->setPixmap(QPixmap(QString("./%1.svg").arg(t)));
-        sa->setWidget(pic);
-        mw->show();
-#else
         system(QString("kgraphviewer ./%1.dot -caption \"%1.dot\" &").arg(t).arg(QDir::currentPath()).toStdString().data());
-#endif
     } catch (...) {
     }
 }
