@@ -122,11 +122,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
     int no_voc_ambiguity[maxDiacritics][ambiguitySize] = {{0}};
     int total_count[maxDiacritics][ambiguitySize] = {{0}};
     int full_vocalized[ambiguitySize] = {0};
-#ifdef RANDOM_DIACRITICS
-    int random_voc_ambiguity[maxDiacritics][ambiguitySize] = {0};
-    int random_total_count[maxDiacritics][ambiguitySize] = {0};
-    int random_full_vocalized[ambiguitySize] = {0};
-#else
     double other_ambiguity[maxDiacritics][ambiguitySize] = {{0}};
     int other_best_ambiguity[maxDiacritics][ambiguitySize] = {{0}};
     int other_worst_ambiguity[maxDiacritics][ambiguitySize] = {{0}};
@@ -138,7 +133,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
     int partial_worst_total[ambiguitySize] = {0};
     double partial_average_total[ambiguitySize] = {0};
     int correctly_detected[ambiguitySize] = {0}, correctly_detectedNoDiacritics[ambiguitySize] = {0};
-#endif
     int countReduced = 0, countEquivalent = 0, countEquivalentTanween = 0, countReducedTanween = 0, countTanween = 0;
     QTextStream file(&diacritics_file);
     int filePos = 0;
@@ -247,24 +241,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
             if (equal(partial_voc, voc, true)) {
                 correctly_detected[amb]++;
 #endif
-#ifdef RANDOM_DIACRITICS
-                    //random voc
-                    random_voc_ambiguity[0][amb] += no_voc_amb;
-                    random_total_count[0][amb]++;
-
-                    for (int i = 1; i < maxDiacritics; i++) {
-                        QString v = voc;
-                        /*if (*/addRandomDiacritics(v, i); /*==i) {*/
-                        AmbiguityStemmer stemmer(v);
-                        stemmer();
-                        int a = stemmer.getAmbiguity(ambiguity);
-                        random_voc_ambiguity[i][amb] += a;
-                        random_total_count[i][amb]++;
-                        //}
-                    }
-
-                    random_full_vocalized[amb] += full_amb;
-#else
 #ifndef THEORETICAL_DIACRITICS
 
                     if (ambiguity == All_Ambiguity) {
@@ -305,8 +281,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
                             }
                         }
                     }
-
-#endif
                 }
 
                 countEquivalent++;
@@ -381,16 +355,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
                             << "->\t" << average_ratio1 << "\t(" << best_ratio1 << ",\t" << worst_ratio1 << ")\n";
             displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n\n\n";
 #endif
-#ifdef RANDOM_DIACRITICS
-
-            for (int i = 0; i < maxDiacritics; i++) {
-                double  ratio = ((double)random_voc_ambiguity[i][amb]) / random_total_count[i][amb];
-                theSarf->displayed_error << "\tDiacritics\t" << i << "\t" << ratio << "\n";
-            }
-
-            double  random_full_voc_ratio = ((double)random_full_vocalized[amb]) / random_total_count[0][amb];
-            theSarf->displayed_error << "\tDiacritics\t*\t" << random_full_voc_ratio << "\n";
-#else
 
             for (int i = 0; i < maxDiacritics; i++) {
                 double  ratio = ((double)other_ambiguity[i][amb]) / other_count[i][amb];
@@ -401,7 +365,6 @@ int atbDiacritic(QString inputString, ATMProgressIFC *prg) {
             }
 
             theSarf->displayed_error << "\tDiacritics\t*\t" << full_voc_ratio << "\n";
-#endif
 #else
             theSarf->displayed_error    << "\tRecall=\t" << correctly_detected[amb] << "/" << correctly_detectedNoDiacritics[amb] <<
                                         "=\t" << correctly_detected[amb] / ((double)correctly_detectedNoDiacritics[amb]) << "\n"
