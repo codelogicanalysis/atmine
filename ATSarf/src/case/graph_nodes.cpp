@@ -114,17 +114,6 @@ NarratorNodeIfc & GroupNode::getCorrespondingNarratorNode() {
 }
 
 void GroupNode::addChainNode(NarratorGraph */*g*/,ChainNarratorNode & nar) { //we dont check for duplicates here
-#if 0
-    for (int i=0;i<size();i++)
-    {
-        ChainNarratorNode * n2=&(*this)[i];
-        ChainNarratorNode * n1=&nar;
-        if (n1==n2)
-            return;
-        //assert (n1!=n2); //TODO...
-    }
-#endif
-    //assert(nar.graphNode==NULL);
     list.append(&nar);
     nar.setCorrespondingNarratorNodeGroup(this);
     int index=nar.getIndex();
@@ -153,10 +142,6 @@ NarratorNodeIfc * NarratorNodeIfc::deserialize(QDataStream &chainIn, NarratorGra
     } else {
         n=new GroupNode();
     }
-#if 0
-    n->setId(graph.nodesCount);
-    graph.addNode(n);
-#endif
     chainIn>>n->indicies;
     n->deserializeHelper(chainIn,graph);
     return n;

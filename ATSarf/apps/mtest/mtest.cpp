@@ -17,12 +17,12 @@ using namespace std;
  * This method runs an instance of the class defined and triggers the pracket operator in it to start the tool
  * @param input This is a string representing the input string to be processed
  */
-void run_process(QString & input) {
-
+void run_process(QString &input) {
     QStringList list = input.split(' ', QString::SkipEmptyParts);
-    for(int i=0; i<list.size(); i++) {
-        QString * inString = &(list[i]);
-        Stemmer stemmer(inString,0);
+
+    for (int i = 0; i < list.size(); i++) {
+        QString *inString = &(list[i]);
+        Stemmer stemmer(inString, 0);
         stemmer();
     }
 }
@@ -32,37 +32,35 @@ void run_process(QString & input) {
  * This tests a default version of the stemmer example where no destination is specified for the output and error by the user.
  * @return The function returns 0 if successful, else -1.
  */
-int stemmerExampleDefault(const char * filename) {
-
+int stemmerExampleDefault(const char *filename) {
     /*
      * sarfStart is a function used to initialize the Sarf tool
      * It returns 1 if succesful else 0
      */
     Sarf srf;
     bool all_set = srf.start();
-
     Sarf::use(&srf);
 
-    if(!all_set) {
+    if (!all_set) {
         _error << "Can't Set up Project";
-    }
-    else {
-        cout<<"All Set"<<endl;
+    } else {
+        cout << "All Set" << endl;
     }
 
     // The input file name is passed to a QFile which implements an interface for reading from and writing to files
     QFile Ifile(filename);
+
     if (!Ifile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         cerr << "error opening file." << endl;
         return -1;
     }
-
 
     /*
      * The opened input file is passed to a text stream in order to read it and pass the lines to the core function to
      * run the implemented analyzer on.
      */
     QTextStream in(&Ifile);
+
     while (!in.atEnd()) {
         QString line = in.readLine();
         run_process(line);
@@ -71,36 +69,24 @@ int stemmerExampleDefault(const char * filename) {
     // This function is called after the processing is done in order to close the tool properly.
     srf.exit();
     //delete theSarf;
-
     return 0;
 }
 
 int main(int argc, char *argv[]) {
-
-    if(argc < 2) {
-        cerr<<"Usage: mtest filename"<<endl;
+    if (argc < 2) {
+        cerr << "Usage: mtest filename" << endl;
         return -1;
     }
+
     //theSarf = new Sarf();
     int test;
-#if 1
     test = stemmerExampleDefault(argv[1]);
-    if(!test) {
-        cout<<"The example without interface is successful\n";
+
+    if (!test) {
+        cout << "The example without interface is successful\n";
+    } else {
+        cout << "The example without interface failed\n";
     }
-    else {
-        cout<<"The example without interface failed\n";
-    }
-#endif
-#if 0
-    test = stemmerExampleWithInterface();
-    if(!test) {
-        cout<<"The example with interface is successful\n";
-    }
-    else {
-        cout<<"The example with interface failed\n";
-    }
-#endif
 
     return 0;
 }

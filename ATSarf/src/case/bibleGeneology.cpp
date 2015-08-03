@@ -593,13 +593,6 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                 return node;
             } else {
                 GeneNode *node = topMostNode->getNodeInSubTree(name.getString(), checkSpouses);
-#if 0
-
-                if (node == NULL) {
-                    node = mainTree->findTreeNode(name.getString(), checkSpouses);
-                }
-
-#endif
                 return node;
             }
         }
@@ -680,42 +673,6 @@ class GeneTree::MergeVisitor : public GeneVisitor {
                             n1->addSpouse(name2);
                             appendEdgeName(n1, n1->spouses.last(), delimitersStart, delimitersEnd);
                         }
-                    } else {
-#if 0
-                        //try merging spouses 2 nodes if possible
-                        GeneNode *main = n1;
-
-                        if (n1->ignoreInSearch) {
-                            bool found = false;
-
-                            for (int j = 0; j < 2; j++) {
-                                GeneNode *s = (j == 0 ? n1 : n2);
-
-                                for (int i = 0; i < s->spouses.size(); i++) {
-                                    GeneNode *n = mainTree->findTreeNode(s->spouses[i].getString());
-
-                                    if (n != NULL && !n->ignoreInSearch) {
-                                        main = n;
-                                        found = true;
-                                        break;
-                                    }
-                                }
-
-                                if (found) {
-                                    break;
-                                }
-                            }
-
-                            assert(found);
-                        }
-
-                        for (int i = 0; i < n2->children.size(); i++) {
-                            n2->children[i]->parent = NULL;
-                            main->addChild(n2->children[i]);
-                        }
-
-                        n2->ignoreInSearch = true;
-#endif
                     }
                 }
             } else {
@@ -1717,11 +1674,6 @@ class GenealogySegmentor {
                 currentData.outputData->setGraph(new GeneTree());
                 stateInfo.nextState = TEXT_S;
             } else {
-#if 0
-                currentData.last = NULL;
-                stateInfo.nextState = NAME_S;
-#else
-
                 if (conditionToOutput()) {
                     outputAndTag();
                     currentData.last = NULL;
@@ -1734,8 +1686,6 @@ class GenealogySegmentor {
                     currentData.last = NULL;
                     stateInfo.nextState = NAME_S;
                 }
-
-#endif
             }
 
             stateInfo.descentDirection = UNDEFINED_DIRECTION;
@@ -2797,13 +2747,6 @@ class GenealogySegmentor {
             displayed_error << tags.size() << "\t" << detectionRecall << "\t" << detectionPrecision
                             << "\t" << boundaryRecall << "\t" << boundaryPrecision
                             << "\t" << graphFound     << "\t" << graphSimilarContext << "\n";
-#endif
-#if 0
-
-            for (int i = 0; i < tags.size(); i++) {
-                displayed_error << text->mid(tags[i].getMainStart(), tags[i].getMainEnd() - tags[i].getMainStart()) << "\n";
-            }
-
 #endif
 
             for (int i = 0; i < tags.size(); i++) {

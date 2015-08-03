@@ -80,15 +80,6 @@ EditTagTypeView::EditTagTypeView(QWidget *parent) :
 
     /** routine End **/
 
-#if 0
-    colorfgcolor = new ColorListEditor(this);
-    colorfgcolor->setColor("Red");
-    colorfgcolor->setEnabled(false);
-    colorbgcolor = new ColorListEditor(this);
-    colorbgcolor->setColor("Yellow");
-    colorbgcolor->setEnabled(false);
-#endif
-
     grid->addWidget(colorfgcolor,2,4);
     grid->addWidget(colorbgcolor,3,4);
 

@@ -11,9 +11,9 @@
 
 
 #ifdef TIME_REFINEMENTS
-#define GET_AFFIXES_ALSO
+    #define GET_AFFIXES_ALSO
 #else
-#undef GET_AFFIXES_ALSO
+    #undef GET_AFFIXES_ALSO
 #endif
 
 
@@ -307,7 +307,7 @@ class time_stemmer: public Stemmer {
 
             do {
                 stem_info = Stem->solution;
-                #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
                 solution_position *p_inf = Prefix->computeFirstSolution();
 
                 do {
@@ -316,20 +316,20 @@ class time_stemmer: public Stemmer {
 
                     do {
                         suffix_infos = &Suffix->affix_info;
-                #endif
+#endif
 
                         if (!analyze()) {
                             return false;
                         }
 
-                        #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
                     } while (Suffix->computeNextSolution(s_inf));
 
                     delete s_inf;
                 } while (Prefix->computeNextSolution(p_inf));
 
                 delete p_inf;
-                        #endif
+#endif
             } while (Stem->computeNextSolution(S_inf));
 
             delete S_inf;
@@ -337,17 +337,9 @@ class time_stemmer: public Stemmer {
         }
 
         bool analyze() {
-            #if 0
-
-            if (Suffix->info.finish >= Suffix->info.start) {
-                return true;    //ignore solutions having suffixes
-            }
-
-            #endif
-
             for (int i = 0; i < bits_ABSOLUTE_TIME.count(); i++) {
                 if (stem_info->abstract_categories.getBit(bits_ABSOLUTE_TIME[i])) {
-                    #ifdef GET_AFFIXES_ALSO
+#ifdef GET_AFFIXES_ALSO
 
                     if (bits_ABSOLUTE_TIME[i] == bit_DAY_NAME) {
                         for (int j = 0; j < prefix_infos->size(); j++) {
@@ -361,7 +353,7 @@ class time_stemmer: public Stemmer {
                         return true;
                     }
 
-                    #endif
+#endif
                     absoluteTime = true;
                     finish_pos = info.finish;
                     isTimeUnit = (equal(stem_info->raw_data, QString("") + tha2 + alef + noon + ya2) ||
@@ -575,12 +567,12 @@ wordType getWordType(TimeStateInfo   &stateInfo) {
     } else if (s.number) {
         return result(NUM);
     } else if (s.attribute)
-    #ifdef TIME_REFINEMENTS
+#ifdef TIME_REFINEMENTS
         return result(T_ATTR);
 
-    #else
+#else
         return result(PREP_T);
-    #endif
+#endif
     else {
         return result(OTHER);
     }
@@ -688,7 +680,7 @@ int calculateStatistics(QString filename) {
            detectionPrecision = (double)commonCount / timeVector->size(),
            boundaryRecall = average(boundaryRecallList),
            boundaryPrecision = average(boundaryPrecisionList);
-    #ifdef DETAILED_DISPLAY
+#ifdef DETAILED_DISPLAY
     theSarf->displayed_error << "-------------------------\n"
                              << "Detection:\n"
                              << "\trecall=\t" << commonCount << "/" << tags.size() << "=\t" << detectionRecall << "\n"
@@ -696,17 +688,10 @@ int calculateStatistics(QString filename) {
                              << "Boundary:\n"
                              << "\trecall=\t\t" << boundaryRecall << "\n"
                              << "\tprecision=\t\t" << boundaryPrecision << "\n";
-    #else
+#else
     displayed_error << tags.size() << "\t" << detectionRecall << "\t" << detectionPrecision << "\t" << boundaryRecall <<
                     "\t" << boundaryPrecision << "\n";
-    #endif
-    #if 0
-
-    for (int i = 0; i < tags.size(); i++) {
-        displayed_error << time_text->mid(tags[i].first, tags[i].second - tags[i].first) << "\n";
-    }
-
-    #endif
+#endif
     return 0;
 }
 
@@ -762,10 +747,10 @@ int timeRecognizeHelper(QString input_str, ATMProgressIFC *prg) {
 
         if (timeVector->size() > timeVectorSize) {
             TimeEntity &t = (*timeVector)[timeVectorSize];
-            #ifdef TIME_REFINEMENTS
+#ifdef TIME_REFINEMENTS
 
             if (!(stateInfo.hasTimeUnit && !t.getString().contains(' '))) {
-            #endif
+#endif
                 theSarf->out << t.getString() << "\n";
                 prg->tag(t.getStart(), t.getLength(), Qt::darkYellow, false); //Qt::gray
                 const TimeEntityVector &absolute = t.getAbsoluteParts();
@@ -786,12 +771,12 @@ int timeRecognizeHelper(QString input_str, ATMProgressIFC *prg) {
                     prg->tag(numbers[j].getStart(), numbers[j].getLength(), Qt::darkMagenta, true);
                 }
 
-                #ifdef TIME_REFINEMENTS
+#ifdef TIME_REFINEMENTS
             } else {
                 timeVector->remove(timeVectorSize);
             }
 
-                #endif
+#endif
         }
 
         stateInfo.currentState = stateInfo.nextState;

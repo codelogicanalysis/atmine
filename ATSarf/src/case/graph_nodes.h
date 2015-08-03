@@ -752,15 +752,6 @@ class GraphNarratorNode: public NarratorNodeIfc {
         int savedRank;
         virtual void setRank(int rank) {
             savedRank = rank;
-#if 0
-
-            for (int i = 0; i < size(); i++) {
-                for (int j = 0; j < groupList[i]->size(); j++) {
-                    (*groupList[i])[j].setRank(rank);
-                }
-            }
-
-#endif
         }
         virtual int getAutomaticRank() const {
             int smallest_rank = groupList[0]->getAutomaticRank();
@@ -1165,11 +1156,7 @@ class ChainNodeIterator: public NodeIterator {
             return (NodeIterator::operator ==(rhs) && j == rhs.j);
         }
         bool isNull() const {
-#if 0
-            return this == &null;
-#else
             return operator ==(null);
-#endif
         }
 
         static ChainNodeIterator null;
@@ -1244,11 +1231,7 @@ class FilledNodeIterator: public NodeIterator {
             return (NodeIterator::operator ==(rhs) && list == rhs.list);
         }
         bool isNull() const {
-#if 0
-            return this == &null;
-#else
             return operator ==(null);
-#endif
         }
 
         static FilledNodeIterator null;
@@ -1365,11 +1348,7 @@ class NodeIterator {
                     type == rhs.type); //if we are using list instead of list, no problem also (will be just compared)
         }
         bool isNull() const {
-#if 0
-            return this == &null;
-#else
             return operator ==(null);
-#endif
         }
         bool isChainIterator() const {
             return type == CHAINS;
@@ -1379,5 +1358,4 @@ class NodeIterator {
 
 #endif
 
-
-#endif // GRAPH_STRUCTURE_H
+#endif

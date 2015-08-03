@@ -610,10 +610,6 @@ class NarratorGraph {
         NarratorHash hash;
         bool built; //needed to check if we are to fillNodes
 
-#if 0
-        Node2IntMap node2IntMap;
-        Int2NodeMap int2NodeMap;
-#endif
         unsigned int nodesCount;
         String2IntMap hadith2IntMap;
         Int2StringMap int2HadithMap;
@@ -1934,37 +1930,6 @@ class NarratorGraph {
                 }
             }
 
-#if 0
-
-            for (int i = 0; i < all_nodes.size(); i++) {
-                NarratorNodeIfc *node = all_nodes[i];
-
-                if (node != NULL && node->isChainNode()) {
-                    ChainNarratorNode *cNode = dynamic_cast<ChainNarratorNode *>(node);
-                    int chainNum = cNode->getChainNum();
-
-                    if (nullChains.contains(chainNum)) {
-                        if (cNode->isFirst()) {
-                            topChainNodes[chainNum] = cNode;
-                            nullChains.removeOne(chainNum);
-                        }
-                    }
-
-                    if (chainNum >= topChainNodes.size() && cNode->isFirst()) {
-                        int oldSize = topChainNodes.size();
-
-                        for (int i = oldSize - 1; i < chainNum; i++) {
-                            topChainNodes.append(NULL);
-                            nullChains.append(i);
-                        }
-
-                        topChainNodes[chainNum] = cNode;
-                        nullChains.removeOne(chainNum);
-                    }
-                }
-            }
-
-#endif
         }
 
         ChainNarratorNode *getChainNode(int chain_num, int narrator_num) {
