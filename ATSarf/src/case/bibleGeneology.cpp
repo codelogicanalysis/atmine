@@ -220,10 +220,8 @@ class GeneStemmer: public Stemmer {
         DescentDirection descentDir: 3;
         bool pluralDescent: 1;
         bool relativeSuffix;
-#ifdef GET_WAW
         bool has_waw: 1;
         bool has_li: 1;
-#endif
         long startStem, finishStem, wawStart, wawEnd;
 
         GeneStemmer(QString *word, int start)
@@ -244,12 +242,10 @@ class GeneStemmer: public Stemmer {
             finishStem = start;
             relativeSuffix = false;
             male = true;
-#ifdef GET_WAW
             wawStart = start;
             wawEnd = start;
             has_waw = false;
             has_li = false;
-#endif
         }
         bool on_match() {
             solution_position *S_inf = Stem->computeFirstSolution();
@@ -285,7 +281,6 @@ class GeneStemmer: public Stemmer {
             return true;
         }
 
-#ifdef GET_WAW
         void checkForWaw() {
             has_waw = false;
             has_li = false;
@@ -302,7 +297,6 @@ class GeneStemmer: public Stemmer {
 
                 if (prefix_infos->size() > 0) {
                     int i = 0;
-#endif
                     has_waw = prefix_infos->at(i).POS == "wa/CONJ+";
 
                     if (!has_waw) {
@@ -393,13 +387,11 @@ class GeneStemmer: public Stemmer {
                             }
                         }
 
-#ifdef GET_WAW
 
                         if (info.finish == finish_pos && !has_waw && !has_li) {
                             checkForWaw();
                         }
 
-#endif
                         return true;
                     }
                 }
@@ -2177,7 +2169,6 @@ class GenealogySegmentor {
                 }
             } else if (s.name) {
                 long nextpos = stateInfo.nextPos;
-#ifdef GET_WAW
                 PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
 
                 if ((s.has_waw || s.has_li) && (stateInfo.currentState == NAME_S || stateInfo.currentState == SONS_S)) {
@@ -2209,7 +2200,6 @@ class GenealogySegmentor {
                 }
 
                 stateInfo.currentPunctuationInfo = copyPunc;
-#endif
                 stateInfo.startPos = s.startStem;
                 stateInfo.endPos = s.finishStem;
                 stateInfo.nextPos = nextpos;

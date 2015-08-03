@@ -66,8 +66,6 @@ extern QString preProcessedDescriptionsFileName;
 extern QString PhrasesFileName;
 extern QString StopwordsFileName;
 
-#define GET_WAW
-
 enum WordType { NAME, NRC, NMC, STOP_WORD};
 enum StateType { TEXT_S , NAME_S, NMC_S , NRC_S, STOP_WORD_S};
 enum Structure { INITIALIZE, NAME_CONNECTOR, NARRATOR_CONNECTOR, NAME_PRIM, RASOUL_WORD, UNDETERMINED_STRUCTURE};
@@ -147,9 +145,7 @@ class hadith_stemmer: public Stemmer {
         long finish_pos;
         int numSolutions;
         bool name: 1, nrc: 1, nmc, possessive: 1, familyNMC: 1, ibn: 1, _2ab: 1, _2om: 1, _3abid: 1, stopword: 1;
-#ifdef GET_WAW
         bool has_waw: 1, is3an: 1;
-#endif
         bool tryToLearnNames: 1, learnedName: 1;
         long startStem, finishStem, wawStart, wawEnd;
         hadith_stemmer(QString *word, int start)
@@ -178,11 +174,9 @@ class hadith_stemmer: public Stemmer {
             is3an = false;
             startStem = start;
             finishStem = start;
-#ifdef GET_WAW
             wawStart = start;
             wawEnd = start;
             has_waw = false;
-#endif
         }
         bool on_match() {
             solution_position *S_inf = Stem->computeFirstSolution();
@@ -218,7 +212,6 @@ class hadith_stemmer: public Stemmer {
             return true;
         }
 
-#ifdef GET_WAW
         void checkForWaw() {
             has_waw = false;
 #ifndef GET_AFFIXES_ALSO
@@ -242,7 +235,6 @@ class hadith_stemmer: public Stemmer {
             delete p_inf;
 #endif
         }
-#endif
 
         bool analyze() {
             numSolutions++;
@@ -271,9 +263,7 @@ class hadith_stemmer: public Stemmer {
 
                 finishStem = Stem->info.finish;
                 startStem = Stem->info.start;
-#ifdef GET_WAW
                 checkForWaw();
-#endif
                 nmc = true;
                 finish_pos = info.finish;
                 return false;
@@ -317,9 +307,7 @@ class hadith_stemmer: public Stemmer {
 
                             finishStem = Stem->info.finish;
                             startStem = Stem->info.start;
-#ifdef GET_WAW
                             checkForWaw();
-#endif
                         } else if (info.finish == finish_pos && bit_NOUN_PROP != bits_NAME[i]) {
                             learnedName = false;
                         }

@@ -11,7 +11,6 @@
 #include "abstractGraph.h"
 
 
-#define GET_WAW
 //#define TRUST_OLD
 #define SINGULAR_DESCENT
 //#define GENEOLOGYDEBUG

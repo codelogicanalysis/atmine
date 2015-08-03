@@ -56,8 +56,6 @@ int augment() {
         return -1;
     }
 
-#ifndef JUST_BUCKWALTER
-#endif
     return 0;
 }
 /**

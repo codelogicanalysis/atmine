@@ -765,11 +765,10 @@ bool getNextState(StateInfo   &stateInfo, HadithData *structures, StateData &cur
                 }
             } else if (stateInfo.currentType == NRC) {
                 stateInfo.nextState = NRC_S;
-#ifdef GET_WAW
 
-                if (!stateInfo.isWaw) //so as not to affect the count for tolerance and lead to false positives, just used for accuracy
-#endif
+                if (!stateInfo.isWaw) { //so as not to affect the count for tolerance and lead to false positives, just used for accuracy
                     currentData.narratorCount++;
+                }
 
                 display(QString("counter%1\n").arg(currentData.narratorCount));
                 currentData.nrcCount = 1;
@@ -1375,7 +1374,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
     } else if (s.nmc) {
         if (s.familyNMC) {
             PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
-#ifdef GET_WAW
             long nextpos = stateInfo.nextPos;
 
             if (s.has_waw && (stateInfo.currentState == NAME_S || stateInfo.currentState == NRC_S)) {
@@ -1395,7 +1393,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
                 stateInfo.lastEndPos = stateInfo.endPos;
             }
 
-#endif
             display("FamilyNMC ");
             stateInfo.familyNMC = true;
 
@@ -1452,7 +1449,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
 
         return result(NMC, stateInfo, structures, currentData);
     } else if (s.name) {
-#ifdef GET_WAW
         long nextpos = stateInfo.nextPos;
         PunctuationInfo copyPunc = stateInfo.currentPunctuationInfo;
 
@@ -1474,7 +1470,6 @@ bool proceedInStateMachine(StateInfo   &stateInfo, HadithData *structures,
         }
 
         stateInfo.currentPunctuationInfo = copyPunc;
-#endif
         stateInfo.learnedName = s.learnedName;
         stateInfo.startPos = s.startStem;
         stateInfo.endPos = s.finishStem;
