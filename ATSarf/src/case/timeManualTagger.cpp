@@ -136,16 +136,6 @@ void TimeTaggerDialog::unTag_action() {
 }
 
 void TimeTaggerDialog::save_action() {
-#ifdef SUBTRACT_FACTOR
-    int factor = 115149;
-
-    for (int i = 0; i < tags.size(); i++) {
-        Selection &s = tags[i];
-        s.first -= factor;
-        s.second -= factor;
-    }
-
-#endif
     qSort(tags.begin(), tags.end());
     QFile file(QString("%1" + ext).arg(filename).toStdString().data());
 

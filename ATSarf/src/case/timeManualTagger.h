@@ -7,11 +7,8 @@
 #include <QScrollArea>
 #include <QGridLayout>
 
-
 #include "ATMProgressIFC.h"
 #include "abstractAnnotator.h"
-
-//#define SUBTRACT_FACTOR
 
 using namespace std;
 
