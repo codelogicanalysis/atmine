@@ -87,14 +87,6 @@ class NarratorDetector {
                 hash.performActionToAllCorrespondingNodes(&c_node, action);
             }
 
-#ifndef ASSUMESORTED
-
-            for (int i = 0; i < lists.size(); i++) {
-                qSort(*lists[i]);
-            }
-
-#endif
-
             if (list.size() > 0) {
                 IndexList *old = new IndexList;
                 old->append(list);
@@ -155,13 +147,6 @@ class NarratorDetector {
                             lists.append(PositionList);
                         }
 
-#ifdef ASSUMESORTED
-
-                        if (lists[listIndex]->size() > 0) {
-                            assert(index > lists[listIndex]->last());
-                        }
-
-#endif
                         lists[listIndex]->append(index);
                     }
                 }
