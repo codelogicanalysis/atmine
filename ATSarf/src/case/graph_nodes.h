@@ -17,8 +17,6 @@
 
 #include "hadith.h"
 
-#define SMALLEST_CANONICAL
-
 class NarratorNodeIfc;
 class ChainNarratorNode;
 class ChainNarratorNode;
@@ -627,7 +625,6 @@ class GroupNode: public GraphNodeItem {
                 return alrasoul;
             }
 
-#ifdef SMALLEST_CANONICAL
             int smallestsize = list[0]->CanonicalName().size(), index = 0;
 
             for (int i = 1; i < list.size(); i++) {
@@ -638,20 +635,6 @@ class GroupNode: public GraphNodeItem {
                     index = i;
                 }
             }
-
-#else
-            int largestsize = list[0]->CanonicalName().size(), index = 0;
-
-            for (int i = 1; i < list.size(); i++) {
-                int size = list[i]->CanonicalName().size();
-
-                if (largestsize < size) {
-                    largestsize = size;
-                    index = i;
-                }
-            }
-
-#endif
 
             if (index >= 0) {
                 return list[index]->CanonicalName();
@@ -917,7 +900,6 @@ class GraphNarratorNode: public NarratorNodeIfc {
                 return alrasoul;
             }
 
-#ifdef SMALLEST_CANONICAL
             //qDebug()<<"---";
             int smallestsize = groupList[0]->CanonicalName().size(), index = 0;
 
@@ -931,23 +913,6 @@ class GraphNarratorNode: public NarratorNodeIfc {
                     index = i;
                 }
             }
-
-#else
-            //qDebug()<<"---";
-            int largestsize = groupList[0]->CanonicalName().size(), index = 0;
-
-            //qDebug()<<"("<<groupList[0]->CanonicalName();
-            for (int i = 1; i < groupList.size(); i++) {
-                int size = groupList[i]->CanonicalName().size();
-
-                //qDebug()<<groupList[i]->CanonicalName();
-                if (largestsize < size) {
-                    largestsize = size;
-                    index = i;
-                }
-            }
-
-#endif
 
             if (index >= 0) {
                 //qDebug()<<")=>{"<<groupList[index]->CanonicalName()<<"}";
