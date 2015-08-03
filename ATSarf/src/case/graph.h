@@ -1424,8 +1424,7 @@ class NarratorGraph {
                 }
             }
 
-#if 1 //TODO: not equal always => top_nodes not totally correct
-
+            //TODO: not equal always => top_nodes not totally correct
             //qDebug()<<"top= "<<top_nodes.size()<<"\tlargest+1="<<largestChainNum+1;
             if (top_nodes.size() != largestChainNum + 1) {
                 removeDuplicatesFromTopNodes();
@@ -1434,7 +1433,6 @@ class NarratorGraph {
             }
 
             return top_nodes.size();
-#endif
             //post-condition: top_nodes contains the chain nodes instead of the graph nodes (i.e. opposite of correctTopNodes() )
             // return value=new size of top_nodes
         }
@@ -1929,7 +1927,6 @@ class NarratorGraph {
                     nullChains.append(i);
                 }
             }
-
         }
 
         ChainNarratorNode *getChainNode(int chain_num, int narrator_num) {

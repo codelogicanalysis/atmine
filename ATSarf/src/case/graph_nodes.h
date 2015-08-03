@@ -341,18 +341,7 @@ class ChainNarratorNode: public GraphNodeItem {
         virtual int getSavedRank() const ;
         virtual int getAutomaticRank() const {
             int savedRank = getSavedRank();
-#if 1
             return (savedRank >= 0 ? savedRank : getIndex());
-#else
-            int r = getIndex();
-
-            if (savedRank < r) {
-                return savedRank;
-            } else {
-                return r;
-            }
-
-#endif
         }
         virtual void setRank(int rank);
         virtual void setIndex(int index) {

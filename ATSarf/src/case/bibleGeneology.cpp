@@ -2670,10 +2670,8 @@ class GenealogySegmentor {
             GeneTree::GraphStatistics globalStats;
             currentData.globalTree->compareToStandardTree(globalTree, globalStats);
             globalTree->displayGraph(prg);
-#if 1 //will be deleted after they are finished display
             currentData.globalTree->deleteGraph();
             globalTree->deleteGraph();
-#endif
 #ifdef DETAILED_DISPLAY
             theSarf->displayed_error << "-------------------------\n"
                                      << "Segmentation:\n"

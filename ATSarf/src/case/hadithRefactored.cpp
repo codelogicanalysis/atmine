@@ -1,4 +1,3 @@
-#if 1
 #include "hadith.h"
 
 #include <QTextBrowser>
@@ -260,6 +259,3 @@ int segmentNarrators(QString *text, int (*functionUsingChains)(ChainsContainer &
     return segmentNarrators(text, 0, text->size() - 1, functionUsingChains, prg);
 }
 
-
-
-#endif
