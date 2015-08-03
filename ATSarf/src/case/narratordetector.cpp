@@ -87,6 +87,10 @@ class NarratorDetector {
                 hash.performActionToAllCorrespondingNodes(&c_node, action);
             }
 
+            for (int i = 0; i < lists.size(); i++) {
+                qSort(*lists[i]);
+            }
+
             if (list.size() > 0) {
                 IndexList *old = new IndexList;
                 old->append(list);
