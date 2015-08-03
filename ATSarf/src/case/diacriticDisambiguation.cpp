@@ -123,19 +123,6 @@ void DiacriticDisambiguationBase::analyze() {
 }
 
 void DiacriticDisambiguationBase::printDiacriticDisplay(Diacritics d, QTextStream *o) {
-#ifdef ALL_DIA
-
-    if (!d.isSelfConsistent()) {
-        (*o) << "~" << diacritic_shadde_delimeter << "~";
-        return;
-    }
-
-    (*o) << (d.hasShadde() ? 1 : 0);
-    (*o) << diacritic_shadde_delimeter;
-    Diacritic dia = d.getMainDiacritic();
-    (*o) << (dia == UNDEFINED_DIACRITICS ? 0 : (int)dia + 1);
-#else
-
     if (!d.isSelfConsistent()) {
         (*o) << "~";
     } else if (d.hasShadde()) {
@@ -147,53 +134,19 @@ void DiacriticDisambiguationBase::printDiacriticDisplay(Diacritics d, QTextStrea
             (*o) << (int)dia;
         }
     }
-
-#endif
 }
 
 void DiacriticDisambiguationBase::printDiacritics(QString entry, int pos, QChar c,
                                                   QTextStream *o) {  //for one diacritic
     (*o) << entry.size() << "\t" << diacriticsCount;
-#ifdef ALL_DIA
-
-    for (int p = 0; p < pos; p++) {
-        (*o) << "\t" << "0" << diacritic_shadde_delimeter << "0";
-    }
-
-    Diacritics dia(c);
-    (*o) << "\t";
-    printDiacriticDisplay(dia, o);
-
-    for (int p = pos + 1; p < entry.size(); p++) {
-        (*o) << "\t" << "0" << diacritic_shadde_delimeter << "0";
-    }
-
-    for (int p = entry.size(); p < maxDiacritics; p++) {
-        (*o) << "\t" << "X" << diacritic_shadde_delimeter << "X";
-    }
-
-#else
     Diacritics dia(c);
     (*o) << "\t" << pos << "\t";
     printDiacriticDisplay(dia, o);
-#endif
 }
 
 void DiacriticDisambiguationBase::printDiacritics(QString unvoc, const QList<Diacritics> &d, AmbiguitySolution sol,
                                                   QTextStream *o) {  //for multiple diacritcs
     (*o) << sol.voc << "\t" << d.size() << "\t" << diacriticsCount;
-#if ALL_DIA
-
-    for (int i = 0; i < d.size(); i++) {
-        (*o) << "\t";
-        printDiacriticDisplay(d[i], o);
-    }
-
-    for (int i = d.size(); i < maxDiacritics; i++) {
-        (*o) << "\t" << "X" << diacritic_shadde_delimeter << "X";
-    }
-
-#else
 
     for (int i = 0; i < d.size(); i++) {
         const Diacritics &dia = d[i];
@@ -213,8 +166,6 @@ void DiacriticDisambiguationBase::printDiacritics(QString unvoc, const QList<Dia
                  << "\t" << sol.stemPOS;
         }
     }
-
-#endif
 }
 
 
@@ -253,9 +204,6 @@ void insertIntoCombSet(QSet<TextNposNmorphDiaTriplet> &alreadyProceesed, CombSet
 
 void DiacriticDisambiguationBase::analyzeOne(QString currEntry, const AmbiguitySolutionList &currSol) {
     AmbiguitySolutionList currSolutions[ambiguitySize];
-#ifdef ONE_SPECIAL
-    QList<int> index[ambiguitySize];
-#endif
 
     for (int amb = 0; amb < ambiguitySize; amb++) {
         if ((Ambiguity)amb != All_Ambiguity) {
@@ -263,14 +211,6 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry, const AmbiguityS
         } else {
             currSolutions[amb] = currSol;
         }
-
-#ifdef ONE_SPECIAL
-
-        for (int i = 0; i < currSolutions[amb].size(); i++) {
-            index[amb].append(-1);
-        }
-
-#endif
     }
 
     int sub_total[ambiguitySize] = {0}, sub_left[ambiguitySize] = {0};
@@ -280,91 +220,7 @@ void DiacriticDisambiguationBase::analyzeOne(QString currEntry, const AmbiguityS
         best_sub_Left[amb] = currSolutions[amb].size();
     }
 
-#ifdef ONE_SPECIAL
-
-    if (diacriticsCount == 1) {
-        for (int i = -1; i < currEntry.size(); i++) {
-            int diacritics[ambiguitySize][(int)UNDEFINED_DIACRITICS + 1] = {0};
-            int diacriticsSum[(int)UNDEFINED_DIACRITICS + 1] = {0};
-
-            for (int amb = 0; amb < ambiguitySize; amb++) {
-                for (int j = 0; j < currSolutions[amb].size(); j++) {
-                    QString d = getDiacritics(currSolutions[amb][j].voc, index[amb][j]);
-
-                    if (d.size() > 0 && !isDiacritic(d[0])) {
-                        d.remove(0, 1);
-                    }
-
-                    assert(d.size() <= 2);
-                    bool non_shadda = true;
-
-                    for (int k = 0; k < d.size(); k++) {
-                        QChar c = d[k];
-                        int c_d = (int)interpret_diacritic(c);
-
-                        if (c_d < UNDEFINED_DIACRITICS) {
-                            diacritics[amb][c_d]++;
-                            diacriticsSum[c_d]++;
-
-                            if (c_d != (int)SHADDA) {
-                                non_shadda = false;
-                            }
-                        }
-                    }
-
-                    if (d.size() == 0 || non_shadda) {
-                        diacritics[amb][(int)UNDEFINED_DIACRITICS]++;
-                        diacriticsSum[(int)UNDEFINED_DIACRITICS]++;
-                    }
-                }
-            }
-
-            for (int j = 0; j < UNDEFINED_DIACRITICS; j++) {
-                if (diacriticsSum[j] == 0) {
-                    continue;
-                }
-
-                double valid_ratio[ambiguitySize];
-
-                for (int amb = 0; amb < ambiguitySize; amb++) {
-                    int count_nothing = diacritics[amb][UNDEFINED_DIACRITICS];
-                    int count = diacritics[amb][j];
-                    int valid_count = (j == (int)SHADDA ? count : count + count_nothing);
-                    valid_ratio[amb] = ((double)valid_count) / (currSolutions[amb].size());
-                    worst_sub_Left[amb] = max(worst_sub_Left[amb], valid_count);
-                    best_sub_Left[amb] = min(best_sub_Left[amb], valid_count);
-                    sub_left[amb] += valid_count;
-                    sub_total[amb] += currSolutions[amb].size();
-
-                    if (valid_ratio[amb] < 1) {
-                        reducingCombinations[amb]++;
-                    }
-
-                    totalCombinations[amb]++;
-                }
-
-                bool reduced = valid_ratio[All_Ambiguity] < 1;
-                bool display = !suppressOutput && reduced;
-
-                if (display) {
-                    QChar c = interpret_diacritic((Diacritic)j);
-                    QString new_input = currEntry;
-                    new_input.insert(i + 1, c);
-                    out << new_input << "\t";
-                    printDiacritics(currEntry, i, c);
-
-                    for (int amb = 0; amb < ambiguitySize; amb++) {
-                        out << "\t" << valid_ratio[amb];
-                    }
-
-                    out << "\n";
-                }
-            }
-        }
-    } else {
-#else
     {
-#endif
         CombSet allPossibleComb;
         QSet<TextNposNmorphDiaTriplet> alreadyProceesed;
 
