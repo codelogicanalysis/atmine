@@ -7,6 +7,7 @@
 *.d
 lib/
 moc_*.cpp
+*.txt.user
 .GenealogyPreProcessedDescriptions
 .HadithPreProcessedDescriptions
 .chainOutput
