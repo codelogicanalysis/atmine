@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(common)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -16,9 +16,13 @@ include_directories(${PARENT_DIRECTORY}/sarf)
 include_directories(${PARENT_DIRECTORY}/sql)
 include_directories(${PARENT_DIRECTORY}/util)
 
+include_directories(${DATRIE_INCLUDE_DIRS})
+
+link_directories(${DATRIE_LIBRARY_DIRS})
+
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+qt5_use_modules(${PROJECT_NAME} Core Sql)
 target_link_libraries(${PROJECT_NAME} ${DATRIE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} cache)

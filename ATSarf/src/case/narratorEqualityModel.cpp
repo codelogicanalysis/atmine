@@ -67,12 +67,14 @@ bool NarratorEqualityModel::setData(const QModelIndex &index, const QVariant &va
         return false;
     if (index.column()!=COL_EQUALITY)
         return false;
+    beginResetModel();
     bool v=value.toBool();
     int row=index.row();
     NarratorMap::iterator itr=map.begin()+row;
     bool & b=*itr;
     b=v;
-    reset();
+    endResetModel();
+//    reset();
     return true;
 }
 

@@ -3,6 +3,7 @@
 
 #include <QPair>
 #include <QList>
+#include <QDataStream>
 #include "abstractGraph.h"
 
 

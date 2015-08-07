@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(ATMineDemo)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -31,9 +31,9 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(UIS mainwindow.ui)
+#set(UIS mainwindow.ui)
 
-QT4_WRAP_UI(UIS ${UIS})
+#QT4_WRAP_UI(UIS ${UIS})
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${UIS})
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(case)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -27,4 +27,4 @@ set(CMAKE_AUTOMOC ON)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Sql)

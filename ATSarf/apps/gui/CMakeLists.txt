@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(ATSarfGui)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -34,7 +34,7 @@ set(CMAKE_AUTOUIC ON)
 add_definitions(-g -m64)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+qt5_use_modules(${PROJECT_NAME} Core Sql Gui Widgets)
 target_link_libraries(${PROJECT_NAME} ${DATRIE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} build)
 target_link_libraries(${PROJECT_NAME} cache)

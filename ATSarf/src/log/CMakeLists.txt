@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(log)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -19,4 +19,4 @@ set(LOG_LIBRARY_DIRS ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+qt5_use_modules(${PROJECT_NAME} Core)

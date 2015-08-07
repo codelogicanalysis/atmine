@@ -11,8 +11,8 @@ int main(int argc, char *argv[]) {
 
     /** Set encoding to UTF-8 **/
 
-    QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
-    QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
+//    QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
+//    QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 
     /** Read input word from command line **/
 

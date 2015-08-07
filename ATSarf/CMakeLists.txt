@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(atmine)
 
 # Fixing OS X rpath issues.
@@ -20,16 +20,16 @@ mark_as_advanced(INSTALL_LIB_DIR)
 
 #add_definitions("-fPIC")
 
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 
 # Finding required packages
 find_package(PkgConfig REQUIRED)
 
-# Finding Qt4 packages
-find_package(Qt4 4.8.0 REQUIRED QtCore QtGui QtSql)
+# Finding Qt5 packages
+find_package(Qt5 5.4.0 REQUIRED Core Gui Sql Widgets)
 
 # Finding QJson
-find_package(QJSON REQUIRED)
+#find_package(QJSON REQUIRED)
 
 # Finding libdatrie
 pkg_check_modules(DATRIE datrie-0.2 REQUIRED)
@@ -39,9 +39,6 @@ pkg_check_modules(CGRAPH libcgraph REQUIRED)
 
 # Finding libgvc
 pkg_check_modules(GVC libgvc REQUIRED)
-
-# Include QT4 stuff
-include(${QT_USE_FILE})
 
 # Add subprojects
 add_subdirectory(src)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 project(atmine-apps)
 
 # Add subprojects
@@ -13,7 +13,7 @@ add_subdirectory(sarfenumerate)
 add_subdirectory(syntest)
 add_subdirectory(worddensity)
 add_subdirectory(demo)
-add_subdirectory(AMTagger)
+#add_subdirectory(AMTagger)
 
 # Exporting include dirs
 set(NUMNORM_INCLUDE_DIRS ${NUMNORM_INCLUDE_DIRS} PARENT_SCOPE)
