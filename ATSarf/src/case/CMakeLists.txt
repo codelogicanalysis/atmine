@@ -19,6 +19,10 @@ include_directories(${PARENT_DIRECTORY}/util)
 # UGLY, VICIOUS AND DANGEROUS
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../apps/gui)
 
+# UGLY, HACK BECAUSE THE CODE IS POSITION ON FILESYSTEM DEPENDENT!!!!!!!
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/stop_words ${CMAKE_CURRENT_BINARY_DIR}/stop_words)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/phrases ${CMAKE_CURRENT_BINARY_DIR}/phrases)
+
 set(CMAKE_AUTOMOC ON)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 

@@ -293,6 +293,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     MainWindow mainw;
     mainw.show();
+    mainw.raise();
     int r = app.exec();
 
     if (theSarf != NULL) {

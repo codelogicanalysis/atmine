@@ -8,6 +8,7 @@
 lib/
 moc_*.cpp
 *.txt.user
+.DS_Store
 .idea/
 .GenealogyPreProcessedDescriptions
 .HadithPreProcessedDescriptions
