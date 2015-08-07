@@ -8,6 +8,7 @@
 lib/
 moc_*.cpp
 *.txt.user
+.idea/
 .GenealogyPreProcessedDescriptions
 .HadithPreProcessedDescriptions
 .chainOutput
