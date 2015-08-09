@@ -87,7 +87,7 @@ QModelIndex HadithChainItemModel::index(int row, int column, const QModelIndex &
 
 	if (!parent.isValid()) {
 		if (graph->chain.m_chain.size()>0)
-			return createIndex(0, column,0);
+			return createIndex(0, column, quintptr(0));
 		else
 			return QModelIndex();
 	}

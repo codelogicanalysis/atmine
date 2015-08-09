@@ -6,8 +6,8 @@
 #include "ATMProgressIFC.h"
 #include "Math_functions.h"
 #include "graph.h"
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+//#include "mainwindow.h"
+//#include "ui_mainwindow.h"
 
 #include "hadithCommon.h"
 

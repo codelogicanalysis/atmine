@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
-#include <QtGui>
+#include <QtWidgets>
 #include "hadithManualTagger.h"
 #include "hadithChainGraph.h"
 #include "hadithDagGraph.h"

@@ -17,7 +17,7 @@ LargeFileIterator::LargeFileIterator(QString fileName, int valueColumn, int weig
 }
 
 long LargeFileIterator::getSize(QString line){
-	int s=line.toAscii().size()+1;
+	int s=line.toLatin1().size()+1;
 	return s;
 }
 
