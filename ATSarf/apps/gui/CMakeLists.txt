@@ -31,9 +31,9 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_definitions(-g -m64)
+qt5_wrap_ui(UI_HEADERS mainwindow.ui)
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${UI_SOURCES} ${MOC_SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${UI_HEADERS})
 qt5_use_modules(${PROJECT_NAME} Core Sql Gui Widgets)
 target_link_libraries(${PROJECT_NAME} ${DATRIE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} build)

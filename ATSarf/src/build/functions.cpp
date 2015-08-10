@@ -10,7 +10,7 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "Search_Compatibility.h"
-#include "test.h"
+//#include "test.h"
 
 bool pos = false;
 long abstract_possessive;

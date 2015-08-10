@@ -26,7 +26,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 find_package(PkgConfig REQUIRED)
 
 # Finding Qt5 packages
-find_package(Qt5 5.4.0 REQUIRED Core Gui Sql Widgets)
+find_package(Qt5 5.2.0 REQUIRED Core Gui Sql Widgets)
 
 # Finding QJson
 #find_package(QJSON REQUIRED)
