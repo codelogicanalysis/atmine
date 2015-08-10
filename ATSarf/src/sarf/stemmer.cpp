@@ -8,7 +8,7 @@
 #include "text_handling.h"
 #include "diacritics.h"
 #include "stemmer.h"
-#include "test.h"
+//#include "test.h"
 #include "inflections.h"
 
 SarfParameters sarfParameters;

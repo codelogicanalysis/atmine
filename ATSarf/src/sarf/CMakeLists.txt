@@ -17,7 +17,7 @@ include_directories(${PARENT_DIRECTORY}/sql)
 include_directories(${PARENT_DIRECTORY}/util)
 
 # UGLY, VICIOUS AND DANGEROUS
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../apps/gui)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../apps/gui)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 
