@@ -23,8 +23,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../apps/gui)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/stop_words ${CMAKE_CURRENT_BINARY_DIR}/stop_words)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/phrases ${CMAKE_CURRENT_BINARY_DIR}/phrases)
 
+# Run automoc and read source files.
 set(CMAKE_AUTOMOC ON)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+# Add resource files
+qt5_add_resources(RESOURCES resources.qrc)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${RESOURCES})
 qt5_use_modules(${PROJECT_NAME} Core Gui Widgets Sql)

@@ -12,8 +12,11 @@ QStringList compound_words, suffixNames;
 
 QString chainDataStreamFileName = ".chainOutput";
 QString preProcessedDescriptionsFileName = ".HadithPreProcessedDescriptions";
-QString PhrasesFileName = "../src/case/phrases";
-QString StopwordsFileName = "../src/case/stop_words";
+//QString PhrasesFileName = "../src/case/phrases";
+//QString StopwordsFileName = "../src/case/stop_words";
+
+QString PhrasesFileName = ":/phrases";
+QString StopwordsFileName = ":/stop_words";
 
 QString hadath, abid, alrasoul, abyi, _3an, _2ama, _3ama;
 int bit_POSSESSIVE, bit_PLACE, bit_CITY, bit_COUNTRY, bit_NOUN_PROP, bit_ENARRATOR_NAMES;
@@ -90,6 +93,8 @@ void readFromFilePreprocessedHadithDescriptions() {
 }
 
 void hadith_initialize() {
+    Q_INIT_RESOURCE(resources);
+
     hadath.append(_7a2).append(dal).append(tha2);
     abid.append(_3yn).append(ba2).append(dal);
     _2ama.append(alef).append(meem).append(alef);
@@ -131,6 +136,7 @@ void hadith_initialize() {
 
     //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
     if (!input.open(QIODevice::ReadOnly)) {
+        qDebug() << "Could not load phrases from resources file.";
         return;
     }
 
@@ -147,6 +153,7 @@ void hadith_initialize() {
 
     //maybe if later number of words becomes larger we save it into a trie and thus make their finding in a text faster
     if (!input2.open(QIODevice::ReadOnly)) {
+        qDebug() << "Could not load stop words fro the resource files.";
         return;
     }
 

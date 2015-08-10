@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>phrases</file>
+        <file>stop_words</file>
+    </qresource>
+</RCC>
