@@ -29,9 +29,14 @@ class MainWindow : public QMainWindow, public ATMProgressIFC {
 
     signals:
         void updateProgress(int);
+        void resetProgress();
+        void actionUpdate(const QString &);
 
     private slots:
         void on_initializeButton_clicked();
+        void on_updateProgress(int progress);
+        void on_resetProgress();
+        void on_actionUpdate(const QString &action);
 
     private:
         Ui::MainWindow *ui;

@@ -16,9 +16,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-//    ui->progressBar->setVisible(false);
+    ui->progressBar->setVisible(false);
     ui->statusbar->showMessage("Idle.");
-    connect(this, SIGNAL(updateProgress(int)), ui->progressBar, SLOT(setValue(int)), Qt::DirectConnection);
+    connect(this, SIGNAL(updateProgress(int)), ui->progressBar, SLOT(setValue(int)));
+    connect(this, &MainWindow::resetProgress, &MainWindow::on_resetProgress);
+    connect(this, SIGNAL(actionUpdate(const QString &)), ui->statusbar, SLOT(showMessage(const QString &)));
+//    connect(this, SIGNAL(updateProgress(int)), this, SLOT(on_updateProgress(int)));
+//    connect(this, SIGNAL(updateProgress(int)), SLOT(on_updateProgress(int)));
 }
 
 MainWindow::~MainWindow() {
@@ -38,6 +42,22 @@ void MainWindow::changeEvent(QEvent *e) {
     }
 }
 
+void MainWindow::on_updateProgress(int progress) {
+//    qDebug() << "on_updateProgress" << progress;
+//    ui->progressBar->setValue(progress);
+}
+
+void MainWindow::on_resetProgress() {
+    emit updateProgress(0);
+    emit actionUpdate("Idle.");
+//    ui->progressBar->reset();
+//    ui->statusbar->showMessage("Idle.");
+}
+
+void MainWindow::on_actionUpdate(const QString &action) {
+//    ui->statusbar->showMessage(action);
+}
+
 void MainWindow::report(int value) {
 //    qDebug() << "Reporting value " << value;
     emit updateProgress(value);
@@ -45,12 +65,12 @@ void MainWindow::report(int value) {
 }
 
 void MainWindow::setCurrentAction(const QString &action) {
-    ui->statusbar->showMessage(action);
+//    ui->statusbar->showMessage(action);
+    emit actionUpdate(action);
 }
 
 void MainWindow::resetActionDisplay() {
-    ui->progressBar->reset();
-    ui->statusbar->showMessage("Idle.");
+    emit resetProgress();
 }
 
 void MainWindow::tag(int /*start*/, int /*length*/, QColor /*color*/, bool /*textcolor*/) {
@@ -128,21 +148,12 @@ void MainWindow::on_initializeButton_clicked() {
     ui->progressBar->setVisible(true);
     ui->initializeButton->setEnabled(false);
     ui->statusbar->showMessage("Initializing...");
-    theSarf = new Sarf();
-
-    if (!theSarf->start(&output_str, &error_str, this)) {
-        QMessageBox::critical(this, tr("ATMineDemo"), tr("Cannot set up the project. The application will now exit."));
-    }
-
-    Sarf::use(theSarf);
     QThread *thread = new QThread();
-    InitializationWorker *worker = new InitializationWorker();
+    InitializationWorker *worker = new InitializationWorker(&output_str, &error_str, this);
     connect(thread, SIGNAL(started()), worker, SLOT(run()));
     connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     worker->moveToThread(thread);
-    qDebug() << this->thread()->currentThreadId();
     thread->start();
-    qDebug() << "WTF!?";
 }
