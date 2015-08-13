@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QThreadPool>
+#include <QTimer>
 
 #include <hadith.h>
 #include <hadithCommon.h>
@@ -16,13 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    ui->progressBar->setVisible(false);
+    setUnifiedTitleAndToolBarOnMac(true);
     ui->statusbar->showMessage("Idle.");
-    connect(this, SIGNAL(updateProgress(int)), ui->progressBar, SLOT(setValue(int)));
+    connect(this, &MainWindow::updateProgress, ui->statusbar->progressBar(), &QProgressBar::setValue);
     connect(this, &MainWindow::resetProgress, &MainWindow::on_resetProgress);
     connect(this, SIGNAL(actionUpdate(const QString &)), ui->statusbar, SLOT(showMessage(const QString &)));
-//    connect(this, SIGNAL(updateProgress(int)), this, SLOT(on_updateProgress(int)));
-//    connect(this, SIGNAL(updateProgress(int)), SLOT(on_updateProgress(int)));
+    QTimer::singleShot(100, this, &MainWindow::on_initializeSystem);
 }
 
 MainWindow::~MainWindow() {
@@ -42,30 +42,16 @@ void MainWindow::changeEvent(QEvent *e) {
     }
 }
 
-void MainWindow::on_updateProgress(int progress) {
-//    qDebug() << "on_updateProgress" << progress;
-//    ui->progressBar->setValue(progress);
-}
-
 void MainWindow::on_resetProgress() {
     emit updateProgress(0);
     emit actionUpdate("Idle.");
-//    ui->progressBar->reset();
-//    ui->statusbar->showMessage("Idle.");
-}
-
-void MainWindow::on_actionUpdate(const QString &action) {
-//    ui->statusbar->showMessage(action);
 }
 
 void MainWindow::report(int value) {
-//    qDebug() << "Reporting value " << value;
     emit updateProgress(value);
-//    ui->progressBar->setValue(value);
 }
 
 void MainWindow::setCurrentAction(const QString &action) {
-//    ui->statusbar->showMessage(action);
     emit actionUpdate(action);
 }
 
@@ -144,16 +130,14 @@ void MainWindow::displayGraph(AbstractGraph */*graph*/) {
 //    }
 }
 
-void MainWindow::on_initializeButton_clicked() {
-    ui->progressBar->setVisible(true);
-    ui->initializeButton->setEnabled(false);
-    ui->statusbar->showMessage("Initializing...");
+void MainWindow::on_initializeSystem() {
+    emit actionUpdate("Initializing...");
     QThread *thread = new QThread();
     InitializationWorker *worker = new InitializationWorker(&output_str, &error_str, this);
-    connect(thread, SIGNAL(started()), worker, SLOT(run()));
-    connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
-    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    connect(thread, &QThread::started, worker, &InitializationWorker::run);
+    connect(worker, &InitializationWorker::finished, thread, &QThread::quit);
+    connect(worker, &InitializationWorker::finished, worker, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
     worker->moveToThread(thread);
     thread->start();
 }
