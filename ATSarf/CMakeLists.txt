@@ -26,7 +26,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 find_package(PkgConfig REQUIRED)
 
 # Finding Qt5 packages
-find_package(Qt5 5.2.0 REQUIRED Core Gui Sql Widgets)
+find_package(Qt5 5.2.0 REQUIRED Core Gui Sql Widgets Test)
 
 # Finding QJson
 #find_package(QJSON REQUIRED)
@@ -40,6 +40,10 @@ pkg_check_modules(CGRAPH libcgraph REQUIRED)
 # Finding libgvc
 pkg_check_modules(GVC libgvc REQUIRED)
 
+# Enable testing
+enable_testing()
+
 # Add subprojects
 add_subdirectory(src)
 add_subdirectory(apps)
+add_subdirectory(tests)
