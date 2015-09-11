@@ -35,8 +35,6 @@ else
 endif
 
 GRAPHVIZ=third/graphviz/lib
-APRIORI= third/apriori
-
 INCLUDEDIRS+= src/common src/util src/cache src/sql src/log src/sarf
 INCLUDEDIRS+= src/case src/build 
 INCLUDEDIRS+= apps/gui apps/syn apps/syntest apps/numnorm apps/sarfenumerate apps/diacriticrules apps/worddensity apps/diacritics
@@ -45,11 +43,6 @@ ifndef USE_SYSTEM_LIBS
 	INCLUDEDIRS+= $(DATRIE) $(DATRIE)/datrie
 	INCLUDEDIRS+= $(QJSON)
 endif
-#INCLUDEDIRS+= $(APRIORI)/apriori
-#INCLUDEDIRS+= $(APRIORI)/math
-#INCLUDEDIRS+= $(APRIORI)/tract
-#INCLUDEDIRS+= $(APRIORI)/util
-INCLUDEDIRS+= $(APRIORI)
 INCLUDEDIRS+= $(GRAPHVIZ)/cgraph $(GRAPHVIZ)/gvc
 INCLUDEFLAGS= -I.
 INCLUDEFLAGS+= $(patsubst %,-I$(TOP)/%, $(INCLUDEDIRS))
