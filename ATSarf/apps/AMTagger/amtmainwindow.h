@@ -12,7 +12,7 @@
 #include <QSignalMapper>
 #include <QTabWidget>
 #include <QLabel>
-#include <QtGui/QGraphicsView>
+#include <QGraphicsView>
 #include "graphedge.h"
 #include "graphnode.h"
 #include "ATMProgressIFC.h"

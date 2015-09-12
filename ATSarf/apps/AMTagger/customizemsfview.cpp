@@ -1,5 +1,7 @@
 #include "customizemsfview.h"
 #include <QGroupBox>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QMainWindow(parent)
@@ -205,14 +207,14 @@ CustomizeMSFView::CustomizeMSFView(QWidget *parent) :
     QByteArray tagtypedata = ITfile.readAll();
     ITfile.close();
 
-    QJson::Parser parser;
-    bool ok;
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(tagtypedata, &error);
 
-    QVariantMap result = parser.parse (tagtypedata,&ok).toMap();
-
-    if (!ok) {
+    if (error.error != QJsonParseError::NoError) {
         close();
     }
+
+    QVariantMap result = jsonDoc.object().toVariantMap();
 
     if(!(result.value("MSFs").isNull())) {
         /** The tagtype file contains MSFs **/

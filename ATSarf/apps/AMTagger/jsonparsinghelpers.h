@@ -3,8 +3,6 @@
 
 #include <QString>
 #include <QVector>
-#include <qjson/serializer.h>
-#include <qjson/parser.h>
 #include <QByteArray>
 #include "word.h"
 #include "msformula.h"

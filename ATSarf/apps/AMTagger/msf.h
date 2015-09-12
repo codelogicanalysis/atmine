@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QTreeWidget>
-#include <qjson/parser.h>
 #include "nfa.h"
 
 class NFA;

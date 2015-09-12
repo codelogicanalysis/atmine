@@ -1,4 +1,4 @@
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "amtmainwindow.h"
 
 #include <QContextMenuEvent>
@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QTextBlock>
 #include <QtAlgorithms>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <getopt.h>
 #include <sys/time.h>
 #include "crossreferenceview.h"
@@ -370,11 +372,11 @@ void AMTMainWindow::open() {
     _atagger->tagFile = fileName;
     QByteArray Tags = ITfile.readAll();
     ITfile.close();
-    QJson::Parser parser;
-    bool ok;
-    QVariantMap result = parser.parse(Tags, &ok).toMap();
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(Tags, &error);
+    QVariantMap result = jsonDoc.toVariant().toMap();
 
-    if (!ok) {
+    if (error.error != QJsonParseError::NoError) {
         QMessageBox::about(this, tr("Input Tag File"),
                            tr("The <b>Tag File</b> has a wrong format"));
         return;
@@ -483,9 +485,7 @@ void AMTMainWindow::startTaggingText(QString &text) {
 }
 
 void AMTMainWindow::process(QByteArray &json) {
-    QJson::Parser parser;
-    bool ok;
-    QVariantMap result = parser.parse(json, &ok).toMap();
+    QVariantMap result = QJsonDocument::fromJson(json).toVariant().toMap();
     QString tagtypeFile = result.value("TagTypeFile").toString();
 
     if (tagtypeFile.isEmpty()) {
@@ -1961,11 +1961,11 @@ void AMTMainWindow::difference() {
     _atagger->compareToTagFile = fileName;
     QByteArray Tags = ITfile.readAll();
     ITfile.close();
-    QJson::Parser parser;
-    bool ok;
-    QVariantMap result = parser.parse(Tags, &ok).toMap();
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(Tags, &error);
+    QVariantMap result = jsonDoc.toVariant().toMap();
 
-    if (!ok) {
+    if (error.error != QJsonParseError::NoError) {
         QMessageBox::about(this, tr("Input Tag File"),
                            tr("The <b>Tag File</b> has a wrong format"));
         return;
@@ -2035,10 +2035,11 @@ void AMTMainWindow::difference() {
     QByteArray tagtypedata = ITTfile.readAll();
     ITTfile.close();
     /** Process Tag Types **/
-    QJson::Parser parsertt;
-    QVariantMap resulttt = parsertt.parse(tagtypedata, &ok).toMap();
+    QJsonParseError errortt;
+    QJsonDocument jsonDoctt = QJsonDocument::fromJson(tagtypedata, &error);
+    QVariantMap resulttt = jsonDoctt.toVariant().toMap();
 
-    if (!ok) {
+    if (errortt.error != QJsonParseError::NoError) {
         QMessageBox::about(this, tr("Input Tag File"),
                            tr("The <b>Tag Types File</b> has a wrong format"));
     }
@@ -2612,8 +2613,6 @@ void print_usage() {
 }
 
 int main(int argc, char *argv[]) {
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     _atagger = new ATagger();
 
     if (argc < 2) {

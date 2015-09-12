@@ -1,12 +1,13 @@
 #include "atagger.h"
 #include "ger.h"
 #include <QVariant>
-#include <qjson/serializer.h>
 #include <QFile>
 #include <QTextStream>
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <QSet>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 ATagger * _atagger = NULL;
 
@@ -1274,8 +1275,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
             sarftagtypedata.insert("MSFs", msfsList);
         }
 
-        QJson::Serializer serializer;
-        json = serializer.serialize(sarftagtypedata);
+        QJsonDocument serializer(QJsonObject::fromVariantMap(sarftagtypedata));
+        json = serializer.toBinaryData();
     }
     else if(_data == tagTV) {
         /** Convert TagType to QJSON **/
@@ -1296,8 +1297,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
             tagtypeset << data;
         }
         tagtypedata.insert("TagTypeSet",tagtypeset);
-        QJson::Serializer serializer;
-        json = serializer.serialize(tagtypedata);
+        QJsonDocument jsonDoc = QJsonDocument::fromVariant(tagtypedata);
+        json = jsonDoc.toBinaryData();
     }
     else if(_data == tagV || _data == sarfTV || _data == sarfMSF) {
 
@@ -1464,8 +1465,8 @@ QByteArray ATagger::dataInJsonFormat(Data _data, QVector<QMultiHash<int,Tag*>* >
             }
         }
 
-        QJson::Serializer serializer;
-        json = serializer.serialize(tagdata);
+        QJsonDocument jsonDoc = QJsonDocument::fromVariant(tagdata);
+        json = jsonDoc.toBinaryData();
     }
 
     return json;
