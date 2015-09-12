@@ -5,12 +5,11 @@
 #include <iostream>
 
 Sarf::Sarf() :
-        db(*(new QSqlDatabase)), query(*(new QSqlQuery))
-{
+    db(*(new QSqlDatabase)), query(*(new QSqlQuery)) {
 }
 
 bool
-Sarf::start(QString * output_str, QString * error_str, ATMProgressIFC * pIFC) {
+Sarf::start(QString *output_str, QString *error_str, ATMProgressIFC *pIFC) {
     try {
         out.setString(output_str);
         out.setCodec("utf-8");
@@ -18,14 +17,14 @@ Sarf::start(QString * output_str, QString * error_str, ATMProgressIFC * pIFC) {
         displayed_error.setCodec("utf-8");
         initialize_variables();
         start_connection(pIFC);
-        generate_bit_order("source",source_ids);
-        generate_bit_order("category",abstract_category_ids,"abstract");
+        generate_bit_order("source", source_ids);
+        generate_bit_order("category", abstract_category_ids, "abstract");
         database_info.fill(pIFC);
-
-    } catch(const char * ex)  {
-            _error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
-            return false;
+    } catch (const char *ex)  {
+        _error << "Fail to initialize tool. Exception is " << ex << '.' << endl;
+        return false;
     }
+
     return true;
 }
 
@@ -36,43 +35,47 @@ Sarf::~Sarf() {
     }
 }
 
-bool
-Sarf::start(QFile * _out, QFile * _displayed_error, ATMProgressIFC * pIFC) {
-    Sarf * oldSarf = use(this);
+bool Sarf::start(QFile *_out, QFile *_displayed_error, ATMProgressIFC *pIFC) {
+    Sarf *oldSarf = use(this);
     bool rc = true;
-    try {
 
-        if(_out==NULL) {
-            _out=new QFile();
-            _out->open(stdout,QIODevice::WriteOnly);
+    try {
+        if (_out == NULL) {
+            _out = new QFile();
+            _out->open(stdout, QIODevice::WriteOnly);
         }
-        if(_displayed_error==NULL) {
+
+        if (_displayed_error == NULL) {
             _displayed_error = new QFile();
             _displayed_error->open(stderr, QIODevice::WriteOnly);
         }
-        if(pIFC==NULL) {
+
+        if (pIFC == NULL) {
             pIFC = new EmptyProgressIFC();
         }
+
         displayed_error.setDevice(_displayed_error);
         displayed_error.setCodec("utf-8");
         out.setDevice(_out);
         out.setCodec("utf-8");
         initialize_variables();
         start_connection(pIFC);
-        generate_bit_order("source",source_ids);
-        generate_bit_order("category",abstract_category_ids,"abstract");
+        generate_bit_order("source", source_ids);
+        generate_bit_order("category", abstract_category_ids, "abstract");
         database_info.fill(pIFC);
-    } catch(const char * ex)  {
-            _error<<"Fail to initialize tool. Exception is "<<ex<<'.'<<endl;
-            rc = false;
+    } catch (const char *ex)  {
+        _error << "Fail to initialize tool. Exception is " << ex << '.' << endl;
+        rc = false;
     }
-    if (oldSarf != NULL)
+
+    if (oldSarf != NULL) {
         use(oldSarf);
+    }
+
     return rc;
 }
 
-bool
-Sarf::exit() {
+bool Sarf::exit() {
     try {
         if (theSarf->db.lastError().type() != QSqlError::NoError) {
             std::cerr << theSarf->db.lastError().text().toStdString() << std::endl;
@@ -83,32 +86,33 @@ Sarf::exit() {
         if (theSarf->db.lastError().type() !=  QSqlError::NoError) {
             std::cerr << theSarf->db.lastError().text().toStdString() << std::endl;
         }
+
         db.close();
+
         if (theSarf->db.lastError().type() != QSqlError::NoError) {
             std::cerr << theSarf->db.lastError().text().toStdString() << std::endl;
         }
 
         delete &db;
-
         QSqlDatabase::removeDatabase("atm");
-/*
-        if (theSarf->db.lastError().type() != NoError) {
-            cerr << theSarf->db.lastError().text().toStdString() << endl;
-        }
-*/
+        /*
+                if (theSarf->db.lastError().type() != NoError) {
+                    cerr << theSarf->db.lastError().text().toStdString() << endl;
+                }
+        */
         //TODO: must destroy the db before calling the following
-    } catch(const char * ex)  {
-        _error<<"Fail to exit tool. Exception is "<<ex<<'.'<<endl;
+    } catch (const char *ex)  {
+        _error << "Fail to exit tool. Exception is " << ex << '.' << endl;
         return false;
     }
+
     return true;
 }
 
-Sarf * theSarf = NULL;
+Sarf *theSarf = NULL;
 
-Sarf *
-Sarf::use(Sarf * srf){
-    Sarf * old = theSarf;
+Sarf *Sarf::use(Sarf *srf) {
+    Sarf *old = theSarf;
     theSarf = srf;
     return old;
 }

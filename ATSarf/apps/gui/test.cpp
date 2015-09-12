@@ -29,25 +29,31 @@ extern int atb(QString inputString, ATMProgressIFC *prg);
 extern int atb2(QString inputString, ATMProgressIFC *prg);
 extern int atbDiacritic(QString inputString, ATMProgressIFC *prg);
 extern void diacriticDisambiguationCount(item_types t, int numDiacritics = 1);
-extern void diacriticDisambiguationCount(QString fileName, int numDiacritics, ATMProgressIFC *prg,
-                                         QString reducedFile = "reducedOutput", QString allFile = "fullOutput");
-extern void diacriticDisambiguationCount(QStringList &list, int numDiacritics, ATMProgressIFC *prg);
+extern void diacriticDisambiguationCount(QString fileName, int numDiacritics,
+                                         ATMProgressIFC *prg,
+                                         QString reducedFile = "reducedOutput",
+                                         QString allFile = "fullOutput");
+extern void diacriticDisambiguationCount(QStringList &list, int numDiacritics,
+                                         ATMProgressIFC *prg);
 extern int mada(QString folderName, ATMProgressIFC *prg);
 extern int diacriticStatistics(QString inputString, ATMProgressIFC *prg);
 extern int regressionTest(QString inputString, ATMProgressIFC *prg);
 extern int regressionReload(QString input, ATMProgressIFC *prg);
 
 /**
-  * This method extracts the valid data from the input string and passes it to the Stemmer function
+  * This method extracts the valid data from the input string and passes it to
+ * the Stemmer function
   * @author Jad Makhlouta
   * @param  input_str   This is the input string by user
   * @return Returns 0 if function is successful
   */
 int word_sarf_test(QString input_str) {
-    QString line =
-        input_str.split('\n')[0]; /// Splits the input string based on new line characters and takes first entry of it
-    Stemmer stemmer(&line, 0);  /// Passes extracted string to stemmer class constructor
-    stemmer();  /// Invoke the stemmer routine using () operator overloading
+    QString line = input_str.split('\n')[0]; /// Splits the input string based
+    /// on new line characters and
+    /// takes first entry of it
+    Stemmer stemmer(&line,
+                    0); /// Passes extracted string to stemmer class constructor
+    stemmer(); /// Invoke the stemmer routine using () operator overloading
     return 0;
 }
 
@@ -59,7 +65,8 @@ int augment() {
     return 0;
 }
 /**
-  * This method is called in order to extract the morphological analysis of the entered word
+  * This method is called in order to extract the morphological analysis of the
+ * entered word
   * @author Jad Makhlouta
   * @param  input_str   the string/word entered by the user
   * @param  ATMProgressIFC  pointer to function calling this method
@@ -85,7 +92,7 @@ int hadith(QString input_str, ATMProgressIFC *prg) {
 
         gettimeofday(&tim, NULL);
         double t2 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-#if REPETITIONS<2
+#if REPETITIONS < 2
         theSarf->out << "elapsed time=" << t2 - t1 << "s\n";
 #else
         theSarf->out << t2 - t1 << "\n";
@@ -94,6 +101,7 @@ int hadith(QString input_str, ATMProgressIFC *prg) {
 
     return 0;
 }
+
 int genealogy(QString inputString, ATMProgressIFC *prg) {
     if (genealogyHelper(inputString, prg)) {
         return -1;
@@ -109,6 +117,7 @@ int biography(QString inputString, ATMProgressIFC *prg) {
 
     return 0;
 }
+
 int simple_annotation(QString inputString, ATMProgressIFC *) {
     if (timeTagger(inputString)) {
         return -1;
@@ -140,17 +149,20 @@ int test(QString inputString, ATMProgressIFC *prg) {
 
     return 0;
 }
-int verify(QString , ATMProgressIFC *) {
-    //drawAffixGraph(PREFIX);
-    //drawAffixGraph(SUFFIX);
+
+int verify(QString, ATMProgressIFC *) {
+    // drawAffixGraph(PREFIX);
+    // drawAffixGraph(SUFFIX);
     listAllAffixes(SUFFIX);
     listAllAffixes(PREFIX);
     return 0;
 }
+
 int breakAffix(QString, ATMProgressIFC *) {
     splitRecursiveAffixes();
     return 0;
 }
+
 int timeRecognize(QString input_str, ATMProgressIFC *prg) {
     timeval tim;
     gettimeofday(&tim, NULL);
