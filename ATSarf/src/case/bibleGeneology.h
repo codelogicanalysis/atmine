@@ -559,16 +559,28 @@ class GeneTree: public AbstractGraph {
             return root->height + 1;
         }
         int getTreeNodesCount(bool countSpouses = false) {
+            if (root == NULL) {
+                return 0;
+            }
             return root->getSubTreeCount(countSpouses);
         }
         int getTreeDistinctNodesCount(bool countSpouses = false) {
+            if (root == NULL) {
+                return 0;
+            }
             QSet<Name> visited;
             return root->getSubTreeCount(&visited, countSpouses);
         }
         GeneNode *findTreeNode(QString word, bool checkSpouses = false) {
+            if (root == NULL) {
+                return NULL;
+            }
             return root->getNodeInSubTree(word, checkSpouses);
         }
         AbstractGeneNode *findAbstractTreeNode(QString word, bool checkSpouses = false) {
+            if (root == NULL) {
+                return NULL;
+            }
             return root->getAbstractNodeInSubTree(word, checkSpouses);
         }
         void compareToStandardTree(GeneTree *standard, GraphStatistics &stats);

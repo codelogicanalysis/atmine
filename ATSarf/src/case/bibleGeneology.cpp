@@ -672,11 +672,14 @@ class FindAllVisitor: public GeneVisitor {
                     currContext++;
                 }
             } else {
-                if (equalNames(toMatchParent->toString(), currParent->toString())) {
-                    currContext++;
-                }
-
+//                if (equalNames(toMatchParent->toString(), currParent->toString())) {
+//                    currContext++;
+//                }
                 if (toMatchParent != NULL && currParent != NULL) {
+                    if (equalNames(toMatchParent->toString(), currParent->toString())) {
+                        currContext++;
+                    }
+
                     for (int i = 0; i < toMatchParent->spouses.size(); i++) {
                         if (equalNames(toMatchParent->spouses[i]->getString(), currParent->toString())) {
                             currContext++;
@@ -1587,45 +1590,47 @@ class GenealogySegmentor {
             return ret_value;
         }
         inline void addToTree(Name &name) {
-            switch (stateInfo.descentDirection) {
-                case SON:
+            if (currentData.last != NULL) {
+                switch (stateInfo.descentDirection) {
+                    case SON:
 
-                    //case UNDEFINED_DIRECTION:
-                    if (!currentData.last->hasSpouse(name)) {
-                        new GeneNode(name, currentData.last);
-                    }
+                        //case UNDEFINED_DIRECTION:
+                        if (!currentData.last->hasSpouse(name)) {
+                            new GeneNode(name, currentData.last);
+                        }
 
-                    break;
+                        break;
 
-                case FATHER:
-                    currentData.last->addParent(new GeneNode(name, NULL));
-                    currentData.tree->updateRoot();
-                    break;
+                    case FATHER:
+                        currentData.last->addParent(new GeneNode(name, NULL));
+                        currentData.tree->updateRoot();
+                        break;
 
-                case SPOUSE:
-                    if (currentData.last != NULL && currentData.last->getName().isMarriageCompatible(name)) {
-                        currentData.last->addSpouse(name);
-                    } else {
-                        DescentDirection temp = stateInfo.descentDirection;
-                        stateInfo.descentDirection = stateInfo.lastDescentDirection;
-                        addToTree(name); //TODO: check if useful, or needs more complex intervention
-                        stateInfo.descentDirection = temp;
+                    case SPOUSE:
+                        if (currentData.last != NULL && currentData.last->getName().isMarriageCompatible(name)) {
+                            currentData.last->addSpouse(name);
+                        } else {
+                            DescentDirection temp = stateInfo.descentDirection;
+                            stateInfo.descentDirection = stateInfo.lastDescentDirection;
+                            addToTree(name); //TODO: check if useful, or needs more complex intervention
+                            stateInfo.descentDirection = temp;
+                            return;
+                        }
+
+                        break;
+
+                    case SIBLING:
+                        currentData.last->addSibling(new GeneNode(name, NULL));
+
+                        if (currentData.last->getParent() != NULL) {
+                            currentData.outputData->addName(name);
+                        }
+
                         return;
-                    }
 
-                    break;
-
-                case SIBLING:
-                    currentData.last->addSibling(new GeneNode(name, NULL));
-
-                    if (currentData.last->getParent() != NULL) {
-                        currentData.outputData->addName(name);
-                    }
-
-                    return;
-
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
 
             if (stateInfo.descentDirection != UNDEFINED_DIRECTION && currentData.last != NULL) {
@@ -2039,7 +2044,11 @@ class GenealogySegmentor {
                 QString word = stateInfo.getWord();
                 bool searchSpouseCondition = stateInfo.descentDirection == SPOUSE ||
                                              stateInfo.descentDirection == UNDEFINED_DIRECTION || stateInfo.preceededBygaveBirth;
-                GeneNode *node = currentData.tree->findTreeNode(word, searchSpouseCondition);
+                GeneNode *node = NULL;
+
+                if (currentData.tree != NULL) {
+                    currentData.tree->findTreeNode(word, searchSpouseCondition);
+                }
 
                 if (node == NULL) {
                     type = NEW_NAME;
@@ -2071,7 +2080,11 @@ class GenealogySegmentor {
                     }
                 } else {
                     if (!currentData.lastName.isEmpty()) {
-                        AbstractGeneNode *lastNode = currentData.tree->findAbstractTreeNode(currentData.lastName, true);
+                        AbstractGeneNode *lastNode = NULL;
+
+                        if (currentData.tree != NULL) {
+                            currentData.tree->findAbstractTreeNode(currentData.lastName, true);
+                        }
 
                         if (lastNode != NULL) {
                             currentData.currEdge = GeneTree::MergeVisitor::getEdge(lastNode->getName(), currName, &delimitersStart, &delimitersEnd);
