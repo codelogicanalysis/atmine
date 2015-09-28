@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, &MainWindow::updateProgress, ui->statusbar->progressBar(), &QProgressBar::setValue);
     connect(this, &MainWindow::resetProgress, &MainWindow::on_resetProgress);
     connect(this, SIGNAL(actionUpdate(const QString &)), ui->statusbar, SLOT(showMessage(const QString &)));
-    QTimer::singleShot(100, this, &MainWindow::on_initializeSystem);
+    QTimer::singleShot(100, this, SLOT(on_initializeSystem));
 }
 
 MainWindow::~MainWindow() {

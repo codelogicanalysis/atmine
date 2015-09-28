@@ -16,7 +16,7 @@ void InitializationWorker::run() {
     theSarf = new Sarf();
 
     if (!theSarf->start(m_output_str, m_error_str, m_progress)) {
-        QMessageBox::critical(nullptr, tr("ATMineDemo"), tr("Cannot set up the project. The application will now exit."));
+        QMessageBox::critical(NULL, tr("ATMineDemo"), tr("Cannot set up the project. The application will now exit."));
     }
 
     Sarf::use(theSarf);

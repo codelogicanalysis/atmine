@@ -43,6 +43,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOURCES)
 set(CMAKE_AUTOMOC ON)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} dl)
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${QJSON_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${DATRIE_LIBRARIES})
