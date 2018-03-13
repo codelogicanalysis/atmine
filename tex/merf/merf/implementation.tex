@@ -1,0 +1,87 @@
+We implemented \framework and its GUI as a C++ desktop application 
+with the Qt GUI toolkit. 
+Figure~\ref{f:tagger} presents the main window of the \framework GUI.
+
+The \framework GUI uses standard intuitive tagging facilities such as 
+the application menus, the context menus, the mouse selection mechanism,
+and the drag and drop mechanism to perform tagging and editing operation. 
+
+The \framework GUI allows the user to create, manipulate, and analyze a tagging project. 
+The {\em File} menu is used to create, close, or open an existing project. 
+The {\em tags} menu enables the user to manually define and edit general purpose tag types.
+The user can define and edit the MBF and MSF based tag types and 
+trigger the automatic morphology based simulator from the {\em sarf} menu. 
+The user performs comparison and analysis of two tag sets 
+using the {\em Analyse} menu. 
+
+The main window displays the text with rich colors in a pane. 
+A companion pane shows a list of all the tags. 
+A secondary companion pane shows details about the selected tag.
+
+\subsection{Data Model}
+
+The \framework tool saves the tag types and the tags in a user friendly format using
+the JavaScript Object Notation (JSON) format.
+The JSON interface uses a tree format based on name value pairs, where the name 
+is an identifier and the value is either a sequence of values of a nested set of values. 
+The nested set of values is easily defined using nested open close braces. 
+
+The tag files keep pointers to the separate text and tag type files. 
+Then they contain a list of tags with their tag type identifiers as well as their location
+in text in terms of characters from the beginning of text, length of the tag, 
+and in terms of word counts.
+
+The file formats are selected to make it easier to compute statistical metrics 
+necessary for CL and NLP tasks such as frequency and distance. 
+
+
+\begin{figure}[h*]
+\begingroup
+    \fontsize{8pt}{12pt}\selectfont
+\begin{verbatim}
+{ "TagArray":
+  [{"length":5,"pos":0,"source":1,"type":"Place"},...],
+  "TagTypeFile":"/home/autoexample.stt.json",
+  "file":"/home/politics.txt",
+  "textchecksum":696
+}
+\end{verbatim}
+\endgroup
+\caption{Tag File Format}
+\label{fig:tagfile}
+\end{figure}
+
+A sample tag file is shown in Figure~\ref{fig:tagfile}. 
+The tag file includes the list of tags (TagArray), tag type file (TagTypeFile), 
+text file (file), and {\em textchecksum} which is used to ensure that the 
+text is not corrupt. 
+A tag is defined by its position in the text (pos), length of the tag (length), 
+tag type (type), and the source of the tag (source).
+
+\begin{figure}[h*]
+\begingroup
+    \fontsize{8pt}{12pt}\selectfont
+\begin{verbatim}
+{"TagTypeSet":
+  [{"Description":"Detects all the adjectives",
+   "Features":[{"Stem-POS" : "ADJ" },... ],
+   "Tag" : "Adjectives",
+   "background_color":"#f08080",
+   "bold" : false,"font" : 12,
+   "foreground_color":"#778899",
+   "id" : 3,"italic" : false,
+   "underline" : false},...
+  ]
+}
+\end{verbatim}
+\endgroup
+\caption{Tag Type File Format}
+\label{fig:tagtypefile}
+\end{figure}
+
+Figure~\ref{fig:tagtypefile} shows a sample tag type file. 
+The file includes the list of defined tag types (TagTypeSet). 
+Each tag type is defined by the fields name (Tag), description, 
+morphological features (Features), foreground color, 
+background color, bold, italic, underline, font size (font), and id. 
+The morphological features are stored in an array of name/value pairs.

@@ -1,0 +1,109 @@
+\setcode{utf8}
+\setarab
+\transfalse
+
+\begin{figure*}[tb]
+  \begin{center}
+\renewcommand{\arraystretch}{1.5}% Wider
+\resizebox{1.9\columnwidth}{!}{
+    \begin{tabular}{R{12cm}L{12cm}}
+     \RL{وأنت} $\stackrel{u1}{\framebox[1.2\width]{\RL{الأول}}}$ $\stackrel{p_2}{\framebox[1.2\width]{\RL{التقاطع}}}$ \RL{من} $\stackrel{r_1}{\framebox[1.2\width]{\RL{بالقرب}}}$ $\stackrel{n_1}{\framebox[1.2\width]{\RL{خليفة}}}$ $\stackrel{p_1}{\framebox[1.2\width]{\RL{برج}}}$ \RL{تلاحظ} \RL{ألا} \RL{المستحيل} \RL{من} &
+     \resizebox{\columnwidth}{!} {
+     %[$\showvrb{cout<<$R.text}$]
+     Expression = $(P|N)+~\mathit{O}?~R~\mathit{O^{\wedge}2}~(P|N|U)+$}\\
+     $\stackrel{u_2}{\framebox[1.2\width]{\RL{الأولى}}}$ \RL{المرّة} \RL{هذه} \RL{كانت} \RL{وإن} \RL{حتّى} $\stackrel{n_3}{\framebox[1.2\width]{\RL{زايد،}}}$ $\stackrel{n_2}{\framebox[1.2\width]{\RL{الشيخ}}}$ $\stackrel{p_3}{\framebox[1.2\width]{\RL{شارع}}}$ $\stackrel{r_2}{\framebox[1.2\width]{\RL{في}}}$ \RL{سيارتك} \RL{تقود}&
+     \multirow{2}{*}[20pt]{
+           \resizebox{1.5\columnwidth}{!}{ 
+				\relsize{-4} \input{figures/motivTree.tex}}
+          }\\
+     $\stackrel{p_7}{\framebox[1.2\width]{\RL{المبنى}}}$ \RL{هذا} \RL{من} $\stackrel{r_4}{\framebox[1.2\width]{\RL{مقربة}}}$ \RL{على} $\stackrel{p_6}{\framebox[1.2\width]{\RL{مول}}}$ $\stackrel{p5}{\framebox[1.2\width]{\RL{دبيّ}}}$ \RL{يقع} $\stackrel{p_4}{\framebox[1.2\width]{\RL{الطريق؛}}}$ \RL{هذا} $\stackrel{r_3}{\framebox[1.2\width]{\RL{فيها}}}$ \RL{تسلك} \RL{التي}& \\
+     \RL{العالم.} \RL{في} \RL{الأطول} \RL{يُعد} \RL{الذي}& \\
+	  & \multicolumn{1}{c}{\multirow{1}{*}[-15pt]{\textbf{(b) Formula, matches, and entity-relation graph}}}\\
+     \multicolumn{1}{L{12cm}}{
+     \arabfalse
+     \transtrue
+     \RL{من المستحيل ألا تلاحظ برج خليفة بالقرب من التقاطع الأول وأنت تقود سيارتك في شارع الشيخ زايد، حتّى وإن كانت هذه المرّة الأولى التي تسلك فيها هذا الطريق؛ يقع دبيّ مول على مقربة من هذا المبنى الذي يُعد الأطول في العالم.}
+     \arabtrue
+     \transfalse}
+     & \\
+     \multicolumn{1}{L{12cm}}{It is impossible not to notice $\stackrel{n_1}{\framebox[1.2\width]{Khalifa}}$ $\stackrel{p_1}{\framebox[1.2\width]{Tower}}$ $\stackrel{r_1}{\framebox[1.2\width]{next to}}$ the $\stackrel{u_1}{\framebox[1.2\width]{first}}$ $\stackrel{p_2}{\framebox[1.2\width]{intersection}}$ while you are driving $\stackrel{r_2}{\framebox[1.2\width]{on}}$ $\stackrel{n_2}{\framebox[1.2\width]{Sheikh}}$ $\stackrel{n_3}{\framebox[1.2\width]{Zayed}}$ $\stackrel{p_3}{\framebox[1.2\width]{Road}}$, even if this was $\stackrel{u_2}{\framebox[1.2\width]{the first}}$ time that you take this $\stackrel{p_4}{\framebox[1.2\width]{road}}$; $\stackrel{p_5}{\framebox[1.2\width]{Dubai}}$ $\stackrel{p_6}{\framebox[1.2\width]{Mall}}$ is located $\stackrel{r_4}{\framebox[1.2\width]{near}}$ this $\stackrel{p_7}{\framebox[1.2\width]{building}}$, which is the longest in the world.} &
+     \multirow{2}{*}[20pt]{
+     \resizebox{1.3\columnwidth}{!}{
+                   \begin{tabular}{c|c|c|c}
+                   MBF & description & formula & matches\\ \hline
+                   N & name of person & $category~=~Name\_of\_Person$ & $n_1,n_2,n_3$ \\ \hline
+                   P & name of place & $category~=~Name\_of\_Place$ & $p_1,p_2,...,p_7$ \\ \hline
+                   R & relative position & $stem\in$ \{\RL{قرب},\RL{في},\dots\} & $r_1,r_2,r_3,r_4$ \\ \hline
+                   U & numerical term & $stem\in$ \{\RL{أول},\RL{ثاني},\dots\} & $u_1,u_2$ \\
+                   \end{tabular}
+          }}\\
+      \multicolumn{1}{c}{\multirow{1}{*}[-10pt]{\textbf{(a) Text with directions}}} & \multicolumn{1}{c}{\multirow{1}{*}[-10pt]{\textbf{(c) Tag types with Boolean formulae}}}\\
+    \end{tabular}
+}
+  \end{center}
+  \caption{Text, formula, and match \framework example}
+  \label{fig:motiv}
+\end{figure*}
+\transtrue
+\setcode{standard}
+
+We motivate \framework with a direction extraction example. 
+Consider the example in Figure~\ref{fig:motiv}\footnote{text taken from the directions page of Dubai Mall \url{http://www.thedubaimall.com/ar/}.}.
+We are interested in the extraction of the entities and relations illustrated in Figure~\ref{fig:motiv}(b)
+from the Arabic text in Figure~\ref{fig:motiv}(a). Figure~\ref{fig:motiv}(a) 
+also presents a transliteration, and an English translation. 
+The user interacts with \framework to specify her/his intent, 
+and \framework automates the extraction process.
+
+Using our tool, the user specifies the $N$, $P$, $R$, and $U$ tag types with Boolean formulae based on morphological features.
+As described in Figure~\ref{fig:motiv}(c), $N$ denotes names of persons and is specified by a constraint on its category feature,
+$P$ denotes places and is specified similarly, $R$ denotes relative positions and is specified by belonging to selected list of 
+stems, and $U$ denotes numerical terms and is specified by a disjunction of a category constraint and an stem constraint.
+
+\framework calls an inhouse morphiological analyzer~\cite{sarf} and computes matches to $N$, $P$, $R$, and $U$. 
+Stemming is required in the case of \RL{bAlqrb} in order to detect the position key word \RL{qrb}. 
+We refer to all {\em other} words in the text that did not match a user defined tag type as {\em null} words and we denote them
+by $O$. 
+The resulting matches are illustrated with boxes and superscripts in Figure~\ref{fig:motiv}(a) and are also listed 
+in Figure~\ref{fig:motiv}(c).
+
+The user now defines the direction entities and relations with the regular expression 
+$(P|N)+~O?~R~O\wedge 2~(P|N|U)+$ shown in Figure~\ref{fig:motiv}(b) where 
+$|,+,?,$ and $\wedge k$ denote disjunction, one or more, zero or one, and
+up to $k$ matches, respectively.
+The expression specifies a sequence of places or names of persons, 
+optionally followed by a null word, 
+followed by one relative position, followed by up two possible null words, 
+followed by one or more match of name of place, name of person, or numerical term. 
+$O$ and $\wedge 2$ are used in the expression to allow for flexible matches. 
+\framework computes the matches of the expression in the text. 
+The match trees in Figure~\ref{fig:motiv}(b) illutstrates two of them.
+The nodes of the trees are entities and the edges and internal nodes are text, morphology-based, 
+and word distance based relational entities. 
+% the sequence and structure gives me the text of a parent node from the children nodes
+% the same sequence can also give me the interesting (matching) morphological features
+% the word distance is defined and abstracted by the matches of the re operators (internal nodes). 
+
+The user declares semantic relations that relate 
+parts of the matches of the expression with each other. 
+For example, in Figure~\ref{fig:motiv}(b), let $e_1,o_1,r,o_2,$ and $e_2$ be the 
+$(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$ parts of the expression, respectively;
+the declaration \cci{Relation($r$,$e_1$,$e_2$)} creates the 
+edge labeled with \cci{next to} between \cci{intersection 1} and \cci{Khalifa tower} nodes in match 1, and the
+edge labeled with \cci{near} between the \cci{Dubai Mall} and \cci{the building} nodes in match 2. 
+The conditional relation \cci{if($o_1$,Relation($o_1$,$r$,$e_1$))} creates 
+the edge labeled with \cci{prep} between the \cci{Dubai Mall} and \cci{near} nodes in match 2.
+The conditional relation \cci{if($o_2$,Relation($o_2$,$r$,$e_2$))} creates 
+he edge labeled with \cci{from} between the \cci{intersection 1} and \cci{next to} nodes in match 1, and the 
+edge labeled with \cci{from this} between the \cci{near} and \cci{the building} nodes in match 2. 
+
+In addition, the user specifies the \cci{isA} relation as a cross reference relation, which creates
+the edge between the \cci{Khalifa Tower} and the \cci{The building} nodes. 
+
+%The user can add c++ code action to each term in the expression with access to match properties. 
+%A sample action is shown in the expression where the user prints the text of the relative position match. 
+%The last step for the user is to run the smilulator to extract the expression matches and simulate the actions. 
+%The tree in Table~\ref{fig:motiv}(b) shows the match trees of the directions extracted from the text based on the user-defined expression.
+
+%The existence of a morphological analyzer is crucial to the analysis. 
+%In order to extract the directions, \framework requires the user to first define those tag types as stated above.

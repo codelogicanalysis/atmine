@@ -1,0 +1,405 @@
+In this Section, we describe the different implementation aspects of \framework. 
+We cover the data model used to store the MBF and MRE based tag types, the MBF and MRE tags, and the generated actions. 
+We explain the data structures used to hold the data from the files including MBF and MRE tag types, MBF and MRE matches, code action, and relations. 
+Then, we describe the simulation of the MBFs and MREs to compute the matches, the construction of relations matches, and the execution of actions. 
+We also describe how the interface is written with Qt and how the match tree and entity-relation graphs are visualized.
+
+\subsection{Data Model}
+
+\framework saves the tag types and the tags in a user friendly format using
+the JavaScript Object Notation (JSON) data-interchange format~\cite{nolan2014javascript}.
+The JSON interface is built on two structures.
+The first structure is a collection of name and value pairs. An instance
+of the structure is referred to as an object. 
+The second structure defines ordered lists of values as arrays. 
+The name in a name value pair is an identifier string 
+and the value can be a string, a number, a Boolean (true or false), an object, 
+or an array. 
+%The file format is selected to make it easier to compute statistical metrics 
+%necessary for CL and NLP tasks such as frequency and distance.
+
+\subsubsection{Tag file}
+
+The tag file keeps the paths of the separate text and tag type files. 
+It also contains a list of tags with their tag type identifiers as well 
+as their position in text in terms of number of characters from the beginning 
+of text, length of the tag, and word index. 
+In addition to the previous features, 
+the MRE matches contain an object representing the match tree with 
+the identifier ``match''.
+
+\begin{figure}[h*]
+\begingroup
+    \fontsize{8pt}{12pt}\selectfont
+\begin{verbatim}
+{ "TagArray":
+  [{"length": 3,"pos": 152,"source": 1,"type": "P","wordIndex": 29},...],
+  "simulationTags":
+  [{"formula": "direction","length": 33,"match": {...},"pos": 22,"source": 1},...],
+  "TagTypeFile":"directions.stt.json",
+  "file":"directions.txt",
+  "textchecksum":211
+}
+\end{verbatim}
+\endgroup
+\caption{Tag file format}
+\label{fig:tagfile}
+\end{figure}
+
+A sample tag file is shown in Figure~\ref{fig:tagfile}. 
+The tag file includes the tag type file pointer(TagTypeFile), 
+text file pointer (file), the list of MBF tags (TagArray), 
+the list of MRE tags (simulationTags), 
+and {\em textchecksum} which is used to ensure that the 
+text is not corrupt. 
+An MBF tag is defined by its position in the text (pos), length of the tag (length), 
+tag type (type), word index (wordIndex), and the source of the tag (source). 
+A simulation tag, referring to an MRE match, is defined by the formula (MRE), length, position and the match tree (match).
+
+\subsubsection{Tag type file}
+
+The tag type file contains two objects referring to MBF and MRE based tag types. 
+Each object has an array value containing the user-defined tag types. 
+Each tag type is stored as an object and contains the name, description, formula or expression, and the visualization legends.
+
+\begin{figure}[h!]
+\begingroup
+    \fontsize{8pt}{12pt}\selectfont
+\begin{multicols}{2}
+\begin{verbatim}
+{ "TagTypeSet":
+  [{"Description":"numerical term",
+   "Features":[{"Negation": "",
+                "Relation": "isA",
+                "Stem-Gloss": "first"},
+                ... 
+              ],
+   "Tag": "U",
+   "background_color": "grey",
+   "bold": false,
+   "font": 12,
+   "foreground_color": "orangered",
+   "italic": false,
+   "underline": false
+   },...
+  ],
+
+  
+  "MSFs": [{
+      "name": "direction","description": "",
+  	  "MSF": {... {"MBF": "U","actions": "",
+  	               "init": "","name": "s7",
+  	               "parent": "s13","type": "mbf"} 
+  	               ... 
+  	         },
+  	  "Relations": [...
+  	           { "entity1": "s9","e1Label": "text",
+  	             "entity2": "s14","e2Label": "text",
+  	             "edge": "s3","edgeLabel": "text",
+  	             "name": "r1"} 
+  	             ... ],
+      "bgcolor": "#9acd32","fgcolor": "#f0f8ff",
+      "includes": "","members": "",
+      "delimiter": true
+     }]
+}
+\end{verbatim}
+\end{multicols}
+\endgroup
+\caption{Tag type file format}
+\label{fig:tagtypefile}
+\end{figure}
+
+Figure~\ref{fig:tagtypefile} shows a sample tag type file. 
+The file includes a list of defined MBF tag types (TagTypeSet). 
+Each tag type is defined by the fields name (Tag), description, 
+morphological features (Features), foreground color, 
+background color, bold, italic, underline, font size (font), and id. 
+The morphological features are stored in an array of objects where each object refers to an MAT. 
+An MAT object contains the fields negation, relation (isA or contains), and feature name and value pair.
+
+The file also includes a list of defined MRE tag types and refers to them with the
+notation Morphology-based Sequential Formulae (MSFs); the tool name of MRE. 
+Each tag type is defined by the fields name, description, expression, 
+semantic relations (Relations), code action information (includes and members), 
+delimiter, and foreground and background color. 
+The includes and members contain the libraries and global variables added to the actions by the user respectively. 
+
+The expression is a tree of objects and arrays whose depends on the definition of the user. 
+For example, a sequence of sub-expressions is expressed as an array of objects. 
+A sample MBF added to the expression is shown in the Figure	defined by the name (MBF), pre-match actions (init), on-match actions (actions), unique name assigned by \framework(name), name of parent expression (parent), and expression type (type) which is specified based on operation applied. 
+The delimiter entry specifies whether the simulation should stop on a full stop or any punctuation mark.
+
+Relations are saved in an array where each relation is defined by its name, the first entity (entity1) and its label (e1Label), second entity (entity2) and its label (e2Label), and the edge and its label (edgeLabel).
+
+
+The user-defined actions (pre-match and on-match) are written into a cpp output file. 
+The file includes the libraries included, global members declared, pre-match and on-match functions, and the function calls. 
+A sample of the generated file is shown in Figure~\ref{fig:generatedactions}. 
+The Figure shows a sample on-match function for a sub-expression named {\tt s2} (s2\_Match). 
+The function takes an integer as a parameter. 
+The integer refers to the numerical value of the match of {\tt s2} (s2\_number). 
+The second function named {\tt number\_actions} contains the list of function calls. 
+A sample call of the s2\_Match is shown with the parameter value 200.
+
+\begin{figure}[h!]
+%\begingroup
+%    \fontsize{8pt}{12pt}\selectfont
+\begin{multicols}{2}
+\begin{Verbatim}[fontsize=\relsize{-2}] 
+extern "C" void s2_onMatch(int s2_number) {
+   isHundred = true;
+   if(current == 0)  {
+      currentH=s2_number;
+   }
+   else {
+      if(!isKey) {
+         currentH= current * s2_number;
+         current = 0;
+      }
+      else {
+         currentH = s2_number;
+      }
+   }
+   isKey = false;
+}
+extern "C" void number_actions() {
+   s5_preMatch();
+   s4_preMatch();
+   s2_preMatch();
+   s2_onMatch(200);
+   s4_onMatch();
+   s4_preMatch();
+   s3_preMatch();
+   s0_preMatch();
+   s0_onMatch(9);
+   .
+   .
+   .
+}
+
+
+\end{Verbatim}
+\end{multicols}
+%\endgroup
+\caption{sample generated actions file}
+\label{fig:generatedactions}
+\end{figure}
+
+\subsection{Data structures}
+
+In this section, we explain the data structures we used to store the text, MBF-based tag types, 
+MRE-based tag types, relations, MBF matches, MRE match trees, and relations constructed.
+
+\subsubsection{Arabic document}
+
+\framework supports Arabic documents with UTF-8 encoding only. 
+The input Arabic text is saved as a string. 
+We process the text to build a word position to word index hash, 
+a set of words that end by punctuation, and a set of words that end with full stop. 
+The two sets are used in MRE simulation.
+
+\subsubsection{MBF tag types}
+
+We store the MBF tag types in a vector of {\tt TagType} class. 
+Each tag type contains strings to store the name, description, foreground color, and background color. 
+Boolean variables are used to track the bold and italic properties. 
+The Boolean formula is stored as a vector of quadruples where each quadruple contains the feature, feature value, negation option, and predicate (isA or contains).
+
+\subsubsection{MRE tag types}
+
+The MRE tag types are stored in a vector of {\tt MSFormula} class. 
+The regular expression is stored in a tree structure where each node refers to a sub-expression. 
+Each sub-expression is represented by a class derived from a base class called {\tt MSF}. 
+{\tt MSF} defines the common attributes of all sub-expressions including name, pre-match code actions, and on-match code actions. 
+It also contains the common functions required to be implemented by all derived classes.
+
+An MRE tag type is stored in a class called MSFormula. 
+This class contains strings for description of the tag type, foreground color, 
+background color, included libraries by user, and action global variables. 
+It also contains a vector of MSF pointers referring to a sequence of sub-expressions. 
+MSFormula contains a formula that maps the name of each sub-expression to a pointer of the relevant structure instance.
+
+The expressions with the operations zero or one ($?$), 
+zero or more ($*$), one or more ($+$), and zero up to x ($f$\textasciicircum$x$) 
+are stored in a class called {\tt UNARYF}. 
+This class holds the operation and an MSF pointer referring to the sub-expression subject to the operation. 
+The expressions with the disjnuction ($|$) or conjunction ($\&$) operations 
+are stored in a class called {\tt BINARYF}. 
+This class holds the operation along with two MSF pointers referring to the two sub-expressions subject to conjunction or disjunction. 
+The sequential expression is stored in a class called {\tt SequentialF}. 
+It contains a vector of MSF pointers referring to a sequence of sub-expressions. 
+An MBF-based sub-expression is stored in a class called {\tt MBF} which contains the name of the MBF tag type. 
+All the classes introduced above are derived from the base class {\tt MSF}.
+
+Moreover, the MRE tag type stores the relevant semantic relations defined by the user. 
+The relations are stored in a vector and each relation is represented by a class {\tt Relation}. 
+This class holds MSF pointers that refer to the three entity sub-expressions, and strings to identify the name of the relation and the labels of the three entities.
+
+\subsubsection{MBF tags}
+
+The MBF tags are stored in a multi-hash based on wordindex. 
+We use a multi-hash because a single word can have multiple tags as stated before. 
+Each tag is represented in an instance of the {\tt Tag} class. 
+This class holds a pointer to the tag type, and integers for word index, position, and length. 
+It also contains a flag to differentiate the automatic tag from a user one.
+
+\subsubsection{MRE tags}
+\label{subsubsec:mretag}
+
+We store the MRE tag type matches in a vector of {\tt Match} class. 
+In order to preserve the relation between the expression and the match tags, we use similar classes to store the match in a tree structure as well. 
+Hence, we define the classes {\tt KeyM}, {\tt UnaryM}, {\tt BinaryM}, and {\tt SequentialM} referring to MBF, UNARYF, BINARYF, and SequentialF matches, respectively. 
+All those classes inherit from base class {\tt Match}.
+
+The base class contains common data including pointer to relevant MSF, 
+operation if present, and a flag to differentiate the automatic tag from a user one. 
+KeyM holds the matching word, tag name (key), position, and length. 
+UnaryM contains a vector of {\tt Match} pointers and an integer to the limit in UPTO operation if applicable. 
+BinaryM contains two {\tt Match} pointers. 
+Both pointers are required in the conjunction case, but only one is used in the disjunction. 
+The SequentialM class holds a vector of {\tt Match} pointers.
+
+\subsection{MBF simulation}
+
+The Arabic morphological analyzer, Sarf, provides a pure virtual function called $on\_match$. 
+This function is triggered by the analyzer for every morphological solution computed for an input word. 
+Through this function, we can access the morphological features of the solution including the stem, affixs, POS and gloss tags, and categories.
+
+We derive the class {\tt SarfTag} from {\tt Stemmer}, the main class of Sarf, and implement the $on\_match$ function. 
+For each solution found, we iterate over the MBFs and check whether the solution matches any of the MATs defined by the user. 
+In case there is a match, we add a tag to the multi-hash referring to the word index. 
+The tag contains a pointer to the tag type that refers to the matching MBF. 
+
+In order to minimize the computational cost of the $Syn^k$ feature, we compute the sets prior to the tag computation process. 
+For each $CS$ (constant stem) and $k$ (order) pair, we compute the set of Arabic stems that are synonyms of the stem $CS$ of order $k$. 
+When we find a $Syn^k$ based MAT in the tag computation process, we detect a match if a solution stem belongs to the relevant set.
+
+\subsection{MRE simulation}
+
+In this Section, we describe how we generate the NFA equivalent to the MRE. 
+Then we describe how we simulate the NFA and construct the match trees.
+
+\subsubsection{NFA generation}
+
+In order to simulate the regular expression, we first generate the equivalent non-deterministic finite automata (NFA). 
+We represent the generated NFA with the {\tt NFA} class which contains strings representing start and accept states, a multi-map for transitions, and a map from NFA state to relevant MSF. 
+The state name is represented by a string of the form $q_0$, $q_1$, \dots
+The transition multi-hash takes a concatenation of current state and label (epsilon or tag type name). 
+It the transition exists, the hash returns one or more transition states. 
+A sample transition input is $q_1|NONE$ and a sample value would be $q_2$ if the transition exists. 
+The MSF map is used to track the source sub-expression of each state and whether the state was generated with a pre-match or on-match property. 
+This information is important in the simulation of the NFA, and computation of the match tree. 
+Thus, the map takes the state name as input and returns a pair of MSF pointer and string indicating the pre-match or on-match property.
+
+\begin{figure}[h!]
+\centering
+\resizebox{0.7\columnwidth}{!}{
+	\relsize{-3} \input{figures/starNFA.tex}
+}
+\caption{Star expression NFA}
+\label{fig:starnfa}
+\end{figure}
+
+Figure~\ref{fig:starnfa} shows a sample NFA generated for a zero or more expression ($*$). 
+The dotted block represents the sub-expression subject to the zero or more operation. 
+$q_i$ is the start state of this expression and $q_j$ is the end state. 
+The map entry of the start state is $s_k$ concatenated with $pre$. 
+$s_k$ is the name of the stared expression and $pre$ refers to pre-match. 
+Similarly, $on$ in the $q_j$ entry refers to on-match.
+
+\subsubsection{NFA simulation}
+
+We simulate the generated NFA in a recursive function. 
+The function takes as parameters a pointer to the NFA, current state, and current word index and returns a {\tt Match} instance. 
+At each stage, we check for possible transitions from current state based on empty strings ($\epsilon$) or MBF tags. 
+Note that we can get the tags for current word index using the multi-hash used to store the MBF tag based on word index.
+
+When we reach the accept state, we build the match tree backwards. 
+At each stage, we check if the current state refers to a sub-expression pre-match or on-match property. 
+On an on-match property, we generate the relevant match node compatible with the sub-expression type (Subsubsection~\ref{subsubsec:mretag}) and add it as a child node to returned {\tt Match} structure. 
+In case of a pre-match property, we return the parent node of the {\tt Match} structure.
+
+\subsection{Code action execution}
+
+In this Section, we describe how we generate the code action file and then compile, link, and run it.
+
+\subsubsection{Action file generation}
+
+In order to execute the user-defined code actions, we first generate a C++ file. 
+This file contains the includes, global declared variables, pre-match and on-match functions, and the sequence of function calls. 
+
+The libraries and global variables are directly inserted at the beginning of the file as entered by the user. 
+Then, we generate the pre-match and on-match functions referring to each sub-expression in the MRE tree. 
+In case the user uses the feature access API, we process the feature API and pass the relevant variable as a parameter to the function. 
+For example, \cci{\$s0.number} allows the user to access the numerical value of the match of the sub-expression $s_0$. 
+This call is processed and transformed into the form \cci{s0\_number}, and it is added as an integer parameter of the calling function.
+
+After the MRE simulation stage, we traverse the match trees and generate the sequence of pre-match and on-match calls. 
+The function calls are listed in a function named after the MRE tag type name such as \cci{number\_actions() \{\dots\}}. 
+At each node in a match tree, we generate the pre-match call of the current node, call the generation method of children {\tt Match}, then generate the on-match call of the current node.
+
+\subsubsection{Action file execution}
+
+In order to execute the generated C++ file, we use shared object libraries and dynamic loading. 
+The shared object library allows us to compile, load, and run the action file at run-time using dynamic linking loader system functions. 
+The process requires us to create the shared library, load it, then use it by calling the target functions.
+
+We create the library using a system call of the form: 
+\newline
+\cci{/usr/bin/g++ -fPIC -shared cppFile -o cppFile\_Path lib\_MREName.so}.
+\newline
+The \cci{cppFile} is the name of the action file generated, \cci{cppFile\_Path} is the path of the action file, and \cci{lib\_MRENAME.so} is the name of the output shared library.
+
+We load the library using the \cci{dlopen} function provided by the dynamic library. 
+The function takes the library name as input and returns a library pointer. 
+As previously noted, the function calls are listed in a single function. 
+In order to call this function, we use \cci{dlsym} which is a content extraction function. 
+This function takes the library pointer and the name of the target method as parameters.
+
+\subsection{\framework~interface}
+
+We implemented \framework and its GUI as a C++ desktop application 
+with the Qt GUI toolkit. 
+The \framework GUI uses standard intuitive tagging facilities such as 
+the application menus, the context menus, the mouse selection mechanism,
+and the drag and drop mechanism to perform tagging and editing operation. 
+The \framework GUI allows the user to create, manipulate, and analyze a tagging project.
+
+In order to provide a user-friendly interface, we use {\tt QDockWidget} in \framework main window. 
+This class provides the concept of dock widgets which can be moved into new areas and removed by the user. 
+The main window contains 4 widgets referring to text visualization, 
+tag list, tag description, and match tree and entity-relation graph. 
+The main window displays the text with rich colors in a text browser pane. 
+A companion pane shows a list of all the tags. 
+A secondary companion pane shows details about the selected tag. 
+A tabbed widget visualizes the match tree and entity-relation graph.
+
+As for the MBF and MRE tag type editors, we use grids to organize the layout. 
+The MBF and MRE are represented using the tree widget provided by Qt. 
+We use combo box, label, edit text, and push button classes provided by Qt to 
+add the other objects in the editor.
+
+\subsubsection{Tree and graph visualization}
+
+We use graphics scene and graphics view in order to visualize the match tree and entity-relation graph. 
+The graphics scene provides a surface to manage 2D graphical items such as lines, text, and shapes. 
+The graphics view provides a widget to display the content of the graphics scene. 
+Our visualization method is based on an example provided by Qt showing how to implement nodes, and edges between nodes in a graph~\footnote{\url{http://qt-project.org/doc/qt-4.8/graphicsview-elasticnodes.html}}. 
+However, Qt doesn't calculate the layout automatically but requires the user to position the elements.
+
+In order to generate the tree or graph layout, we use the graphviz library. 
+This library provides a variety of software for drawing attributed graphs and computes the layout using a set of common graph layout algorithms such as dot. 
+First, we define our match tree or entity-relation graph using this library. 
+We use commands such as \cci{agopen} to create a graph, \cci{agsafeset} to set graph attributes, 
+\cci{agnode} to create a graph node, and \cci{agedge} to create a graph edge. 
+After creating the graph, we compute a layout using the {\em dot} layout engine. 
+This task is performed by calling the method \cci{gvLayoutJobs}. 
+We use the generated coordinates of the nodes in the graphviz graph to position the nodes in \framework's main window graphics scene.
+
+\subsection{Open source tool}
+
+\framework is an open source tool present on google code under \cci{atmine} repository (\url{https://code.google.com/p/atmine/}). 
+In addition to \framework, the repository contains entity extraction tasks developed by our research group. 
+People are welcome to download and use the tools. 
+We appreciate any feedback that we get and we try to improve the tools accordingly.

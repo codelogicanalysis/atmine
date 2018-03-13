@@ -1,0 +1,372 @@
+\section*{Reviewer 3 comments} 
+\textit{Comments to the Author}
+
+
+
+This work is an improvement step in a continuous previous work 
+(Saref,MATAr) which leads to a complete project that can be 
+used as a tool for other researchers in the field to help 
+improving the Arabic language computations and processings.
+
+
+It depends on the morphological analyser (Saref) results 
+to define tags for flexible corpus annotation that is automatic 
+but allow the users to correct and fix the tagging. 
+In additions it extract entitiy and relational entityies from 
+the input document.
+
+
+\begin{enumerate}[leftmargin=0mm,label=\bfseries CommentR3.\arabic*]
+\item \label{Review.3.1}
+As a reader, It wasn't very easy to followup with the writing 
+style. I needed to return back to ``Saref'' and ``MATAr'' papers 
+to understand the terminology used.
+\answer{
+  We added a background section with definitions... 
+}
+
+First, I think we can ask 
+"What would a researcher reading this paper need to know?", the answer would be:
+
+\item \label{Review.3.2}
+1- ``What is new in MERF?''. and this was clear for the reader 
+    which is mainly
+    a)(entity and relational entity extraction).
+    b) defining tag of words based on a synonymic relation
+\answer{
+  ...
+}
+
+\item \label{Review.3.3}
+2- ``How to use MERF?''
+(you can have more explanations in your appendex and could have 
+``help'' button in your API. This part was also relatively 
+clear for the reader.
+\answer{
+  ... 
+}
+
+
+\item \label{Review.3.4}
+3- The most important part is ``how MERF was built 
+(methodology)?''. but I found this part was not very clear.
+\answer{
+  We added a methodology section...
+}
+
+4-and for sure ``how it was evaluated and good results discussion''. hich needs more attention.
+\answer{
+  We added subsection Results.X to discuss the evaluation 
+  strategy. 
+  We also added extended the discussion section... 
+}
+
+
+The following are some detailed recomendations:
+
+
+\item \label{Review.3.5}
+1-In the introduction, I think you need to omit ``We discuss the importance of the morphological featureotivs supported in MERF terms in Section 3; in brief, morphological preprocessing iskey to Arabic NLP.'' , in page 2 since it will be repeated in page 5.
+\answer{
+  Done. 
+}
+
+
+\item \label{Review.3.6}
+2- in the introduction you illusterated a target example, 
+so why don you need the Motivation section. 
+What about if combine both.
+\answer{
+  Thank you. We combine both as motivation and we include that
+  as a subsection of the introduction. 
+}
+
+\item \label{Review.3.7}
+In addition, at page 9 ``the edges and internal nodes are text, 
+morphology-based, and word distance based relational entities'' 
+is not clear.
+\answer{
+  We rephrase the sentence to read ... 
+}
+
+
+\item \label{Review.3.8}
+please always define your terminology before using it and 
+provide examples. suggest the ``formula" was not so clear. 
+I suggest using regular grammar insted since you are using 
+regular expression and the match tree can be considered as 
+parse tree.
+\answer{
+  We use formula to define predicates that range over 
+  the morphological features. 
+  We consider the matches of the formulae as tokens/tags (maybe
+  we call them tag types.)
+  We then use regular expressions (maybe we should use rules). 
+  ... 
+  We modify the paper by adopting the suggested terminology: 
+  rule for regular expression and parse tree for match tree. 
+}
+
+\item \label{Review.3.9}
+2- Section ``Existing annotation and entity extraction tools” 
+need to be with section 6 or section 6 need to be combined 
+with it in as one section but leaving the comparision to 
+the analysis section.
+\answer{
+  We thank the reviewer for the comment. 
+  We moved Section 1.1 to Section 6. 
+}
+
+
+\item \label{Review.3.10}
+3- Section Background:Morphological analysis, 
+the definition explaned in page 9 did not match table 1 at page 7.
+\answer{
+  We fix the definition to reflect that a prefix (and an suffix)
+  could be a concatenation of other prefixes. 
+}
+
+
+\item \label{Review.3.11}
+4- Section 5 can be combined with section 2. 
+you can introduce the user friendly interface using the 
+specified example. 
+Section 2 seemed not very imporatnt as stand alone section.
+\answer{
+  We merged Section 2 with Section 1. 
+  We move Section 5 to become Section 2 so that it follows 
+  the motivation directly. 
+}
+
+5- Section MERF/
+
+
+\item \label{Review.3.12}
+a) figure 3 did not make it clear for the reader to 
+understand the process. Also, the figure location is far 
+away from its explanation.
+
+\answer{
+We split Figure 3 into three Figures and provide explanations
+for both. 
+a. Arabic Text (Consider MBBF as input coming fro another figure) ----> Tags.
+b. Rest of the figure... 
+c. RTC + Diff. + Visualizatiin 
+}
+
+
+\item \label{Review.3.13}
+b) Syn$^k$ is nicely explaned but I did not recognize it as 
+your own idea. if this is your idea to use English translation 
+as a pivot to extract Arabic synonyms then it needs to have 
+more focus because I think this is new.
+\answer{
+Up to our knowledge, we introduced the idea. 
+We highlight the concept more in the paper. 
+}
+
+\item \label{Review.3.14}
+what is $2^{gloss}$ and $2^{s}$?
+\answer{
+  The power sets of... We clarify that in the paper. 
+}
+
+
+\item \label{Review.3.15}
+please to make it easier for the reader to followup, 
+let the example in figure 4 also be defined as the formula 
+variables. w,{u},..so on
+\answer{
+  We do that now.
+}
+
+
+\item \label{Review.3.16}
+c) In MRE section,page 10, $k <=7$ why? 
+\answer{
+  Computational reasons ... say it in the paper. 
+}
+
+\item \label{Review.3.17}
+also, A belongs-to F , A is a morphological feature, 
+then how CF belongs-to A. A is defined as one item not a set.
+\answer{
+Thank you. This is a mistake. We corrected that in teh paper to 
+read as follows... 
+}
+
+
+\item \label{Review.3.18}
+MRT definition is not clear.
+\answer{
+We clarify the definition of MRE in the paper. 
+}
+
+
+\item \label{Review.3.19}
+"MRE" and "user defined relations and actions " sections 
+were hard to be understood.
+\answer{
+We rewrote both sections... 
+}
+
+\item \label{Review.3.20}
+MREF simulator: please provide examples soon after the 
+definitions to make it easier for the reader. 
+The reader can be lost so fast within the variable definitions. 
+\answer{
+We provide running examples with the definitions....
+}
+
+
+\item \label{Review.3.21}
+for each word you are computing all the formulas values, 
+so the comlexity is O(text length X number of formulas), 
+what is the range of number of formulas ?
+\answer{
+  ... 
+  The complexity is (\#solutions for all words) times 
+  (\#number of user defined formulae). 
+  We provide no limit on that.
+  Practically, users define up to 10 formula. 
+  We include this discussion in the paper .. 
+}
+
+
+\item \label{Review.3.22}
+you are using R as tuple defining relation, 
+then bellow you used it as set of feature vectors for the text. 
+This is confusing the reader. 
+I needed to read the definition in MATAr paper to understand 
+what R is.
+\answer{
+  We cleaned the definitions... 
+}
+
+
+\item \label{Review.3.23}
+d) In general, what was the data structure used? 
+how would the annotated text be saved?
+\answer{
+  We used XXX data structures... 
+}
+
+
+\item \label{Review.3.24}
+6- At section Results, comparing the development time 
+did not strength the work. 
+This is my first time to see researchers compare their 
+algorithm in term of line of code and developing time. 
+I would suggest comparing the algorithm complexity 
+(linear , exponential, etc), and comparing how fast a user can 
+accomplish similar jobs in the different applications. 
+This can be done by assiging similar corpus annotation job 
+and information extraction while computeing time needed by 
+the user 
+``as a survey like comparison for qualitative evaluation''. 
+you can search for ``user interface system evaluation''. 
+There is huristic evaluation where you give weight for job 
+complexity and record time needed to complete it.
+
+\answer{
+By development time we meant the time it required the 
+users to build an automated annotator similar to 
+the MERF based annotator. 
+We clarify that in the paper ... 
+
+We conducted a survey as requested and we compare the 
+manual annotation time without MERF to the annotation
+time with MERF. 
+}
+
+\item \label{Review.3.24}
+Also, comparison with previous work done by (Zaraket ) 
+in different vesion seems like comparing with your previous work 
+only and not with others. 
+It would be nice to compare others work too because user 
+interface could be introduced in different view.
+\answer{
+ ?????   
+}
+
+\item \label{Review.3.24}
+What is the data size of your evaluation? 
+I couldn't find how presion and recal was counted. 
+you mentioned books but did you covered all the text in those 
+books ? and how long was it? you can define it in term of 
+number of relation extracted , tags added, expesion processed, 
+sentences,..etc
+\answer{
+  We include more information about the data and 
+  the evaluation process... 
+}
+
+
+\item \label{Review.3.24}
+7- At section Discussion, I strongly urge you to discuss 
+WHY the precission and recall have these values.
+\answer{
+We extend the discussion section to discuss ... 
+}
+
+\item \label{Review.3.25}
+Clarity:  
+It was not very clear how the work was done 
+``Methodology part''. 
+Having ``Existing annotation and entity extraction tools'' 
+under unspecified section is misleading the reader. 
+
+
+\item \label{Review.3.25}
+unnumbered subsections was misleading me as a reader. 
+\answer{
+  Fixed. CLS file was not compatible with arabtex package. 
+}
+
+\item \label{Review.3.25}
+table 1 at page 7 while referring to it only at page 9. 
+I think it need to be closer to where it was mentioned in the text. 
+\answer{
+  Done.
+}
+
+\item \label{Review.3.25}
+``MERF regular expressions support operators such as concatenation, zero or one, zero or more, one or more, up to $M$” what is M? 
+it could be for example 0<=M<=|chunk| Section 4 “MERF”please add “Methedology”
+\answer{
+  $M$ is ... we clarified that in the paper. 
+}
+
+\item \label{Review.3.25}
+Correctness: 
+1- in the abstract, the sentence ``These techniques and 
+tools require expertise in linguistics and programming and 
+lack support of Arabic morphological analysis which is key to 
+process Arabic text''
+gives the meaning that ``it require lack support'' so I think it 
+needs to be reformulated 
+\answer{
+  We rephrased the sentence as requested. 
+}
+
+
+\item \label{Review.3.25}
+2-``defines tag types and''.// unify the font here and 
+many other places in the paper. 
+for example look at words(,correct,commercial)
+\answer{
+  Emphasize ... 
+}
+
+\item \label{Review.3.25}
+Originality:  
+This work will contribute in facilitating Arabic corpus 
+annotation, if it was made available for other researchers in 
+the field to access and use it, although there is no 
+referencing to where it can be accessed. 
+this is an improvement of a per-existing work ``MATAr: Morphology-based Tagger for Arabic''
+\answer{
+  The work is available on github... 
+}
+
+\end{enumerate}

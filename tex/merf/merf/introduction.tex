@@ -1,0 +1,213 @@
+\transtrue
+\IEEEPARstart{C}{\em omputational Linguistics} (CL) is concerned with building accurate linguistic computational models. 
+{\em Natural Language Processing} (NLP) is concerned with automating the understanding of natural language. 
+CL and NLP tasks range from simple tasks such as spell checking and typo-error correction to more complex tasks including text summarization, {\em named entity recognition} (NER), {\em cross-document analysis}, {\em machine translation}, and {\em entity-relational information extraction}~\cite{linckels2011natural,ferilli2011natural}.
+These tasks take as input digital text documents from sources including literature, books, news, business reports, chat messages, and emails. 
+Some documents are originally typed in digital format such as emails. 
+Other documents are automatically digitized using techniques such as {\em optical character recognition} (OCR) and {\em automatic speech recognition}~\cite{margner2012guide,rashwan2012robust}. 
+
+{\em Entities} are elements of text that are of interest to an NLP task. 
+{\em Relational entities} are elements of text that connect entities. 
+{\em Annotations} (referred to as {\em tags} in the sequel) relate a chunk of text to a {\em label} (a {\em tag type}) denoting a semantic value such as an entity or a relational entity.
+
+\setcode{utf8}
+\setarab
+\transfalse
+\begin{figure*}[tb]
+%  \begin{center}
+%\renewcommand{\arraystretch}{1.5}% Wider
+\resizebox{2\columnwidth}{!}{
+    \begin{tabular}{C{12cm} C{12cm}}
+  \begin{tabular}{R{12cm}}
+  \RL{وأنت} $\stackrel{u1}{\framebox[1.2\width]{\RL{الأول}}}$ $\stackrel{p_2}{\framebox[1.2\width]{\RL{التقاطع}}}$ \RL{من} $\stackrel{r_1}{\framebox[1.2\width]{\RL{بالقرب}}}$ $\stackrel{n_1}{\framebox[1.2\width]{\RL{خليفة}}}$ $\stackrel{p_1}{\framebox[1.2\width]{\RL{برج}}}$ \RL{تلاحظ} \RL{ألا} \RL{المستحيل} \RL{من} 
+  \\
+	$\stackrel{u_2}{\framebox[1.2\width]{\RL{الأولى}}}$ \RL{المرّة} \RL{هذه} \RL{كانت} \RL{وإن} \RL{حتّى} $\stackrel{n_3}{\framebox[1.2\width]{\RL{زايد،}}}$ $\stackrel{n_2}{\framebox[1.2\width]{\RL{الشيخ}}}$ $\stackrel{p_3}{\framebox[1.2\width]{\RL{شارع}}}$ $\stackrel{r_2}{\framebox[1.2\width]{\RL{في}}}$ \RL{سيارتك} \RL{تقود}  
+  \\
+  $\stackrel{p_7}{\framebox[1.2\width]{\RL{المبنى}}}$ \RL{هذا} \RL{من} $\stackrel{r_4}{\framebox[1.2\width]{\RL{مقربة}}}$ \RL{على} $\stackrel{p_6}{\framebox[1.2\width]{\RL{مول}}}$ $\stackrel{p_5}{\framebox[1.2\width]{\RL{دبيّ}}}$ \RL{يقع} $\stackrel{p_4}{\framebox[1.2\width]{\RL{الطريق؛}}}$ \RL{هذا} $\stackrel{r_3}{\framebox[1.2\width]{\RL{فيها}}}$ \RL{تسلك} \RL{التي} 
+  \\
+  \RL{العالم.} \RL{في} \RL{الأطول} \RL{يُعد} \RL{الذي}  
+  \\
+  \multicolumn{1}{L{12cm}}{
+   \arabfalse \transtrue
+   \RL{من المستحيل ألا تلاحظ برج خليفة بالقرب من التقاطع الأول وأنت تقود سيارتك في شارع الشيخ زايد، حتّى وإن كانت هذه المرّة الأولى التي تسلك فيها هذا الطريق؛ يقع دبيّ مول على مقربة من هذا المبنى الذي يُعد الأطول في العالم.}
+   \arabtrue \transfalse} 
+  \\
+  \multicolumn{1}{L{12cm}}{It is impossible not to notice $\stackrel{n1}{\framebox[1.2\width]{Khalifa}}$ $\stackrel{p_1}{\framebox[1.2\width]{Tower}}$ $\stackrel{r_1}{\framebox[1.2\width]{next to}}$ the $\stackrel{u_1}{\framebox[1.2\width]{first}}$ $\stackrel{p_2}{\framebox[1.2\width]{intersection}}$ while you are driving $\stackrel{r_2}{\framebox[1.2\width]{on}}$ $\stackrel{n_2}{\framebox[1.2\width]{Sheikh}}$ $\stackrel{n_3}{\framebox[1.2\width]{Zayed}}$ $\stackrel{p_3}{\framebox[1.2\width]{Road}}$, even if this was $\stackrel{u_2}{\framebox[1.2\width]{the first}}$ time that you take this $\stackrel{p_4}{\framebox[1.2\width]{road}}$; $\stackrel{p_5}{\framebox[1.2\width]{Dubai}}$ $\stackrel{p_6}{\framebox[1.2\width]{Mall}}$ is located $\stackrel{r_4}{\framebox[1.2\width]{near}}$ this $\stackrel{p_7}{\framebox[1.2\width]{building}}$, which is the longest in the world.} 
+  \\
+  \end{tabular}
+&
+\resizebox{0.8\columnwidth}{!}{
+  \relsize{-1} \input{figures/ergraphEx.tex}}
+  \\
+\multicolumn{1}{C{12cm}}{\multirow{1}{*}{\textbf{(a) Text with directions}}} &
+\multicolumn{1}{c}{\textbf{(b) Formula, matches, and entity-relation graph}} \\
+    \end{tabular}
+}
+%  \end{center}
+  \caption{Text, formula, and match \framework example}
+  \label{fig:intromotiv}
+\end{figure*}
+\transtrue
+\setcode{standard}
+
+In this work, we address entity and relational entity extraction from Arabic text using morphological analysis. 
+For example, given the text in Figure~\ref{fig:intromotiv}(a), we would like to extract entities and relations that form the graph in Figure~\ref{fig:intromotiv}(b). 
+The text in Figure~\ref{fig:intromotiv}(a) contains directions to Dubai Mall taken from the mall website~\footnote{~\url{http://www.thedubaimall.com/ar/}}. 
+The framed words in the text are target entities referring to names of people, 
+names of places, relative position, and numerical terms. 
+From those entities, we extract the graph shown in Figure~\ref{fig:intromotiv}(b) where vertices express entities, and edges represent the relations between those entities. 
+This task is accomplished in four phases that include morphological analysis, entity extraction based on morphological features, relation construction, and entity cross-reference.
+
+\subsection*{Morphological analysis}
+
+The Arabic language is morphologically rich. 
+Short vowels, also known as diacritics, are almost always omitted in Arabic text
+and inferred by human readers~\cite{habash2006arabic}. 
+For example, the word \RL{'sd}%
+                              ~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
+can be interpreted as \RL{'sad} {\tt ``lion''} with a {\em fatha} on the letter \RL{s} or 
+\vocalize \RL{'sodd} (I block) with a 
+{\em damma} on the letter \RL{s} and {\em shadda} on the letter \RL{d}.
+Consequently, {\em morphological analysis} is key to Arabic CL and NLP 
+even for simple tasks 
+such as tokenization and stemming\cite{arabicmorph}.
+Tokenization requires morphological analysis in Arabic because a subset of the Arabic letters are 
+non-connecting letters and do not require a space after them to provide a visual separation 
+from the next letter. 
+For example, in the sentence \setcode{utf8}\RL{ذهب الولدإلى المدرسة} (the kid went to the school)
+\transfalse
+the letter \RL{ى} is non-connecting and the two words 
+\RL{إلى} and \RL{الولد}
+are visually separable, 
+yet there is no space character between them. 
+\setcode{standard}
+\transtrue
+
+Given an Arabic word delimited by white space and punctuation, 
+a {\em morphological analyzer} returns the internal structure of the word. 
+The word structure is composed of several morphemes including 
+{\em affixes} ({\em prefixes} and {\em suffixes}), and 
+{\em stems}~\cite{arabicmorph}. 
+The analyzer returns a set of morphological solution vectors with features
+such as {\em prefix, stem, suffix}, and part of speech (POS), gloss, and category tags. 
+\vocalize
+For example, for the word \RL{fsyl`bwn},
+the analyzer may return 
+\setcode{utf8}\RL{فسيـ}\setcode{standard} 
+as a prefix morpheme with the POS tag {\tt fa/CONJ+sa/FUT+ya/IV3MD}
+and with gloss tag {\tt and + will + they (both)},
+\RL{l`b} as a stem with POS tag {\tt loEab/VERB\_IMPERFECT}
+and with gloss tag {\tt ``play''},
+and 
+\setcode{utf8}\RL{ـون}\setcode{standard}
+as a suffix with POS tag {\tt uwna/IVSUFF\_SUBJ:MP\_MOOD:I}
+and with gloss tag {\tt [MASC.PL.]}.
+%Additionally, affixes sometimes produce word forms that are homographic with other words. 
+\novocalize
+
+\subsection*{Knowledge-based entity extraction}
+
+Researchers proposed and evaluated empirical and knowledge-based techniques to extract entities and relations from text. 
+Knowledge-based techniques target a task based on solid linguistic or structural grounds~\cite{soudi2007arabic}.
+Knowledge-based techniques such as~\cite{zaghouani2010adapting,traboulsi2009arabic} propose local grammars 
+with morphological stemming to perform NER. 
+The work in~\cite{ZaMaHaCicling2012Entity} presents a method for extracting entities, 
+events, and relations amongst them from Arabic text using a hierarchy of manually built 
+finite state machines driven by morphological features and graph transformation algorithms. 
+Such techniques require advanced linguistic and programming expertise. 
+Our method provides a user-friendly interface that enables an average user to define 
+target entities and relations.
+
+\subsection*{Empirical entity extraction}
+
+Supervised and unsupervised empirical techniques employ machine learning techniques to 
+automatically extract entities without the need to manually encode the requisite 
+knowledge~\cite{soudi2007arabic}. 
+Supervised learning techniques require training text that is annotated with correct tags to learn a computational model. 
+Supervised and unsupervised techniques require reference text that is annotated with correct tags to evaluate the 
+accuracy of the technique in terms of metrics such as precision and recall~\cite{englishtreebank,arabictreebank,chinesetreebank}. 
+The work in~\cite{ekbal2010named} presents a language independent approach for NER extraction using {\em support vector machines}. 
+The work in~\cite{abdelrahman2010integrated} integrates 
+a semi-supervised bootstrapping pattern recognition technique, 
+and a supervised classifier based on {\em conditional random fields}
+to solve NER problems. 
+Our method enables the user to incrementally create complex annotations for Arabic text based on automatic 
+extraction of morphological tags through a user friendly interactive interface.
+%Researchers proposed and evaluated techniques to target different tasks in the fields of NLP and CL. 
+%The target tasks include named entity recognition, temporal entity recognition, and cross-document analysis.
+%Researchers propose local grammars with morphological stemming to perform NER\cite{zaghouani2010adapting,traboulsi2009arabic}. 
+%The work in \cite{shaalan2009nera} suggests rule-based systems powered with local grammars. 
+%The work in \cite{ZaMaHaCicling2012Entity} propose a method for extracting entities, events, and relations amongst them from Arabic text using a hierarchy of finite state machines driven by morphological features and graph transformation algorithms. However, building of the computational models of these tasks requires expertise and manual coding; something not everyone is capable of.
+
+\subsection*{\framework}
+
+In this work, we present a {\em morphology-based entity and relational information extraction framework for Arabic text} (\framework). 
+\framework provides a user-friendly interface where the user defines tag types 
+and associates them with \framework formulae that are regular expressions over 
+\framework Boolean formulae. 
+Boolean formulae are terms, negations of terms, and disjunctions of terms. 
+Terms are matches to Arabic morphological features including 
+prefix, stem, suffix, POS tags, gloss tags, and semantic categories. 
+In addition to the morphological features, \framework 
+introduces $Syn^k$ as a feature that relates two words $w_1$ and $w_2$ iff
+$w_1$ is a synonym of $w_2$ or $w_1$ is a $Syn^{k-1}$ with one of the synonyms of $w_2$. 
+Consider the example shown in Figure~\ref{fig:introsynEx}. 
+Given the Arabic words \RL{.t`Am}, \RL{'kl}, and \RL{'t`b} and their glosses \{food\}, \{food, eat, make tired\}, and \{make tired, bother, drink\} respectively. 
+We can relate \RL{.t`Am} to \RL{'kl} based on the gloss intersection \cci{food}. 
+Moreover, we can relate \RL{.t`Am} to ``\RL{'t`b}'' since \RL{'kl} and \RL{'t`b} have the gloss intersection \cci{make tired}.
+
+\begin{figure}[h]
+\setcode{utf8}
+\begin{center}
+  \resizebox{0.6\columnwidth}{!}{ 
+  	{\relsize{-3} \input{figures/syn2ex.tex}}
+  }
+  \setcode{standard}
+  \caption{$Syn^2($\RL{.t`Am}$)$}
+  \label{fig:introsynEx}
+\end{center}
+\end{figure}
+
+\framework regular expressions support operators such as concatenation, zero or one, zero or more, one or more, up to $M$, and logical conjunction and disjunction operations. 
+\framework editor allows the user to associate an action with each \framework sub-expression. 
+The user specifies the action with C++ code and uses the \framework API to access information related to 
+the matches such as text, position, length, morphological features, and numerical values.
+
+\framework takes an Arabic text, a set of user-defined \framework Boolean formulae, and a set of user-defined \framework regular expressions. \framework computes the morphological solutions of the words in the input text then computes matches to the Boolean formulae. 
+\framework then generates a {\em non-deterministic finite state automata} (NDFSA) for each expression and simulates it with the sequence of Boolean formulae matches to compute the regular expression matches. 
+\framework generates, complies, links, and executes the actions of the corresponding regular expressions as shared object libraries. 
+Finally, \framework constructs the semantic relations and cross-reference between entities. 
+\framework also provides visualization tools to present the matches, and estimate their accuracy with respect to reference tags.
+
+\framework has the following advantages:
+
+\begin{itemize}
+  \item \framework provides a novel and intuitive visual interface to build Boolean formulae over morphological features, 
+    build regular expressions over the resulting Boolean formulae, and thereafter compute automatic tags.
+  \item Up to our knowledge, \framework  is the first morphology-based framework for Arabic entity and relational entity extraction.
+  \item \framework provides the user with the ability to rapidly create annotated Arabic text corpora with sophisticated morphology-based tags.
+\end{itemize}
+
+In \framework, we make the following contributions:
+
+\begin{itemize}
+  \item \framework enables the user to define semantic relations and automatically construct matches of these relations.
+  \item \framework enables the user to associate code actions with sub-expressions with API access to 
+    match features including text, position, length, numerical value, and morphological features.
+  \item \framework enables the user to tag words based on a synonymic relation using the $Syn^k$ feature.
+\end{itemize}
+
+\subsection*{Related work}
+
+Researchers proposed systems for automatic information extraction based on user specifications. 
+CPSL is a common pattern specification language for finite-state grammar~\cite{appelt1998common}. 
+It defines three sections for declaration, rule definition, and macros. 
+\framework is an extension to CPSL with action execution and relation construction. 
+The work in \cite{chiticariu2010systemt} presents SystemT, a system based on an algebraic Approach to Declarative information extraction (IE). 
+It uses a declarative rule language and an optimizer. 
+TEXTMARKER is a rule-based IE system designed to extract structured data from text \cite{atzmueller2008rule}.  
+The work in~\cite{urbain2012user} presents a user-driven relational model targeting entity-relation extraction. 
+In this model, the user enters a natural language query. 
+QARAB is a question answering system supporting the Arabic language~\cite{hammo2002qarab}. 
+It takes Arabic natural language query and attempts to provide short answers for it. 
+We discuss related work and compare to it in details in Section~\ref{sec:related}.

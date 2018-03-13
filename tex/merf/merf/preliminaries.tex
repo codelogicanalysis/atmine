@@ -1,0 +1,89 @@
+\setcode{utf8}
+\setarab
+
+\subsection{Morphological features}
+
+Arabic is a morphologically rich language. 
+Due to the rich Arabic morphology, a single Arabic word 
+might replace a complete sentence in English. 
+For example, the word \RL{يَأْكُله}
+stands for the English 
+statement ``he/it is eating him/it''. 
+
+Morphological analysis decomposes an Arabic word into
+several morphemes,
+where a morpheme is the smallest linguistic unit 
+that has a meaning and fulfills a grammatical function. 
+A morpheme can be a {\em stem}, or an {\em affix}. 
+An affix can be a {\em prefix}, a {\em suffix}, or an {\em infix}. 
+Each morpheme is associated with other morphological features 
+including {\em POS}, {\em gloss}, {\em lemma}, and {\em category} tags. 
+The gloss is a brief notation of the semantic meaning of a word. 
+The category is a user defined tag that includes several morphemes of 
+one kind. 
+For example, the user can define a temporal category to include the 
+prefix \RL{س} (will) and the time unit \RL{ساعة} (hour).
+
+For example, the word \RL{يَأْكُله} is composed of three morphemes 
+with associated morphological features as shown in Table~\ref{tab:samplesolution}.
+The {\tt IV3MS} POS tag indicates a third person masculine singular subject pronoun 
+attached to a verb, and the {\tt IVSUFF\_DO:3MS} POS tag
+indicates a third person masculine
+singular pronoun attached as an object to an action verb.
+The {\tt VERB\_IMPERFECT} tag indicates an imperfect verb.
+The notation for the gloss and POS tags is taken from the Buckwalter 
+morphological analyzer~\cite{Buckwalter:02}.
+
+%In particular, the word belongs to the category {\em Verb Imperfect}.
+
+\begin{table}[h!]
+  \centering
+  \caption{Sample Solution Vector for the text \RL{يَأْكُله}.}
+    \begin{tabular}{|r|c|c|c|}
+          & \textbf{Prefix} & \textbf{Stem} & \textbf{Suffix} \\
+    \textbf{Data} & \RL{يَ} & \RL{أْكُل} & \RL{ه} \\
+    \textbf{POS} & IV3MS+ & VERB\_IMPERFECT & IVSUFF\_DO:3MS \\
+    \textbf{Gloss} & he/it & eat/consume & him/it \\
+    \end{tabular}%
+  \label{tab:samplesolution}%
+\end{table}%
+\setcode{standard}
+
+\subsection{Morphological Analyzer}
+An Arabic morphological analyzer takes a word in Arabic
+and returns a set of morphological solutions. 
+Each solution splits the word into its morphemes and 
+associates each morpheme with corresponding tags. 
+Multiple solutions can be the result of multiple valid 
+segmentations of the word into morphemes, or the multiple 
+possible tags associated with a morpheme. 
+
+\framework is integrated with an in-house open source Arabic morphological analyzer
+based on finite state transducers~\cite{ZaMaColing2012DemosSarf}.
+
+\subsection{Finite State Transducers}
+A finite state transducer (FST) is a finite state machine with an input and an output tape. 
+FSTs differ from finite state automata (FSA) in that
+they have an output tape while FSAs have accept states instead.
+Formally, an FST is a tuple $M = (S,S_{0},\sigma,\varGamma,\delta)$ where $S$ is the set of states,
+$S_{0} \subset S$ is the set of initial states, 
+$\sigma$ is the input alphabet, 
+$\varGamma$ is the output alphabet, 
+and $\delta \subseteq S \times (\sigma \times \{\epsilon\}) \times (\varGamma \times \{\epsilon\}) \times S$ is the transition relation. 
+FSTs have been used extensively in text mining applications where the input is the text and the output is the
+delimiters of a chunk of text with an associated class~\cite{beesley2001finite}. 
+FSTs are attractive due to their efficiency and ease of use.
+
+\subsection{Classes and labels}
+A {\em class} is a semantic decision that the NLP of CL task tries to make. 
+Parts of text that belong to the desired class are all assigned the same class {\em label}. 
+For example, {\em temporal unit} is a label of a class that encompasses explicit temporal 
+information in the sentence related to time such as 
+\RL{dqyqT} (minute) and \RL{sA`T} (hour). 
+
+The user may wish to define a simple class as an abstract category that contains a 
+set of morphemes. 
+For more sophisticated classes, the user can use the visual interface in \framework to 
+define the class through a Boolean formulae with morphology based atomic terms. 
+The annotation of text with the labels of the classes can later be used in 
+CL and NLP tasks for learning, testing, and validation. 

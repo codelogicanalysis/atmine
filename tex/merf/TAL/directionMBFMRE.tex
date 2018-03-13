@@ -1,0 +1,30 @@
+\setcode{utf8}
+\setarab
+\transfalse
+\begin{figure}[tb!]
+%\renewcommand{\arraystretch}{1.5}% Wider
+\resizebox{0.9\columnwidth}{!}{
+\begin{tabular}{c}
+\resizebox{\columnwidth}{!}{
+	\begin{tabular}{c|c|c|c}
+		MBF & description & formula & matches\\ \hline
+        N & name of person & $category~=~Name\_of\_Person$ & $n_1,n_2,n_3$ \\ \hline
+        P & name of place & $category~=~Name\_of\_Place$ & $p_1,p_2,...,p_7$ \\ \hline
+        R & relative position & $stem\in$ \{\RL{قرب},\RL{في},\dots\} & $r_1,r_2,r_3,r_4$ \\ \hline
+        U & numerical term & $stem\in$ \{\RL{أول},\RL{ثاني},\dots\} & $u_1,u_2$ \\
+    \end{tabular}
+} 
+\\ ~ \\
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{cc}
+\relsize{-2} \input{figures/match1.tex} &
+\relsize{-2} \input{figures/match2.tex} \\
+    \end{tabular}
+} \\
+\end{tabular}
+}
+  \caption{Boolean formulae, and matches of regular expression $(P|N)+~O?~R~O$\^{}$2~(P|N|U)+$}
+  \label{fig:motiv}
+\end{figure}
+\transtrue
+\setcode{standard}

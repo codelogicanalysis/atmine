@@ -1,0 +1,133 @@
+\vocalize
+
+\def\pp{\ensuremath{{\cal P}}} % prefix
+\def\ss{\ensuremath{{\cal S}}} % stem
+\def\xx{\ensuremath{{\cal X}}} % suffix
+\def\PP{\ensuremath{\mathit{POS}}} % pos
+\def\GG{\ensuremath{\mathit{GLOSS}}} % gloss
+\def\AC{\ensuremath{\mathit{CAT}}} % category
+
+%~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
+%{\bf Morphological analyzer (Sarf).~}
+Morphological analysis is key to Arabic NLP~\cite{arabicmorph} 
+due to the exceptional degree of ambiguity in writing, 
+the rich morphology, and the complex word derivation system. 
+Short vowels, also known as diacritics, are typically omitted in Arabic text
+and inferred by readers~\cite{habash2006arabic}. 
+For example, the word \RL{bn}%
+can be interpreted as \RL{bon} {\tt ``coffee''} with a {\em damma} diacritic on the 
+letter \utfrl{بـ} or 
+\vocalize \RL{bin} (son of) with a 
+{\em kasra} diacritic on the letter \utfrl{بـ}.
+
+Morphological analysis is required even for tokenization 
+of Arabic text. 
+The position of an Arabic letter in a word 
+(beginning, middle, end, and standalone) changes
+its visual form.
+Some letters have non-connecting end forms which allows visual
+word separation without the need of a white space separator. 
+For example, the word \utfrl{ياسمين} can be interpreted as
+the ``Jasmine'' flower, 
+as well as \notrutfrl{يا} (the calling word) followed by
+the word \notrutfrl{سمين} (obese). 
+Consider the sentence 
+%\utfrl{ذهب الولدإلى المدرسة} 
+\notrrl{AlmdrsT}\notrrl{_dhb alwald-il_A}
+\arabfalse \RL{_dhb alwald-il_A almdrsT} \arabtrue
+(the kid went to school). 
+The letters \notrutfrl{د} and \notrutfrl{ى} have 
+non-connecting end of word forms and the words 
+\notrutfrl{الولد},\notrutfrl{الى}, and\notrutfrl{المدرسة} 
+are visually separable, 
+yet there is no space character in between.
+Newspaper articles with text justification requirements, 
+SMS messages, and automatically digitized documents
+are examples where such problems occur. 
+
+\framework is integrated with {\em Sarf}, 
+an in-house open source Arabic morphological analyzer based on 
+finite state transducers~\cite{ZaMaColing2012DemosSarf}. 
+Given an Arabic word, Sarf returns 
+a set of morphological solutions. 
+A word might have more than one solution 
+due to multiple possible segmentations and multiple tags associated 
+with each word. 
+A morphological solution is the internal structure of the word 
+composed of several morphemes including 
+{\em affixes} ({\em prefixes} and {\em suffixes}), and a
+{\em stem}, where each morpheme is associated with tags such as 
+POS, gloss, and category tags~\cite{arabicmorph,habash2010introduction}.
+
+Prefixes attach before the stem and a word can have multiple prefixes. 
+Suffixes attach after the stem and a word can have multiple suffixes. 
+Infixes are inserted inside the stem to form a new stem. 
+In this work we consider a set of stems that includes infix morphological changes. 
+The part-of-speech tag, referred to as POS, 
+assigns a morpho-syntactic tag for a morpheme. 
+The gloss is a brief semantic notation of morpheme in English. 
+A morpheme might have multiple glosses as it could stand for multiple meanings. 
+The category is a custom tag that we assign to multiple morphemes. 
+For example, we define the {\tt Name of Person} category to include proper names.
+%The category is a user defined tag that the user can assign to several 
+%morphemes.
+%For example, the user can define a temporal category to include the 
+%prefix \utfrl{س} (will) and the time unit \utfrl{ساعة} (hour). 
+
+We denote by 
+\ss,
+\pp,
+\xx,
+\PP,
+\GG, and 
+\AC, the set of 
+all stems,
+prefixes,
+suffixes,
+POS,
+gloss, 
+and user defined category tags, respectively. 
+Let $T=\langle t_1,t_2,\ldots,t_M\rangle$ be a set of Arabic words denoting the 
+text documents. 
+\framework uses Sarf to compute a set of morphological solutions $M(t)=\{m_1,m_2,\ldots,m_N\}$
+for each word $t\in T$. 
+Each morphological solution $m\in M(t)$ is a tuple of the form 
+$\langle p,s,x,P,G,C\rangle\in \pp \times  \ss\times \xx\times \PP\times\GG \times \AC$.
+
+%\setarab
+\begin{table}[tb!]
+  \centering
+  \caption{Sample solution vector for \utfrl{فَسَيَأْكُلها}.}
+  \resizebox{0.7\columnwidth}{!}{
+    \begin{tabular}{|r|c|c|c|c|c|}
+          & \multicolumn{3}{c|}{\textbf{Prefixes}} & \textbf{Stem} & \textbf{Suffix} \\
+    \textbf{Data} & \utfrl{فَ} & \utfrl{سَ} & \utfrl{يَ} & \utfrl{أْكُل} & \utfrl{ها} \\
+    \textbf{POS} & CONJ+ & FUT+ & IV3MS+ & VERB\_IMPERFECT & IVSUFF\_DO:3FS \\
+    \textbf{Gloss} & and/so & will & he/it & eat/consume & it/them/her \\
+    \textbf{index} & \multicolumn{3}{c|}{10} & 13 & 16 \\
+    \textbf{length} & \multicolumn{3}{c|}{3} & 3 & 2 \\
+    \end{tabular}%
+    }
+  \label{tab:samplesolution}%
+\end{table}%
+
+Table~\ref{tab:samplesolution} shows the morphological analysis
+of the word \notrutfrl{فَسَيَأْكُلها}. 
+The word is composed of the prefix morphemes 
+\utfrl{فَ}, \utfrl{سَ}, and \utfrl{يَ}, followed by the 
+stem \utfrl{أْكُل}, and then followed by the suffix morpheme
+\utfrl{ها}. 
+Each morpheme is associated with a number of morphological features.
+The {\tt CONJ},
+{\tt FUT}, 
+{\tt IV3MS} 
+{\tt VERB\_IMPERFECT}, and 
+{\tt IVSUFF\_DO:3FS} POS tags indicate
+conjunction, 
+future, 
+third person masculine singular subject pronoun,
+an imperfect verb, and 
+and a third person feminine singular object pronoun, respectively.
+The POS and gloss notations follow the Buckwalter notation~\cite{Buckwalter:02}.
+
+\input{MERFOverview}

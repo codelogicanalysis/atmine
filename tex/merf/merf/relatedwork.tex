@@ -1,0 +1,52 @@
+The work in \cite{dukes2011supervised} presents a collaborative effort towards morphological 
+and syntactic annotation of the Quran. 
+The task is held through online supervised collaboration using a multi-stage approach that 
+includes automatic POS tagging, manual verification, and online supervised collaborative 
+proofreading. 
+Moreover, the work in \cite{dorr2010interlingual} presents a framework for interlingual 
+annotation of parallel text corpora with multi-level representations. 
+This corpora is important for NLP tasks including text summarization, information retrieval, 
+and machine translation.
+An overview of annotation tools and their Arabic-English word alignment issues 
+concludes with a set of rules and guidelines needed in an Arabic annotation alignment tool
+~\cite{kholidy2010towards}.
+The work in \cite{kulick2010consistent} presents the integration of the Standard Arabic Morphological 
+Analyzer (SAMA) into the annotation workflow of the Arabic Treebank.
+Such tasks motivated us to build \framework, a morphology based open source annotation tool 
+for the Arabic language.
+
+MMAX2 is a manual multi-level linguistic annotation tool with an XML 
+based data model ~\cite{mmax2}. 
+It enables the user to create, browse, visualize, and query annotations
+and may be able to resolve coreference tags. 
+BRAT is a multi-lingual user friendly manual web-based annotator that allows the construction 
+of entity and relation annotation corpora~\cite{brat}. 
+BRAT provides an API for automated annotators to provide annotations.
+WordFreak is similar to BRAT. It supports Arabic text and can be extended through a plug-in 
+architecture to integrate with NLP and CL tasks. 
+The plug-in API may enable the use of automatic annotators along with customized visualization 
+and annotation specifications~\cite{wordfreak}. 
+AGTK is a toolkit for the development of text and speech annotation tools~\cite{agtk}. 
+It provides import APIs from other data and graphical user interface (GUI) components. 
+The work in \cite{smrz2004morphotrees} presents the extension of TrEd, a customizable 
+general purpose tree editor, with the Arabic MorphoTrees annotation. The MorphoTrees present 
+the morphological analyses in a hierarchical organization based on common features.
+
+\framework differs from MMAX2, BRAT, WordFreak, AGTK, and TrEd in that it allows the user to specify 
+sophisticated tag types using Boolean formulae of Arabic morphological features. 
+These are key in CL and NLP for Arabic text. 
+Fassieh is a commercial Arabic text annotation tool that enables the production of large 
+Arabic text corpora~\cite{attia2009fassieh}. 
+The tool supports Arabic text factorizations including morphological analysis, POS tagging, 
+full phonetic transcription, and lexical semantics analysis in an automatic mode. 
+Fassieh is not directly accessible to the research community and requires commercial licensing. 
+\framework is open source and differs in that it allows the user to build tag types 
+using Boolean formulae of several atomic terms and define Sequential formulae based on the Boolean formulae. 
+
+Task specific annotation tools such as~\cite{alrahabi2006semantic}
+uses enunciation semantic maps to automatically annotate 
+directly reported Arabic and French speech. 
+AraTation is another task specific tool for semantic annotation of 
+Arabic news using web ontology based semantic maps~\cite{saleh2009aratation}.
+We differ in that \framework is general, and not task specific, and it uses 
+morphology based features as atomic terms. 

@@ -1,0 +1,35 @@
+%\begin{figure}[h!]
+%  \centering
+%  \includegraphics[width=0.45\textwidth]{figures/overview}
+%  \caption{\framework Overview}
+%  \label{f:overview}
+%\end{figure}
+
+\begin{figure}[h!]
+\centering
+\resizebox{\columnwidth}{!}
+{\tiny \input{figures/overview.tex}}
+\caption{\framework flow diagram.}
+\label{f:overview}
+\end{figure}
+
+Figure~\ref{f:overview} shows the flow diagram of \framework.
+\framework takes as input the Arabic text. 
+The user interacts with \framework through a user-friendly interface to specify the
+Morphology-based Boolean formulae, the Morphology-based regular expressions, 
+the relation declarations, and the actions.
+\framework analyzes the text using an inhouse Arabic morphological anaylzer~\cite{sarf} and computes morphological solutions
+for each word in the Arabic text.
+\framework passes the solutions to the Boolean formula simulator including the K-Synonym detector 
+which computes the matches and produces a tag set for each word.
+\framework then passes the sequence of tag sets to the regular expression simulator which computes 
+chunks; i.e. sequences of words, whose tag sets match the expressions. 
+\framework then evaluates the semantic relation declarations against the matches to compute the semantic relational entities, 
+and executes the corresponding user-defined actions. 
+Finally, \framework uses a cross-referrence relation such as the \cci{isA} relation to create relations across chunks and 
+documents. 
+
+\framework presents the resulting tags to the user incrementally in the form of 
+text annotated with style and color legends, match trees, and graphs.
+\framework also provides statistical analysis tools that help compare sets of tags to reference tags,
+compute standard accuracy measures, and correct generated annotations. 

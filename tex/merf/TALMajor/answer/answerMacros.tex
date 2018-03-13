@@ -1,0 +1,730 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\MATH}[1]{\ensuremath{#1}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% Lists
+\newcommand{\be}{\begin{itemize}}
+\newcommand{\ee}{\end{itemize}}
+\newcommand{\bdn}{\begin{description}}
+\newcommand{\edn}{\end{description}}
+\newcommand{\bn}{\begin{enumerate}}
+\newcommand{\en}{\end{enumerate}}
+\renewcommand{\i}{\item}
+
+\newenvironment{closeitemize}{\begin{list}%
+{$\bullet$}%
+{\setlength{\itemsep}{-0.2\baselineskip}%
+\setlength{\topsep}{0.2\baselineskip}}}%
+{\end{list}}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MISC
+
+\newcommand{\remove}[1]{}
+
+%\newcommand{\case}[2]{\vspace{1.5ex} \noindent \textit{Case} #1: \emph{#2}.}
+\newcommand{\scase}[2]{\vspace{1.5ex} \noindent \textit{Subcase} #1: #2.}
+\newcommand{\sscase}[2]{\vspace{1.0ex} \noindent \textit{Subsubcase} #1: #2.}
+
+%\newcommand{\defn}[1]{\textit{#1}}
+\newcommand{\defi}[1]{\textit{#1}:}
+
+\newcommand{\lb}{\linebreak}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% FOOTNOTES AND THEOREMS
+
+
+\newtheorem{definition}{Definition}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+
+\newtheorem{helper}{Helper Function}
+\AtBeginEnvironment{helper}{\small}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Text
+\newcommand{\smpage}{\noindent \parbox{\textwidth}}
+\newcommand{\samep}{\parbox{\textwidth}}   % put onto the same page
+
+
+\newcommand{\mathid}[1]{\ensuremath{\mathit{#1}}\xspace}
+
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+%\newcommand{\ul}{\underline}
+\newcommand{\bs}{\bigskip}
+%\newcommand{\ms}{\medskip}
+%\renewcommand{\ss}{\smallskip}
+
+\newcommand{\bfg}{\begin{figure}}
+\newcommand{\efg}{\end{figure}}
+
+\renewcommand{\ss}{\smallskip}
+\newcommand{\Eg}{E.g.,\xspace}
+\newcommand{\eg}{e.g.,\xspace}
+\newcommand{\ie}{i.e.,\xspace}
+
+
+\newcommand{\intr}{\empi}
+\newcommand{\intrdef}{\emph}
+
+\newcommand{\emp}[1]{\textbf{#1}}
+\newcommand{\empp}[1]{\emph{#1}}
+\newcommand{\empb}[1]{\textbf{#1}}
+\newcommand{\empi}[1]{\textit{#1}}
+\newcommand{\empbi}[1]{\textbf{\textit{#1}}}
+
+\newcommand{\ind}{\hspace*{3.0em}}
+
+%%%%%From Nancy's book directory:  This spaces the symbols within a
+%%%%%word nicely, in math mode.
+\newcommand{\ms}[1]{%
+        \relax\ifmmode
+                \mathord{\mathcode`\-="702D\it #1\mathcode`\-="2200}%
+        \else
+                $\mathord{\mathcode`\-="702D\it #1\mathcode`\-="2200}$%
+        \fi
+}
+
+
+\newcommand{\cmnt}{\`//}
+
+
+%%%%%%%%%%%%%%%%%%%%%%% GENERAL MATH SYMBOLS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Adj}{\mathop{\rm Adj}\nolimits}
+\newcommand{\abs}[1]{\left| #1\right|}
+\newcommand{\card}[1]{\left| #1\right|}
+\newcommand{\ar}{\rightarrow}
+%\newcommand{\ar}{\longrightarrow}
+\newcommand{\al}{\alpha}
+\renewcommand{\b}[1]{\overline{#1}}
+\newcommand{\cat}{\mathbin{\frown}}
+\newcommand{\choice}{\mbox{$[\hspace*{-1.0pt}]$}}
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\renewcommand{\d}{\, . \,}      % separator in quantified formulae
+\newcommand{\df}{\triangleq}
+%\newcommand{\df}{\mbox{$\:\stackrel{\rm df}{=\!\!=}\:$}}
+\newcommand{\dn}{\mbox{$\hspace{-0.1em}\downarrow\hspace{-0.1em}$}}
+\newcommand{\Ex}{\mathop{\rm Ex}}
+\newcommand{\es}{``"}   %empty string
+\newcommand{\expect}[1]{{\rm E}\left[ #1 \right]}
+\newcommand{\expectsq}[1]{{\rm E}^2\left[ #1 \right]}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\renewcommand{\ge}{\geqslant}
+\newcommand{\given}{\mid}
+\newcommand{\halfind}{\hspace*{1.5em}}
+\newcommand{\ifof}{\Longleftrightarrow} % logical equivalence
+\newcommand{\img}{\mathrm{Image}}
+\newcommand{\ints}{\cap}
+\renewcommand{\l}{\ell}
+\newcommand{\la}[1]{\mbox{$\, \stackrel{#1}{\rightarrow} \,$}}
+\renewcommand{\le}{\leqslant}
+\newcommand{\lra}{\mbox{$\longrightarrow$}}
+%\newcommand{\mod}{\ \mathrm{mod}\ }
+\newcommand{\oneton}{\{1,\,\ldots, n\}}
+\newcommand{\n}{\ensuremath{[1:n]}} 
+\newcommand{\paren}[1]{\left( #1 \right)}
+\newcommand{\pair}[2]{\ensuremath{(#1, #2)}}
+\newcommand{\pind}{\hspace*{3.0em}}
+\newcommand{\pj}{\!\upharpoonright\!}
+\newcommand{\proj}{\pj}
+\newcommand{\preimg}{\mathrm{PreImage}}
+\newcommand{\pl}{\!\parallel\!}
+\newcommand{\s}{\mbox{$\hspace{-1pt}-\hspace{-2pt}$}}
+\newcommand{\set}[1]{\ensuremath{\{ #1 \}}\xspace}
+%\newcommand{\set}[1]{\{#1\}}
+\newcommand{\seq}{\approx}
+\newcommand{\spc}{\mbox{\vspace{-0.25in}}}
+\newcommand{\stt}{\ | \ }
+%\newcommand{\st}[1]{\ensuremath{[ #1 ]}\xspace}
+\newcommand{\sub}{\subseteq}
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}
+\newcommand{\tiff}{\textup{\ iff\ }}
+\newcommand{\tl}[1]{\mbox{$\tilde{#1}$}}% abbreviated tilde
+\newcommand{\tpl}[1]{\ensuremath{\langle #1 \rangle}}
+\newcommand{\un}{\cup}
+\newcommand{\union}{\bigcup}
+\newcommand{\up}{\mbox{$\hspace{-0.1em}\uparrow\hspace{-0.1em}$}}
+\newcommand{\Var}{\mathop{\rm Var}\nolimits}
+\newcommand{\variance}[1]{{\rm Var}\left[ #1 \right]}
+\newcommand{\w}{\omega}
+
+\newcommand{\defcase}{\noindent\ensuremath{\bullet}\xspace}
+
+%%%%%%%%%%%%%%%%%%% Ints, Reals, etc %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\reals}{{\mathbb R}}
+\newcommand{\integers}{{\mathbb Z}}
+\newcommand{\naturals}{{\mathbb N}}
+\newcommand{\nat}{\naturals}
+\newcommand{\nats}{\naturals}
+\newcommand{\rationals}{{\mathbb Q}}
+\newcommand{\complex}{{\mathbb C}}
+\newcommand{\complexes}{{\mathbb C}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%% MATH MACROS AND ENVIRONMENTS %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\newcommand{\se}[3]{\ensuremath{#1[#2 .. #3]}}
+\newcommand{\se}[3]{\ensuremath{#1[#2 \! : \! #3]}}
+%\newcommand{\se}[3]{\ensuremath{#1[#2,\ldots,#3]}}
+
+
+\newcommand{\ang}[1]{\ifmmode{\left\langle #1 \right\rangle}
+   \else{$\left\langle${#1}$\right\rangle$}\fi}
+        % the \if allows use outside mathmode,
+        % but will swallow following space there!
+
+\newcommand{\struct}[2]{\raisebox{-0.1in}{$\stackrel { \displaystyle
+#1} {\scriptstyle #2}\,$}}
+
+\newcommand{\pbx}[2]{\stackrel{\fbox{\begin{Beqnarray*} #1\\.\\.\\.\\#2 \end{Beqnarray*}}}{}}      % proof box
+
+\newcommand{\asrt}[1]{\ensuremath{\{ #1 \}}}
+
+%%%%%%%%%%%%%%%%%%%%%%% Hoare Logic Symbols
+\newcommand{\lng}{\langle}
+\newcommand{\ra}{\rangle}
+\newcommand{\htp}[3]{\ensuremath{\{#1\}\,#2\,\{#3\}}}
+\newcommand{\htptc}[3]{\ensuremath{\langle#1\rangle\,#2\,\langle#3\rangle}}
+\newcommand{\var}{\ensuremath{\varphi}}
+
+\newcommand{\as}[1]{\ensuremath{\{#1\}}}               % partial correctness asserion
+%\newcommand{\ts}[1]{\ensuremath{\langle #1 \rangle}}   % termination correctness asserion
+
+\newcommand{\ch}{\mbox{[\hspace{-0.15ex}]}}
+
+\newcommand{\pa}[1]{\{\ensuremath{#1}\}}
+%\newcommand{\ta}[1]{$<$#1$>$}
+\newcommand{\ta}[1]{$\langle$\ensuremath{#1}$\rangle$}
+
+
+\newcommand{\satt}{\equiv}
+\newcommand{\sat}{\models}
+\newcommand{\satf}{\mbox{\ensuremath{=\hspace*{-5pt}|}}}   % satisfiable - backward turnstile
+%\newcommand{\satf}{\mbox{\ensuremath{=\!\!\!\!|}}}   % satisfiable - backward turnstile
+
+
+\newcommand{\yld}{\vdash}
+\newcommand{\yldd}{\equiv}
+%\newcommand{\yldd}{\dashv \vdash}
+
+\newcommand{\prob}{\ensuremath{\Pm \sat \pair{\Pre}{\Post}|_b }}
+
+
+
+\newcommand{\pc}[1]{{#1}}    %% font for pseudocode
+%\newcommand{\pc}[1]{\codetext{#1}}    %% font for pseudocode
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% JUSTIFY EXAMPLE MACROS
+\newcommand{\valpha}{\ensuremath{\mathit{alpha}}}
+\newcommand{\numeric}{\ensuremath{\mathit{numeric}}}
+\newcommand{\wspace}{\ensuremath{\mathit{wspace}}}
+\newcommand{\vnewline}{\ensuremath{\mathit{newline}}}
+\newcommand{\blank}{\ensuremath{\mathit{blank}}}
+\newcommand{\word}{\ensuremath{\mathit{word}}}
+\newcommand{\lline}{\ensuremath{\mathit{line}}}
+\newcommand{\para}{\ensuremath{\mathit{para}}}
+\newcommand{\numWords}{\ensuremath{\mathit{numWords}}}
+\newcommand{\selectWord}{\ensuremath{\mathit{selectWord}}}
+\newcommand{\numLines}{\ensuremath{\mathit{numLines}}}
+
+
+%\RequirePackage{metre}
+
+\newcommand{\nl}{\ensuremath{\backslash n}}
+\newcommand{\bl}{\textvisiblespace}
+\newcommand{\tx}{tx}
+
+
+
+%%%%%%%%%%%%%% MACROS FOR NUMBERED LINES IN CODE TABBING ENVIRONMENT %%%%%%%%%%%%%%%%
+
+\newcounter{lctr}
+
+\newcommand{\li}{\addtocounter{lctr}{1}\arabic{lctr}.}
+\newcommand{\lio}[1]{\addtocounter{lctr}{1}\arabic{lctr}.\>\ensuremath{#1}\\}
+\newcommand{\lit}[1]{\addtocounter{lctr}{1}\arabic{lctr}.\>\>\ensuremath{#1}\\}
+\newcommand{\lih}[1]{\addtocounter{lctr}{1}\arabic{lctr}.\>\>\>\ensuremath{#1}\\}
+
+%%%% 2'nd argument is for a commment
+\newcommand{\lioc}[2]{\addtocounter{lctr}{1}\arabic{lctr}.\>\ensuremath{#1}\`{#2}\\}
+\newcommand{\litc}[2]{\addtocounter{lctr}{1}\arabic{lctr}.\>\>\ensuremath{#1}\`{#2}\\}
+\newcommand{\lihc}[2]{\addtocounter{lctr}{1}\arabic{lctr}.\>\>\>\ensuremath{#1}\`{#2}\\}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% PSEUDOCODE SECTION
+
+\newcommand{\gt}{\ensuremath{:=}}   % assignment
+%\newcommand{\gt}{\ensuremath{\leftarrow}}   % assignment
+\newcommand{\swap}{\ensuremath{\leftrightarrow}}   % swap two vars
+
+\newcommand{\pseudocode}[1]{\ensuremath{\mathbf{#1}}\xspace}
+%\newcommand{\pseudocode}[1]{\ensuremath{\mathbf{#1}\ }}
+\newcommand{\pseudocodensp}[1]{\ensuremath{\mathbf{#1}}}
+%\newcommand{\pseudocode}[1]{\mbox{${\bf #1}$}\xspace}
+
+\newcommand{\IFC}[1]{\pseudocode{if}\ (\ensuremath{#1})}
+\newcommand{\WHILEC}[1]{\pseudocode{while}\ (\ensuremath{#1})}
+\newcommand{\RETURNE}[1]{\pseudocodensp{return}(\ensuremath{#1})}
+
+\newcommand{\IF}{\pseudocode{if}}
+\newcommand{\FI}{\pseudocode{fi}}
+\newcommand{\THEN}{\pseudocode{then}}
+\newcommand{\ELSE}{\pseudocode{else}}
+\newcommand{\ELSF}{\pseudocode{else\ if}}
+\newcommand{\ENDIF}{\pseudocodensp{endif}}
+
+\newcommand{\WHILE}{\pseudocode{while}}
+\newcommand{\ENDWHILE}{\pseudocode{endwhile}}
+\newcommand{\FOR}{\pseudocode{for}}
+\newcommand{\FORALL}{\pseudocode{forall}}
+\newcommand{\FOREACH}{\pseudocode{foreach}}
+\newcommand{\CONTINUE}{\pseudocode{continue}}
+\newcommand{\ENDFOR}{\pseudocodensp{endfor}}
+\newcommand{\DO}{\pseudocode{do}}
+\newcommand{\OD}{\pseudocode{od}}
+
+\newcommand{\BEGIN}{\pseudocode{begin}}
+\newcommand{\END}{\pseudocode{end}}
+\newcommand{\PROC}{\pseudocode{procedure}}
+\newcommand{\CALL}{\pseudocode{call}}
+\newcommand{\VAL}{\pseudocode{value}}
+\newcommand{\VALRES}{\pseudocode{value\!-\!result}}
+\newcommand{\RES}{\pseudocode{result}}
+\newcommand{\RETURN}{\pseudocodensp{return}}
+\newcommand{\DOWNTO}{\pseudocode{downto}}
+\newcommand{\TO}{\pseudocode{to}}
+
+\newcommand{\function}{\pseudocode{function}}
+\newcommand{\operation}{\pseudocode{operation}}
+
+\newcommand{\newo}{\pseudocode{new}}
+\renewcommand{\int}{\pseudocode{int}}
+
+\newcommand{\skipp}{\pseudocode{skip}}
+
+
+
+
+
+
+\newcommand{\csrtl}{\adjustbox{width=3.5em}{\ensuremath{{\cal C/S}}-\ensuremath{\mathit{RTL}}}\xspace}
+
+\newcommand{\flfl}{\ensuremath{\mathit{ff}}\xspace}
+\newcommand{\gflfl}{\ensuremath{\mathit{gff}}\xspace}
+\newcommand{\gicflfl}{\ensuremath{\mathit{gicff}}\xspace}
+
+\newcommand{\vflfl}{\ensuremath{\mathbf{ff}}\xspace}
+\newcommand{\vgflfl}{\ensuremath{\mathbf{gff}}\xspace}
+\newcommand{\vgicflfl}{\ensuremath{\mathbf{gicff}}\xspace}
+
+\newcommand{\vI}{\ensuremath{\mathbf{I}}\xspace}
+\newcommand{\vO}{\ensuremath{\mathbf{O}}\xspace}
+\newcommand{\vRi}{\ensuremath{\mathbf{RI}}\xspace}
+\newcommand{\vL}{\ensuremath{\mathbf{L}}\xspace}
+\newcommand{\vDelta}{\ensuremath{\pmb{\delta}}\xspace}
+
+
+%%%%%% macros for helper functions 
+\newcommand{\bfit}[1]{\ensuremath{\textsc{\small  #1}}}
+\newcommand{\htbullet}{\scalebox{0.7}{$\bullet$}\xspace}
+\newcommand{\htfunc}[1]{\cellcolor{gray!10}\textbf{\textsc{\small #1}}}
+
+\newcommand{\alwaysB}{\bfit{alwaysB}\xspace}
+\newcommand{\clkedged}{\bfit{ClkEdged}\xspace}
+\newcommand{\wireAssign}{\bfit{wireAssign}\xspace}
+\newcommand{\asgnmtType}{\bfit{asgnmtType}\xspace}
+\newcommand{\belongsTo}{\bfit{belongsTo}\xspace}
+\newcommand{\compAStmt}{\bfit{compAStmt}\xspace}
+\newcommand{\compCStmt}{\bfit{compCStmt}\xspace}
+\newcommand{\createWire}{\bfit{createWire}\xspace}
+\newcommand{\elseB}{\bfit{elseB}\xspace}
+\newcommand{\exprsn}{\bfit{exprsn}\xspace}
+\newcommand{\isPrm}{\bfit{isPrm}\xspace}
+\newcommand{\selectRule}{\bfit{selectRule}\xspace}
+\newcommand{\interconnectRule}{\bfit{interconnectRule}\xspace}
+\newcommand{\ConcernWeave}{\bfit{ConcernWeave}\xspace}
+\newcommand{\PrmRTLTransform}{\bfit{PrmRTLTransform}\xspace}
+\newcommand{\PLIPCCompute}{\bfit{PLIPCCompute}\xspace}
+\newcommand{\FFIPCCompute}{\bfit{FFIPCCompute}\xspace}
+\newcommand{\followingPrmLps}{\bfit{followingPrmLps}\xspace}
+\newcommand{\gffInst}{\bfit{gffInst}\xspace}
+\newcommand{\gicffInst}{\bfit{gicffInst}\xspace}
+\newcommand{\arrindex}{\bfit{index}\xspace}
+\newcommand{\iterator}{\bfit{iterator}\xspace}
+\newcommand{\incrementExp}{\bfit{incrementExp}\xspace}
+\newcommand{\initExp}{\bfit{initExp}\xspace}
+\newcommand{\loopB}{\bfit{loopB}\xspace}
+\newcommand{\nestedPrmLps}{\bfit{nestedPrmLps}\xspace}
+\newcommand{\parent}{\bfit{parent}\xspace}
+\newcommand{\parentBlock}{\bfit{parentBlock}\xspace}
+\newcommand{\precedes}{\bfit{precedes}\xspace}
+\newcommand{\process}{\bfit{process}\xspace}
+\newcommand{\replaceVar}{\bfit{replaceVar}\xspace}
+\newcommand{\stmtType}{\bfit{stmtType}\xspace}
+\newcommand{\target}{\bfit{target}\xspace}
+\newcommand{\thenB}{\bfit{thenB}\xspace}
+\newcommand{\vars}{\bfit{vars}\xspace}
+
+\newcommand{\rtltransform}{\bfit{RTLTransform}\xspace}
+\newcommand{\ipccompute}{\bfit{InstPathCondCompute}\xspace}
+\newcommand{\ffInfer}{\bfit{ffInfer}\xspace}
+\newcommand{\RegWireInst}{\bfit{RegWireInst}\xspace}
+\newcommand{\SeqBlkConstruct}{\bfit{SeqBlkConstruct}\xspace}
+\newcommand{\CombAssignConstruct}{\bfit{CombAssignConstruct}\xspace} %this (before:\CombRegWireConstruct) creates the initialization assignments 
+\newcommand{\CombFLogicConstruct}{\bfit{CombFLogicConstruct}\xspace} %this (incorrectly before:\CombAssignConstruct) alters the  functional logic
+%\newcommand{\CombRegWireConstruct}{\bfit{CombRegWireConstruct}\xspace}
+%\newcommand{\CombAssignConstruct}{\bfit{CombAssignConstruct}\xspace}
+\newcommand{\handleExprsn}{\bfit{handleExprsn}\xspace}
+\newcommand{\CombBlkConstruct}{\bfit{CombBlkConstruct}\xspace}
+\newcommand{\ProgConstruct}{\bfit{ProgConstruct}\xspace}
+% parametrized 
+\newcommand{\InstCondCompute}{\bfit{InstCondCompute}\xspace}
+\newcommand{\PrmSeqBlkConstruct}{\bfit{PrmSeqBlkConstruct}\xspace}
+\newcommand{\PrmCombBlkConstruct}{\bfit{\PrmCombBlkConstruct}\xspace}
+\newcommand{\GnrtLpConstruct}{\bfit{GnrtLpConstruct}\xspace}
+%\newcommand{\PrmCombAsgnConstruct}{\bfit{PrmCombAsgnConstruct}\xspace}
+\newcommand{\LpAssignConstruct}{\bfit{LpAssignConstruct}\xspace}
+\newcommand{\PrmCombAssignConstruct}{\bfit{PrmCombAssignConstruct}\xspace}
+\newcommand{\InstPathCondCompute}{\bfit{InstPathCondCompute}\xspace}
+\newcommand{\PathCondCompute}{\bfit{PathCondCompute}\xspace}
+\newcommand{\IPCMutex}{\bfit{IPCMutex}\xspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Boolean Constants
+
+
+
+
+\newcommand{\T}{\mbox{\rm T}}
+\newcommand{\F}{\mbox{\rm F}}
+\newcommand{\Fa}{\mbox{\rm F}}
+
+\newcommand{\true}{\ensuremath{\mathit{true}}}
+\renewcommand{\tt}{\ensuremath{\mathit{tt}}}
+\newcommand{\vtt}{\ensuremath{\mathit{vtt}}\xspace}
+%\newcommand{\true}{\mbox{\textsc{true}}\xspace}
+
+\newcommand{\false}{\ensuremath{\mathit{false}}}
+%\newcommand{\false}{\mbox{\textsc{false}}\xspace}
+
+%\newcommand{\TT}{\top}
+%\newcommand{\FF}{\bot}
+
+
+\newcommand{\andw}{\mbox{ and }}
+
+%\newcommand{\ANDW}{\mbox{\bf and \xspace}}
+%\newcommand{\OR}{{\bf or} }
+%\newcommand{\NOT}{{\bf not} }
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Boolean Connectives
+
+\renewcommand{\iff}{\equiv}
+%\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\ev}{\equiv}
+%\newcommand{\implies}{\Rightarrow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% QUANTIFIERS
+\newcommand{\qt}[3]{#1\,#2\,#3}
+\newcommand{\qtr}[4]{(#1\,#2 : #3 : #4)}
+
+\newcommand{\Q}{\mbox{${\bf Q}$}\xspace}
+\newcommand{\q}{\mbox{${\bf q}$}\xspace}
+
+%% quantifiers
+\newcommand{\AND}{\bigwedge}
+\newcommand{\INTER}{\bigcap}
+\newcommand{\OR}{\bigvee}
+\newcommand{\UN}{\bigcup}
+\newcommand{\SUM}{\Sigma}
+%\newcommand{\INT}{\bigcap}
+
+%% Logical Quantifiers
+\newcommand{\fa}{\ensuremath{\forall\,}}
+%\newcommand{\fa}{\mbox{${\mathbf{\forall}}$}\xspace}
+\newcommand{\ex}{\ensuremath{\exists\,}}
+%\newcommand{\ex}{\mbox{${\mathbf{\exists}}$}\xspace}
+\newcommand{\LQ}{\mbox{${\bf LQ}$}\xspace}
+
+
+%% Arithmetic Quantifiers
+%\renewcommand{\S}{\Sigma\,}
+%\renewcommand{\S}{\mbox{${\mathbf{\Sigma}}$}\xspace}
+\renewcommand{\P}{\Pi\,}
+\newcommand{\N}{\ensuremath{\mathrm{N}\,}}
+\newcommand{\AQ}{\ensuremath{\mathrm{AQ}\,}}
+\newcommand{\MAX}{\ensuremath{\mathrm{MAX}\,}}
+\newcommand{\MIN}{\ensuremath{\mathrm{MIN}\,}}
+
+%%%%%%%%%%%%%%%%% ENVIRONMENTS
+\newcommand{\bd}{\begin{definition}}
+\newcommand{\ed}{\end{definition}}
+
+%%%%%%%%%%%%%%%%% EQUATION ENVIRONMENTS
+\newcommand{\beqn}{\begin{centeqn}}
+\newcommand{\eeqn}{\end{centeqn}}
+\newcommand{\beqnnbsp}{\begin{centeqn-nbsp}}
+\newcommand{\eeqnnbsp}{\end{centeqn-nbsp}}
+\newcommand{\bleqn}[1]{\begin{centlabeqn}{#1}}
+\newcommand{\eleqn}{\end{centlabeqn}}
+\newcommand{\bleqnnbsp}[1]{\begin{centlabeqn-nbsp}{#1}}
+\newcommand{\eleqnnbsp}{\end{centlabeqn-nbsp}}
+
+\newenvironment{centeqn}	% centered equation environment
+   {{\ss\\ \hspace*{\fill}}}
+   {\hspace*{\fill}\ss\\}
+
+\newsavebox{\EqnLabel}
+\newenvironment{centlabeqn}[1]	% centered labeled equation environment
+   {\sbox{\EqnLabel}{#1}
+    {\medskip\\ \hspace*{\fill}}
+   }
+   {\hfill{\makebox[0in][r]{\usebox{\EqnLabel}}}\medskip\\}
+
+\newenvironment{centeqn-nbsp} % centered equation - no vertical space at the bottom
+   {{\medskip\\ \hspace*{\fill}}}
+   {\hspace*{\fill}}
+
+%%%%%%%%%%%%%%%% SpecCheck Specific macros
+
+\newcommand{\cd}[1]{{\small\texttt{#1}}}
+\newcommand{\cci}[1]{\mbox{\small \textup{\texttt{#1}}}}
+%\newcommand{\cci}[1]{{\small\texttt{#1}}}
+%\newcommand{\chci}[1]{`\cci{#1}'}
+\newcommand{\chci}[1]{\cci{#1}}
+
+\newcommand{\good}{\cci{good}\xspace}
+\newcommand{\bad}{\cci{bad}\xspace}
+\newcommand{\dc}{\cci{dontCare}\xspace}
+\newcommand{\tgood}{\tiny\texttt{good}\xspace}
+\newcommand{\tbad}{\tiny\texttt{bad}\xspace}
+\newcommand{\tdc}{\tiny\texttt{dontCare}\xspace}
+
+\newcommand{\ord}{\sqsubseteq}
+\newcommand{\ordne}{\sqsubset}
+
+\newcommand{\white}{\ensuremath{\mathit{white}}\xspace}
+\newcommand{\black}{\ensuremath{\mathit{black}}\xspace}
+
+\newcommand{\ls}{\cd{ls}}
+\newcommand{\af}{f}
+
+\newcommand{\vit}{{\cal T}_I}
+\newcommand{\vst}{{\cal T}_S}
+\newcommand{\vocrm}{\mathit{voc}_R^M}
+\newcommand{\tp}{\mathit{type}}
+\newcommand{\tll}{\mathit{tail}}
+\newcommand{\hdd}{\mathit{head}}
+\newcommand{\Data}{\mathrm{Data}}
+\newcommand{\func}{\mathit{func}}
+\newcommand{\port}{\mathit{port}}
+\newcommand{\export}{\mathit{export}}
+\newcommand{\guard}{\mathit{guard}}
+\newcommand{\source}{\mathit{src}}
+\newcommand{\dest}{\mathit{dest}}
+%\DeclareMathOperator{\var}{var}
+
+\newcommand{\ignore}[1]{}
+%\newcommand{\ie}{i.e.,}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+\newcommand{\defas}{\stackrel{\mathrm{\scriptscriptstyle def}}{=}}
+
+%\newcommand{\true}{\ensuremath{\mathtt{true}}}
+%\newcommand{\false}{\ensuremath{\mathtt{false}}}
+\newcommand{\goesto}[1][]{\stackrel{#1}{\longrightarrow}} % -->
+\newcommand{\valu}[1]{\mathbf{#1}}
+
+\newcommand{\ff}{\ensuremath{\vec{ff}}}
+\newcommand{\RI}{\ensuremath{\vec{RI}}}
+\newcommand{\I}{\ensuremath{\vec{I}}}
+\newcommand{\OO}{\ensuremath{\vec{O}}}
+\newcommand{\dlt}{\ensuremath{\vec{\delta}}}
+\newcommand{\LL}{\ensuremath{\vec{L}}}
+\newcommand{\itodo}[1]{\todo[inline,color=green]{FZ: #1}}
+%\newcommand{\itodo}[1]{}
+
+%by Maya
+\newcommand\codebold[1]{\textbf{#1}}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{darkgreen}{rgb}{0.0,0.6,0.0}
+\definecolor{lightgray}{gray}{0.93}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{darkgreen}{rgb}{0.0,0.6,0.0}
+\definecolor{darkred}{rgb}{0.6,0.0,0.0}
+\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}
+\definecolor{auburn}{rgb}{0.43, 0.21, 0.1}
+\definecolor{arylideyellow}{rgb}{0.91, 0.84, 0.42}
+\definecolor{brass}{rgb}{0.71, 0.65, 0.26}
+\definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+\definecolor{bulgarianrose}{rgb}{0.28, 0.02, 0.03}
+\definecolor{chocolate}{rgb}{0.48, 0.25, 0.0}
+\definecolor{darkraspberry}{rgb}{0.53, 0.15, 0.34}
+\definecolor{lightbrown}{rgb}{0.71, 0.4, 0.11}
+\definecolor{brown(web)}{rgb}{0.65, 0.16, 0.16}
+\definecolor{darkbrown}{rgb}{0.4, 0.26, 0.13}
+\definecolor{magenta(process)}{rgb}{1.0, 0.0, 0.56}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{lightviolet}{RGB}{93,71,139}
+\definecolor{lighterviolet}{RGB}{159,121,239}
+\definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset{ %
+language=C,                % choose the language of the code
+basicstyle=\tiny,       % the size of the fonts that are used for the code
+numberstyle=\tiny,      % the size of the fonts that are used for the line-numbers
+frame=tb,
+rulesep=.4pt,
+mathescape, % Allows escaping to (La)TeX mode within $$,
+stringstyle=\color{redb},
+morekeywords={Boolean, dotogether, foreach, endfor, endif, Let},
+showstringspaces = false,
+basicstyle=\scriptsize\ttfamily,
+keywordstyle=\color{darkblue}\bf,
+commentstyle=\color{darkgreen},
+numbers=left,
+stepnumber=1,
+%
+breaklines=true
+}
+
+\lstdefinestyle{c-code}{%
+  language=C,                % choose the language of the code
+  basicstyle=\tiny,       % the size of the fonts that are used for the code
+  numberstyle=\tiny,      % the size of the fonts that are used for the line-numbers
+  frame=Ltbr,
+  rulesep=.4pt,
+  mathescape, % Allows escaping to (La)TeX mode within $$,
+  stringstyle=\color{red},% \color{redb}
+  %keywords=[1]{elseif, return, else, int, bool, if, Boolean, do-together, foreach, endfor, endif, while, to, Let},
+%keywords=[1]{declaration,program,list-of-statements,statement,conditional,loop,sync,assignment,target,bexpr,expr,return-statement,type,variable-decl,function-decl,property-decl,precondition,postcondition,property,quantifier,range,term,id,access,function-call,call-argument,argument-list,call-arg-list},
+ % keywords=[2]{@dotogether,@pre,@post,if,while,return,forall,exists,int,bool,num,else,constant},
+  showstringspaces = false,
+  escapeinside={/*@}{@*/},
+  basicstyle=\scriptsize\ttfamily,
+   keywords=[1]{foreach,endfor,in,if,elseif,endif,to,else,let,be},
+   keywords=[2]{append,next-list,v-next-list,v-expr,pc-next-list,decl-list,init-list,a-index,a-expr,a-next-statement},
+  keywordstyle=[3]\color{darkbrown}\bf,
+  keywordstyle=[2]\color{darkred}\bf,
+  keywordstyle=[1]\color{darkblue}\bf,
+  commentstyle=\color{darkgreen},
+  alsoletter={-0123456789},
+  captionpos=b, %
+  breaklines=true,
+  backgroundcolor=\color{background},
+}
+
+%\lstdefinelanguage{veriloggg}{
+%    language=Verilog,
+%    alsoletter={&},
+%}
+\lstdefinestyle{verilog-code}{%
+  language=Verilog,                % choose the language of the code
+  %basicstyle=\tiny,       % the size of the fonts that are used for the code
+  numbers=none, %add numbers=left if want numbers to appear on left of the code lines
+  numberstyle=\tiny,      % the size of the fonts that are used for the line-numbers
+  frame=none,
+  rulesep=.4pt,
+  mathescape, % Allows escaping to (La)TeX mode within $$,
+  stringstyle=\color{red},% \color{redb}
+  %keywords=[1]{elseif, return, else, int, bool, if, Boolean, do-together, foreach, endfor, endif, while, to, Let},
+  %keywords=[1]{declaration,program,list-of-statements,statement,conditional,loop,sync,assignment,target,bexpr,expr,return-statement,type,variable-decl,function-decl,property-decl,precondition,postcondition,property,quantifier,range,term,id,access,function-call,call-argument,argument-list,call-arg-list},
+ % keywords=[2]{@dotogether,@pre,@post,if,while,return,forall,exists,int,bool,num,else,constant},
+  showstringspaces = false,
+  escapeinside={/*@}{@*/},
+  basicstyle=\scriptsize\ttfamily,
+  identifierstyle=\color{blue}\it,
+  keywords=[1]{always,reg,wire,posedge,negedge,assign,else,if,begin,end,parameter,module,endmodule,input,output, inputs, outputs,integer, or, generate, for, and, xor,dff, dff2},
+  keywords=[2]{0,1,2,3,4,5,6,7,8,9},
+  keywords=[3]{@,<,<=,==,>,>=,||,&&,!=},%,\&,!,\#,+,-,<,=,(,),;,[,]},
+  keywords=[4]{lssd,gff,gicff},
+  keywordstyle=[4]\color{darkgreen}\bf,
+  keywordstyle=[3]\color{lightviolet}\bf,
+  keywordstyle=[2]\color{red},
+  keywordstyle=[1]\color{darkred}\bf,
+  commentstyle=\color{darkgreen},
+  alsoletter={-0123456789},
+  captionpos=b, %
+  breaklines=true,
+backgroundcolor={},
+%  backgroundcolor=\color{white},
+ literate=
+            {\&}{{\textcolor{lightviolet}{\&}}}{1}
+            {[}{{\textcolor{lighterviolet}{[}}}{1}
+            {]}{{\textcolor{lighterviolet}{]}}}{1}
+            {(}{{\textcolor{lighterviolet}{(}}}{1}
+            {)}{{\textcolor{lighterviolet}{)}}}{1}
+            {!}{{\textcolor{lightviolet}{!}}}{1}
+            {<=}{{\textcolor{lightviolet}{<=}}}{1}
+            {=}{{\textcolor{lightviolet}{=}}}{1}
+            {;}{{\textcolor{lightviolet}{;}}}{1},
+}
+
+
+\lstdefinestyle{alg}{%
+  language=matlab,                % choose the language of the code
+  %basicstyle=\tiny, % the size of the fonts that are used for the code
+  numberstyle=\normal,% the size of the fonts that are used for the line-numbers
+  frame=none, %Ltbr,
+  rulesep=1pt,
+  mathescape, % Allows escaping to (La)TeX mode within $$,
+  stringstyle=\color{red},% \color{redb}
+  %keywords=[1]{elseif, return, else, int, bool, if, Boolean, do-together, foreach, endfor, endif, while, to, Let},
+%keywords=[1]{declaration,program,list-of-statements,statement,conditional,loop,sync,assignment,target,bexpr,expr,return-statement,type,variable-decl,function-decl,property-decl,precondition,postcondition,property,quantifier,range,term,id,access,function-call,call-argument,argument-list,call-arg-list},
+ % keywords=[2]{@dotogether,@pre,@post,if,while,return,forall,exists,int,bool,num,else,constant},
+  showstringspaces = false,
+  escapeinside={/*@}{@*/},
+  %basicstyle=\scriptsize,
+Add a comment to this line
+  identifierstyle=\color{blue}\it,
+%
+  keywords=[1]{foreach,endfor,in,elseif,endif,to,let,Then,If,For,Else,such,that,if,then,else},
+  keywords=[2]{for,end,begin,generate},
+  keywords=[3]{
+  InstPathCondCompute, InstPathCondCompute1,  InstPathCondCompute2,  InstPathCondCompute3,  InstPathCondCompute4,  
+  iterator,loopB, ThenB, ElseB, nestedPrmLps,followingPrmLps, parentBlock,replaceVar,
+  stmtType,initExp,incrementExp,exprsn,clkEdged,IPCcompute,ffInfer,RegWireInst,
+  SeqBlkConstruct,RTLTransform,CombRegWireConstruct,Process,
+  CombAssignConstruct,CombBlkConstruct,ProgConstruct,target,belongsTo,createWire,
+  lookUpWire,gffInst,gicffInst,vars,asgnmtType,handleExprsn,compCStmt,compAStmt,compLStmt,init,increment,InstCondRTLTransform,
+  PathCondCompute,PLIPCCompute,FFIPCCompute,IPCMutex,
+  InstCondCompute,PrmSeqBlkConstruct,PrmCombBlkConstruct,GnrtLpConstruct,PrmCombAsgnConstruct,LpAssignConstruct,index},
+  keywords=[4]{Before,After,},
+  keywords=[5]{gff,gicff,},
+%
+  keywordstyle=[5]\color{darkgreen}\bf,
+  keywordstyle=[4]\color{black}\it, 
+  keywordstyle=[3]\color{black}\sc, 
+  keywordstyle=[2]\color{darkred}\bf,
+  keywordstyle=[1]\color{darkblue}\bf,
+%
+  commentstyle=\color{darkgreen},
+  morecomment=[l][\color{darkgreen}\bf]{//},
+  morecomment=[s][\color{javadocblue}\bf]{/**}{*/},
+  alsoletter={-0123456789'},
+  captionpos=b, %
+  breaklines=true,
+  backgroundcolor=\color{lightgray},
+}
+
+
+
+\newcommand{\answer}[1]{{\bf Response:~}\\ {\color{blue}#1} $\blacksquare$} 
