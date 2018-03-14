@@ -1,0 +1,141 @@
+\setcode{utf8}
+\setarab
+
+\def\pp{\ensuremath{{\cal P}}} % prefix
+\def\ss{\ensuremath{{\cal S}}} % stem
+\def\xx{\ensuremath{{\cal X}}} % suffix
+\def\PP{\ensuremath{\mathit{POS}}} % pos
+\def\GG{\ensuremath{\mathit{GLOSS}}} % gloss
+\def\AC{\ensuremath{\mathit{CAT}}} % category
+
+In this Section we define and discuss terms important to our method such as 
+morphological features, finite state transducers, morphological analyzer, 
+classes, labels, and tag types.
+
+\subsection{Morphological features}
+
+Arabic is a morphologically rich language. 
+Due to the rich Arabic morphology, a single Arabic word 
+might replace a complete sentence in English. 
+For example, the word \RL{يَأْكُله}
+stands for the English 
+statement ``he/it is eating him/it''.
+
+Form-based morphological analysis decomposes an Arabic word into
+several morphemes~\cite{habash2010introduction}.
+A morpheme is the smallest linguistic unit 
+that has a meaning and fulfills a grammatical function. 
+A morpheme can be a stem or an affix. 
+Each morpheme is associated with other morphological features 
+including {\em POS}, {\em gloss}, {\em lemma}, and {\em category} tags. 
+
+A stem can be a root word, a {\em templatic}, or {\em non-templatic} stem. 
+Templatic stems are formed from roots using template morphological rules. 
+For example, the stem
+\RL{kAtb} (writer) is a subject noun formed from the root verb \RL{ktb} (write). 
+Non-templatic stems tend to be foreign names such as \RL{واشنطن} (Washington). 
+A root is an atomic word with three, four, and rarely five letters.
+We denote the set of all stems by the symbol \ss.
+
+An affix can be a {\em prefix}, a {\em suffix}, or an {\em infix}. 
+Prefixes attach before the stem and a word can have multiple prefixes. 
+We denote the set of all prefixes by the symbol \pp. 
+Suffixes attach after the stem and a word can have multiple suffixes. 
+We denote the set of all suffixes by the symbol \xx.
+Infixes are inserted inside the stem to form a new stem. 
+In this work we consider a set of stems that includes infix morphological changes. 
+
+The part-of-speech tag, referred to as POS, assigns a morpho-syntactic tag for a morpheme. 
+Sample POS tags are {\tt NOUN} and {\tt VERB\_PERFECT}. 
+We denote the set of all POS tags by the symbol \PP.
+
+The gloss is a brief notation of the semantic meaning of a morpheme in English. 
+A word might have multiple glosses attached to it as it could stand for multiple meanings. 
+We denote the set of all glosses by the symbol \GG.
+
+The lemma is a convention choice that assigns a core meaning of word forms that share similar stems. 
+For example, the words \RL{byt}(house), 
+\RL{llbyt}(for the house), 
+and \RL{bywt}(houses) are mapped to the singular noun form \RL{byt} as a lemma.
+
+The category is a user defined tag that the user can assign to several 
+morphemes.
+For example, the user can define a temporal category to include the 
+prefix \RL{س} (will) and the time unit \RL{ساعة} (hour). 
+We denote the set of all categories by the symbol \AC.
+
+\subsection{Morphological analyzer}
+
+An Arabic morphological analyzer takes an Arabic word 
+and returns a set of morphological solutions. 
+Each solution splits the word into its morphemes and 
+associates each morpheme with corresponding tags. 
+Multiple solutions can be the result of multiple valid 
+segmentations of the word into morphemes, multiple 
+possible tags associated with a morpheme.
+
+\framework is integrated with {\em Sarf}, 
+an in-house open source Arabic morphological analyzer based on 
+finite state transducers~\cite{ZaMaColing2012DemosSarf}. 
+We use Sarf to extract the morphological features of words present in a text. 
+Sarf takes an Arabic word as input and returns a set of morphological solutions. 
+Each solution splits the word into its morphemes and associates each morpheme with the corresponding tags. 
+We refer to the morphemes and associated tags as features. 
+These features are used to tag each input word with one or more user-defined tags. 
+Sarf processes a word $w_{i}$ in a text and returns the relevant solution vectors. 
+%Multiple solutions are the result of multiple valid segmentations of the word into morphemes, 
+%or the multiple possible tags associated with a morpheme. 
+%Also, a word might have multiple solution vectors as it can have multiple interpretations and meanings.
+%The contribution of Sarf over previous work is that it considers the Arabic affixes as agglutinative, i.e. composed of one or more morphemes. 
+%Hence, it introduces fusional compatibility rules for affix-affix concatenations. 
+%This contribution results in a lexicon which is smaller in size, has less redundancy, and resolves a number of inconsistencies. 
+%Figure~\ref{fig:sarfFSM} shows the finite state machine of Sarf. 
+%Boxes denote legal affixes and stems, and circles denote regular nodes. 
+%The edges are transitions and the labels correspond to the input letters. 
+%$\epsilon$ represents an empty string and is the source of non-determinism.
+%The transitions between the prefix \pp, stem \ss, and suffix \xx~sub-machines are non-deterministic to compute all valid morphological analyses.
+
+%\transfalse
+%\begin{figure}[h!]
+%\begin{center}
+%\resizebox{\columnwidth}{!}{
+%	\input{figures/FSM.pdftex_t}
+%}
+%\caption{FSM of Sarf}
+%\label{fig:sarfFSM}
+%\end{center}
+%\end{figure}
+%\transtrue
+
+%An example is shown in Table~\ref{tab:table1} below:
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+%\begin{table}[h]
+%\setcode{utf8}
+%\setarab
+%  \centering
+%    \begin{tabular}{|r|r|}
+%    \toprule
+%    \RL{وَلَد} & child/son \\
+%    \midrule
+%    \RL{وَلَّدَ}& generate \\
+%    \midrule
+%    \RL{وُلِدَ}& be born \\
+%    \bottomrule
+%    \end{tabular}%
+%    \caption{Word with different interpretations}
+%    \label{tab:table1}%
+%\setcode{standard}
+%\end{table}%
+
+A sample solution vector of Sarf is shown in Table~\ref{tab:table2}. 
+$w_{i}$-index shows the index of the word $w_{i}$ in the text. 
+The terms pref and suf in the features refer to prefix and suffix respectively. 
+The features pref-data, stem-data, and suf-data presents the prefix, stem, and suffix morphemes with diacritics. 
+Sarf provides an additional feature called stem-ac. 
+This feature shows a list of the abstract categories relevant to this stem. 
+For example, ``Country'' is an abstract category for ``Lebanon''.
+
+%By the end of the morphological analysis stage, Sarf returns a sequence of solution vectors. 
+%These vectors contain all the possible morphological analyses of the words in the input text.
+\setcode{standard}

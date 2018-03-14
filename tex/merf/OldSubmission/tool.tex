@@ -1,0 +1,457 @@
+This section assumes that the user passed a set of text documents and 
+specified a set of tag types using the interactive user friendly
+interface of \framework. 
+Let $T=\langle t_1,t_2,\ldots,t_M\rangle$ be a set of Arabic words denoting the 
+text documents, and let ${\cal T}$  be the 
+set of tag types each with an associated formula. 
+\framework uses Sarf~\cite{ZaMaColing2012DemosSarf},
+to compute a set of morphological solutions $M(t)=\{m_1,m_2,\ldots,m_N\}$
+for each word $t\in T$. 
+
+Recall from Section~\ref{sec:overview} 
+that \pp, \ss, \xx, \PP, \GG, and \AC~denote the set of prefixes, stems, 
+suffixes, POS, gloss, and category tags, respectively. 
+Each morphological solution $m\in M(t)$ is a tuple of the form 
+$\langle p,s,x,P,G,C\rangle\in \pp \times  \ss\times \xx\times \PP\times\GG \times \AC$.
+%where $p\in \pp, s\in \ss, x\in \xx, P \in \PP, G \in \GG,$ and $C \in \AC$. 
+
+In what follows we formally present 
+the extended synonymy feature, 
+the morphology-based atomic terms (MAT), 
+the morphology-based Boolean formulae (MBF), 
+the morphology-based regular expressions (MRE), 
+the computational actions, and the user defined relational entities.
+ 
+%\begin{table}[tb!]
+%\centering
+%\caption{Example of computing $Sy(l_{5})$ and $Sy^{1}(l_{5})$}
+%\begin{tabular}{|c|c|c|c|c|c|}
+%\hline
+%$s$ & $\alpha(s) $ & $\alpha(l_{1})\cap\alpha(s)$ & $\alpha(l_{2})\cap\alpha(s)$ & $\alpha(l_{3})\cap\alpha(s)$ \\
+%\hline
+%$l_{1}$ & $e_{1}$,$e_{2}$ & $e_{1}$,$e_{2}$ & $e_{2}$ & $e_{2}$ \\
+%\hline
+%$l_{2}$ & $e_{2}$ & $e_{2}$ & $e_{2}$ & $e_{2}$ \\
+%\hline
+%$l_{3}$ & $e_{2},e_{3}$ & $e_{2}$ & $e_{2}$ & $e_{2},e_{3}$ \\ 
+%\hline
+%$l_{4}$ & $e_{3},e_{4}$ & $\emptyset$ & $\emptyset$ & $e_{3}$ \\
+%\hline 
+%\end{tabular}
+%\label{table:syex}
+%\end{table}
+%
+
+\begin{figure}[tb!]
+\setcode{utf8}
+\begin{center}
+  \resizebox{\columnwidth}{!}{ 
+  	{\relsize{-3} \input{figures/syn2ex.tex}} }
+\setcode{standard}
+\vspace{-2em}
+\caption{$Syn^2($\RL{mA'}$)$}
+\vspace{-3em}
+\label{fig:introsynEx}
+\end{center}
+\end{figure}
+
+
+\subsection{The extended synonymy feature $Syn^k$}
+
+The sets $E, A,$ and $L$ denote all English words, Arabic words, 
+and Arabic lexicon words, respectively. 
+We have $\GG \subset E$ and $\ss \subset L \subset A$. 
+Function $\alpha: \ss \rightarrow 2^{\GG}$ maps Arabic stems to 
+subsets of related English glosses; e.g. $g_{s} = \alpha(s)\subset 2^{\GG}$.
+Function $\gamma: L \rightarrow 2^{\ss}$ maps Arabic lexicon words to subsets 
+of relevant Arabic stems; e.g. $s_{l} = \gamma(l)\subset 2^{\ss}$.
+
+Given a word $w\in L$, 
+$Sy(w)=\{u\mid u\in \ss \land\exists s\in \gamma(w)\land~\alpha(u)\cap\alpha(s)\neq\emptyset\}$
+is the set of Arabic stems 
+directly related to $w$ through the gloss map.
+For example, consider % the example of Table~\ref{table:syex} where
+$\ss$ = $\{l_{1}, l_{2}, l_{3}, l_{4}\}$, 
+$L$ = $\ss \cup \{l_{5}, l_{6}\}$,
+$\GG$ = $\{e_{1}, e_{2}, e_{3}, e_{4}\}$, 
+$E$ = $\GG \cup \{e_{5}, e_{6}\}$, 
+$\alpha$ = $\{ \mathbf{(l_{1}, \{e_{1}, e_{2}\})}, 
+\mathbf{(l_{2}, \{e_{2}\})}, (l_{3}, \{e_{2}, e_{3}\}),
+(l_{4}, \{e_{3}, e_{4}\})\}$,  and 
+$\gamma$ = $\{ (l_{1}, \{l_{1}\}),  
+  (l_{2}, \{l_{2}\}),  (l_{3},  \{l_{3}\}), (l_{4},  \{l_{4}\}), \\
+\mathbf{(l_{5}, \{l_{1}, l_{2}\})},  (l_{6}, \{l_{4}\})\}$. 
+
+Given the Arabic word $l_{5}$ with stems
+$\gamma(l_5) = \{l_{1},l_{2}\}$ and related glosses
+$\alpha(l_{1}) = \{e_{1},e_{2}\} \cup \alpha(l_{2}) = \{e_{2}\}$. 
+%Table~\ref{table:syex} illustrates the process of computing 
+%$Sy(l_5)$ is the stems whose glosses have
+%some intersection with the glosses related to $l_{5}$. 
+Stem $l_3$ is in $Sy(l_5)$ since $\alpha(l_{3})\cap\alpha(l_{1}) = \{e_{2}\}\not=\emptyset$;
+similarly, for  $l_1$ and $l_2$. However, $l_4$ is not in $Sy(l_5)$ since 
+$\alpha(l_{4})\cap\alpha(l_{5}) = \emptyset$.
+Consequently, $Sy(w) = \{l_{1},l_{2},l_{3}\}$.
+
+Let $Sy^{i}(w)$ denote stems related to $w$ using the gloss map of order $i$ recursively such that
+$Sy^{1}(w) = Sy(w)$ and
+$Sy^{i+1}(w)=\{u\mid u\in S\land\exists s\in Sy^{i}(w)\land~\alpha(u)\cap\alpha(s)\neq\phi\}$.
+For example, $Sy^{2}(l_{5})$ includes  $l_{4}$ since $(\alpha(l_{3})\cap\alpha(l_{4}))\neq\emptyset$. 
+Formally, $Syn^k(w) = \bigcup\limits_{i=1}^{k} Sy^{i}(w)$
+to be the union of $Sy^{i}(w)$ for $i\in[1 \ldots k]$.
+
+The example in Figure~\ref{fig:introsynEx} illustrates the computation. 
+%Words \RL{mA'}, \RL{n.d.h}, and \RL{r^s^s} and their glosses
+%\{water\}, \{water, leak, spray\}, and \{spray, splatter\}, respectively,
+%shown in the example of Figure~\ref{fig:introsynEx}. 
+The word \RL{mA'} is related to \RL{n.d.h} through the gloss intersection \cci{water}. 
+The $Syn^2$ feature relates 
+the words \RL{mA'} and ``\RL{r^s^s}'' since \RL{n.d.h} and \RL{r^s^s} 
+have the gloss intersection \cci{spray}.
+
+
+
+%\begin{figure}[tb!]
+%\setcode{utf8}
+%\begin{center}
+%  \resizebox{0.8\columnwidth}{!}{ 
+%  	{\relsize{-3} \input{figures/syn2ex.tex}}
+%  }
+%  \setcode{standard}
+%  \caption{$Syn^2($\RL{.t`Am}$)$}
+%  \label{fig:synEx}
+%\end{center}
+%\end{figure}
+				  
+\vspace{-3em}
+\subsection{MRE: Morphology-based regular expressions}
+
+Let ${\cal O} = \{ \mathit{isA}, \mathit{contains}\}$ be the set of atomic term 
+predicates, and ${\cal F} = \{ \pp, \ss, \xx, \PP, \GG, \AC\}$ be the 
+set of morphological features. 
+Given a word $w$, a morphological feature $A\in{\cal F}$, 
+a user defined constant feature value $CF\in A$, and an integer 
+$k, 1\le k\le 7$, 
+the following are morphology-based atomic terms (MAT). 
+\begin{itemize}
+  \item $a(w):= \exists m \in M(w). m=\langle p,s,x,P,G,C\rangle. r \circ CF$
+where $\circ \in {\cal O}$, $r \in \{p,s,x,P,G,C\}$, and $r\in A$.
+Informally, a solution vector of $w$ exists with
+a feature containing (or exactly matching) $CF$. 
+\item $a(w) := w \in Syn^k(CF), CF \in \ss$.
+%\item $a(w) := \exists s\in \gamma(w).s\in Syn^k(CF)
+%  \textit{where} k\in\{1,\dots,7\}$. 
+  Informally, this checks $w$ is an extended synonym of a stem $CF$. 
+\end{itemize}
+   
+%Consider the motivational example introduced in Section~\ref{sec:motivation}. 
+%Some of the MATs defined are:
+
+%\begin{itemize}
+%\item $t_1=C~isA~Name\_of\_Person$
+%\item $t_2=s~isA~\RL{qrb}$
+%\item $t_3=s~isA~\RL{fy}$
+%\end{itemize}
+
+%$t_1$ checks whether a word has the category {\tt Name\_of\_Person}.  
+%$t_2$ checks whether the stem of a word is \RL{qrb} (near). 
+%$t_3$ checks whether the stem of a word is \RL{fy} (in). 
+%Note that a word can be tagged with more than one MAT.
+
+A morphology-based Boolean formula (MBF) is of the following form. 
+\begin{itemize}
+  \item $a$ and $\neg a$ are MBF formulae where $a$ an MAT, where
+    $\neg$ is the negation (complement) operator. 
+  \item $(f \vee g)$ is an MBF where $f$ and $g$ are MBF formulae, 
+    and $\vee$ is the disjunction (union) operator. 
+\end{itemize}
+Formula $N$ in Figure~\ref{fig:motiv} checks whether a solution has a category
+feature matching category {\tt Name\_of\_Person}.
+Formula $R$ is the disjunction of MAT terms that check for
+solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
+
+A morphology-based regular expression (MRE) is one of the following. 
+\begin{itemize}
+\item $m$ is an MRE where $m$ is an MBF.
+\item $fg$ is an MRE denoting a concatenation or a sequencing operation
+  where $f$ and $g$ are both MRE expressions. This is 
+  satisfied by a match of $f$ followed directly by a match of $g$. 
+\item $f*,f+,f$\textasciicircum$x,$ and $f?$ are MRE expressions where $f$ is an MRE,
+  and are satisfied by zero or more matches, one of more matches, up to $x$ matches, 
+  and zero or only one match of $f$, respectively.
+%  This refers to the {\em Kleene-star} operation, and is satisfied by 
+%  zero or more matches of $f$.
+%\item $f+$ is an MRE where $f$ is an MRE. 
+%This operation is interpreted as one or more matches of $f$.
+%\item $f$\textasciicircum$x$ is an MRE where $f$ is an MRE and $x \in \mathbb{N^*}$. 
+%This is interpreted as zero or more matches of $f$ up to $x$ matches.
+%\item $f?$ is an MRE where $f$ is an MRE. 
+%This is interpreted as zero or one occurrence of MRE $f$.
+\item $f\& g,$ (conjunction) and $f|g$ (disjunction) are  MRE expressions where 
+  $f$ and $g$ are MRE expressions, and are satisfied by a 
+  a match of both $f$ and $g$, 
+  and a match of either $f$ or $g$, respectively. 
+\end{itemize}
+We denote by $\ldbrack f\rdbrack$ the set of matches of an MRE $f$. 
+
+\subsection{User-defined relations and actions}
+
+A user-defined relation $R$ defined by a tuple 
+$\langle e_1,e_2,r\rangle$ where 
+$e_1,e_2,$ and $r$ are identifiers associated with MRE 
+subexpressions in as expression $f$ is a set of labeled binary edges
+where matches of $e_1$ and $e_2$ are the source and destination nodes
+and matches of $r$ are the edge labels.
+We refer to a member of $R=\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ 
+as a user defined relational entity.
+
+%\itodo{handle the following}
+%Moreover, \framework~defines the 
+%{\em default cross-reference} relation between two 
+%entities $e_1$ and $e_2$ as
+%$cr(e_1,e_2) := e_1.text \in Syn^2(e_2.text)$.
+%\itodo{end of handle the following (:)}
+
+\framework allows advanced users to write C++ code snippets 
+to process matches of MRE subexpressions. 
+Users can use these actions to compute statistical features, 
+store intermediate results, or apply intelligent entity inference techniques
+as we show in the numerical extraction example of Section~\ref{sec:sec:number}. 
+\framework provides an API that enrich the actions with detailed access to
+all solution features of an MRE or an MBF match including 
+text, position, length, equivalent numerical value if applicable, 
+and morphological features.
+
+Once \framework computes all match trees, it traverses each match to 
+execute the user defined \cci{pre-match} actions in a pre-order manner
+and the \cci{on-match} actions in a post-order manner.
+% as illustrated in the code of Figure~\ref{fig:actions-traverse}. 
+
+%In addition the user can also specify code headers to associate the expressions 
+%with proprietary code such as declaring global variables and including user libraries.
+
+%\begin{figure}[tb!]
+
+%\begin{Verbatim}[fontsize=\relsize{-2},frame=lines,label=Match tree traverse to execute actions,commandchars=\\\[\]]
+%traverse (node) {    //node is the match tree
+%  pre-match(node)    //call user defined pre-match function
+%  foreach child in node.children
+%    traverse(child)  //recursively traverse children in tree
+%  on-match(node)}    //call on-match function 
+%\end{Verbatim}
+
+%\begin{Verbatim}[fontsize=\relsize{-2},frame=lines,label=\cci{On-match} example,commandchars=\\\[\]]
+%cout << \fvtextcolor[red][$s2.text];
+%isHundred = true;
+%if(current == 0)  {
+%  currentH=\fvtextcolor[red][$s2.number];
+%} else if(!isKey) {
+%  currentH= current * \fvtextcolor[red][$s2.number];
+%  current = 0;
+%} else {
+%  currentH = \fvtextcolor[red][$s2.number]; }
+%isKey = false;
+%\end{Verbatim}
+
+%\caption{User-defined computational actions} 
+%%(a) match tree traverse & (b) example \cci{on-match} action
+%\label{fig:actionEx}
+%\label{fig:actions-traverse}
+%\end{figure}
+
+%Consider the sample code action shown in Figure~\ref{fig:numnormalgo} (TMB algorithm). 
+%This code action is used in the number normalization case study of Section~\ref{sec:results}. 
+%The variables \cci{isHundred}, \cci{isKey}, \cci{current}, and \cci{currentH} are global variables declared by the user. 
+%The use of \cci{cout} requires the user to include the \cci{iostream} library. 
+%In the code the user can use the API with the \$ sign with an expression name to retrieve features of the match expressions. 
+%In this example, the user prints the sub-expression text and processes its numerical value.
+%
+%The use can access the morphological features with the API {\tt \$sub\_expression\_name.matches}.
+%The API returns a vector of morphological solutions where each solution contains the stem, 
+%arrays of affixes (prefixes and suffixes), stem gloss, arrays for affix glosses, 
+%stem POS, and arrays for affix POS tags.
+
+\subsection{\framework simulator}
+
+The set of tag types ${\cal T}$ contains tuples of the form $\langle l,f,d\rangle$ 
+where $l$ is a text label with a descriptive name, 
+$f$ is an MRE expression, and $d$ is a visualization legend
+%The visualization legend describes how the tags should be displayed to the user 
+that contains font and color information.
+%such as the foreground and background colors, the
+%font size, weight, and style.
+
+For each word $t_i \in T, 0\le i < n, n=|T|$ 
+\framework computes a Boolean value 
+($\{\mathit{true}, \mathit{false}\}$)
+for all MBF formulae. 
+and computes the set of MBF tags
+$R_i=\{(t_i,tt)| tt=\langle l,f,d\rangle \wedge
+f~\mathit{is~an~MBF} \wedge f(t_i)\} \subseteq T \times {\cal T}$
+which tags a word $t_i$ with $\mathit{tt}$ 
+iff the MBF formula $f$ associated with
+tag type $\mathit{tt}$ is true for $t_i$. 
+
+The MBF evaluation results in a sequence of tag sets 
+$\langle R_0, R_1, \ldots, R_{n-1}\rangle$.
+If a word $t_o$ has no tag type match, 
+its tag set $R_o$ is by default the singleton $O=\{\mathit{NONE}\}$
+and $t_o$ is referred to as a {\em null} word.
+
+%\subsection{MRE and action simulation}
+
+For each MRE, 
+\framework generates its equivalent non-deterministic finite automaton (NFA) 
+in the typical manner~\cite{sipser2006introduction}. 
+%Each MRE operation has its equivalent representation in an NFA. 
+We support the upto operation ($f$\textasciicircum$x$), which is not directly 
+supported in ~\cite{sipser2006introduction}, by 
+%it is equivalent to $f?|ff|\dots|\underbrace{f}_{x \text{ times}}$ which has an NFA mapping. 
+%we can expand it into a standard regular expression form, for example
+expanding it into a regular expression form; for example 
+$f$\textasciicircum$3$ is equivalent to $f?|ff|fff$. 
+Consider the example of Figure~\ref{fig:motiv} and the
+MRE $\mathit{dir}= (P|N)+~O?~R~O\wedge 2~(P|N|U)+$. 
+Figure~\ref{fig:nfaEx} shows part of the corresponding NFA where
+$q_8, q_9, \dots, q_{13}$ represent NFA states,
+and edges are transitions based labeled with MBF tags such as 
+$P,$ and $N$. Edges labeled with the 
+empty string $\epsilon$ are non-deterministic.
+The expression uses operations $|$, $?$, $+$, and $\wedge$ to 
+relate places {\tt P}, names of persons {\tt N}, 
+relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
+
+\framework simulates the generated NFA over the sequence of tag sets 
+matching the MBF formulae.
+A simulation match $m$ of an expression $f$ is a tree where the root is the 
+MRE expression, the internal nodes are the MRE and MBF operations, and the 
+leaves are matches of the MAT terms of $f$.
+The leave matches form a vector of tags
+$\langle r_k,r_{k+1},\dots,r_j\rangle$ 
+corresponding to the text sequence 
+$\langle t_k,t_{k+1},\dots,t_j\rangle$ where 
+where $r_{\ell}\in R_{\ell},0\le k\le \ell \le j < n$.
+%
+%If the simulation has a match $\langle r_m,r_{m+1},\dots,r_n\rangle$ 
+%where $0\le m\le n$, 
+%the next simulation starts at $R_{n+1}$. 
+%This disallows overlap of matches for the same MRE. 
+%
+%In case the NFA simulation has no match, 
+%the next simulation starts at $R_{m+1}$. 
+If we have more than one match %starting at $R_k$ where $0\le k\le n$, 
+\framework returns the longest. 
+%
+Figure~\ref{fig:motiv}(b) shows two match trees of $\mathit{dir}$ extracted 
+from the text of Figure~\ref{fig:intromotiv}.
+\RL{dby} and \RL{mwl} are leaf nodes referring to name of place tags ($P$). 
+The $+$, $|$, and $?$ MRE operations
+are internal nodes.
+
+%\framework maintains a function $\phi\subset Q\times\Phi$, 
+%where $\mathit{Q}$ is the set of states in the NFA and $\Phi$ is the set of sub-expressions in the MRE.
+%So $(q,f)\in \phi$ iff state $q\in Q$ was generated by \framework to correspond to sub-expression $f\in \Phi$. 
+%\framework uses $\phi$ to compute a match tree with respect to the MRE regular expression. 
+%It also uses $\phi$ and the match sequence to compute the sequence of computational actions of an MRE match. 
+
+\setcode{utf8}
+\setarab
+\transfalse
+
+\begin{figure}[tb!]
+\centering
+\resizebox{0.8\columnwidth}{!}{
+	\relsize{-1} \input{figures/reNFA.tex}
+}
+  \caption{Equivalent NFA of direction expression}
+\vspace{-2em}
+  \label{fig:nfaEx}
+\end{figure}
+\transtrue
+\setcode{standard}
+
+
+%\begin{figure}[tb!]
+%{ \relsize{-1}
+%\begin{framed}
+%\begin{multicols}{2}
+%\begin{itemize}
+%\item Annotated Expression: \\
+%\\
+%{ \relsize{-2.5}
+%%\begin{itemize}
+%%  \item 
+%  $\stackrel{e_1}{(P|N)+}~\stackrel{o_1}{\mathit{O}?}~\stackrel{r}{R}~\stackrel{o_2}{\mathit{O^{\wedge}2}}~\stackrel{e_2}{(P|N|U)+}$
+%%\end{itemize}
+%}
+%\end{itemize}
+%\begin{itemize}
+%\item User defined semantic \\relations:
+%\begin{itemize}
+%\item $\langle e_1,e_2,r\rangle$
+%\item $\langle r,e_1,o_1\rangle$
+%\item $\langle r,e_2,o_2\rangle$
+%\end{itemize}
+%\end{itemize}
+%\columnbreak
+%\setcode{utf8}
+%\transfalse
+%\resizebox{0.9\columnwidth}{!}{
+%	\relsize{+1.5} \input{figures/ergraphEx.tex}
+%}
+%\transtrue
+%\setcode{standard}
+%\end{multicols}
+%\end{framed}
+%}
+%\caption{User-defined semantic relation example}
+%\label{fig:srEx}
+%\end{figure}
+
+\framework computes the relational entities in a user defined 
+relation $R=\ldbrack \langle e_1,e_2,r\rangle \rdbrack
+\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$ 
+to be the elements of $\ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$
+with the smallest nonzero positive distance between the source and the destination
+where the distance is the number of words between the matches. 
+
+%\framework supports the following configurations for the subexpressions of $e_i$ and $e_j$:
+%\begin{itemize}
+%\item $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert=1$: Relate $e_i$ match to $e_j$ match with edge labelled by $r$.
+%\item $i=j\wedge\left\vert{e_i}\right\vert>1$: Relate sequences of $e_i$ matches with edges labelled by $r$.
+%\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert=1$: Relate each $e_i$ match to the single $e_j$ match with an edge labelled by $r$. The reverse applies for $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert>1$.
+%\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert>1$: Relate each $e_i$ match to each $e_j$ match with an edge labelled by $r$.
+%\end{itemize}
+%
+In Figure~\ref{fig:motiv}(b), \framework names the subexpressions 
+$(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, 
+as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
+The user defines the semantic relations
+$\langle e_1, e_2, r\rangle$, 
+$\langle r, e_1, o_1\rangle$, and 
+$\langle r,e_2,o_2\rangle$.
+
+The matches of $e_1,~e_2,~o_1,~o_2,$ and $r$ from the second match tree 
+of Figure~\ref{fig:motiv}(b) are \RL{dby mwl}(Dubai Mall), 
+\RL{Almbn_A}(the building), \RL{`l_A}(prep), \RL{mn h_dA}(from this), 
+and \RL{mqrbT}(near), respectively. 
+\framework~constructs the semantic relation matches and builds the lower part of the 
+entity-relation graph shown in Figure~\ref{fig:intromotiv}.
+
+Similarly, for the  
+first match \RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'-wl},
+the matches of $e_1,~e_2,~o_2,$ and $r$ are 
+\RL{brj _hlyfT}(Khalifa tower), \RL{AltqA.t` Al-'-wl}(intersection 1), 
+\RL{mn}(from), and \RL{bAlqrb}(next to), respectively. 
+\framework~doesn't construct the relation $\langle r, e_1, o_1\rangle$ 
+since $o_1$ has no match. 
+Therefore, we get the upper part of the entity-relation graph shown 
+in Figure~\ref{fig:intromotiv}.
+
+After computing the relational entities, 
+\framework~computes a cross-reference relation between the extracted entities
+using a second order synonymy feature ($Syn^2$).
+The \cci{isA} edge in the 
+graph of Figure~\ref{fig:intromotiv} shows the cross-reference relation 
+between \RL{brj _hlyfT}(Khalifa tower) from the first match 
+with \RL{Almbn_A}(the building) from the second match. 

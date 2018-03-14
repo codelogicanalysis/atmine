@@ -1,0 +1,83 @@
+\include{macros}
+\begin{document}
+%
+% paper title
+% can use linebreaks \\ within to get better formatting as desired
+\title{\framework: Morphology-based Entity and Relational Entity Extraction Framework for Arabic}
+%~\IEEEmembership{Member,~IEEE,}
+\author{Ameen~A.~Jaber,
+      Fadi~A.~Zaraket
+\IEEEcompsocitemizethanks{\IEEEcompsocthanksitem A. Jaber and F. Zaraket are with the Department
+of Electrical and Computer Engineering, American University of Beirut, Beirut,
+Lebanon.\protect\\
+% note need leading \protect in front of \\ to get a newline within \thanks as
+% \\ is fragile and will error, could use \hfil\break instead.
+E-mail: \{aaj15,fz11\}@aub.edu.lb}
+}
+
+\IEEEcompsoctitleabstractindextext{%
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\begin{keywords}
+Tagging, Arabic, Natural language processing, Morphological analysis, Computational linguistics, Information extraction, Entity, Relational Entity.
+\end{keywords}}
+
+\maketitle
+
+\IEEEdisplaynotcompsoctitleabstractindextext
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+\label{sec:introduction}
+\input{introduction}
+
+%\hfill mds
+%\hfill August 15, 2013
+\section{Motivation}
+\label{sec:motivation}
+\input{motivation}
+
+\section{\framework Overview}
+\label{sec:overview}
+\input{overview}
+
+%\section{Preliminaries}
+%\label{sec:preliminaries}
+%\input{preliminaries}
+
+
+\section{\framework}
+\label{sec:framework}
+\input{tool}
+
+\vspace{-4em}
+\section{Tool}
+\vspace{-1em}
+\label{sec:gui}
+\input{gui}
+
+%\section{Implementation}
+%\label{sec:implementation}
+%\input{implementation}
+
+\section{Related Work}
+\label{sec:related}
+\input{relatedwork}
+
+\section{Results}
+\label{sec:results}
+\input{results}
+
+\section{Discussion }
+\label{sec:discuss}
+\input{discussion}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{conclusion}
+
+\bibliography{merf}
+\end{document}

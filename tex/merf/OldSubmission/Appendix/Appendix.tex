@@ -1,0 +1,680 @@
+\include{macros}
+\begin{document}
+
+\begin{appendices}
+
+In Appendix~\ref{a:motivation} we include a full version of the direction motivation example. 
+In Appendices~\ref{a:temporal}, \ref{a:gen}, and \ref{a:numnorm} we describe the temporal entity
+extraction, the genealogy tree extraction, and the number normalization tasks that we discuss 
+in the paper, respectively. 
+In Appendix\ref{a:cases}, we discuss other case studies we developed with \framework. 
+
+
+%\tableofcontents
+
+%\newpage
+
+\section{Motivation}
+\label{a:motivation}
+
+\setcode{utf8}
+\setarab
+\transfalse
+
+\begin{figure}[tb!]
+%  \begin{center}
+%\renewcommand{\arraystretch}{1.5}% Wider
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{R{10cm} C{10cm}}
+\multicolumn{2}{C{20cm}}{
+\resizebox{1.7\columnwidth}{0.4\columnwidth} {
+\begin{tabular}{R{10cm} C{10cm}}
+    \begin{tabular}{R{10cm}}
+     \RL{وأنت} $\stackrel{u1}{\framebox[1.2\width]{\RL{الأول}}}$ $\stackrel{p_2}{\framebox[1.2\width]{\RL{التقاطع}}}$ \RL{من} $\stackrel{r_1}{\framebox[1.2\width]{\RL{بالقرب}}}$ $\stackrel{n_1}{\framebox[1.2\width]{\RL{خليفة}}}$ $\stackrel{p_1}{\framebox[1.2\width]{\RL{برج}}}$ \RL{تلاحظ} \RL{ألا} \RL{المستحيل} \RL{من}
+     \\ ~ \\
+     $\stackrel{u_2}{\framebox[1.2\width]{\RL{الأولى}}}$ \RL{المرّة} \RL{هذه} \RL{كانت} \RL{وإن} \RL{حتّى} $\stackrel{n_3}{\framebox[1.2\width]{\RL{زايد،}}}$ $\stackrel{n_2}{\framebox[1.2\width]{\RL{الشيخ}}}$ $\stackrel{p_3}{\framebox[1.2\width]{\RL{شارع}}}$ $\stackrel{r_2}{\framebox[1.2\width]{\RL{في}}}$ \RL{سيارتك} \RL{تقود}
+     \\ ~ \\
+     $\stackrel{p_7}{\framebox[1.2\width]{\RL{المبنى}}}$ \RL{هذا} \RL{من} $\stackrel{r_4}{\framebox[1.2\width]{\RL{مقربة}}}$ \RL{على} $\stackrel{p_6}{\framebox[1.2\width]{\RL{مول}}}$ $\stackrel{p_5}{\framebox[1.2\width]{\RL{دبيّ}}}$ \RL{يقع} $\stackrel{p_4}{\framebox[1.2\width]{\RL{الطريق؛}}}$ \RL{هذا} $\stackrel{r_3}{\framebox[1.2\width]{\RL{فيها}}}$ \RL{تسلك} \RL{التي}\\
+     \RL{العالم.} \RL{في} \RL{الأطول} \RL{يُعد} \RL{الذي} 
+     \end{tabular} &
+     \multicolumn{1}{L{10cm}}{It is impossible not to notice $\stackrel{n1}{\framebox[1.2\width]{Khalifa}}$ $\stackrel{p_1}{\framebox[1.2\width]{Tower}}$ $\stackrel{r_1}{\framebox[1.2\width]{next to}}$ the $\stackrel{u_1}{\framebox[1.2\width]{first}}$ $\stackrel{p_2}{\framebox[1.2\width]{intersection}}$ while you are driving $\stackrel{r_2}{\framebox[1.2\width]{on}}$ $\stackrel{n_2}{\framebox[1.2\width]{Sheikh}}$ $\stackrel{n_3}{\framebox[1.2\width]{Zayed}}$ $\stackrel{p_3}{\framebox[1.2\width]{Road}}$, even if this was $\stackrel{u_2}{\framebox[1.2\width]{the first}}$ time that you take this $\stackrel{p_4}{\framebox[1.2\width]{road}}$; $\stackrel{p_5}{\framebox[1.2\width]{Dubai}}$ $\stackrel{p_6}{\framebox[1.2\width]{Mall}}$ is located $\stackrel{r_4}{\framebox[1.2\width]{near}}$ this $\stackrel{p_7}{\framebox[1.2\width]{building}}$, which is the longest in the world.} \\ 
+     \multicolumn{1}{C{10cm}}{\multirow{1}{*}{\textbf{(a) Text with directions}}} &
+     \multicolumn{1}{C{10cm}}{\multirow{1}{*}{\textbf{(b) English translation}}} \\ 
+     & \\ 
+     \multicolumn{1}{L{10cm}}{
+     \arabfalse
+     \transtrue
+     \RL{من المستحيل ألا تلاحظ برج خليفة بالقرب من التقاطع الأول وأنت تقود سيارتك في شارع الشيخ زايد، حتّى وإن كانت هذه المرّة الأولى التي تسلك فيها هذا الطريق؛ يقع دبيّ مول على مقربة من هذا المبنى الذي يُعد الأطول في العالم.}
+     \arabtrue
+     \transfalse
+     } &
+\resizebox{0.85\columnwidth}{!}{
+	\begin{tabular}{c|c|c|c}
+    	MBF & description & formula & matches\\ \hline
+        N & name of person & $category~=~Name\_of\_Person$ & $n_1,n_2,n_3$ \\ \hline
+        P & name of place & $category~=~Name\_of\_Place$ & $p_1,p_2,...,p_7$ \\ \hline
+        R & relative position & $stem\in$ \{\RL{قرب},\RL{في},\dots\} & $r_1,r_2,r_3,r_4$ \\ \hline
+        U & numerical term & $stem\in$ \{\RL{أول},\RL{ثاني},\dots\} & $u_1,u_2$ \\ \hline
+    \end{tabular}
+} \\ 
+& \\
+\multicolumn{1}{C{10cm}}{\multirow{1}{*}{\textbf{(c) Arabic text transliteration}}} &
+     \multicolumn{1}{C{10cm}}{\multirow{1}{*}{\textbf{(d) Tag types with Boolean formulae}}} \\   
+\end{tabular}
+}
+} \\ 
+ & \\
+\hline
+\begin{tabular}{C{10cm}}
+\resizebox{0.9\columnwidth}{!}{
+	\relsize{-4} \input{figures/match1.tex}} \\
+\resizebox{0.9\columnwidth}{!}{
+	\relsize{-4} \input{figures/match2.tex}}
+\end{tabular} &
+\begin{tabular}{C{10cm}}
+\resizebox{0.8\columnwidth}{!}{
+	\relsize{-1} \input{figures/ergraphEx.tex}}
+\end{tabular} \\
+ & \\
+\multicolumn{1}{c}{\textbf{\relsize{1} (f) MRE match trees}} &
+\multicolumn{1}{c}{\textbf{\relsize{1} (g) Entity-relation graph}} \\
+%\multicolumn{1}{C{10cm}}{
+     %[$\showvrb{cout<<$R.text}$]
+%     Expression = $(P|N)+~\mathit{O}?~R~\mathit{O^{\wedge}2}~(P|N|U)+$} \\
+%\resizebox{0.8\columnwidth}{!}{
+%	\relsize{-4} \input{figures/motivTree.tex}} \\
+%\multicolumn{1}{c}{\textbf{(c) Formula, matches, and entity-relation graph}} \\
+\end{tabular}
+}
+%  \end{center}
+  \caption{Text, formula, and match \framework example}
+  \label{fig:motiv}
+\end{figure}
+\transtrue
+\setcode{standard}
+
+We motivate \framework with an example that extracts directions from a sample Arabic text. 
+Consider the text in Figure~\ref{fig:motiv}(a) which includes directions to a shopping mall. 
+Figure~\ref{fig:motiv}(b) presents an English translation of the Arabic text and a transliteration. 
+The text contains some details that are not interesting to the direction extraction task. 
+Interesting entities, such as names, places, relative directions, 
+and numerical terms are highlighted in the text. 
+For example, row 1 in the table shown in Figure~\ref{fig:motiv}(d) 
+lists the matches of names of persons as $n_1$, $n_2$, and $n_3$. 
+We are also interested in presenting the directions in a relational diagram as shown in Figure ~\ref{fig:motiv}(g).
+
+We demonstrate how to do that using \framework. 
+The user interacts with the \framework interface to specify Boolean 
+formulae, regular expressions, and semantic relations. 
+\framework will automatically extract formulae matches 
+using an in-house Arabic morphological analyzer (Sarf)
+\cite{ZaMaColing2012DemosSarf},
+extract regular expression matches, and construct the 
+semantic relations.
+
+\subsection*{Direction morphology-based formulae}
+
+Using \framework, the user specifies the $N$, $P$, $R$, and $U$ tag 
+types with Boolean formulae based on morphological features. 
+As described in the table in Figure~\ref{fig:motiv}(d), the user denotes 
+names of persons with formula $N$ and specifies it with a constraint 
+requiring the category feature in the morphological solution to be {\tt name of person}. 
+Similarly, the user specifies formula $P$ with a {\tt name of place} category. 
+The user specifies formula 
+$R$ to denote relative positions and requires the stem feature to belong to a selected list of 
+stems containing \RL{fy} and \RL{qrb}. 
+$U$ denotes numerical terms and is specified by a disjunction of constraints 
+requiring the stem feature to belong to a set of stems such as
+\RL{'wl}(first), \RL{_tAny}(second), \RL{_tAl_t}(third), 
+\dots, \RL{tAs`}(ninth), and \RL{`A^sr}(tenth).
+
+\subsection*{Direction morphology-based Boolean formulae matches}
+
+The existence of a morphological analyzer is crucial 
+to the Boolean formulae match extraction. 
+Stemming is required in the case of \RL{bAlqrb} in order to detect 
+the relative position tag match  based on \RL{qrb}. 
+Thus, \framework calls an in-house morphological 
+analyzer~\cite{ZaMaColing2012DemosSarf} and computes matches of 
+the tag types $N$, $P$, $R$, and $U$. 
+We refer to all {\em other} words in the text that do not match 
+a user defined tag type as {\em null} words and we denote them by $O$. 
+
+The resulting matches are illustrated with boxes and superscripts 
+in Figure~\ref{fig:motiv}(a) and are also listed in 
+the fourth column of the table in Figure~\ref{fig:motiv}(d). 
+So words with superscripts $n_1$, $n_2$, and $n_3$ are matches of tag type $N$. 
+Words with superscripts $p_1$, $p_2$, \dots, $p_7$ are matches of tag type $P$. 
+Words with superscripts $r_1$, $r_2$, $r_3$, and $r_4$ are matches of tag type $R$. 
+Words with superscripts $u_1$, and $u_2$ are matches of tag type $U$.
+
+\subsection*{Direction regular expressions}
+
+The user now interacts with the regular expression editor to 
+specify the direction entities and relations.
+Intuitively, 
+the directions are names of places ($P$) related to each other with 
+positional propositions ($R$). 
+A place name can be a tabulated place name, a street named after 
+a person ($N$), or a numbered street ($U$). 
+The text containing the directions might also include words that are not 
+necessary to indicate directions ($O$)
+but are necessary to complete the sentence. 
+
+The user tries several sequences of the above entities in the 
+editor and checks their matches in the visualizer. 
+Finally, the user is satisfied with an expression such as 
+$(P|N)+~O?~R~O\wedge 2~(P|N|U)+$ where 
+$|,+,?,$ and $\wedge k$ denote disjunction, one or more, zero or one, and
+up to $k$ matches, respectively. 
+The expression specifies a sequence of places or names of persons, 
+optionally followed by a null word, 
+followed by one relative position, followed by up to two possible null words, 
+followed by one or more match of name of place, name of person, or numerical term. 
+$O$ and $\wedge 2$ are used in the expression to allow for flexible matches. 
+
+The user writes the expression by experimenting with the visualizer and 
+the expression editor which does not
+require knowledge and expertise in regular expressions. 
+
+\subsection*{Direction regular expression matches}
+
+\framework computes the matches of the expression in the text. 
+The match trees in Figure~\ref{fig:motiv}(f) illustrate two of them. 
+The first match tree refers to the text 
+\RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(Khalifa Tower next to 
+the first intersection). 
+The second match tree refers to the text 
+\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building).
+
+The nodes of the trees are entities and the edges and internal nodes are text, morphology-based, 
+and word distance based relational entities. 
+The sequence and structure gives us the text of a parent node from the children nodes. 
+The same sequence can also give us the interesting (matching) morphological features. 
+The word distance is defined and abstracted by the matches of the regular expression operators (internal nodes).
+
+\subsection*{Direction semantic relations}
+
+The user now uses the semantic relation editor to declare semantic relations that relate 
+parts of the matches of the expression with each other. 
+The aim of the semantic relations to be defined is to construct the entity-relation 
+graph shown in Figure~\ref{fig:motiv}(g). 
+Intuitively, 
+the user wants to create relations between place, name, and numerical entities. 
+A relation between two entities can be a prepositional entity occurring between them. 
+For example, the entities \RL{dby mwl}(Dubai Mall) and \RL{Almbn_A}(the building) are 
+related by the preposition \RL{mqrbT}(near) as shown in Figure~\ref{fig:motiv}(g).
+
+Let $e_1,o_1,r,o_2,$ and $e_2$ be the 
+$(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$ parts of the expression, respectively.
+The user selected $(P|N)+$ to be an entity after noticing in the visualizer  that it happens to capture 
+non-separated sequences of place and name entities denoting a single entity such as \cci{Khalifa tower}.
+
+The declaration of the relation \cci{Relation($e_1$,$e_2$,$r$)} creates the 
+edge labeled with \cci{next to} between \cci{intersection 1} and \cci{Khalifa tower} nodes in match 1, and the 
+edge labeled with \cci{near} between the \cci{Dubai Mall} and \cci{the building} nodes in match 2. 
+Those relations will be constructed if $e_1$, $e_2$, and $r$ exist as match entities.
+
+The relation \cci{Relation($r$,$e_1$,$o_1$)} creates 
+the edge labeled with \cci{prep} between the \cci{Dubai Mall} and \cci{near} nodes in match 2. 
+This relation will be constructed if $r$, $e_1$, and $o_1$ exist as match entities.
+
+The relation \cci{Relation($r$,$e_2$,$o_2$)} creates 
+the edge labeled with \cci{from} between the \cci{intersection 1} and \cci{next to} nodes in match 1, and the 
+edge labeled with \cci{from this} between the \cci{near} and \cci{the building} nodes in match 2. 
+This relation will be constructed if $r$, $e_2$, and $o_2$ exist as match entities.
+
+\subsection*{Cross-reference} 
+
+After constructing the semantic relations, the user is interested to relate the entities across relations to each other. 
+The user aims in this step to relate entities that point to the same concept or thing. 
+In the directions task, the user aims to relate the entities referring to the same place. 
+
+\framework provides the \cci{isA} relation as a default cross-reference relation. 
+This relation relates two entities if they are directly synonymous or one entity is a synonym of a synonym of the other entity. 
+As shown in Figure~\ref{fig:motiv}(g), the cross-reference relation creates the edge between the \cci{Khalifa Tower} and the \cci{The building} nodes.
+
+\newpage
+
+\section{Temporal entity extraction case}
+\label{a:temporal}
+
+
+Temporal entities are text chunks that express temporal information. 
+Some of these entities represent absolute time and dates such as \RL{Al_hAms mn 'Ab 2010}. 
+Others represent relative time such as \RL{b`d _hmsT 'ayAm} and others represent quantities 
+such as \RL{14 ywmA}. 
+{\em ATEEMA} presents a temporal entity detection technique for the Arabic language using 
+morphological analysis and a finite state transducer~\cite{ZaMa2012IJCLATime}. 
+Hence, we design our expressions and compare the tag results with ATEEMA.
+
+The MBFs defined for this purpose are introduced in Table~\ref{tab:tbtags}. 
+\cci{TIME} defines explicit temporal words. 
+\cci{NUM} denotes numerals and includes digits or words referring to numbers. 
+As for \cci{TIMEPREP}, it denotes temporal prepositions which precedes or follows a time expression.
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[tb!]
+  \centering
+  \caption{Temporal MBFs}
+  \resizebox{!}{!}{
+    \begin{tabular}{|r|r|r|}
+    \toprule
+    MBF &  & Examples \\
+    \midrule
+    \multicolumn{1}{|c|}{\multirow{5}[0]{*}{TIME}} & unit  & \RL{dqyqT} (minute) \\
+    \multicolumn{1}{|c|}{} & relative & \RL{.gd} (tomorrow) \\
+    \multicolumn{1}{|c|}{} & range & \RL{rby`} (spring) \\
+    \multicolumn{1}{|c|}{} & nominal & \RL{'.hd} (Sunday) \\
+    \multicolumn{1}{|c|}{} & events & \RL{hjry} \\
+    \midrule
+    \multicolumn{1}{|c|}{\multirow{3}[0]{*}{NUM}} & digit & \RL{3} (3) \\
+    \multicolumn{1}{|c|}{} & word  & \RL{_tmAnyn} (eighty) \\
+    \multicolumn{1}{|c|}{} & range & \RL{_tmAnynyAt} (eighties) \\
+    \midrule
+    \multicolumn{1}{|c|}{\multirow{4}[0]{*}{TIMEPREP}} & point & \RL{fy} (in) \\
+    \multicolumn{1}{|c|}{} & relative & \RL{qbl} (before) \\
+    \multicolumn{1}{|c|}{} & approximate & \RL{n.hw} (about) \\
+    \multicolumn{1}{|c|}{} & range & \RL{xlAl} (during) \\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:tbtags}%
+\end{table}%
+
+The \framework MREs constructed are shown below. 
+MRE {\em mts}, denotes {\tt maybe time start}, and is a disjunction of \cci{NUM} tag or \cci{TIMEPREP} tag. 
+MRE \cci{dt}, denotes {\tt definitetime}, and is zero or more sequence of \cci{mts} tags and up to two 
+\cci{NONE} tags, \cci{TIME} tag, then an optional sub-expression. 
+The sub-expression is a sequence of zero or more sequence of up to two \cci{NONE} tags followed by \cci{mts} tag or \cci{TIME} tag followed by up to two \cci{NONE} tags and \cci{TIME} tag or \cci{NUM} tag. 
+The last sub-expression \cci{TIME|NUM} is introduced to ensure that the temporal match ends with a \cci{TIME} tag or \cci{NUM} tag and not \cci{TIMEPREP} tag.
+
+\begin{Verbatim}[fontsize=\relsize{-1},commandchars=\\\{\},codes={\catcode`$=3 \catcode`_=8}]
+mts : NUM | TIMEPREP;
+dt : ( $\stackrel{s_1}{mts}$ NONE^2)* $\stackrel{s_2}{TIME}$
+       ( (NONE^2 $\stackrel{s_3}{( mts|TIME )}$)* 
+         NONE^2 $\stackrel{s_4}{( TIME|NUM )}$ )?;
+\end{Verbatim}
+
+\framework assigns the symbols $s_1$, $s_2$, $s_3$, and $s_4$ for the sub-expressions \cci{mts}, \cci{TIME}, \cci{mts|TIME}, and \cci{TIME|NUM}, respectively. 
+These symbols are also shown in the regular expression defined above. 
+Using these symbols, we define the semantic relations $r_1=\langle s_1,s_2,\epsilon\rangle$, $r_2=\langle s_2,s_3,\epsilon\rangle$, and $r_3=\langle s_3,s_4,\epsilon\rangle$. 
+$r_1$ relates each entity representing a match of \cci{mts} to the entity representing the match of TIME. 
+$r_2$ relates each entity representing a match of \cci{mts|TIME} to the entity representing the match of TIME. 
+$r_3$ relates each entity representing a match of \cci{mts|TIME} to the entity representing the match of \cci{TIME|NUM}.
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[tb!]
+  \centering
+  \caption{Temporal entity example}
+  \resizebox{\columnwidth}{!}{
+    \begin{tabular}{|r|r|r|r|r|r|r|r|}
+    \toprule
+    \RL{AlsnwAt} & \RL{'.s`b} & \RL{mn} & \RL{w_hms} & \RL{`jAf} & \RL{'^shr} & \RL{'rb`T} & \RL{b`d} \\
+    \midrule
+    TIME  & NONE  & NONE  & NUM   & NONE  & TIME  & NUM   & TIMEPREP \\
+    \midrule
+          &       &       & mts   &       &       & mts   & mts \\
+    \midrule
+    \multicolumn{8}{|c|}{definitetime} \\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:tempex}%
+\end{table}%
+
+Table~\ref{tab:tempex} shows a sample temporal entity match. 
+The first row in Table~\ref{tab:tempex} is a temporal entity Arabic text. 
+Each word is denoted with MBF tags based on its morphological features. 
+The matches of the MRE {\tt mts} and {\tt dt} are shown as tags in rows 3 and 4, respectively.
+
+\begin{table}[tb!]
+  \centering
+  \caption{MBF and semantic relation accuracy of temporal entity extraction in \framework}
+  %\resizebox{\columnwidth}{!}{
+    \begin{tabular}{c|c|c|c}
+     \toprule
+     \multicolumn{2}{c|}{MBF accuracy} & \multicolumn{2}{c}{Semantic relation accuracy}\\
+     Recall & Precision & Recall & Precision \\
+    \midrule
+    1 & 0.52 & 0.98 & 0.89 \\
+    \bottomrule
+    \end{tabular}%
+   % }
+  \label{tab:tmbfer}%
+\end{table}%
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[tb!]
+  \centering
+  \caption{\framework~against ATEEMA: Time, accuracy, and ease of composition}
+  \resizebox{\columnwidth}{!}{
+    \begin{tabular}{l|l|l|ll|l}
+     \toprule
+     & \multirow{2}{*}{Build Time} & \multirow{2}{*}{Run Time(s)} & \multicolumn{2}{c|}{Accuracy} & \multirow{2}{*}{Ease of Composition}\\
+     & & & Recall & \multicolumn{1}{c|}{Precision} & \\
+    \midrule
+    ATEEMA & 1-2 month & 2.53 & 0.88  & 0.89  & 1000+ lines of code  \\
+    framework & 3 hours & 3.14 & 0.91  & 0.81  & 3 MBFs and 2 MREs\\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:tresults}%
+\end{table}%
+
+We evaluated ATEEMA and \framework against articles chosen arbitrarily from the political section of 
+Al-Akhbar 17/6/2011 and 27/12/2013 issues and sports section of Al-Akhbar 24/12/2013 issue. 
+
+We present the accuracy of the MBF match extraction and semantic relation construction of \framework in Table~\ref{tab:tmbfer}. 
+\framework detects all the correct MBF matches with a 100\% recall, however it shows a low precision of 52\%. 
+As for the semantic relation construction, \framework presents a 98\% recall and 89\% precision. 
+We also report the build time, runtime, accuracy, and ease of composition as our evaluation metrics for ATEEMA and \framework. 
+
+Table~\ref{tab:tresults} shows the metrics for both techniques. 
+The time metric shows an advantage of \framework over ATEEMA with three hours compared to one to two month. 
+The same advantage for \framework approach appears in the ease of composition. 
+
+ATEEMA contains more than one thousand lines of code while \framework requires the definition of three MBFs and two MREs. 
+However, ATEEMA has a lower runtime with 2.53 seconds compared to 3.14 seconds for \framework. 
+\framework shows higher recall (91\%)  compared to ATEEMA (88\%) which means 
+that \framework detected more temporal entities than ATEEMA. 
+
+However, ATEEMA presents higher precision (89\%) than \framework (81\%). 
+This indicates than the MRE in \framework is underfitting which leads to incorrect temporal matches. 
+An incorrect temporal match that \framework detects is \RL{`qd} which has has the two meanings {\tt contract} and {\tt decade}.
+
+\newpage
+
+\section{Genealogy tree case}
+\label{a:gen}
+
+Biblical genealogical lists trace key biblical figures such as Israelite kings and
+prophets with family relations. 
+The family relations include wife and parenthood. 
+A sample genealogical chunk of text is \RL{wwld hArAn lw.tA} 
+meaning ``and Haran became the father of Lot
+''. 
+Our aim is to extract the names {\em Haran} and {\em Lot} and be able to relate them with parenthood relation.
+
+GENTREE~\cite{ZaMaHaCicling2012Entity} automatically 
+extracts the genealogical family tree using morphology, 
+finite state machines, and graph transformations. 
+We build our model in \framework by defining the required MBFs first, then construct 
+the regular expression and semantic relations.
+
+In this application, we need to extract the possible male names, female names, 
+and family connectors. 
+Thus, we define the MBFs \cci{MN}, \cci{FN}, and \cci{CONN}. 
+\cci{MN} denotes male name and is defined by the {\tt male name} category. 
+\cci{FN} denotes female name and is defined by the {\tt female name} category. 
+\cci{CONN} denotes connection and is defined by the stem \RL{wld} (give birth to).
+
+A genealogical chunk in the text has one of two forms which are 
+defined in the expressions \cci{fform} and \cci{sform}. 
+\cci{fform} denotes first form and it is defined by a male name (\cci{MN} tag) followed by an optional  female name (\cci{FN} tag) representing the male's wife followed by a one or more sequences of connectors and male sons (\cci{CONN} and \cci{MN} tags). 
+
+\begin{Verbatim}[fontsize=\relsize{-1},commandchars=\\\{\},codes={\catcode`$=3 \catcode`_=8}]
+fform : $\stackrel{s_1}{MN}$ NONE^4 $\stackrel{s_2}{FN}$? (NONE^10 $\stackrel{s_3}{CONN}$ NONE^4 $\stackrel{s_4}{MN}$)+
+\end{Verbatim}
+
+\cci{sform} denotes second form and it is defined by a connector (\cci{CONN} tag) followed by a male (\cci{MN} tag) or female name (\cci{FN} tag) then a male name (\cci{MN} tag). 
+
+\begin{Verbatim}[fontsize=\relsize{-1},commandchars=\\\{\},codes={\catcode`$=3 \catcode`_=8}]
+sform : $\stackrel{s_5}{CONN}$ NONE^4 $\stackrel{s_6}{(MN|FN)}$ NONE^4 $\stackrel{s_7}{MN}$
+\end{Verbatim}
+
+We insert \cci{NONE} in both forms to introduce flexibility to the expression. 
+Last, we define the expression \cci{geneinfo} which denotes genealogical information and is defined by a disjunction of the previously defined two forms.
+
+\begin{Verbatim}[fontsize=\relsize{-1}]
+geneinfo : fform | sform
+\end{Verbatim}
+
+\framework assigns the symbols $s_1$, $s_2$, $s_3$, $s_4$, $s_5$, $s_6$, and $s_7$ for the MRE sub-expressions \cci{MN}, \cci{FN}, \cci{CONN}, \cci{MN}, \cci{CONN}, \cci{MN|FN}, and \cci{MN}, respectively. 
+These symbols are shown over the sub-expressions in the defined MREs.
+
+Based on those symbols, we define the user-defined relations $r_1=\langle s_1,s_4,s_3\rangle$, $r_2=\langle s_1,s_2,``spouse''\rangle$, $r_3=\langle s_2,s_4,s_3\rangle$, and $r_4=\langle s_6,s_7,s_5\rangle$. 
+$r_1$ relates $s_1$ matches to $s_4$ matches with an edge labeled with $s_3$ matches. 
+This relation indicates that entity $s_1$ is the father of $s_4$. 
+$r_2$ relates $s_2$ matches to $s_1$ matches with an edge labeled by {\tt spouse}. 
+This relation indicates that the female is the male's spouse. 
+$r_3$ relates $s_4$ matches to $s_2$ matches using an edge labeled by $s_3$. 
+This relation indicates that the male is the female's child. 
+$r_4$ relates $s_6$ matches to $s_7$ matches using an edge labeled by $s_5$ matches. 
+This relation indicates that $s_7$ match is the child of $s_6$.
+
+\begin{table}[tb!]
+  \centering
+  \caption{MBF and semantic relation accuracy of genealogy extraction in \framework}
+    \begin{tabular}{c|c|c|c}
+     \toprule
+     \multicolumn{2}{c|}{MBF accuracy} & \multicolumn{2}{c}{Semantic relation accuracy}\\
+     Recall & Precision & Recall & Precision \\
+    \midrule
+    1 & 0.75 & 0.81 & 0.96 \\
+    \bottomrule
+    \end{tabular}%
+  \label{tab:gmbfer}%
+\end{table}%
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[tb!]
+  \centering
+  \caption{\framework~against manual coding of genealogy extraction: Time, accuracy, and ease of composition}
+  \resizebox{\columnwidth}{!}{
+    \begin{tabular}{l|l|l|ll|l}
+     \toprule
+     & \multirow{2}{*}{Build Time} & \multirow{2}{*}{Run Time(s)} & \multicolumn{2}{c|}{Accuracy} & \multirow{2}{*}{Ease of Composition}\\
+     & & & Recall & \multicolumn{1}{c|}{Precision} & \\
+    \midrule
+    Manual technique & 1-2 month & 0.74 & 0.96 & 0.98 & 3000+ lines of code\\
+    framework & 4 hours & 2.28 & 0.84 & 0.93  & 3 MBFs and 3 MREs\\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:gresults}%
+\end{table}%
+
+We evaluated the work in~\cite{ZaMaHaCicling2012Entity} and \framework against parts of the genesis chosen randomly. 
+We present the accuracy of the MBF match extraction and semantic relation construction of \framework in Table~\ref{tab:gmbfer}. 
+\framework detects all the correct MBF matches with a 100\% recall, but has a precision of 75\% which indicates that there are some incorrect matches. 
+As for the semantic relation construction, \framework presents an 81\% recall and 96\% precision. 
+We also report the build time, runtime, accuracy, and ease of composition as our evaluation metrics for both techniques. 
+Table~\ref{tab:gresults} shows the metrics for both techniques. 
+Similar to the previous cases, \framework has an advantage over the manual technique when it comes to the time required to build the application where the user needs four hours using \framework compared to one to two month. 
+The same advantage for \framework approach appears in the ease of composition. 
+The other technique contains more than three thousand lines of code while \framework requires the definition of three MBFs and two MREs. 
+However, the manual technique has a lower runtime with 0.74 seconds compared to 2.28 seconds for \framework. 
+\framework shows an 84\% recall and 93\% precision of MRE extraction compared to a 96\% recall and 98\% precision for the other technique.
+
+\newpage
+
+\section{Number normalization}
+\label{a:numnorm}
+
+In this application, we are interested in number normalization in Arabic text. 
+Number normalization is the process of converting numbers in text into real numbers. 
+For example the normalization of \RL{`^srwn alf} (twenty thousand) would be 20,000. 
+Our target is to extract text chunks that express numbers and normalize them. 
+We implemented a number normalization extractor using \framework and 
+compared it with {\em NUMNORM}, a 
+C++ implementation for number normalization.
+
+NUMNORM reads an Arabic text as input, extracts the text chunks with numerical information, and normalizes them. 
+NUMNORM uses the in-house morphological analyzer, {\em Sarf}, to identify the words referring to numbers. 
+Sarf provides a {\tt Number} category that tags all words with numerical information. 
+In the normalization algorithm, NUMNORM identifies three different categories for numbers;
+each with different behavior in normalization. 
+The categories are:
+\begin{itemize}
+\item DT, denoting digits and tens
+\item H, denoting hundred
+\item TMB, denoting thousand, million, and billion
+\end{itemize}
+
+NUMNORM retrieves the number referring to a word through a fixed map. 
+This map takes the word gloss as input and returns the matching number if found. 
+For example, the map returns 100 for the input gloss {\tt hundred}. 
+As for the normalization of more than one word, such as \RL{'lfyn w-'rb`T `^sr} (2014), 
+the normalization algorithm used for each category is shown in Figure~\ref{fig:numnormalgo}.  
+The algorithm uses Boolean variables and three integer variables. 
+The three integer variables are previous, current, and currentH for hundred. 
+The main steps in the algorithm are as follows. 
+Hundred is multiplied to previous digit if found, else saved. 
+Digits and tens are added to previous hundred if found, else added to current. 
+TMB match is multiplied by the previous hundred or DT if found, 
+else saved in current.
+
+\begin{figure}[tb!]
+\centering
+  \begin{tabular}{p{3.6cm}p{3.6cm}p{3.6cm}}
+\begin{Verbatim}[fontsize=\relsize{-3},frame=single,label=TMB algorithm] 
+
+  if(isHundred) {
+    if(current != 0) {
+      previous += current;
+    }
+    current = currentH * matchNumber;
+    currentH = 0;
+    isHundred = false;
+    isKey = true;
+  } else if(current == 0) {
+    current = matchNumber;
+    isKey = true;
+  } else if(!isKey) {
+    isKey = true;
+    current = current * matchNumber;
+  } else {
+    previous += current;
+    current = matchNumber;
+  }
+\end{Verbatim}
+&
+\begin{Verbatim}[fontsize=\relsize{-3},frame=single,label=DT algorithm] 
+
+  if(isHundred) {
+    currentH += matchNumber;
+  } else if(current == 0) {
+    current = matchNumber;
+  } else if(isKey) {
+    previous += current;
+    current = matchNumber;
+  } else {
+    current += matchNumber;
+  }
+isKey = false;
+
+
+
+
+
+
+
+\end{Verbatim}
+&
+\begin{Verbatim}[fontsize=\relsize{-3},frame=single,label=H algorithm] 
+
+  isHundred = true;
+  if(current == 0)  {
+    currentH = matchNumber;
+  } else if(!isKey) {
+    currentH= current * matchNumber;
+    current = 0;
+  } else {
+    currentH = matchNumber;
+  }
+  isKey = false;
+  
+  
+  
+  
+  
+  
+  
+  
+\end{Verbatim}
+\\ 
+\end{tabular}
+\caption{NUMNORM algorithm for TMB, DT, and H.}
+\label{fig:numnormalgo}
+\end{figure}
+
+Using \framework , we designed a morphology-based regular expression to detect the numerical chunks in the text. 
+Based on the previously introduced algorithm, we added actions to this MRE to normalize each match. 
+First, we defined the MBFs \cci{DT}, \cci{H}, and \cci{TMB}. 
+The MBF 
+\cci{DT} denotes digits and tens, and is defined by a disjunction formula of the stem glosses 
+{\tt one}, {\tt two}, \dots , {\tt ten}, {\tt twenty}, \dots , and {\tt ninety}. 
+The MBF \cci{H} is defined by the stem gloss {\tt hundred}. 
+The MBF \cci{TMB} is defined by a disjunction formula of the stem glosses {\tt thousand}, {\tt million}, and {\tt billion}.
+
+The \cci{number} MRE is defined as one or more matches of \cci{DT}, \cci{TMB}, or \cci{H}. 
+The actions associated with each MBF are shown in Figure~\ref{fig:numnormalgo}.
+We access the text and numerical values of the matches using the API provided by \framework. 
+For example, we access the numerical value of the match of $s_1$ in the TMB algorithm using the API \cci{\$s1.number}. 
+We also declare global variables such as \cci{current} and \cci{isHundred} to store intermediate values.
+
+\begin{Verbatim}[numbers=left]
+number : (((DT)|(TMB))|(H))+;
+\end{Verbatim}
+
+\framework also assigns the symbol $s_3$ for the sub-expression \cci{DT|TMB|H}. 
+Accordingly, we define the user-defined relation $\langle s3,s3',\epsilon\rangle$. 
+This relation identifies the matches of $s_3$ as entities and relates them successively with non-labelled edges.
+
+\begin{table}[tb!]
+  \centering
+  \caption{MBF and semantic relation accuracy of number normalization in \framework}
+  %\resizebox{\columnwidth}{!}{
+    \begin{tabular}{c|c|c|c}
+     \toprule
+     \multicolumn{2}{c|}{MBF accuracy} & \multicolumn{2}{c}{Semantic relation accuracy}\\
+     Recall & Precision & Recall & Precision \\
+    \midrule
+    0.99 & 1 & 0.97 & 0.95 \\
+    \bottomrule
+    \end{tabular}%
+   % }
+  \label{tab:nnmbfer}%
+\end{table}%
+
+% Table generated by Excel2LaTeX from sheet 'Sheet1'
+\begin{table}[tb!]
+  \centering
+  \caption{\framework~against NUMNORM: Time, accuracy, and ease of composition}
+  \resizebox{\columnwidth}{!}{
+    \begin{tabular}{l|l|l|ll|l}
+     \toprule
+     & \multirow{2}{*}{Build Time} & \multirow{2}{*}{Run Time(s)} & \multicolumn{2}{c|}{Accuracy} & \multirow{2}{*}{Ease of Composition}\\
+     & & & Recall & \multicolumn{1}{c|}{Precision} & \\
+    NUMNORM & 1 week & 0.32 & 0.91 & 0.93  & 500 lines of code\\
+    framework & 1 hour & 1.53 & 0.91 & 0.90  & 3 MBFs/1 MRE/57 lines\\
+    \bottomrule
+    \end{tabular}%
+    }
+  \label{tab:nnresults}%
+\end{table}%
+
+We evaluated NUMNORM and \framework against an article chosen arbitrarily from the economical section 
+of Assafir newspaper 25/12/2013 issues. 
+Table~\ref{tab:nnmbfer} shows the accuracy of the MBF match extraction and semantic relation construction in \framework. 
+\framework presents high accuracy in extracting the MBF matches with a 99\% recall and 100\% precision. 
+\framework also shows a high accuracy in constructing the semantic relations with a 97\% recall and 95\% precision. 
+We report the build time, runtime, accuracy, and ease of composition as our evaluation metrics for NUMNORM and \framework. 
+Table~\ref{tab:nnresults} shows the metrics for both techniques. 
+Using \framework to perform normalization takes 1 hour while NUMNORM implementation required one to two month. 
+NUMNORM takes 0.32 seconds to perform the task while the \framework model needs 1.53 seconds. 
+As for ease of composition, \framework requires the construction of 3 MBFs and 1 
+MRE with code actions of 57 lines while NUMNORM requires more than 500 lines of code. 
+Both techniques have the same recall (91\%) which means that both detected the same correct number of matches. 
+However, NUMNORM has a higher precision (93\%) than \framework (90\%) which means that NUMNORM has less false matches.
+
+\newpage 
+\section{Additional case studies}
+\label{a:cases}
+
+\end{appendices}
+
+\bibliography{merf}
+
+\end{document}

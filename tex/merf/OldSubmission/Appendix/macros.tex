@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage[toc,page]{appendix}
+
+%packages 
+\usepackage{etex}
+\usepackage{tikz}
+\usepackage{xspace}
+\usepackage{arabtex}
+\usepackage{graphicx}
+%\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{framed}
+\usepackage{array}
+\usepackage{graphics}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{utf8}
+\bibliographystyle{plain}
+\usepackage{subfigure}
+\usepackage{todonotes}
+\usepackage{hyperref}
+\usetikzlibrary{shapes,arrows}
+\usepackage{color,soul}
+\usepackage{verbatim}
+\usepackage{array}
+\usepackage{multicol}
+
+\usepackage{fancyvrb}
+\usepackage{relsize}
+\usepackage{wasysym}
+\usepackage{pbox}
+
+\def\showvrb#1{%
+\texttt{\detokenize{#1}}%
+}
+%%%%%%%%%%%%%%%%%%%%%%
+%macros
+\def\framework{\textsc{MERF}\xspace}
+\newcommand{\itodo}[1]{\todo[inline,color=green]{\tiny #1}}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\newcommand{\TinyRL}[1]{{\RL{#1}}}
+\newcommand{\cci}[1]{{\small \texttt{#1}}}
+%%%%%%%%%%%%%%%%%%%%%%%
+%other 
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+%%% RL commands
+\newcommand{\utfrl}[1]{\setcode{utf8}\RL{#1}\setcode{standard}}
+\newcommand{\notrutfrl}[1]{\transfalse\setcode{utf8}\RL{#1}\setcode{standard}\transtrue}
+\newcommand{\notrrl}[1]{\transfalse\RL{#1}\transtrue}
+\newcommand{\noarrl}[1]{\arabfalse\RL{#1}\arabtrue}

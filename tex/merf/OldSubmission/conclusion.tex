@@ -1,0 +1,17 @@
+In this work, we presented a morphology-based entity and relational entity information extraction framework for Arabic text; \framework . 
+\framework provides a user-friendly interface where the user defines tag types 
+and associates them with regular expressions defined over Boolean formulae. 
+The Boolean formulae are terms, negations of terms, and disjunctions of terms where terms are matches to Arabic morphological features. 
+In addition to the morphological features, \framework introduces $Syn^k$; a semantic feature that relates words based on synonymity. 
+The editor allows the user to associate code actions with each regular sub-expression and to define semantic relations between sub-expressions. 
+\framework uses an in house Arabic morphological analyzer to compute morphological matches. \framework then computes regular expression matches, 
+and then builds the relations. 
+We evaluated our work with several case studies comparing the results with existing application-specific techniques. 
+The results show good accuracy for \framework compared to manually-coded techniques.
+
+Currently, \framework supports one built in cross-reference predicate 
+based on the $Syn^2$ feature. 
+In the future, \framework will support user-defined cross-reference predicates. 
+Currently the user selects the morphological features to specify the MBF. 
+We will explore techniques that can infer the features from example words 
+that the user judges as relevant to the basic concept in question.

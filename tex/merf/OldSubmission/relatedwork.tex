@@ -1,0 +1,157 @@
+In this section we review the literature on 
+entity and relation IE and on automatic and manual annotation
+techniques and compare to \framework.
+
+
+\begin{table}[tb!]
+\caption{Comaprison of IE system}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{p{1.4cm}|p{.7cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}}
+Features & \framework & SystemT\cite{chiticariu2010systemt} & TEXT\cite{atzmueller2008rule} \linebreak MARKER
+& Urbain\cite{urbain2012user} & QARAB\cite{hammo2002qarab}\\ \hline
+Query type & MRE & AQL & matching \linebreak rules & natural language & natural language \\ \hline
+Morphology support& $\checked$ & - & - & OpenNLP & Parser \\ \hline
+Relations & $\checked$ & - & - & $\checked$ & - \\ \hline
+Actions & $\checked$ & - & - & - & - \\ \hline
+Editor & $\checked$ & - & $\checked$ & - & - \\ \hline
+Tag visualization & $\checked$ & - & $\checked$ & - & - \\ \hline
+Graph visualization & $\checked$ & - & - & - & - \\
+\end{tabular}
+}
+\label{tab:iecomp}
+\end{table}
+
+{\bf Information Extraction.~}
+The common pattern specification grammar language (CPSL) targets system independent 
+IE specifications. 
+CPSL consists of 
+(1) a declaration part specifying names and labels, 
+(2) a rule definition part specifying patterns, regular expressions and associated actions, and 
+(3) and macro text substitution part~\cite{appelt1998common}.
+\framework extends CPSL with Arabic morphological features, code actions, and user defined relations.
+
+SystemT~\cite{chiticariu2010systemt}
+aims to overcome the performance and expressivity limitations of CPSL.
+It is based on an algebraic approach to declarative information extraction,
+uses the declarative annotation query language (AQL), and uses
+an optimizer to generate high performance execution plans for the AQL rules. 
+%The AQL query is translated into an algebraic expression and an optimizer selects an execution plan. 
+%\framework overcomes the limitations described by SystemT. 
+\framework supports multiple tags per word, and supports the MRE conjunction operator
+which allows for overcoming the overlapping annotation problem. 
+%es the overfor each word and this overcomes the lossy sequencing caused 
+%by random annotation dropping. 
+%\framework introduces the conjunction operation in the MRE to overcome the expressivity limitations of expressing rules with overlapping annotations. 
+
+TEXTMARKER is a semi-automatic rule-based IE system 
+for structured data acquisition\cite{atzmueller2008rule}.
+%TEXTMARKER requires user defined rules that consider features of the text 
+%However, constructing the rules requires manual work of a domain specialist. 
+Both TEXTMARKER and \framework provide the user with GUI editor and result visualizer. 
+%\framework also differs in that it provides graph visualization for regular expression and user defisemantic relation matches.
+
+The work in~\cite{urbain2012user} presents a user 
+driven relational model and targets entity and relation extraction. 
+The user enters a natural language query, and uses the OpenNLP toolkit to 
+extract tags and relations from the query. 
+Then it extends the extracted entities into a query model,
+and uses the query model to extract matches from the document. 
+Similar to \framework, the system constructs entities and relations. 
+
+QARAB is an Arabic question answering system that 
+takes an Arabic natural language query and provides short answers for it~\cite{hammo2002qarab}. 
+QARAB uses traditional information retrieval techniques and an outdated Arabic NLP 
+analyzer that computes limited features of Arabic words compared 
+to the morphological analysis of \framework. 
+QARAB then classifies the query against a set of known question types. 
+
+Table~\ref{tab:iecomp} summarizes the comparison between \framework and
+other systems. \framework differs in that it provides 
+code actions, user defined relations, and an interactive 
+graph visualization of the relational entities. 
+It also differs in that it fully supports Arabic morphological analysis
+while only QARAB supports Arabic linguistic features using a parser, and 
+the work in ~\cite{urbain2012user} uses OpenNLP that currently lacks full
+support for Arabic morphological features. 
+Similar to TEXTMARKER, \framework has the advantage of providing 
+a user friendly interactive interface to edit the entity and relational 
+specifications and visualize the results. 
+
+DUALIST is an annotation system for quickly building classifiers for 
+text processing tasks using active learning and semi-supervised learning~\cite{settles2011closing}. 
+The classifier is interactive as it queries the annotator 
+for entity detetction correction and annotation correction. 
+\framework doesn't support classification tasks. 
+However, \framework provides an interactive GUI where the user can edit MBF and MRE tags. 
+This interactive environment contributes to the regular expression 
+extraction and semantic relation construction which increases the overall accuracy of the framework.
+
+WordNet is a lexical reference system that mimics human lexical memory inspired 
+by psycholinguistic theories and that relates words based on their semantic values and their functional 
+categories: nouns, verbs, adjectives, adverbs, and function words~\cite{intro}. 
+%The lexicon is composed of five categories: nouns, verbs, adjectives, adverbs, and function words; 
+%each category with its distinct organization to better represent the psychological complexity of lexical knowledge~\cite{nouns,adjectives}. 
+The $Syn^k$ feature in \framework is inspired by WordNet. 
+
+{\bf Annotation tools.~}
+An overview of annotation tools and their Arabic-English word alignment issues 
+concludes with a set of rules and guidelines needed in an Arabic annotation alignment tool
+~\cite{kholidy2010towards}. 
+The work in \cite{dukes2011supervised} presents a collaborative effort towards morphological 
+and syntactic annotation of the Quran. 
+%The task is held through online supervised collaboration using a multi-stage approach that 
+%includes automatic POS tagging, manual verification, and online supervised collaborative 
+%proofreading. 
+The work in \cite{dorr2010interlingual} presents a framework for interlingual 
+annotation of parallel text corpora with multi-level representations. 
+%This corpora is important for NLP tasks including text summarization, information retrieval, 
+%and machine translation. 
+The work in \cite{kulick2010consistent} presents the integration of the 
+Standard Arabic Morphological Analyzer (SAMA) into the workflow of the Arabic Treebank.
+%Such tasks motivated us to build \framework, a morphology-based open source annotation tool 
+%for the Arabic language.
+
+MMAX2 is a manual multi-level linguistic annotation tool with an XML 
+based data model~\cite{mmax2}. 
+It enables the user to create, browse, visualize, and query annotations
+and may be able to resolve coreference tags. 
+BRAT~\cite{brat} and WordFreak~\cite{wordfreak} are manual 
+multi-lingual user friendly web-based annotators that allow the construction 
+of entity and relation annotation corpora~\cite{brat}. 
+%BRAT provides an API for automated annotators to provide annotations. 
+They can be extended through plug-ins to enable automatic annotators 
+and customized annotation visualization specifications.
+%AGTK is a toolkit for the development of text and speech annotation tools~\cite{agtk}. 
+%It provides import APIs from other data and graphical user interface (GUI) components. 
+Knowtator~\cite{ogren2006knowtator} is a general purpose incremental text annotation tool 
+implemented as a Prot\'eg\'e~\cite{gennari2003evolution} plug-in. 
+Prot\'eg\'e is a free, open-source platform with a suite of tools to construct domain 
+models and knowledge-based applications with ontologies~\cite{gennari2003evolution}. 
+However, Prot\'eg\'e doesn't support the Arabic language.
+
+\framework differs from MMAX2, BRAT, WordFreak, and Knowtator in that it is 
+an automatic annotator that allows manual corrections 
+and sophisticated tag type and relation specifications using regular expressions over
+Arabic morphological features.
+
+The work in \cite{smrz2004morphotrees} presents %the extension of TrEd, 
+a customizable general purpose tree editor, with the Arabic MorphoTrees annotations. 
+The MorphoTrees present the morphological analyses in a hierarchical organization 
+based on common features. 
+
+Task specific annotation tools such as~\cite{alrahabi2006semantic}
+uses enunciation semantic maps to automatically annotate 
+directly reported Arabic and French speech. 
+AraTation is another task specific tool for semantic annotation of 
+Arabic news using web ontology based semantic maps~\cite{saleh2009aratation}.
+We differ in that \framework is general, and not task specific, and it uses 
+morphology-based features as atomic terms.
+Fassieh is a commercial Arabic text annotation tool that enables the production of large 
+Arabic text corpora~\cite{attia2009fassieh}. 
+The tool supports Arabic text factorization including morphological analysis, POS tagging, 
+full phonetic transcription, and lexical semantics analysis in an automatic mode. 
+Fassieh is not directly accessible to the research community and requires commercial licensing. 
+\framework is open source and differs in that it allows the user to build tag types 
+and extract entities and relations from text.
+%using Boolean formulae of several atomic terms and define regular expressions based on the Boolean formulae.
+

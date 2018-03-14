@@ -1,0 +1,78 @@
+\documentclass[10pt,stdletter,dateno,sigleft]{newlfm}
+
+\usepackage{charter}
+
+%\newsavebox{\Luiuc}\sbox{\Luiuc}{\parbox[b]{1.75in}{\vspace{0.5in}
+%\includegraphics[width=1.2\linewidth]{aub-logo.jpg}}} % Company/institution logo at the top left of the page
+\makeletterhead{Uiuc}{\Lheader{\usebox{\Luiuc}}}
+
+\newlfmP{sigsize=50pt} % Slightly decrease the height of the signature field
+\newlfmP{addrfromphone} % Print a phone number under the sender's address
+\newlfmP{addrfromemail} % Print an email address under the sender's address
+\PhrPhone{Phone} % Customize the "Telephone" text
+\PhrEmail{Email} % Customize the "E-mail" text
+
+%\lthUiuc % Print the company/institution logo
+
+%----------------------------------------------------------------------------------------
+%	YOUR NAME AND CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\namefrom{Ameen Jaber} % Name
+
+\addrfrom{
+\today\\[12pt] % Date
+American University of Beirut\\
+P.O.Box 11-3875\\
+Riad El-Solh / Beirut 1107 2020
+}
+
+\phonefrom{(+961)70-962096} % Phone number
+
+\emailfrom{aaj15@aub.edu.lb} % Email address
+
+%----------------------------------------------------------------------------------------
+%	ADDRESSEE AND GREETING/CLOSING
+%----------------------------------------------------------------------------------------
+
+\greetto{Dear Jian Pei, editor in cheif, }% Greeting text
+\closeline{Sincerely yours,} % Closing text
+
+\begin{document}
+\begin{newlfm}
+
+
+The submitted manuscript 
+``MERF: Morphology-based Entity and Relational Entity Extraction Framework for Arabic'', 
+significantly extends the work in the attached position 
+paper entitled 
+``MATAr: Morphology-based Tagger for Arabic'' (AICCSA, 2013). 
+MERF is an entity and relational entity extraction framework that 
+uses the output of a morphological analyzer to extract entities and 
+relations amongst them from text documents. 
+MATAr is an Arabic morphology tagger that tags words in text documents 
+with their morphological solutions.
+
+In addition, MATAr only supports Boolean formulae defined over morphological features on the word level, 
+and MERF extends the support to 
+\begin{enumerate}
+\item User defined regular expressions over Boolean formulae.
+\item User defined relations between subexpressions of the regular expressions. 
+\item User defined code actions associated with matches of the subexpressions. 
+\item User friendly interfaces to edit the formulae, regular expressions, relations, and actions. 
+\item MERF API that allows programmatic access to match morphological features in the code actions. 
+\item Automatic cross-reference relation inference that relate entities and relational entities across documents. 
+\item User friendly visualizations aids to report the results and facilitate incremental and interactive editing using:
+\begin{enumerate}
+\item Color and font style sensitive text tagging. 
+\item Graph based visualization of morphology and regular expression match trees.
+\item Graph based visualization of relational entities and cross reference relations. 
+  \end{enumerate}
+\end{enumerate}
+
+
+
+%----------------------------------------------------------------------------------------
+
+\end{newlfm}
+\end{document}

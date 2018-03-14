@@ -1,0 +1,166 @@
+\setcode{utf8}
+\setarab
+\transfalse
+\begin{figure*}[tb!]
+\renewcommand{\arraystretch}{1.5}% Wider
+\resizebox{2\columnwidth}{!}{
+\begin{tabular}{cc}
+\resizebox{\columnwidth}{!}{
+	\begin{tabular}{c|c|c|c}
+		MBF & description & formula & matches\\ \hline
+        N & name of person & $category~=~Name\_of\_Person$ & $n_1,n_2,n_3$ \\ \hline
+        P & name of place & $category~=~Name\_of\_Place$ & $p_1,p_2,...,p_7$ \\ \hline
+        R & relative position & $stem\in$ \{\RL{قرب},\RL{في},\dots\} & $r_1,r_2,r_3,r_4$ \\ \hline
+        U & numerical term & $stem\in$ \{\RL{أول},\RL{ثاني},\dots\} & $u_1,u_2$ \\
+    \end{tabular}
+} 
+&
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{cc}
+\relsize{-2} \input{figures/match1.tex} &
+\relsize{-2} \input{figures/match2.tex} \\
+    \end{tabular}
+} \\
+\end{tabular}
+}
+  \caption{\framework Boolean formulae, and matches of regular expression $(P|N)+~O?~R~O\wedge 2~(P|N|U)+$}
+  \label{fig:motiv}
+\end{figure*}
+\transtrue
+\setcode{standard}
+
+We motivate \framework with the example of Figure~\ref{fig:intromotiv} 
+that shows how to extract direction entities from sample Arabic text. 
+The text includes directions to a shopping mall and the 
+figure presents a transliteration and an English translation of the text.
+%The text contains some details that are not interesting to the direction extraction task. 
+Interesting entities, such as names, places, relative directions, 
+and numerical terms are highlighted with boxes in the text. 
+We are interested in detecting those entities and presenting 
+the direction as relational entities as 
+shown in Figure~\ref{fig:intromotiv} using \framework.
+
+%We demonstrate how to do that using \framework. 
+%The user interacts with the \framework interface to specify Boolean 
+%formulae, regular expressions, and semantic relations. 
+%\framework will automatically extract formulae matches 
+%using an in-house Arabic morphological analyzer (Sarf)
+%\cite{ZaMaColing2012DemosSarf},
+%extract regular expression matches, and construct the 
+%semantic relations.
+
+%For example, row 1 in the table shown in Figure~\ref{fig:motiv} 
+%lists the matches of names of persons as $n_1$, $n_2$, and $n_3$. 
+
+{\bf Entity detection.~}
+As described in the table of Figure~\ref{fig:motiv}, the user denotes 
+Using \framework, the user denotes the ``name of person'' entities with formula $N$ 
+which requires the category feature in the morphological solution of a word
+to be {\tt name of person}. 
+The entities $n_1,n_2,$ and $n_3$ are matches of the formula $N$. 
+Similarly, the user specifies formula $P$ to denote ``name of place'' entities. 
+The user specifies formula 
+$R$ to denote ``relative position'' entities, and requires the stem feature to belong 
+to a selected list of 
+stems containing \RL{fy} and \RL{qrb}. 
+Similarly, $U$ denotes numerical terms and is a disjunction of constraints 
+requiring the stem feature to belong to a set of stems such as
+\RL{'wl}(first), \RL{_tAny}(second), \dots, \RL{tAs`}(ninth), and \RL{`A^sr}(tenth).
+
+\framework calls an inhouse open source morphological 
+analyzer based on finite state transducers~\cite{ZaMaColing2012DemosSarf} and computes matches of 
+the formulae $N$, $P$, $R$, and $U$. 
+We refer to all {\em other} words in the text that do not match 
+a user defined formula as {\em null} words and we denote them by $O$. 
+The resulting matches are illustrated with boxes and superscripts 
+in Figure~\ref{fig:intromotiv} and are also listed in the table of 
+Figure~\ref{fig:motiv}.
+
+%{\bf Direction regular expressions.~}
+The user now interacts with the regular expression editor to 
+specify the direction entities and relations.
+Intuitively, 
+the directions are names of places ($P$) related to each other with 
+positional propositions ($R$). 
+A place name can be a tabulated place name, a street named after 
+a person ($N$), or a numbered street ($U$). 
+The text containing the directions might also include words that are not 
+necessary to indicate directions ($O$)
+but are necessary to complete the sentence. 
+
+The user tries several sequences of the above entities in the 
+editor and checks their matches in the visualizer. 
+Finally, the user is satisfied with the matches of an expression such as 
+$(P|N)+~O?~R~O\wedge 2~(P|N|U)+$ where 
+$|,+,?,$ and $\wedge k$ denote disjunction, one or more, zero or one, and
+up to $k$ matches, respectively.
+The expression specifies a sequence of places or names of persons, 
+optionally followed by a null word, 
+followed by one relative position, followed by up to two possible null words, 
+followed by one or more match of name of place, name of person, or numerical term. 
+$O$ and $\wedge 2$ are used in the expression to allow for flexible matches. 
+The user reaches the satisfying matches by experimenting with the visualizer and 
+the expression editor which do not
+require knowledge and expertise in regular expressions. 
+
+\framework computes the matches of the expression in the text. 
+The match trees in Figure~\ref{fig:motiv} illustrate two of them. 
+The first match tree refers to the text 
+\RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(Khalifa Tower next to 
+the first intersection). 
+The second match tree refers to the text 
+\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building).
+The nodes of the trees are entities and the edges and internal nodes are text, 
+morphology-based, 
+and word distance based relational entities. 
+%The sequence and structure gives us the text of a parent node from the children nodes. 
+%The same sequence can also give us the interesting (matching) morphological features. 
+%The word distance is defined and abstracted by the matches of the regular expression 
+%operators (internal nodes).
+
+{\bf User defined direction relations.~} 
+The user now uses the relation editor to declare user defined relations that relate 
+parts of the matches of the expression with each other. 
+%The aim of the semantic relations to be defined is to construct the entity-relation 
+%graph shown in Figure~\ref{fig:intromotiv}. 
+Intuitively, 
+the user wants to create relations between places, names, and numerical entities. 
+A relation between two entities can be a prepositional entity.
+For example, the entities \RL{dby mwl}(Dubai Mall) and \RL{Almbn_A}(the building) are 
+related by the preposition \RL{mqrbT}(near) as shown in Figure~\ref{fig:intromotiv}.
+
+Let $e_1,o_1,r,o_2,$ and $e_2$ be the 
+$(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$ subexpressions, respectively.
+The user selected $(P|N)+$ to be an entity after noticing in the visualizer  
+that it happens to capture 
+non-separated sequences of place and name entities denoting a single 
+entity such as \cci{Khalifa tower}.
+
+The declaration of \cci{Relation($e_1$,$e_2$,$r$)} creates the 
+edge labeled \cci{next to} between \cci{intersection 1} and 
+\cci{Khalifa tower} nodes in match 1 of Figure~\ref{fig:motiv}(b), and the 
+edge labeled \cci{near} between \cci{Dubai Mall} and \cci{the building} nodes in 
+match 2 of Figure~\ref{fig:motiv}(b). 
+%Those relations will be constructed if $e_1$, $e_2$, and $r$ exist as match entities.
+%
+\cci{Relation($r$,$e_1$,$o_1$)} creates the edge labeled \cci{prep} 
+between \cci{Dubai Mall} and \cci{near} nodes in match 2 of Figure~\ref{fig:motiv}(b). 
+%This relation will be constructed if $r$, $e_1$, and $o_1$ exist as match entities.
+%
+\cci{Relation($r$,$e_2$,$o_2$)} creates the edge labeled \cci{from} 
+between \cci{intersection 1} and \cci{next to} nodes in 
+match 1 of Figure~\ref{fig:motiv}(b), and the 
+edge labeled \cci{from this} between \cci{near} and \cci{the building} 
+nodes in match 2 of Figure~\ref{fig:motiv}(b). 
+%This relation will be constructed if $r$, $e_2$, and $o_2$ exist as match entities.
+
+%\subsection*{Cross-reference} 
+
+After constructing the user defined relations, 
+the user is interested to relate the discovered entities and relational entities
+that express the same concept; in particular, the same place. 
+\framework provides the \cci{isA} predicate as a default cross-reference
+relation which creates the edge between the nodes \cci{Khalifa Tower} and 
+\cci{The building} in  Figure~\ref{fig:intromotiv}.
+%The \cci{isA} predicate relates an entity $w_21$ to an entity $w_2$ two entities if they are direct synonyms 
+%synonymous or one entity is a synonym of a synonym of the other entity. 

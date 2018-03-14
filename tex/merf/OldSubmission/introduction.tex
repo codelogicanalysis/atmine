@@ -1,0 +1,193 @@
+\IEEEPARstart{C}{\em omputational Linguistics} (CL) is concerned with building 
+accurate linguistic computational models. 
+{\em Natural Language Processing} (NLP) is concerned with automating the 
+understanding of natural language. 
+CL and NLP tasks range from simple ones such as spell checking and typing 
+error correction to more 
+complex tasks including %text summarization, 
+{\em named entity recognition} (NER), {\em cross-document analysis}, 
+machine translation, 
+and {\em relational entity extraction}~\cite{linckels2011natural,ferilli2011natural}.
+Entities are elements of text that are of interest to an NLP task. 
+Relational entities are elements that connect entities. 
+{\em Annotations} relate chunks of text to {\em labels} denoting
+semantic values such as entities or relational entities.
+We refer to annotations and labels as {\em tags} and {\em tag types}, respectively, 
+in the sequel.
+
+Supervised and unsupervised empirical learning techniques tackle NLP and CL tasks. 
+They employ machine learning without the need to manually encode the requisite 
+knowledge~\cite{soudi2007arabic}. 
+Supervised learning techniques require training corpora that are annotated 
+with {\em correct} tags to learn a computational model. 
+Supervised and unsupervised techniques require reference corpora that are
+annotated with correct tags to evaluate the 
+accuracy of the technique in terms of metrics such as precision and 
+recall~\cite{englishtreebank,arabictreebank,chinesetreebank}. 
+
+Researchers build the required %seed 
+training and reference corpora 
+either manually, incrementally using learning techniques, or using knowledge-based 
+annotation techniques that recognize and extract entities and relational 
+entities from text. 
+Knowledge-based techniques use linguistic and 
+rhetorical domain specific knowledge encoded into sets of rules 
+to extract entities and relational entities~\cite{soudi2007arabic}.
+While existing annotation, entity, and relational entity 
+extraction tools exist
+\cite{chiticariu2010systemt% SystemT
+,atzmueller2008rule%Textmarker
+,urbain2012user%
+,settles2011closing% dualist
+,mmax2%MMAX
+,brat% BRAT
+},
+most of them lack Arabic language support, and almost all of them
+lack Arabic morphological analysis support that is key to Arabic NLP
+due to the rich morphological nature of Arabic~\cite{habash2006arabic}. 
+Fassieh~\cite{attia2009fassieh} is a {\em commercial} Arabic annotation tool
+with morphological analysis support and text factorization. 
+Fassieh lacks support for entity and relational entity extraction.
+
+\input{directionFigure}
+
+%These tasks take as input digital text documents from sources including literature, books, news, business reports, chat messages, and emails. 
+%Some documents are originally typed in digital format such as emails. 
+%Other documents are automatically digitized using techniques such as {\em optical character recognition} (OCR) and 
+%{\em automatic speech recognition}~\cite{margner2012guide,rashwan2012robust}. 
+
+In this paper, 
+we present a {\em morphology-based entity and relational entity
+extraction framework for Arabic text } (\framework). 
+\framework provides a user-friendly interface where the user defines tag types 
+and associates them with \framework formulae that are regular expressions over 
+\framework Boolean formulae. 
+Boolean formulae are terms, negations of terms, and disjunctions of terms. 
+Terms are matches to Arabic morphological features including 
+prefix, stem, suffix, part of speech (POS) tags, gloss tags, extended synonym tags, 
+and semantic categories. 
+We discuss the importance of the morphological features supported in 
+\framework terms in Section~\ref{s:s:morph}; in breif, morphological preprocessing
+is key to Arabic NLP due to the richness of Arabic morphology. 
+
+We illusrate the target of \framework using a simple example. 
+Given the text in Figure~\ref{fig:intromotiv} that contains
+directions to Dubai Mall~\footnote{text taken from the Dubai Mall website
+~\url{http://www.thedubaimall.com/ar/}}.
+The framed words in the text are entities referring to names of people 
+($n_1,n_2,n_3$), 
+names of places ($p_1,\dots,p_7$), 
+relative positions ($r_1,\dots,r_4$), 
+and numerical terms ($u_1,u_2$). 
+We would like to extract those entities, and then extract
+the relational entities forming the graph in Figure~\ref{fig:intromotiv} 
+where vertices express entities, 
+and edges represent the relational entities.
+\framework allows a regular user to do that interactively
+in four phases that include morphological analysis, 
+entity extraction based on morphological features, 
+relational entity extraction, and entity cross-reference.
+
+\framework regular expressions support operators such as concatenation, 
+zero or one, zero or more, one or more, up to $M$, and logical 
+conjunction and disjunction operations. 
+\framework editor allows the user to associate an action with each 
+\framework sub-expression. 
+The user specifies the action with C++ code and uses the 
+\framework API to access information related to 
+the matches such as text, position, length, morphological features, 
+and numerical values.
+
+\framework takes an Arabic text, a set of user-defined \framework Boolean 
+formulae, and a set of user-defined \framework regular expressions. 
+\framework computes the morphological solutions of the words in the 
+input text then computes matches to the Boolean formulae. 
+\framework then generates a {\em non-deterministic finite state 
+automata} (NDFSA) for each expression and simulates it with the 
+sequence of Boolean formulae matches to compute the regular 
+expression matches. 
+\framework generates executable code for the actions associated with
+the regular expressions, 
+compiles, links, and executes the generated code 
+as shared object libraries. 
+
+Finally, \framework constructs the semantic relations and 
+cross-reference between entities. 
+\framework also provides visualization tools to present the matches, 
+and estimate their accuracy with respect to reference tags.
+
+\subsection*{Existing annotation and entity extraction tools}
+
+Researchers proposed and evaluated empirical and 
+knowledge-based techniques to extract entities and relational entities
+from text. 
+We briefly review them here and we discuss them and compare to them
+in Section~\ref{sec:related}. 
+The work in~\cite{ekbal2010named} presents a language independent 
+approach for NER extraction using {\em support vector machines}. 
+The work in~\cite{abdelrahman2010integrated} integrates 
+a semi-supervised bootstrapping pattern recognition technique, 
+and a supervised classifier based on {\em conditional random fields}
+to solve NER problems. 
+
+Knowledge-based techniques such 
+as~\cite{zaghouani2010adapting,traboulsi2009arabic} propose local grammars 
+with morphological stemming to perform NER. 
+The work in~\cite{ZaMaHaCicling2012Entity} presents a method for extracting entities, 
+events, and relations amongst them from Arabic text using a hierarchy of manually built 
+finite state machines driven by morphological features and graph 
+transformation algorithms. 
+Such techniques require advanced linguistic and programming expertise. 
+QARAB is a question answering system that takes 
+an Arabic natural language query and provides short answers for it~\cite{hammo2002qarab}. 
+
+Researchers also proposed systems for automatic IE based 
+on user specifications. 
+CPSL is a common pattern specification language for finite-state 
+grammar~\cite{appelt1998common}. 
+%It defines three sections for declaration, rule definition, and macros. 
+The work in \cite{chiticariu2010systemt} presents SystemT, a system based on 
+an algebraic Approach to Declarative information extraction (IE). 
+%It uses a declarative rule language and an optimizer. 
+TEXTMARKER is a rule-based IE system designed to extract structured data from 
+text \cite{atzmueller2008rule}. 
+The work in~\cite{urbain2012user} presents a user-driven relational model 
+requiring a user natural language query to extract entities and relational entities.
+
+\framework is an extension to CPSL with action execution and relation construction. 
+\framework enables a regular user to incrementally create 
+complex annotations for Arabic text based on automatic 
+extraction of morphological tags through a user friendly interactive interface. 
+\framework has the following advantages.
+\begin{itemize}
+  \item \framework provides a novel and intuitive visual interface to build Boolean formulae over morphological features, 
+    build regular expressions over the resulting Boolean formulae, and thereafter compute automatic tags.
+  \item Up to our knowledge, \framework  is the first morphology-based framework for Arabic entity and relational entity extraction.
+  \item \framework provides the user with the ability to rapidly create annotated Arabic text corpora with sophisticated morphology-based tags.
+\end{itemize}
+
+In \framework, we make the following contributions.
+\begin{itemize}
+  \item \framework enables the user to define relations in a simple manner
+    and automatically detects relational entities matching the user defined relations. 
+  \item \framework enables the user to associate subexpressions
+    with code actions, and executes the code action 
+    when a corresponding match is found. 
+    \framework provides an API to enable access to match 
+    features such as text, position, length, numerical value, and morphological features.
+  \item \framework enables the user to tag words based on a synonymic relation using the $Syn^k$ feature.
+\end{itemize}
+
+The work in this paper significantly extends the position 
+paper~\cite{JaZaMatar} that allows for manual, and 
+basic morphology annotation. 
+The rest of this paper is organized as follows. 
+Section~\ref{sec:motivation} presents a motivational example. 
+Then, we present an overview of \framework in Section~\ref{sec:overview}. 
+%We present preliminaries necessary to understand the work 
+%in Section~\ref{sec:preliminaries}. 
+Section~\ref{sec:framework} explains the methodology behind \framework. 
+Section~\ref{sec:gui} presents the visual and user friendly aspects of \framework. 
+In Section~\ref{sec:results}, we present our result in comparison to other tools. 
+In Section~\ref{sec:related}, we present and discuss related work. 
+Finally, we present our conclusion and future work in Section~\ref{sec:conclusion}.

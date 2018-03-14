@@ -1,0 +1,79 @@
+\documentclass[10pt,stdletter,dateno,sigleft]{newlfm}
+
+\usepackage{charter}
+
+\newsavebox{\Luiuc}\sbox{\Luiuc}{\parbox[b]{1.75in}{\vspace{0.5in}
+\includegraphics[width=1.2\linewidth]{aub-logo.jpg}}} % Company/institution logo at the top left of the page
+\makeletterhead{Uiuc}{\Lheader{\usebox{\Luiuc}}}
+
+\newlfmP{sigsize=50pt} % Slightly decrease the height of the signature field
+\newlfmP{addrfromphone} % Print a phone number under the sender's address
+\newlfmP{addrfromemail} % Print an email address under the sender's address
+\PhrPhone{Phone} % Customize the "Telephone" text
+\PhrEmail{Email} % Customize the "E-mail" text
+
+\lthUiuc % Print the company/institution logo
+
+%----------------------------------------------------------------------------------------
+%	YOUR NAME AND CONTACT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\namefrom{Ameen Jaber} % Name
+
+\addrfrom{
+\today\\[12pt] % Date
+American University of Beirut\\
+P.O.Box 11-3875\\
+Riad El-Solh / Beirut 1107 2020
+}
+
+\phonefrom{(+961)70-962096} % Phone number
+
+\emailfrom{aaj15@aub.edu.lb} % Email address
+
+%----------------------------------------------------------------------------------------
+%	ADDRESSEE AND GREETING/CLOSING
+%----------------------------------------------------------------------------------------
+
+\greetto{Dear Jian Pei, editor in cheif, }% Greeting text
+\closeline{Sincerely yours,} % Closing text
+
+%\nameto{Mrs. Jane Smith} % Addressee of the letter above the to address
+
+%\addrto{
+%Recruitment Officer \\ % To address
+%The Corporation \\
+%123 Pleasant Lane \\
+%City, State 12345
+%}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\begin{newlfm}
+
+%----------------------------------------------------------------------------------------
+%	LETTER CONTENT
+%----------------------------------------------------------------------------------------
+
+I am Ameen Jaber, PhD candidate,  working with Fadi Zaraket, Assistant professor, 
+from the Electrical and Computer Engineering department at the American University of Beirut, 
+on Natural Language Processing (NLP) techniques for the Arabic language. 
+We are submitting an original manuscript for consideration of publication at 
+the IEEE Transactions on Knowledge and Data Engineering journal.
+
+The title of the manuscript is ``MERF: Morphology-based Entity and Relational Entity Extraction Framework for Arabic''.
+The manuscript present a set of techniques with a supporting tool to allow user to quickly develop entity and relational
+entity extraction application for the Arabic language based on morphology features. 
+Existing tools and techniques lack proper support for Arabic morphology analysis which is key for Arabic NLP.
+The tool also presents a user friendly interface to help users build their applications. 
+
+The paper presents novel specification techniques for Arabic relational entity extraction as it allows 
+user defined relations, and code actions based on Arabic morphological analysis. 
+
+We highly appreciate your consideration of our manuscript for publication.
+
+%----------------------------------------------------------------------------------------
+
+\end{newlfm}
+\end{document}
