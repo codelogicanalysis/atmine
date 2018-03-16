@@ -1,3 +1,5 @@
+\input{MERFOverview}
+
 The \framework framework is illustrated in the flow diagram of
 Figure~\ref{f:overview}.
 The Arabic text and the reference tag chunks are the primary inputs to \framework. 
@@ -23,8 +25,10 @@ are processes.
 
 \subsection{The extended synonymy feature $Syn^k$}
 
+The motivation for $Syn^k$ is to construct a light Arabic ontology based on the lexicon of Sarf.
 The sets $E, A,$ and $L$ denote all English words, Arabic words, 
-and Arabic lexicon words, respectively. 
+and Arabic lexicon words, respectively.
+Recall that $\GG$ and $\ss$ denote the set of glosses and stems in the morphological analyzer, respectively.
 We have $\GG \subset E$ and $\ss \subset L \subset A$. 
 Function $\alpha: \ss \rightarrow 2^{\GG}$ maps Arabic stems to 
 subsets of related English glosses. %; e.g. $g_{s} = \alpha(s)\subset 2^{\GG}$.
@@ -41,11 +45,11 @@ $Sy^{1}(w) = Sy(w)$ and
 $Sy^{i+1}(w)=\{u\mid u\in S\land\exists s\in Sy^{i}(w)\land~\alpha(u)\cap\alpha(s)\neq\phi\}$.
 Formally, $Syn^k(w) = \bigcup\limits_{i=1}^{k} Sy^{i}(w)$ for $i\in[1 \ldots k]$.
 
-The example in Figure~\ref{fig:introsynEx} illustrates the computation. 
-The word \RL{mA'}is related to \RL{n.d.h}through the gloss intersection \cci{water}. 
-The $Syn^2$ feature relates 
-the words \RL{mA'} and ``\RL{r^s^s}'' since \RL{n.d.h} and \RL{r^s^s} 
-have the gloss intersection \cci{spray}.
+The example in Figure~\ref{fig:introsynEx} illustrates the computation.
+The input Arabic word \RL{mA'}, denoted $w$, shares the gloss \cci{water} with the stem \RL{n.d.h}, denoted $s_1$, i.e. $s_1\in Sy^{1}(w)$.
+%The input word \RL{mA'} shares the gloss \RL{n.d.h} through the gloss intersection \cci{water}. 
+Next, the stem \RL{r^s^s}, denoted $s_2$, shares the gloss \cci{spray} with $s_1$, i.e. $s_2\in Sy^{1}(s1)\subset Sy^{2}(w)$.
+Therefore, $Syn^2(w)$ relates the words \RL{mA'} and \RL{r^s^s}.
 
 \begin{figure}[tb!]
 \setcode{utf8}
@@ -62,32 +66,52 @@ have the gloss intersection \cci{spray}.
 
 Let ${\cal O} = \{ \mathit{isA}, \mathit{contains}\}$ be the set of atomic term 
 predicates, and let ${\cal F} = \{ \pp, \ss, \xx, \PP, \GG, \AC\}$ be the 
-set of morphological features. 
+set of morphological features where each entry is in turn a set of values for that feature.
 Given a word $w$, a morphological feature $A\in{\cal F}$, 
 a user defined constant feature value $CF\in A$, and an integer 
 $k, 1\le k\le 7$, 
-the following are morphology-based atomic terms (MAT). 
+the following are morphology-based atomic terms (MAT), {\em terms} for short.
 \begin{itemize}
-  \item $a(w):= \exists m \in M(w). m=\langle p,s,x,P,G,C\rangle. r \circ CF$
-where $\circ \in {\cal O}$, $r \in \{p,s,x,P,G,C\}$, and $r\in A$.
+  \item $a(w):= \exists m \in M(w). m=\langle p^k,s,x^l,P,G,C\rangle. r \circ CF$
+where $\circ \in {\cal O}$, $r \in \{p^k,s,x^l,P,G,C\}$, and $r\in A$.
 Informally, a solution vector of $w$ exists with
-a feature containing (or exactly matching) $CF$. 
+a feature containing or exactly matching $CF$.
+The predicates $\mathit{isA}$ and $\mathit{contains}$ denote the exact match and contain criteria, respectively.
 \item $a(w) := w \in Syn^k(CF), CF \in \ss$.
-  Informally, this checks $w$ is an extended synonym of a stem $CF$. 
+  Informally, this checks if $w$ is an extended synonym of a stem $CF$. 
 \end{itemize}
 
-A morphology-based Boolean formula (MBF) is of the following form. 
+A morphology-based Boolean formula (MBF) is of the following form.
 \begin{itemize}
   \item $a$ and $\neg a$ are MBF formulae where $a$ is a MAT and $\neg$ is the negation operator. 
   \item $(f \vee g)$ is an MBF where $f$ and $g$ are MBF formulae, 
     and $\vee$ is the disjunction (union) operator. 
 \end{itemize}
-Formula $N$ in Figure~\ref{fig:motiv} checks whether a solution has a category
-feature matching category {\tt Name\_of\_Person}.
-Formula $R$ is the disjunction of MAT terms that check for
-solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
 
-A morphology-based regular expression (MRE) is one of the following. 
+Moreover, \framework provides $O$ to be a default Boolean formula that tags all {\em other} words in the text that do not match a user defined formula.
+We also refer to those words as {\em null} words.
+
+\input{directionMBF}
+
+Consider the task we discussed in the introduction (Figure~\ref{fig:intromotiv}) 
+and recall that we are interested in identifying names of people, names of places, relative positions, and numerical terms.
+The table in Figure~\ref{fig:taskMBF} presents the defined formulae.
+The user denotes the ``name of person'' entities with formula $N$ 
+which requires the {\em category} feature in the morphological solution of a word to be {\tt Name\_of \_Person}.
+The entities $n_1$, $n_2$, and $n_3$ are matches of the formula $N$ in the text.
+Similarly, the user specifies formula $P$ to denote ``name of place'' entities. 
+The user specifies formula $R$ to denote ``relative position'' entities, 
+and defines it as a disjunction of MAT terms that check for 
+solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
+%requires the stem feature of a word to belong to a selected list of stems containing \RL{fy} and \RL{qrb}. a
+Similarly, $U$ denotes numerical terms and is a disjunction of constraints 
+requiring the stem feature to belong to a set of stems such as
+\RL{'wl}(first), \RL{_tAny}(second), \dots \RL{`A^sr}(tenth).
+
+%Formula $N$ in Figure~\ref{fig:motiv} checks whether a solution has a category feature matching category {\tt Name\_of\_Person}.
+%Formula $R$ is the disjunction of MAT terms that check for solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
+
+Next, we define a morphology-based regular expression (MRE) as follows.
 \begin{itemize}
 \item $m$ is an MRE where $m$ is an MBF.
 \item $fg$ is an MRE denoting a concatenation operation
@@ -101,7 +125,30 @@ A morphology-based regular expression (MRE) is one of the following.
   a match of both $f$ and $g$, 
   and a match of either $f$ or $g$, respectively. 
 \end{itemize}
-We denote by $\ldbrack f\rdbrack$ the set of matches of an MRE $f$. 
+We denote by $\ldbrack f\rdbrack$ the set of matches of an MRE $f$.
+
+Back to the example in Figure~\ref{fig:intromotiv}.
+We use the formulae defined in Figure~\ref{fig:directionMBF} to construct an MRE such as
+$(P|N)\!+~O?~R~O^\wedge\!2~(P|N|U)+$ where 
+$|,+,?,$ and $^\wedge k$ denote disjunction, one or more, zero or one, and
+up to $k$ matches, respectively.
+The expression specifies a sequence of places or names of persons, 
+optionally followed by a null word, 
+followed by one relative position, followed by up to two possible null words, 
+followed by one or more match of name of place, name of person, or numerical term.
+$O?$ and $O^\wedge 2$ are used in the expression to allow for flexible matches.
+%The user reaches the satisfying matches by experimenting with the visualizer and the expression editor which do not require knowledge and expertise in regular expressions. 
+
+\input{directionMRE}
+
+The match trees in Figure~\ref{fig:taskMRE} illustrate two matches of the expression computed by \framework.
+The first match tree refers to the text 
+\RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(Khalifa Tower next to the first intersection).
+The second match tree refers to the text 
+\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building).
+The leaf nodes of the trees are entities and the edges and internal nodes are text, 
+morphology-based, 
+and word distance based relational entities. 
 
 \subsection{User-defined relations and actions}
 

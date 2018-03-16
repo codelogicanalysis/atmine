@@ -92,7 +92,7 @@ text documents.
 \framework uses Sarf to compute a set of morphological solutions $M(t)=\{m_1,m_2,\ldots,m_N\}$
 for each word $t\in T$. 
 Each morphological solution $m\in M(t)$ is a tuple of the form 
-$\langle p,s,x,P,G,C\rangle\in \pp \times  \ss\times \xx\times \PP\times\GG \times \AC$.
+$\langle p^k,s,x^l,P,G,C\rangle\in \pp^k \times  \ss\times \xx^l\times \PP\times\GG \times \AC$ where $k>0$ and $l>0$ indicate possibly multiple prefixes and suffixes, respectively.
 
 %\setarab
 \begin{table}[tb!]
@@ -129,5 +129,3 @@ third person masculine singular subject pronoun,
 an imperfect verb, and 
 and a third person feminine singular object pronoun, respectively.
 The POS and gloss notations follow the Buckwalter notation~\cite{Buckwalter:02}.
-
-\input{MERFOverview}
