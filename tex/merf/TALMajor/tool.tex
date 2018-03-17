@@ -154,31 +154,33 @@ For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the sub-expression 
 
 \subsection{User-defined relations and actions}
 
-A relation $R$ is defined by the user as a tuple 
+A relation is defined by the user as a tuple 
 $\langle e_1,e_2,r\rangle$ where 
 $e_1,e_2,$ and $r$ are identifiers associated with 
 sub-expressions of an expression $f$.
-Matches of $R$ are a set of labeled binary edges
+Matches of the relation are a set of labeled binary edges
 where matches of $e_1$ and $e_2$ are the source and destination nodes
 and matches of $r$ are the edge labels.
-We denote $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ to be the set of matches of $R$, and refer to them as user defined relational entities.
+We denote $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ to be the set of matches of the corresponding relation, 
+and we refer to them as relational entities.
 
 We are interested in constructing the relational entity graph in Figure~\ref{fig:intromotiv}.
 Let $e_1,o_1,r,o_2,$ and $e_2$ be identifiers to the sub-expressions 
 $(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$, respectively.
-We select $(P|N)+$ to denote an entity as it captures a composite place name such as \cci{Khalifa tower}.
+%We select $(P|N)+$ to denote an entity as it captures a composite place name such as \cci{Khalifa tower}.
+We define the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 The matches to $e_1$, $r$, $o_2$, and $e_2$ in match 1 (Fig.~\ref{fig:taskMRE}) are \RL{brj _hlyfT} (Khalifa Tower), \RL{bAlqrb} (next), \RL{mn} (to), and \RL{AltqA.t` Al-'wl} (first intersection).
 Note that there is no match to the optional $O$ formula in match 1.
 Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second match tree are
 \RL{dby mwl} (Dubai Mall), \RL{`l_A} (is located), \RL{mqrbT} (near), \RL{mn h_dA} (this), and \RL{Almbn_A} (building), respectively.
 
-\cci{Relation($e_1$,$e_2$,$r$)} creates the 
+Relation $\langle e_1,e_2,r\rangle$ creates the 
 edge labeled \cci{next to} between \cci{Khalifa tower} and 
 \cci{intersection 1} nodes from match 1, and the 
 edge labeled \cci{near} between \cci{Dubai Mall} and \cci{the building} nodes from match 2.
-\cci{Relation($r$,$e_1$,$o_1$)} creates the edge labeled \cci{prep} 
+Relation $\langle r,e_1,o_1\rangle$ creates the edge labeled \cci{prep} 
 between \cci{Dubai Mall} and \cci{near} nodes from match 2. 
-\cci{Relation($r$,$e_2$,$o_2$)} creates the edge labeled \cci{from} 
+Relation $\langle r,e_2,o_2\rangle$ creates the edge labeled \cci{from} 
 between \cci{intersection 1} and \cci{next to} nodes in 
 match 1, and the 
 edge labeled \cci{from this} between \cci{near} and \cci{the building} 

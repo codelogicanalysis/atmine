@@ -22,10 +22,10 @@ its tag set $R_i$ is by default the singleton $O=\{\mathit{NONE}\}$.
 %\subsection{MRE and action simulation}
 
 For each MRE, 
-\framework generates its equivalent non-deterministic finite automaton (NFA) in the typical manner~\cite{sipser2006introduction}. 
+\framework generates its equivalent non-deterministic finite automaton (NFA) in the typical manner~\cite{sipser2006introduction}.
 %Each MRE operation has its equivalent representation in an NFA. 
 We support the upto operation ($f$\^{}$x$), which is not directly 
-supported in ~\cite{sipser2006introduction}, by 
+supported in~\cite{sipser2006introduction}, by 
 %it is equivalent to $f?|ff|\dots|\underbrace{f}_{x \text{ times}}$ which has an NFA mapping. 
 %we can expand it into a standard regular expression form, for example
 expanding it into a regular expression form; for example 
@@ -40,11 +40,9 @@ Edges labeled with the empty string $\epsilon$ are non-deterministic.
 %The expression uses operations $|$, $?$, $+$, and $\wedge$ to relate places {\tt P}, names of persons {\tt N}, relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
 
 \framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
-A simulation match $m$ of an expression $f$ is a tree where the root is the 
-MRE expression, the internal nodes are the MRE and MBF operations, and the 
-leaves are matches of the MAT terms of $f$.
-The leave matches form a vector of tags
-$\langle r_k,r_{k+1},\dots,r_j\rangle$ 
+%A simulation match $m$ of an expression $f$ is a tree where the root is the MRE expression, the internal nodes are the MRE and MBF operations, and the leaves are matches of the MAT terms of $f$.
+A simulation match $m$ of an expression $f$ is a tree where the root spans the expression, the internal nodes are roots to sub-expressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Fig.~\ref{fig:taskMRE}.
+The sequence of leaf matches forms a vector of tags $\langle r_k,r_{k+1},\dots,r_j\rangle$ 
 corresponding to the text sequence 
 $\langle t_k,t_{k+1},\dots,t_j\rangle$ where $r_{\ell}\in R_{\ell},0\le k\le \ell \le j < n$.
 %
@@ -55,14 +53,12 @@ $\langle t_k,t_{k+1},\dots,t_j\rangle$ where $r_{\ell}\in R_{\ell},0\le k\le \el
 %
 %In case the NFA simulation has no match, 
 %the next simulation starts at $R_{m+1}$. 
-If we have more than one match %starting at $R_k$ where $0\le k\le n$, 
-\framework returns the longest. 
-%
-Figure~\ref{fig:motiv}(b) shows two match trees of $\mathit{dir}$ extracted 
-from the text of Figure~\ref{fig:intromotiv}.
-\RL{dby} and \RL{mwl} are leaf nodes referring to name of place tags ($P$). 
-The $+$, $|$, and $?$ MRE operations
-are internal nodes.
+If we have more than one match for an expression, 
+%starting at $R_k$ where $0\le k\le n$, 
+\framework returns the longest.
+%Figure~\ref{fig:taskMRE} shows two match trees of $\mathit{dir}$ extracted from the text of Figure~\ref{fig:intromotiv}.
+%\RL{dby} and \RL{mwl} are leaf nodes referring to name of place tags ($P$).
+%The $+$, $|$, and $?$ MRE operations are internal nodes.
 
 %\framework maintains a function $\phi\subset Q\times\Phi$, 
 %where $\mathit{Q}$ is the set of states in the NFA and $\Phi$ is the set of sub-expressions in the MRE.
@@ -122,49 +118,31 @@ are internal nodes.
 %\label{fig:srEx}
 %\end{figure}
 
-\framework computes the relational entities in a user defined 
-relation $R=\ldbrack \langle e_1,e_2,r\rangle \rdbrack$
-$\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$ 
-to be the elements of $\ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$
-with the smallest nonzero positive distance between the source and the destination
-where the distance is the number of words between the matches. 
+Next, \framework computes the relational entities corresponding to each user defined relation $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$
+$\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$.
+Note that the number of matches for $e_i$ ($\ldbrack e_i \rdbrack$) depends on the corresponding sub-expression.
+For instance, we could have multiple matches if we associate $e_i$ with the sub-expression $P|N$ while we have $(P|N)+$.
+%to be the elements of $\ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$
+%with the smallest nonzero positive distance between the source and the destination
+%where the distance is the number of words between the matches. 
+Hence, \framework supports the following configurations for $e_i$ and $e_j$ based on the corresponding matches of sub-expressions:
+\begin{itemize}
+\item $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert=1$: Relate $e_i$ match to $e_j$ match with edge labeled by $r$.
+\item $i=j\wedge\left\vert{e_i}\right\vert>1$: Relate sequences of $e_i$ matches with edges labeled by $r$.
+\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert=1$: Relate each $e_i$ match to the single $e_j$ match with an edge labeled by $r$. The reverse applies for $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert>1$.
+\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert>1$: Relate each $e_i$ match to each $e_j$ match with an edge labeled by $r$.
+\end{itemize}
 
-%\framework supports the following configurations for the subexpressions of $e_i$ and $e_j$:
-%\begin{itemize}
-%\item $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert=1$: Relate $e_i$ match to $e_j$ match with edge labelled by $r$.
-%\item $i=j\wedge\left\vert{e_i}\right\vert>1$: Relate sequences of $e_i$ matches with edges labelled by $r$.
-%\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert=1$: Relate each $e_i$ match to the single $e_j$ match with an edge labelled by $r$. The reverse applies for $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert>1$.
-%\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert>1$: Relate each $e_i$ match to each $e_j$ match with an edge labelled by $r$.
-%\end{itemize}
-%
-In Figure~\ref{fig:motiv}(b), \framework names the subexpressions 
-$(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, 
-as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
-The user defines the semantic relations
-$\langle e_1, e_2, r\rangle$, 
-$\langle r, e_1, o_1\rangle$, and 
-$\langle r,e_2,o_2\rangle$.
+%In Figure~\ref{fig:taskMRE}, \framework names the sub-expressions $(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
+%The user defines the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 
-The matches of $e_1,~e_2,~o_1,~o_2,$ and $r$ from the second match tree 
-of Figure~\ref{fig:motiv}(b) are \RL{dby mwl}(Dubai Mall), 
-\RL{Almbn_A}(the building), \RL{`l_A}(prep), \RL{mn h_dA}(from this), 
-and \RL{mqrbT}(near), respectively. 
-\framework~constructs the semantic relation matches and builds the lower part of the 
-entity-relation graph shown in Figure~\ref{fig:intromotiv}.
+%The matches of $e_1,~e_2,~o_1,~o_2,$ and $r$ from the second match tree of Figure~\ref{fig:motiv}(b) are \RL{dby mwl}(Dubai Mall), \RL{Almbn_A}(the building), \RL{`l_A}(prep), \RL{mn h_dA}(from this), and \RL{mqrbT}(near), respectively. 
+%\framework~constructs the semantic relation matches and builds the lower part of the entity-relation graph shown in Figure~\ref{fig:intromotiv}.
 
-For the first match \RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'-wl},
-the matches of $e_1,~e_2,~o_2,$ and $r$ are 
-\RL{brj _hlyfT}(Khalifa tower), \RL{AltqA.t` Al-'-wl}(intersection 1), 
-\RL{mn}(from), and \RL{bAlqrb}(next to), respectively. 
-\framework~doesn't construct the relation $\langle r, e_1, o_1\rangle$ 
-since $o_1$ has no match. 
-Therefore, we get the upper part of the entity-relation graph shown 
-in Figure~\ref{fig:intromotiv}.
+%For the first match \RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'-wl}, the matches of $e_1,~e_2,~o_2,$ and $r$ are \RL{brj _hlyfT}(Khalifa tower), \RL{AltqA.t` Al-'-wl}(intersection 1), \RL{mn}(from), and \RL{bAlqrb}(next to), respectively. 
+%\framework doesn't construct the relation $\langle r, e_1, o_1\rangle$ since $o_1$ has no match. 
+%Therefore, we get the upper part of the entity-relation graph shown in Figure~\ref{fig:intromotiv}.
 
 After computing the relational entities, 
-\framework~computes a cross-reference relation between the extracted entities
-using a second order synonymy feature ($Syn^2$).
-The \cci{isA} edge in the 
-graph of Figure~\ref{fig:intromotiv} shows the cross-reference relation 
-between \RL{brj _hlyfT}(Khalifa tower) from the first match 
-with \RL{Almbn_A}(the building) from the second match.
+\framework computes cross-reference relations between the extracted entities using a second order synonymy feature ($Syn^2$).
+%The \cci{isA} edge in the graph of Figure~\ref{fig:intromotiv} shows the cross-reference relation between \RL{brj _hlyfT}(Khalifa tower) from the first match with \RL{Almbn_A}(the building) from the second match.
