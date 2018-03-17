@@ -7,27 +7,6 @@ techniques and compare to \framework.
 %Urbain\cite{urbain2012user}, 
 %QARAB\cite{hammo2002qarab}
 
-\begin{table}[tb!]
-\caption{Comaprison of \framework with SystemT, 
-TEXTMARKER, 
-Urbain, 
-QARAB}
-\resizebox{\columnwidth}{!}{
-\begin{tabular}{l|c|c|c|c|c}
-%{p{2.7cm}|p{.7cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}}
-Features & \framework & SystemT & TEXT\linebreak MARKER & Urbain & QARAB\\ \hline
-Query type & MRE & AQL & matching \linebreak rules & natural language & natural language \\ \hline
-Morphology support& $\checked$ & - & - & OpenNLP & Parser \\ \hline
-Relations & $\checked$ & - & - & $\checked$ & - \\ \hline
-Actions & $\checked$ & - & - & - & - \\ \hline
-Editor & $\checked$ & - & $\checked$ & - & - \\ \hline
-Tag visualization & $\checked$ & - & $\checked$ & - & - \\ \hline
-Graph visualization & $\checked$ & - & - & - & - \\
-\end{tabular}
-}
-\label{tab:iecomp}
-\end{table}
-
 {\bf Information Extraction.~}
 The common pattern specification language (CPSL) targets system independent 
 IE specifications. 
@@ -71,6 +50,27 @@ QARAB uses traditional information retrieval techniques and an outdated Arabic N
 analyzer that computes limited features of Arabic words compared 
 to the morphological analysis of \framework. 
 QARAB then classifies the query against a set of known question types. 
+
+\begin{table}[tb!]
+\caption{Comaprison of \framework with SystemT, 
+TEXTMARKER, 
+Urbain, 
+QARAB}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l|c|c|c|c|c}
+%{p{2.7cm}|p{.7cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}}
+Features & \framework & SystemT & TEXT\linebreak MARKER & Urbain & QARAB\\ \hline
+Query type & MRE & AQL & matching \linebreak rules & natural language & natural language \\ \hline
+Morphology support& $\checked$ & - & - & OpenNLP & Parser \\ \hline
+Relations & $\checked$ & - & - & $\checked$ & - \\ \hline
+Actions & $\checked$ & - & - & - & - \\ \hline
+Editor & $\checked$ & - & $\checked$ & - & - \\ \hline
+Tag visualization & $\checked$ & - & $\checked$ & - & - \\ \hline
+Graph visualization & $\checked$ & - & - & - & - \\
+\end{tabular}
+}
+\label{tab:iecomp}
+\end{table}
 
 Table~\ref{tab:iecomp} summarizes the comparison between \framework and
 other systems. \framework differs in that it provides 

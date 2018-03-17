@@ -241,6 +241,63 @@ Table~\ref{tab:mbfer} shows that \framework detected
 MBF matches with 99\% recall, and 75\% precision, and
 extracted user-defined relations with 81\% recall and 96\% precision.
 
+\newcommand*{\fvtextcolor}[2]{\textcolor{#1}{#2}}
+\begin{figure}[tb!]
+\centering
+  \begin{tabular}{p{5.5cm}p{5.5cm}}
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=TMB algorithm,commandchars=\\\[\]] 
+cout << \fvtextcolor[red][$s1.text];
+if(isHundred) {
+  if(current != 0) {
+    previous += current;
+  }
+  current = currentH * \fvtextcolor[red][$s1.number];
+  currentH = 0;
+  isHundred = false;
+  isKey = true;
+} else if(current == 0) {
+  
+  current = \fvtextcolor[red][$s1.number];
+  isKey = true;
+} else if(!isKey) {
+
+  isKey = true;
+  current = current * \fvtextcolor[red][$s1.number];
+} else {
+  previous += current;
+  current = \fvtextcolor[red][$s1.number];
+}
+\end{Verbatim}
+&
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=DT algorithm,commandchars=\\\[\]] 
+if(isHundred) {
+  currentH += \fvtextcolor[red][$s0.number];
+} else if(current == 0) {
+  current = \fvtextcolor[red][$s0.number];
+} else if(isKey) {
+  previous += current;
+  current = \fvtextcolor[red][$s0.number];
+} else {
+  current += \fvtextcolor[red][$s0.number]; }
+isKey = false;
+\end{Verbatim}
+\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=H algorithm,commandchars=\\\[\]] 
+isHundred = true;
+if(current == 0)  {
+  currentH = \fvtextcolor[red][$s2.number];
+} else if(!isKey) {
+  currentH = current * \fvtextcolor[red][$s2.number];
+  current = 0;
+} else {
+  currentH = \fvtextcolor[red][$s2.number];}
+isKey = false;
+\end{Verbatim}
+\\ 
+\end{tabular}
+\caption{Actions for TMB, DT, and H MRE expressions.}
+\label{fig:numnormalgo}
+\end{figure}
+
 \vspace{-1em}
 \subsection{Number normalization}
 \label{sec:sec:number}
@@ -255,71 +312,14 @@ The \cci{num} MRE
 \cci{(DT|TMB|H)+} is one or more \cci{DT}, \cci{TMB}, or \cci{H} tags. 
 \framework assigns the symbols $s_1$, $s_2$, and $s_3$ 
 for the sub-expressions \cci{DT}, \cci{TMB}, and \cci{H}, respectively. 
-The actions associated with the sub-expressions \cci{DT}, \cci{TMB}, and \cci{H} are presented in the appendix.
-%Figure~\ref{fig:numnormalgo} shows the actions associated with the \cci{DT}, \cci{TMB}, and \cci{H} subexpressions that cumulatively compute the numeric value of the numeric expression match.
+%The actions associated with the sub-expressions \cci{DT}, \cci{TMB}, and \cci{H} are presented in the appendix.
+Figure~\ref{fig:numnormalgo} shows the actions associated with the \cci{DT}, \cci{TMB}, and \cci{H} subexpressions that cumulatively compute the numeric value of the numeric expression match.
 The actions use \framework API to access features of the matches such 
 as text (\cci{\$s1.text}) and numeric 
 value (\cci{\$s1.number}) of literal numbers such as numbers from one to ten.
 
 Table~\ref{tab:mbfer} shows high accuracy in MBF tagging with 99\% recall and 99\% precision, and
 high accuracy in relation extraction with 97\% recall and 95\% precision.
-
-%\newcommand*{\fvtextcolor}[2]{\textcolor{#1}{#2}}
-%\begin{figure}[tb!]
-%\centering
-%  \begin{tabular}{p{5.5cm}p{5.5cm}}
-%\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=TMB algorithm,commandchars=\\\[\]] 
-%cout << \fvtextcolor[red][$s1.text];
-%if(isHundred) {
-%  if(current != 0) {
-%    previous += current;
-%  }
-%  current = currentH * \fvtextcolor[red][$s1.number];
-%  currentH = 0;
-%  isHundred = false;
-%  isKey = true;
-%} else if(current == 0) {
-%  
-%  current = \fvtextcolor[red][$s1.number];
-%  isKey = true;
-%} else if(!isKey) {
-%
-%  isKey = true;
-%  current = current * \fvtextcolor[red][$s1.number];
-%} else {
-%  previous += current;
-%  current = \fvtextcolor[red][$s1.number];
-%}
-%\end{Verbatim}
-%&
-%\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=DT algorithm,commandchars=\\\[\]] 
-%if(isHundred) {
-%  currentH += \fvtextcolor[red][$s0.number];
-%} else if(current == 0) {
-%  current = \fvtextcolor[red][$s0.number];
-%} else if(isKey) {
-%  previous += current;
-%  current = \fvtextcolor[red][$s0.number];
-%} else {
-%  current += \fvtextcolor[red][$s0.number]; }
-%isKey = false;
-%\end{Verbatim}
-%\begin{Verbatim}[fontsize=\relsize{-1},frame=single,label=H algorithm,commandchars=\\\[\]] 
-%isHundred = true;
-%if(current == 0)  {
-%  currentH = \fvtextcolor[red][$s2.number];
-%} else if(!isKey) {
-%  currentH = current * \fvtextcolor[red][$s2.number];
-%  current = 0;
-%} else {
-%  currentH = \fvtextcolor[red][$s2.number];}
-%isKey = false;
-%\end{Verbatim}
-%\\ 
-%\end{tabular}
-%\caption{Actions for TMB, DT, and H MRE expressions.}
-%\label{fig:numnormalgo}
-%\end{figure}
 
 \vspace{-1em}
 \subsection{Discussion}

@@ -128,8 +128,8 @@ Next, we define a morphology-based regular expression (MRE) as follows.
 We denote by $\ldbrack f\rdbrack$ the set of matches of an MRE $f$.
 
 Back to the example in Figure~\ref{fig:intromotiv}.
-We use the formulae defined in Figure~\ref{fig:directionMBF} to construct an MRE such as
-$(P|N)\!+~O?~R~O^\wedge\!2~(P|N|U)+$ where 
+We use the formulae defined in Figure~\ref{fig:taskMBF} to construct an MRE such as
+$(P|N)\!+O?~R~O^\wedge\!2~(P|N|U)+$ where 
 $|,+,?,$ and $^\wedge k$ denote disjunction, one or more, zero or one, and
 up to $k$ matches, respectively.
 The expression specifies a sequence of places or names of persons, 
@@ -137,7 +137,7 @@ optionally followed by a null word,
 followed by one relative position, followed by up to two possible null words, 
 followed by one or more match of name of place, name of person, or numerical term.
 $O?$ and $O^\wedge 2$ are used in the expression to allow for flexible matches.
-%The user reaches the satisfying matches by experimenting with the visualizer and the expression editor which do not require knowledge and expertise in regular expressions. 
+%Note that the user reaches the satisfying matches by experimenting with the visualizer and the expression editor which do not require knowledge and expertise in regular expressions. 
 
 \input{directionMRE}
 
@@ -146,35 +146,68 @@ The first match tree refers to the text
 \RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(Khalifa Tower next to the first intersection).
 The second match tree refers to the text 
 \RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building).
-The leaf nodes of the trees are entities and the edges and internal nodes are text, 
-morphology-based, 
-and word distance based relational entities. 
+%The leaf nodes of the trees are entities and the edges and internal nodes are text, 
+%morphology-based, 
+%and word distance based relational entities. 
+The leaf nodes of the match trees are matches to formulae and the internal nodes represent roots to sub-expression matches.
+For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the sub-expression $(P|N)+$.
 
 \subsection{User-defined relations and actions}
 
-A user-defined relation $R$ defined by a tuple 
+A relation $R$ is defined by the user as a tuple 
 $\langle e_1,e_2,r\rangle$ where 
-$e_1,e_2,$ and $r$ are identifiers associated with MRE 
-subexpressions in as expression $f$ is a set of labeled binary edges
+$e_1,e_2,$ and $r$ are identifiers associated with 
+sub-expressions of an expression $f$.
+Matches of $R$ are a set of labeled binary edges
 where matches of $e_1$ and $e_2$ are the source and destination nodes
 and matches of $r$ are the edge labels.
-We refer to a member of $R=\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ 
-as a user defined relational entity.
+We denote $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ to be the set of matches of $R$, and refer to them as user defined relational entities.
 
-\framework allows advanced users to write C++ code snippets 
-to process matches of MRE subexpressions. 
+We are interested in constructing the relational entity graph in Figure~\ref{fig:intromotiv}.
+Let $e_1,o_1,r,o_2,$ and $e_2$ be identifiers to the sub-expressions 
+$(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$, respectively.
+We select $(P|N)+$ to denote an entity as it captures a composite place name such as \cci{Khalifa tower}.
+The matches to $e_1$, $r$, $o_2$, and $e_2$ in match 1 (Fig.~\ref{fig:taskMRE}) are \RL{brj _hlyfT} (Khalifa Tower), \RL{bAlqrb} (next), \RL{mn} (to), and \RL{AltqA.t` Al-'wl} (first intersection).
+Note that there is no match to the optional $O$ formula in match 1.
+Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second match tree are
+\RL{dby mwl} (Dubai Mall), \RL{`l_A} (is located), \RL{mqrbT} (near), \RL{mn h_dA} (this), and \RL{Almbn_A} (building), respectively.
+
+\cci{Relation($e_1$,$e_2$,$r$)} creates the 
+edge labeled \cci{next to} between \cci{Khalifa tower} and 
+\cci{intersection 1} nodes from match 1, and the 
+edge labeled \cci{near} between \cci{Dubai Mall} and \cci{the building} nodes from match 2.
+\cci{Relation($r$,$e_1$,$o_1$)} creates the edge labeled \cci{prep} 
+between \cci{Dubai Mall} and \cci{near} nodes from match 2. 
+\cci{Relation($r$,$e_2$,$o_2$)} creates the edge labeled \cci{from} 
+between \cci{intersection 1} and \cci{next to} nodes in 
+match 1, and the 
+edge labeled \cci{from this} between \cci{near} and \cci{the building} 
+nodes in match 2.
+
+After the relation construction phase, we are interested to relate the discovered entities
+% and relational entities 
+that express the same concept.
+\framework provides the extended synonym feature of second order as a default cross-reference relation ($Syn^2$).
+%\framework provides the \cci{isA} predicate as a default cross-reference relation.
+In Figure~\ref{fig:intromotiv}, triggering this feature creates the edge between the nodes \cci{Khalifa Tower} and \cci{The building}.
+The edge is labeled with \cci{isA}.
+
+Moreover, \framework allows advanced users to write C++ code snippets 
+to process matches of sub-expressions.
+Each sub-expression can be associated with two computational actions: \cci{pre-match} and \cci{on-match}.
 Users can use these actions to compute statistical features, 
-store intermediate results, or apply intelligent entity inference techniques
-as we show in the numerical extraction example of Section~\ref{sec:sec:number}. 
-\framework provides an API that enrich the actions with detailed access to
-all solution features of an MRE or an MBF match including 
-text, position, length, equivalent numerical value if applicable, 
+store intermediate results, 
+or apply intelligent entity inference techniques
+as we show later in the numerical extraction example of Section~\ref{sec:sec:number}.
+\framework provides an API that enriches the actions with detailed access to
+all solution features of an expression or a formula match including 
+text, position, length, equivalent numerical value when applicable, 
 and morphological features.
-
-Once \framework computes all match trees, it traverses each match to 
+Once \framework computes all match trees, it traverses each tree to 
 execute the user defined \cci{pre-match} actions in pre-order manner
 and the \cci{on-match} actions in post-order manner.
 
+\begin{comment}
 \subsection{\framework simulator}
 
 The set of tag types ${\cal T}$ contains tuples of the form $\langle l,f,d\rangle$ 
@@ -182,7 +215,7 @@ where $l$ is a text label with a descriptive name,
 $f$ is an MRE, and $d$ is a visualization legend 
 with font and color information.
 
-For each word $t_i\in T, 0\le i < n, n=|T|$ 
+For each word $t_i\in T, 0\le i < M, M=|T|$.
 \framework computes a Boolean value 
 ($\{\mathit{true}, \mathit{false}\}$)
 for all MBFs. 
@@ -192,38 +225,33 @@ f~\mathit{is~an~MBF} \wedge f(t_i)\} \subseteq T \times {\cal T}$
 which tags a word $t_i$ with $\mathit{tt}$ 
 iff the MBF $f$ associated with
 tag type $\mathit{tt}$ is true for $t_i$. 
-
 The MBF evaluation results in a sequence of tag sets 
 $\langle R_0, R_1, \ldots, R_{n-1}\rangle$.
-If a word $t_o$ has no tag type match, 
-its tag set $R_o$ is by default the singleton $O=\{\mathit{NONE}\}$
-and $t_o$ is referred to as a {\em null} word.
+If a word $t_i$ has no tag type match, 
+its tag set $R_i$ is by default the singleton $O=\{\mathit{NONE}\}$.
+%and $t_i$ is referred to as a {\em null} word.
 
 %\subsection{MRE and action simulation}
 
 For each MRE, 
-\framework generates its equivalent non-deterministic finite automaton (NFA) 
-in the typical manner~\cite{sipser2006introduction}. 
+\framework generates its equivalent non-deterministic finite automaton (NFA) in the typical manner~\cite{sipser2006introduction}. 
 %Each MRE operation has its equivalent representation in an NFA. 
-We support the upto operation ($f$\textasciicircum$x$), which is not directly 
+We support the upto operation ($f$\^{}$x$), which is not directly 
 supported in ~\cite{sipser2006introduction}, by 
 %it is equivalent to $f?|ff|\dots|\underbrace{f}_{x \text{ times}}$ which has an NFA mapping. 
 %we can expand it into a standard regular expression form, for example
 expanding it into a regular expression form; for example 
-$f$\textasciicircum$3$ is equivalent to $f?|ff|fff$. 
-Consider the example of Figure~\ref{fig:motiv} and the
-MRE $\mathit{dir}= (P|N)+~O?~R~O\wedge 2~(P|N|U)+$. 
+$f$\^{}$3$ is equivalent to $f?|ff|fff$. 
+Consider the example of Figure~\ref{fig:intromotiv} and the
+corresponding expression $(P|N)\!+~O?~R~O^\wedge 2~(P|N|U)+$. 
 Figure~\ref{fig:nfaEx} shows part of the corresponding NFA where
 $q_8, q_9, \dots, q_{13}$ represent NFA states,
-and edges are transitions based labeled with MBF tags such as 
-$P,$ and $N$. Edges labeled with the 
-empty string $\epsilon$ are non-deterministic.
-The expression uses operations $|$, $?$, $+$, and $\wedge$ to 
-relate places {\tt P}, names of persons {\tt N}, 
-relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
+and edges are transitions based on MBF tags such as 
+$P,$ and $N$.
+Edges labeled with the empty string $\epsilon$ are non-deterministic.
+%The expression uses operations $|$, $?$, $+$, and $\wedge$ to relate places {\tt P}, names of persons {\tt N}, relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
 
-\framework simulates the generated NFA over the sequence of tag sets 
-matching the MBF formulae.
+\framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
 A simulation match $m$ of an expression $f$ is a tree where the root is the 
 MRE expression, the internal nodes are the MRE and MBF operations, and the 
 leaves are matches of the MAT terms of $f$.
@@ -352,3 +380,4 @@ The \cci{isA} edge in the
 graph of Figure~\ref{fig:intromotiv} shows the cross-reference relation 
 between \RL{brj _hlyfT}(Khalifa tower) from the first match 
 with \RL{Almbn_A}(the building) from the second match.
+\end{comment}
