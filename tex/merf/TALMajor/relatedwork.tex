@@ -8,15 +8,15 @@ and compare to \framework.
 %QARAB\cite{hammo2002qarab}
 
 {\bf Information Extraction.~}
-The common pattern specification language (CPSL) targets system independent IE specifications. 
-CPSL consists of 
-(1) a declaration part specifying names and labels, 
-(2) a rule definition part specifying patterns, regular expressions and associated actions, and 
-(3) macro text substitution part~\cite{appelt1998common}.
+The common pattern specification language (CPSL) targets system independent IE specifications~\cite{appelt1998common}. 
+%CPSL consists of 
+%(1) a declaration part specifying names and labels, 
+%(2) a rule definition part specifying patterns, regular expressions and associated actions, and 
+%(3) macro text substitution part~\cite{appelt1998common}.
 \framework extends CPSL with Arabic morphological features, code actions, and user defined relations.
-
-SystemT~\cite{chiticariu2010systemt}
-aims to overcome the performance and expressivity limitations of CPSL.
+SystemT~\cite{chiticariu2010systemt} aims to overcome the 
+%performance and expressivity 
+limitations of CPSL. 
 It is based on an algebraic approach to declarative information extraction, 
 uses the declarative annotation query language (AQL), 
 and uses an optimizer to generate high performance execution plans for the AQL rules.
@@ -38,16 +38,16 @@ The work in~\cite{urbain2012user} presents a user
 driven relational model and targets entity and relation extraction. 
 The user enters a natural language query, and uses the OpenNLP toolkit to 
 extract tags and relations from the query. 
-Then, it extends the extracted entities into a query model,
-and uses the query model to extract matches from the document. 
+%Then, it extends the extracted entities into a query model, 
+%and uses the query model to extract matches from the document. 
 Similar to \framework, the system constructs entities and relations. 
 
 QARAB is an Arabic question answering system that 
 takes an Arabic natural language query and provides short answers for it~\cite{hammo2002qarab}. 
 QARAB uses traditional information retrieval techniques and an outdated Arabic NLP 
-analyzer that computes limited features of Arabic words compared 
+analyzer with limited features of Arabic words compared 
 to the morphological analysis of \framework. 
-QARAB then classifies the query against a set of known question types. 
+%QARAB then classifies the query against a set of known question types. 
 
 \begin{table}[tb!]
 \caption{Comaprison of \framework with SystemT, 
@@ -82,23 +82,24 @@ Similar to TEXTMARKER, \framework has the advantage of providing
 a user friendly interactive interface to edit the entity and relational 
 specifications and visualize the results. 
 
-DUALIST is an annotation system for quickly building classifiers for 
-text processing tasks using active learning and semi-supervised learning~\cite{settles2011closing}. 
+DUALIST is an annotation system for building classifiers for 
+text processing tasks using machine learning techniques 
+%active learning and semi-supervised learning
+\cite{settles2011closing}. 
 %The classifier is interactive as it queries the annotator for entity detection correction and annotation correction.
 \framework doesn't support classification tasks. 
 However, \framework provides an interactive GUI where the user can edit MBF and MRE tags.
 This interactive environment contributes to the regular expression extraction 
 and semantic relation construction which increases the overall accuracy.
 
-Another track in the literature targets specific tasks such as NER using statistical machine learning techniques \cite{ekbal2010named,abdelrahman2010integrated}.
+Another track in the literature targets specific tasks such as NER using statistical machine learning techniques \cite{benajiba2007anersys,benajiba2008arabic,ekbal2010named,abdelrahman2010integrated}.
 %The work in~\cite{ekbal2010named} presents a language independent approach for NER extraction using {\em support vector machines}. 
 %The work in~\cite{abdelrahman2010integrated} integrates a semi-supervised bootstrapping pattern recognition technique, and a supervised classifier based on {\em conditional random fields} to solve NER problems.
 Knowledge-based techniques such 
-as~\cite{zaghouani2010adapting,traboulsi2009arabic} propose local grammars 
-with morphological stemming to perform NER. 
+as~\cite{zaghouani2010adapting,traboulsi2009arabic} propose local grammars with morphological stemming.% to perform NER. 
 %The work in~
-\cite{ZaMaHaCicling2012Entity} presents a method for extracting entities and events, and relations amongst them from Arabic text using a hierarchy of manually built 
-finite state machines driven by morphological features 
+\cite{ZaMaHaCicling2012Entity} present a method for extracting entities and events, and relations amongst them from Arabic text using a hierarchy of manually built 
+finite state machines driven by morphological features, 
 and graph transformation algorithms. 
 Such techniques require advanced linguistic and programming expertise. 
 
