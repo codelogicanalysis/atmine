@@ -1,7 +1,11 @@
 Rule-based techniques and tools to extract entities and relational entities from documents allow users to specify desired entities using natural language questions, finite state automata, regular expressions, structured query language statements, or proprietary scripts.
-These techniques and tools require expertise in linguistics and programming and they lack support of Arabic {\em morphological analysis} which is key to process Arabic text.
+These techniques and tools require expertise in linguistics and programming.
+\major{
+They lack support of Arabic {\em morphological analysis} which is key to 
+process Arabic text.
+}
 In this work, we present \framework; a morphology-based entity and relational entity extraction framework for Arabic text.
-\framework provides a friendly interface where the user, with basic knowledge of linguistic features and regular expressions, defines {\em tag types} and interactively associates them with regular expressions defined over Boolean formulae.
+\framework provides a friendly interface where the user, with basic knowledge of linguistic features and regular expressions, defines tag types and interactively associates them with regular expressions defined over Boolean formulae.
 Boolean formulae range over matches of Arabic morphological features, and synonymity features.
 Users define relations with tuples of subexpression matches and can associate code actions with subexpressions.
 \framework computes feature matches, regular expression matches, and constructs entities and relational entities from the user-defined relations.

@@ -24,14 +24,22 @@ are processes.
 %editor.
 
 \subsection{The extended synonymy feature $Syn^k$}
+\label{sec:synk} 
 
-The motivation for $Syn^k$ is to construct a light Arabic ontology based on the lexicon of Sarf.
+\major{
+Up to our knowledge, 
+$Syn^k$ provides the first light Arabic wordnet based on the lexicon of Sarf.
+}
 The sets $E, A,$ and $L$ denote all English words, Arabic words, 
 and Arabic lexicon words, respectively.
 Recall that $\GG$ and $\ss$ denote the set of glosses and stems in the morphological analyzer, respectively.
 We have $\GG \subset E$ and $\ss \subset L \subset A$. 
 Function $\alpha: \ss \rightarrow 2^{\GG}$ maps Arabic stems to 
-subsets of related English glosses. %; e.g. $g_{s} = \alpha(s)\subset 2^{\GG}$.
+subsets of related English glosses, %; e.g. $g_{s} = \alpha(s)\subset 2^{\GG}$.
+\major{
+where $2^{\GG}$ denote the power set of $\GG$ which is the set of all subsets 
+of $\GG$. 
+}
 Function $\gamma: L \rightarrow 2^{\ss}$ maps Arabic lexicon words to subsets 
 of relevant Arabic stems. %; e.g. $s_{l} = \gamma(l)\subset 2^{\ss}$.
 
@@ -39,17 +47,19 @@ Given a word $w\in L$,
 $Sy(w)=\{u\mid u\in \ss \land\exists s\in \gamma(w)\land~\alpha(u)\cap\alpha(s)\neq\emptyset\}$
 is the set of Arabic stems 
 directly related to $w$ through the gloss map.
-
+%
 Let $Sy^{i}(w)$ denote stems related to $w$ using the gloss map of order $i$ recursively such that
 $Sy^{1}(w) = Sy(w)$ and
 $Sy^{i+1}(w)=\{u\mid u\in S\land\exists s\in Sy^{i}(w)\land~\alpha(u)\cap\alpha(s)\neq\phi\}$.
 Formally, $Syn^k(w) = \bigcup\limits_{i=1}^{k} Sy^{i}(w)$ for $i\in[1 \ldots k]$.
-
+%
+\major{
 The example in Figure~\ref{fig:introsynEx} illustrates the computation.
 The input Arabic word \RL{mA'}, denoted $w$, shares the gloss \cci{water} with the stem \RL{n.d.h}, denoted $s_1$, i.e. $s_1\in Sy^{1}(w)$.
 %The input word \RL{mA'} shares the gloss \RL{n.d.h} through the gloss intersection \cci{water}. 
 Next, the stem \RL{r^s^s}, denoted $s_2$, shares the gloss \cci{spray} with $s_1$, i.e. $s_2\in Sy^{1}(s1)\subset Sy^{2}(w)$.
 Therefore, $Syn^2(w)$ relates the words \RL{mA'} and \RL{r^s^s}.
+}
 
 \begin{figure}[tb!]
 \setcode{utf8}
@@ -72,13 +82,18 @@ a user defined constant feature value $CF\in A$, and an integer
 $k, 1\le k\le 7$, 
 the following are morphology-based atomic terms (MAT), {\em terms} for short.
 \begin{itemize}
-  \item $a(w):= \exists m \in M(w). m=\langle p^k,s,x^l,P,G,C\rangle. r \circ CF$
-where $\circ \in {\cal O}$, $r \in \{p^k,s,x^l,P,G,C\}$, and $r\in A$.
+  \item $a(w):= \exists m \in M(w).~m=\langle p,s,x,P,G,C\rangle. r \circ CF$
+where $\circ \in {\cal O}$, $r \in \{p,s,x,P,G,C\}$, and $r\in A$.
 Informally, a solution vector of $w$ exists with
 a feature containing or exactly matching $CF$.
 The predicates $\mathit{isA}$ and $\mathit{contains}$ denote the exact match and contain criteria, respectively.
 \item $a(w) := w \in Syn^k(CF), CF \in \ss$.
   Informally, this checks if $w$ is an extended synonym of a stem $CF$. 
+\major{
+  We limit $k$ to a maximum of $7$ since we practically noticed that 
+  (1) values above $7$ introduce significant semantic noise and
+  (2) the computation is expensive without a bound. 
+}
 \end{itemize}
 
 A morphology-based Boolean formula (MBF) is of the following form.
@@ -149,8 +164,10 @@ The second match tree refers to the text
 %The leaf nodes of the trees are entities and the edges and internal nodes are text, 
 %morphology-based, 
 %and word distance based relational entities. 
+\major{
 The leaf nodes of the match trees are matches to formulae and the internal nodes represent roots to sub-expression matches.
 For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the sub-expression $(P|N)+$.
+}
 
 \subsection{User-defined relations and actions}
 
@@ -209,11 +226,6 @@ Once \framework computes all match trees, it traverses each tree to
 execute the user defined \cci{pre-match} actions in pre-order manner
 and the \cci{on-match} actions in post-order manner.
 
-\subsection{Framework Availability}
-\framework is an open source tool present on google code under atmine repository (\url{https://code.google.com/p/atmine/}).
-In addition to \framework, the repository contains entity extraction tasks developed by our research group.
-People are welcome to download and use the tools.
-We appreciate any feedback that we get and we try to improve the tools accordingly.
 
 \begin{comment}
 \subsection{\framework simulator}

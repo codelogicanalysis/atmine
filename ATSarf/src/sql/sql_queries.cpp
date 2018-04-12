@@ -224,16 +224,19 @@ bool start_connection(ATMProgressIFC *p_ifc) { //and do other initializations
     theSarf->db.setHostName("localhost");
     theSarf->db.setDatabaseName("atm");
     theSarf->db.setUserName("root");
-    theSarf->db.setPassword("root");
+    theSarf->db.setPassword("");
+    theSarf->db.setConnectOptions("UNIX_SOCKET=/opt/lampp/var/mysql/mysql.sock");
     bool ok = theSarf->db.open();
 
     if (ok) {
+      std::cout << "Opening the database worked"  << (const char *) theSarf->db.lastError().text().toLatin1();
         theSarf->db.exec("SET NAMES 'utf8'");
         QSqlQuery temp(theSarf->db);
         theSarf->query = temp;
         check_for_staleness();
         return 0;
     } else {
+      std::cerr << "Error opening atm db: " << (const char *) theSarf->db.lastError().text().toLatin1();
         if (!tried_once) {
             system("mysql --user=\"root\" --password=\"\" -e \"create database atm\"");
             system(string("mysql --user=\"root\" --password=\"\" atm <\"" + databaseFileName.toStdString() + "\"").c_str());

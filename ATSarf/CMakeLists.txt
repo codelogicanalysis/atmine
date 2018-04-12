@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+#cmake_minimum_required(VERSION 2.8.12)
 project(atmine)
 
 # Fixing OS X rpath issues.
@@ -20,7 +20,7 @@ mark_as_advanced(INSTALL_LIB_DIR)
 
 #add_definitions("-fPIC")
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra")
 
 # Finding required packages
 find_package(PkgConfig REQUIRED)

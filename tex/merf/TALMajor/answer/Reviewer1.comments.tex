@@ -27,7 +27,7 @@ This make things rigouros but the notations are sometimes heavy.
 
 \answer{
   We clarified the following notations.... 
-  The new notations appear in Sectioon AA in teh paper. 
+  The new notations appear in Section AA in the paper. 
 }
 
 
@@ -40,6 +40,10 @@ isA and how it is used, the authors should be a bit
 We modified the description of isA to .... 
 }
 
+\itodo{
+Add two sentences in the paper to say what isA does. 
+}
+
 \item \label{Review1.3} 
 The system is evaluated and compared to four other systems for 
 tasks of Information Extraction.
@@ -47,7 +51,14 @@ the data used for the evaluation is not clearly described,
 did you have a manual gold annotation of all the data ?
 
 \answer{
-We have to look at the test data for the paper. 
+Manual annotators inspected the outcome of the tools and provided 
+corrections where tools made mistakes. 
+The corrections form the manual gold annotation that we
+compared against. 
+We indicate that in the Results Section. 
+}
+\itodo{
+  Add teh above to teh results section. 
 }
 
 
@@ -56,7 +67,15 @@ what is the size of the evaluation data ?
 did you have a train and a test data set ?
 
 \answer{
-No training... testing yes. 
+  \framework does not require training. 
+  It is an interactive tool where the user provides the formulae, expressions,
+    relation tuples and the associated code. 
+  The user inspects the results and refines the model accordingly. 
+  The testing set is available with the tool. 
+}
+
+\itodo{
+  Ameen will get the size from teh files and provide. 
 }
 
 \item \label{Review1.5} 
@@ -64,25 +83,24 @@ how did you compute the time for the implementation of rules
 with the other system (one of the tasks needed 2 month of work 
 !! is it really 2 acutal months of work or is it the period of 
 time during which the development has been done)
+more should be said about the evaluation methodology.
 
 \answer{
 A research assistant 6 hours course work and 14 hours 
 teaching duties performed the task in two months. 
 }
-
-\item \label{Review1.5} 
-more should be said about the evaluation methodology.
-
-\answer{
-We added a methodology section. 
+\itodo{
+Add this to the results/evaluation
 }
 
-\item \label{Review1.6}
+
+\item \label{Review1.5}
 you say nothing about the availability of the system, 
 is it distributed ? free ? what kind of licence ?
 
 \answer{
-Available online on github, with GPL license. 
+\framework is open source and available online. We modified the
+contributions in the Introduction Section to indicate that. 
 }
 
 
