@@ -14,9 +14,13 @@ It is not clear how to associate code actions with
 subexpressions!
 
 \answer{
-  We elaborate the use of code actions in Section~\ref{sec:numnorm} 
-    by introducing Figure~\ref{fig:nunnormalgo} and discussing it 
-    in the Section. 
+  We elaborate the use of code actions in Subsection~\ref{subsec:numnorm} 
+    by introducing Figure~\ref{fig:numnormalgo} and discussing it 
+    in the corresponding case study. 
+}
+
+\done{
+  Discussion of the code actions is pending...
 }
 
 \item \label{Review.4.1} 
@@ -24,12 +28,18 @@ Correctness :
 - $Syn^k$ introduces a lot of noise especially if $k$ is large. 
 
 \answer{
-  7 is a limit... 
-}
-\itodo{
-  Use the same answer for Reviewer 3, and say why you used 7. 
+  Your note is accurate, this is why we limit the degree (k) to 7.
+  We further elaborate on this by introducing the following in the paper; Subsection~\ref{subsec:grammar}.
+  \begin{quote}
+  We limit $k$ to a maximum of $7$ since we practically noticed that 
+  (1) values above $7$ introduce significant semantic noise and
+  (2) the computation is expensive without a bound. 
+  \end{quote}
 }
 
+\done{
+  Done: Use the same answer for Reviewer 3, and say why you used 7. 
+}
 
 \item \label{Review.4.1} 
 In the results section, there is no standard evaluation. 
@@ -45,8 +55,6 @@ to the quality of the annotator!
 \itodo{
 Say something about clarifying the evaluation process. 
 }
-
-
 
 \end{enumerate}
 

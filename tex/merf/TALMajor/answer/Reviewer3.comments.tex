@@ -27,6 +27,10 @@ to understand the terminology used.
   We added a background section with definitions... 
 }
 
+\done{
+Pending...
+}
+
 \item \label{Review.3.2}
 First, I think we can ask 
 ``What would a researcher reading this paper need to know?", the answer would be:
@@ -91,10 +95,10 @@ The following are some detailed recommendations:
     ``We discuss the importance of the morphological featureotivs supported in 
     MERF terms in Section 3; in brief, morphological preprocessing iskey to 
     Arabic NLP.'' , in page 2 since it will be repeated in page 5.
+
 \answer{
   Done. 
 }
-
 
 \item \label{Review.3.6}
 2- in the introduction you illustrated a target example, 
@@ -104,6 +108,10 @@ What about if combine both.
 \answer{
   Thank you. We combine both as motivation and we include that
   as a subsection of the introduction. 
+}
+
+\done{
+  We combine the Motivation section with \framework section (Now Section~\ref{sec:framework}).
 }
 
 
@@ -208,7 +216,7 @@ more focus because I think this is new.
 \answer{
 Up to our knowledge, we introduced the idea. 
 We claim that now as a novelty and a contribution in the introduction
-and we rephrase the beginning of Section~\ref{sec:synk}. 
+and we rephrase the beginning of Section~\ref{subsec:synk}. 
 }
 
 \item \label{Review.3.14}
@@ -249,12 +257,13 @@ also, A belongs-to F , A is a morphological feature,
 then how CF belongs-to A. A is defined as one item not a set.
 
 \answer{
-This is a mistake. We corrected that in the paper to 
-read as follows... 
+F is the set of morphological features where each element is in turn a set of the values of that feature.
+Hence, A is one such set corresponding to a morphological feature, and CF is a feature value in A.
+We clarify this point in Subsection~\ref{subsec:grammar}.
 }
 
-\itodo{
-  Ameen please find where you fixed this and say it here. 
+\done{
+  DONE: Ameen please find where you fixed this and say it here. 
 }
 
 
@@ -309,8 +318,9 @@ what is the range of number of formulas ?
   We include this discussion in the Results Section of the paper. 
 }
 
-\itodo{
-  Add that to the Results. 
+\done{
+  Add that to the Results.\\
+  Added the above explanation in the Results section, needs to be checked.
 }
 
 
@@ -322,11 +332,14 @@ I needed to read the definition in MATAr paper to understand
 what R is.
 
 \answer{
-  We cleaned the definitions... 
+  Thank you for pointing it out. We cleaned the definitions.
 }
 
-\itodo{
-  Ameen: highlight the changes and refer to them please. 
+\done{
+  highlight the changes and refer to them please.\\
+  We use R first to denote the set of user-defined relations.
+  Then, we use it to denote the set of MBF tags which is contradicting.
+  I got rid of the first case as we don't need it.
 }
 
 
@@ -451,8 +464,8 @@ I think it needs to be closer to where it was mentioned in the text.
   Done.
 }
 
-\itodo{
-  Make sure this is moved. 
+\done{
+  Done: Make sure this is moved. 
 }
 
 \item \label{Review.3.25}
