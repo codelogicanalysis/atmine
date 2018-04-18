@@ -1,5 +1,5 @@
 In this section we compare \framework implementations of 
-the narrator chain, temporal entity, and genealogy entity extration 
+the narrator chain, temporal entity, and genealogy entity extraction 
 tasks to the task specific techniques proposed to solve them
 in ANGE~\cite{ZaMaFlairs2012HadithBio}, 
 ATEEMA~\cite{ZaMa2012IJCLATime},  and
@@ -9,12 +9,26 @@ a task specific implementation.
 In the online appendix%
 ~\footnote{available at ~\url{-ommited-for-anonymity-}}%http://webfea.fea.aub.edu.lb/fadi/pdfs/merfappendix.pdf
 , we report on eight additional \framework case studies.
-
+\major{
+Manual annotators inspected the outcome of the tools and provided corrections where tools made mistakes.
+The corrections form the manual gold annotation that we compared against.}
 Table~\ref{tab:results} reports the development time,
 extraction runtime, recall and precision 
 of the output MRE tags, 
 the size of the task in lines of code or in number of \framework rules, 
-for both the standalone task specific and the \framework implementations. 
+for both the standalone task specific and the \framework implementations.
+
+\major{
+The development time presents the period of time during which the development was done.
+For instance, ANGE task~\cite{ZaMaFlairs2012HadithBio} was performed in two months by a research assistant with a load of six hours of course work and 14 hours of teaching duties.
+
+Another aspect to evaluate is the complexity of running \framework simulator for both MBFs and MRGRs over an input text.
+The complexity of the MBF simulation is the total number of morphological solutions for all the words multiplied by the number of user-defined MBFs.
+Note that we don't provide a limit on the number of formulae defined by the user.
+Practically, we did not need to define more than 10 formulae per case study.
+As for the complexity of MRGR simulation, converting the rules into non-deterministic finite state machines (NDFSM) is decidable.
+However, simulating an NDFSM over the MBF tags might not be tractable as it could be exponential.
+Table~\ref{tab:results} provides run time results of \framework which presents a practical evaluation of the complexity of MBF and MRGR simulation jointly.}
 %Table~\ref{tab:mbfer} reports the accuracy of the output MBF tags and the user-defined relation 
 %construction in \framework for each task.
 
@@ -22,7 +36,7 @@ for both the standalone task specific and the \framework implementations.
 \begin{table}[tb!]
   \centering
 \caption{\framework compared to task specific applications.}
-  \resizebox{0.85\columnwidth}{!}{
+  \resizebox{\columnwidth}{!}{
     \begin{tabular}{l|l|l|ll|l}
      \toprule
      \multirow{2}{*}{Task} & Development& Run & \multicolumn{2}{c|}{Accuracy} & \multirow{2}{*}{Ease of Composition}\\
@@ -300,8 +314,7 @@ isKey = false;
 
 \vspace{-1em}
 \subsection{Number normalization}
-\label{sec:sec:number}
-\label{sec:numnorm}
+\label{subsec:numnorm}
 
 We implemented a number normalization extractor using \framework and 
 compared it with {\em NUMNORM}, a 

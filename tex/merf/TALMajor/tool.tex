@@ -24,12 +24,11 @@ are processes.
 %editor.
 
 \subsection{The extended synonymy feature $Syn^k$}
-\label{sec:synk} 
+\label{subsec:synk} 
 
 \major{
 Up to our knowledge, 
-$Syn^k$ provides the first light Arabic wordnet based on the lexicon of Sarf.
-}
+$Syn^k$ provides the first light Arabic wordnet based on the lexicon of Sarf.}
 The sets $E, A,$ and $L$ denote all English words, Arabic words, 
 and Arabic lexicon words, respectively.
 Recall that $\GG$ and $\ss$ denote the set of glosses and stems in the morphological analyzer, respectively.
@@ -37,9 +36,8 @@ We have $\GG \subset E$ and $\ss \subset L \subset A$.
 Function $\alpha: \ss \rightarrow 2^{\GG}$ maps Arabic stems to 
 subsets of related English glosses, %; e.g. $g_{s} = \alpha(s)\subset 2^{\GG}$.
 \major{
-where $2^{\GG}$ denote the power set of $\GG$ which is the set of all subsets 
-of $\GG$. 
-}
+where $2^{\GG}$ denotes the power set of $\GG$ which is the set of all subsets 
+of $\GG$.}
 Function $\gamma: L \rightarrow 2^{\ss}$ maps Arabic lexicon words to subsets 
 of relevant Arabic stems. %; e.g. $s_{l} = \gamma(l)\subset 2^{\ss}$.
 
@@ -55,7 +53,8 @@ Formally, $Syn^k(w) = \bigcup\limits_{i=1}^{k} Sy^{i}(w)$ for $i\in[1 \ldots k]$
 %
 \major{
 The example in Figure~\ref{fig:introsynEx} illustrates the computation.
-The input Arabic word \RL{mA'}, denoted $w$, shares the gloss \cci{water} with the stem \RL{n.d.h}, denoted $s_1$, i.e. $s_1\in Sy^{1}(w)$.
+Let $w$ denote an input Arabic word \RL{mA'}, which has the gloss \cci{water}, i.e. \cci{water} $\in\alpha(w)$.
+$w$ shares this gloss with the stem \RL{n.d.h}, denoted $s_1$, i.e. $s_1\in Sy^{1}(w)$.
 %The input word \RL{mA'} shares the gloss \RL{n.d.h} through the gloss intersection \cci{water}. 
 Next, the stem \RL{r^s^s}, denoted $s_2$, shares the gloss \cci{spray} with $s_1$, i.e. $s_2\in Sy^{1}(s1)\subset Sy^{2}(w)$.
 Therefore, $Syn^2(w)$ relates the words \RL{mA'} and \RL{r^s^s}.
@@ -75,20 +74,22 @@ Therefore, $Syn^2(w)$ relates the words \RL{mA'} and \RL{r^s^s}.
 \end{figure}
 
 \subsection{MRE: Morphology-based regular expressions}
+\label{subsec:grammar}
 
+\major{
 Let ${\cal O} = \{ \mathit{isA}, \mathit{contains}\}$ be the set of atomic term 
-predicates, and let ${\cal F} = \{ \pp, \ss, \xx, \PP, \GG, \AC\}$ be the 
+predicates, where $\mathit{isA}$ and $\mathit{contains}$ denote exact match and containment, respectively.
+Also, let ${\cal F} = \{ \pp, \ss, \xx, \PP, \GG, \AC\}$ be the 
 set of morphological features where each entry is in turn a set of values for that feature.
-Given a word $w$, a morphological feature $A\in{\cal F}$, 
-a user defined constant feature value $CF\in A$, and an integer 
-$k, 1\le k\le 7$, 
+Given a word $w$, a morphological feature set $A\in{\cal F}$,}
+a user defined constant feature value $CF\in A$,
+and an integer $k, 1\le k\le 7$, 
 the following are morphology-based atomic terms (MAT), {\em terms} for short.
 \begin{itemize}
   \item $a(w):= \exists m \in M(w).~m=\langle p,s,x,P,G,C\rangle. r \circ CF$
 where $\circ \in {\cal O}$, $r \in \{p,s,x,P,G,C\}$, and $r\in A$.
 Informally, a solution vector of $w$ exists with
-a feature containing or exactly matching $CF$.
-The predicates $\mathit{isA}$ and $\mathit{contains}$ denote the exact match and contain criteria, respectively.
+a feature containing or exactly matching \major{the user-chosen feature value} $CF$.
 \item $a(w) := w \in Syn^k(CF), CF \in \ss$.
   Informally, this checks if $w$ is an extended synonym of a stem $CF$. 
 \major{
@@ -219,7 +220,7 @@ Each sub-expression can be associated with two computational actions: \cci{pre-m
 Users can use these actions to compute statistical features, 
 store intermediate results, 
 or apply intelligent entity inference techniques
-as we show later in the numerical extraction example of Section~\ref{sec:sec:number}.
+as we show later in the numerical extraction example of Subsection~\ref{subsec:numnorm}.
 \framework provides an API that enriches the actions with detailed access to
 all solution features of an expression or a formula match including 
 text, position, length, equivalent numerical value when applicable, 
