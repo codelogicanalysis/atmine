@@ -240,21 +240,15 @@ set  A.
 We clarify this point in SubSection~\ref{subsec:grammar}.
 }
 
-\done{
-  DONE: Ameen please find where you fixed this and say it here. 
-}
-
 
 \item \label{Review.3.18}
 MRT definition is not clear.
 
 \answer{
-We clarify the definition of MRE in the paper. 
+  We modified the definition. We also 
+  followed the MRE definition with a running illustrating example.
 }
 
-\itodo{
-  Clarify the definition. 
-}
 
 
 \item \label{Review.3.19}
@@ -262,11 +256,7 @@ We clarify the definition of MRE in the paper.
 were hard to be understood.
 
 \answer{
-We rewrote both sections... 
-}
-
-\itodo{
-  Figure our something to do/say.
+  We provided a running example across both sections and rewrote parts of the sections. 
 }
 
 \item \label{Review.3.20}
@@ -276,9 +266,6 @@ The reader can be lost so fast within the variable definitions.
 
 \answer{
 We provide running examples with the definitions....
-}
-\itodo{
-  Color them and say where they are. 
 }
 
 
@@ -296,11 +283,6 @@ what is the range of number of formulas ?
   We include this discussion in the Results Section of the paper. 
 }
 
-\done{
-  Add that to the Results.\\
-  Added the above explanation in the Results section, needs to be checked.
-}
-
 
 \item \label{Review.3.22}
 you are using R as tuple defining relation, 
@@ -313,26 +295,15 @@ what R is.
   Thank you for pointing it out. We cleaned the definitions.
 }
 
-\done{
-  highlight the changes and refer to them please.\\
-  We use R first to denote the set of user-defined relations.
-  Then, we use it to denote the set of MBF tags which is contradicting.
-  I got rid of the first case as we don't need it.
-}
-
 
 \item \label{Review.3.23}
 d) In general, what was the data structure used? 
 how would the annotated text be saved?
 
 \answer{
-  We used XXX data structures... 
+  We included descriptions of the storage format 
+  in the Methodology Section~\ref{sec:methodology}. 
 }
-
-\itodo{
-  Ameen: JSON add that as a paragraph in the methodology section. 
-}
-
 
 \item \label{Review.3.24}
 6- At section Results, comparing the development time 
@@ -364,16 +335,17 @@ for the benchmark corpora.
 That alone took much more time than the time it took to develop and run
 the \framework annotators. 
 
-We clarify that in the beginning of the Results Section ~\ref{sec:results}.
+We clarify that in the beginning of the Results 
+Section ~\ref{sec:results}.
 }
 
 \itodo{
   Ameen: lets add the above to the section. 
 }
 
-\item \label{Review.3.24}
+\item \label{Review.3.25}
 Also, comparison with previous work done by (Zaraket ) 
-in different vesion seems like comparing with your previous work 
+in different version seems like comparing with your previous work 
 only and not with others. 
 It would be nice to compare others work too because user 
 interface could be introduced in different view.
@@ -388,25 +360,26 @@ interface could be introduced in different view.
   can point us to such accessible tools. 
 }
 
-\item \label{Review.3.24}
+\item \label{Review.3.26}
 What is the data size of your evaluation? 
-I couldn't find how presion and recal was counted. 
+I couldn't find how precision and recall was counted. 
 you mentioned books but did you covered all the text in those 
 books ? and how long was it? you can define it in term of 
-number of relation extracted , tags added, expesion processed, 
+number of relation extracted , tags added, expression processed, 
 sentences,..etc
 
 \answer{
   We include more information about the data and 
-  the evaluation process... 
+  the evaluation process.
+  We include the size of the annotated data sets that 
+  we used for accuracy evaluation in Table~\ref{tab:results}. 
+  We discuss how the golden reference was constructed. 
+  We also discuss the workload of the research assistant who built
+  the task specific case studies. 
 }
 
-\itodo{
-  Answer.. 
-}
 
-
-\item \label{Review.3.24}
+\item \label{Review.3.27}
 7- At section Discussion, I strongly urge you to discuss 
 WHY the precision and recall have these values.
 
@@ -414,7 +387,7 @@ WHY the precision and recall have these values.
 We extend the discussion section to discuss ... 
 }
 
-\item \label{Review.3.25}
+\item \label{Review.3.28}
 Clarity:  
 It was not very clear how the work was done 
 ``Methodology part''. 
@@ -425,16 +398,18 @@ Section 4 ``MERF'' please add ``Methedology''.
 }
 
 
-\item \label{Review.3.25}
+\item \label{Review.3.29}
 Having ``Existing annotation and entity extraction tools'' 
 under unspecified section is misleading the reader. 
 unnumbered subsections was misleading me as a reader. 
 
 \answer{
-  Fixed. CLS file was not compatible with arabtex package. 
+  We fixed the non-numbered subsections.
+  We removed Subsection ``Existing annotation and entity extraction tools''
+  as requested in \ref{Review.3.9}.
 }
 
-\item \label{Review.3.25}
+\item \label{Review.3.30}
 table 1 at page 7 while referring to it only at page 9. 
 I think it needs to be closer to where it was mentioned in the text. 
 
@@ -442,11 +417,7 @@ I think it needs to be closer to where it was mentioned in the text.
   Done.
 }
 
-\done{
-  Done: Make sure this is moved. 
-}
-
-\item \label{Review.3.25}
+\item \label{Review.3.31}
 ``MERF regular expressions support operators such as concatenation, zero or one, zero or more, one or more, up to $M$” what is M? 
 it could be for example 0<=M<=|chunk| 
 
@@ -461,7 +432,7 @@ it could be for example 0<=M<=|chunk|
 }
 
 
-\item \label{Review.3.25}
+\item \label{Review.3.32}
 Correctness: 
 1- in the abstract, the sentence ``These techniques and 
 tools require expertise in linguistics and programming and 
@@ -475,18 +446,18 @@ needs to be reformulated
 }
 
 
-\item \label{Review.3.25}
+\item \label{Review.3.33}
 2-``defines tag types and''.// unify the font here and 
 many other places in the paper. 
 for example look at words(,correct,commercial)
 
 \answer{
-  We use italics to emphasize important 
+  We used italics to emphasize important 
   concepts that we introduce for the first time. 
-  We reduced the use of emphasize in the paper. 
+  We reduced the use of emphasid text in the paper. 
 }
 
-\item \label{Review.3.25}
+\item \label{Review.3.34}
 Originality:  
 This work will contribute in facilitating Arabic corpus 
 annotation, if it was made available for other researchers in 
