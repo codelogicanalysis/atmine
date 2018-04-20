@@ -9,7 +9,9 @@ Entities are elements of text that are of interest to an NLP task.
 Relational entities are elements that connect entities.
 {\em Annotations} relate chunks of text to {\em labels} denoting 
 semantic values such as entities or relational entities.
-We refer to annotations and labels as {\em tags} and {\em tag types}, respectively, in the sequel.
+We refer to annotations and labels as {\em tags} and {\em tag types}, 
+respectively, in the sequel.
+
 
 Supervised and unsupervised empirical learning techniques tackle NLP and CL tasks.
 They employ machine learning without the need to manually encode the requisite knowledge~\cite{soudi2007arabic}. 
@@ -46,6 +48,24 @@ However, this tool lacks support for entity and relational entity extraction.
 
 \input{directionFigure}
 
+\major{
+Figure~\ref{fig:intromotiv} illustrates the target of \framework using 
+the directions to Dubai Mall example~\footnote{text taken from the Dubai 
+Mall website ~\url{http://www.thedubaimall.com/ar/}}.
+The figure also presents a transliteration and an English translation of 
+the Arabic text.
+}
+The framed words in the text are entities referring to names of people 
+($n_1,n_2,n_3$), 
+names of places ($p_1,\dots,p_7$), 
+relative positions ($r_1,\dots,r_4$), 
+and numerical terms ($u_1,u_2$). 
+We would like to extract those entities, and then extract
+the relational entities forming the graph in Figure~\ref{fig:intromotiv} 
+where vertices express entities, 
+and edges represent the relational entities.
+
+
 %These tasks take as input digital text documents from sources including literature, books, news, business reports, chat messages, and emails. 
 %Some documents are originally typed in digital format such as emails. 
 %Other documents are automatically digitized using techniques such as {\em optical character recognition} (OCR) and 
@@ -60,46 +80,54 @@ and associates them with
 regular expressions over 
 %\framework
 Boolean formulae.
+%
 A Boolean formula is defined by a term, negation of a term, or disjunction of terms.
 Terms are matches to Arabic morphological features including 
-prefix, stem, suffix, part of speech (POS) tags, gloss tags, extended synonym tags, and semantic categories.
-We often refer to regular expressions and Boolean formulae as expressions and formulae, respectively, for short.
-%We discuss the importance of the morphological features supported in 
-%\framework terms in Section~\ref{sec:morph}; in brief, morphological preprocessing
-%is key to Arabic NLP.% due to the richness of Arabic morphology.
-
-We illustrate the target of \framework using a simple example.
-Consider the text in Figure~\ref{fig:intromotiv} which contains
-directions to Dubai Mall~\footnote{text taken from the Dubai Mall website
-~\url{http://www.thedubaimall.com/ar/}}.
+prefix, stem, suffix, part of speech (POS) tags, gloss tags, extended synonym 
+tags, and semantic categories.
 \major{
-The figure also presents a transliteration and an English translation of 
-the Arabic text.
+For example, entity $p_1$ in Figure~\ref{fig:intromotiv} has a place semantic 
+category. 
 }
-The framed words in the text are entities referring to names of people 
-($n_1,n_2,n_3$), 
-names of places ($p_1,\dots,p_7$), 
-relative positions ($r_1,\dots,r_4$), 
-and numerical terms ($u_1,u_2$). 
-We would like to extract those entities, and then extract
-the relational entities forming the graph in Figure~\ref{fig:intromotiv} 
-where vertices express entities, 
-and edges represent the relational entities.
-\framework allows a regular user to do that interactively
-in four phases that include morphological analysis, 
-entity extraction based on morphological features, 
-relational entity extraction, and entity cross-reference.
-
 \framework regular expressions support operators such as concatenation, 
 zero or one, zero or more, one or more, up to $M$ \major{repititions where $M$ is 
 a non-zero positive integer}, and logical conjunction and disjunction.
-An editor allows the user to associate an action with each sub-expression.
-The user specifies the action with C++ code and uses an API to access information related to the matches such as text, position, length, morphological features, and numerical value.
+\major{
+For example, the sequence between $p_1$ and $p_2$ matches a regular expression $re$ 
+that requires two semantic place categories with a place-preposition POS 
+tag ($r_1$) in between. 
+}
 
-\framework takes an Arabic text, a set of user-defined Boolean 
-formulae, and a set of user-defined regular expressions.
-\framework computes the morphological solutions of the words in the 
-input text then computes matches to the Boolean formulae.
+An editor allows the user to associate an action with each sub-expression.
+The user specifies the action with C++ code and uses an API to access information 
+related to the matches such as text, position, length, morphological features, 
+and numerical value.
+%
+\major{
+Each regular expression is associated with a named identifier to form a 
+{\em local grammar} like structure~\cite{traboulsi2009arabic}. 
+%
+A relation definition GUI allows the user to provide relational tuples 
+where each tuple has a 
+source, a destination and an edge label.
+The user uses the regular expression identifiers to define the relational 
+tuple elements.
+For example, the relation between $e_1, e_2$ and $r$ shown in 
+Figure~\ref{fig:intromotiv} is a match of a relational tuple 
+over the components of $re$. 
+%
+We refer to regular expressions and Boolean formulae as expressions and formulae, respectively.
+We also refer to expressions as rules
+when used in a grammar context; e.g.  when used with an identifier. 
+%We discuss the importance of the morphological features supported in 
+%\framework terms in Section~\ref{sec:morph}; in brief, morphological preprocessing
+%is key to Arabic NLP.% due to the richness of Arabic morphology.
+}
+
+\framework takes an Arabic text and the local grammar defined by the 
+Boolean formulae and the regular expressions.
+\framework computes the morphological solutions of the 
+input text then computes matches to the Boolean formulae therein.
 \framework then generates a {\em non-deterministic finite state 
 automata} (NDFSA) for each expression and simulates it with the 
 sequence of Boolean formulae matches to compute the regular 
@@ -113,7 +141,8 @@ cross-reference between entities.
 \framework also provides visualization tools to present the matches, 
 and estimate their accuracy with respect to reference tags.
 
-This work significantly extends the position paper~\cite{JaZaMatar} that allows for manual, and basic morphology annotation.
+This work significantly extends the position paper~\cite{JaZaMatar} 
+that allows for manual, and basic morphology annotation.
 \framework enables a regular user to incrementally create 
 complex annotations for Arabic text based on automatic 
 extraction of morphological tags through a user friendly interactive interface. 

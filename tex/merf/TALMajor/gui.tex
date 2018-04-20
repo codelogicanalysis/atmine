@@ -9,14 +9,15 @@ inter annotation agreement results
 when the tag sets come from two human annotators, 
 or as evaluation results when comparing with reference tag sets.
 
-\framework saves the tags and the tag types in a user friendly format using
-the JavaScript Object Notation (JSON) format~\cite{nolan2014javascript}.
-The tag file keeps the paths of the separate text and tag type files. 
-It also contains a list of tags with their tag type identifiers,
-position in text, length, and word index.
-The tag type file contains MBF and MRE tag types. 
-%Each object has an array value containing the user-defined tag types. 
-Each tag type contains the name, description, expression, and the visualization legends.
+
+%\framework saves the tags and the tag types in a user friendly format using
+%the JavaScript Object Notation (JSON) format~\cite{nolan2014javascript}.
+%The tag file keeps the paths of the separate text and tag type files. 
+%It also contains a list of tags with their tag type identifiers,
+%position in text, length, and word index.
+%The tag type file contains MBF and MRE tag types. 
+%%Each object has an array value containing the user-defined tag types. 
+%Each tag type contains the name, description, expression, and the visualization legends.
 
 %Figure~\ref{fig:mbftagger} shows the \framework GUI. 
 %%\framework's GUI allows the user to create, manipulate, and analyze a project. 
@@ -135,7 +136,7 @@ descriptors.
 \begin{figure}[tb!]
   \centering
   \includegraphics[width=\textwidth]{figures/treegraph}
-  \caption{MRE annotated Text, MRE match tree, and entity-relation graph}
+  \caption{MRE annotated Text, MRE \major{matching parse tree}, and entity-relation graph}
   \label{fig:treegraph}
 \end{figure}
 
@@ -148,8 +149,8 @@ The color-sensitive text view in Figure~\ref{fig:treegraph} shows
 the highlighted tag matches after the user called the MRE simulator using 
 the {\tt Tagtypes} menu. 
 
-The match tree view shows the selected match in a graph view.
-Figure~\ref{fig:treegraph} shows the MRE match tree of the direction task 
+The \major{matching parse tree} view shows the selected match in a graph view.
+Figure~\ref{fig:treegraph} shows the \major{matching parse tree} of the direction task 
 \RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building). 
 %Leaf nodes show the match text, internal nodes show the operations, and edge labels shows the MBF tag type name.
 
@@ -175,8 +176,8 @@ of the matches of the sub expressions to define the three components of the rela
 A snapshot of the GUI in 
 Figure~\ref{fig:treegraph} shows in an interactive graph view
 the entity-relation graph of the match of the user defined relation 
-extracted from the match tree of the MRE. 
-
+extracted from the \major{matching parse tree} of the MRE. 
+%
 In the computational action editor, an advanced user can 
 enter C++ code and use the \framework API to program and process 
 subexpression matches. 
@@ -196,10 +197,10 @@ two tag type sets ${\cal T}_1$ and ${\cal T}_2$ as input.
 %the tag sets.
 %
 The tag type difference view shows the text annotated in three panes: 
-1) the common tag types ${\cal T}_1 \cap {\cal T}_2$,
-2) the tag types in ${\cal T}_1$ but not in ${\cal T}_2$, 
-and 3) the tag types in ${\cal T}_2$ and not in ${\cal T}_1$.
-
+(i) the common tag types ${\cal T}_1 \cap {\cal T}_2$,
+(ii) the tag types in ${\cal T}_1$ but not in ${\cal T}_2$, 
+and (iii) the tag types in ${\cal T}_2$ and not in ${\cal T}_1$.
+%
 Similarly, the tag difference view shows $R_1\cap R_2$, $R_1/R_2$ and $R_2/R_1$
 in addition to precision, recall and F-measure values. 
 The user selects a predicate to compute the metrics from the following predicates:

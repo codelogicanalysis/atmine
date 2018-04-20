@@ -24,12 +24,16 @@ I needed to return back to ``Saref'' and ``MATAr'' papers
 to understand the terminology used.
 
 \answer{
-  We added a background section with definitions... 
+  We cleared notations in the paper that might have led to 
+    the confusion.
+    For example, we cleared (1) the notation for morphological solutions,
+    (2) the use of symbol $R$ as a both a relation tuple and a 
+    tag set. 
+    We clarified the \cci{isA} and \cci{contains} predicates. 
+    We define the power set notation $2^A$ where $A$ is a set
+    and $2^A$ is the set of all subsets of $A$.
 }
 
-\done{
-Pending...
-}
 
 \item \label{Review.3.2}
 First, I think we can ask 
@@ -51,7 +55,7 @@ First, I think we can ask
 clear for the reader.
 
 \answer{
-  Thank you. We added a tutorial/video demo... 
+  Thank you. 
 }
 
 
@@ -60,33 +64,19 @@ clear for the reader.
 (methodology)?''. but I found this part was not very clear.
 
 \answer{
-  We added a methodology section...
-}
-
-\itodo{
-  We should the following sections.
-    1. \framework methodology: diagram with its description, and the 
-    reference to the example +...
-    2. \framework supporting tools: the current \framework section
-    3. \framework GUI: remain as is
-
-  Look for high level stuff in the (2) and (3) sections that can move
-    into (1). 
-
-    When this is done go over the answers to make sure the references
-    to answers in the paper are accurate.
+  We added a methodology Section~\ref{sec:methodology} with a 
+    new Figure~\ref{f:overview} that illustrates the four
+    processes involved in the \framework Methodology. 
 }
 
 4-and for sure ``how it was evaluated and good results discussion''. 
 which needs more attention.
 
 \answer{
-  We added subsection Results.X to discuss the evaluation 
-  strategy. 
-  We also added extended the discussion section... 
+  We added more discussions to the results Section~\ref{sec:results}
+    including case study size, development time evaluation, 
+    complexity, and a discussion on required expertise. 
 }
-
-\itodo{same answer from Reviewer 1}
 
 The following are some detailed recommendations:
 
@@ -106,12 +96,9 @@ so why don you need the Motivation section.
 What about if combine both.
 
 \answer{
-  Thank you. We combine both as motivation and we include that
-  as a subsection of the introduction. 
-}
-
-\done{
-  We combine the Motivation section with \framework section (Now Section~\ref{sec:framework}).
+  Thank you for the note. 
+  We removed the motivation Section and embedded its content as 
+  a running example in the \framework Components Section~\ref{sec:tool}. 
 }
 
 
@@ -123,7 +110,7 @@ is not clear.
 \answer{
   We rephrased the sentence in the paper to read as follows. 
   \begin{quote}
-The leaf nodes of the match trees are matches to formulae and the internal nodes represent roots to sub-expression matches.
+The leaf nodes of the trees are matches to formulae and the internal nodes represent roots to sub-expression matches.
   \end{quote}
 }
 
@@ -136,21 +123,15 @@ regular expression and the match tree can be considered as
 parse tree.
 
 \answer{
-  We use formula to define predicates that range over 
-  the morphological features. 
-  We consider the matches of the formulae as tokens/tags (maybe
-  we call them tag types.)
-  We then use regular expressions (maybe we should use rules). 
-
-  We modify the paper by adopting the suggested terminology: 
-  rule for regular expression and parse tree for match tree. 
+  We modified the paper to refer to the collection of the regular
+  expressions as a local grammar. 
+  We also use matching parse trees instead of match trees in the paper now. 
+  We added a sentence in the Introduction Section to 
+  clarify that ``formula'' across the paper denotes a morphology
+  based Boolean formula (MBF). 
+  We do the same for regular expressions and rules. 
 }
 
-\itodo{
-Lets use regular grammar and introduce that with similarity to antler.
-MRE becomes a macro maybe a good acronym is morphology based regular grammar rule 
-MRGR. 
-}
 
 \item \label{Review.3.9}
 2- Section ``Existing annotation and entity extraction tools” 
@@ -182,10 +163,11 @@ specified example.
 Section 2 seemed not very imporatnt as stand alone section.
 
 \answer{
-  We introduced a new Methodology Section~\ref{sec:methodology} and
-  we moved the content of old Section 2 to it. 
+  We removed the Motivation Section (2 in the old version) and
+  embedded its contents in the \framework Components Section (4 in the
+  old version and \ref{sec:tool} now). 
+  We also introduced a Methodology Section~\ref{sec:methodology}. 
 }
-
 
 
 \item \label{Review.3.12}
@@ -194,21 +176,15 @@ understand the process. Also, the figure location is far
 away from its explanation.
 
 \answer{
-We split Figure 3 (the flow diagram figure) 
-into three Figures and provide explanations
-for each. 
-a. Arabic Text (Consider MBF as input coming from another figure) ----> Tags.
-b. Rest of the figure... 
-c. RTC + Diff. + Visualizatiin 
+  We replaced the figure with Figure~\ref{f:overview}.
+  Figure~\ref{f:overview} is 
+  a clearer and is composed of four
+  separate processes. 
+  We discuss the new Figure in the Methodology Section~\ref{sec:methodology}.
 }
-
-\itodo{
-  Edit the figure and split it  and refer to the (a), (b) and (c) in the paper. 
-}
-
 
 \item \label{Review.3.13}
-b) Syn$^k$ is nicely explanied but I did not recognize it as 
+b) Syn$^k$ is nicely explained but I did not recognize it as 
 your own idea. if this is your idea to use English translation 
 as a pivot to extract Arabic synonyms then it needs to have 
 more focus because I think this is new.
@@ -257,9 +233,11 @@ also, A belongs-to F , A is a morphological feature,
 then how CF belongs-to A. A is defined as one item not a set.
 
 \answer{
-F is the set of morphological features where each element is in turn a set of the values of that feature.
-Hence, A is one such set corresponding to a morphological feature, and CF is a feature value in A.
-We clarify this point in Subsection~\ref{subsec:grammar}.
+F is a sets of sets. It is a set of morphological feature sets.
+Each morphological feature set is in turn a set of values of that feature.
+CF belongs to A denotes that CF is a value of a morphological feature
+set  A. 
+We clarify this point in SubSection~\ref{subsec:grammar}.
 }
 
 \done{

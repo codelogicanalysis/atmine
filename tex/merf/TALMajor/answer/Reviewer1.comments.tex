@@ -26,11 +26,10 @@ objects manipulated by the software.
 This make things rigouros but the notations are sometimes heavy.
 
 \answer{
-  We clarified the following notations.... 
-  The new notations appear in Section AA in the paper. 
-}
-\itodo{
-Pending...
+  We added a methodology section that precedes the formal 
+    notation. 
+  We also embedded a running example along with the formal
+    notations. 
 }
 
 
@@ -40,13 +39,13 @@ isA and how it is used, the authors should be a bit
  clearer about that.
 
 \answer{
-We modified the description of isA to address this issue. 
-Basically, isA is used to detect the `exact match' between a user-chosen value for a morphological feature and the corresponding feature value in a morphological solution of a word.
-}
+  We clarified the \cci{isA} predicate in Section~\ref{subsec:grammar}.
+  Basically, isA is used to detect the `exact match' 
+  between a user-chosen value for a morphological feature and the 
+  corresponding feature value in a morphological solution of a word.
 
-\done{
-Add two sentences in the paper to say what isA does.\\ 
-Changes are highlighted in red at beginning of Subsection~\ref{subsec:grammar}.
+  We also replaced a mistake that referenced the \cci{isA} predicate
+  in Figure~\ref{fig:intromotiv} by the correct predicate \cci{isSyn}. 
 }
 
 \item \label{Review1.3} 
@@ -56,15 +55,13 @@ the data used for the evaluation is not clearly described,
 did you have a manual gold annotation of all the data ?
 
 \answer{
-Manual annotators inspected the outcome of the tools and provided 
+  We added description of the case studies in the Results Section~\ref{sec:results}. 
+  The reference chunks are manually created gold annotations.
+  Manual annotators inspected the outcome of the tools and provided 
 corrections where tools made mistakes. 
 The corrections form the manual gold annotation that we
 compared against. 
 We indicate that in the Results Section. 
-}
-\done{
-  Add the above to the results section.\\ 
-Done.
 }
 
 
@@ -73,15 +70,14 @@ what is the size of the evaluation data ?
 did you have a train and a test data set ?
 
 \answer{
+  We added a column to Table~\ref{tab:results} to refer to the size 
+  of the annotated data for each case study and we discussed the numbers
+  in the Results Section~\ref{sec:results}. 
   \framework does not require training. 
   It is an interactive tool where the user provides the formulae, expressions,
     relation tuples and the associated code. 
   The user inspects the results and refines the model accordingly. 
   The testing set is available with the tool. 
-}
-
-\itodo{
-  Ameen will get the size from the files and provide. 
 }
 
 \item \label{Review1.5} 
@@ -92,14 +88,9 @@ time during which the development has been done)
 more should be said about the evaluation methodology.
 
 \answer{
+  We clarify this issue in the Results Section~\ref{sec:results}.
 A research assistant 6 hours course work and 14 hours 
 teaching duties performed the task in two months. 
-We clarify this issue in the results Section.
-}
-
-\done{
-Add this to the results/evaluation.\\
-Done
 }
 
 \item \label{Review1.5}
@@ -108,7 +99,7 @@ is it distributed ? free ? what kind of licence ?
 
 \answer{
 \framework is open source and available online. We modified the
-contributions in the Introduction Section to indicate that. 
+contributions in the Introduction Section~\ref{sec:introduction} to indicate that. 
 }
 
 \end{enumerate}

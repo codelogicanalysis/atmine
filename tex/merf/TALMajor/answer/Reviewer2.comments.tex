@@ -35,17 +35,21 @@ definitions and to present the resulted software tool in
 terms of more clear software techniques.
 
 \answer{
-We introduced the following formal definitions...
+We introduced a Methodology Section~\ref{sec:methodology} to separate
+the conceptual aspects from the implementation aspects of the
+framework. 
 
-We clarify the implementation in the following manner. 
-Tranformative algorithms: 1. RE to FSM
-                          2. Entities and relations to garphs
-Generative algorithms: 1. Actions to code
-... 
-}
+We refer to the collection of regular expressions as a grammar, 
+we also provide information about the data model used to store
+the user defined tag types. 
+In the results Section~\ref{sec:results} we discuss the 
+complexity of the simulators. 
 
-\itodo{
-Pending...
+We now relate the action code API to corresponding software design patterns in Section~\ref{sec:relations-actions}, 
+%
+We discuss the translation from grammar to NDFSA. We also 
+discuss the generative nature of the action code as a shared 
+object library. 
 }
 
 
@@ -55,6 +59,13 @@ morphological aspect, this feature came to short in the
 presentation; e.g. sets of morphological solutions.
 
 \answer{
+  We provide a Methodology Section~\ref{sec:methodology} 
+    that benefits directly from the preceding Background.
+  We introduced new Figure~\ref{f:overview} to show that 
+  the morphological analysis is the first preprocessing 
+  step in the data flow of \framework. 
+  Section~\ref{sec:morph} that discusses morphological 
+    analysis with solution examples in Table~\ref{tab:samplesolution}.
   Section XXX discussed morphological analysis in Arabic. 
   We extend that in ...
   We highlight that by referring to the Section in the 
@@ -68,17 +79,13 @@ particularly when evaluating the required time of different
 development tasks. 
 
 \answer{
-  The problem is decidable: regular grammar rules to FSM. 
-  However, the problem might be not tractable: NDFSM to FSM might 
-  be exponential. 
-  In practice Table~\ref{tab:results} provides runtime results... 
-  We modified the paper to include the above.
+  We added discussion in the Results Section~\ref{sec:results}
+    to discuss and comment on the complexity of the 
+    regular expression to non-deterministic finite state
+    automata (NDFSA), and the simulation of the NDFSA  
+    with the morphology based Boolean formulae tags. 
 }
 
-\done{
-Done.
-}
-    
 \item \label{Review.2.4} 
 Providing the system with GUI is an advantage, 
 However the system requires probably to some extend 
@@ -86,16 +93,8 @@ good linguistic and formal languages expertise to optimize
 the benefit of the implements tool.
 
 \answer{
-We discuss the target audience of the MERF tool in Section XXX. 
-We prepared a set of 45 minutes slides based on the regular
-expression chapter in Martin Jurafsky's book to... 
-}
-
-\done{
-You note is accurate.
-An advantage of the GUI is that it enables a user with mediocre 
-linguistic skills to perform information extraction tasks and 
-benefit from the framewrok.
+We added a statement at the end of the Discussion 
+Subsection~\ref{sec:discuss} to reflect the comment of the reviewer. 
 }
 
 \end{enumerate}

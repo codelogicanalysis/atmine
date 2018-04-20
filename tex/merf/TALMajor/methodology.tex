@@ -1,148 +1,60 @@
-The set of tag types ${\cal T}$ contains tuples of the form $\langle l,f,d\rangle$ 
-where $l$ is a text label with a descriptive name, 
-$f$ is an MRE, and $d$ is a visualization legend 
-with font and color information.
 
-For each word $t_i\in T, 0\le i < M, M=|T|$.
-\framework computes a Boolean value 
-($\{\mathit{true}, \mathit{false}\}$)
-for all MBFs. 
-Then, it computes the set of MBF tags
-$R_i=\{(t_i,tt)| tt=\langle l,f,d\rangle \wedge
-f~\mathit{is~an~MBF} \wedge f(t_i)\} \subseteq T \times {\cal T}$
-which tags a word $t_i$ with $\mathit{tt}$ 
-iff the MBF $f$ associated with
-tag type $\mathit{tt}$ is true for $t_i$. 
-The MBF evaluation results in a sequence of tag sets 
-$\langle R_0, R_1, \ldots, R_{n-1}\rangle$.
-If a word $t_i$ has no tag type match, 
-its tag set $R_i$ is by default the singleton $O=\{\mathit{NONE}\}$.
-%and $t_i$ is referred to as a {\em null} word.
 
-%\subsection{MRE and action simulation}
 
-For each MRE, 
-\framework generates its equivalent non-deterministic finite automaton (NFA) in the typical manner~\cite{sipser2006introduction}.
-%Each MRE operation has its equivalent representation in an NFA. 
-We support the upto operation ($f$\^{}$x$), which is not directly 
-supported in~\cite{sipser2006introduction}, by 
-%it is equivalent to $f?|ff|\dots|\underbrace{f}_{x \text{ times}}$ which has an NFA mapping. 
-%we can expand it into a standard regular expression form, for example
-expanding it into a regular expression form; for example 
-$f$\^{}$3$ is equivalent to $f?|ff|fff$. 
-Consider the example of Figure~\ref{fig:intromotiv} and the
-corresponding expression $(P|N)\!+~O?~R~O^\wedge 2~(P|N|U)+$. 
-Figure~\ref{fig:nfaEx} shows part of the corresponding NFA where
-$q_8, q_9, \dots, q_{13}$ represent NFA states,
-and edges are transitions based on MBF tags such as 
-$P,$ and $N$.
-Edges labeled with the empty string $\epsilon$ are non-deterministic.
-%The expression uses operations $|$, $?$, $+$, and $\wedge$ to relate places {\tt P}, names of persons {\tt N}, relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
+Figure~\ref{f:overview} illustrates the four processes involved in 
+\framework methodology. 
+The first process takes the Arabic text input and provides the user 
+with a morphology-based Boolean (MB) formulae GUI. 
+The user interactively composes MB-formulae using the GUI and the output 
+of the simulator and the $Syn^k$ detector. 
+The simulator and the detector apply the formulae over the morphological solutions 
+of the Arabic text and produce the MB-formulae tags. 
 
-\framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
-%A simulation match $m$ of an expression $f$ is a tree where the root is the MRE expression, the internal nodes are the MRE and MBF operations, and the leaves are matches of the MAT terms of $f$.
-A simulation match $m$ of an expression $f$ is a tree where the root spans the expression, the internal nodes are roots to sub-expressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Fig.~\ref{fig:taskMRE}.
-The sequence of leaf matches forms a vector of tags $\langle r_k,r_{k+1},\dots,r_j\rangle$ 
-corresponding to the text sequence 
-$\langle t_k,t_{k+1},\dots,t_j\rangle$ where $r_{\ell}\in R_{\ell},0\le k\le \ell \le j < n$.
+The second process takes the MB-formulae tags and the Arabic text and provides
+the user with a morphology-based grammar rule GUI. 
+The user interactively composes MB-grammar rules using the GUI and the output 
+of the MB-grammar rule simulator. 
+The grammar rule simulator applies the rules over the MB-formulae tags and 
+produces the MB-grammar rule tags. 
+
+The third process takes the MB-grammar rule tags and provides the user with 
+a relation and action GUI. 
+The user interactively provides (1) the relation definitions and 
+(2) the actions in terms of identifiers from the MB-grammar 
+rules.
+The relation extraction produces the target entities and relational
+entities. 
+The action execution enriches the entities and the relational entities
+with powerful semantics.
+For example, users can utilize actions to compute statistical features, 
+store intermediate results, 
+or apply intelligent entity inference techniques
+as we show later in the numerical extraction example of 
+Subsection~\ref{subsec:numnorm}.
 %
-%If the simulation has a match $\langle r_m,r_{m+1},\dots,r_n\rangle$ 
-%where $0\le m\le n$, 
-%the next simulation starts at $R_{n+1}$. 
-%This disallows overlap of matches for the same MRE. 
-%
-%In case the NFA simulation has no match, 
-%the next simulation starts at $R_{m+1}$. 
-If we have more than one match for an expression, 
-%starting at $R_k$ where $0\le k\le n$, 
-\framework returns the longest.
-%Figure~\ref{fig:taskMRE} shows two match trees of $\mathit{dir}$ extracted from the text of Figure~\ref{fig:intromotiv}.
-%\RL{dby} and \RL{mwl} are leaf nodes referring to name of place tags ($P$).
-%The $+$, $|$, and $?$ MRE operations are internal nodes.
+Finally, in the fourth process the user compares the results with golden
+reference chunks and visualizes the difference. 
+This allows the user to refine the formulae, rules, relations and actions. 
 
-%\framework maintains a function $\phi\subset Q\times\Phi$, 
-%where $\mathit{Q}$ is the set of states in the NFA and $\Phi$ is the set of sub-expressions in the MRE.
-%So $(q,f)\in \phi$ iff state $q\in Q$ was generated by \framework to correspond to sub-expression $f\in \Phi$. 
-%\framework uses $\phi$ to compute a match tree with respect to the MRE regular expression. 
-%It also uses $\phi$ and the match sequence to compute the sequence of computational actions of an MRE match. 
+After the relation construction phase, we are interested to relate the 
+discovered entities that express the same concept.
+\framework provides the extended synonym feature of second order as 
+a default cross-reference relation ($Syn^2$).
+In Figure~\ref{fig:intromotiv}, triggering this feature creates the 
+edge labels with \cci{isSyn} 
+between the nodes \cci{Khalifa Tower} and \cci{The building}.
 
-\setcode{utf8}
-\setarab
-\transfalse
+\input{MERFOverview}
 
-\begin{figure}[tb!]
-\centering
-\resizebox{0.7\columnwidth}{!}{
-	\relsize{-1} \input{figures/reNFA.tex}
-}
-  \caption{Equivalent NFA of direction expression}
-  \label{fig:nfaEx}
-\end{figure}
-\transtrue
-\setcode{standard}
+The user may inspect and refine the defined formulae, rules and relations and 
+the corresponding formulae tags, rule tags, entities and relational entities
+either using the GUI or directly through readable output files. 
+The files are in the javascript object notation (JSON)~\cite{nolan2014javascript} 
+format that is intuitive to read and modify. 
+\framework separates the user defined formulae, rules, actions and relations in
+a \framework tag type file and the 
+matching tags in a tags files. 
+The separation serves the user to apply the tag types to multiple case studies 
+and to obtain a separate resulting tags file for each case study. 
 
-%\begin{figure}[tb!]
-%{ \relsize{-1}
-%\begin{framed}
-%\begin{multicols}{2}
-%\begin{itemize}
-%\item Annotated Expression: \\
-%\\
-%{ \relsize{-2.5}
-%%\begin{itemize}
-%%  \item 
-%  $\stackrel{e_1}{(P|N)+}~\stackrel{o_1}{\mathit{O}?}~\stackrel{r}{R}~\stackrel{o_2}{\mathit{O^{\wedge}2}}~\stackrel{e_2}{(P|N|U)+}$
-%%\end{itemize}
-%}
-%\end{itemize}
-%\begin{itemize}
-%\item User defined semantic \\relations:
-%\begin{itemize}
-%\item $\langle e_1,e_2,r\rangle$
-%\item $\langle r,e_1,o_1\rangle$
-%\item $\langle r,e_2,o_2\rangle$
-%\end{itemize}
-%\end{itemize}
-%\columnbreak
-%\setcode{utf8}
-%\transfalse
-%\resizebox{0.9\columnwidth}{!}{
-%	\relsize{+1.5} \input{figures/ergraphEx.tex}
-%}
-%\transtrue
-%\setcode{standard}
-%\end{multicols}
-%\end{framed}
-%}
-%\caption{User-defined semantic relation example}
-%\label{fig:srEx}
-%\end{figure}
 
-Next, \framework computes the relational entities corresponding to each user defined relation $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$
-$\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$.
-Note that the number of matches for $e_i$ ($\ldbrack e_i \rdbrack$) depends on the corresponding sub-expression.
-For instance, we could have multiple matches if we associate $e_i$ with the sub-expression $P|N$ while we have $(P|N)+$.
-%to be the elements of $\ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$
-%with the smallest nonzero positive distance between the source and the destination
-%where the distance is the number of words between the matches. 
-Hence, \framework supports the following configurations for $e_i$ and $e_j$ based on the corresponding matches of sub-expressions:
-\begin{itemize}
-\item $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert=1$: Relate $e_i$ match to $e_j$ match with edge labeled by $r$.
-\item $i=j\wedge\left\vert{e_i}\right\vert>1$: Relate sequences of $e_i$ matches with edges labeled by $r$.
-\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert=1$: Relate each $e_i$ match to the single $e_j$ match with an edge labeled by $r$. The reverse applies for $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert>1$.
-\item $i\neq j\wedge\left\vert{e_i}\right\vert>1\wedge\left\vert{e_j}\right\vert>1$: Relate each $e_i$ match to each $e_j$ match with an edge labeled by $r$.
-\end{itemize}
-
-%In Figure~\ref{fig:taskMRE}, \framework names the sub-expressions $(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
-%The user defines the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
-
-%The matches of $e_1,~e_2,~o_1,~o_2,$ and $r$ from the second match tree of Figure~\ref{fig:motiv}(b) are \RL{dby mwl}(Dubai Mall), \RL{Almbn_A}(the building), \RL{`l_A}(prep), \RL{mn h_dA}(from this), and \RL{mqrbT}(near), respectively. 
-%\framework~constructs the semantic relation matches and builds the lower part of the entity-relation graph shown in Figure~\ref{fig:intromotiv}.
-
-%For the first match \RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'-wl}, the matches of $e_1,~e_2,~o_2,$ and $r$ are \RL{brj _hlyfT}(Khalifa tower), \RL{AltqA.t` Al-'-wl}(intersection 1), \RL{mn}(from), and \RL{bAlqrb}(next to), respectively. 
-%\framework doesn't construct the relation $\langle r, e_1, o_1\rangle$ since $o_1$ has no match. 
-%Therefore, we get the upper part of the entity-relation graph shown in Figure~\ref{fig:intromotiv}.
-
-After computing the relational entities, 
-\framework computes cross-reference relations between the extracted entities using a second order synonymy feature ($Syn^2$).
-%The \cci{isA} edge in the graph of Figure~\ref{fig:intromotiv} shows the cross-reference relation between \RL{brj _hlyfT}(Khalifa tower) from the first match with \RL{Almbn_A}(the building) from the second match.
