@@ -33,7 +33,7 @@ directly related to $w$ through the gloss map.
 %
 Let $Sy^{i}(w)$ denote stems related to $w$ using the gloss map of order $i$ recursively such that
 $Sy^{1}(w) = Sy(w)$ and
-$Sy^{i+1}(w)=\{u\mid u\in S\land\exists s\in Sy^{i}(w)\land~\alpha(u)\cap\alpha(s)\neq\phi\}$.
+$Sy^{i+1}(w)=\{u\mid u\in S\land\exists s\in Sy^{i}(w)\land~\alpha(u)\cap\alpha(s)\neq\emptyset\}$.
 Formally, $Syn^k(w) = \bigcup\limits_{i=1}^{k} Sy^{i}(w)$ for $i\in[1 \ldots k]$.
 %
 \major{
@@ -102,7 +102,7 @@ Consider the task we discussed in the introduction (Figure~\ref{fig:intromotiv})
 and recall that we are interested in identifying names of people, names of places, relative positions, and numerical terms.
 The table in Figure~\ref{fig:taskMBF} presents the defined formulae.
 The user denotes the ``name of person'' entities with formula $N$ 
-which requires the {\em category} feature in the morphological solution of a word to be {\tt Name\_of \_Person}.
+which requires the {\em category} feature in the morphological solution of a word to be {\tt Name\_of\_Person}.
 The entities $n_1$, $n_2$, and $n_3$ are matches of the formula $N$ in the text.
 Similarly, the user specifies formula $P$ to denote ``name of place'' entities. 
 The user specifies formula $R$ to denote ``relative position'' entities, 
@@ -171,7 +171,7 @@ For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the sub-expression 
 A relation is defined by the user as a tuple 
 $\langle e_1,e_2,r\rangle$ where 
 $e_1,e_2,$ and $r$ are identifiers associated with 
-sub-expressions of an expression $f$.
+sub-expressions of an MRE $f$.
 Matches of the relation are a set of labeled binary edges
 where matches of $e_1$ and $e_2$ are the source and destination nodes
 and matches of $r$ are the edge labels.
@@ -183,7 +183,6 @@ We are interested in constructing the relational entity graph in Figure~\ref{fig
 Let $e_1,o_1,r,o_2,$ and $e_2$ be identifiers to the sub-expressions 
 $(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$, respectively.
 %We select $(P|N)+$ to denote an entity as it captures a composite place name such as \cci{Khalifa tower}.
-We define the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 The matches to $e_1$, $r$, $o_2$, and $e_2$ in match 1 (Fig.~\ref{fig:taskMRE}) are \RL{brj _hlyfT} (Khalifa Tower), \RL{bAlqrb} (next), \RL{mn} (to), and \RL{AltqA.t` Al-'wl} (first intersection).
 Note that there is no match to the optional $O$ formula in match 1.
 Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second \major{matching parse tree} are
@@ -191,6 +190,7 @@ Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second \maj
 }
 
 \major{
+We define the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 Relation $\langle e_1,e_2,r\rangle$ creates the 
 edge labeled \cci{next to} between \cci{Khalifa tower} and 
 \cci{intersection 1} nodes from match 1, and the 
@@ -257,7 +257,7 @@ $\langle R_0, R_1, \ldots, R_{n-1}\rangle$.
 If a word $t_i$ has no tag type match, 
 its tag set $R_i$ is by default the singleton $O=\{\mathit{NONE}\}$.
 \major{
-For example, $R$ for the text in Figure~\ref{f:overview} follows 
+For example, the tag sets for the text in Figure~\ref{f:overview} follows 
 $\{ \{NONE\}, \{NONE\}, \{NONE\}, \{NONE\}, \{($\RL{brj}$,P)\}, \{($\RL{xlyfT}$,N)\},\ldots\}$. 
 }
 
@@ -283,7 +283,7 @@ Edges labeled with the empty string $\epsilon$ are non-deterministic.}
 
 \framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
 %A simulation match $m$ of an expression $f$ is a tree where the root is the MRE expression, the internal nodes are the MRE and MBF operations, and the leaves are matches of the MAT terms of $f$.
-A simulation match $m$ of an expression $f$ is a tree where the root spans the expression, the internal nodes are roots to sub-expressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Fig.~\ref{fig:taskMRE}.
+A simulation match $m$ of an expression $f$ is a \major{parse tree} where the root spans the expression, the internal nodes are roots to sub-expressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Fig.~\ref{fig:taskMRE}.
 The sequence of leaf matches forms a vector of tags $\langle r_k,r_{k+1},\dots,r_j\rangle$ 
 corresponding to the text sequence 
 $\langle t_k,t_{k+1},\dots,t_j\rangle$ where $r_{\ell}\in R_{\ell},0\le k\le \ell \le j < n$.
@@ -360,7 +360,7 @@ If we have more than one match for an expression,
 %\label{fig:srEx}
 %\end{figure}
 %
-Next, \framework computes the relational entities corresponding to each user defined relation $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$
+Finally, \framework computes the relational entities corresponding to each user defined relation $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$
 $\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$.
 
 \begin{comment} 
