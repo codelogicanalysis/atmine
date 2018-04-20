@@ -55,7 +55,7 @@ First, I think we can ask
 clear for the reader.
 
 \answer{
-  Thank you. 
+  We will provide a GUI tutorial file on the tool's website. 
 }
 
 
@@ -265,7 +265,8 @@ definitions to make it easier for the reader.
 The reader can be lost so fast within the variable definitions. 
 
 \answer{
-We provide running examples with the definitions....
+We now provide running examples for the definitions in the 
+MEF simulator Section. 
 }
 
 
@@ -322,26 +323,34 @@ There is heuristic evaluation where you give weight for job
 complexity and record time needed to complete it.
 
 \answer{
-Our evaluation is a survey based evaluation.
-Users used \framework to define their \framework based annotators. 
-Users also built finite state transducer based annotators to 
-perform the same tasks on the same corpora. 
-We measured and reported the time needed by both. 
 
-We also performed manual annotation to construct the correctness 
-benchmark.
+We address the comment by adding the following at the beginning
+of the Results Section~\ref{sec:results}. 
+
+\begin{quote}
+In this section we evaluate \framework with four case studies. 
+We perform a survey like evaluation where developers manually 
+built task specific information extraction tools for the case studies 
+and other developers built equivalent \framework tools. 
+The aim of the comparison is to showcase that \framework enables 
+fast development of linguistic applications with similar accuracy 
+and a reasonable affordable overhead in computational time. 
+We report development time,
+size of developed code versus size of grammar,
+running time, and 
+precision-recall as metrics
+of cost, complexity, overhead, and accuracy,
+respectively. 
+\end{quote} 
+
+Developers implemented the same tasks and ran on the same corpora. 
+%
+We also performed manual annotation to construct the golden reference. 
 We did that by correcting the automated annotations of both annotators
 for the benchmark corpora. 
-That alone took much more time than the time it took to develop and run
-the \framework annotators. 
-
-We clarify that in the beginning of the Results 
-Section ~\ref{sec:results}.
+We clarify that in the Results Section~\ref{sec:results}.
 }
 
-\itodo{
-  Ameen: lets add the above to the section. 
-}
 
 \item \label{Review.3.25}
 Also, comparison with previous work done by (Zaraket ) 
@@ -369,13 +378,26 @@ number of relation extracted , tags added, expression processed,
 sentences,..etc
 
 \answer{
+  We address this in the Results Section~\ref{sec:results}
+  as follows. 
+  \begin{itemize} 
+    \item 
   We include more information about the data and 
   the evaluation process.
+\item 
   We include the size of the annotated data sets that 
   we used for accuracy evaluation in Table~\ref{tab:results}. 
-  We discuss how the golden reference was constructed. 
+\item 
+  We now discuss how the golden reference was constructed. 
+\item 
+  We now discuss how precision and recall are computed as ratios of 
+  entities correctly detected against extracted entities, and 
+  entities correctly detected against the total number of entities, 
+  respectively. 
+\item 
   We also discuss the workload of the research assistant who built
   the task specific case studies. 
+  \end{itemize} 
 }
 
 
@@ -384,7 +406,21 @@ sentences,..etc
 WHY the precision and recall have these values.
 
 \answer{
-We extend the discussion section to discuss ... 
+  We added  the following to the discussion Section. 
+  \begin{quote}
+We notice that ANGE, ATEEMA, and Genealogy tree report higher 
+    precision than \framework. 
+This is mainly due to their capacity 
+to learn words and relations that may not have a match in the 
+morphological analyzer based on co-occurence relations. 
+For example, the sequence $p_1 t_1 p_2$ where $p_1$ and 
+$p_2$ are persons and $t_1$ is a tell relationship helps
+indicate that $x$ is a tell relationship in $p_1 x p_2$ 
+even if the morphological analyzer did not return the required
+feature for $x$ to match a tell relationship. 
+\framework does not have that capacity yet unless it is
+encoded in the C++ actions. 
+  \end{quote} 
 }
 
 \item \label{Review.3.28}

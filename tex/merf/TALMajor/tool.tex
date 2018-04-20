@@ -233,11 +233,19 @@ The set of tag types ${\cal T}$ contains tuples of the form $\langle l,f,d\rangl
 where $l$ is a text label with a descriptive name, 
 $f$ is an MRE, and $d$ is a visualization legend 
 with font and color information.
+\major{
+For the example of Figure~\ref{fig:intromotiv},
+$l$ is ``direction'',
+$f$ is $(P|N)\!+~O?~R~O^\wedge 2~(P|N|U)+$,
+and $d$ is italic. 
+}
 
-For each word $t_i\in T, 0\le i < M, M=|T|$.
+For each word $t_i\in T, 0\le i < |T|$.
 \framework computes a Boolean value 
-($\{\mathit{true}, \mathit{false}\}$)
 for all MBFs. 
+\major{
+For example, \RL{brj} matches MBF $P$. 
+}
 Then, it computes the set of MBF tags
 $R_i=\{(t_i,tt)| tt=\langle l,f,d\rangle \wedge
 f~\mathit{is~an~MBF} \wedge f(t_i)\} \subseteq T \times {\cal T}$
@@ -248,7 +256,10 @@ The MBF evaluation results in a sequence of tag sets
 $\langle R_0, R_1, \ldots, R_{n-1}\rangle$.
 If a word $t_i$ has no tag type match, 
 its tag set $R_i$ is by default the singleton $O=\{\mathit{NONE}\}$.
-%and $t_i$ is referred to as a {\em null} word.
+\major{
+For example, $R$ for the text in Figure~\ref{f:overview} follows 
+$\{ \{NONE\}, \{NONE\}, \{NONE\}, \{NONE\}, \{($\RL{brj}$,P)\}, \{($\RL{xlyfT}$,N)\},\ldots\}$. 
+}
 
 
 For each MRE, 
@@ -262,11 +273,12 @@ expanding it into a regular expression form; for example
 $f$\^{}$3$ is equivalent to $f?|ff|fff$. 
 Consider the example of Figure~\ref{fig:intromotiv} and the
 corresponding expression $(P|N)\!+~O?~R~O^\wedge 2~(P|N|U)+$. 
+\major{
 Figure~\ref{fig:nfaEx} shows part of the corresponding NFA where
 $q_8, q_9, \dots, q_{13}$ represent NFA states,
 and edges are transitions based on MBF tags such as 
 $P,$ and $N$.
-Edges labeled with the empty string $\epsilon$ are non-deterministic.
+Edges labeled with the empty string $\epsilon$ are non-deterministic.}
 %The expression uses operations $|$, $?$, $+$, and $\wedge$ to relate places {\tt P}, names of persons {\tt N}, relative positions {\tt R}, numerical terms {\tt U}, and other {\tt O}.
 
 \framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
