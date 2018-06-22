@@ -63,15 +63,6 @@ specifies the constant value $CF$, and adds it to the Boolean formula editor.
 %and {\tt gray}, respectively, and the font size to {\tt 12}.
 %, normal font weight, and unitalicized.
 
-\begin{figure}[tb!]
-  \centering
-  {\setlength{\fboxsep}{0pt}%
-  \setlength{\fboxrule}{0.5pt}%
-  \fbox{\includegraphics[width=\textwidth]{figures/mreedit}}}
-  \caption{\framework tag type regular expression editor.}
-  \label{f:sfe}
-\end{figure}
-
 \subsection{MBF match visualization}
 
 %After defining the MBFs of the direction extraction task, 
@@ -90,8 +81,17 @@ that are not based on morphological features.
 This enables building reference corpora without 
 help from the morphological analyzer.
 
-\vspace{-1em}
+\begin{figure}[tb]
+  \centering
+  {\setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.5pt}%
+  \fbox{\includegraphics[width=0.995\textwidth]{figures/mreedit}}}
+  \vspace{-2em}
+  \caption{\label{f:sfe}\framework tag type regular expression editor.}
+\end{figure}
+
 \subsection{Tag type regular expression editor}
+\vspace{-1em}
 
 After interacting with the MBF editor, the user moves to 
 specify the regular expressions. 
@@ -133,13 +133,6 @@ descriptors.
 %Similar to the MBF tag type editor, the user specifies a set of legend descriptors for each MRE tag type.
 %
 
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=\textwidth]{figures/treegraph}
-  \caption{MRE annotated Text, MRE \major{matching parse tree}, and entity-relation graph}
-  \label{fig:treegraph}
-\end{figure}
-
 \vspace{-1em}
 \subsection{MRE match visualization}
 
@@ -153,6 +146,13 @@ The \major{matching parse tree} view shows the selected match in a graph view.
 Figure~\ref{fig:treegraph} shows the \major{matching parse tree} of the direction task 
 \RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building). 
 %Leaf nodes show the match text, internal nodes show the operations, and edge labels shows the MBF tag type name.
+
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=\textwidth]{figures/treegraph}
+  \vspace{-2em}
+  \caption{\label{fig:treegraph}MRE annotated Text, MRE \major{matching parse tree}, and entity-relation graph.}
+\end{figure}
 
 %\begin{figure}[tb]
 %  \centering

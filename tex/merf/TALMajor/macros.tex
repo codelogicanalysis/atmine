@@ -1,18 +1,19 @@
 \documentclass[english,utf8x]{article-hermes}
 
-%%%%%%%% packages %%%%%%%%%%
+%%%%%%%%% packages %%%%%%%%%%
 \usepackage{xspace}
 \usepackage{arabtex}
 \usepackage{array}
 \usepackage{tikz}
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=false,
-    pdfborder={0 0 0},
-}
+\usepackage{url}
+%\usepackage{hyperref}
+%\hypersetup{
+%    colorlinks=false,
+%    pdfborder={0 0 0},
+%}
 \usepackage{booktabs}
 \usepackage[ruled]{algorithm2e}
-\usepackage{etex}
+%\usepackage{etex}
 \usepackage{graphicx}
 \usepackage{framed}
 \usepackage{graphics}
@@ -36,10 +37,10 @@
 \usepackage{relsize}
 \usepackage{wasysym}
 \usepackage{pbox}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%% Macros %%%%%%%%%%
-\newcommand{\major}[1]{{\color{red}#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%%%%%%%%%%% Macros %%%%%%%%%%
+\newcommand{\major}[1]{{\color{black}#1}}
 \def\framework{\textsc{MERF}\xspace}
 \newcommand{\itodo}[1]{\todo[inline,color=green]{\tiny #1}}
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
@@ -63,7 +64,7 @@
 %other 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \submitted[15/10/2017]{TAL~58-03}{R}
 
@@ -75,11 +76,9 @@
 %\fup{**} Second affiliation
 %}
 
-\author{}
-%\author{Amin A. Jaber \andauthor Fadi A. Zaraket} 
+\author{Amin Jaber \andauthor Fadi Zaraket} 
 
-\address{}
-%\address{American University of Beirut, Beirut 1107 2020, Lebanon}
+\address{American University of Beirut, Beirut 1107 2020, Lebanon}
 
 \abstract{
 \input{abstract}
@@ -96,15 +95,28 @@ tagging.
 }
 
 \motscles{
-%mot-cl\'e$_1$,
-%mot-cl\'e$_2$,
-%mot-cl\'e$_3$.
+Arabe,
+extraction d'information,
+traitement du langage naturel,
+entité,
+entité relationnelle,
+visualisation d'information,
+marquage.
 }
 
 \resume{
-%Le r\'esum\'e est \`a \'ecrire ici.
+Les techniques et outils basés sur des règles pour extraire des entités et des entités relationnelles des documents permettent aux utilisateurs de spécifier les entités souhaitées en utilisant des questions de langage naturel, des automates à états finis, des expressions régulières, des instructions de langage de requête structurées ou des scripts propriétaires.
+Ces techniques et outils nécessitent une expertise en linguistique et en programmation.
+Ils manquent de soutien de l'analyse morphologique arabe qui est la clé de
+traiter le texte arabe.
+Dans ce travail, nous présentons \framework; une entité morphologique et un cadre d'extraction d'entité relationnelle pour le texte arabe.
+\framework fournit une interface conviviale où l'utilisateur, avec une connaissance de base des caractéristiques linguistiques et des expressions régulières, définit les types de balises et les associe de manière interactive aux expressions régulières définies sur des formules booléennes.
+Les formules booléennes couvrent des correspondances d'entités morphologiques arabes et des caractéristiques de synonymie.
+Les utilisateurs définissent des relations avec des tuples de correspondance de sous-expression et peuvent associer des actions de code à des sous-expressions.
+\framework calcule des correspondances de fonctions, des correspondances d'expressions régulières et construit des entités et des entités relationnelles à partir des relations définies par l'utilisateur.
+Nous avons évalué notre travail avec plusieurs études de cas et les avons comparées avec des techniques spécifiques à une application existante.
+Les résultats montrent que \framework nécessite un temps et un effort de développement plus courts par rapport aux techniques existantes et produit des résultats raisonnablement précis dans une surcharge raisonnable en temps d'exécution.
 }
-
 
 \begin{document}
 

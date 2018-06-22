@@ -108,7 +108,7 @@ documentclass[fleqn,english,cropmarks,empty,nofirstpagebreak]{article-hermes}}}
 
 % On n'utilise plus french de B. Gaulle, mais frenchb (de babel)
 
- \RequirePackage[frenchb,english]{babel}
+\RequirePackage[frenchb,english]{babel}
 
 % Attention ! avec babel, tout appel à \selectlanguage active un espacement spécial pour
 % les listes et redéfinit les noms de certaines entités (tablename, figurename....

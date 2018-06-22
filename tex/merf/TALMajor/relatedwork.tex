@@ -7,7 +7,7 @@ and compare to \framework.
 %Urbain\cite{urbain2012user}, 
 %QARAB\cite{hammo2002qarab}
 
-{\bf Information Extraction.~}
+{\bf Information Extraction.}
 The common pattern specification language (CPSL) targets system independent IE specifications~\cite{appelt1998common}. 
 %CPSL consists of 
 %(1) a declaration part specifying names and labels, 
@@ -49,11 +49,7 @@ analyzer with limited features of Arabic words compared
 to the morphological analysis of \framework. 
 %QARAB then classifies the query against a set of known question types. 
 
-\begin{table}[tb!]
-\caption{Comparison of \framework with SystemT, 
-TEXTMARKER, 
-Urbain, 
-QARAB}
+\begin{table}[tb]
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{l|c|c|c|c|c}
 %{p{2.7cm}|p{.7cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.2cm}}
@@ -67,7 +63,10 @@ Tag visualization & $\checked$ & - & $\checked$ & - & - \\ \hline
 Graph visualization & $\checked$ & - & - & - & - \\
 \end{tabular}
 }
-\label{tab:iecomp}
+\caption{\label{tab:iecomp}Comparison of \framework with SystemT, 
+TEXTMARKER, 
+Urbain, 
+QARAB}
 \end{table}
 
 Table~\ref{tab:iecomp} summarizes the comparison between \framework and
@@ -113,7 +112,7 @@ and relates words based on their semantic values and their functional
 categories: nouns, verbs, adjectives, adverbs, and function words~\cite{intro}.
 The $Syn^k$ feature in \framework is inspired by WordNet.
 
-{\bf Annotation tools.~}
+{\bf Annotation tools.}
 MMAX2 is a manual multi-level linguistic annotation tool with an XML 
 based data model~\cite{mmax2}.
 %It enables the user to create, browse, visualize, and query annotations and may be able to resolve coreference tags. 
