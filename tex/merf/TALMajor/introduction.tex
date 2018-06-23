@@ -47,13 +47,11 @@ However, this tool lacks support for entity and relational entity extraction.
 
 \input{directionFigure}
 
-\major{
 Figure~\ref{fig:intromotiv} illustrates the target of \framework using 
 the directions to Dubai Mall example~\footnote{text taken from the Dubai 
 Mall website ~\url{http://www.thedubaimall.com/ar/}}.
 The figure also presents a transliteration and an English translation of 
 the Arabic text.
-}
 The framed words in the text are entities referring to names of people 
 ($n_1,n_2,n_3$), 
 names of places ($p_1,\dots,p_7$), 
@@ -84,25 +82,20 @@ A Boolean formula is defined by a term, negation of a term, or disjunction of te
 Terms are matches to Arabic morphological features including 
 prefix, stem, suffix, part of speech (POS) tags, gloss tags, extended synonym 
 tags, and semantic categories.
-\major{
 For example, entity $p_1$ in Figure~\ref{fig:intromotiv} has a place semantic 
-category. 
-}
+category.
 \framework regular expressions support operators such as concatenation, 
-zero or one, zero or more, one or more, up to $M$ \major{repetitions where $M$ is 
-a non-zero positive integer}, and logical conjunction and disjunction.
-\major{
+zero or one, zero or more, one or more, up to $M$ repetitions where $M$ is 
+a non-zero positive integer, and logical conjunction and disjunction.
 For example, the sequence between $p_1$ and $p_2$ matches a regular expression $re$ 
 that requires two semantic place categories with a place-preposition POS 
-tag ($r_1$) in between. 
-}
+tag ($r_1$) in between.
 
 An editor allows the user to associate an action with each sub-expression.
 The user specifies the action with C++ code and uses an API to access information 
 related to the matches such as text, position, length, morphological features, 
 and numerical value.
 %
-\major{
 Each regular expression is associated with a named identifier to form a 
 {\em local grammar} like structure~\cite{traboulsi2009arabic}. 
 %
@@ -121,7 +114,6 @@ when used in a grammar context; e.g.  when used with an identifier.
 %We discuss the importance of the morphological features supported in 
 %\framework terms in Section~\ref{sec:morph}; in brief, morphological preprocessing
 %is key to Arabic NLP.% due to the richness of Arabic morphology.
-}
 
 \framework takes an Arabic text and the local grammar defined by the 
 Boolean formulae and the regular expressions.
@@ -162,15 +154,9 @@ In \framework, we make the following contributions.
     when a corresponding match is found.
     It also provides an API to enable access to match 
     features such as text, position, length, numerical value, and morphological features.
-  \item \framework enables the user to tag words based on a 
-    \major{
-    novel light Arabic wordnet relation that leverages the 
-    synonym $Syn^k$ feature.
-  }
-
-  \item \major{
-\framework is open source and available online for the research community 
-    under on (\url{https://github.com/codelogicanalysis/atmine}).}
+  \item \framework enables the user to tag words based on a novel light Arabic wordnet relation that leverages the synonym $Syn^k$ feature.
+  \item \framework is open source and available online for the research community 
+    under on (\url{https://github.com/codelogicanalysis/atmine}).
 \end{itemize}
 
 The rest of the paper is structured as follows.

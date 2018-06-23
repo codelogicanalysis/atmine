@@ -9,13 +9,11 @@
 
 %~\footnote{In this document, we use the default ArabTeX transliteration style ZDMG.}
 %{\bf Morphological analyzer (Sarf).~}
-\major{
 Morphological analysis is key to Arabic 
 NLP
 due to the exceptional degree of ambiguity in writing, 
 the rich morphology, and the complex word derivation 
 system~\cite{arabicmorph,shahrour2016camelparser,pasha2014madamira}.
-}
 Short vowels, also known as diacritics, are typically omitted in Arabic text
 and inferred by readers~\cite{habash2006arabic}. 
 For example, the word \RL{bn}%
@@ -89,13 +87,12 @@ prefixes,
 suffixes,
 POS,
 gloss, 
-and user defined category tags, respectively. 
+and user defined category tags, respectively.
 Let $T=\langle t_1,t_2,\ldots,t_M\rangle$ be a set of Arabic words denoting the 
-text documents. 
+text documents.
 \framework uses Sarf to compute a set of morphological solutions $M(t)=\{m_1,m_2,\ldots,m_N\}$
 for each word $t\in T$. 
 %
-\major{
 Each morphological solution $m\in M(t)$ is a tuple of the form 
 $\langle p,s,x,P,G,C\rangle \in \pp \times \ss \times \xx \times \PP \times \GG \times \AC$ 
 where $p=p_1 \ldots p_{|p|}$, $x=x_1 \ldots x_{|x|}$, 
@@ -112,10 +109,9 @@ category tags of stem $s$.
 Intuitively, 
 $p,x,P,G$ and $C$ are concatenations of prefix, suffix, POS, Gloss and
 Category values, respectively.
-}
 
 %\setarab
-\begin{table}[tb!]
+\begin{table}[tb]
   \centering
   \resizebox{0.85\columnwidth}{!}{
     \begin{tabular}{|r|c|c|c|c|c|}

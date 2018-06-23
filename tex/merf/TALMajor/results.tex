@@ -1,4 +1,3 @@
-\major{
 In this section we evaluate \framework with four case studies. 
 We perform a survey like evaluation where developers manually 
 built task specific information extraction tools for the case studies 
@@ -44,7 +43,6 @@ In the online appendix%
 Manual annotators inspected the outcome and provided corrections where tools 
 made mistakes.
 The corrections form the manual gold annotation that we compared against.
-}
 
 \begin{table}[tb]
   \centering
@@ -82,7 +80,6 @@ extraction runtime, recall and precision
 of the output MRE tags, 
 the size of the task in lines of code or in number of \framework rules, 
 for both the standalone task specific and the \framework implementations.
-\major{
 The development time measures the time required for 
 developing the case study.
 For instance, ANGE~\cite{ZaMaFlairs2012HadithBio} required two 
@@ -92,9 +89,7 @@ Recall refers to the fraction of the entities correctly detected against the
 total number of entities. 
 Precision refers to the fraction of correctly
 detected entities against the total number of extracted entities. 
-}
 
-\major{
 Table~\ref{tab:results} provides runtime results of \framework 
 compared to the task specific implementations while running 
 MBF and MRE simulations jointly.
@@ -113,7 +108,6 @@ time bound of less than 30 minutes.
 implementations and reported acceptable and 
 slightly less precision metrics with around
 the same recall.
-}
 
 %Table~\ref{tab:mbfer} reports the accuracy of the output MBF tags and the user-defined relation 
 %construction in \framework for each task.
@@ -367,12 +361,10 @@ The \cci{num} MRE
 \framework assigns the symbols $s_1$, $s_2$, and $s_3$ 
 for the sub-expressions \cci{DT}, \cci{TMB}, and \cci{H}, respectively. 
 %The actions associated with the sub-expressions \cci{DT}, \cci{TMB}, and \cci{H} are presented in the appendix.
-\major{
 Figure~\ref{fig:numnormalgo} shows the actions associated with the \cci{DT}, \cci{TMB}, and \cci{H} subexpressions that cumulatively compute the numeric value of the numeric expression match.
 The actions use \framework API to access features of the matches such 
 as text (\cci{\$s1.text}) and numeric 
 value (\cci{\$s1.number}) of literal numbers such as numbers from one to ten.
-}
 %
 Table~\ref{tab:mbfer} shows high accuracy in MBF tagging and relation extraction 
 with 99\% and 97\% recall and 99\% and 95\% precision, respectively. 
