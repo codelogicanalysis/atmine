@@ -1,0 +1,103 @@
+\documentclass[11pt]{article}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[letterpaper,margin=1.5in,left=35mm,right=20mm, top=20mm, bottom=20mm ]{geometry}
+\usepackage{url}
+%\usepackage{todonotes}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{arabtex}
+\usepackage{hyperref}
+\hypersetup{          
+  colorlinks=false, 
+  pdfborder={0 0 0},
+}                     
+% used for cross reference from nlesarf.tex
+\usepackage{xr} 
+\externaldocument{out/nlesarf}
+
+\usepackage{csquotes}
+
+
+% You ou can also add a prefix: 
+%\externaldocument[I-]{chapterI}
+% then you can reference it as \ref{I-a}
+
+\newcommand{\cci}[1]{\mbox{\textup{\small \texttt{#1}}}}
+\newcommand{\frl}[1]{\fbox{\RL{#1}}} 
+\newcommand{\noArRL}[1]{\arabfalse\RL{#1}\arabtrue} 
+\newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue}
+
+\newcommand{\chci}[1]{`\cci{#1}'}
+
+\newcommand{\noTrnoVocRL}[1]{\transfalse\novocalize\noTrRL{#1}\vocalize\transtrue}  
+\newcommand{\noVocRL}[1]{\transtrue\novocalize\RL{#1}\vocalize}  
+\newcommand{\utfRL}[1]{\setcode{utf8} \RL{#1} \setcode{standard}}
+\newcommand{\noTrutfRL}[1]{\setcode{utf8} \transfalse\RL{#1}\transtrue \setcode{standard}}
+\newcommand{\noArutfRL}[1]{\setcode{utf8} \arabfalse \RL{#1} \arabtrue \setcode{standard}} 
+
+\definecolor{shadecolor}{named}{gray}
+\definecolor{DarkGray}{gray}{0.30}
+
+\usepackage{utf8}
+\setarab
+%\fullvocalize
+\transtrue
+\arabtrue
+
+\RequirePackage{xspace}
+\linespread{1.5}
+
+%\newcommand{\itodo}[1]{\todo[inline,color=green]{#1}}
+
+
+
+\title{Sarf: Fast and Application Customizable Arabic Morphological Analyzer
+ \\
+~~ \\
+  Revision summary }
+\date{}
+
+\begin{document}
+\maketitle
+
+{\noindent Dear Editor-in-Chief and Expert Reviewers,}
+
+We would like to thank you for your recommendations, valuable comments, 
+and constructive observations. 
+In this revised version of the paper we made every effort to address the 
+concerns brought up in your review. 
+This document includes a summary of our changes and lists each of the 
+reviewers’ comments followed by a description of how it was addressed. 
+
+For the convenience of the reviewers, we also provide online 
+(\url{http://research-fadi.aub.edu.lb/nlesarf/nlesarf-rev1-annotated.pdf})  
+a version of the revised paper with annotations that point to changes and 
+revisions and relate them to the concerns of the reviewers. 
+
+Thank you,
+\newline
+\hrule
+
+
+\input{editorComments.tex}
+~\newline
+\hrule
+
+\input{Reviewer1.comments}
+~\newline
+\hrule
+
+\input{Reviewer2.comments}
+~\newline
+\hrule
+
+\input{Reviewer3.comments}
+~\newline
+\hrule
+
+%\newsavebox\mytempbib
+%\savebox\mytempbib{\parbox{\textwidth}{
+%\input{psqBMCaig.bbl}
+%}}
+
+\end{document}

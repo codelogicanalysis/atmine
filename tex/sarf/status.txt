@@ -1,0 +1,13 @@
+For places:
+Done: compute 1) correct, 2) detected and required for 1) names, 2) with possessive (POS) and 3) in the vicinity of a name across alkafi, alistibsar and musnad ahmad *Ameen*
+
+1) put the results in table format
+2) create tag files with the three categories: 1) correct, 2) detected and 3)required_not_detected. categories 1 and 2 should be easily regenerated automatically. 
+
+Editing the paper in general *Fadi*
+
+Refinement results *Fadi*
+
+Check the todo list in the paper *Ameen, Fadi*
+
+

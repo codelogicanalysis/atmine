@@ -1,0 +1,253 @@
+\section*{Reviewer 3 comments} 
+
+\subsection*{Comments to the Author}
+In general, I like the approach the authors take, and they make a good case that it is a better way to maintain the
+SAMA information. The API looks useful as well.
+
+\subsection*{Most serious points:}
+\begin{enumerate}[leftmargin=0mm,label=\bfseries CommentR3.\arabic*]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.1}
+A. The authors need to make it clear that they are using the morphological categories and ``compatibility" tables from SAMA, which as far as I can tell they are doing. (\#3 below)
+
+\textbf{Response}\\
+We already mentioned in the paper that Sarf refines the lexicons of SAMA and BAMA and encodes the compatibility rules into agglutinative
+and fusional rules. 
+We made several modifications to stress this point including.
+\begin{itemize}
+  \item In the abstract and conclusion, we stressed that Sarf extends and refines the lexicons of SAMA and BAMA. 
+\item At the end of the Section~\ref{sec:motivation}, we clarified that Sarf starts from the lexicons of SAMA and BAMA and 
+  detailed the changes from BAMA and Sarf in terms of lexical content. 
+\end{itemize}
+$\blacksquare$
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.2}
+B. For comparison with SAMA, there needs to be discussion of the preprocessing SAMA for non-standard characters (\#5 below)
+
+\textbf{Response}\\
+We respond to this comment in \ref{Review.3.11} below. 
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.3}
+C. The empirical justification for using the partial diacritics is not adequate (\#6 below).
+
+\textbf{Response}\\
+We respond to this comment in \#6 (\ref{Review.3.13}) below. 
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.4}
+D. Evaluation should not be done with ATB3v3.1.  It's not even a public release, and was an intermediate step. 
+It should be done with ATB3 v3.2.  (\#9 below)
+
+\textbf{Response}\\
+This was a typo. We use ATB3v3.2 for evaluation. 
+$\blacksquare$
+
+\subsection*{Points:}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.5}
+1. There seems to be an ongoing confusing with regard to ``segmentation'' or ``tokenization" of SAMA-type solutions.
+This is first seen on page 5, with  ``The analysis of the example  li/PREP+Al/DET+qaDA'/NOUN is segmented into two tokens li/PREP and Al/DET+qaDA'/NOUN."
+
+This is not relevant for the paper.  That segmentation is done for  purposes of treebanking, so that ``li" can be a separate leaf on  the syntactic tree.  It is using the output of SAMA of course, but this segmentation is not an issue for SAMA.  SAMA produces li/PREP+Al/DET+qaDA'/NOUN.  The issue of the alignment and correspondence between the original word and its morphemes is already there regardless of the later usage of the SAMA output.  It takes a particular form in the ATB because of this separation for treebanking, but it is an independent problem.
+
+\textbf{Response}\\
+We thank the reviewer for the comment. We clarified that the problem is not a SAMA problem and that it is pertinent to the 
+applications that use the SAMA output later. 
+That said, the fusional rules help solve this problem and hence we claim it as an advantage for Sarf.
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.6}
+Section 6 has several references to TOKAN.  
+TOKAN is concerned with, also, splitting up the parts of a SAMA solution (e.g. li,Al,qaDA' above) into different ``segments'', as above, such as ``li" and ``Al+qaDA'", with options for doing it different ways, e.g. to split off the future particle or not, etc.., depending on the application. It's a separate issue from the output of SAMA (or of Sarf, as far as I can tell), so a comment such as ``In Sarf, there is no need for a separate segmentor such as TOKAN..." don't make sense, or is at best very unclear.
+
+\textbf{Response}\\
+We modified the sentence to read as follows. 
+
+\blockquote{
+Sarf keeps a stack of the positions that partition text into morphemes
+as part of the solution construction process. 
+Therefore, the text segments corresponding to the solution features is preserved
+with no need for further post-processing. }
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.7}
+Section 7.1 has a confusing reference to ``the same experiment using TOKAN toolkit. What does this mean?  What were the option settings for TOKAN?  What relevance does that have for the problem of matching sequences in the input string to the parts of the morphological solution?
+
+\textbf{Response}\\
+We used the ATB scheme alias with TOKAN. We see the point of the reviewer that the relevance is hard to argue for. 
+We removed the paragraph.
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item \label{Review.3.8}
+2. p. 7, section 2.2. The point about the priority rules is unclear. In either case, with POS as the priority or the gloss, you end up with six solutions in Fig.3, don't you?  It's unclear what the utility is of this.  This seems to be the same mechanism whereby later it's explained that the API can be modified to augment or filter solutions as desired?  Is so, could a reference be made to that section later, or the later section refer back to this one, to make that explicit?
+
+\textbf{Response}\\
+We further explained the benefit of priority features and referred to the API for priority rules in Section \ref{ss:solconstr}. 
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item \label{Review.3.9}
+3. It's referred to several times that the ``prefix-prefix", etc. compatibility rules are used. (eg. page 7).  
+Are these taken directly from SAMA, which implies that the morphological categories taken from SAMA are also used?  
+It should be stated clearly that you are taking these categories from SAMA, which after all already involves a 
+certain amount of analysis.
+
+\textbf{Response}\\
+We addressed this issue in the response to \ref{Review.3.1}.
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.10}
+4. p. 11, last paragraph before section 4.1. ``Row 4 illustrates the use of the wild character..."  There should be a concrete example of the application of this expression with *.  It's too confusing otherwise.
+
+\textbf{Response}\\
+We added an example just before Section~\ref{ss:affix-affix}.
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\item \label{Review.3.11}
+5. p. 15, (a) - ``This is resolved in SAMA for standalone Alef prefixes via preprocessing tokens...".   More needs to be said about this. As I am sure the authors are aware, the Sama Perl engine does some preprocessing of various character, allowing for certain common  alternative spellings (the function get\_variants in SAMA.pm). Since this is done by preprocessing, they are not included in  the SAMA tables.  How does Sarf handle these cases?  To what extent do they matter?
+
+\textbf{Response}\\
+We address this concern by the separation of prefixes into partial and atomic variants, and by 
+introducing agglutinative and fusional rules. 
+The rules construct compound prefixes from partial and atomic prefixes. 
+This, therefore, enables the introduction of all prefixes that include Alef, with any of its three alternative spellings, 
+by only adding the Alef alternatives into the atomic prefix set. In contrast, SAMA lists all prefixes with all 
+possible spelling alternatives (e.g. \RL{sA}, \utfRL{سأ}, \utfRL{سآ}), or does a preprocessing to map all alternatives into one.
+
+We illustrate this point in the paper in Section ~\ref{s:s:inc} when describing the SAMA inconsistencies. 
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.12}
+5. pp. 13,14 - lots of inconsistencies are listed, but they almost all have to do with the glosses.  Some summary statement should be made of this. This seems to be confirmed by the later Table 9, and perhaps a forward reference should be made.  A reasonable assumption is that  for the Arabic Treebank, ensuring gloss consistency was a lower priority than other aspects of the analysis, and I was surprised that there were so few non-gloss inconsistencies found.  It's obviously better to have the glosses consistent as well, of course.
+
+\textbf{Response}\\
+Sure. We indicated this in Section ~\ref{s:s:inc} (Inconsistencies) and added a forward reference to the table.
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.13}
+6. p. 15, section 5.  The authors write ``We inspected the ATB v3.2 corpus for diacritics and we found that 1.364\% of the words were partially diacriticized and those diacritics eventually reduced morphological ambiguity."
+
+This is not adequate.  What we need to know is not just that morphological ambiguity was reduced using the diacritics (wouldn't that almost have to be the case?) but also that the diacritics *were consistent with the annotation assigned to the word in the ATB morphological annotation*.  That is, the diacritic could simply be wrong, and so reduce the morphological ambiguity, but also eliminate the use of the diacritic that should have been used - the point (2) that they could be unreliable.  The authors don't answer that.
+
+\textbf{Response}\\
+We agree with the reviewer. 
+We are not making the argument for the use of diacritics all the time for disambiguation. 
+We think this should be optional for the following reasons. 
+
+In theory, partial diacritics help reduce ambiguity. 
+Unfortunately, sometimes writers miss-place the diacritics for several reasons. 
+\begin{itemize}
+  \item They make mistakes (mostly syntax),
+  \item They use a pronunciation of the MSA word that is common in their local Arabic dialect,
+  \item They place the diacritic in an incorrect textual position, however, font effects such as kasheeda and 
+    ligatures compensate for that and the diacritic shows visually correct, and
+  \item They use diacritics as ornaments to decorate their text!
+\end{itemize}
+As for the ATB, the most common diacritics are tanween and shadda. These significantly and effectively reduce ambiguity. 
+They are followed by dhamma associated with verbs to mark the passive tense. Which is also effective to reduce ambiguity.
+We refer to ``Diacritization: A Challenge to Arabic Treebank Annotation and Parsing '' Maamouri-2006 since we found out they
+report the same results.
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.14}
+7. p. 15, section 5 - ``The Diacritic-aware consistency check algorithm takes as input two words w\_1 and w\_2...". I didn't understand this. What are the words being input?  Is this filtering the possible solutions for a word ignoring the diacritics with the diacritics that are actually present?  This needs to be made clearer.
+
+\textbf{Response}\\
+The algorithm takes two chunks (not necessarily full words). 
+It is called several times in the traversal when a morpheme is found. 
+It eliminates solutions that do not match the partial diacritics during the traversal and does not filter them later.
+We added a paragraph at the end of Section~\ref{sec:diac} to clarify the issue. 
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.15}
+8. p. 18 - comparison with Beesley\&Kartunnen.  One of the questions I had reading section 2 is how this is different than finite-state machines. This sort of discusses it, but it doesn't seem to me like a fair comparison.   The authors claim that the Xerox approach ``requires deep knowledge..." etc. while Sarf ``constructs a framework of efficient
+structures that encode the stems...".   
+But Sarf relies on categories and compatibility tables taken from SAMA! (as best as I can tell).
+
+\textbf{Response}\\
+Sarf encodes the extended tables and rules from SAMA into structures that can be traversed linear in the length of the input string.
+Those are comparable to finite state machines since the nodes are states and the edges represent transitions. 
+The main difference is that Sarf structures are manually optimized to minimize (1) number of states (storage) and (2) non-deterministic transitions that are limited to transitions between ${\cal P}$, ${\cal S}$, ${\cal X}$.
+No control on non-determinism is possible with Xerox and the result is left to the compilers. 
+We further clarified this point. 
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.16}
+9. Some questions arise about the evaluation in section 7.1.
+
+a. The evaluation should not be done with v3.1 of ATB3.  It's not even a public release. ATB3v3.2 should be used, which is referenced elsewhere in the paper.
+
+b. Does the 99.991\% segmentation agreement with the ``oracle ATB segmentation" not include the words for which SAMA did not have a correct morphological solution?  Does ``correct morphological solution" include the gloss, which
+seems irrelevant for this (and is not part of such statistics in the  ATB documentation.)?
+
+c. first sentence, p. 21 - ``..generating a vocalized tag in the ATB 'after' dataset, which carries more information in 15.47\% of the time than the counterpart POS derived vocalized entry. The vocalized entry in the 'after' dataset was dropped because of maintenance and segmentation issues."
+
+I am very familiar with this data, and I do not understand what the authors are referring to.  An example is badly needed.
+
+\textbf{Response}\\
+We used ATB3.2. 3.1 was a typo.  The 99.991\% is over the words that have a SAMA correct solution and it does not include the gloss. We clarify that in the text.
+
+We thank the reviewer for bringing up the issue with the vocalized tag in the after dataset. 
+We could not directly recall where this claim came from. 
+We must have meant the UNSPLITVOC entry that relates directly to the word and not the vocalization that is built
+from concatenating the vocalized segment (VOCALIZED tag in the 'after' data set).
+
+After inspection, we think it is a misunderstanding (maybe due to several rewrites of that paragraph) 
+on our part to the following quote from the ATBv3\_2 documentation discussing the 
+challenges and difficulties associated with defining and computing the INPUT\_STRING and UNVOCALIZED tags. 
+
+\blockquote{
+... We plan
+for future releases to continue utilizing the present improved creation of the
+INPUT STRING tree tokens, as is done in this release.  However, this is not 
+part of the annotation process itself, as explained above, and it is possible 
+that future releases either will not include extensive checking on the
+creation of these INPUT STRING tree tokens, or will {\bf leave out completely
+such tokens}.
+}
+
+We removed the claim ``The vocalized entry in the 'after' dataset was dropped because of maintenance and segmentation issues" 
+from the paper.
+$\blacksquare$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.17}
+11. p. 22, Augmentation - this is a good point, but at the same time, SAMA did not want to generate all possible solutions because it might overwhelm the annotator.  This is less of an issue if a tagger such as MADA, ranking the SAMA output, is used.
+
+\textbf{Response}\\
+We agree.
+$\blacksquare$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.18}
+References:
+1. The reference for SAMA is not the best one.  It's okay to refer to (Kulick, Bies \& Maamouri 2010a), but the actual release should also be cited, with the citation information listed here: https://catalog.ldc.upenn.edu/LDC2010L01
+
+\textbf{Response}\\
+We used the indicated reference. 
+$\blacksquare$
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\item \label{Review.3.19}
+Typos/confusing language
+p. 2, bottom ``cosistency"
+p. 6, top - ``and the use diacritic option and constructs..."
+This is confusing. Either put quotes around the ``use diacritic option" or make it something like ``And the option to use existing diacritics, and  constructs..."
+p. 14, (k) - ``...if each belongs to an one In SAMA..."
+
+\textbf{Response}\\
+Fixed. 
+$\blacksquare$
+
+\end{enumerate}

@@ -1,0 +1,337 @@
+\begin{figure}
+\centering
+\resizebox{.8\textwidth}{!} {
+ \input{out/sarf_flow_diagram.pdftex_t} 
+}
+ \caption{Sarf flow diagrams: construction and traversal of morpheme structures, and generation of solutions.}
+ \label{fig:flowdiagram}
+\end{figure}
+\todo{R2.10 fig1}
+The flow diagram in Figure~\ref{fig:flowdiagram} illustrates the components of Sarf. 
+%{\tt Construct Sarf structures} takes the morpheme {\tt lexicons} 
+%including the prefix, stem, and suffix constituents. 
+The stem lexicon of Sarf $L_s$ extends the lexicon of 
+Buckwalter~\citep{Buckwalter:02} with 
+proper and location names extracted from different online 
+sources as well as biblical sources.
+\footnote{\href{http://alasmaa.net/}{http://alasmaa.net/ }, 
+\href{http://ar.wikipedia.org/}{http://ar.wikipedia.org/},
+Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}
+The fusional and agglutinative affix rules 
+%($L_p, L_x, R_{pp}, R_{ps}, R_{sx}, R_{xx}, R_{px}$)
+encode affix-stem compatibility rules which are also taken from Buckwalter~\citep{Buckwalter:02} \todo{R.3.9}
+Additionally, they encode morpheme-morpheme concatenation rules to implement 
+agglutinative morphemes and they are associated with fusional rules expressed in 
+regular expressions where necessary.
+%The {\tt fusional/agglutinative rules} are used to check for the compatibility between 
+%the prefix, stem, and suffix morphemes and construct the compound affixes. 
+The use of diacritics to disambiguate morphological solutions is optional. 
+%The {\tt diacritic on} option enables the user to disambiguate and filter the morphological 
+%solutions based on possible input diacritics. 
+
+The {\em construct Sarf structures} process takes as input 
+the lexicons, the fusional and agglutinative rules, and 
+the ``use diacritic'' \todo{R3.19} option 
+and constructs directed acyclic graph (DAG) structures that encode the 
+affixes, and a root index trie structure that encodes the stems~\citep*{Aoe:89}. 
+%Those structures are compact and deterministic representations and allow linear
+%time traversal in each of them. 
+
+%Figure~\ref{fig:flowdiagram}(right) presents the traversal of the constructed
+%structures for application specific analysis. 
+%The Sarf structures serve as input to 
+The {\em traverse structures} process
+reads the user-provided Arabic text in question one character at a time and traverses 
+the Sarf structures accordingly. 
+The traversal produces a sequence of morphemes each with its morpheme features,
+applies the fusional and agglutinative rules on each morpheme, 
+checks for concatenation compatibility,
+and constructs morphological solution feature trees. 
+The construction of the solution trees calls the \cci{OnMatch API} 
+at every morpheme match (control point) and takes into account 
+the feature priority and selection rules 
+defined by the NLP application developer. 
+A \cci{feature priority rule} is an order on features that is 
+followed when constructing the morphological solution tree. 
+Features with higher priority appear at higher levels in the solution tree. 
+\cci{A feature selection rule} defines the morphological features to be included
+in the morphological solution tree; other features are ignored in the 
+construction of the solution. 
+The traversal reports the constructed solution trees to a \cci{filter} specified by 
+the developer that either accepts or rejects the reported solutions. 
+
+%\vspace{-1.5em}
+\subsection{Sarf structures}
+
+
+Sarf represents affix lexicons and rules using directed acyclic graphs as shown in Figure~\ref{f:example}. 
+This provides compactness as well as linear time traversal with respect to the input text.
+%
+\todo{R1.4}
+Algorithm \cci{ConstructSarfDAGs} in Figure~\ref{f:dag-alg} describes how the 
+structures are constructed from the lexicons and the rules. 
+First, the algorithm creates efficient double array trie structures~\citep{Aoe:89} to
+represent the lexicons and benefit from the common sub-strings. 
+A morpheme is represented as an accept-node in the trie structure. 
+Then for each relation tuple in $R_{pp}, R_{ps}, R_{sx},$ and $R_{xx}$ Sarf adds 
+corresponding edges between the corresponding morphemes. 
+Note that this transforms the affix trie structures into DAGs and keeps the 
+stem structure as a trie since no stem-stem relations exist. 
+
+The \cci{AddEdges} algorithm iterates over all relation tuples in $R$, and for each
+relation tuple $r=\langle c_1, c_2\rangle$ it creates edges for all morphemes 
+$\langle m_1,m_2\rangle$ with compatibility categories $c_1$ and $c_2$, respectively. 
+
+In contrast, the Buckwalter analyzer considers all possible sub-strings and looks 
+them up in affix hash tables, 
+and performs several hash lookups in the stem hash tables in the order of all 
+possible partitions of the input string. 
+Sarf saves a binary version of the affix and stem structures which allows a 
+fast loading time and 
+only regenerates them if one of the lexicons 
+and agglutinative and fusional rules are modified.
+
+\transfalse
+\begin{figure}
+\centering
+\resizebox{.8\textwidth}{!}{ 
+ \input{FSM.pdftex_t}
+}
+\caption{Example affix DAGs and stem trie. 
+The traversal of the shaded nodes corresponds to the final solution of \RL{wsyl`b-h-aa}.}
+%\vspace{-2cm}
+\label{f:example}
+\end{figure}
+\transtrue
+
+\todo{R2.10 fig2}
+The diagram in Figure~\ref{f:example}
+illustrates the Sarf data structures. 
+Subfigures (a), (b), and (c) in Figure~\ref{f:example}
+represent ${\cal P}$ the prefix DAG,
+${\cal S}$ the stem trie, and ${\cal X}$ the suffix
+DAG, respectively. 
+Boxes and circles denote morpheme versus non-morpheme nodes, 
+respectively. 
+The edges between nodes are labeled with input letters. 
+Morpheme nodes contain the morphological features of the matching morpheme.
+These features include the VMF, gloss, POS, and compatibility 
+information for morpheme concatenation.
+
+When we reach a morpheme node in ${\cal P}$, ${\cal S}$, 
+or ${\cal X}$, we proceed with the traversal in the next data structure. 
+We use the symbol $\epsilon$ to refer to this transition. 
+Invalid moves from a current node given an input letter denote 
+the absence of a valid solution through this traversal path.
+
+\begin{lrbox}{0}
+  \begin{tabular}{p{2.7in}p{0.02in}p{1.9in}}
+\begin{lstlisting}
+/*@\textbf{AddEdges}@*/($R$, $T_1$, $T_2$)
+ foreach $r=(c_1,c_2)\in R$,
+  foreach $m_1\in T_1$ such that category($m_1$)= $c_1$
+   foreach $m_2\in T_2$ such that category($m_2$)= $c_2$
+    createEdge($m_1$, $m_2$);
+   end
+  end
+ end
+\end{lstlisting}
+& & 
+\begin{lstlisting}
+/*@\textbf{ConstructSarfDAGs}@*/($L_p$, $L_s$, $L_x$,
+          $R_{pp}$,$R_{ps}$,$R_{sx}$,$R_{xx}$)
+$T_p$ = makeTrie($L_p$)
+$T_x$ = makeTrie($L_s$)
+$T_s$ = makeTrie($L_x$)
+AddEdges($R_{pp}$, $T_p$, $T_p$)
+AddEdges($R_{ps}$, $T_p$, $T_s$)
+AddEdges($R_{sx}$, $T_s$, $T_x$)
+AddEdges($R_{xx}$, $T_x$, $T_x$)
+\end{lstlisting}
+\end{tabular}
+\end{lrbox}
+
+\begin{figure}[tb]
+\resizebox{.9\textwidth}{!}{\usebox0}
+\caption{Algorithm to construct Sarf structures.}
+\label{f:dag-alg}
+\end{figure}
+
+%\begin{figure}[h]
+%\begin{lstlisting}
+%/*@\textbf{ConstructSarfDAGs}@*/($R_{ps}$, $T_p$, $T_s$ )
+%  foreach $r=(pc_i, sc_j)\in R_{ps}$, //pc: prefix category, sc: stem category
+%    foreach $p\in T_p$ such that category(p)= $pc_i$
+%      foreach $s\in T_s$ such that category(s)= $sc_j$
+%        createEdge(p, s);
+%      end
+%    end
+%  end
+%\end{lstlisting}
+%\caption{Algorithm to construct edges between prefix and stem lexical nodes.}
+%\label{f:dag-alg}
+%\end{figure}
+%
+%\vspace{-1.5cm}
+
+\transtrue
+
+
+\subsection{Running example: Sarf traversal}
+
+%In what follows, we present a running example of Sarf. 
+%The running example explains how Sarf works,
+In this section, we illustrate how Sarf constructs morphological solutions from affix DAGs and stem trie using an example string \RL{wsyl`b-h-aa al-lA`bwn}
+\footnote{ 
+\noTrRL{n}%
+\noTrRL{w}
+\noTrRL{b}
+\noTrRL{`}
+\noTrRL{a} 
+\noTrRL{l}
+\noTrRL{l}
+\noTrRL{a} %
+\noTrRL{a}
+\noTrRL{h}
+\noTrRL{b}
+\noTrRL{`}
+\noTrRL{l}
+\noTrRL{y}
+\noTrRL{s}
+\noTrRL{w}
+in separate form to ease following the example
+}
+ (and they will play it) \todo{R2.12}. The solution construction process also reveals how Sarf implements agglutinative and fusional affixes and how it handles `run-on' words.
+Figure \ref{f:example} highlights the node sequences of morphemes in \RL{wsyl`b-h-aa al-lA`bwn} in the affix DAGs and stem trie. A square node (box) signifies reaching a complete morpheme and is referred to as a morpheme node, and an $\epsilon$-edge is a transition move from one tree structure to another or a starting move to ${\cal P}$. It connects any morpheme node in the source tree to the root node in the destination tree.\\
+
+In our example, Sarf parses the string \RL{wsyl`b-h-aa al-lA`bwn}
+%\RL{al-lA`bwn}\RL{wsyl`b-h-aa}.
+and traverses the tree structures using a traversal path $\Phi$. 
+$\Phi$ first uses the starting $\epsilon$-edge and moves to the root square node in ${\cal P}$. 
+A square node implies that an $\epsilon$-edge from ${\cal P}$ to ${\cal S}$ is a valid transition, i.e. the morpheme sequence can start as a stem without a prefix \todo{R1.7}. All edges in ${\cal P}$ starting from the root node with the current parsed character 
+\RL{w} are also valid edges. 
+Therefore, there are two valid moves, \RL{w} and $\epsilon$.  
+$\Phi$ hence spawns an exact copy of itself $\Psi$. 
+$\Phi$ proceeds with \RL{w} in ${\cal P}$, and $\Psi$ moves to ${\cal S}$ through $\epsilon$. 
+Each of $\Phi$ and $\Psi$ represents a valid analysis path so far. 
+A traversal path ($\Phi$ or $\Psi$) dies when it reaches a node of no valid moves.
+In our example, if there were no stems that start 
+with the letter \RL{w}, $\Psi$ dies. 
+With the complete stem trie, $\Psi$ actually dies when the input 
+is at \RL{wsyl`} as no stem word in the Arabic language is of such morpheme sequence. 
+%
+The Sarf DAGs allow agglutinative and fusional affixes. 
+In our example, after the \RL{w} move, $\Phi$ reaches a square morpheme node. A copy of $\Phi$ gets created and proceeds with $\epsilon$, and $\Phi$ proceeds with \RL{s}, in ${\cal P}$, being the next parsed character.
+The move of $\Phi$ leads to a round node signifying that $\epsilon$ move is invalid. $\Phi$ proceeds with \RL{y} and reaches a square node corresponding to compound prefix \RL{wsy}.
+
+
+Now $\Phi$ transitions along $\epsilon$, being the only valid move, into the root node of ${\cal S}$. Similar to its traversal in ${\cal P}$, $\Phi$ traverses moves corresponding to  \RL{l`} in ${\cal S}$. 
+%
+Before proceeding with \RL{b} and reaching a morpheme node, $\Phi$ checks if stem \RL{l`b} is compatible with the prefix \RL{wsy}. 
+If the category of \RL{l`b} is compatible with the category of
+\RL{wsy} then $\Phi$ moves to a morpheme node. 
+\todo{R1.6}Otherwise, it moves to a non-morpheme node or dies. 
+Sarf enables this by keeping compatibility category values as part of the morpheme nodes.%square morpheme 
+Thus a morpheme node represents the whole morpheme sequence path leading to it within its tree.  
+\\
+Since $\Phi$ is now in a morpheme node in ${\cal S}$, it continues 
+to traverse ${\cal S}$ and spawns a copy $\Xi$ that moves to root node of ${\cal X}$. 
+$\Phi$ dies when \RL{h--} is parsed since no
+\noTrRL{h--}-edge from the current node exists in ${\cal S}$.
+On the other hand $\Xi$ moves along \RL{h--} in ${\cal X}$ and reaches a valid analysis morpheme node.
+%which represents 
+%a valid analysis.
+\\\\\\
+A Sarf traversal considers a full word at any morpheme node in ${\cal X}$ 
+and continues the traversal using an $\epsilon$ transition
+to the root node of ${\cal P}$.
+This solves the `run-on' words problem.
+%We left this transition out of Figure~\ref{f:example} for clarity. 
+Consider there was no space between words 
+\noTrRL{al-lA`bwn}
+and 
+\noTrRL{wsyl`b-h-aa}.
+The traversal will transition to the root of ${\cal P}$ when the word 
+\noTrRL{wsyl`b-h-aa} is fully consumed, and then the traversal of 
+\noTrRL{al-lA`bwn} will resume. 
+As for the other transitions from ${\cal X}$ morpheme nodes to the root of ${\cal P}$
+before the completion of 
+\noTrRL{wsyl`b-h-aa}, they will result in dead traversals and 
+they will not be reported. 
+%
+Sarf reaches a solution and reports a valid traversal, including the morphological solutions of 
+the `run-on' words, when it reaches text delimiters, 
+such as white space and punctuation, with valid segmentation of the input string. \\
+\todo{R1.7}In case of string with only stem sequences, empty transitions $\epsilon$ between ${\cal S}$ and ${\cal X}$, ${\cal X}$ and ${\cal P}$, 
+and ${\cal P}$ and ${\cal X}$ to accept nodes allow parsing the string.
+%The application developer can interfere in the analysis 
+%at the control points to make decisions like ignoring 
+%a possible solution path that is not interesting. 
+%The developer may also decide to correct one traversal
+%based on the decision of the others. 
+%The developer uses the output of the traversals as input
+%to make decision.
+
+\subsection{Morphological solution construction}
+\label{ss:solconstr}
+
+%Given an input string, the traversal results in sequences of 
+%morpheme nodes. 
+%Let $M=\langle m_1,\dots , m_n\rangle$ represent a sequence of solution morphemes. 
+
+\itodo{R2.4.}This section describes how Sarf  constructs the morphological solutions of an input string. We use \RL{w-'klh} as an example input for illustration throughout the section.
+As a first step, Sarf processes the string input by the traversal algorithm which results in two sequences of morpheme nodes where each sequence 
+refers to a valid segmentation. The first sequence is $\langle$\RL{w},\RL{'},\RL{kl},\RL{h}$\rangle$ and 
+the second sequence is $\langle$\RL{w},\RL{'kl},\RL{h}$\rangle$. 
+Figures~\ref{f:strees} (a) to (d) show the first sequence and figures~\ref{f:strees} (a),(e),(d) show the second sequence. Below, we describe how the morphological solution tree of every sequence is generated.
+
+\itodo{R2.11}
+For every sequence, Sarf calls the developer-defined API at each morpheme node
+and constructs its solution  tree according to the selected features and priority rules. 
+Each path from the root of a morpheme solution tree to one of its leaves forms a
+morpheme solution path. 
+Figures~\ref{f:strees}(a) to (e) show the constructed solution feature trees 
+of the morphemes \RL{w}, \RL{'}, \RL{kl}, \RL{h}, and \RL{'kl}, respectively. 
+The figures show that the API selects the gloss, POS, and VMF 
+features with decreasing priority. Hence, the gloss is at first level of the tree, then POS follows, and finally VMF is at leaf level. 
+Figure~\ref{f:strees}(f) illustrates an alternative solution feature tree of 
+the morpheme \RL{'kl} with POS at highest priority followed by \todo{R2.13}VMF and gloss. 
+The comparison between the solution trees (e) and (f) shows 
+how the priority rules can lead to the construction of smaller 
+trees depending on the application at hand. 
+For example, the solution feature tree (f) is more efficient 
+if the developer is interested in the POS first. In such case, if \cci{Noun} POS is required, only the right hand side branch of \RL{'kl} solution tree (f) is considered. This would be much simpler than the case of (e) where every single branch has to be checked to determine whether to include it or not in the solution. More details on the API are provided in Section \ref{s:api}. \todo{3.8}\\
+Finally, Sarf composes the set of valid morphological solutions for the input string from solution paths
+that match the prefix-prefix, prefix-stem, stem-suffix, 
+suffix-suffix, and prefix-suffix compatibility rules.
+%
+%Let $T=\langle t_1,\dots , t_n\rangle$ be the sequence of solution feature 
+%trees referring to a solution morphemes. 
+%Let ${\cal T}(t_i)=\{\cci{root to leaf paths of tree }t_i\}~1\leq i\leq n~$. 
+%The set of full morphological solutions is 
+%${\cal Q}\subseteq{\cal T}(t_1)\times {\cal T}(t_2)\times \dots\times {\cal T}(t_n)$. 
+%The valid full morphological solutions are 
+%subject to the prefix-prefix, prefix-stem, stem-suffix, 
+%suffix-suffix, and prefix-suffix compatibility rules 
+%of the morpheme solutions.
+For example, the first paths (paths to the leftmost leaves) of each of the 
+solution trees in Figures~\ref{f:strees}(a), (b), (c), and (d) are compatible.
+The resulting morphological solution has the 
+prefix \RL{w} with POS tag \cci{CONJ+}, 
+gloss tag \cci{and}, and VMF tag \RL{wa}, 
+the prefix \RL{'} with POS tag \cci{IVIS+}, 
+gloss tag \cci{I}, and VMF tag \RL{'a},
+the stem \noTrutfRL{kl} with POS tag \cci{VERB\_IMPERFECT},
+gloss tag  \cci{trust/put in charge}, and VMF tag \RL{kil}, 
+and the suffix \noTrutfRL{h} with POS tag \cci{PVSUFF:DO:3MS}, 
+gloss tag \cci{him/it}, and VMF \RL{ho}.
+
+\transfalse
+\begin{figure}[tb]
+\centering
+\resizebox{.9\textwidth}{!}{ 
+ \input{sftrees.pdftex_t}
+}
+\caption{\label{f:strees}Sample solution feature trees.}
+%\vspace{-.5cm}
+\end{figure}

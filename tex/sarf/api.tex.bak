@@ -1,0 +1,79 @@
+\label{s:api}
+Sarf provides the developer with an application programming interface (API) 
+  that allows to 
+  (1) define developer categories and associate them with specific morphemes, 
+  (2) provide rules that prioritize and filter the solution features, and 
+  (3) control and refine the morphological analysis on the fly at solution {\em control points}.
+%
+The control points are (1) agglutinative prefix matches, (2) stem matches, 
+(3) agglutinative suffix matches, and 
+(4) full solution matches. 
+
+\todo{R1.3}
+To use the API, an NLP application developer is required to inherit from 
+one or more of the prefix, suffix, stem and general 
+stemmer C++ classes and implemt the \textit{OnMatch} interface. 
+The developer configures the feature priority and selection rules 
+by using the \textit{setSolutionSetting} method to push the desired features 
+into a feature configuration vector. 
+The computation returns the features present in vector in the solutions ordered 
+by the same order in the vector. 
+If the vector is empty, all features are considered. 
+
+The developer implements the \textit{OnMatch} interface that Sarf calls at the 
+control points. 
+The developer processes the solution features provided at the control point and returns 
+a value that instructs Sarf to 
+(1) proceed with the analysis ignoring the current solution, 
+(2) accept the solution and continue considering other solutions, 
+and (3) accept the solution and stop the analysis.
+%
+The developer can inspect at each control point 
+the agglutinative morphemes and their compatibility category tags, 
+the VMF, gloss, POS, lemma, and the developer-defined category tags. 
+
+Consider the task that aims to detect words with possible VERB POS tags. 
+The API can be implemented to reject the analysis at the stem control point if the POS tag is not a VERB. 
+This prevents the analyzer from computing insignificant 
+full morphological solutions at early stages of the analysis.
+The developer can also use the feature selection filter API to 
+disregard features such as VMF, gloss, and categories. 
+This reduces the size of the solution trees and 
+their corresponding traversal time. 
+%
+For example, given the word \RL{'kl}, 
+with gloss tags such as `he/it eat' and `fruit',
+Sarf typically returns nine possible morphological solutions 
+with different VMF, POS tags, and gloss tags. 
+With the feature selection filter API, Sarf considers only two solutions with 
+two solutions with the {\tt VERB\_PERFECT} and {\tt NOUN} POS tags.
+
+\tododone{find a compatible example to explain the importance of this feature of Sarf}
+
+Sarf also provides the developer with the ability to alter 
+the structure of the morphological solutions so 
+that the traversal of the solutions is application specific. 
+The developer can provide a factorization order 
+of the solution features using the API priority rules. 
+Sarf uses the priority rules to build the structures. 
+This allows the developer to dismiss analysis earlier at the control points. 
+Consider the task with an aim is to detect adjectives 
+with positive sentiment. 
+Since the POS feature is more limited than the gloss feature, 
+it might give priority to the POS over the gloss. 
+Hence, it can filter invalid solutions early in 
+the analysis.
+
+Moreover, Sarf enables the application developer to define 
+categories and associate them with existing morphemes. 
+Consider the task of detecting words that indicate 
+family relations such as \RL{ibn} (son), \RL{'b} (father), 
+and \RL{'m} (mother). 
+The developer can define a category called `family connections' 
+and associate it with the stems \RL{ibn}, \RL{'b}, \RL{'m} 
+or with their relevant glosses. 
+The user defined categories are attached to the tags in the 
+morpheme nodes as auxiliary tags that can be looked up in constant time. 
+
+%During the analysis, Sarf calls the API at the control points and 
+%the API detect the morphemes that fall under the defined category.

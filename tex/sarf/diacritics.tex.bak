@@ -1,0 +1,97 @@
+Diacritics are short vowels that
+are often omitted in Arabic text and inferred by readers from context. 
+Their omission adds to the ambiguity problem of Arabic morphological analysis. 
+\fullvocalize
+The diacritics \RL{|Ba} ({\em fatha}),  \RL{|Bu} ({\em damma}), and 
+\transfalse\RL{|B}\transtrue represent
+and appears above the letter. 
+`a' vowel,  `o' vowel, and consonant, respectively,  and appear above the letter. 
+The diacritic \RL{|Bi} represents a `y' vowel and appears below the letter. 
+The diacritics 
+\RL{|BaN}, \RL{|BuN}, and \RL{|BiN} represent the `a', `o', and `y' vowels followed 
+by a phonetically stressed \transtrue \RL{n} consonant. 
+
+The shadda \RL{|BB} mark is not a 
+diacritic but is treated typographically as one, and is also often omitted in Arabic text. 
+It denotes  a repeated letter, first as consonant, and second 
+as vocalized.
+Arabic forbids two consonant diacriticized letters to follow each other. 
+%A shadda can be followed by all diacritics except \transfalse\RL{|B}\transtrue. 
+
+
+Analyzers such as BAMA and SAMA ignore input partial diacritics because 
+they consider them to be (1) rare in common corpora, and (2) 
+unreliable because of dialect diversity and human errors~\citep*{Elkateb:06,Attia:06b}. 
+\todo{R3.13}
+The diacritics can be missplaced for several reasons including: 
+(1) writers use a local Arabic dialect pronunciation of the word, 
+(2) font effects such as ligatures compensate for missplacing diacritics, 
+and
+(3) writers sometimes use diacritics to decorate their text. 
+%
+However, the work in \citep{Chaaben:10,Attia:00,Beesley:01} considers 
+partial diacritics to decrease morphological ambiguity.
+The work in~\cite{Maamouri:06} inspected the ATB v3.2 corpus~\citep*{Maamouri:04}
+for diacritics and found that 1.364\% of the words were partially diacriticized and 
+those diacritics eventually and {\em effectively} reduced morphological ambiguity.
+Most of the diacritics we found were tanween marks which indicate indefiniteness, 
+followed in frequency by shadda, and then by dhamma that often indicates 
+passive tense when associated with verbs. 
+Hence, we decided not to force the use of partial diacritics to disambiguate the 
+solutions and to provide it as an option.
+
+%Figure~\ref{t:consistent} presents the Diacritic-aware consistency check Algorithm.
+Key to partial diacritic analysis is a diacritic-aware consistency check that replaces
+standard string matching checks. 
+The \cci{ Diacritic-aware consistency check} algorithm takes as input 
+two text chunks $c_1$ and $c_2$. 
+\todo{R2.14}It checks if the sequence of letters in $c1$ is the same as that in $c2$. 
+It also checks the consistency of the sequence of diacritics in $c1$ and in $c2$. 
+%It first checks if the sequence of letters, without diacritics, in $c1$ is consistent with that in $c2$. 
+%Then, it checks if the sequence of diacritics of letters in  $c1$ is consistent with that of $c2$.
+%
+%It checks that the sequence of non-diacritic letters, ignoring the 
+%diacritics between them, are equal. 
+%It also checks that all sequences of diacritics occurring between 
+%non-diacritic letters are consistent. 
+
+Two sequences of diacritics are consistent iff:
+\begin{enumerate}
+  \item Both are equal, or
+  \item One of the sequences is empty, or
+%  \item don't contain different diacritics
+  \item If one has a shadda, then the other has no sukoun, or
+  \item If one has a shadda and the other has no shadda, then the rest of the diacritics are compared recursively. 
+\end{enumerate}
+
+If both checks were positive, then $c1$ and $c2$ are said to be equal with diacritic-aware consistency. \todo{R2.14}
+
+\input{diaceqtable}
+
+Table~\ref{t:correspondence} illustrates the 
+\cci{diacritic-aware consistency check} as compared to the standard
+string comparison with an example. 
+Part (a) shows two diacritic-consistent words 
+\vocalize
+\utfRL{أَكّل} and \RL{'kal} as a fatha \RL{|Ba} is compatible with an empty diacritic 
+and a shadda \RL{|BB} is compatible with a fatha \RL{|Ba}. 
+%In fact, a shadda is compatible with all diacritics except 
+%for the sukun.
+%and consequently its disambiguation value is mainly measured 
+%through its presence/absence and not through its compatibility. 
+Part (b) illustrates two inconsistent diacritizations 
+since \RL{|Bi} is incompatible with \RL{|Ba} next to the letter \noVocRL{k}.
+%Inconsistencies can be detected when different short vowels are encountered as in 
+%part~\hyperref[ex:valid_correspondence]{(b)} of Table~\ref{t:correspondence}
+%in which \fullvocalize
+
+\todo{R2.15, R3.14}
+Sarf takes an Arabic word as input with possible partial diacritics. 
+Then, it traverses ${\cal P}$, ${\cal S}$, and ${\cal X}$ structures 
+to compute the morphological solutions. 
+For each matching morpheme in the structures, 
+Sarf uses the \cci{Diacritic-aware consistency check} algorithm 
+to check for the consistency of the fully diacritized morpheme 
+with the corresponding partially diacritized chunk of the input word.
+The traversal path corresponding to the morpheme dies if the consistency 
+check is negative (inconsistent).

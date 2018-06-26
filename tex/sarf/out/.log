@@ -1,0 +1,90 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.8.3)  25 OCT 2015 18:09
+entering extended mode
+ %&-line parsing enabled.
+**.tex
+(/usr/share/texmf-texlive/tex/latex/tools/.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, loaded.
+File ignored)
+*
+(Please type a command or say `\end')
+*\end
+
+*end
+
+! LaTeX Error: \begin{document} ended by \end{e}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> e
+     nd
+? 
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+<*> e
+     nd
+? y
+Type <return> to proceed, S to scroll future error messages,
+R to run without stopping, Q to run quietly,
+I to insert something, 
+1 or ... or 9 to ignore the next 1 to 9 tokens of input,
+H for help, X to quit.
+? 1
+
+\end ...dgroup \if@endpe \@doendpe \fi \if@ignore 
+                                                  \@ignorefalse \ignorespace...
+<*> e
+     nd
+? 
+! Interruption.
+<to be read again> 
+                   \global 
+<*> e
+     nd
+? 
+! Extra \fi.
+\end ...if@ignore \@ignorefalse \ignorespaces \fi 
+                                                  
+<*> e
+     nd
+? ^^[
+Type <return> to proceed, S to scroll future error messages,
+R to run without stopping, Q to run quietly,
+I to insert something, 
+1 or ... or 9 to ignore the next 1 to 9 tokens of input,
+H for help, X to quit.
+? q
+OK, entering \batchmode...
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> en
+      d
+You're in trouble here.  Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+Missing character: There is no n in font nullfont!
+Missing character: There is no d in font nullfont!
+! Emergency stop.
+<*> end
+       
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 7 strings out of 495052
+ 238 string characters out of 1182342
+ 45131 words of memory out of 3000000
+ 3288 multiletter control sequences out of 15000+50000
+ 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 28 hyphenation exceptions out of 8191
+ 5i,0n,6p,84b,14s stack positions out of 5000i,500n,10000p,200000b,50000s
+!  ==> Fatal error occurred, no output PDF file produced!

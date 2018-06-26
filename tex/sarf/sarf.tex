@@ -1,0 +1,118 @@
+In this Section, we describe the methodology used to construct the affix and stem data structures. 
+We also discuss the advantage of choosing these data structures over the ones used in the literature. 
+We also describe the construction of the system of Sarf by combining the different data structures.
+
+\subsection{Affix and stem data structures}
+%\label{subsec:dfsas}
+
+We analyzed the prefixes and suffixes of 
+Buckwalter~\shortcite{Buckwalter:02}
+and constructed the agglutinative affixes
+into directed acyclic graphs (DAG) similar to 
+those in Figures~\ref{f:example}(a) and~\ref{f:example}(c).
+The use of the DAG data structure provides compactness as well as 
+linear time traversal.
+This is computationally superior to the 
+approach of Buckwalter where the analyzer considers
+all possible substrings and looks them up in the affix tables. 
+
+The affix structures encode $L_{pp}$ and $L_{xx}$. 
+An accept node in the DAG corresponds to the last letter 
+of an affix in the affix lists. 
+The accept nodes produce as output the POS and other tags
+associated with the node. 
+Consider the affix \noTrutfRL{وسيـ} of the word \RL{wsyl`bhA}. 
+Possible accept nodes for this input in ${\cal P}$ are for 
+\noTrutfRL{و} and \noTrutfRL{يـ}. 
+However, only the accept node of \noTrutfRL{يـ} will yield a valid 
+solution for the input word \RL{wsyl`bhA}.
+
+%\subsection{Stem transducer}
+%\label{subsec:stemFSA}
+
+We built our stem lexicon using the stem lexicon of 
+Buckwalter. 
+Sarf extends the lexicon of Buckwalter~\shortcite{Buckwalter:02} with
+proper names and location names extracted from different online 
+sources~\footnote{\href{http://alasmaa.net/}{http://alasmaa.net/ }, 
+\href{http://ar.wikipedia.org/}{http://ar.wikipedia.org/}}
+as well as biblical sources~\footnote{Genesis 4:17-23; 5:1-32; 9:28-10:32; 11:10-32; 25:1-4, 12-18; 36:1-37:2; Exodus 6:14-25; Ruth 4:18-22; 1 Samuel 14:49-51; 1 Chronicles 1:1-9:44; 14:3-7; 24:1; 25:1-27:22; Nehemiah 12:8-26; Matthew 1:1-16; Luke 3:23-38}.
+%We augmented the lexicon with a set of proper names and
+%a set of location names which we 
+%obtained from online and biblical sources. 
+
+The stems share lots of sub-strings. We encoded them in
+an efficient double array trie structure~\citep{Aoe:89}. 
+The accept nodes are the terminal nodes corresponding to the last 
+letters in stems. 
+This approach is superior to Buckwalter since it consists of
+a linear walk in the trie while with Buckwalter we need 
+a number of hash lookups in the order of all possible partitions
+of the string. 
+For example given the word \RL{'kl}, our approach requires three 
+steps to check that this is a valid stem. 
+However, buckwalter needs to partition this word into six different partitions 
+where each partition contains possible prefix, stem, and suffix.
+
+\subsection{Combined system}
+%\label{subsec:combined}
+
+\begin{figure}
+\begin{minipage}{0.6\textwidth}
+\begin{Verbatim}[fontsize=\relsize{-2},
+frame=topline,framesep=4mm,label=\fbox{NDSarf algorithm},
+commandchars=\\\{\}, codes={\catcode`$=3\catcode`_=8}]
+NDSarf(string $L$, Interface $A$) 
+  TraversalVec $M$; -- collection of traversals
+  Traversal $\Phi_1$;
+  $M$.insert($\Phi_1$);
+  foreach $c$ in $L$ \{
+    foreach $\Phi$ in $M$ \{
+      if ( $\Phi$.node.isAccept() ) \{
+        if ($\Phi$.isSuffix())
+          if ($c$.isWhite()) or 
+            $A$.report();
+          if ($\Phi$.lastChar().isNonConnecting())
+            $A$.report();
+        $\Psi$ = $\Phi$.clone();
+        $M$.insert($\Psi$); \}
+
+      if ( $\Phi$.isWalkable($c$) ) \{
+        $\Phi$.child($c$);
+      \} else \{
+        $M$.remove($\Phi$);
+        $\Phi$.die();
+      \} \} 
+    $A$.control($M$, $c$); \}
+\end{Verbatim}
+\end{minipage}
+\caption{Sarf algorithm}
+\label{f:ndsarf}
+\end{figure}
+
+The algorithm \CodeIn{NDSarf} shown in Figure~\ref{f:ndsarf}
+takes as input a text string $L$ and a user-implemented interface
+$A$. 
+It starts with one traversal $\Phi_1$ and inserts it into a collection $M$. 
+The algorithm reads a letter $c$ at a time from $L$
+and iterates over all the traversals in $M$. 
+For each $\Phi$ in $M$, 
+if $\Phi$ is in an accept node and it is in the suffix
+phase, then the algorithm checks whether it should report
+a full word. 
+This happens when $c$ is a white space, a delimiter, 
+or when the preceding letter %leading to the current state
+was a non-connecting letter. 
+
+In all cases, if $\Phi$ is in an accept node, 
+it spawns another traversal $\Psi$ and adds it to $M$. 
+Notice that spawning a new traversal requires only keeping
+the current node of the traversal since all traversals share the
+structures of the three transducers.
+If $c$ leads to a reject, then $\Phi$ dies 
+and we remove it from $M$. 
+Otherwise, $\Phi$ proceeds using the $c$ edge.
+After iterating over all traversals in $M$, we invoke the 
+user-implemented interface $A$
+and grant it full access and control over
+all traversals in $M$.

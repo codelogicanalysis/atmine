@@ -1,0 +1,19 @@
+\begin{table}[tb]
+\centering
+  \begin{minipage}{.8\textwidth}
+  \caption{\label{t:sarfapi}Morphological solutions per word ratio and runtime gains with the customizable Sarf API utility.}
+%  \relsize{-2} {
+    \begin{tabular}{lccccc}\toprule
+              &             & Temporal & Hadith        & Biography       & Genealogy \\ \colrule
+
+              & Words       & 125,010  & 18,047,732    & 14,710,064      & 21,385    \\[3pt]
+   Without    & Solutions   & 4.33     & 5.41          & 5.61            & 4.63     \\
+        API   & Time (secs) & 12.45    &45.21$\times$60& 133.17$\times$60& 2.89     \\[3pt]
+      With    & Solutions   & 1.74     & 1.82          & 2.12            & 2.44      \\
+      API     & Time (secs) & 2.39     &22.64$\times$60& 31.77$\times$60 & 0.41\\
+    \botrule
+    \end{tabular}%
+ %   }
+    \end{minipage}
+\end{table}%
+

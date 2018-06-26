@@ -1,0 +1,35 @@
+\begin{table}[!tbp]
+\begin{minipage}{\textwidth}
+\begin{tabular}{lccc} 
+\hline \hline
+Reason & {\bf ATB}  & {\bf TOKAN} & {\bf Frequency} \\ \hline
+Dropping diacritics & \utfRL{اميركياً} & \utfRL{اميركيا} &
+1.456\% \\
+Hamza normalization & \utfRL{أنقرة} & \utfRL{انقرة} &
+2.799\% \\
+Other normalizations & \utfRL{مغادرت+ه} & \utfRL{مغادرة+ه} &
+5.450\% \\
+Removing letters & \utfRL{لكن+ني} & \utfRL{لكن+ي} &
+0.034\% \\
+Adding letters & \utfRL{ل+لتحقيق} & \utfRL{ل+التحقيق} &
+1.318\% \\                                                                                                              
+{\bf Total} & & &{\bf 11.058\%} \\
+\hline \hline
+\end{tabular}
+\end{minipage}
+\caption{ATB-TOKAN segmentation disagreement examples}
+{%\vspace{-0.5cm}
+}
+\label{t:tokan}
+\end{table}
+
+When we performed the same experiment using TOKAN toolkit 
+(with the ATB scheme alias)
+we got a total of 88.942\% agreement with ATB. 
+When analyzing the inconsistent instances,
+we noticed that TOKAN disregarded input diacritics. 
+It also performed its segmentation based on the POS tags
+of the morphological solutions in a similar approach 
+to that mentioned in~\citep{LRECMaamouriKB08}. 
+Table~\ref{t:tokan} shows examples of the disagreement instances.
+

@@ -1,0 +1,80 @@
+% nleguide.tex
+% v1.14, released 30th September 1998
+% Copyright 1995, 1997, 1998 Cambridge University Press
+
+\documentclass{nle}
+
+\input{packages}
+
+\input{title}
+
+\input{macros}
+
+\begin{document}
+
+\label{firstpage}
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+%\listoftodos
+
+\section{Introduction}
+\label{sec:intro}
+\input{intro}
+
+\section{Motivation}
+\label{sec:motivation}
+\input{motivation}
+
+\section{Related work}\todo{R2.8}
+\label{sec:related}
+\input{related}
+
+\section{Sarf}
+\label{sec:overview}
+\input{overview}
+
+
+\section{Application specific API}
+\label{sec:api}
+\input{api}
+
+
+\section{Agglutinative and fusional morphemes}
+\label{sec:aggaffix}
+\input{aggaffix}
+
+%%\subsection{Redundancy and inconsistencies}
+%%\label{sec:motivation}
+\input{redinc}
+
+\section{Diacritics}
+\label{sec:diac}
+\input{diacritics}
+
+%%\section{Sarf}
+%%\label{sec:sarf}
+%%\input{sarf}
+
+
+
+\section{Results}
+\label{sec:results}
+\input{results}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{conclusion}
+
+{\footnotesize
+%\linespread{1.5}
+\bibliographystyle{apacite}
+\bibliography{refs/nlesarf}
+}
+
+\label{lastpage}
+
+\end{document}

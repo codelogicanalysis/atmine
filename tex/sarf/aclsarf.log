@@ -1,0 +1,1462 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  26 JUN 2018 13:00
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**aclsarf.tex
+(./aclsarf.tex
+LaTeX2e <2016/03/31>
+Babel <3.9r> and hyphenation patterns for 83 language(s) loaded.
+(./elsarticle.cls
+Document Class: elsarticle 2010/06/11, 1.21: Elsevier Ltd
+\@bls=\dimen102
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen103
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/05/09 v1.0r Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/01/02 v1.10 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 96.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen104
+\Gin@req@width=\dimen105
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/pifont.sty
+Package: pifont 2005/04/12 PSNFSS-v9.2a Pi font support (SPQR) 
+LaTeX Font Info:    Try loading font information for U+pzd on input line 63.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/upzd.fd
+File: upzd.fd 2001/06/04 font definitions for U/pzd.
+)
+LaTeX Font Info:    Try loading font information for U+psy on input line 64.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/upsy.fd
+File: upsy.fd 2001/06/04 font definitions for U/psy.
+))
+\c@tnote=\count88
+\c@fnote=\count89
+\c@cnote=\count90
+\c@ead=\count91
+\c@author=\count92
+\@eadauthor=\toks15
+\c@affn=\count93
+\absbox=\box26
+\keybox=\box27
+\Columnwidth=\dimen106
+\space@left=\dimen107
+\els@boxa=\box28
+\els@boxb=\box29
+\leftMargin=\dimen108
+\@enLab=\toks16
+\@sep=\skip43
+\@@sep=\skip44
+\abovelistskipi=\skip45
+\belowlistskipi=\skip46
+\abovelistskipii=\skip47
+\belowlistskipii=\skip48
+\abovelistskipiii=\skip49
+\belowlistskipiii=\skip50
+\abovelistskipiv=\skip51
+\belowlistskipiv=\skip52
+\abovelistskipv=\skip53
+\belowlistskipv=\skip54
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip55
+\bibsep=\skip56
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count94
+)
+\splwrite=\write3
+\openout3 = `aclsarf.spl'.
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2016/05/14 v3.1 Provides the ifpdf switch
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count95
+\Gm@cntv=\count96
+\c@Gm@tempcnt=\count97
+\Gm@bindingoffset=\dimen109
+\Gm@wd@mp=\dimen110
+\Gm@odd@mp=\dimen111
+\Gm@even@mp=\dimen112
+\Gm@layoutwidth=\dimen113
+\Gm@layoutheight=\dimen114
+\Gm@layouthoffset=\dimen115
+\Gm@layoutvoffset=\dimen116
+\Gm@dimlist=\toks17
+)
+\appnamewidth=\dimen117
+
+(./framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip57
+\fb@frw=\dimen118
+\fb@frh=\dimen119
+\FrameRule=\dimen120
+\FrameSep=\dimen121
+)
+\tempbox=\box30
+\defbox=\box31
+\defboxdimen=\dimen122
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/txfonts.sty
+Package: txfonts 2008/01/22 v3.2.1
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 21.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/txr/m/n on input line 21.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/txr/m/n on input line 21.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/txr/m/n --> OT1/txr/bx/n on input line 22.
+\symitalic=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `italic' in version `bold'
+(Font)                  OT1/txr/m/it --> OT1/txr/bx/it on input line 26.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/txr/bx/n on input line 29.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/txr/bx/n on input line 29.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 30.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/txr/m/it on input line 30.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/txr/m/it on input line 30.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/txr/m/it --> OT1/txr/bx/it on input line 31.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 40.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/txss/m/n on input line 40.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/txss/m/n on input line 40.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/txss/m/n --> OT1/txss/b/n on input line 41.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 50.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> OT1/txtt/m/n on input line 50.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> OT1/txtt/m/n on input line 50.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/txtt/m/n --> OT1/txtt/b/n on input line 51.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 58.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/txmi/m/it on input line 58.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/txmi/m/it on input line 58.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/txmi/m/it --> OML/txmi/bx/it on input line 59.
+\symlettersA=\mathgroup5
+LaTeX Font Info:    Overwriting symbol font `lettersA' in version `bold'
+(Font)                  U/txmia/m/it --> U/txmia/bx/it on input line 67.
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 77.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/txsy/m/n on input line 77.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/txsy/m/n on input line 77.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/txsy/m/n --> OMS/txsy/bx/n on input line 78.
+\symAMSa=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `AMSa' in version `bold'
+(Font)                  U/txsya/m/n --> U/txsya/bx/n on input line 94.
+\symAMSb=\mathgroup7
+LaTeX Font Info:    Overwriting symbol font `AMSb' in version `bold'
+(Font)                  U/txsyb/m/n --> U/txsyb/bx/n on input line 103.
+\symsymbolsC=\mathgroup8
+LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
+(Font)                  U/txsyc/m/n --> U/txsyc/bx/n on input line 113.
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 120.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/txex/m/n on input line 120.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/txex/m/n on input line 120.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/txex/m/n --> OMX/txex/bx/n on input line 121.
+\symlargesymbolsA=\mathgroup9
+LaTeX Font Info:    Overwriting symbol font `largesymbolsA' in version `bold'
+(Font)                  U/txexa/m/n --> U/txexa/bx/n on input line 129.
+LaTeX Info: Redefining \not on input line 1043.
+) (./ecrc.sty
+Package: ecrc 2011/05/07 v1.2a ecrc
+\dummylogowidth=\dimen123
+\tempdimen=\dimen124
+\bibindent=\dimen125
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/fleqn.sty
+
+LaTeX Warning: inputting `fleqn.clo' instead of obsolete `fleqn.sty'.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/fleqn.clo
+File: fleqn.clo 2015/03/31 v1.1i Standard LaTeX option (flush left equations)
+\mathindent=\dimen126
+Applying: [2015/01/01] Make \[ robust on input line 50.
+LaTeX Info: Redefining \[ on input line 51.
+Already applied: [0000/00/00] Make \[ robust on input line 62.
+Applying: [2015/01/01] Make \] robust on input line 74.
+LaTeX Info: Redefining \] on input line 75.
+Already applied: [0000/00/00] Make \] robust on input line 83.
+))) (./packages.tex (/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/arabt
+ex.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/aconfig.sty
+LaTeX2e detected 
+BABEL detected
+\a@moduledate=\count98
+\a@maindate=\count99
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/arabaux.sty)
+LaTeX Font Info:    Try loading font information for OT1+txr on input line 551.
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/ot1txr.fd)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/acmd.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/afonts.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/afonts2.sty))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/ascan.sty
+(ArabTeX) scanner for code `arabtex' installed.
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/aparse.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/awrite.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/xarbsymb.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/arabskel.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/xarbskel.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/aboxes.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/arabtoks.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/arabchrs.sty))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/aligs.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/aoutput.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/abidir.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/atrans.sty
+(ArabTeX) ZDMG transliteration.)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/alatex.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/afoot.sty))
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/abjad.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/apatch.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/alists.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/asect.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/atabg.sty)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006))
+Arabic processor `ArabTeX' [20060702 patch level 3.11s (02.07.2006)]
+(ArabTeX) ... now be patient ... )
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/times.sty
+Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/multirow/multirow.sty
+\bigstrutjot=\dimen149
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks38
+LaTeX Font Info:    Redeclaring symbol font `AMSa' on input line 59.
+LaTeX Font Info:    Overwriting symbol font `AMSa' in version `normal'
+(Font)                  U/txsya/m/n --> U/msa/m/n on input line 59.
+LaTeX Font Info:    Overwriting symbol font `AMSa' in version `bold'
+(Font)                  U/txsya/bx/n --> U/msa/m/n on input line 59.
+LaTeX Font Info:    Redeclaring symbol font `AMSb' on input line 60.
+LaTeX Font Info:    Overwriting symbol font `AMSb' in version `normal'
+(Font)                  U/txsyb/m/n --> U/msb/m/n on input line 60.
+LaTeX Font Info:    Overwriting symbol font `AMSb' in version `bold'
+(Font)                  U/txsyb/bx/n --> U/msb/m/n on input line 60.
+LaTeX Font Info:    Redeclaring math delimiter \ulcorner on input line 74.
+LaTeX Font Info:    Redeclaring math delimiter \urcorner on input line 75.
+LaTeX Font Info:    Redeclaring math delimiter \llcorner on input line 76.
+LaTeX Font Info:    Redeclaring math delimiter \lrcorner on input line 77.
+LaTeX Font Info:    Redeclaring math symbol \square on input line 141.
+LaTeX Font Info:    Redeclaring math symbol \lozenge on input line 142.
+)
+LaTeX Font Info:    Redeclaring math symbol \boxdot on input line 44.
+LaTeX Font Info:    Redeclaring math symbol \boxplus on input line 45.
+LaTeX Font Info:    Redeclaring math symbol \boxtimes on input line 46.
+LaTeX Font Info:    Redeclaring math symbol \blacksquare on input line 48.
+LaTeX Font Info:    Redeclaring math symbol \centerdot on input line 49.
+LaTeX Font Info:    Redeclaring math symbol \blacklozenge on input line 51.
+LaTeX Font Info:    Redeclaring math symbol \circlearrowright on input line 52.
+
+LaTeX Font Info:    Redeclaring math symbol \circlearrowleft on input line 53.
+LaTeX Font Info:    Redeclaring math symbol \leftrightharpoons on input line 56
+.
+LaTeX Font Info:    Redeclaring math symbol \boxminus on input line 57.
+LaTeX Font Info:    Redeclaring math symbol \Vdash on input line 58.
+LaTeX Font Info:    Redeclaring math symbol \Vvdash on input line 59.
+LaTeX Font Info:    Redeclaring math symbol \vDash on input line 60.
+LaTeX Font Info:    Redeclaring math symbol \twoheadrightarrow on input line 61
+.
+LaTeX Font Info:    Redeclaring math symbol \twoheadleftarrow on input line 62.
+
+LaTeX Font Info:    Redeclaring math symbol \leftleftarrows on input line 63.
+LaTeX Font Info:    Redeclaring math symbol \rightrightarrows on input line 64.
+
+LaTeX Font Info:    Redeclaring math symbol \upuparrows on input line 65.
+LaTeX Font Info:    Redeclaring math symbol \downdownarrows on input line 66.
+LaTeX Font Info:    Redeclaring math symbol \upharpoonright on input line 67.
+LaTeX Font Info:    Redeclaring math symbol \downharpoonright on input line 69.
+
+LaTeX Font Info:    Redeclaring math symbol \upharpoonleft on input line 70.
+LaTeX Font Info:    Redeclaring math symbol \downharpoonleft on input line 71.
+LaTeX Font Info:    Redeclaring math symbol \rightarrowtail on input line 72.
+LaTeX Font Info:    Redeclaring math symbol \leftarrowtail on input line 73.
+LaTeX Font Info:    Redeclaring math symbol \leftrightarrows on input line 74.
+LaTeX Font Info:    Redeclaring math symbol \rightleftarrows on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Lsh on input line 76.
+LaTeX Font Info:    Redeclaring math symbol \Rsh on input line 77.
+LaTeX Font Info:    Redeclaring math symbol \leftrightsquigarrow on input line 
+79.
+LaTeX Font Info:    Redeclaring math symbol \looparrowleft on input line 80.
+LaTeX Font Info:    Redeclaring math symbol \looparrowright on input line 81.
+LaTeX Font Info:    Redeclaring math symbol \circeq on input line 82.
+LaTeX Font Info:    Redeclaring math symbol \succsim on input line 83.
+LaTeX Font Info:    Redeclaring math symbol \gtrsim on input line 84.
+LaTeX Font Info:    Redeclaring math symbol \gtrapprox on input line 85.
+LaTeX Font Info:    Redeclaring math symbol \multimap on input line 86.
+LaTeX Font Info:    Redeclaring math symbol \therefore on input line 87.
+LaTeX Font Info:    Redeclaring math symbol \because on input line 88.
+LaTeX Font Info:    Redeclaring math symbol \doteqdot on input line 89.
+LaTeX Font Info:    Redeclaring math symbol \triangleq on input line 91.
+LaTeX Font Info:    Redeclaring math symbol \precsim on input line 92.
+LaTeX Font Info:    Redeclaring math symbol \lesssim on input line 93.
+LaTeX Font Info:    Redeclaring math symbol \lessapprox on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \eqslantless on input line 95.
+LaTeX Font Info:    Redeclaring math symbol \eqslantgtr on input line 96.
+LaTeX Font Info:    Redeclaring math symbol \curlyeqprec on input line 97.
+LaTeX Font Info:    Redeclaring math symbol \curlyeqsucc on input line 98.
+LaTeX Font Info:    Redeclaring math symbol \preccurlyeq on input line 99.
+LaTeX Font Info:    Redeclaring math symbol \leqq on input line 100.
+LaTeX Font Info:    Redeclaring math symbol \leqslant on input line 101.
+LaTeX Font Info:    Redeclaring math symbol \lessgtr on input line 102.
+LaTeX Font Info:    Redeclaring math symbol \backprime on input line 103.
+LaTeX Font Info:    Redeclaring math symbol \risingdotseq on input line 104.
+LaTeX Font Info:    Redeclaring math symbol \fallingdotseq on input line 105.
+LaTeX Font Info:    Redeclaring math symbol \succcurlyeq on input line 106.
+LaTeX Font Info:    Redeclaring math symbol \geqq on input line 107.
+LaTeX Font Info:    Redeclaring math symbol \geqslant on input line 108.
+LaTeX Font Info:    Redeclaring math symbol \gtrless on input line 109.
+LaTeX Font Info:    Redeclaring math symbol \bigstar on input line 117.
+LaTeX Font Info:    Redeclaring math symbol \between on input line 118.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangledown on input line 11
+9.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangleright on input line 1
+20.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangleleft on input line 12
+1.
+LaTeX Font Info:    Redeclaring math symbol \vartriangle on input line 122.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangle on input line 123.
+LaTeX Font Info:    Redeclaring math symbol \triangledown on input line 124.
+LaTeX Font Info:    Redeclaring math symbol \eqcirc on input line 125.
+LaTeX Font Info:    Redeclaring math symbol \lesseqgtr on input line 126.
+LaTeX Font Info:    Redeclaring math symbol \gtreqless on input line 127.
+LaTeX Font Info:    Redeclaring math symbol \lesseqqgtr on input line 128.
+LaTeX Font Info:    Redeclaring math symbol \gtreqqless on input line 129.
+LaTeX Font Info:    Redeclaring math symbol \Rrightarrow on input line 130.
+LaTeX Font Info:    Redeclaring math symbol \Lleftarrow on input line 131.
+LaTeX Font Info:    Redeclaring math symbol \veebar on input line 132.
+LaTeX Font Info:    Redeclaring math symbol \barwedge on input line 133.
+LaTeX Font Info:    Redeclaring math symbol \doublebarwedge on input line 134.
+LaTeX Font Info:    Redeclaring math symbol \measuredangle on input line 137.
+LaTeX Font Info:    Redeclaring math symbol \sphericalangle on input line 138.
+LaTeX Font Info:    Redeclaring math symbol \varpropto on input line 139.
+LaTeX Font Info:    Redeclaring math symbol \smallsmile on input line 140.
+LaTeX Font Info:    Redeclaring math symbol \smallfrown on input line 141.
+LaTeX Font Info:    Redeclaring math symbol \Subset on input line 142.
+LaTeX Font Info:    Redeclaring math symbol \Supset on input line 143.
+LaTeX Font Info:    Redeclaring math symbol \Cup on input line 144.
+LaTeX Font Info:    Redeclaring math symbol \Cap on input line 146.
+LaTeX Font Info:    Redeclaring math symbol \curlywedge on input line 148.
+LaTeX Font Info:    Redeclaring math symbol \curlyvee on input line 149.
+LaTeX Font Info:    Redeclaring math symbol \leftthreetimes on input line 150.
+LaTeX Font Info:    Redeclaring math symbol \rightthreetimes on input line 151.
+
+LaTeX Font Info:    Redeclaring math symbol \subseteqq on input line 152.
+LaTeX Font Info:    Redeclaring math symbol \supseteqq on input line 153.
+LaTeX Font Info:    Redeclaring math symbol \bumpeq on input line 154.
+LaTeX Font Info:    Redeclaring math symbol \Bumpeq on input line 155.
+LaTeX Font Info:    Redeclaring math symbol \lll on input line 156.
+LaTeX Font Info:    Redeclaring math symbol \ggg on input line 158.
+LaTeX Font Info:    Redeclaring math symbol \circledS on input line 160.
+LaTeX Font Info:    Redeclaring math symbol \pitchfork on input line 161.
+LaTeX Font Info:    Redeclaring math symbol \dotplus on input line 162.
+LaTeX Font Info:    Redeclaring math symbol \backsim on input line 163.
+LaTeX Font Info:    Redeclaring math symbol \backsimeq on input line 164.
+LaTeX Font Info:    Redeclaring math symbol \complement on input line 165.
+LaTeX Font Info:    Redeclaring math symbol \intercal on input line 166.
+LaTeX Font Info:    Redeclaring math symbol \circledcirc on input line 167.
+LaTeX Font Info:    Redeclaring math symbol \circledast on input line 168.
+LaTeX Font Info:    Redeclaring math symbol \circleddash on input line 169.
+LaTeX Font Info:    Redeclaring math symbol \lvertneqq on input line 171.
+LaTeX Font Info:    Redeclaring math symbol \gvertneqq on input line 172.
+LaTeX Font Info:    Redeclaring math symbol \nleq on input line 173.
+LaTeX Font Info:    Redeclaring math symbol \ngeq on input line 174.
+LaTeX Font Info:    Redeclaring math symbol \nless on input line 175.
+LaTeX Font Info:    Redeclaring math symbol \ngtr on input line 176.
+LaTeX Font Info:    Redeclaring math symbol \nprec on input line 177.
+LaTeX Font Info:    Redeclaring math symbol \nsucc on input line 178.
+LaTeX Font Info:    Redeclaring math symbol \lneqq on input line 179.
+LaTeX Font Info:    Redeclaring math symbol \gneqq on input line 180.
+LaTeX Font Info:    Redeclaring math symbol \nleqslant on input line 181.
+LaTeX Font Info:    Redeclaring math symbol \ngeqslant on input line 182.
+LaTeX Font Info:    Redeclaring math symbol \lneq on input line 183.
+LaTeX Font Info:    Redeclaring math symbol \gneq on input line 184.
+LaTeX Font Info:    Redeclaring math symbol \npreceq on input line 185.
+LaTeX Font Info:    Redeclaring math symbol \nsucceq on input line 186.
+LaTeX Font Info:    Redeclaring math symbol \precnsim on input line 187.
+LaTeX Font Info:    Redeclaring math symbol \succnsim on input line 188.
+LaTeX Font Info:    Redeclaring math symbol \lnsim on input line 189.
+LaTeX Font Info:    Redeclaring math symbol \gnsim on input line 190.
+LaTeX Font Info:    Redeclaring math symbol \nleqq on input line 191.
+LaTeX Font Info:    Redeclaring math symbol \ngeqq on input line 192.
+LaTeX Font Info:    Redeclaring math symbol \precneqq on input line 193.
+LaTeX Font Info:    Redeclaring math symbol \succneqq on input line 194.
+LaTeX Font Info:    Redeclaring math symbol \precnapprox on input line 195.
+LaTeX Font Info:    Redeclaring math symbol \succnapprox on input line 196.
+LaTeX Font Info:    Redeclaring math symbol \lnapprox on input line 197.
+LaTeX Font Info:    Redeclaring math symbol \gnapprox on input line 198.
+LaTeX Font Info:    Redeclaring math symbol \nsim on input line 199.
+LaTeX Font Info:    Redeclaring math symbol \ncong on input line 200.
+LaTeX Font Info:    Redeclaring math symbol \diagup on input line 201.
+LaTeX Font Info:    Redeclaring math symbol \diagdown on input line 202.
+LaTeX Font Info:    Redeclaring math symbol \varsubsetneq on input line 203.
+LaTeX Font Info:    Redeclaring math symbol \varsupsetneq on input line 204.
+LaTeX Font Info:    Redeclaring math symbol \nsubseteqq on input line 205.
+LaTeX Font Info:    Redeclaring math symbol \nsupseteqq on input line 206.
+LaTeX Font Info:    Redeclaring math symbol \subsetneqq on input line 207.
+LaTeX Font Info:    Redeclaring math symbol \supsetneqq on input line 208.
+LaTeX Font Info:    Redeclaring math symbol \varsubsetneqq on input line 209.
+LaTeX Font Info:    Redeclaring math symbol \varsupsetneqq on input line 210.
+LaTeX Font Info:    Redeclaring math symbol \subsetneq on input line 211.
+LaTeX Font Info:    Redeclaring math symbol \supsetneq on input line 212.
+LaTeX Font Info:    Redeclaring math symbol \nsubseteq on input line 213.
+LaTeX Font Info:    Redeclaring math symbol \nsupseteq on input line 214.
+LaTeX Font Info:    Redeclaring math symbol \nparallel on input line 215.
+LaTeX Font Info:    Redeclaring math symbol \nmid on input line 216.
+LaTeX Font Info:    Redeclaring math symbol \nshortmid on input line 217.
+LaTeX Font Info:    Redeclaring math symbol \nshortparallel on input line 218.
+LaTeX Font Info:    Redeclaring math symbol \nvdash on input line 219.
+LaTeX Font Info:    Redeclaring math symbol \nVdash on input line 220.
+LaTeX Font Info:    Redeclaring math symbol \nvDash on input line 221.
+LaTeX Font Info:    Redeclaring math symbol \nVDash on input line 222.
+LaTeX Font Info:    Redeclaring math symbol \ntrianglerighteq on input line 223
+.
+LaTeX Font Info:    Redeclaring math symbol \ntrianglelefteq on input line 224.
+
+LaTeX Font Info:    Redeclaring math symbol \ntriangleleft on input line 225.
+LaTeX Font Info:    Redeclaring math symbol \ntriangleright on input line 226.
+LaTeX Font Info:    Redeclaring math symbol \nleftarrow on input line 227.
+LaTeX Font Info:    Redeclaring math symbol \nrightarrow on input line 228.
+LaTeX Font Info:    Redeclaring math symbol \nLeftarrow on input line 229.
+LaTeX Font Info:    Redeclaring math symbol \nRightarrow on input line 230.
+LaTeX Font Info:    Redeclaring math symbol \nLeftrightarrow on input line 231.
+
+LaTeX Font Info:    Redeclaring math symbol \nleftrightarrow on input line 232.
+
+LaTeX Font Info:    Redeclaring math symbol \divideontimes on input line 233.
+LaTeX Font Info:    Redeclaring math symbol \varnothing on input line 234.
+LaTeX Font Info:    Redeclaring math symbol \nexists on input line 235.
+LaTeX Font Info:    Redeclaring math symbol \Finv on input line 236.
+LaTeX Font Info:    Redeclaring math symbol \Game on input line 237.
+LaTeX Font Info:    Redeclaring math symbol \eth on input line 240.
+LaTeX Font Info:    Redeclaring math symbol \eqsim on input line 241.
+LaTeX Font Info:    Redeclaring math symbol \beth on input line 242.
+LaTeX Font Info:    Redeclaring math symbol \gimel on input line 243.
+LaTeX Font Info:    Redeclaring math symbol \daleth on input line 244.
+LaTeX Font Info:    Redeclaring math symbol \lessdot on input line 245.
+LaTeX Font Info:    Redeclaring math symbol \gtrdot on input line 246.
+LaTeX Font Info:    Redeclaring math symbol \ltimes on input line 247.
+LaTeX Font Info:    Redeclaring math symbol \rtimes on input line 248.
+LaTeX Font Info:    Redeclaring math symbol \shortmid on input line 249.
+LaTeX Font Info:    Redeclaring math symbol \shortparallel on input line 250.
+LaTeX Font Info:    Redeclaring math symbol \smallsetminus on input line 251.
+LaTeX Font Info:    Redeclaring math symbol \thicksim on input line 252.
+LaTeX Font Info:    Redeclaring math symbol \thickapprox on input line 253.
+LaTeX Font Info:    Redeclaring math symbol \approxeq on input line 254.
+LaTeX Font Info:    Redeclaring math symbol \succapprox on input line 255.
+LaTeX Font Info:    Redeclaring math symbol \precapprox on input line 256.
+LaTeX Font Info:    Redeclaring math symbol \curvearrowleft on input line 257.
+LaTeX Font Info:    Redeclaring math symbol \curvearrowright on input line 258.
+
+LaTeX Font Info:    Redeclaring math symbol \digamma on input line 259.
+LaTeX Font Info:    Redeclaring math symbol \varkappa on input line 260.
+LaTeX Font Info:    Redeclaring math symbol \Bbbk on input line 261.
+LaTeX Font Info:    Redeclaring math symbol \hslash on input line 262.
+LaTeX Font Info:    Redeclaring math symbol \backepsilon on input line 265.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/relsize/relsize.sty
+Package: relsize 2013/03/29 ver 4.1
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/tools/enumerate.sty
+Package: enumerate 2015/07/23 v3.00 enumerate extensions (DPC)
+\@enLab=\toks39
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2016/05/05 v6.83n Hypertext links for LaTeX
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+Package: pdftexcmds 2016/05/10 v0.21 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package atveryend Info: \a@enddocument detected (standard20110627).
+Package: atbegshi 2016/05/16 v1.17 At begin shipout hook (HO)
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+
+
+Package auxhook Warning: Cannot patch \document,
+(auxhook)                using \AtBeginDocument instead.
+
+) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+)
+\@linkdim=\dimen150
+\Hy@linkcounter=\count129
+\Hy@pagecounter=\count130
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2016/05/05 v6.83n Hyperref: PDFDocEncoding definition (HO)
+)
+\Hy@SavedSpaceFactor=\count131
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4446.
+Package hyperref Info: Link nesting OFF on input line 4451.
+Package hyperref Info: Hyper index ON on input line 4454.
+Package hyperref Info: Plain pages OFF on input line 4461.
+Package hyperref Info: Backreferencing OFF on input line 4466.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4691.
+\c@Hy@tempcnt=\count132
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5044.
+\XeTeXLinkMargin=\dimen151
+\Fld@menulength=\count133
+\Field@Width=\dimen152
+\Fld@charsize=\dimen153
+Package hyperref Info: Hyper figures OFF on input line 6298.
+Package hyperref Info: Link nesting OFF on input line 6303.
+Package hyperref Info: Hyper index ON on input line 6306.
+Package hyperref Info: backreferencing OFF on input line 6313.
+Package hyperref Info: Link coloring OFF on input line 6318.
+Package hyperref Info: Link coloring with OCG OFF on input line 6323.
+Package hyperref Info: PDF/A mode OFF on input line 6328.
+LaTeX Info: Redefining \ref on input line 6368.
+LaTeX Info: Redefining \pageref on input line 6372.
+\Hy@abspage=\count134
+\c@Item=\count135
+\c@Hfootnote=\count136
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2016/05/05 v6.83n Hyperref driver for pdfTeX
+\Fld@listcount=\count137
+\c@bookmark@seq@number=\count138
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip60
+)
+Package hyperref Info: Option `colorlinks' set `false' on input line 13.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/utf8.sty
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/utfcode.sty
+Package: utfcode 2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
+\u@lb=\count139
+\u@lq=\count140
+)
+Package: utf8 2000/06/13  3.10 UTF-8 input encoding 
+
+(ArabTeX) scanner for code UTF-8 installed.)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/listings/listings.sty
+\lst@mode=\count141
+\lst@gtempboxa=\box47
+\lst@token=\toks40
+\lst@length=\count142
+\lst@currlwidth=\dimen154
+\lst@column=\count143
+\lst@pos=\count144
+\lst@lostspace=\dimen155
+\lst@width=\dimen156
+\lst@newlines=\count145
+\lst@lineno=\count146
+\lst@maxwidth=\dimen157
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+\c@lstnumber=\count147
+\lst@skipnumbers=\count148
+\lst@framebox=\box48
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2015/06/04 1.6 listings configuration
+))
+Package: listings 2015/06/04 1.6 (Carsten Heinz)
+)
+(./macros.tex (./psfig.sty
+\@unused=\write6
+\ps@stream=\read1
+\p@intvaluex=\dimen158
+\p@intvaluey=\dimen159
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/listings/lstlang1.sty
+File: lstlang1.sty 2015/06/04 1.6 listings language file
+)
+(/usr/local/texlive/2016/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+))
+No file aclsarf.aux.
+\openout1 = `aclsarf.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/txmi/m/it on input line 29.
+LaTeX Font Info:    Try loading font information for OML+txmi on input line 29.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/omltxmi.fd
+File: omltxmi.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMS/txsy/m/n on input line 29.
+LaTeX Font Info:    Try loading font information for OMS+txsy on input line 29.
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/omstxsy.fd
+File: omstxsy.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMX/txex/m/n on input line 29.
+LaTeX Font Info:    Try loading font information for OMX+txex on input line 29.
+
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/omxtxex.fd
+File: omxtxex.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for U/txexa/m/n on input line 29.
+LaTeX Font Info:    Try loading font information for U+txexa on input line 29.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/utxexa.fd
+File: utxexa.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 29.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+(/usr/local/texlive/2016/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count149
+\scratchdimen=\dimen160
+\scratchbox=\box49
+\nofMPsegments=\count150
+\nofMParguments=\count151
+\everyMPshowfont=\toks41
+\MPscratchCnt=\count152
+\MPscratchDim=\dimen161
+\MPnumerator=\count153
+\makeMPintoPDFobject=\count154
+\everyMPtoPDFconversion=\toks42
+) (/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: custom
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* hratio: 1:1
+* vratio: 1:1
+* modes: 
+* h-part:(L,W,R)=(36.98857pt, 468.0pt, 41.30434pt)
+* v-part:(T,H,B)=(68.18pt, 620.39996pt, 56.88225pt)
+* \paperwidth=546.29291pt
+* \paperheight=745.4622pt
+* \textwidth=468.0pt
+* \textheight=620.39996pt
+* \oddsidemargin=-35.28142pt
+* \evensidemargin=-30.96565pt
+* \topmargin=-30.72897pt
+* \headheight=10.0pt
+* \headsep=10.0pt
+* \topskip=10.0pt
+* \footskip=0.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=24.0pt
+* \skip\footins=24.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+\AtBeginShipoutBox=\box50
+Package hyperref Info: Link coloring OFF on input line 29.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count155
+)
+LaTeX Info: Redefining \ref on input line 29.
+LaTeX Info: Redefining \pageref on input line 29.
+LaTeX Info: Redefining \nameref on input line 29.
+\@outlinefile=\write7
+\openout7 = `aclsarf.out'.
+
+\c@lstlisting=\count156
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/apatch.sty
+\a@lines=\count157
+\a@Lwidth=\dimen162
+\a@displaywidth=\dimen163
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006)
+(ArabTeX) version 3.11s (02.07.2006): second phase of patching)
+LaTeX Font Info:    Try loading font information for U+txmia on input line 75.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/utxmia.fd
+File: utxmia.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 75.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 75.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Try loading font information for U+txsyc on input line 75.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/txfonts/utxsyc.fd
+File: utxsyc.fd 2000/12/15 v3.1
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
+ (./intro.tex
+
+Package natbib Warning: Citation `Benajiba:07' on page 1 undefined on input lin
+e 5.
+
+
+Package natbib Warning: Citation `Habash:06' on page 1 undefined on input line 
+5.
+
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 1 undefined on input li
+ne 12.
+
+
+Package natbib Warning: Citation `habash2010introduction' on page 1 undefined o
+n input line 24.
+
+
+Package natbib Warning: Citation `JaZaMatar' on page 1 undefined on input line 
+31.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 1 undefined 
+on input line 31.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 1 undefined on inp
+ut line 31.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 1 undefined 
+on input line 31.
+
+
+Package natbib Warning: Citation `ZaMaColing2012DemosSarf' on page 1 undefined 
+on input line 48.
+
+
+Package natbib Warning: Citation `Vajda' on page 1 undefined on input line 52.
+
+
+Package natbib Warning: Citation `Spencer:91' on page 1 undefined on input line
+ 58.
+
+
+Package natbib Warning: Citation `Abd00' on page 1 undefined on input line 61.
+
+
+Package natbib Warning: Citation `Abd001' on page 1 undefined on input line 61.
+
+
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 70.
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/omsptm.fd
+File: omsptm.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 70.
+
+Underfull \vbox (badness 1609) has occurred while \output is active []
+
+
+<elsevier-logo-3p.pdf, id=4, 54.08205pt x 59.7432pt>
+File: elsevier-logo-3p.pdf Graphic file (type pdf)
+
+<use elsevier-logo-3p.pdf>
+Package pdftex.def Info: elsevier-logo-3p.pdf used on input line 71.
+(pdftex.def)             Requested size: 54.0819pt x 59.74303pt.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 71.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1phv.fd
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+<SDlogo-3p.pdf, id=5, 96.36pt x 13.04875pt>
+File: SDlogo-3p.pdf Graphic file (type pdf)
+ <use SDlogo-3p.pdf>
+Package pdftex.def Info: SDlogo-3p.pdf used on input line 71.
+(pdftex.def)             Requested size: 96.35974pt x 13.0487pt.
+
+<Procs.pdf, id=6, 112.42pt x 62.2325pt>
+File: Procs.pdf Graphic file (type pdf)
+ <use Procs.pdf>
+Package pdftex.def Info: Procs.pdf used on input line 71.
+(pdftex.def)             Requested size: 112.41972pt x 62.23235pt.
+File: elsevier-logo-3p.pdf Graphic file (type pdf)
+
+<use elsevier-logo-3p.pdf>
+Package pdftex.def Info: elsevier-logo-3p.pdf used on input line 71.
+(pdftex.def)             Requested size: 54.0819pt x 59.74303pt.
+File: SDlogo-3p.pdf Graphic file (type pdf)
+ <use SDlogo-3p.pdf>
+Package pdftex.def Info: SDlogo-3p.pdf used on input line 71.
+(pdftex.def)             Requested size: 96.35974pt x 13.0487pt.
+File: Procs.pdf Graphic file (type pdf)
+ <use Procs.pdf>
+Package pdftex.def Info: Procs.pdf used on input line 71.
+(pdftex.def)             Requested size: 112.41972pt x 62.23235pt.
+
+Overfull \vbox (53.68895pt too high) has occurred while \output is active []
+
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 71.
+
+Overfull \vbox (25.4559pt too high) has occurred while \output is active []
+
+
+[1{/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+
+ <./elsevier-logo-3p.pdf> <./SDlogo-3p.pdf> <./Procs.pdf>]
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 84.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+
+Package natbib Warning: Citation `JaZaMatar' on page 2 undefined on input line 
+97.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 2 undefined 
+on input line 97.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 2 undefined on inp
+ut line 97.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 2 undefined 
+on input line 97.
+
+
+LaTeX Warning: Reference `sec:motivation' on page 2 undefined on input line 103
+.
+
+
+LaTeX Warning: Reference `sec:related' on page 2 undefined on input line 104.
+
+
+LaTeX Warning: Reference `sec:overview' on page 2 undefined on input line 105.
+
+
+LaTeX Warning: Reference `sec:api' on page 2 undefined on input line 106.
+
+
+LaTeX Warning: Reference `sec:aggaffix' on page 2 undefined on input line 108.
+
+
+LaTeX Warning: Reference `sec:diac' on page 2 undefined on input line 112.
+
+
+LaTeX Warning: Reference `sec:results' on page 2 undefined on input line 114.
+
+
+LaTeX Warning: Reference `sec:conclusion' on page 2 undefined on input line 117
+.
+
+) (./motivation.tex
+
+Package natbib Warning: Citation `Buckwalter:02' on page 2 undefined on input l
+ine 9.
+
+
+Package natbib Warning: Citation `SAMAmain' on page 2 undefined on input line 1
+0.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 2 undefined on input line 
+10.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 2 undefined on input line
+ 11.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 2 undefined on inp
+ut line 12.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 2 undefined on input line 
+13.
+
+(./solutiontable.tex (ArabTeX) input encoding set to UTF-8 conventions
+LaTeX Font Info:    Try loading font information for U+xnsh on input line 4.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/arabtex/Uxnsh.fd
+File: uxnsh.fd  1999/10/19 v3.10 ArabTeX Naskh extd. font definitions
+)
+LaTeX Font Info:    Font shape `U/xnsh/m/n' will be
+(Font)              scaled to size 14.40002pt on input line 4.
+
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+LaTeX Font Info:    Font shape `U/xnsh/m/n' will be
+(Font)              scaled to size 11.52002pt on input line 12.
+
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) detected at line 12
+[]
+ []
+
+) (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 20.
+
+
+Package natbib Warning: Citation `arabtex' on page 2 undefined on input line 20
+.
+
+
+Package natbib Warning: Citation `IntroNHabash' on page 2 undefined on input li
+ne 20.
+
+
+LaTeX Warning: Reference `t:solexample' on page 2 undefined on input line 21.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 5189) has occurred while \output is active []
+
+ [2]
+
+Package natbib Warning: Citation `Maamouri:10' on page 3 undefined on input lin
+e 51.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Beesley:01' on page 3 undefined on input line
+ 81.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 3 undefined on input line
+ 81.
+
+
+Package natbib Warning: Citation `Attia:00' on page 3 undefined on input line 8
+1.
+
+
+Package natbib Warning: Citation `Buckwalter:04' on page 3 undefined on input l
+ine 102.
+
+(./affixtable.tex
+Underfull \hbox (badness 10000) detected at line 28
+[]
+ []
+
+)
+
+Package natbib Warning: Citation `Buckwalter:02' on page 3 undefined on input l
+ine 112.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 3 undefined on input line 
+112.
+
+
+LaTeX Warning: Reference `t:affixes' on page 3 undefined on input line 115.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `t:affixes' on page 3 undefined on input line 129.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [3]
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 4 undefined on inpu
+t line 134.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 4 undefined on input 
+line 134.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Hunspell' on page 4 undefined on input line 1
+36.
+
+
+Package natbib Warning: Citation `Regina2011' on page 4 undefined on input line
+ 150.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 4 undefined on input li
+ne 150.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [4]
+
+LaTeX Warning: Reference `t:affixes' on page 5 undefined on input line 190.
+
+) (./related.tex
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+[]\OT1/ptm/m/n/8 MADA+
+ []
+
+
+Underfull \hbox (badness 3179) in paragraph at lines 14--14
+[]\OT1/ptm/m/n/8 Application cus-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8 Affix seg-men-ta-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8 tokenization
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
+[]\OT1/ptm/m/n/8 maximum
+ []
+
+
+Underfull \hbox (badness 10000) detected at line 26
+[]
+ []
+
+
+LaTeX Warning: Reference `tab:comparison' on page 5 undefined on input line 35.
+
+
+
+Package natbib Warning: Citation `Otakar:07' on page 5 undefined on input line 
+37.
+
+
+Package natbib Warning: Citation `Beesley:03' on page 5 undefined on input line
+ 37.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 5 undefined on inpu
+t line 37.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 5 undefined on inp
+ut line 39.
+
+
+Package natbib Warning: Citation `Habash:09' on page 5 undefined on input line 
+39.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 5 undefined on input l
+ine 59.
+
+
+Package natbib Warning: Citation `maamouri2010ldc' on page 5 undefined on input
+ line 61.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 5 undefined on input l
+ine 69.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 5 undefined on input lin
+e 69.
+
+
+Underfull \vbox (badness 1281) has occurred while \output is active []
+
+ [5]
+
+Package natbib Warning: Citation `Maamouri:04' on page 6 undefined on input lin
+e 82.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 6 undefined on input lin
+e 90.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 6 undefined on input line 
+92.
+
+
+Package natbib Warning: Citation `Badawi:04' on page 6 undefined on input line 
+98.
+
+
+Package natbib Warning: Citation `Habash:09' on page 6 undefined on input line 
+104.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 6 undefined on inp
+ut line 123.
+
+
+Package natbib Warning: Citation `Beesley:03' on page 6 undefined on input line
+ 147.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 6 undefined on input line
+ 153.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 6 undefined on inpu
+t line 176.
+
+
+Package natbib Warning: Citation `Attia:10' on page 6 undefined on input line 1
+89.
+
+
+Package natbib Warning: Citation `Regina2011' on page 6 undefined on input line
+ 203.
+
+
+Package natbib Warning: Citation `LIMASemmar05' on page 6 undefined on input li
+ne 204.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 6 undefined on input li
+ne 204.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 6 undefined on input line
+ 206.
+
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 6 undefined on inpu
+t line 212.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 6 undefined on input 
+line 212.
+
+
+Package natbib Warning: Citation `ATB32LDCNum' on page 6 undefined on input lin
+e 213.
+
+
+Package natbib Warning: Citation `Regina2011' on page 6 undefined on input line
+ 216.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [6]
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 7 undefined on input li
+ne 222.
+
+
+Package natbib Warning: Citation `Khoja:01' on page 7 undefined on input line 2
+24.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 7 undefined on input line
+ 224.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 7 undefined on input line
+ 233.
+
+
+Package natbib Warning: Citation `Attia:00' on page 7 undefined on input line 2
+33.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 7 undefined on input line
+ 233.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 7 undefined on input line
+ 246.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 7 undefined on input line
+ 246.
+
+
+Package natbib Warning: Citation `Attia:00' on page 7 undefined on input line 2
+46.
+
+) (./overview.tex (./out/sarf_flow_diagram.pdftex_t
+<out/sarf_flow_diagram.pdf, id=72, 636.3775pt x 346.29375pt>
+File: out/sarf_flow_diagram.pdf Graphic file (type pdf)
+
+<use out/sarf_flow_diagram.pdf>
+Package pdftex.def Info: out/sarf_flow_diagram.pdf used on input line 2.
+(pdftex.def)             Requested size: 636.37595pt x 346.2929pt.
+)
+Overfull \hbox (46.84137pt too wide) in paragraph at lines 2--5
+[][] 
+ []
+
+
+LaTeX Warning: Reference `fig:flowdiagram' on page 7 undefined on input line 9.
+
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 13.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 21.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7 <./out/sarf_flow_diagram.pdf>]
+
+Package natbib Warning: Citation `Aoe:89' on page 8 undefined on input line 35.
+
+
+
+LaTeX Warning: Reference `f:example' on page 8 undefined on input line 66.
+
+
+LaTeX Warning: Reference `f:dag-alg' on page 8 undefined on input line 70.
+
+
+Package natbib Warning: Citation `Aoe:89' on page 8 undefined on input line 72.
+
+
+
+! LaTeX Error: File `FSM.pdftex_t' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: pdftex_t)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.97 }
+      ^^M
+*** (cannot \read from terminal in nonstop modes)
+
+ 
+Here is how much of TeX's memory you used:
+ 11601 strings out of 493014
+ 153661 string characters out of 6133351
+ 305103 words of memory out of 5000000
+ 14819 multiletter control sequences out of 15000+600000
+ 54865 words of font info for 121 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 34i,15n,49p,310b,403s stack positions out of 5000i,500n,10000p,200000b,80000s
+!  ==> Fatal error occurred, no output PDF file produced!

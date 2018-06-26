@@ -1,0 +1,81 @@
+aggaffix.tex:\todo{R3.10}
+api.tex:\todo{R1.3}
+api.tex:\tododone{find a compatible example to explain the importance of this feature of Sarf}
+conclusion.tex:\todo{R2.17}
+diacritics.tex:\todo{R3.13}
+diacritics.tex:\todo{R2.14}It checks if the sequence of letters in $c1$ is the same as that in $c2$. 
+diacritics.tex:If both checks were positive, then $c1$ and $c2$ are said to be equal with diacritic-aware consistency. \todo{R2.14}
+diacritics.tex:\todo{R2.15, R3.14}
+intro.tex:%\itodo{check whether journal is a blind review journal or not.}
+intro.tex:This work presents Sarf, a \todo{R2.13} {\em fast and application 
+intro.tex:regular expressions \todo{R2.13 removed in} as substitution rules to 
+intro.tex:\todo{R1.1}
+intro.tex:consistency\todo{R3.19}, accuracy, and runtime efficiency. 
+intro.tex:\todo{R2.14}We evaluated Sarf also within applications that use its API 
+intro.tex:\tododone{ we will consistently in this paper refer to tokenization as the 
+intro.tex:%\itodo{fix section summary at end of introduction when done}
+intro.tex:\todo{R2.1A} In Section~\ref{sec:motivation}, we motivate Sarf and discuss how it deals with existing morphological analysis challenges. 
+intro.tex:\todo{R1.2}In Section~\ref{sec:results}, we discuss the use of Sarf with several NLP tasks and 
+macros.tex:\newcommand{\itodo}[1]{\todo[inline,color=yellow]{#1}}
+macros.tex:%\newcommand{\itodo}[1]{}
+macros.tex:\newcommand{\tododone}[1]{}
+macros.tex:%\newcommand{\tododone}[1]{\todo[inline,color=green]{\st{#1} }}
+motivation.tex:\todo{R2.1A}
+motivation.tex:SAMA~\citep*{SAMAmain, Kulick:10}, \todo{R3.18} 
+motivation.tex:For example, given the word \utfRL{وسيلعبونها}\todo{R2.5}\footnote{The paper uses ArabTex package \citep{arabtex} for Arabic text editing and transliteration. ArabTex package is recommended and used by \citep{IntroNHabash}.} (and they will play it), 
+motivation.tex:\tododone{good to check whether the 1.364 percent reduce ambiguity or not and how often 
+motivation.tex:\RL{il_A\nospace almdrsT} \transtrue \todo{R2.12} (to the school)
+motivation.tex:\todo{2.1A}None of existing morphological analyzers, up to our knowledge, 
+motivation.tex:and can be concatenated to the stem \noTrutfRL{لعب} \todo{R2.12} (he plays) to form 
+motivation.tex:    \item $L_p$ and $L_x$ contain redundant entries which result \todo{R2.13 corrected results} in maintenance and consistency issues~\citep*{LRECMaamouriKB08,lrecKulickBM10}.
+motivation.tex:The analysis of the example \utfRL{للقضاء} (for/to the justice/judiciary\todo{R2.12 gloss}) using SAMA,
+motivation.tex:\todo{R.3.5}
+motivation.tex:\todo{R3.1}
+motivation.tex:prefix-prefix rules.\todo{R2.4} 
+nlesarf.tex:%\listoftodos
+nlesarf.tex:\section{Related work}\todo{R2.8}
+overview.tex:\itodo{what about the NDSarf algorithm for the traversal?
+overview.tex:\todo{R2.10 fig1}
+overview.tex:encode affix-stem compatibility rules which are also taken from Buckwalter~\citep{Buckwalter:02} \todo{3.9 check if from Sarf as well}.
+overview.tex:the ``use diacritic'' \todo{R3.19} option 
+overview.tex:\tododone{
+overview.tex:\todo{R1.4}
+overview.tex:\todo{R2.10 fig2}
+overview.tex: (and they will play it) \todo{R2.12}. The solution construction process also reveals how Sarf implements agglutinative and fusional affixes and how it handles `run-on' words.
+overview.tex:A square node implies that an $\epsilon$-edge from ${\cal P}$ to ${\cal S}$ is a valid transition, i.e. the morpheme sequence can start as a stem without a prefix \todo{R1.7}. All edges in ${\cal P}$ starting from the root node with the current parsed character 
+overview.tex:\todo{Qstn: does sarf spawn a copy also here. I suppose yes. But the way it was written shows that it does not (as a first step).}
+overview.tex:\todo{R1.6}Otherwise, it moves to a non-morpheme node or dies. 
+overview.tex:\todo{R1.7}In case of string with only stem sequences, empty transitions $\epsilon$ between ${\cal S}$ and ${\cal X}$, ${\cal X}$ and ${\cal P}$, 
+overview.tex:\itodo{R2.4.}This section describes how Sarf  constructs the morphological solutions of an input string. We use \RL{w-'klh} as an example input for illustration throughout the section.
+overview.tex:\itodo{R2.11}
+overview.tex:the morpheme \RL{'kl} with POS at highest priority followed by \todo{R2.13 added missing ``by"}VMF and gloss. 
+overview.tex:if the developer is interested in the POS first. In such case, if \cci{Noun} POS is required, only the right hand side branch of \RL{'kl} solution tree (f) is considered. This would be much simpler than the case of (e) where every single branch has to be checked to determine whether to include it or not in the solution. More details on the API are provided in Section \ref{s:api}. \todo{3.8}\\
+packages.tex:\usepackage{todonotes}
+redinc.tex:\todo{R1.9.}The first five rows can be replaced with two atomic affix morphemes ( \RL{f} and \RL{y})  
+redinc.tex:\todo{1.10}
+redinc.tex:Most of the inconsistencies are direct results of partially redundant entries with erroneous tags. Experiments described later in section \ref{s:s:lexicon_consistency} shows that most of the detected inconsistencies are specifically related to gloss (Table~\ref{t:comp:SAMA}). \todo{3.12 should I add the explanation the review suggests?}
+redinc.tex:\item \label{inc:relaxed}\todo{R3.11} $L_p$ misses entries for Alef prefixes with omitted hamza or madda due to relaxed
+redinc.tex:    SAMA POS tags should spell out the repeated consonants if each belongs to one.\todo{R3.19 please double check if meaning is preserved}  
+related.tex:MADA+TOKAN and MADAMIRA provide \todo{R2.13 corrected provides} partial control over the output, and not the 
+related.tex:analysis, where MADA+TOKAN allows the user to select \todo{R2.13 corrected selected} from several segmentation schemes and 
+related.tex:compute the product of the solutions, eliminate \todo{R2.13 corrected eliminates} the 
+related.tex:incompatible solutions, and then report \todo{R2.13 corrected reports} the valid solutions. 
+related.tex:\todo{R3.6}
+related.tex:\todo{R.3.15}
+related.tex:considers partial diacritics and performs \todo{R2.13 corrected perform} morphological 
+Response_rev1.tex:%\usepackage{todonotes}
+Response_rev1.tex:%\newcommand{\itodo}[1]{\todo[inline,color=green]{#1}}
+results.tex:\itodo{list all experiments that we report on and what each of them proves. 
+results.tex:\itodo{add places as a feature to compute . for SAMA/BAMA and elixir look for words whose gloss has: country, town, city, place, continent, village, state, capital, }
+results.tex:\itodo{review the 100 percent precision and recall results!}
+results.tex:\itodo{the accuracy comparison between Buckwalter, ElixirFM is a result of two things: 
+results.tex:\todo{R1.14} Since Sarf preserves correspondence when performing segmentation, it is capable of
+results.tex:\todo{R1.16}
+results.tex:the lexicons of BAMA.\todo{R1.15.} 
+results.tex:\tododone{the table below should include the atomic features that sarf is concerned with. 
+results.tex:\todo{R1.5}
+results.tex:\todo{R1.17}
+results.tex:\todo{R2.13}
+rev1.tex:\usepackage{todonotes}
+rev1.tex:\newcommand{\itodo}[1]{\todo[inline,color=green]{#1}}
+Reviewer1.comments.tex:%\mayatodo{Maya: Read paper of SAMA on segmentation to understand the \% of it (check references -Maamouri et al. 2008)}

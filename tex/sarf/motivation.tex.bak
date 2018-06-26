@@ -1,0 +1,187 @@
+\todo{R2.1A}
+In this section, we discuss issues that currently challenge morphological analysis 
+and explain how Sarf resolves them. 
+\\\\
+\textbf{\textit{Exhaustive enumeration and performance:}}\\
+Current morphological analyzers such as 
+%Buckwalter~\citep*{Buckwalter:02},
+BAMA~\citep*{Buckwalter:02}, 
+SAMA~\citep*{SAMAmain, Kulick:10}, \todo{R3.18} 
+Beesley~\citep*{Beesley:01}, 
+MADAMIRA~\citep*{pasha2014madamira}, 
+and ElixirFM~\citep*{Otakar:07} 
+take as input white space delimited tokens,
+consider them as words,
+and enumerate all possible morphological solutions for each word. 
+
+\input{solutiontable}
+
+For example, given the word \utfRL{وسيلعبونها}\todo{R2.5}\footnote{The paper uses ArabTex package \citep{arabtex} for Arabic text editing and transliteration. ArabTex package is recommended and used by \citep{IntroNHabash}.} (and they will play it), 
+an analyzer may return the solution presented in Table~\ref{t:solexample} with 
+a prefix, a stem, a suffix, and their corresponding 
+POS, transliteration, and gloss tags. 
+%\noTrutfRL{وسيـ} with POS tag \cci{wa/CONJ+sa/FUT+ya/IV3MP} 
+%and gloss tag \cci{and they will}, 
+%the stem 
+%\noTrutfRL{لعبـ} with POS tag \cci{loEab/VERB\_IMPERFECT}
+%and gloss tag  \cci{play},
+%and 
+%the suffix \noTrutfRL{ونها} with POS tag \cci{uwna/IVSUFF\_SUBJ:MP\_MOOD:I+hA/IVSUFF\_DO:3FS}
+%and gloss tag \cci{[MASC.PL.]+it/them/her}. 
+The prefix 
+\noTrutfRL{وسيـ} can be further segmented into 
+(1) the proclitic \noTrutfRL{و} with POS tag \cci{CONJ} and gloss tag \cci{and},
+(2) the proclitic \noTrutfRL{سـ} with POS tag \cci{FUT} and gloss tag \cci{will},
+and (3) the prefix \noTrutfRL{ـيـ} with POS tag \cci{IV3MP} and gloss tag \cci{they(people)}.
+Similarly, the suffix 
+\noTrutfRL{ونها} 
+can be segmented into
+(1) the suffix \noTrutfRL{ونـ}, forming a circumfix with \noTrutfRL{ـيـ}, 
+with POS tag \cci{IVSUFF\_SUBJ:MP\_MOOD:I}
+and gloss tag \cci{[MASC.PL.]}, 
+and (2) the enclitic \noTrutfRL{ـها} with POS tag \cci{IVSUFF\_DO:3FS}
+and gloss tag \cci{it/them/her}. 
+%Some analyzers may refer to \noTrutfRL{و} and \noTrutfRL{سـ} as proclitics, 
+%and may refer to \noTrutfRL{ـها} as an enclitic.
+\novocalize
+
+The exhaustive enumeration of all solutions may hurt performance and may
+not be necessary or appropriate
+in some applications as noted in~\citep*{Maamouri:10}. 
+Thus the need of a customizable morphological analyzer that adapts to 
+application specific requirements.
+\\\\
+\fullvocalize
+\textbf{\textit{Diacritics and accuracy:}}\\
+The accuracy of morphological analysis %, with respect to the context,
+suffers from inherent difficulties
+%of morphological analysis 
+of the Arabic language such as omitted diacritics and position dependent letter
+forms. 
+%
+Diacritics, i.e. short vowels, such as 
+fatha (\RL{|Ba}), damma (\RL{|Bu}), kasra (\RL{|Bi}), 
+tanween (i.e. doubled diacritic including \RL{|BaN}, \RL{|BuN}, \RL{|BiN}), 
+\transfalse and sokun (\RL{|B}) 
+are almost always omitted in written Arabic text as they can be 
+inferred by human readers.
+The mark \novocalize shadda (\RL{|BB}) \transtrue denotes the repetition
+of the marked character and is also often omitted. 
+Partial diacritics can help disambiguate solutions. 
+%This is a source of disambiguity. 
+Consider the unvocalized word \RL{'kl} with nine morphological solutions.  
+Its partially vocalized version \utfRL{أكِل} has only two solutions; 
+VMF \utfRL{أَكِل} with gloss \cci{I+trust/put in charge}, and 
+VMF \utfRL{أُكِلّ} with gloss \cci{I+make tired/wear out}.
+
+Analyzers such as BAMA and SAMA ignore partial diacritics while 
+other analyzers such as \citep*{Beesley:01,Chaaben:10,Attia:00} make use of 
+the partial diacritics to reduce ambiguity. 
+Sarf provides an option that enables the use of existing diacritics for disambiguation, 
+and considers the diacritics at morpheme boundaries to generate only the diacritic 
+matching solutions, rather than generating all morphological solutions then 
+filtering them. 
+\\\\
+\tododone{good to check whether the 1.364 percent reduce ambiguity or not and how often 
+they are correct!?
+evidence that they exist and can be functional (mostly correct).}
+\textbf{\textit{Problem of `run-on' words:}}\\
+Arabic letters have up to four different forms
+corresponding to their position in a word, i.e, beginning,
+middle, end, and separate word forms. 
+This allows the phrase \transfalse
+\RL{il_A\nospace almdrsT} \transtrue \todo{R2.12} (to the school)
+to be visually recognizable
+as two separate words \RL{il_A} (to) and \RL{almdrsT} (the school) 
+without the need of a delimiter space in between. 
+The reason is the first word \RL{il_A} ends with
+\RL{_A} a non-connecting letter. 
+These words, referred to as `run-on' words~\citep*{Buckwalter:04},
+occur regularly, and greatly increase the
+difficulty of tokenization. 
+\todo{2.1A}None of existing morphological analyzers, up to our knowlege, 
+resolve this issue. Sarf on the other hand does by the structures and rules it introduces, which are further discussed in the next issue.
+\\\\
+\input{affixtable}
+\textbf{\textit{Structure of existing analyzers and related problems:}}\\
+Concatenative morphological analyzers~\citep{Buckwalter:02,Kulick:10} %BAMA,SAMA
+are based on lexicons of prefixes $L_p$, 
+stems $L_s$, and suffixes $L_x$. 
+As shown in Table~\ref{t:affixes}, each entry in a lexicon includes the morpheme, 
+its vocalized form with diacritics, 
+a {\em concatenation compatibility category} (CCC) rule, 
+a gloss tag, and a POS tag.
+Separate CCC rules specify the compatibility of prefix-stem 
+$R_{ps}$, stem-suffix $R_{sx}$, and prefix-suffix (circumfix) $R_{px}$ concatenations. 
+The affixes \noTrutfRL{و} and 
+\noTrutfRL{يـ} in the before mentioned example are valid standalone prefixes, 
+and can be concatenated to the stem \noTrutfRL{لعب} \todo{R2.12} (he plays) to form 
+\noTrutfRL{ولعب} (and he plays) and
+\noTrutfRL{يلعب} (he is playing), respectively. 
+%In addition, the morpheme \noTrutfRL{سـ} can connect to \noTrutfRL{يلعب} to form 
+%\noTrutfRL{سيلعب}. 
+The $L_p$ and $L_x$ lexicons contain also all final forms of concatenated affixes
+as shown in Table~\ref{t:affixes} for sample morphemes. 
+
+This is the source of several problems: 
+\begin{itemize}
+%\vspace{-2cm}
+    \item $L_p$ and $L_x$ contain redundant entries which result \todo{R2.13 corrected results} in maintenance and consistency issues~\citep*{LRECMaamouriKB08,lrecKulickBM10}.
+    \item Augmenting $L_p$ and $L_x$ with additional morphemes, such as \utfRL{أَ} (the question glottal hamza), 
+      may result in a quadratic increase in the size of the lexicons~\citep*{Hunspell}.
+      The additional morpheme may attach to exiting morphemes. 
+      Currently, this results in adding all the resulting morphemes to the BAMA and SAMA lexicons. 
+    \item The $L_p$ and $L_x$ lexicons are larger than needed especially that 
+      they have to account 
+      for several forms of a morpheme with varying diacritics.
+    \item The concatenated forms in $L_p$ and $L_x$ contain concatenated POS and 
+      other tags. 
+%        The segmentation correspondence between the prefix concatenated from several morphemes and the tags associated with it is lost. 
+%        In several cases, this leads to missing correspondence between the tokens of the morphological 
+%        solution and the segmentation of the original word.
+The alignment and correspondence between the original word and its
+morphemes with the tags of its morphological solution 
+are essential to the success of NLP tasks such as MT 
+and IE~\citep*{Regina2011,ELRASemmar08}.
+The analysis of the example \utfRL{للقضاء} (for/to the justice/judiciary\todo{R2.12 gloss}) using SAMA,
+generates the morphological solution \cci{li/PREP + Al/DET + qaDA'/NOUN}.
+The issue of the alignment and correspondence between the original word \noTrutfRL{للقضاء} 
+and its morphemes arises as the concatenation of the unvocalized prefix morphemes 
+\cci{li} and \cci{Al} is not the same as the corresponding prefix 
+segment \noTrutfRL{لل} in the original word. 
+\todo{R.3.5}
+This is not a problem for SAMA, but rather for the applications that 
+use the SAMA output such as treebanking that is interested in \cci{li} be present
+as a separate leaf in the syntactic tree. 
+Sarf provides a general solution for the segmentation correspondence problem 
+since the valid compound affixes preserve the input text segmentation. 
+In particular, a partial affix \noTrutfRL{ل} \cci{Al/DET}
+connects to the atomic affix \noTrutfRL{ل} \cci{li/PREP} and resolves the problem.
+
+%is segmented into two tokens:
+%\cci{li/PREP} and \cci{Al/DET + qaDA'/NOUN}~\citep{LRECMaamouriKB08}. 
+%The best approximation of the unvocalized entry 
+%of each token is
+%\noTrnoVocRL{li} and \noTrnoVocRL{Alqa.dA'}, respectively, 
+%with an extra letter \RL{A}. 
+%This is not a faithful representation of the original text data 
+%and the segmentation does not correspond with that of the
+%input text.
+\end{itemize}
+
+
+\todo{R3.1}
+Alternatively, 
+Sarf extends and refines the lexicons and compatibility category rules of BAMA and SAMA 
+such that:
+\begin{itemize}
+  \item it represents only atomic affix morphemes in the lexicons,
+  \item it adds prefix-prefix $R_{pp}$ and suffix-suffix $R_{xx}$ agglutinitive and 
+    fusional rules,
+  \item it generates compound affixes from the atomic ones using $R_{pp}$ and $R_{xx}$, and
+  \item it extends the stem lexicon with additional words necessary for the NLP applications it considers.
+\end{itemize}
+
+Considering the enteries of Table \ref{t:affixes} as example, Sarf represents them using 
+only five atomic affix morphemes and five 
+prefix-prefix rules.\todo{R2.4} 

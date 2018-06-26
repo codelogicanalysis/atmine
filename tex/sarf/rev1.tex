@@ -1,0 +1,77 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=1.5in,left=35mm,right=20mm, top=20mm, bottom=20mm ]{geometry}
+
+\usepackage{url}
+\usepackage{todonotes}
+\usepackage{enumitem}
+\usepackage{amssymb}
+
+% used for cross reference from psq2aig.tex
+\usepackage{xr} 
+\externaldocument{psqBMCaig}
+% You ou can also add a prefix: 
+%\externaldocument[I-]{chapterI}
+% then you can reference it as \ref{I-a}
+
+\RequirePackage{xspace}
+\linespread{1.5}
+
+\newcommand{\cci}[1]{\mbox{\textup{\small \texttt{#1}}}}
+\newcommand{\psqlanguage}{\ensuremath{\mathit{J}}\xspace}
+\newcommand{\psqcore}{\ensuremath{\mathit{Jcore}}\xspace}
+\newcommand{\psqtool}{\ensuremath{\{\cal P\}{\cal S}\{\cal Q\}}\xspace}
+\newcommand{\oneloop}{\ensuremath{\mathit{\cal O}lp}\xspace}
+\newcommand{\true}{\ensuremath{\mathit{true}}\xspace}
+\newcommand{\false}{\ensuremath{\mathit{false}}\xspace}
+\newcommand{\itodo}[1]{\todo[inline,color=green]{#1}}
+\newcommand{\Pm}{\ensuremath{\mathcal{S}}\xspace}         % program
+
+\title{Sarf: Fast and Application Customizable Arabic Morphological Analyzer
+ \\
+~~ \\
+  Revision summary }
+\date{}
+
+\begin{document}
+\maketitle
+
+{\noindent Dear Editor-in-Chief and Expert Reviewers,}
+
+We would like to thank you for your recommendations, valuable comments, 
+and constructive observations. 
+In this revised version of the paper we made every effort to address the 
+concerns brought up in your review. 
+This document includes a summary of our changes and lists each of the 
+reviewers’ comments followed by a description of how it was addressed. 
+
+For the convenience of the reviewers, we also provide online 
+(\url{http://research-fadi.aub.edu.lb/psqaigfiles/psqaig-tse-revised-annotated.pdf})  
+a version of the revised paper with annotations that point to changes and 
+revisions and relate them to the concerns of the reviewers. 
+
+Thank you,
+\newline
+\hrule
+
+\input{editorComments.tex}
+~\newline
+\hrule
+
+\input{Reviewer1.comments}
+~\newline
+\hrule
+
+\input{Reviewer2.comments}
+~\newline
+\hrule
+
+\input{Reviewer3.comments}
+~\newline
+\hrule
+
+\newsavebox\mytempbib
+\savebox\mytempbib{\parbox{\textwidth}{
+%\input{psqBMCaig.bbl}
+}}
+
+\end{document}

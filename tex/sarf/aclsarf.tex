@@ -1,0 +1,130 @@
+\documentclass[3p,times,procedia]{elsarticle}
+\flushbottom
+
+%% The `ecrc' package must be called to make the CRC functionality available
+\usepackage{ecrc}
+%\usepackage{amsmath}
+
+
+%% set the volume if you know. Otherwise `00'
+\volume{00}
+
+%% set the starting page if not 1
+\firstpage{1}
+
+%% Give the name of the journal
+\journalname{Procedia Computer Science}
+
+%% Give the author list to appear in the running head
+%% Example \runauth{C.V. Radhakrishnan et al.}
+\runauth{Author name}
+
+%% Give the abbreviation of the Journal.
+\jid{procs}
+
+\input{packages}
+
+\input{macros}
+
+\begin{document}
+\begin{frontmatter}
+
+\dochead{3rd International Conference on Arabic Computational Linguistics, ACLing 2017, 5--6 November 2017, Dubai, United Arab Emirates}%
+%% Use \dochead if there is an article header, e.g. \dochead{Short communication}
+%% \dochead can also be used to include a conference title, if directed by the editors
+%% e.g. \dochead{17th International Conference on Dynamical Processes in Excited States of Solids}
+
+\title{Sarf: Fast and Application Customizable Arabic Morphological Analyzer}
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{<author name>}
+%% \address[label1]{<address>}
+%% \address[label2]{<address>}
+
+
+%\author[a]{First Author} 
+%\author[b]{Second Author}
+%\author[a,b]{Third Author\corref{cor1}}
+
+%\address[a]{First affiliation, Address, City and Postcode, Country}
+%\address[b]{Second affiliation, Address, City and Postcode, Country}
+
+
+%% From NLE %%
+%\author[F. Zaraket, A. Jaber, J. Makhlouta, and M. Safieddine]
+%       {Fadi A. Zaraket\and Ameen Jaber\and Jad Makhlouta\and Maya H. Safieddine\\
+%        Electrical and Computer Engineering,\\
+%        American university of Beirut}
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\begin{keyword}
+Type your keywords here, separated by semicolons ; 
+
+%% keywords here, in the form: keyword \sep keyword
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+%\cortext[cor1]{Corresponding author. Tel.: +0-000-000-0000 ; fax: +0-000-000-0000.}
+\end{frontmatter}
+
+%\correspondingauthor[*]{Corresponding author. Tel.: +0-000-000-0000 ; fax: +0-000-000-0000.}
+%\email{author@institute.xxx}
+
+
+\section{Introduction}
+\label{sec:intro}
+\input{intro}
+
+\section{Motivation}
+\label{sec:motivation}
+\input{motivation}
+
+\section{Related work}
+\label{sec:related}
+\input{related}
+
+\section{Sarf}
+\label{sec:overview}
+\input{overview}
+
+\section{Application specific API}
+\label{sec:api}
+\input{api}
+
+%\section{Agglutinative and fusional morphemes}
+%\label{sec:aggaffix}
+%\input{aggaffix}
+
+%%\subsection{Redundancy and inconsistencies}
+%%\label{sec:motivation}
+%\input{redinc}
+
+\section{Diacritics}
+\label{sec:diac}
+\input{diacritics}
+
+\section{Results}
+\label{sec:results}
+\input{results}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{conclusion}
+
+{\footnotesize
+%\linespread{1.5}
+%\bibliographystyle{apacite}
+\bibliographystyle{elsarticle-harv}
+\bibliography{refs/aclsarf}
+}
+
+%\label{lastpage}
+
+\end{document}

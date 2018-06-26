@@ -1,0 +1,40 @@
+\begin{table}
+\begin{minipage}{\textwidth}
+\relsize{-1.5} {    
+    \begin{tabular}{llcccccc}
+\hline \hline
+          &       & \multicolumn{2}{c}{Al Kafi} & \multicolumn{2}{c}{Al Istibsar} & \multicolumn{2}{c}{Ibn Hanbal} \\
+\cline{3-8}
+          &       & Simple & Refined & Simple & Refined & Simple & Refined \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Proper Names}} & precision &       & 0.56  &       & 0.42  &       & 0.57 \\
+    \multicolumn{1}{l}{} & recall &       & 0.94  &       & 0.95  &       & 0.98 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Tell connectors}} & precision &       & 0.56  &       & 0.7   &       & 0.83 \\
+    \multicolumn{1}{l}{} & recall &       & 0.99  &       & 0.99  &       & 1 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Family connectors}} & precision &       & 0.91  &       & 0.9   &       & 1 \\
+    \multicolumn{1}{l}{} & recall &       & 1     &       & 0.98  &       & 1 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Total}} & precision &       & 0.52  &       & 0.56  &       & 0.69 \\
+    \multicolumn{1}{l}{} & recall &       & 0.97  &       & 0.71  &       & 0.99 \\ \hline
+    Sarf running time (secs.) &       & 2.97  & 1.32  & 2.93  & 1.31  & 0.25  & 0.096 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Narrator name}} & precision &       & 0.93  &       & 0.97  &       & 0.97 \\
+    \multicolumn{1}{l}{} & recall &       & 0.99  &       & 0.97  &       & 0.97 \\
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Narrator chain}} & precision &       & 0.99  &       & 0.97  &       & 0.97 \\
+    \multicolumn{1}{l}{} & recall &       & 0.97  &       & 1     &       & 1 \\
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Hadith segmentation}} & precision &       & 0.97  &       & 0.97  &       & 0.97 \\
+    \multicolumn{1}{l}{} & recall &       & 0.97  &       & 1     &       & 1 \\ \hline
+          &       & SAMA  & ElixirFM & SAMA  & ElixirFM & SAMA  & ElixirFM \\
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Proper Names}} & precision & 0.36  & 0.42  & 0.35  & 0.37  & 0.55  & 0.64 \\
+    \multicolumn{1}{l}{} & recall & 0.83  & 0.77  & 0.81  & 0.73  & 0.79  & 0.76 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Tell connectors}} & precision & 0.85  & 0.84  & 0.9   & 0.92  & 0.92  & 0.94 \\
+    \multicolumn{1}{l}{} & recall & 0.99  & 0.99  & 1     & 1     & 1     & 1 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Family connectors}} & precision & 0.65  & 0.78  & 0.73  & 0.77  & 0.9   & 0.95 \\
+    \multicolumn{1}{l}{} & recall & 1     & 0.41  & 0.98  & 0.42  & 1     & 0.69 \\ \hline
+    \multicolumn{1}{l}{\multirow{2}[0]{*}{Total}} & precision & 0.5   & 0.56  & 0.54  & 0.55  & 0.71  & 0.78 \\
+    \multicolumn{1}{l}{} & recall & 0.92  & 0.77  & 0.91  & 0.74  & 0.9   & 0.83 \\ \hline
+    Running time (secs.) &       & 6.65  & 2.78$\times60^2$ & 4.55  & 2.3$\times60^2$ & 0.66  & 29.2$\times$60 \\
+    \hline \hline
+\end{tabular}%
+}
+\end{minipage}
+  \caption{Results of the hadith case study with Sarf.}
+  \label{t:hadithresallresultsnew}%
+\end{table}%

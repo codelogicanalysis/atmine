@@ -1,0 +1,251 @@
+\begin{table}[tb]
+%\caption{Comaprison of Sarf with SAMA~\citep{Kulick:10}, 
+%ElixirFM~\citep{Otakar:07}, 
+%MADA+TOKAN~\citep{},
+%MADAMIRA~\citep{pasha2014madamira}, 
+%Beesley~\citep{}, and
+%Xerox~\citep{Beesley:01}
+%}
+\centering
+\begin{minipage}{\textwidth}
+\caption{\label{tab:comparison}Comparison of Sarf with SAMA, 
+ElixirFM, MADA+TOKAN, MADAMIRA, Beesley, and Fassieh}
+\relsize{-1} {
+  \begin{tabular}{lccccccc}\toprule
+             & Sarf & SAMA & ElixirFM & MADA+TOKAN & MADAMIRA & Beesley & Fassieh\\ \colrule
+Application customizable & $\checkmark$ & - & - & - &  - & - & - \\[4pt]
+Feature selection & $\checkmark$ & - & - &  - & $\checkmark$ & - & - \\[4pt]
+Run-on words & $\checkmark$ & - & - & - & - & - & - \\[4pt]
+Partial diacritics & $\checkmark$ & - & - & - & - & $\checkmark$ & - \\[4pt]
+Affix segmentation & $\checkmark$ & - & functional & tokenization schemes & statistical & - & - \\[4pt]
+Root-Pattern & - & - & $\checkmark$ & - & - & $\checkmark$ & $\checkmark$ \\[4pt]
+Automated disambiguation & - & - & - & SVM & SVM & - & maximum  aposteriori  \\ 
+\botrule
+\end{tabular}
+}
+\end{minipage}
+\end{table}
+
+
+In this section, we review work related to Arabic morphological analyzers,
+segmentation correspondence, 
+partial diacritics, and application specific analyzers and compare it to Sarf.
+
+Table~\ref{tab:comparison} summarizes the comparison between Sarf 
+and related Arabic morphological analyzers. 
+Only ElixirFM~\citep{Otakar:07}, Beesley~\citep*{Beesley:03}, and Fassieh~\citep*{attia2009fassieh} 
+provide root-pattern analysis of the stem. 
+ElixirFM, MADAMIRA~\citep{pasha2014madamira}, and MADA+TOKAN~\citep*{Habash:09} are 
+based on BAMA and SAMA and use functional and statistical techniques to 
+address the segmentation problem by reverse engineering the multiple tags of the 
+affixes. 
+Sarf differs in that the segmentation is an output of the morphological
+analysis and not a reverse engineering of the multi-tag affixes. 
+Sarf is the only analyzer that addresses the 'run-on words' problem 
+and solves it while performing the analysis. 
+MADA+TOKAN, MADAMIRA, and Fassieh apply morphological disambiguation 
+using support vector machines (SVM), 
+and {\em maximum a posteriori} (MAP) estimation, respectively.
+Beesley and Sarf consider partial diacritics to eliminate morphological 
+solutions that are not in agreement with the partial diacritization. 
+Sarf provides an application customizable analyzer that enables 
+the developer to control and refine the analysis on the fly 
+and filter the solution features. 
+MADA+TOKAN and MADAMIRA provide \todo{R2.13} partial control over the output, and not the 
+analysis, where MADA+TOKAN allows the user to select \todo{R2.13 } from several segmentation schemes and 
+MADAMIRA enables the user to select solution features.
+
+Sarf builds upon the lexicon of Buckwalter\citep{Buckwalter:02}.
+SAMA is an updated version of BAMA with increased lexicon coverage 
+and additional POS tags~\citep*{maamouri2010ldc}.
+Sarf differs from Buckwalter and SAMA in that it defines 
+agglutinative and fusional affixes using a shorter list of affixes
+and a list of concatenation compatibility rules that allow 
+prefix-prefix and suffix-suffix concatenations.
+This allows Sarf to better maintain %and propagate 
+the morphological tags associated with the affixes. 
+
+Buckwalter\citep{Buckwalter:02} and SAMA~\citep{Maamouri:10} 
+produce a set of segmentation solutions for
+a word, compute the morphological solutions for each segment, 
+compute the product of the solutions, eliminate \todo{R2.13 } the 
+incompatible solutions, and then report \todo{R2.13 } the valid solutions. 
+Sarf traverses the affix and stem structures with the input word
+character by character and keeps a stack of morpheme nodes. 
+When a morpheme node in a structure is met, 
+it is checked for compatibility with the stack of nodes. 
+Consequently, Sarf generates only the solutions with valid 
+segmentation, and reports only those with compatible stem and affix 
+concatenation. 
+
+SAMA was refined to interact with the Arabic Treebank(ATB)~\citep{Maamouri:04}  %Arabic Treebank at the Linguistic Data Consortium 
+project after the addition of a large new corpus. 
+The algorithmic changes in SAMA were done manually 
+to integrate with the ATB format. 
+Sarf API allows for customizable refinements 
+and allows Sarf to interact with any 
+application on the fly
+without the modification of the morphological engine itself
+as was reportedly required with SAMA~\citep{Maamouri:10} 
+
+Like ElixirFM~\citep{Otakar:07}, Sarf builds on the lexicon
+of the Buckwalter analyzer. 
+Sarf also uses deterministic parsing with tries and DAGs
+to implement the affix and stem structures. 
+We think that the inferential-realizational approach 
+of ElixirFM that is highly compatible with the 
+Arabic linguistic description~\citep*{Badawi:04}
+can benefit from many features unique to the Arabic language.
+Sarf leaves implementing that to the developer customization 
+through the API since in several cases the NLP application that uses the morphological analyzer
+needs only a partial linguistic model of Arabic.
+
+MADA+TOKAN~\citep{Habash:09} is a toolkit for Arabic tokenization, diacritization, 
+morphological disambiguation, POS tagging, stemming, and lemmatization. 
+Sarf performs all those tasks except for morphological disambiguation 
+where MADA uses SVM.
+\todo{R3.6}
+Sarf keeps a stack of the positions that partition text into morphemes 
+as part of the solution construction process. 
+Therefore, the text segments corresponding to the solution features is preserved 
+with no need for further post-processing. 
+%a separate segmentor such as TOKAN is not required. 
+
+%Similar to The MADA+TOKAN toolkit, 
+%Also, Sarf thinks of the several valid morphological analyses as 
+%a richness that should be exploited at a higher abstract level 
+%rather than an inaccuracy that should be corrected.
+
+MADAMIRA is a tool for Arabic morphological analysis and disambiguation 
+that is based on the general design of MADA, 
+an Arabic morphological analyzer and disambiguator, with additional components 
+inspired by AMIRA~\citep{pasha2014madamira}, a language independent SVM based analyzer. 
+MADAMIRA improves upon the two systems and returns information selectively 
+upon the request of the user. 
+Sarf provides means for the developer to control and adapt 
+the morphological analysis according to application needs. 
+Moreover, the API enables the developer to implement high level 
+applications such as NER which is provided by AMIRA.
+
+
+%Xerox rules can be compiled into specialized finite state
+%machine (FSM) based analyzers as described in~\citep{Beesley:03}.
+%However, the efficiency of the resulting analyzer depends on the
+%way the Xerox rules are written. 
+%Writing application specific Xerox grammars and rules, or modifying the existing ones, 
+%requires the NLP application developer to have deep knowledge 
+%of compilation techniques, context free grammars, 
+%and morphological analysis. 
+%%Other morphological analyzers such as 
+%%Amira~\citep{Diab:07,Benajiba:07},
+%%and MAGEAD~\citep{Habash:05}%, and MADA+TOKAN~\citep{Habash:09} 
+%%use machine learning and support vector machines (SVM) 
+%%to enhance the accuracy of the morphological analysis at the expense 
+%%of performance.
+
+Beesley~\citep{Beesley:03} compiles 
+Xerox rules into specialized finite state
+machine (FSM) based morphological analyzer.
+The number of machines 
+generated by a compiler for Xerox rules cannot be controlled by the developer of the analyzer, 
+and the composition of the FSMs into a single framework is a difficult task 
+~\citep{Beesley:01}.
+Consequently the efficiency of the resulting analyzer depends on the
+way the Xerox rules are written. 
+Writing application specific Xerox grammars and rules, or modifying the existing ones, 
+requires deep knowledge and insight from the NLP application developer
+in compilation techniques, context free grammars, 
+and morphological analysis. 
+Sarf constructs a framework of efficient structures %including 
+%a trie and two DAGs 
+that encode the stems and the agglutinative and fusional affixes, respectively.
+\todo{R.3.15}
+The structures are traversed in a manner similar to the Xerox finite state machines, 
+however, they are manually optimized to reduce the number of states and the 
+number of non-deterministic transitions. 
+Control on non-determinism is left to the compilers with Xerox.
+Sarf also provides an application customizable API that allows the developer 
+to control the analysis. 
+Doing the equivalent with Beesley 
+requires the modification of the Xerox rules and 
+the recompilation of the analyzer.
+Unlike Sarf, Beesley provides a root-pattern analysis of the stem.
+
+Fassieh is a commercial Arabic text annotation tool that 
+enables the production of large Arabic text corpora~\citep{attia2009fassieh}.
+The tool supports Arabic text factorization including 
+morphological analysis, POS tagging, full phonetic transcription, 
+and lexical semantics analysis in an automatic mode. 
+Unlike Sarf, Fassieh provides morphological 
+disambiguation and root-pattern analysis. 
+However, Fassieh does not provide segmentation of the affix 
+and reports it as a whole unit. 
+This tool is not directly accessible to the research community 
+and requires commercial licensing. 
+Sarf differs in that it is an open-source application 
+customizable tool that solves the affix segmentation and 'run-on words' problems. 
+
+The work in~\citep*{Attia:10} addresses the detection of 
+Arabic Multi-word Expressions (MWE). 
+They define MWEs as 'idiosyncratic interpretations 
+that cross word boundaries or spaces'. 
+Sarf adopts a similar approach for specific entities such as person names 
+and place names. 
+
+
+Several researchers stress the importance of 
+correspondence
+between the input string and the tokens of the morphological 
+solutions. 
+Some work uses POS tags and a syntactic morphological agreement
+hypothesis to refine 
+syntactic boundaries within words~\citep{Regina2011}.
+The work in~\citep*{LIMASemmar05}\citep{ELRASemmar08}
+uses an extensive lexicon 
+with 3,164,000 stems, stem rewrite rules~\citep*{Darwish:02}, 
+syntax analysis, proclitics, and enclitics to address the 
+same problem. 
+Parallel traversal of the input string and the tokens 
+of the morphological solution, while accounting for all possible
+SAMA normalizations, partially solves the problem as 
+reported in~\citep{LRECMaamouriKB08,lrecKulickBM10}.
+Later notes in the documentation of the ATB~\citep*{ATB32LDCNum}
+indicate that extensive manual work is still required and that
+later versions may drop the input tokens. 
+\citep{Regina2011} uses syntactic analysis to resolve the same problem. 
+%A significant amount of the literature on Arabic NLP uses the Arabic Tree Bank 
+%(ATB)~\citep{Maamouri:04} with tags 
+%generated from BAMA and SAMA for learning and 
+%evaluation~\citep{ShaalanMF10,Benajiba:07,jumaily2011}.
+
+The survey in~\citep{Sughaiyer:04} compares
+several morphological analyzers. 
+Analyzers such as~\citep*{Khoja:01}\citep{Darwish:02} 
+target specific applications in the analyzer itself 
+or use a specific set of POS tags as their reference.
+Sarf differs in that it is a general morphological 
+analyzer that reports all possible solutions. 
+It is application customizable in the sense that the API is used to 
+control and prioritize the analysis, refine the solution features, 
+and associate morphemes with developer-defined categories.
+
+The work in \citep{Chaaben:10,Attia:00,Beesley:01} 
+considers partial diacritics and performs \todo{R2.13 } morphological 
+disambiguation by filtering the full morphological solutions 
+and excluding inconsistent ones. 
+This approach constructs several solutions that will be excluded later. 
+Sarf considers diacritic consistency at the morpheme level instead of the final 
+solution level. 
+It checks for diacritic consistency %using Algorithm~\ref{t:consistent} 
+between the input morpheme and the candidate VMF features at every 
+accept node during the traversal of Sarf structures.
+Sarf analysis proceeds with the consistent VMFs
+and terminates the inconsistent ones.
+
+\citep{Beesley:01}, \citep{Chaaben:10}, and \citep{Attia:00} present 
+analyzers that consider partial diacritics for morphological disambiguation. 
+They filter the output morphological analysis based on 
+compatibility with input diacritics if found.
+Sarf differs in that it considers the diacritics at morpheme boundaries 
+to generate only the diacritic matching solutions, rather than 
+generating all morphological solutions then filtering them.

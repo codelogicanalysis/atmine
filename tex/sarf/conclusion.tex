@@ -1,0 +1,27 @@
+This paper presents Sarf, an application customizable Arabic morphological analyzer. 
+NLP applications can implement the Sarf API to 
+to refine the morphological analysis on the fly by 
+(1) selecting the interesting features, (2) prioritizing the features, and
+(3) accepting and rejecting solutions on the fly based on partial features reported 
+so far. 
+Sarf extends the SAMA and BAMA lexicons and 
+represents affixes using agglutinative and fusional morphemes which 
+(1) significantly reduces the size of the lexicons needed to represent Arabic morphology,(2) fixes inconsistencies in morphological features corresponding to morphemes,
+(3) simplifies the maintenance and augmentation of the affix morpheme lexicons, and
+(4) solves the segmentation correspondence problem between the morphological solution 
+and the original text. 
+Sarf also allows the NLP application to use partial diacritics for morphological solution
+disambiguation, and solves the `run-on words' problem.
+Sarf is available online as an open source tool. 
+\todo{R2.17}
+We evaluated Sarf in terms of effectiveness and performance with respect to 
+other tools such as SAMA, BAMA and ElixirFM. Sarf outperforms other analyzers in 
+run-time and slightly increases recall rates in morphological analysis due to the 
+extended lexicons. 
+We used Sarf application specific API in several NLP applications 
+for information extraction from Arabic documents and the applications
+provided more accurate results than existing analyzers with faster running time. 
+
+In the future, we plan to improve Sarf by allowing root analysis of stems,
+supporting inflectional stems, and providing a graphical user interface to 
+allow the users to edit the affix and stem morpheme lexicons of Sarf. 

@@ -1,0 +1,249 @@
+\section*{Reviewer 1 comments}
+This paper presents Sarf, an application customizable morphological analyzer for Arabic. 
+
+\begin{enumerate}[leftmargin=0mm,label=\bfseries CommentR1.\arabic*]
+\item \label{Review.1.1}
+While Sarf's API specification is new in this paper, the most significant research contributions, namely, Sarf's use of agglutinative morphemes and fusional concatenation rules (Section 4) along with the relevant experimental results (Section 7) had already been published in COLING 2012 cited in the paper.
+
+More specifically, among the five contributions noted on page 2,  and repeated below, only the first contribution is new to this paper, and all others have significant overlaps with the previously published  ``Arabic morphological analyzer with agglutinative affix morphemes and fusional concatenation rules''.
+
+1)      Sarf provides an application customizable morphological analyzer where the developer can control and refine analysis\\
+2)      Sarf is a novel Arabic morphological analyzer with agglutinative affixes and fusional affix concatenation rules based on textbook Arabic morphological rules and on the concatenation rules of existing analyzers\\
+3)      Sarf solves inconsistencies in existing affix lexicons of BAMA \& SAMA\\
+4)      Sarf solves correspondence between morphological solution and the morphological segmentation of the original text problem\\
+5)      Sarf is fully implemented and available online as an open source tool\\
+
+Both customizable API and agglutinative morphology sections need to be substantiated with more technical details and content.
+
+
+{\bf Response}\\
+We modified the contribution list in Section \ref{sec:intro} 
+to reflect the following. 
+The paper provides several additional contributions to the short paper published in COLING 2012 including the following.
+\begin{itemize}
+  \item The paper presents the application specific API. The API allows NLP application developers to do the following.
+    \begin{itemize}
+      \item Control the morphological analysis by dynamically accepting and rejecting solutions. 
+      \item Refine the analysis by dynamically selecting the morphological features to compute. 
+      \item Refine the analysis by dynamically prioritizing what features to compute first. 
+    \end{itemize}
+  \item Presents and describes in detail the engineering behind the efficient implementation of Sarf including the following.
+    \begin{itemize}
+      \item The organization of the lexical structures into root index tries during runtime. 
+      \item The traversal structures that allows multiple solutions to be considered at once.
+      \item The computation of the solution features in a tree based structure instead of computing all features and filtering later on.
+      \item The manual optimization of the traversal of the lexicon tries to reduce the typical excessive non-determinism exhibited in 
+        the finite state machine based solutions. 
+    \end{itemize}
+  \item The solution to the ``run-on'' words problem. 
+  \item The optional use of partial diacritics to disambiguate the analysis. 
+  \item Lists and discusses the inconsistencies found in BAMA and SAMA in details. This might be helpful for users of the two tools. 
+  \item Presents additional experimental results with discussions. 
+\end{itemize}
+$\blacksquare$
+
+\subsection*{Detailed Comments:}
+\item\label{Review.1.2}
+Page 5. In the paragraph above ``2 Overview'', mention of `Section 7 Results' is missing.
+
+\textbf{Response}\\
+Fixed.
+
+$\blacksquare$
+
+\item\label{Review.1.3}
+Page 6. What's the syntax of feature priority and feature selection rules?
+
+\textbf{Response}\\
+The rules are added using C++ APIs. We added more details about the API in Section ~\ref{sec:api}.
+$\blacksquare$
+
+\item\label{Review.1.4}
+Page 7. Regarding Fig 2, how are the DAG's for affixes generated in the first place? If possible, provide an algorithm for affix DAG generation given a list of prefixes and suffixes in the language?
+
+\textbf{Response}\\
+%Note that relations and category are not referred to in the text. \\
+%\\
+%In overview: ``construct Sarf structures process takes as input the lexicon, the fusional and agglutinative
+%rules, and the use diacritic option and constructs directed acyclic graph (DAG) structures
+%that encode the affixes, and a root index trie structure that encodes the stems (Aoe, 1989)."\\
+%Suggested modification in page 7: The diagram in Figure 2 illustrates the Sarf data structures. Subfigures (a), (b), and (c) in
+%Figure 2 represent P the prefix DAG, S the stem trie, and X the suffix DAG, respectively. \textit{The DAG's are generated using  lexicons, fusional and agglutinative
+%rules, and use diacritics (Aoe, 1989).} Boxes and circles \textit{in the DAG's} denote morpheme versus non-morpheme node.\\
+%Or\\
+We added the ConstructSarfDAGs algorithm in Section~\ref{sec:overview} 
+and modified the name of the section to 
+be Sarf. 
+$\blacksquare$
+
+\item\label{Review.1.5}
+Page 7. What is the speed-up gained by adopting affix DAGs and stem trie? How does the speed of Sarf with affix DAGs and stem trie compare with  BAMA and SAMA. Provide a table comparing the speed of Sarf and BAMA and SAMA, analogous to Table 10 for lexicon size.
+
+\textbf{Response}\\
+Table ~\ref{t:reduction} provides a comparison to SAMA and ElixirFM using the Hadith application. SAMA subsumes BAMA.
+We also performed an experiment where we computed all solutions with SAMA and Sarf and we report on that in text in 
+Section ~\ref{ss:perform}.
+$\blacksquare$
+
+\item\label{Review.1.6}
+Page 9.  Line 3. Regarding the statement ``Otherwise, it moves to a regular node or dies.'' 
+What is a regular node? How does it differ from “morpheme”, “non-morpheme” nodes introduced 
+on page 6 in relation to Fig.2 (4th line from the bottom)?
+
+\textbf{Response}\\
+This was a typo. We meant to say non-morpheme node.
+$\blacksquare$
+
+\item\label{Review.1.7}
+Page 9. 3rd paragraph regarding run-on word problem, what are the possible structures of run-on words? 
+Fig. 2 illustrates a traversal from the suffix node X to the prefix node P. 
+How are the run-on words consisting of only stem sequences or prefix-stem sequences handled?
+
+\textbf{Response}\\
+Run-on words are words that are separated by a non-connecting letter rather than a delimiter space. 
+In case of a string with only stem sequences, empty transitions between 
+${\cal S}$ and ${\cal X}$, ${\cal X}$ and ${\cal P}$, and ${\cal P}$ and ${\cal S}$ to accept nodes allows parsing the string. 
+We added this note at the end of the ``Running example'' section. \\
+$\blacksquare$
+
+\item\label{Review.1.8}
+Page 10. Is it possible to provide the complete list of partial affix morphemes?
+
+\textbf{Response}\\
+The complete list of partial affix morphemes that are generated from BAMA is available online in the open source tool. 
+The same algorithm applies for extracting morphemes from SAMA.  
+Our understanding is that our license covers only
+using SAMA and limits publishing an exhaustive list. 
+$\blacksquare$
+
+\item\label{Review.1.9}
+Page 12.  Regarding the statement ``The first five rows in Table 2 can be replaced with three atomic affix morphemes and one partial affix morpheme in Lp and three rules to generate compound morphemes in Rpp'',  what are the three atomic affix morphemes? What are the three rules to generate  compound morphemes in Rpp?
+
+\textbf{Response}\\
+The two atomic affix morphemes are \RL{f} and \RL{y}, and the partial morpheme is \RL{s}. The three rules are the rules that connects the category of \RL{f} to that of \RL{y}, the category of \RL{s} to that of \RL{y}, and the category of \RL{f} to that of \RL{s}. We added the morphemes and rules to the text.
+$\blacksquare$
+
+\item\label{Review.1.10}
+Page 12.  Regarding the statement ``With Sarf, the equivalent addition of ya requires only two rules in Rpp'',   what are the two rules?
+
+\textbf{Response}\\
+The two rules are those that connect the category of \RL{f} to that of \RL{y}, and the category of \RL{s} to that of \RL{y}. 
+We modified the text to reflect this. 
+$\blacksquare$
+
+\item\label{Review.1.11}
+Page 15.  Regarding diacritics, how does one determine whether or not a particular diacritic reduces the ambiguity of an input word? 
+Is it algorithmic?
+
+\textbf{Response}\\
+We explain the use of partial diacritics to disambiguate the solutions in Section~\ref{sec:diac}. 
+$\blacksquare$
+
+\item\label{Review.1.12}
+Page 18-19.  Regarding the statement ``Sarf differs in that it is a general morphological analyzer that reports all possible solutions'': 1) Is there any score associated with each solution? 2) Is it possible to restrict the number of solutions, analogous to $n$-best hypotheses in statistical models? 3) Is it possible to reduce the ambiguities on the basis of surrounding word contexts, i.e., word $n$-gram contexts?
+
+\textbf{Response}\\
+Sarf is a morphological analyzer that works on a word level. It does not consider context to disambiguate solutions and it currently does not 
+provide a score with the solution.
+$\blacksquare$
+
+\item\label{Review.1.13}
+Page 20.  7.1. Regarding Sarf used in the evaluation, how were the prefix, suffix, stem lexicons constructed? Have they been derived from ATBv3.1? 99.991\% agreement indicates that there is no out-of-vocabulary, which is almost impossible unless the lexicons are derived from the same data as the evaluation data.
+
+\textbf{Response}\\
+The lexicons of SAMA (and BAMA) are already updated according to the ATB.\\
+Sarf refines and extends the lexicons of SAMA (and BAMA) and applies some modifications according to affix rules derived from Arabic textbooks on morphology and syntax (AlRajehi, 2000a, 2000b; Mosaad, 2009) as discussed in Section 5.1.
+  
+The Arabic TreeBank (ATB) originally bases its morphological analysis on BAMA where acceptable morphological
+analysis reaches a minimum of 98.87\%. 
+Also, SAMA was updated according to ATB according to ``Consistent and Flexible Integration of Morphological Annotation in the Arabic Treebank'', S. Kulick \& M. Maamouri/
+
+%\mayatodo{Maya: Read paper of SAMA on segmentation to understand the \% of it (check references -Maamouri et al. 2008)}
+%\textbf{Remove in final rev version:}\\
+%The ATB uses a level of annotation more accurately
+%described as morphological analysis than as part-of-
+%speech tagging. \\
+%%%%%%
+%The source token is run through the
+%Buckwalter Arabic Morphological Analyzer (Buck-
+%walter, 2004). \\
+%%%%%%
+%This provides all possible analyses of
+%the token, each analysis consisting of (1) breaking a
+%word into its various segments (prefixes, suffixes, gen-
+%der and Case endings) and (2) providing a vocalization
+%for each segment, with the diacritics appropriate for
+%that solution. The annotator picks one such analysis
+%as the proper solution for this token. We refer to this
+%solution as the POS token, which includes the break-
+%down of the source token into its various segments,
+%each one vocalized.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%Maamouri 2004  Developing an Arabic Treebank: Methods, Guidelines, Procedures, and Tools
+%The automatic Arabic morphological
+%analysis and part-of-speech tagging was performed
+%with the Buckwalter Arabic Morphological
+%Analyzer, an open-source software package
+%distributed by the Linguistic Data Consortium
+%(LDC catalog number LDC2002L49).
+%\\
+%The Arabic Treebank: Part 2 corpus contains
+%125,698 Arabic-only word tokens (prior to the
+%separation of clitics), of which 124,740 (99.24\%)
+%were provided with an acceptable morphological
+%analysis and POS tag by the morphological parser,
+%and 958 (0.76\%) were items that the morphological
+%parser failed to analyze correctly.\\
+%Items with solution 124740 99.24\% \\
+%Items with no solution 958 0.76\% \\
+%Total 125698 100.00\% \\
+%Table 1. Buckwalter lexicon coverage, UMAAH
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Consistent and Flexible Integration of Morphological Annotation in the Arabic Treebank
+%In this paper we have discussed how we have overcome
+%these problems with consistent and more precise
+%categorization of each Treebank token for its relationship
+%with SAMA. We also discussed how we have improved
+%the creation of alternative forms of the tokens used in the
+%treebank structures.
+$\blacksquare$
+
+\item\label{Review.1.14}
+Page 20-21.  Regarding the statement ``Since Sarf preserves correspondence when performing segmentation,  it is capable of generating a vocalized tag in the ATB 'after' dataset, which carries more information in 15.47\% of the time than the counterpart POS derived vocabulary entry",  what does it mean to carry more information?
+
+\textbf{Response}\\
+%No vocalized types in ATB. Sarf has vocalized types. 
+By carrying more information, we mean adding  diacritics on the source token and not on modified tokens. \\
+We added the following to the article for illustration.
+
+In some cases, the POS derived ATB vocalization processes the source token by splitting it into multiple unvocalized POS tokens which are then converted into vocalized ATB tokens. 
+For example, 
+the word \utfRL{للقضاء} (for/to the justice/judiciary) is split into \cci{li/PREP + Al/DET + qaDA'/NOUN} tokens. 
+In such cases, the POS tokens differ from the source tokens. 
+$\blacksquare$
+
+\item\label{Review.1.15}
+Page 21. The transition from SAMA to BAMA $\rightarrow$ should be from BAMA to SAMA.
+
+\textbf{Response}\\
+Fixed.
+$\blacksquare$
+
+\item\label{Review.1.16}
+Add Sarf lexicon size to Table 10  for side-by-side comparisons with BAMA and SAMA
+
+\textbf{Response}\\
+We rewrote the table to clearly compare BAMA and SAMA to Sarf in terms of the size of the lexicons. 
+$\blacksquare$
+
+\item\label{Review.1.17}
+Page 23. Table 11. Why is the precision so much lower for Proper Names that that of Tell connectors and Family connectors? What is the number of truth, i.e. denominator in recall calculation for Proper Names, Tell connectors and Family connectors?
+
+\textbf{Response}\\
+Some of the proper names occur in the text outside the narrator chains. While they are correct proper names, they are not 
+necessarily wanted proper names for the application. We modified the paper to reflect that. 
+$\blacksquare$
+
+\end{enumerate}

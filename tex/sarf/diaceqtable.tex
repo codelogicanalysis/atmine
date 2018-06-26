@@ -1,0 +1,69 @@
+\begin{table}[tb]
+\centering
+\begin{minipage}{0.9\textwidth}
+\caption{\label{t:correspondence}Arabic string comparison with consideration of partial diacritics}
+\begin{tabular}{cccc} %\hline
+\toprule
+& word & string comparison & diacritic-aware consistency check 
+%\vspace{0.2em} 
+\\\colrule% \cline{2-4}
+(a)\label{ex:valid_correspondence} &
+	\begin{minipage}{0.1\textwidth}
+	\begin{tabular}{c} 
+	\utfRL{أَكّل} \\
+	{\bf $\updownarrow$} \\
+	\utfRL{أكَل} \\
+	\end{tabular}
+	\end{minipage}
+&
+	\begin{minipage}{0.3\textwidth}
+	\begin{tabular}{ccccc} 
+	\noVocRL{'} & \RL{|Ba} & \noVocRL{k} & \noVocRL{|BB} & \noVocRL{l} \\
+	$\updownarrow$ & \textcolor{red}{$\updownarrow$} & \textcolor{red}{$\updownarrow$} & 
+			\textcolor{red}{$\updownarrow$} & \textcolor{red}{?} \\
+	\noVocRL{'} & \noVocRL{k} & \RL{|Ba} & \noVocRL{l} \\
+	\end{tabular}
+	\end{minipage}
+&
+	\begin{minipage}{0.4\textwidth}
+	\begin{tabular}{ccccc} 
+	\noVocRL{'} & \RL{|Ba} & \noVocRL{k} & \noVocRL{|BB} & \noVocRL{l} \\
+%	\RL{'} & \fullvocalize \RL{|Ba} \novocalize & \RL{k} & \RL{|BB} & \RL{l} \\
+	$\updownarrow$ & \multicolumn{4}{l}{~~~~~$\nearrow$ ~~~~~ $\nearrow$ ~~~~ $\nearrow$}  \\
+%	\RL{'} & \RL{k} & \fullvocalize \RL{|Ba} \novocalize & \RL{l} \\
+     \noVocRL{'} &  \noVocRL{k} & \RL{|Ba} & \noVocRL{l} \\
+	\end{tabular}
+	\end{minipage}
+
+\\ \hline
+(b)\label{ex:invalid_correspondence} &
+	\begin{minipage}{0.1\textwidth}
+	\begin{tabular}{c} 
+	\utfRL{أُكِل} \\
+	{\bf \color{red} $\updownarrow$}  \\
+	\utfRL{أكَل} \\
+	\end{tabular}
+	\end{minipage}
+&
+	\begin{minipage}{0.3\textwidth}
+	\begin{tabular}{ccccc} 
+	\noVocRL{'} & \RL{|Bu} & \noVocRL{k} & \RL{|Bi} & \noVocRL{l} \\
+	$\updownarrow$ & \textcolor{red}{$\updownarrow$} & \textcolor{red}{$\updownarrow$} & 
+			\textcolor{red}{$\updownarrow$} & \textcolor{red}{?} \\
+	\noVocRL{'} & \noVocRL{k} & \RL{|Ba} & \noVocRL{l} \\
+	\end{tabular}
+	\end{minipage}
+&
+	\begin{minipage}{0.4\textwidth}
+	\begin{tabular}{ccccc} 
+	\noVocRL{'} & \RL{|Bu} & \noVocRL{k} & \RL{|Bi} & \noVocRL{l} \\
+	$\updownarrow$ & \multicolumn{4}{l}{~~~~~$\nearrow$ ~~~~~ \textcolor{red}{$\nearrow$} ~~~~ $\nearrow$}  \\
+	\noVocRL{'} & \noVocRL{k} & \RL{|Ba} & \noVocRL{l} \\
+	\end{tabular}
+	\end{minipage}
+\\ %\hline
+\botrule
+\end{tabular}
+\end{minipage}
+\end{table}
+

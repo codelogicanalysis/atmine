@@ -1,0 +1,3803 @@
+[31m[36m[36m[30mmake[1]: Entering directory `/home/fadi/projects/bb/atm/tex/nlesarfrev1/figs'
+[36m[49m[36mmake[1]: Nothing to be done for `all'.
+[36m[49m[36mmake[1]: Leaving directory `/home/fadi/projects/bb/atm/tex/nlesarfrev1/figs'
+[36m[49m[30m[30mpdflatex -output-directory=out nlesarf.tex
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./nlesarf.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, loaded.
+(./nle.cls
+Document Class: nle 2004/05/20 v1.0 Natural Language Engineering (NLE) document
+ class
+) (./packages.tex (/usr/share/texmf-texlive/tex/latex/arabtex/arabtex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/aconfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabaux.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/acmd.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts2.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/ascan.sty
+(ArabTeX) scanner for code `arabtex' installed.
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aparse.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/awrite.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbsymb.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aboxes.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabtoks.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabchrs.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/aligs.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aoutput.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/abidir.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atrans.sty
+(ArabTeX) ZDMG transliteration.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alatex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afoot.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/abjad.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alists.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/asect.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atabg.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006))
+Arabic processor `ArabTeX' [20060702 patch level 3.11s (02.07.2006)]
+(ArabTeX) ... now be patient ... )
+(/usr/share/texmf-texlive/tex/latex/psnfss/times.sty)
+(/usr/share/texmf-texlive/tex/latex/multirow/multirow.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def)))
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty))
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/relsize.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/enumerate.sty)
+(/usr/share/texmf-texlive/tex/latex/hyperref/hyperref.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifvtex.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/hycolor.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/xcolor-patch.sty))
+(/usr/share/texmf-texlive/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/etexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty))
+
+Package hyperref Warning: Height of page (\paperheight) is invalid (0.0pt),
+(hyperref)                using 11in.
+
+(/usr/share/texmf-texlive/tex/latex/latexconfig/hyperref.cfg)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/kvoptions.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/kvsetkeys.sty))
+Implicit mode ON; LaTeX internals redefined
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bitset.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/intcalc.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bigintcalc.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/pdftexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifluatex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ltxcmds.sty))))
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty))
+*hyperref using default driver hpdftex*
+(/usr/share/texmf-texlive/tex/latex/hyperref/hpdftex.def)
+(/usr/share/texmf-texlive/tex/latex/todonotes/todonotes.sty
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty)
+(/usr/share/texmf-texlive/tex/latex/xkeyval/xkeyval.sty
+(/usr/share/texmf-texlive/tex/generic/xkeyval/xkeyval.tex))
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+(/etc/texmf/tex/latex/config/color.cfg))
+(/usr/share/texmf/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-latex.def
+(/usr/share/texmf-texlive/tex/latex/ms/everyshi.sty))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfrcs.code.tex))
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/share/texmf/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def)))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathparser.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.random.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.base.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.round.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfloat.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorequick.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty))
+(/usr/share/texmf/tex/latex/pgf/utilities/pgffor.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex))
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+(/usr/share/texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex)
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopat
+hs.code.tex))) (/usr/share/texmf-texlive/tex/latex/tools/calc.sty))
+(/usr/share/texmf-texlive/tex/latex/cleveref/cleveref.sty) (./apacite.sty)
+(/usr/share/texmf-texlive/tex/latex/natbib/natbib.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.sty
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.cfg))) (./title.tex)
+(./macros.tex (./psfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/utf8.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/utfcode.sty)
+(ArabTeX) scanner for code UTF-8 installed.))
+No file nlesarf.aux.
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1ptm.fd)
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texmf-texlive/tex/latex/hyperref/nameref.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/refcount.sty)) (out/nlesarf.out)
+(out/nlesarf.out) ABD: EveryShipout initializing macros
+
+Package apacite Warning: Language definition file english.apc not found.
+
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006)
+(ArabTeX) version 3.11s (02.07.2006): second phase of patching)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd) (./abstract.tex)
+(./intro.tex
+
+Package natbib Warning: Citation `Benajiba:07' on page 1 undefined on input lin
+e 7.
+
+
+Package natbib Warning: Citation `Habash:06' on page 1 undefined on input line 
+7.
+
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 1 undefined on input li
+ne 14.
+
+
+Package natbib Warning: Citation `habash2010introduction' on page 1 undefined o
+n input line 26.
+
+
+Package natbib Warning: Citation `JaZaMatar' on page 1 undefined on input line 
+33.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 1 undefined 
+on input line 33.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 1 undefined on inp
+ut line 33.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 1 undefined 
+on input line 33.
+
+
+LaTeX Warning: Reference `firstpage' on page 1 undefined on input line 46.
+
+
+LaTeX Warning: Reference `lastpage' on page 1 undefined on input line 46.
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/omsptm.fd) [1{/var/lib/texmf/fonts/m
+ap/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Marginpar on page 2 moved.
+
+
+Package natbib Warning: Citation `ZaMaColing2012DemosSarf' on page 2 undefined 
+on input line 50.
+
+
+Package natbib Warning: Citation `Vajda' on page 2 undefined on input line 54.
+
+
+Package natbib Warning: Citation `Spencer:91' on page 2 undefined on input line
+ 60.
+
+
+Package natbib Warning: Citation `Abd00' on page 2 undefined on input line 63.
+
+
+Package natbib Warning: Citation `Abd001' on page 2 undefined on input line 63.
+
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1pcr.fd) [2]
+
+Package natbib Warning: Citation `JaZaMatar' on page 3 undefined on input line 
+99.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 3 undefined 
+on input line 99.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 3 undefined on inp
+ut line 99.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 3 undefined 
+on input line 99.
+
+
+LaTeX Warning: Reference `sec:motivation' on page 3 undefined on input line 112
+.
+
+
+LaTeX Warning: Reference `sec:related' on page 3 undefined on input line 113.
+
+
+LaTeX Warning: Reference `sec:overview' on page 3 undefined on input line 114.
+
+
+LaTeX Warning: Reference `sec:api' on page 3 undefined on input line 115.
+
+
+LaTeX Warning: Reference `sec:aggaffix' on page 3 undefined on input line 117.
+
+
+LaTeX Warning: Reference `sec:diac' on page 3 undefined on input line 121.
+
+
+LaTeX Warning: Reference `sec:results' on page 3 undefined on input line 123.
+
+
+LaTeX Warning: Reference `sec:conclusion' on page 3 undefined on input line 126
+.
+
+) (./motivation.tex
+
+Package natbib Warning: Citation `Buckwalter:02' on page 3 undefined on input l
+ine 8.
+
+
+Package natbib Warning: Citation `SAMAmain' on page 3 undefined on input line 9
+.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 3 undefined on input line 
+9.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 3 undefined on input line
+ 10.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 3 undefined on inp
+ut line 11.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 3 undefined on input line 
+12.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1--16
+
+
+Underfull \hbox (badness 2547) in paragraph at lines 1--16
+\OT1/ptm/m/n/10 Current mor-pho-log-i-cal an-a-lyz-ers such as BAMA (\OT1/ptm/b
+/n/10 ?\OT1/ptm/m/n/10 ), SAMA (\OT1/ptm/b/n/10 ??\OT1/ptm/m/n/10 ), [][][]Bees
+ley (\OT1/ptm/b/n/10 ?\OT1/ptm/m/n/10 ),
+(./solutiontable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(/usr/share/texmf-texlive/tex/latex/arabtex/Uxnsh.fd)
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (19.41003pt too wide) in alignment at lines 3--10
+ [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `arabtex' on page 3 undefined on input line 19
+.
+
+
+Package natbib Warning: Citation `IntroNHabash' on page 3 undefined on input li
+ne 19.
+
+
+LaTeX Warning: Reference `t:solexample' on page 3 undefined on input line 20.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 1348) has occurred while \output is active [3]
+
+Package natbib Warning: Citation `Maamouri:10' on page 4 undefined on input lin
+e 50.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--63
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Beesley:01' on page 4 undefined on input line
+ 78.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 4 undefined on input line
+ 78.
+
+
+Package natbib Warning: Citation `Attia:00' on page 4 undefined on input line 7
+8.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 77--93
+
+
+Underfull \hbox (badness 1527) in paragraph at lines 95--97
+  \OT1/ptm/m/n/10 the school) to be vi-su-ally rec-og-niz-able as two sep-a-rat
+e words  \U/xnsh/m/n/10 ú[]@\OT1/ptm/m/it/10 il[]a-   \OT1/ptm/m/n/10 (to) and
+
+Package natbib Warning: Citation `Buckwalter:04' on page 4 undefined on input l
+ine 99.
+
+(./affixtable.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--27
+
+)
+
+Package natbib Warning: Citation `Buckwalter:02' on page 4 undefined on input l
+ine 107.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 4 undefined on input line 
+107.
+
+
+LaTeX Warning: Reference `t:affixes' on page 4 undefined on input line 110.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+Underfull \hbox (badness 10000) in paragraph at lines 98--116
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [4]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `t:affixes' on page 5 undefined on input line 124.
+
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 5 undefined on inpu
+t line 129.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 5 undefined on input 
+line 129.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Hunspell' on page 5 undefined on input line 1
+31.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [5]
+
+Package natbib Warning: Citation `Regina2011' on page 6 undefined on input line
+ 146.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 6 undefined on input li
+ne 146.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `t:affixes' on page 6 undefined on input line 170.
+
+) (./related.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+[]\OT1/ptm/m/n/8.33334 MADA+
+
+Underfull \hbox (badness 1859) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 Affix seg-men-ta-
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 tokenization
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
+[]\OT1/ptm/m/n/8.33334 maximum
+
+Overfull \hbox (20.1541pt too wide) in alignment at lines 11--22
+ [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 11--24
+
+
+LaTeX Warning: Reference `tab:comparison' on page 6 undefined on input line 35.
+
+
+
+Package natbib Warning: Citation `Otakar:07' on page 6 undefined on input line 
+37.
+
+
+Package natbib Warning: Citation `Beesley:03' on page 6 undefined on input line
+ 37.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 6 undefined on inpu
+t line 37.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 6 undefined on inp
+ut line 39.
+
+
+Package natbib Warning: Citation `Habash:09' on page 6 undefined on input line 
+39.
+
+[6]
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 59.
+
+
+Package natbib Warning: Citation `maamouri2010ldc' on page 7 undefined on input
+ line 61.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 69.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 7 undefined on input lin
+e 69.
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+Package natbib Warning: Citation `Maamouri:04' on page 7 undefined on input lin
+e 82.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 7 undefined on input lin
+e 90.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 7 undefined on input line 
+92.
+
+
+Package natbib Warning: Citation `Badawi:04' on page 7 undefined on input line 
+98.
+
+
+Package natbib Warning: Citation `Habash:09' on page 7 undefined on input line 
+104.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 7 undefined on inp
+ut line 118.
+
+[7]
+
+Package natbib Warning: Citation `Beesley:03' on page 8 undefined on input line
+ 142.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 8 undefined on input line
+ 148.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 8 undefined on inpu
+t line 166.
+
+
+Package natbib Warning: Citation `Attia:10' on page 8 undefined on input line 1
+79.
+
+
+Package natbib Warning: Citation `Regina2011' on page 8 undefined on input line
+ 193.
+
+
+Package natbib Warning: Citation `LIMASemmar05' on page 8 undefined on input li
+ne 194.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 8 undefined on input li
+ne 194.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 8 undefined on input line
+ 196.
+
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 8 undefined on inpu
+t line 202.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 8 undefined on input 
+line 202.
+
+
+Package natbib Warning: Citation `ATB32LDCNum' on page 8 undefined on input lin
+e 203.
+
+
+Package natbib Warning: Citation `Regina2011' on page 8 undefined on input line
+ 206.
+
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 8 undefined on input li
+ne 212.
+
+
+Package natbib Warning: Citation `Khoja:01' on page 8 undefined on input line 2
+14.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 8 undefined on input line
+ 214.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [8]
+
+Package natbib Warning: Citation `Chaaben:10' on page 9 undefined on input line
+ 223.
+
+
+Package natbib Warning: Citation `Attia:00' on page 9 undefined on input line 2
+23.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 9 undefined on input line
+ 223.
+
+
+LaTeX Warning: Marginpar on page 9 moved.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 9 undefined on input line
+ 236.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 9 undefined on input line
+ 236.
+
+
+Package natbib Warning: Citation `Attia:00' on page 9 undefined on input line 2
+36.
+
+) (./overview.tex (./out/sarf_flow_diagram.pdftex_t
+<out/sarf_flow_diagram.pdf, id=163, 636.3775pt x 346.29375pt>
+<use out/sarf_flow_diagram.pdf>)
+
+LaTeX Warning: Reference `fig:flowdiagram' on page 9 undefined on input line 12
+.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 9 undefined on input l
+ine 16.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 9 undefined on input l
+ine 24.
+
+
+Package natbib Warning: Citation `Aoe:89' on page 9 undefined on input line 34.
+
+
+[9 <./out/sarf_flow_diagram.pdf>]
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+
+LaTeX Warning: Reference `f:example' on page 10 undefined on input line 72.
+
+
+Package natbib Warning: Citation `Aoe:89' on page 10 undefined on input line 74
+.
+
+(out/FSM.pdftex_t <out/FSM.pdf, id=185, 486.81876pt x 216.81pt>
+<use out/FSM.pdf> (/usr/share/texmf-texlive/tex/latex/psnfss/ot1phv.fd))
+
+LaTeX Warning: Reference `f:example' on page 10 undefined on input line 97.
+
+
+LaTeX Warning: Reference `f:example' on page 10 undefined on input line 99.
+
+
+LaTeX Warning: Reference `f:dag-alg' on page 10 undefined on input line 119.
+
+(/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty) [10]
+
+LaTeX Warning: Reference `f:example' on page 11 undefined on input line 196.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 196--197
+
+[11 <./out/FSM.pdf>]
+Overfull \hbox (2.63966pt too wide) detected at line 215
+|[]
+
+Overfull \hbox (2.27684pt too wide) detected at line 221
+|[]
+
+Overfull \hbox (5.70474pt too wide) detected at line 221
+|[]
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [12]
+
+LaTeX Warning: Reference `f:strees' on page 13 undefined on input line 276.
+
+
+LaTeX Warning: Reference `f:strees' on page 13 undefined on input line 276.
+
+
+LaTeX Warning: Reference `f:strees' on page 13 undefined on input line 281.
+
+
+LaTeX Warning: Reference `f:strees' on page 13 undefined on input line 285.
+
+
+LaTeX Warning: Reference `s:api' on page 13 undefined on input line 291.
+
+
+LaTeX Warning: Reference `f:strees' on page 13 undefined on input line 306.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+Overfull \hbox (1.04955pt too wide) detected at line 314
+|[]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(out/sftrees.pdftex_t <out/sftrees.pdf, id=225, 813.0375pt x 485.815pt>
+<use out/sftrees.pdf>)
+Underfull \vbox (badness 10000) has occurred while \output is active [13])
+(./api.tex [14 <./out/sftrees.pdf>]) (./aggaffix.tex
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Buckwalter:02' on page 15 undefined on input 
+line 11.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [15]
+
+LaTeX Warning: Marginpar on page 16 moved.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 he/$\OMS/cms
+y/m/n/8 jj$\OT1/ptm/m/it/7.60727 him/$\OMS/cmsy/m/n/8 nn$\OT1/ptm/m/it/7.60727 
+,
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 they$\OMS/cmsy
+/m/n/8 jj$\OT1/ptm/m/it/7.60727 them$\OMS/cmsy/m/n/8 nn []$
+
+Overfull \hbox (23.33916pt too wide) in alignment at lines 24--33
+ [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--35
+
+
+LaTeX Warning: Reference `t:rules' on page 16 undefined on input line 41.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [16]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package natbib Warning: Citation `Mosad09' on page 17 undefined on input line 8
+7.
+
+
+Package natbib Warning: Citation `Abd00' on page 17 undefined on input line 87.
+
+
+
+Package natbib Warning: Citation `Abd001' on page 17 undefined on input line 87
+.
+
+
+LaTeX Warning: Reference `t:rules' on page 17 undefined on input line 92.
+
+
+LaTeX Warning: Reference `t:incSAMA' on page 1 undefined on input line 107.
+
+
+LaTeX Warning: Reference `t:incBAMA' on page 1 undefined on input line 107.
+
+) (./redinc.tex
+
+LaTeX Warning: Reference `t:affixes' on page 17 undefined on input line 4.
+
+
+LaTeX Warning: Reference `sec:results' on page 17 undefined on input line 13.
+
+
+Underfull \vbox (badness 5802) has occurred while \output is active [17]
+
+LaTeX Warning: Reference `t:incSAMA' on page 1 undefined on input line 18.
+
+
+LaTeX Warning: Reference `t:incBAMA' on page 1 undefined on input line 18.
+
+
+LaTeX Warning: Reference `s:s:lexicon_consistency' on page 18 undefined on inpu
+t line 22.
+
+
+LaTeX Warning: Reference `t:comp:SAMA' on page 18 undefined on input line 22.
+
+(./bamainctable.tex
+
+LaTeX Warning: Reference `inc:plus' on page 18 undefined on input line 9.
+
+
+LaTeX Warning: Reference `inc:so' on page 18 undefined on input line 15.
+
+
+LaTeX Warning: Reference `inc:num_gender_subject' on page 18 undefined on input
+ line 22.
+
+
+LaTeX Warning: Reference `inc:num_gender_object' on page 18 undefined on input 
+line 30.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:both' on page 18 undefined on input line 36.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:dot' on page 18 undefined on input line 49.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:pos' on page 18 undefined on input line 57.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 4--66
+
+)
+
+LaTeX Warning: Reference `t:incBAMA' on page 18 undefined on input line 29.
+
+(./samainctable.tex
+
+LaTeX Warning: Reference `inc:relaxed' on page 18 undefined on input line 93.
+
+
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:by' on page 18 undefined on input line 93.
+
+
+LaTeX Warning: Reference `inc:fa' on page 18 undefined on input line 93.
+
+
+Overfull \vbox (9.1287pt too high) detected at line 93
+
+LaTeX Warning: Reference `inc:wafa' on page 18 undefined on input line 93.
+
+
+LaTeX Warning: Reference `inc:def' on page 18 undefined on input line 93.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:num_gender' on page 18 undefined on input line 93
+.
+
+
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:both:sama' on page 18 undefined on input line 93.
+
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:num_gender_differences' on page 18 undefined on i
+nput line 93.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:jus' on page 18 undefined on input line 93.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:dot:SAMA' on page 18 undefined on input line 93.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `inc:pos:SAMA' on page 18 undefined on input line 93.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+
+LaTeX Warning: Reference `t:incSAMA' on page 18 undefined on input line 54.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [18]
+Underfull \vbox (badness 10000) has occurred while \output is active [19]
+Underfull \vbox (badness 10000) has occurred while \output is active [20]
+
+LaTeX Warning: Marginpar on page 21 moved.
+
+) (./diacritics.tex
+Overfull \hbox (3.20706pt too wide) detected at line 9
+|[]
+
+Package natbib Warning: Citation `Elkateb:06' on page 21 undefined on input lin
+e 24.
+
+
+Package natbib Warning: Citation `Attia:06b' on page 21 undefined on input line
+ 24.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 21 undefined on input lin
+e 25.
+
+
+Package natbib Warning: Citation `Attia:00' on page 21 undefined on input line 
+25.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 21 undefined on input lin
+e 25.
+
+
+Package natbib Warning: Citation `Maamouri:04' on page 21 undefined on input li
+ne 27.
+
+(./diaceqtable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (17.72827pt too wide) in alignment at lines 10--14
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 18--23
+ [] [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (20.50816pt too wide) in alignment at lines 39--43
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 47--52
+ [] [] [] [] [] 
+)
+
+LaTeX Warning: Reference `t:correspondence' on page 21 undefined on input line 
+64.
+
+(ArabTeX) input encoding set to UTF-8 conventions [21]
+(ArabTeX) input encoding set to ArabTeX standard conventions.) (./results.tex
+
+LaTeX Warning: Reference `t:incSAMA' on page 1 undefined on input line 26.
+
+
+LaTeX Warning: Reference `t:incBAMA' on page 1 undefined on input line 26.
+
+
+Underfull \hbox (badness 4713) in paragraph at lines 23--31
+[]\OT1/ptm/m/n/10 We com-pared the seg-men-ta-tion ca-pa-bil-i-ties of Sarf to 
+that of SAMA and
+[22] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 23 undefined on inp
+ut line 110.
+
+
+LaTeX Warning: Reference `t:tokan' on page 23 undefined on input line 111.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 104--112
+[]\OT1/ptm/m/n/10 When we per-formed the same ex-per-i-ment us-ing TOKAN toolki
+t of the
+[23] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `t:incSAMA' on page 1 undefined on input line 130.
+
+
+LaTeX Warning: Reference `t:incBAMA' on page 1 undefined on input line 130.
+
+
+LaTeX Warning: Reference `t:comp:SAMA' on page 24 undefined on input line 154.
+
+
+LaTeX Warning: Reference `inc:wafa' on page 24 undefined on input line 161.
+
+
+LaTeX Warning: Reference `t:incSAMA' on page 24 undefined on input line 161.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (1.96475pt too wide) in alignment at lines 171--185
+ [] [] [] [] [] [] [] [] [] 
+
+LaTeX Warning: Reference `t:reduction' on page 24 undefined on input line 195.
+
+[24] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Attia:06b' on page 25 undefined on input line
+ 225.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+LaTeX Warning: Reference `t:reduction' on page 25 undefined on input line 227.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [25]
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 26 undefined
+ on input line 260.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 26 undefined
+ on input line 262.
+
+
+Overfull \hbox (3.09816pt too wide) detected at line 269
+|[]
+(./exp1Results.tex
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 10--10
+[][]| 
+
+Overfull \vbox (8.0pt too high) detected at line 14
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 14--15
+[][]| 
+
+Overfull \vbox (16.0pt too high) detected at line 17
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 17--18
+[][]| 
+
+Overfull \hbox (18.23161pt too wide) in alignment at lines 6--24
+ [] [] [] [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 6--26
+
+)
+
+LaTeX Warning: Reference `tab:exp1Res' on page 26 undefined on input line 285.
+
+
+Package natbib Warning: Citation `IbnHanbal' on page 26 undefined on input line
+ 290.
+
+
+Package natbib Warning: Citation `AlKulayni' on page 26 undefined on input line
+ 290.
+
+
+Package natbib Warning: Citation `AlTousi' on page 26 undefined on input line 2
+90.
+
+
+LaTeX Warning: Reference `sec:overview' on page 26 undefined on input line 314.
+
+
+
+Overfull \vbox (10.0234pt too high) has occurred while \output is active
+[26] (./apitable.tex)
+
+LaTeX Warning: Reference `t:sarfapi' on page 27 undefined on input line 340.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 27 undefined on in
+put line 353.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 27 undefined
+ on input line 368.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 27 undefined
+ on input line 378.
+
+[27]
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 28 undefined
+ on input line 394.
+
+) (./conclusion.tex)
+No file nlesarf.bbl.
+[28]
+
+Package natbib Warning: There were undefined citations.
+
+(out/nlesarf.aux)
+
+ *File List*
+     nle.cls    2004/05/20 v1.0 Natural Language Engineering (NLE) document cla
+ss
+packages.tex
+ arabtex.sty    2003/08/22  3.11 ArabTeX main module
+ arabaux.sty    2003/05/21  3.11 auxiliary macros for ArabTeX
+    acmd.sty    2003/08/20  3.11 Arabic command processing 
+  afonts.sty    1995/11/16  3.04 define Naskh font 
+ afonts2.sty    1998/10/19  3.10 define Naskh fonts for LaTeX2e
+   ascan.sty    2003/08/22  3.11 standard ZDMG input encoding 
+  aparse.sty    2003/05/26  3.11 get syllables 
+  awrite.sty    2003/06/05  3.11 build output word 
+xarbsymb.sty    1998/07/15  3.07 symbolic output encoding 
+arabskel.sty    2000/06/04  3.10 character skeleton definitions 
+xarbskel.sty    1999/07/17  3.09 character skeleton definitions 
+  aboxes.sty    2003/05/28  3.11 build output boxes
+arabtoks.sty    1999/07/17  3.09 ArabTeX CS token definitions 
+arabchrs.sty    1998/07/11  3.07 letter token definitions 
+   aligs.sty    2003/05/26  3.11 compute ligatures
+ aoutput.sty    2000/06/04  3.10 build output lines
+  abidir.sty    2003/08/22  3.11 bidirectional linebreaking
+  atrans.sty    2003/06/14  3.11 generate the transliteration 
+  alatex.sty    2003/05/04  3.11 ArabTeX extensions for LaTeX 
+   afoot.sty    2003/05/12  3.11 ArabTeX footnotes
+   abjad.sty    2003/04/26  3.11 abjad numerals 
+  apatch.sty    2006/07/02  3.11s last minute patches 
+  alists.sty    2003/04/26  3.11 inverted list macros
+   asect.sty    2003/04/26  3.11 section macros for Arabic
+   atabg.sty    1997/01/21  3.05 LaTeX tabbing macros for Arabic
+   times.sty    2005/04/12 PSNFSS-v9.2a (SPQR) 
+multirow.sty    
+graphicx.sty    1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+  keyval.sty    1999/03/16 v1.13 key=value parser (DPC)
+graphics.sty    2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+    trig.sty    1999/03/16 v1.09 sin cos tan (DPC)
+graphics.cfg    2009/08/28 v1.8 graphics configuration of TeX Live
+  pdftex.def    2010/03/12 v0.04p Graphics/color for pdfTeX
+ amssymb.sty    2009/06/22 v3.00
+amsfonts.sty    2009/06/22 v3.00 Basic AMSFonts support
+ relsize.sty    2003/07/04 ver 3.1
+enumerate.sty    1999/03/05 v3.00 enumerate extensions (DPC)
+hyperref.sty    2009/10/09 v6.79a Hypertext links for LaTeX
+   ifpdf.sty    2009/04/10 v2.0 Provides the ifpdf switch (HO)
+  ifvtex.sty    2008/11/04 v1.4 Switches for detecting VTeX and its modes (HO)
+ ifxetex.sty    2009/01/23 v0.5 Provides ifxetex conditional
+ hycolor.sty    2009/10/02 v1.5 Code for color options of hyperref/bookmark (HO
+)
+xcolor-patch.sty    2009/10/02 xcolor patch
+  pd1enc.def    2009/10/09 v6.79a Hyperref: PDFDocEncoding definition (HO)
+etexcmds.sty    2007/12/12 v1.2 Prefix for e-TeX command names (HO)
+infwarerr.sty    2007/09/09 v1.2 Providing info/warning/message (HO)
+hyperref.cfg    2002/06/06 v1.2 hyperref configuration of TeXLive
+kvoptions.sty    2009/08/13 v3.4 Keyval support for LaTeX options (HO)
+kvsetkeys.sty    2009/07/30 v1.5 Key value parser with default handler support 
+(HO)
+     url.sty    2006/04/12  ver 3.3  Verb mode for urls, etc.
+  bitset.sty    2007/09/28 v1.0 Data type bit set (HO)
+ intcalc.sty    2007/09/27 v1.1 Expandable integer calculations (HO)
+bigintcalc.sty    2007/11/11 v1.1 Expandable big integer calculations (HO)
+pdftexcmds.sty    2009/09/23 v0.6 LuaTeX support for pdfTeX utility functions (
+HO)
+ifluatex.sty    2009/04/17 v1.2 Provides the ifluatex switch (HO)
+ ltxcmds.sty    2009/08/05 v1.0 Some LaTeX kernel commands for general use (HO)
+
+atbegshi.sty    2008/07/31 v1.9 At begin shipout hook (HO)
+ hpdftex.def    2009/10/09 v6.79a Hyperref driver for pdfTeX
+todonotes.sty    2009/04/02
+  ifthen.sty    2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+ xkeyval.sty    2008/08/13 v2.6a package option processing (HA)
+ xkeyval.tex    2008/08/13 v2.6a key=value parser (HA)
+  xcolor.sty    2007/01/21 v2.11 LaTeX color extensions (UK)
+   color.cfg    2007/01/18 v1.5 color configuration of teTeX/TeXLive
+    tikz.sty    2010/10/13 v2.10 (rcs-revision 1.76)
+     pgf.sty    2008/01/15 v2.10 (rcs-revision 1.12)
+  pgfrcs.sty    2010/10/25 v2.10 (rcs-revision 1.24)
+everyshi.sty    2001/05/15 v3.00 EveryShipout Package (MS)
+  pgfrcs.code.tex
+ pgfcore.sty    2010/04/11 v2.10 (rcs-revision 1.7)
+  pgfsys.sty    2010/06/30 v2.10 (rcs-revision 1.37)
+  pgfsys.code.tex
+pgfsyssoftpath.code.tex    2008/07/18  (rcs-revision 1.7)
+pgfsysprotocol.code.tex    2006/10/16  (rcs-revision 1.4)
+ pgfcore.code.tex
+pgfcomp-version-0-65.sty    2007/07/03 v2.10 (rcs-revision 1.7)
+pgfcomp-version-1-18.sty    2007/07/23 v2.10 (rcs-revision 1.1)
+  pgffor.sty    2010/03/23 v2.10 (rcs-revision 1.18)
+ pgfkeys.sty    
+ pgfkeys.code.tex
+  pgffor.code.tex
+    tikz.code.tex
+    calc.sty    2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
+cleveref.sty    2009/09/22 v0.14.2 Intelligent cross-referencing
+ apacite.sty    2013/07/21 v6.03 APA citation
+  natbib.sty    2009/07/16 8.31 (PWD, AO)
+listings.sty    2007/02/22 1.4 (Carsten Heinz)
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+listings.cfg    2007/02/22 1.4 listings configuration
+   title.tex
+  macros.tex
+   psfig.sty
+    utf8.sty    2000/06/13  3.10 UTF-8 input encoding 
+ utfcode.sty    2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
+  ot1ptm.fd    2001/06/04 font definitions for OT1/ptm.
+supp-pdf.mkii
+ nameref.sty    2007/05/29 v2.31 Cross-referencing by name of section
+refcount.sty    2008/08/11 v3.1 Data extraction from references (HO)
+ nlesarf.out
+ nlesarf.out
+  apatch.sty    2006/07/02  3.11s last minute patches 
+    umsa.fd    2009/06/22 v3.00 AMS symbols A
+    umsb.fd    2009/06/22 v3.00 AMS symbols B
+abstract.tex
+   intro.tex
+  omsptm.fd    
+  ot1pcr.fd    2001/06/04 font definitions for OT1/pcr.
+motivation.tex
+solutiontable.tex
+   Uxnsh.fd
+affixtable.tex
+ related.tex
+overview.tex
+out/sarf_flow_diagram.pdftex_t
+out/sarf_flow_diagram.pdf
+     FSM.pdftex_t
+ out/FSM.pdf
+  ot1phv.fd    2001/06/04 scalable font definitions for OT1/phv.
+lstlang1.sty    2004/09/05 1.3 listings language file
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+ sftrees.pdftex_t
+out/sftrees.pdf
+     api.tex
+aggaffix.tex
+  redinc.tex
+bamainctable.tex
+samainctable.tex
+diacritics.tex
+diaceqtable.tex
+ results.tex
+exp1Results.tex
+apitable.tex
+conclusion.tex
+ ***********
+
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 1.19637pt have occurred.
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information){/usr/share/texmf-texlive/f
+onts/enc/dvips/base/8r.enc}</usr/share/texmf-texlive/fonts/type1/public/amsfont
+s/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12
+.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/s
+hare/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-t
+exlive/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts
+/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/publi
+c/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/c
+m/cmr5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr6.pfb></
+usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/tex
+mf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-texlive/fo
+nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-texlive/fonts/type1/p
+ublic/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfon
+ts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/symbols/m
+sam10.pfb></usr/share/texmf-texlive/fonts/type1/urw/courier/ucrr8a.pfb></usr/sh
+are/texmf-texlive/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf-texlive
+/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/tim
+es/utmbi8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.pfb></usr
+/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb></usr/share/texmf-texliv
+e/fonts/type1/public/arabtex/xnsh14.pfb>
+Output written on out/nlesarf.pdf (28 pages, 407626 bytes).
+Transcript written on out/nlesarf.log.
+bibtex out/nlesarf.aux
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: out/nlesarf.aux
+The style file: apacite.bst
+Database file #1: refs/nlesarf.bib
+apacite.bst [2013/07/21 v6.03 APA bibliography style]
+Warning--No address in Buckwalter:02
+Warning--No address in arabtex
+(There were 2 warnings)
+pdflatex -output-directory=out nlesarf.tex
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./nlesarf.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, loaded.
+(./nle.cls
+Document Class: nle 2004/05/20 v1.0 Natural Language Engineering (NLE) document
+ class
+) (./packages.tex (/usr/share/texmf-texlive/tex/latex/arabtex/arabtex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/aconfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabaux.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/acmd.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts2.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/ascan.sty
+(ArabTeX) scanner for code `arabtex' installed.
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aparse.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/awrite.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbsymb.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aboxes.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabtoks.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabchrs.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/aligs.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aoutput.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/abidir.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atrans.sty
+(ArabTeX) ZDMG transliteration.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alatex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afoot.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/abjad.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alists.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/asect.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atabg.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006))
+Arabic processor `ArabTeX' [20060702 patch level 3.11s (02.07.2006)]
+(ArabTeX) ... now be patient ... )
+(/usr/share/texmf-texlive/tex/latex/psnfss/times.sty)
+(/usr/share/texmf-texlive/tex/latex/multirow/multirow.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def)))
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty))
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/relsize.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/enumerate.sty)
+(/usr/share/texmf-texlive/tex/latex/hyperref/hyperref.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifvtex.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/hycolor.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/xcolor-patch.sty))
+(/usr/share/texmf-texlive/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/etexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty))
+
+Package hyperref Warning: Height of page (\paperheight) is invalid (0.0pt),
+(hyperref)                using 11in.
+
+(/usr/share/texmf-texlive/tex/latex/latexconfig/hyperref.cfg)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/kvoptions.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/kvsetkeys.sty))
+Implicit mode ON; LaTeX internals redefined
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bitset.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/intcalc.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bigintcalc.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/pdftexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifluatex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ltxcmds.sty))))
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty))
+*hyperref using default driver hpdftex*
+(/usr/share/texmf-texlive/tex/latex/hyperref/hpdftex.def)
+(/usr/share/texmf-texlive/tex/latex/todonotes/todonotes.sty
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty)
+(/usr/share/texmf-texlive/tex/latex/xkeyval/xkeyval.sty
+(/usr/share/texmf-texlive/tex/generic/xkeyval/xkeyval.tex))
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+(/etc/texmf/tex/latex/config/color.cfg))
+(/usr/share/texmf/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-latex.def
+(/usr/share/texmf-texlive/tex/latex/ms/everyshi.sty))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfrcs.code.tex))
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/share/texmf/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def)))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathparser.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.random.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.base.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.round.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfloat.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorequick.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty))
+(/usr/share/texmf/tex/latex/pgf/utilities/pgffor.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex))
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+(/usr/share/texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex)
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopat
+hs.code.tex))) (/usr/share/texmf-texlive/tex/latex/tools/calc.sty))
+(/usr/share/texmf-texlive/tex/latex/cleveref/cleveref.sty) (./apacite.sty)
+(/usr/share/texmf-texlive/tex/latex/natbib/natbib.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.sty
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.cfg))) (./title.tex)
+(./macros.tex (./psfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/utf8.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/utfcode.sty)
+(ArabTeX) scanner for code UTF-8 installed.)) (out/nlesarf.aux)
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1ptm.fd)
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texmf-texlive/tex/latex/hyperref/nameref.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/refcount.sty)) (out/nlesarf.out)
+(out/nlesarf.out) ABD: EveryShipout initializing macros
+
+Package apacite Warning: Language definition file english.apc not found.
+
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006)
+(ArabTeX) version 3.11s (02.07.2006): second phase of patching)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd) (./abstract.tex)
+(./intro.tex
+
+Package natbib Warning: Citation `Benajiba:07' on page 1 undefined on input lin
+e 7.
+
+
+Package natbib Warning: Citation `Habash:06' on page 1 undefined on input line 
+7.
+
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 1 undefined on input li
+ne 14.
+
+
+Package natbib Warning: Citation `habash2010introduction' on page 1 undefined o
+n input line 26.
+
+
+Package natbib Warning: Citation `JaZaMatar' on page 1 undefined on input line 
+33.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 1 undefined 
+on input line 33.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 1 undefined on inp
+ut line 33.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 1 undefined 
+on input line 33.
+
+
+Package hyperref Warning: Empty destination name,
+(hyperref)                using `UNDEFINED' on input line 46.
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/omsptm.fd) [1{/var/lib/texmf/fonts/m
+ap/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Marginpar on page 2 moved.
+
+
+Package natbib Warning: Citation `ZaMaColing2012DemosSarf' on page 2 undefined 
+on input line 50.
+
+
+Package natbib Warning: Citation `Vajda' on page 2 undefined on input line 54.
+
+
+Package natbib Warning: Citation `Spencer:91' on page 2 undefined on input line
+ 60.
+
+
+Package natbib Warning: Citation `Abd00' on page 2 undefined on input line 63.
+
+
+Package natbib Warning: Citation `Abd001' on page 2 undefined on input line 63.
+
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1pcr.fd) [2]
+
+Package natbib Warning: Citation `JaZaMatar' on page 3 undefined on input line 
+99.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 3 undefined 
+on input line 99.
+
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 3 undefined on inp
+ut line 99.
+
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 3 undefined 
+on input line 99.
+
+) (./motivation.tex
+
+Package natbib Warning: Citation `Buckwalter:02' on page 3 undefined on input l
+ine 8.
+
+
+Package natbib Warning: Citation `SAMAmain' on page 3 undefined on input line 9
+.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 3 undefined on input line 
+9.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 3 undefined on input line
+ 10.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 3 undefined on inp
+ut line 11.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 3 undefined on input line 
+12.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1--16
+
+
+Underfull \hbox (badness 2547) in paragraph at lines 1--16
+\OT1/ptm/m/n/10 Current mor-pho-log-i-cal an-a-lyz-ers such as BAMA (\OT1/ptm/b
+/n/10 ?\OT1/ptm/m/n/10 ), SAMA (\OT1/ptm/b/n/10 ??\OT1/ptm/m/n/10 ), [][][]Bees
+ley (\OT1/ptm/b/n/10 ?\OT1/ptm/m/n/10 ),
+(./solutiontable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(/usr/share/texmf-texlive/tex/latex/arabtex/Uxnsh.fd)
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (19.41003pt too wide) in alignment at lines 3--10
+ [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `arabtex' on page 3 undefined on input line 19
+.
+
+
+Package natbib Warning: Citation `IntroNHabash' on page 3 undefined on input li
+ne 19.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 1348) has occurred while \output is active [3]
+
+Package natbib Warning: Citation `Maamouri:10' on page 4 undefined on input lin
+e 50.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 48--63
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Beesley:01' on page 4 undefined on input line
+ 78.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 4 undefined on input line
+ 78.
+
+
+Package natbib Warning: Citation `Attia:00' on page 4 undefined on input line 7
+8.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 77--93
+
+
+Underfull \hbox (badness 1527) in paragraph at lines 95--97
+  \OT1/ptm/m/n/10 the school) to be vi-su-ally rec-og-niz-able as two sep-a-rat
+e words  \U/xnsh/m/n/10 ú[]@\OT1/ptm/m/it/10 il[]a-   \OT1/ptm/m/n/10 (to) and
+
+Package natbib Warning: Citation `Buckwalter:04' on page 4 undefined on input l
+ine 99.
+
+(./affixtable.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--27
+
+)
+
+Package natbib Warning: Citation `Buckwalter:02' on page 4 undefined on input l
+ine 107.
+
+
+Package natbib Warning: Citation `Kulick:10' on page 4 undefined on input line 
+107.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+Underfull \hbox (badness 10000) in paragraph at lines 98--116
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [4]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 5 undefined on inpu
+t line 129.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 5 undefined on input 
+line 129.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Hunspell' on page 5 undefined on input line 1
+31.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [5]
+
+Package natbib Warning: Citation `Regina2011' on page 6 undefined on input line
+ 146.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 6 undefined on input li
+ne 146.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.) (./related.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+[]\OT1/ptm/m/n/8.33334 MADA+
+
+Underfull \hbox (badness 1859) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 Affix seg-men-ta-
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 tokenization
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
+[]\OT1/ptm/m/n/8.33334 maximum
+
+Overfull \hbox (20.1541pt too wide) in alignment at lines 11--22
+ [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 11--24
+
+
+Package natbib Warning: Citation `Otakar:07' on page 6 undefined on input line 
+37.
+
+
+Package natbib Warning: Citation `Beesley:03' on page 6 undefined on input line
+ 37.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 6 undefined on inpu
+t line 37.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 6 undefined on inp
+ut line 39.
+
+
+Package natbib Warning: Citation `Habash:09' on page 6 undefined on input line 
+39.
+
+[6]
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 59.
+
+
+Package natbib Warning: Citation `maamouri2010ldc' on page 7 undefined on input
+ line 61.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 7 undefined on input l
+ine 69.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 7 undefined on input lin
+e 69.
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+Package natbib Warning: Citation `Maamouri:04' on page 7 undefined on input lin
+e 82.
+
+
+Package natbib Warning: Citation `Maamouri:10' on page 7 undefined on input lin
+e 90.
+
+
+Package natbib Warning: Citation `Otakar:07' on page 7 undefined on input line 
+92.
+
+
+Package natbib Warning: Citation `Badawi:04' on page 7 undefined on input line 
+98.
+
+
+Package natbib Warning: Citation `Habash:09' on page 7 undefined on input line 
+104.
+
+
+Package natbib Warning: Citation `pasha2014madamira' on page 7 undefined on inp
+ut line 118.
+
+[7]
+
+Package natbib Warning: Citation `Beesley:03' on page 8 undefined on input line
+ 142.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 8 undefined on input line
+ 148.
+
+
+Package natbib Warning: Citation `attia2009fassieh' on page 8 undefined on inpu
+t line 166.
+
+
+Package natbib Warning: Citation `Attia:10' on page 8 undefined on input line 1
+79.
+
+
+Package natbib Warning: Citation `Regina2011' on page 8 undefined on input line
+ 193.
+
+
+Package natbib Warning: Citation `LIMASemmar05' on page 8 undefined on input li
+ne 194.
+
+
+Package natbib Warning: Citation `ELRASemmar08' on page 8 undefined on input li
+ne 194.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 8 undefined on input line
+ 196.
+
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 8 undefined on inpu
+t line 202.
+
+
+Package natbib Warning: Citation `lrecKulickBM10' on page 8 undefined on input 
+line 202.
+
+
+Package natbib Warning: Citation `ATB32LDCNum' on page 8 undefined on input lin
+e 203.
+
+
+Package natbib Warning: Citation `Regina2011' on page 8 undefined on input line
+ 206.
+
+
+Package natbib Warning: Citation `Sughaiyer:04' on page 8 undefined on input li
+ne 212.
+
+
+Package natbib Warning: Citation `Khoja:01' on page 8 undefined on input line 2
+14.
+
+
+Package natbib Warning: Citation `Darwish:02' on page 8 undefined on input line
+ 214.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [8]
+
+Package natbib Warning: Citation `Chaaben:10' on page 9 undefined on input line
+ 223.
+
+
+Package natbib Warning: Citation `Attia:00' on page 9 undefined on input line 2
+23.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 9 undefined on input line
+ 223.
+
+
+LaTeX Warning: Marginpar on page 9 moved.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 9 undefined on input line
+ 236.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 9 undefined on input line
+ 236.
+
+
+Package natbib Warning: Citation `Attia:00' on page 9 undefined on input line 2
+36.
+
+) (./overview.tex (./out/sarf_flow_diagram.pdftex_t
+<out/sarf_flow_diagram.pdf, id=179, 636.3775pt x 346.29375pt>
+<use out/sarf_flow_diagram.pdf>)
+
+Package natbib Warning: Citation `Buckwalter:02' on page 9 undefined on input l
+ine 16.
+
+
+Package natbib Warning: Citation `Buckwalter:02' on page 9 undefined on input l
+ine 24.
+
+
+Package natbib Warning: Citation `Aoe:89' on page 9 undefined on input line 34.
+
+
+[9 <./out/sarf_flow_diagram.pdf>]
+
+LaTeX Warning: Marginpar on page 10 moved.
+
+
+Package natbib Warning: Citation `Aoe:89' on page 10 undefined on input line 74
+.
+
+(out/FSM.pdftex_t <out/FSM.pdf, id=203, 486.81876pt x 216.81pt>
+<use out/FSM.pdf> (/usr/share/texmf-texlive/tex/latex/psnfss/ot1phv.fd))
+(/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty) [10]
+Underfull \hbox (badness 10000) in paragraph at lines 196--197
+
+[11 <./out/FSM.pdf>]
+Overfull \hbox (2.63966pt too wide) detected at line 215
+|[]
+
+Overfull \hbox (2.27684pt too wide) detected at line 221
+|[]
+
+Overfull \hbox (5.70474pt too wide) detected at line 221
+|[]
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [12]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+Overfull \hbox (1.04955pt too wide) detected at line 314
+|[]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(out/sftrees.pdftex_t <out/sftrees.pdf, id=253, 813.0375pt x 485.815pt>
+<use out/sftrees.pdf>)
+Underfull \vbox (badness 10000) has occurred while \output is active [13])
+(./api.tex [14 <./out/sftrees.pdf>]) (./aggaffix.tex
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Buckwalter:02' on page 15 undefined on input 
+line 11.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [15]
+
+LaTeX Warning: Marginpar on page 16 moved.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 he/$\OMS/cms
+y/m/n/8 jj$\OT1/ptm/m/it/7.60727 him/$\OMS/cmsy/m/n/8 nn$\OT1/ptm/m/it/7.60727 
+,
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 they$\OMS/cmsy
+/m/n/8 jj$\OT1/ptm/m/it/7.60727 them$\OMS/cmsy/m/n/8 nn []$
+
+Overfull \hbox (23.33916pt too wide) in alignment at lines 24--33
+ [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--35
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [16]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package natbib Warning: Citation `Mosad09' on page 17 undefined on input line 8
+7.
+
+
+Package natbib Warning: Citation `Abd00' on page 17 undefined on input line 87.
+
+
+
+Package natbib Warning: Citation `Abd001' on page 17 undefined on input line 87
+.
+
+) (./redinc.tex
+Underfull \vbox (badness 5802) has occurred while \output is active [17]
+(./bamainctable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 4--66
+
+) (./samainctable.tex
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \vbox (9.1287pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [18]
+Underfull \vbox (badness 10000) has occurred while \output is active [19]
+Underfull \vbox (badness 10000) has occurred while \output is active [20]
+
+LaTeX Warning: Marginpar on page 21 moved.
+
+) (./diacritics.tex
+Overfull \hbox (3.20706pt too wide) detected at line 9
+|[]
+
+Package natbib Warning: Citation `Elkateb:06' on page 21 undefined on input lin
+e 24.
+
+
+Package natbib Warning: Citation `Attia:06b' on page 21 undefined on input line
+ 24.
+
+
+Package natbib Warning: Citation `Chaaben:10' on page 21 undefined on input lin
+e 25.
+
+
+Package natbib Warning: Citation `Attia:00' on page 21 undefined on input line 
+25.
+
+
+Package natbib Warning: Citation `Beesley:01' on page 21 undefined on input lin
+e 25.
+
+
+Package natbib Warning: Citation `Maamouri:04' on page 21 undefined on input li
+ne 27.
+
+(./diaceqtable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (17.72827pt too wide) in alignment at lines 10--14
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 18--23
+ [] [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (20.50816pt too wide) in alignment at lines 39--43
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 47--52
+ [] [] [] [] [] 
+) (ArabTeX) input encoding set to UTF-8 conventions [21]
+(ArabTeX) input encoding set to ArabTeX standard conventions.) (./results.tex
+Underfull \hbox (badness 4713) in paragraph at lines 23--31
+[]\OT1/ptm/m/n/10 We com-pared the seg-men-ta-tion ca-pa-bil-i-ties of Sarf to 
+that of SAMA and
+[22] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `LRECMaamouriKB08' on page 23 undefined on inp
+ut line 110.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 104--112
+[]\OT1/ptm/m/n/10 When we per-formed the same ex-per-i-ment us-ing TOKAN toolki
+t of the
+[23] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (1.96475pt too wide) in alignment at lines 171--185
+ [] [] [] [] [] [] [] [] [] 
+[24] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package natbib Warning: Citation `Attia:06b' on page 25 undefined on input line
+ 225.
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [25]
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 26 undefined
+ on input line 260.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 26 undefined
+ on input line 262.
+
+
+Overfull \hbox (3.09816pt too wide) detected at line 269
+|[]
+(./exp1Results.tex
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 10--10
+[][]| 
+
+Overfull \vbox (8.0pt too high) detected at line 14
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 14--15
+[][]| 
+
+Overfull \vbox (16.0pt too high) detected at line 17
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 17--18
+[][]| 
+
+Overfull \hbox (18.23161pt too wide) in alignment at lines 6--24
+ [] [] [] [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 6--26
+
+)
+
+Package natbib Warning: Citation `IbnHanbal' on page 26 undefined on input line
+ 290.
+
+
+Package natbib Warning: Citation `AlKulayni' on page 26 undefined on input line
+ 290.
+
+
+Package natbib Warning: Citation `AlTousi' on page 26 undefined on input line 2
+90.
+
+
+Overfull \vbox (10.0234pt too high) has occurred while \output is active
+[26] (./apitable.tex)
+
+Package natbib Warning: Citation `ZaMa2012IJCLATime' on page 27 undefined on in
+put line 353.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 27 undefined
+ on input line 368.
+
+
+Package natbib Warning: Citation `ZaMaFlairs2012HadithBio' on page 27 undefined
+ on input line 378.
+
+[27]
+
+Package natbib Warning: Citation `ZaMaHaCicling2012Entity' on page 28 undefined
+ on input line 394.
+
+) (./conclusion.tex) (out/nlesarf.bbl [28]
+Underfull \vbox (badness 10000) has occurred while \output is active [29]
+Underfull \hbox (badness 1783) in paragraph at lines 652--658
+[]\OT1/ptm/m/it/10 Hunspell man-ual page.  \OT1/ptm/m/n/10 (2012).  []$\OT1/pcr
+/m/n/10 http :// www [] .linuxcertif [] .com / man / 4 /
+
+Underfull \vbox (badness 10000) has occurred while \output is active [30]
+Underfull \vbox (badness 10000) has occurred while \output is active [31]
+Underfull \hbox (badness 1077) in paragraph at lines 1263--1276
+[]\OT1/ptm/m/n/10 Vajda, E. J.  (2001).  \OT1/ptm/m/it/10 Ty-pol-ogy.  []$\OT1/
+pcr/m/n/10 http :// pandora [] .cii [] .wwu [] .edu / vajda /
+) [32]
+
+Package natbib Warning: There were undefined citations.
+
+(out/nlesarf.aux
+
+Package natbib Warning: Citation(s) may have changed.
+(natbib)                Rerun to get citations correct.
+
+)
+
+ *File List*
+     nle.cls    2004/05/20 v1.0 Natural Language Engineering (NLE) document cla
+ss
+packages.tex
+ arabtex.sty    2003/08/22  3.11 ArabTeX main module
+ arabaux.sty    2003/05/21  3.11 auxiliary macros for ArabTeX
+    acmd.sty    2003/08/20  3.11 Arabic command processing 
+  afonts.sty    1995/11/16  3.04 define Naskh font 
+ afonts2.sty    1998/10/19  3.10 define Naskh fonts for LaTeX2e
+   ascan.sty    2003/08/22  3.11 standard ZDMG input encoding 
+  aparse.sty    2003/05/26  3.11 get syllables 
+  awrite.sty    2003/06/05  3.11 build output word 
+xarbsymb.sty    1998/07/15  3.07 symbolic output encoding 
+arabskel.sty    2000/06/04  3.10 character skeleton definitions 
+xarbskel.sty    1999/07/17  3.09 character skeleton definitions 
+  aboxes.sty    2003/05/28  3.11 build output boxes
+arabtoks.sty    1999/07/17  3.09 ArabTeX CS token definitions 
+arabchrs.sty    1998/07/11  3.07 letter token definitions 
+   aligs.sty    2003/05/26  3.11 compute ligatures
+ aoutput.sty    2000/06/04  3.10 build output lines
+  abidir.sty    2003/08/22  3.11 bidirectional linebreaking
+  atrans.sty    2003/06/14  3.11 generate the transliteration 
+  alatex.sty    2003/05/04  3.11 ArabTeX extensions for LaTeX 
+   afoot.sty    2003/05/12  3.11 ArabTeX footnotes
+   abjad.sty    2003/04/26  3.11 abjad numerals 
+  apatch.sty    2006/07/02  3.11s last minute patches 
+  alists.sty    2003/04/26  3.11 inverted list macros
+   asect.sty    2003/04/26  3.11 section macros for Arabic
+   atabg.sty    1997/01/21  3.05 LaTeX tabbing macros for Arabic
+   times.sty    2005/04/12 PSNFSS-v9.2a (SPQR) 
+multirow.sty    
+graphicx.sty    1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+  keyval.sty    1999/03/16 v1.13 key=value parser (DPC)
+graphics.sty    2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+    trig.sty    1999/03/16 v1.09 sin cos tan (DPC)
+graphics.cfg    2009/08/28 v1.8 graphics configuration of TeX Live
+  pdftex.def    2010/03/12 v0.04p Graphics/color for pdfTeX
+ amssymb.sty    2009/06/22 v3.00
+amsfonts.sty    2009/06/22 v3.00 Basic AMSFonts support
+ relsize.sty    2003/07/04 ver 3.1
+enumerate.sty    1999/03/05 v3.00 enumerate extensions (DPC)
+hyperref.sty    2009/10/09 v6.79a Hypertext links for LaTeX
+   ifpdf.sty    2009/04/10 v2.0 Provides the ifpdf switch (HO)
+  ifvtex.sty    2008/11/04 v1.4 Switches for detecting VTeX and its modes (HO)
+ ifxetex.sty    2009/01/23 v0.5 Provides ifxetex conditional
+ hycolor.sty    2009/10/02 v1.5 Code for color options of hyperref/bookmark (HO
+)
+xcolor-patch.sty    2009/10/02 xcolor patch
+  pd1enc.def    2009/10/09 v6.79a Hyperref: PDFDocEncoding definition (HO)
+etexcmds.sty    2007/12/12 v1.2 Prefix for e-TeX command names (HO)
+infwarerr.sty    2007/09/09 v1.2 Providing info/warning/message (HO)
+hyperref.cfg    2002/06/06 v1.2 hyperref configuration of TeXLive
+kvoptions.sty    2009/08/13 v3.4 Keyval support for LaTeX options (HO)
+kvsetkeys.sty    2009/07/30 v1.5 Key value parser with default handler support 
+(HO)
+     url.sty    2006/04/12  ver 3.3  Verb mode for urls, etc.
+  bitset.sty    2007/09/28 v1.0 Data type bit set (HO)
+ intcalc.sty    2007/09/27 v1.1 Expandable integer calculations (HO)
+bigintcalc.sty    2007/11/11 v1.1 Expandable big integer calculations (HO)
+pdftexcmds.sty    2009/09/23 v0.6 LuaTeX support for pdfTeX utility functions (
+HO)
+ifluatex.sty    2009/04/17 v1.2 Provides the ifluatex switch (HO)
+ ltxcmds.sty    2009/08/05 v1.0 Some LaTeX kernel commands for general use (HO)
+
+atbegshi.sty    2008/07/31 v1.9 At begin shipout hook (HO)
+ hpdftex.def    2009/10/09 v6.79a Hyperref driver for pdfTeX
+todonotes.sty    2009/04/02
+  ifthen.sty    2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+ xkeyval.sty    2008/08/13 v2.6a package option processing (HA)
+ xkeyval.tex    2008/08/13 v2.6a key=value parser (HA)
+  xcolor.sty    2007/01/21 v2.11 LaTeX color extensions (UK)
+   color.cfg    2007/01/18 v1.5 color configuration of teTeX/TeXLive
+    tikz.sty    2010/10/13 v2.10 (rcs-revision 1.76)
+     pgf.sty    2008/01/15 v2.10 (rcs-revision 1.12)
+  pgfrcs.sty    2010/10/25 v2.10 (rcs-revision 1.24)
+everyshi.sty    2001/05/15 v3.00 EveryShipout Package (MS)
+  pgfrcs.code.tex
+ pgfcore.sty    2010/04/11 v2.10 (rcs-revision 1.7)
+  pgfsys.sty    2010/06/30 v2.10 (rcs-revision 1.37)
+  pgfsys.code.tex
+pgfsyssoftpath.code.tex    2008/07/18  (rcs-revision 1.7)
+pgfsysprotocol.code.tex    2006/10/16  (rcs-revision 1.4)
+ pgfcore.code.tex
+pgfcomp-version-0-65.sty    2007/07/03 v2.10 (rcs-revision 1.7)
+pgfcomp-version-1-18.sty    2007/07/23 v2.10 (rcs-revision 1.1)
+  pgffor.sty    2010/03/23 v2.10 (rcs-revision 1.18)
+ pgfkeys.sty    
+ pgfkeys.code.tex
+  pgffor.code.tex
+    tikz.code.tex
+    calc.sty    2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
+cleveref.sty    2009/09/22 v0.14.2 Intelligent cross-referencing
+ apacite.sty    2013/07/21 v6.03 APA citation
+  natbib.sty    2009/07/16 8.31 (PWD, AO)
+listings.sty    2007/02/22 1.4 (Carsten Heinz)
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+listings.cfg    2007/02/22 1.4 listings configuration
+   title.tex
+  macros.tex
+   psfig.sty
+    utf8.sty    2000/06/13  3.10 UTF-8 input encoding 
+ utfcode.sty    2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
+  ot1ptm.fd    2001/06/04 font definitions for OT1/ptm.
+supp-pdf.mkii
+ nameref.sty    2007/05/29 v2.31 Cross-referencing by name of section
+refcount.sty    2008/08/11 v3.1 Data extraction from references (HO)
+ nlesarf.out
+ nlesarf.out
+  apatch.sty    2006/07/02  3.11s last minute patches 
+    umsa.fd    2009/06/22 v3.00 AMS symbols A
+    umsb.fd    2009/06/22 v3.00 AMS symbols B
+abstract.tex
+   intro.tex
+  omsptm.fd    
+  ot1pcr.fd    2001/06/04 font definitions for OT1/pcr.
+motivation.tex
+solutiontable.tex
+   Uxnsh.fd
+affixtable.tex
+ related.tex
+overview.tex
+out/sarf_flow_diagram.pdftex_t
+out/sarf_flow_diagram.pdf
+     FSM.pdftex_t
+ out/FSM.pdf
+  ot1phv.fd    2001/06/04 scalable font definitions for OT1/phv.
+lstlang1.sty    2004/09/05 1.3 listings language file
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+ sftrees.pdftex_t
+out/sftrees.pdf
+     api.tex
+aggaffix.tex
+  redinc.tex
+bamainctable.tex
+samainctable.tex
+diacritics.tex
+diaceqtable.tex
+ results.tex
+exp1Results.tex
+apitable.tex
+conclusion.tex
+ nlesarf.bbl
+ ***********
+
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 1.19637pt have occurred.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{UNDEFINED} has been referenced but does not exist, replaced by a fixed one
+
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texlive
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-texlive/fonts/type1/public/am
+sfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cm
+mi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
+r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texm
+f-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fo
+nts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texmf-texlive/fonts/type1/pub
+lic/amsfonts/cm/cmr6.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
+cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb><
+/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/
+texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texliv
+e/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/symbols/msam10.pfb></usr/share/texmf-texlive/fonts/type1/urw/
+courier/ucrr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/helvetic/uhvr8a.pf
+b></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-
+texlive/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-texlive/fonts/type1
+/urw/times/utmr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmri8a.p
+fb></usr/share/texmf-texlive/fonts/type1/public/arabtex/xnsh14.pfb>
+Output written on out/nlesarf.pdf (32 pages, 441109 bytes).
+Transcript written on out/nlesarf.log.
+pdflatex -output-directory=out nlesarf.tex
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./nlesarf.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, loaded.
+(./nle.cls
+Document Class: nle 2004/05/20 v1.0 Natural Language Engineering (NLE) document
+ class
+) (./packages.tex (/usr/share/texmf-texlive/tex/latex/arabtex/arabtex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/aconfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabaux.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/acmd.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts2.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/ascan.sty
+(ArabTeX) scanner for code `arabtex' installed.
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aparse.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/awrite.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbsymb.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aboxes.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabtoks.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabchrs.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/aligs.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aoutput.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/abidir.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atrans.sty
+(ArabTeX) ZDMG transliteration.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alatex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afoot.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/abjad.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alists.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/asect.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atabg.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006))
+Arabic processor `ArabTeX' [20060702 patch level 3.11s (02.07.2006)]
+(ArabTeX) ... now be patient ... )
+(/usr/share/texmf-texlive/tex/latex/psnfss/times.sty)
+(/usr/share/texmf-texlive/tex/latex/multirow/multirow.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def)))
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty))
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/relsize.sty)
+(/usr/share/texmf-texlive/tex/latex/tools/enumerate.sty)
+(/usr/share/texmf-texlive/tex/latex/hyperref/hyperref.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifvtex.sty)
+(/usr/share/texmf-texlive/tex/generic/ifxetex/ifxetex.sty)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/hycolor.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/xcolor-patch.sty))
+(/usr/share/texmf-texlive/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/etexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/infwarerr.sty))
+
+Package hyperref Warning: Height of page (\paperheight) is invalid (0.0pt),
+(hyperref)                using 11in.
+
+(/usr/share/texmf-texlive/tex/latex/latexconfig/hyperref.cfg)
+(/usr/share/texmf-texlive/tex/latex/oberdiek/kvoptions.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/kvsetkeys.sty))
+Implicit mode ON; LaTeX internals redefined
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bitset.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/intcalc.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/bigintcalc.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/pdftexcmds.sty
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifluatex.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ltxcmds.sty))))
+(/usr/share/texmf-texlive/tex/generic/oberdiek/atbegshi.sty))
+*hyperref using default driver hpdftex*
+(/usr/share/texmf-texlive/tex/latex/hyperref/hpdftex.def)
+(/usr/share/texmf-texlive/tex/latex/todonotes/todonotes.sty
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty)
+(/usr/share/texmf-texlive/tex/latex/xkeyval/xkeyval.sty
+(/usr/share/texmf-texlive/tex/generic/xkeyval/xkeyval.tex))
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+(/etc/texmf/tex/latex/config/color.cfg))
+(/usr/share/texmf/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-latex.def
+(/usr/share/texmf-texlive/tex/latex/ms/everyshi.sty))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfrcs.code.tex))
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/share/texmf/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def)))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathparser.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.random.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.base.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.round.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfloat.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorequick.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty))
+(/usr/share/texmf/tex/latex/pgf/utilities/pgffor.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex))
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+(/usr/share/texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex)
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopat
+hs.code.tex))) (/usr/share/texmf-texlive/tex/latex/tools/calc.sty))
+(/usr/share/texmf-texlive/tex/latex/cleveref/cleveref.sty) (./apacite.sty)
+(/usr/share/texmf-texlive/tex/latex/natbib/natbib.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.sty
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.cfg))) (./title.tex)
+(./macros.tex (./psfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/utf8.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/utfcode.sty)
+(ArabTeX) scanner for code UTF-8 installed.)) (out/nlesarf.aux)
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1ptm.fd)
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texmf-texlive/tex/latex/hyperref/nameref.sty
+(/usr/share/texmf-texlive/tex/latex/oberdiek/refcount.sty)) (out/nlesarf.out)
+(out/nlesarf.out) ABD: EveryShipout initializing macros
+
+Package apacite Warning: Language definition file english.apc not found.
+
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006)
+(ArabTeX) version 3.11s (02.07.2006): second phase of patching)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd) (./abstract.tex)
+(./intro.tex
+
+Package hyperref Warning: Empty destination name,
+(hyperref)                using `UNDEFINED' on input line 30.
+
+(/usr/share/texmf-texlive/tex/latex/psnfss/omsptm.fd) [1{/var/lib/texmf/fonts/m
+ap/pdftex/updmap/pdftex.map}]
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1pcr.fd) [2]) (./motivation.tex
+Underfull \hbox (badness 10000) in paragraph at lines 1--16
+
+(./solutiontable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(/usr/share/texmf-texlive/tex/latex/arabtex/Uxnsh.fd)
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (19.41003pt too wide) in alignment at lines 3--10
+ [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+Underfull \vbox (badness 1924) has occurred while \output is active [3]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 48--63
+
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 77--93
+
+
+Underfull \hbox (badness 1527) in paragraph at lines 95--97
+  \OT1/ptm/m/n/10 the school) to be vi-su-ally rec-og-niz-able as two sep-a-rat
+e words  \U/xnsh/m/n/10 ú[]@\OT1/ptm/m/it/10 il[]a-   \OT1/ptm/m/n/10 (to) and
+(./affixtable.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <3.80363> not available
+(Font)              size <5> substituted on input line 5.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5--27
+
+) (ArabTeX) input encoding set to UTF-8 conventions
+Underfull \hbox (badness 10000) in paragraph at lines 98--116
+
+[4] (ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [5]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.) (./related.tex
+
+LaTeX Font Warning: Font shape `OT1/cmr/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OML/cmm/m/it' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+LaTeX Font Warning: Font shape `OMS/cmsy/m/n' in size <4.16667> not available
+(Font)              size <5> substituted on input line 11.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 13--13
+[]\OT1/ptm/m/n/8.33334 MADA+
+
+Underfull \hbox (badness 1859) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 Affix seg-men-ta-
+
+Underfull \hbox (badness 10000) in paragraph at lines 18--18
+[]\OT1/ptm/m/n/8.33334 tokenization
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--21
+[]\OT1/ptm/m/n/8.33334 maximum
+
+Overfull \hbox (20.1541pt too wide) in alignment at lines 11--22
+ [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 11--24
+
+[6]
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+
+LaTeX Warning: Marginpar on page 7 moved.
+
+[7] [8]) (./overview.tex (./out/sarf_flow_diagram.pdftex_t
+<out/sarf_flow_diagram.pdf, id=367, 636.3775pt x 346.29375pt>
+<use out/sarf_flow_diagram.pdf>) [9] (out/FSM.pdftex_t
+<out/FSM.pdf, id=398, 486.81876pt x 216.81pt> <use out/FSM.pdf>
+(/usr/share/texmf-texlive/tex/latex/psnfss/ot1phv.fd)) [10 <./out/sarf_flow_dia
+gram.pdf>] (/usr/share/texmf-texlive/tex/latex/listings/lstlang1.sty)
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty) [11 <./out/FSM.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 196--197
+
+
+Overfull \hbox (2.63966pt too wide) detected at line 215
+|[]
+
+Overfull \hbox (2.27684pt too wide) detected at line 221
+|[]
+
+Overfull \hbox (5.70474pt too wide) detected at line 221
+|[]
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 232--242
+
+
+Overfull \vbox (23.51979pt too high) has occurred while \output is active
+[12]
+Underfull \vbox (badness 3780) has occurred while \output is active [13]
+Underfull \vbox (badness 10000) has occurred while \output is active [14]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(out/sftrees.pdftex_t <out/sftrees.pdf, id=471, 813.0375pt x 485.815pt>
+<use out/sftrees.pdf>)) (./api.tex [15 <./out/sftrees.pdf>]) (./aggaffix.tex
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [16]
+
+LaTeX Warning: Marginpar on page 17 moved.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+[]\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 he/$\OMS/cms
+y/m/n/8 jj$\OT1/ptm/m/it/7.60727 him/$\OMS/cmsy/m/n/8 nn$\OT1/ptm/m/it/7.60727 
+,
+
+Underfull \hbox (badness 10000) in paragraph at lines 31--32
+\OT1/ptm/m/it/7.60727 d$\OML/cmm/m/it/8 ==$\OT1/ptm/m/it/7.60727 they$\OMS/cmsy
+/m/n/8 jj$\OT1/ptm/m/it/7.60727 them$\OMS/cmsy/m/n/8 nn []$
+
+Overfull \hbox (23.33916pt too wide) in alignment at lines 24--33
+ [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--35
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active [17]
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 85.
+
+) (./redinc.tex
+Underfull \vbox (badness 5802) has occurred while \output is active [18]
+(./bamainctable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 4--66
+
+) (./samainctable.tex
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \vbox (9.1287pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \vbox (9.12871pt too high) detected at line 93
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [19]
+Underfull \vbox (badness 10000) has occurred while \output is active [20]
+Underfull \vbox (badness 10000) has occurred while \output is active [21]
+
+LaTeX Warning: Marginpar on page 22 moved.
+
+) (./diacritics.tex
+Overfull \hbox (3.20706pt too wide) detected at line 9
+|[]
+[22] (./diaceqtable.tex (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (17.72827pt too wide) in alignment at lines 10--14
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 18--23
+ [] [] [] [] [] 
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (20.50816pt too wide) in alignment at lines 39--43
+ [] 
+
+Overfull \hbox (15.36116pt too wide) in alignment at lines 47--52
+ [] [] [] [] [] 
+) (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.) (./results.tex
+Underfull \hbox (badness 4713) in paragraph at lines 23--31
+[]\OT1/ptm/m/n/10 We com-pared the seg-men-ta-tion ca-pa-bil-i-ties of Sarf to 
+that of SAMA and
+[23] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 104--112
+[]\OT1/ptm/m/n/10 When we per-formed the same ex-per-i-ment us-ing TOKAN toolki
+t of the
+[24] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (1.96475pt too wide) in alignment at lines 171--185
+ [] [] [] [] [] [] [] [] [] 
+[25] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \vbox (badness 10000) has occurred while \output is active [26]
+(./exp1Results.tex
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 10--10
+[][]| 
+
+Overfull \vbox (8.0pt too high) detected at line 14
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 14--15
+[][]| 
+
+Overfull \vbox (16.0pt too high) detected at line 17
+
+Overfull \hbox (7.11319pt too wide) in paragraph at lines 17--18
+[][]| 
+
+Overfull \hbox (18.23161pt too wide) in alignment at lines 6--24
+ [] [] [] [] [] [] [] [] [] [] [] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 6--26
+
+)
+Overfull \vbox (21.32263pt too high) has occurred while \output is active
+[27] (./apitable.tex) [28]) (./conclusion.tex) (out/nlesarf.bbl [29]
+Underfull \vbox (badness 10000) has occurred while \output is active [30]
+Underfull \hbox (badness 1783) in paragraph at lines 652--658
+[]\OT1/ptm/m/it/10 Hunspell man-ual page.  \OT1/ptm/m/n/10 (2012).  []$\OT1/pcr
+/m/n/10 http :// www [] .linuxcertif [] .com / man / 4 /
+
+Underfull \vbox (badness 10000) has occurred while \output is active [31]
+Underfull \vbox (badness 10000) has occurred while \output is active [32]
+Underfull \hbox (badness 1077) in paragraph at lines 1263--1276
+[]\OT1/ptm/m/n/10 Vajda, E. J.  (2001).  \OT1/ptm/m/it/10 Ty-pol-ogy.  []$\OT1/
+pcr/m/n/10 http :// pandora [] .cii [] .wwu [] .edu / vajda /
+) [33] (out/nlesarf.aux)
+
+ *File List*
+     nle.cls    2004/05/20 v1.0 Natural Language Engineering (NLE) document cla
+ss
+packages.tex
+ arabtex.sty    2003/08/22  3.11 ArabTeX main module
+ arabaux.sty    2003/05/21  3.11 auxiliary macros for ArabTeX
+    acmd.sty    2003/08/20  3.11 Arabic command processing 
+  afonts.sty    1995/11/16  3.04 define Naskh font 
+ afonts2.sty    1998/10/19  3.10 define Naskh fonts for LaTeX2e
+   ascan.sty    2003/08/22  3.11 standard ZDMG input encoding 
+  aparse.sty    2003/05/26  3.11 get syllables 
+  awrite.sty    2003/06/05  3.11 build output word 
+xarbsymb.sty    1998/07/15  3.07 symbolic output encoding 
+arabskel.sty    2000/06/04  3.10 character skeleton definitions 
+xarbskel.sty    1999/07/17  3.09 character skeleton definitions 
+  aboxes.sty    2003/05/28  3.11 build output boxes
+arabtoks.sty    1999/07/17  3.09 ArabTeX CS token definitions 
+arabchrs.sty    1998/07/11  3.07 letter token definitions 
+   aligs.sty    2003/05/26  3.11 compute ligatures
+ aoutput.sty    2000/06/04  3.10 build output lines
+  abidir.sty    2003/08/22  3.11 bidirectional linebreaking
+  atrans.sty    2003/06/14  3.11 generate the transliteration 
+  alatex.sty    2003/05/04  3.11 ArabTeX extensions for LaTeX 
+   afoot.sty    2003/05/12  3.11 ArabTeX footnotes
+   abjad.sty    2003/04/26  3.11 abjad numerals 
+  apatch.sty    2006/07/02  3.11s last minute patches 
+  alists.sty    2003/04/26  3.11 inverted list macros
+   asect.sty    2003/04/26  3.11 section macros for Arabic
+   atabg.sty    1997/01/21  3.05 LaTeX tabbing macros for Arabic
+   times.sty    2005/04/12 PSNFSS-v9.2a (SPQR) 
+multirow.sty    
+graphicx.sty    1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+  keyval.sty    1999/03/16 v1.13 key=value parser (DPC)
+graphics.sty    2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+    trig.sty    1999/03/16 v1.09 sin cos tan (DPC)
+graphics.cfg    2009/08/28 v1.8 graphics configuration of TeX Live
+  pdftex.def    2010/03/12 v0.04p Graphics/color for pdfTeX
+ amssymb.sty    2009/06/22 v3.00
+amsfonts.sty    2009/06/22 v3.00 Basic AMSFonts support
+ relsize.sty    2003/07/04 ver 3.1
+enumerate.sty    1999/03/05 v3.00 enumerate extensions (DPC)
+hyperref.sty    2009/10/09 v6.79a Hypertext links for LaTeX
+   ifpdf.sty    2009/04/10 v2.0 Provides the ifpdf switch (HO)
+  ifvtex.sty    2008/11/04 v1.4 Switches for detecting VTeX and its modes (HO)
+ ifxetex.sty    2009/01/23 v0.5 Provides ifxetex conditional
+ hycolor.sty    2009/10/02 v1.5 Code for color options of hyperref/bookmark (HO
+)
+xcolor-patch.sty    2009/10/02 xcolor patch
+  pd1enc.def    2009/10/09 v6.79a Hyperref: PDFDocEncoding definition (HO)
+etexcmds.sty    2007/12/12 v1.2 Prefix for e-TeX command names (HO)
+infwarerr.sty    2007/09/09 v1.2 Providing info/warning/message (HO)
+hyperref.cfg    2002/06/06 v1.2 hyperref configuration of TeXLive
+kvoptions.sty    2009/08/13 v3.4 Keyval support for LaTeX options (HO)
+kvsetkeys.sty    2009/07/30 v1.5 Key value parser with default handler support 
+(HO)
+     url.sty    2006/04/12  ver 3.3  Verb mode for urls, etc.
+  bitset.sty    2007/09/28 v1.0 Data type bit set (HO)
+ intcalc.sty    2007/09/27 v1.1 Expandable integer calculations (HO)
+bigintcalc.sty    2007/11/11 v1.1 Expandable big integer calculations (HO)
+pdftexcmds.sty    2009/09/23 v0.6 LuaTeX support for pdfTeX utility functions (
+HO)
+ifluatex.sty    2009/04/17 v1.2 Provides the ifluatex switch (HO)
+ ltxcmds.sty    2009/08/05 v1.0 Some LaTeX kernel commands for general use (HO)
+
+atbegshi.sty    2008/07/31 v1.9 At begin shipout hook (HO)
+ hpdftex.def    2009/10/09 v6.79a Hyperref driver for pdfTeX
+todonotes.sty    2009/04/02
+  ifthen.sty    2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+ xkeyval.sty    2008/08/13 v2.6a package option processing (HA)
+ xkeyval.tex    2008/08/13 v2.6a key=value parser (HA)
+  xcolor.sty    2007/01/21 v2.11 LaTeX color extensions (UK)
+   color.cfg    2007/01/18 v1.5 color configuration of teTeX/TeXLive
+    tikz.sty    2010/10/13 v2.10 (rcs-revision 1.76)
+     pgf.sty    2008/01/15 v2.10 (rcs-revision 1.12)
+  pgfrcs.sty    2010/10/25 v2.10 (rcs-revision 1.24)
+everyshi.sty    2001/05/15 v3.00 EveryShipout Package (MS)
+  pgfrcs.code.tex
+ pgfcore.sty    2010/04/11 v2.10 (rcs-revision 1.7)
+  pgfsys.sty    2010/06/30 v2.10 (rcs-revision 1.37)
+  pgfsys.code.tex
+pgfsyssoftpath.code.tex    2008/07/18  (rcs-revision 1.7)
+pgfsysprotocol.code.tex    2006/10/16  (rcs-revision 1.4)
+ pgfcore.code.tex
+pgfcomp-version-0-65.sty    2007/07/03 v2.10 (rcs-revision 1.7)
+pgfcomp-version-1-18.sty    2007/07/23 v2.10 (rcs-revision 1.1)
+  pgffor.sty    2010/03/23 v2.10 (rcs-revision 1.18)
+ pgfkeys.sty    
+ pgfkeys.code.tex
+  pgffor.code.tex
+    tikz.code.tex
+    calc.sty    2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
+cleveref.sty    2009/09/22 v0.14.2 Intelligent cross-referencing
+ apacite.sty    2013/07/21 v6.03 APA citation
+  natbib.sty    2009/07/16 8.31 (PWD, AO)
+listings.sty    2007/02/22 1.4 (Carsten Heinz)
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+listings.cfg    2007/02/22 1.4 listings configuration
+   title.tex
+  macros.tex
+   psfig.sty
+    utf8.sty    2000/06/13  3.10 UTF-8 input encoding 
+ utfcode.sty    2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
+  ot1ptm.fd    2001/06/04 font definitions for OT1/ptm.
+supp-pdf.mkii
+ nameref.sty    2007/05/29 v2.31 Cross-referencing by name of section
+refcount.sty    2008/08/11 v3.1 Data extraction from references (HO)
+ nlesarf.out
+ nlesarf.out
+  apatch.sty    2006/07/02  3.11s last minute patches 
+    umsa.fd    2009/06/22 v3.00 AMS symbols A
+    umsb.fd    2009/06/22 v3.00 AMS symbols B
+abstract.tex
+   intro.tex
+  omsptm.fd    
+  ot1pcr.fd    2001/06/04 font definitions for OT1/pcr.
+motivation.tex
+solutiontable.tex
+   Uxnsh.fd
+affixtable.tex
+ related.tex
+overview.tex
+out/sarf_flow_diagram.pdftex_t
+out/sarf_flow_diagram.pdf
+     FSM.pdftex_t
+ out/FSM.pdf
+  ot1phv.fd    2001/06/04 scalable font definitions for OT1/phv.
+lstlang1.sty    2004/09/05 1.3 listings language file
+ lstmisc.sty    2007/02/22 1.4 (Carsten Heinz)
+ sftrees.pdftex_t
+out/sftrees.pdf
+     api.tex
+aggaffix.tex
+  redinc.tex
+bamainctable.tex
+samainctable.tex
+diacritics.tex
+diaceqtable.tex
+ results.tex
+exp1Results.tex
+apitable.tex
+conclusion.tex
+ nlesarf.bbl
+ ***********
+
+
+LaTeX Font Warning: Size substitutions with differences
+(Font)              up to 1.19637pt have occurred.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{UNDEFINED} has been referenced but does not exist, replaced by a fixed one
+
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/8r.enc}</usr/share/texmf-texlive
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-texlive/fonts/type1/public/am
+sfonts/cm/cmmi5.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cm
+mi7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
+r/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texm
+f-texlive/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fo
+nts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texmf-texlive/fonts/type1/pub
+lic/amsfonts/cm/cmr6.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/
+cm/cmr7.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr8.pfb><
+/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/
+texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-texliv
+e/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-texlive/fonts/type
+1/public/amsfonts/symbols/msam10.pfb></usr/share/texmf-texlive/fonts/type1/urw/
+courier/ucrr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/helvetic/uhvr8a.pf
+b></usr/share/texmf-texlive/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-
+texlive/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-texlive/fonts/type1
+/urw/times/utmr8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmri8a.p
+fb></usr/share/texmf-texlive/fonts/type1/public/arabtex/xnsh14.pfb>
+Output written on out/nlesarf.pdf (33 pages, 481273 bytes).
+Transcript written on out/nlesarf.log.
+pdflatex -output-directory=out Response_rev1.tex
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian)
+entering extended mode
+(./Response_rev1.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, farsi, arabic, loaded.
+(/usr/share/texmf-texlive/tex/latex/base/article.cls
+Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texmf-texlive/tex/latex/base/size11.clo))
+(/usr/share/texmf/tex/latex/xcolor/xcolor.sty
+(/etc/texmf/tex/latex/config/color.cfg)
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def)
+(/usr/share/texmf-texlive/tex/latex/graphics/dvipsnam.def))
+(/usr/share/texmf-texlive/tex/latex/geometry/geometry.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texmf-texlive/tex/generic/oberdiek/ifvtex.sty))
+(/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty)
+(/usr/share/texmf-texlive/tex/latex/todonotes/todonotes.sty
+(/usr/share/texmf-texlive/tex/latex/base/ifthen.sty)
+(/usr/share/texmf-texlive/tex/latex/xkeyval/xkeyval.sty
+(/usr/share/texmf-texlive/tex/generic/xkeyval/xkeyval.tex))
+(/usr/share/texmf/tex/latex/pgf/frontendlayer/tikz.sty
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-common.tex)
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfutil-latex.def
+(/usr/share/texmf-texlive/tex/latex/ms/everyshi.sty))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfrcs.code.tex))
+(/usr/share/texmf/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty)
+(/etc/texmf/tex/latex/config/graphics.cfg)))
+(/usr/share/texmf/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgf.cfg)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def)))
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex)
+(/usr/share/texmf/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathparser.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.code.tex
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.random.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.base.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.round.code.tex)
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/math/pgfmathfloat.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorequick.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex))
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex)
+(/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex)))
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleshapes.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmoduleplot.code.tex)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty)
+(/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty))
+(/usr/share/texmf/tex/latex/pgf/utilities/pgffor.sty
+(/usr/share/texmf/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex))
+(/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex))
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+(/usr/share/texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex)
+(/usr/share/texmf/tex/generic/pgf/modules/pgfmodulematrix.code.tex)
+(/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopat
+hs.code.tex))) (/usr/share/texmf-texlive/tex/latex/tools/calc.sty))
+(/usr/share/texmf-texlive/tex/latex/enumitem/enumitem.sty)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabtex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/aconfig.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabaux.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/acmd.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afonts2.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/ascan.sty
+(ArabTeX) scanner for code `arabtex' installed.
+(ArabTeX) input encoding set to ArabTeX standard conventions.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aparse.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/awrite.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbsymb.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/xarbskel.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aboxes.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabtoks.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/arabchrs.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/aligs.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/aoutput.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/abidir.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atrans.sty
+(ArabTeX) ZDMG transliteration.)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alatex.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/afoot.sty))
+(/usr/share/texmf-texlive/tex/latex/arabtex/abjad.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alists.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/asect.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/atabg.sty)
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006))
+Arabic processor `ArabTeX' [20060702 patch level 3.11s (02.07.2006)]
+(ArabTeX) ... now be patient ... )
+(/usr/share/texmf-texlive/tex/latex/arabtex/utf8.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/utfcode.sty)
+(ArabTeX) scanner for code UTF-8 installed.)
+(/usr/share/texmf-texlive/tex/latex/tools/xr.sty)
+
+Package xr Warning: 
+No file psqBMCaig.aux
+LABELS NOT IMPORTED.
+ on input line 34.
+
+(/usr/share/texmf-texlive/tex/latex/tools/xspace.sty)
+No file Response_rev1.aux.
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+*geometry auto-detecting driver*
+*geometry detected driver: pdftex*
+ABD: EveryShipout initializing macros
+(/usr/share/texmf-texlive/tex/latex/arabtex/apatch.sty
+(/usr/share/texmf-texlive/tex/latex/arabtex/alocal.sty
+(ArabTeX) 3.11 local stub, 26.02.2006)
+(ArabTeX) version 3.11s (02.07.2006): second phase of patching)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd)
+
+LaTeX Warning: No \author given.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 75--77
+
+(./editorComments.tex [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Overfull \hbox (7.59279pt too wide) in paragraph at lines 17--18
+[]$\OT1/cmtt/m/n/10.95 https : / / mc . manuscriptcentral . com / nle ? URL _ M
+ASK = f5a4558b88a24181a82b5db451930250$ 
+)
+Underfull \hbox (badness 10000) in paragraph at lines 29--81
+
+(./Reviewer1.comments.tex
+Underfull \hbox (badness 10000) in paragraph at lines 10--15
+
+[2]
+
+LaTeX Warning: Reference `sec:intro' on page 3 undefined on input line 19.
+
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd) [3]
+
+LaTeX Warning: Reference `sec:api' on page 4 undefined on input line 56.
+
+[4]
+Underfull \hbox (badness 10000) in paragraph at lines 100--107
+
+(/usr/share/texmf-texlive/tex/latex/arabtex/Uxnsh.fd) [5]
+Underfull \hbox (badness 10000) in paragraph at lines 144--148
+
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 159--215
+
+[7] (ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Overfull \hbox (34.65709pt too wide) in paragraph at lines 228--232
+ \OT1/cmr/m/n/10.95 ex-am-ple, the word   \U/xnsh/m/n/10.95 ZA   []   []   Ê   
+Ë\OT1/cmr/m/it/10.95 llq[]^^Va-$\OML/cmm/m/it/10.95 -$    \OT1/cmr/m/n/10.95 (f
+or/to the jus-tice/judiciary) is split into []
+[8])
+Underfull \hbox (badness 10000) in paragraph at lines 84--85
+
+(./Reviewer2.comments.tex
+Underfull \hbox (badness 10000) in paragraph at lines 5--11
+
+[9] [10] [11] [12] [13])
+Underfull \hbox (badness 10000) in paragraph at lines 88--89
+
+(./Reviewer3.comments.tex [14]
+Overfull \hbox (39.68825pt too wide) in paragraph at lines 35--37
+\OT1/cmr/m/n/10.95 li/PREP+Al/DET+qaDA'/NOUN is seg-mented into two to-kens li/
+PREP and Al/DET+qaDA'/NOUN." 
+[15] [16]
+Underfull \hbox (badness 10000) in paragraph at lines 84--91
+
+(ArabTeX) input encoding set to UTF-8 conventions
+Overfull \hbox (4.02176pt too wide) detected at line 91
+|[]
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+(ArabTeX) input encoding set to UTF-8 conventions
+(ArabTeX) input encoding set to ArabTeX standard conventions.
+Underfull \hbox (badness 10000) in paragraph at lines 91--94
+
+[17] [18] [19])
+Underfull \hbox (badness 10000) in paragraph at lines 92--93
+
+[20] (out/Response_rev1.aux)
+
+ *File List*
+ article.cls    2007/10/19 v1.4h Standard LaTeX document class
+  size11.clo    2007/10/19 v1.4h Standard LaTeX file (size option)
+  xcolor.sty    2007/01/21 v2.11 LaTeX color extensions (UK)
+   color.cfg    2007/01/18 v1.5 color configuration of teTeX/TeXLive
+  pdftex.def    2010/03/12 v0.04p Graphics/color for pdfTeX
+dvipsnam.def    1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+geometry.sty    2008/12/21 v4.2 Page Geometry
+  keyval.sty    1999/03/16 v1.13 key=value parser (DPC)
+   ifpdf.sty    2009/04/10 v2.0 Provides the ifpdf switch (HO)
+  ifvtex.sty    2008/11/04 v1.4 Switches for detecting VTeX and its modes (HO)
+     url.sty    2006/04/12  ver 3.3  Verb mode for urls, etc.
+todonotes.sty    2009/04/02
+  ifthen.sty    2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+ xkeyval.sty    2008/08/13 v2.6a package option processing (HA)
+ xkeyval.tex    2008/08/13 v2.6a key=value parser (HA)
+    tikz.sty    2010/10/13 v2.10 (rcs-revision 1.76)
+     pgf.sty    2008/01/15 v2.10 (rcs-revision 1.12)
+  pgfrcs.sty    2010/10/25 v2.10 (rcs-revision 1.24)
+everyshi.sty    2001/05/15 v3.00 EveryShipout Package (MS)
+  pgfrcs.code.tex
+ pgfcore.sty    2010/04/11 v2.10 (rcs-revision 1.7)
+graphicx.sty    1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+graphics.sty    2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+    trig.sty    1999/03/16 v1.09 sin cos tan (DPC)
+graphics.cfg    2009/08/28 v1.8 graphics configuration of TeX Live
+  pgfsys.sty    2010/06/30 v2.10 (rcs-revision 1.37)
+  pgfsys.code.tex
+pgfsyssoftpath.code.tex    2008/07/18  (rcs-revision 1.7)
+pgfsysprotocol.code.tex    2006/10/16  (rcs-revision 1.4)
+ pgfcore.code.tex
+pgfcomp-version-0-65.sty    2007/07/03 v2.10 (rcs-revision 1.7)
+pgfcomp-version-1-18.sty    2007/07/23 v2.10 (rcs-revision 1.1)
+  pgffor.sty    2010/03/23 v2.10 (rcs-revision 1.18)
+ pgfkeys.sty    
+ pgfkeys.code.tex
+  pgffor.code.tex
+    tikz.code.tex
+    calc.sty    2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
+enumitem.sty    2009/05/18 v2.2 Customized lists
+ amssymb.sty    2009/06/22 v3.00
+amsfonts.sty    2009/06/22 v3.00 Basic AMSFonts support
+ arabtex.sty    2003/08/22  3.11 ArabTeX main module
+ arabaux.sty    2003/05/21  3.11 auxiliary macros for ArabTeX
+    acmd.sty    2003/08/20  3.11 Arabic command processing 
+  afonts.sty    1995/11/16  3.04 define Naskh font 
+ afonts2.sty    1998/10/19  3.10 define Naskh fonts for LaTeX2e
+   ascan.sty    2003/08/22  3.11 standard ZDMG input encoding 
+  aparse.sty    2003/05/26  3.11 get syllables 
+  awrite.sty    2003/06/05  3.11 build output word 
+xarbsymb.sty    1998/07/15  3.07 symbolic output encoding 
+arabskel.sty    2000/06/04  3.10 character skeleton definitions 
+xarbskel.sty    1999/07/17  3.09 character skeleton definitions 
+  aboxes.sty    2003/05/28  3.11 build output boxes
+arabtoks.sty    1999/07/17  3.09 ArabTeX CS token definitions 
+arabchrs.sty    1998/07/11  3.07 letter token definitions 
+   aligs.sty    2003/05/26  3.11 compute ligatures
+ aoutput.sty    2000/06/04  3.10 build output lines
+  abidir.sty    2003/08/22  3.11 bidirectional linebreaking
+  atrans.sty    2003/06/14  3.11 generate the transliteration 
+  alatex.sty    2003/05/04  3.11 ArabTeX extensions for LaTeX 
+   afoot.sty    2003/05/12  3.11 ArabTeX footnotes
+   abjad.sty    2003/04/26  3.11 abjad numerals 
+  apatch.sty    2006/07/02  3.11s last minute patches 
+  alists.sty    2003/04/26  3.11 inverted list macros
+   asect.sty    2003/04/26  3.11 section macros for Arabic
+   atabg.sty    1997/01/21  3.05 LaTeX tabbing macros for Arabic
+    utf8.sty    2000/06/13  3.10 UTF-8 input encoding 
+ utfcode.sty    2002/03/07  3.10a Arabic+Hebrew segment of UTF-8
+      xr.sty    1994/05/28 v5.02 eXternal References (DPC)
+  xspace.sty    2006/05/08 v1.12 Space after command names (DPC,MH)
+supp-pdf.mkii
+  apatch.sty    2006/07/02  3.11s last minute patches 
+    umsa.fd    2009/06/22 v3.00 AMS symbols A
+    umsb.fd    2009/06/22 v3.00 AMS symbols B
+editorComments.tex
+Reviewer1.comments
+  omscmr.fd    1999/05/25 v2.5h Standard LaTeX font definitions
+   Uxnsh.fd
+Reviewer2.comments
+Reviewer3.comments
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information)</usr/share/texmf-texlive/f
+onts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-texlive/fonts/type1/
+public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-texlive/fonts/type1/public/amsf
+onts/cm/cmmi10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr
+10.pfb></usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr
+/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texm
+f-texlive/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-texlive/f
+onts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texmf-texlive/fonts/type1/
+public/amsfonts/symbols/msam10.pfb></usr/share/texmf-texlive/fonts/type1/public
+/arabtex/xnsh14.pfb>
+Output written on out/Response_rev1.pdf (20 pages, 178576 bytes).
+Transcript written on out/Response_rev1.log.
+bibtex out/Response_rev1.aux
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: out/Response_rev1.aux
+I found no \citation commands---while reading file out/Response_rev1.aux
+I found no \bibdata command---while reading file out/Response_rev1.aux
+I found no \bibstyle command---while reading file out/Response_rev1.aux
+(There were 3 error messages)
+rm out/Response_rev1.aux out/Response_rev1.bbl out/nlesarf.aux out/nlesarf.bbl

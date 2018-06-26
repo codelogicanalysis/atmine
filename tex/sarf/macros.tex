@@ -1,0 +1,86 @@
+\newcommand\eg{{\it e.g.\ }}
+\newcommand\etc{{\it etc}}
+
+\input{psfig.sty}
+
+\newcommand{\lsection}[2]{\section{#1}\label{sec:#2} \input{#2}}
+
+\newcommand{\CodeIn}[1]{{\small\texttt{#1}}}
+\newcommand{\frl}[1]{\fbox{\RL{#1}}} 
+\newcommand{\noArRL}[1]{\arabfalse\RL{#1}\arabtrue} 
+\newcommand{\noTrRL}[1]{\transfalse\RL{#1}\transtrue}
+
+\newcommand{\itodo}[1]{\todo[inline,color=yellow]{#1}}
+%\newcommand{\itodo}[1]{}
+\newcommand{\tododone}[1]{}
+%\newcommand{\tododone}[1]{\todo[inline,color=green]{\st{#1} }}
+
+\newcommand{\cci}[1]{{\relsize{-2}\texttt{#1}}}
+\newcommand{\chci}[1]{`\cci{#1}'}
+
+\newcommand{\noTrnoVocRL}[1]{\transfalse\novocalize\noTrRL{#1}\vocalize\transtrue}  
+\newcommand{\noVocRL}[1]{\transtrue\novocalize\RL{#1}\vocalize}  
+\newcommand{\utfRL}[1]{\setcode{utf8} \RL{#1} \setcode{standard}}
+\newcommand{\noTrutfRL}[1]{\setcode{utf8} \transfalse\RL{#1}\transtrue \setcode{standard}}
+\newcommand{\noArutfRL}[1]{\setcode{utf8} \arabfalse \RL{#1} \arabtrue \setcode{standard}} 
+
+\definecolor{shadecolor}{named}{gray}
+\definecolor{DarkGray}{gray}{0.30}
+
+% Arabic settings. 
+\setarab
+\fullvocalize
+\transtrue
+\arabtrue
+%\setarabfont{xnsh14}
+%\setarabfont{nash14bf}
+
+
+%Added by Maya
+\newcommand\codebold[1]{\textbf{#1}}
+
+\definecolor{lightgray}{rgb}{242,242,242}
+\definecolor{darkblue}{rgb}{0.0,0.0,128}
+\definecolor{darkgreen}{rgb}{0.0,0.6,0.0}
+\definecolor{darkred}{rgb}{0.6,0.0,0.0}
+\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}
+\definecolor{auburn}{rgb}{0.43, 0.21, 0.1}
+\definecolor{arylideyellow}{rgb}{0.91, 0.84, 0.42}
+\definecolor{brass}{rgb}{0.71, 0.65, 0.26}
+\definecolor{burgundy}{rgb}{0.5, 0.0, 0.13}
+\definecolor{bulgarianrose}{rgb}{0.28, 0.02, 0.03}
+\definecolor{chocolate}{rgb}{0.48, 0.25, 0.0}
+\definecolor{darkraspberry}{rgb}{0.53, 0.15, 0.34}
+\definecolor{lightbrown}{rgb}{0.71, 0.4, 0.11}
+\definecolor{brown(web)}{rgb}{0.65, 0.16, 0.16}
+\definecolor{darkbrown}{rgb}{0.4, 0.26, 0.13}
+\definecolor{magenta(process)}{rgb}{1.0, 0.0, 0.56}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{lightviolet}{rgb}{93,71,139}
+\definecolor{lighterviolet}{rgb}{159,121,239}
+
+\lstset{ %
+  language=C,
+  basicstyle=\tiny,       % the size of the fonts that are used for the code
+  numberstyle=\tiny,      % the size of the fonts that are used for the line-numbers
+  frame=Ltbr,
+  rulesep=.4pt,
+  mathescape, % Allows escaping to (La)TeX mode within $$,
+  stringstyle=\color{red},% \color{redb}
+  %keywords=[1]{elseif, return, else, int, bool, if, Boolean, do-together, foreach, endfor, endif, while, to, Let},
+  showstringspaces = false,
+  escapeinside={/*@}{@*/},
+  basicstyle=\scriptsize\ttfamily,
+  keywordstyle=[3]\color{darkbrown}\bf \em,
+  keywordstyle=[2]\color{darkred}\em,
+  keywordstyle=[1]\color{darkblue}\bf,
+  commentstyle=\color{darkgreen},
+  alsoletter={-0123456789},
+  captionpos=b, %
+  breaklines=true,
+  backgroundcolor=\color{background},
+  keywords=[1]{foreach, such, that, end},
+  keywords=[2]{category,makeTrie,addEdges},
+}
+
+%End Added by Maya

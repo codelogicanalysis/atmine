@@ -1,0 +1,84 @@
+%\vocalize
+\begin{table}
+\caption{Example rules from $R_{pp}$ }
+\begin{minipage}{0.95\textwidth}
+\relsize{-1.5} {
+  \begin{tabular}{lp{4.4cm}cp{3.3cm}}
+\hline \hline
+{\bf Category 1} & {\bf Category 2} & {\bf Resulting Category}  & {\bf Substituition rules} \\ \hline
+NPref-Bi & NPref-Al & NPref-BiAl &  \\ \hline 
+NPref-Li & NPref-Al & NPref-LiAl & \em r$//$\noTrRL{Al} $||$\noTrRL{l}$\backslash\backslash$ \\ \hline
+Pref-Wa & none of \{ Pref-0, NPref-La, PVPref-La\} & \$2 & \\ \hline
+%Pref-sa- & \{``IVPref*" AND NOT ``IVPref-li-"\} & \{\$2\} \\
+IVPref-li- & IVPref-*-y* & IVPref-(@1)-liy(@2)  & { \em d$//$he/$||$him/$\backslash\backslash$, ~ d$//$they$||$them$\backslash\backslash\ldots$ ~ d$//$(+2)$||$ to$\backslash\backslash$} \\ 
+\hline \hline
+\end{tabular}
+}
+\end{minipage}
+\label{t:rules}
+\end{table}
+
+Sarf considers three types of affixes: {\em atomic} affix morphemes, 
+{\em partial} affix morphemes, and {\em compound} affixes. 
+\begin{itemize}
+\item Atomic affix morphemes such as \noTrutfRL{يـ} can be affixes on their own and can directly connect to stems using the $R_{ps}$ and $R_{sx}$ rules. 
+\item Partial affix morphemes such as \noTrutfRL{سـ} can not be affixes on their own and need to connect to other affixes before they connect to a stem.
+\item Compound affixes are concatenations of atomic and partial affix morphemes as well as other smaller compound affixes. 
+    They can connect to stems according to the $R_{ps}$ and $R_{sx}$ rules. 
+\end{itemize}
+Sarf forms compound affixes from atomic and partial affix morphemes using newly introduced prefix-prefix $R_{pp}$ and suffix-suffix $R_{xx}$ concatenation rules. 
+
+Sarf considers $L_p$ and $L_x$ to be lexicons of atomic and partial affix morphemes associated with their tags. 
+Sarf forms agglutinative affixes using prefix-prefix $R_{pp}$ and suffix-suffix $R_{xx}$ concatenation or agglutination rules.
+A rule $r \in R_{pp} \cup R_{xx}$ takes the compatibility category tags of affixes $a_1$ and $a_2$ and checks whether they can be concatenated. 
+If so, the rule takes $a_1$ and $a_2$ and their tags and generates the
+affix $a=r(a_1,a_2)$ with its associated tags according to substitution rules based on regular expressions. 
+The rules are fusional in the sense that they modify the orthography and the semantics of the resulting 
+affixes by more than simple concatenation.
+
+We illustrate this with the example rules in Table~\ref{t:rules}.
+Row 1 presents a simple rule that allows the concatenation of prefixes with category \cci{NPref-Bi} such as \RL{bi-} and \RL{ka-}
+to prefixes with category \cci{NPref-Al} such as \noTrRL{Al}, the result is the compound prefix with category \cci{ NPref-BiAl}. 
+Since no substitution rule is specified, the tags of the resulting prefix are simple concatenations.
+
+Row 2 presents a rule that takes prefixes with category 
+\cci{NPref-Li} such as \RL{li-} and prefixes with category \cci{NPref-Al} such as \noTrRL{Al}.
+The substitution rule replaces the \noTrRL{Al-} with \noTrRL{l-} resulting in \noTrRL{lil-}. 
+The syntax of the substitution rule for the affix form is \cci{r$//$(substring)$||$(replacement)$\backslash\backslash$}. 
+
+The rule in the Row 3 states that prefixes of category \cci{Pref-Wa} can be concatenated with 
+prefixes with categories that are neither of 
+\cci{Pref-0}, \cci{NPref-La}, and \cci{PVPref-La} categories. 
+%The Boolean operators allowed are \cci{AND}, \cci{OR}, and \cci{NOT}.
+The resulting category is denoted with $\$2$ %$
+which means the category of the second prefix.
+
+Row 4 illustrates the use of the wild character \chci{*} to capture substrings of length zero or more in the second category,
+and refers to the captured substrings in the resulting category using the \chci{@} operator. 
+The \chci{@} operator is always followed by a number that denotes the captured \chci{*} expression.
+Row 4 has also an example of substitution rules for the gloss (description) tag that start with the letter $d$.
+The \cci{+2} pattern in the last substitution rule means that the \cci{to} partial gloss description should be appended after the gloss 
+of the second affix.
+Substitution rules for POS tags start with the letter $p$.
+
+\subsection{Building $R_{pp}$ and $R_{xx}$}
+
+Our method is in line with native Arabic textbooks on morphology and syntax~\cite{Mosad09,Abd00,Abd001} 
+where only atomic and partial affixes are introduced.
+The textbooks also list rules to concatenate the affixes and discuss the syntax, semantic, and phonological forms of the
+resulting affixes. 
+%This representation is more suited for linguists.
+For example, the fourth rule in Table~\ref{t:rules} is derived from a textbook rule that states 
+\cci{IVPref-li-} prefixes connect to all imperfect verb prefixes and transform the subject pronoun in the gloss 
+to an object pronoun.
+
+We built our rules in four steps. 
+\begin{enumerate}
+    \item In the first step, we encoded textbook morphological rules into patterns.
+    \item In the second step, we inspected the BAMA and SAMA affix lexicons and extracted the atomic and partial affixes from them.
+    \item Then, we grouped the rest of the BAMA and SAMA affixes into the rules we collected from the textbooks. 
+    \item We refined the rules wherever necessary, and we grouped rules that shared the same patterns. 
+\end{enumerate}
+
+We validated our work by generating all possible affixes and compared them against the BAMA and SAMA affix lexicons. 
+The comparison resulted in discovering the BAMA and SAMA inconsistencies listed in Tables~\cref{t:incBAMA,t:incSAMA}.

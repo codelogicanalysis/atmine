@@ -1,0 +1,30 @@
+
+\lstdefinestyle{c-code}{%
+  language=C,                % choose the language of the code
+  basicstyle=\tiny,       % the size of the fonts that are used for the code
+  numberstyle=\tiny,      % the size of the fonts that are used for the line-numbers
+  frame=Ltbr,
+  rulesep=.4pt,
+  mathescape, % Allows escaping to (La)TeX mode within $$,
+  stringstyle=\color{red},% \color{redb}
+  %keywords=[1]{elseif, return, else, int, bool, if, Boolean, do-together, foreach, endfor, endif, while, to, Let},
+%keywords=[1]{declaration,program,list-of-statements,statement,conditional,loop,sync,assignment,target,bexpr,expr,return-statement,type,variable-decl,function-decl,property-decl,precondition,postcondition,property,quantifier,range,term,id,access,function-call,call-argument,argument-list,call-arg-list},
+ % keywords=[2]{@dotogether,@pre,@post,if,while,return,forall,exists,int,bool,num,else,constant},
+  showstringspaces = false,
+  escapeinside={/*@}{@*/},
+  basicstyle=\scriptsize\ttfamily,
+  keywords=[1]{foreach,endfor,in,if,elseif,endif,to,else,let,be, end},
+  keywords=[2]{append,next-list,v-next-list,v-expr,pc-next-list,decl-list,init-list,a-index,a-expr,a-next-statement},
+  keywordstyle=[3]\color{darkbrown}\bf,
+  keywordstyle=[2]\color{darkred}\bf,
+  keywordstyle=[1]\color{darkblue}\bf,
+  commentstyle=\color{darkgreen},
+  alsoletter={-0123456789},
+  captionpos=b, %
+  breaklines=true,
+  backgroundcolor=\color{background},
+}
+
+
+
+%End Added by Maya

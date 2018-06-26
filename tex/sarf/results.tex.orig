@@ -1,0 +1,412 @@
+\itodo{list all experiments that we report on and what each of them proves. 
+then have each of them in a separate subsection.}
+
+\itodo{add places as a feature to compute . for SAMA/BAMA and elixir look for words whose gloss has: country, town, city, place, continent, village, state, capital, }
+
+\itodo{review the 100 percent precision and recall results!}
+
+\itodo{the accuracy comparison between Buckwalter, ElixirFM is a result of two things: 
+(1) the extended lexicon in Sarf, (2) the inconsistencies.}
+
+In this section we present and discuss the results of evaluating Sarf and compare it to existing morphological 
+analyzers such as BAMA, SAMA, MADA+TOKAN, and ElixirFM. 
+%Sarf solves the segmentation correspondence problem between the morphemes and their corresponding features, 
+%reduces the lexicon size,  enhances the consistency across morphological features, and simplifies the 
+%augmentation of the lexicons with affix morphemes when needed. 
+%Sarf perfroms better than existing Arabic morphological analyzers in terms of running time. 
+%Finally, our experiments and case studies show the utility of the Sarf application customizable analysis API. 
+
+%We compare Sarf to morphological analyzers 
+%such as BAMA, SAMA, MADA+TOKAN, and ElixirFM. 
+%We evaluated the consistency by measuring the segmentation 
+%capabilities and lexical inconsistencies of the analyzers. 
+We compared the segmentation capabilities of Sarf to that of SAMA and 
+MADA+TOKAN under the ATB v3.2. 
+We also evaluated the presence of the BAMA and SAMA inconsistencies 
+of~\Cref{t:incBAMA,t:incSAMA} in the ATB v3.2 Part 3. 
+Results show that the annotations of Sarf nearly perfectly agree with the 
+manual annotations of the ATB v3.2. 
+The results also show that Sarf can automatically correct 0.76\% of the ATB 
+annotations due to lexicon inconsistencies. 
+
+Moreover, we evaluated the efficiency of Sarf by measuring the size 
+of the lexicons, lexicon augmentation cost, 
+and the runtime and accuracy performance  of the analyzer. 
+
+We compared the cost of augmenting Sarf with the question 
+clitic (hamza \RL{'}) to that of BAMA and SAMA. 
+We also conducted two experiments to evaluate the 
+performance of Sarf compared to SAMA and ElixirFM. 
+The experiments show the advantage of Sarf
+%, as an application customizable analyzer, 
+ over the other analyzers in terms of performance. 
+%We also present results that compare Sarf to existing morphological analyzers
+%such as Buckwalter and ElixirFM. 
+%We evaluate our hypothesis of the utility of a customizable Arabic morphological analyzer.
+
+%\subsection{Inconsistency}
+
+%\vspace{-1.5cm}
+\subsection{Segmentation correspondence}
+
+We evaluated the segmentation correspondence capabilities of 
+Sarf under the segmentation guidelines of the ATB v3.2.
+For each entry in the `before' section of ATB v3.2 
+Part 3 with a correct SAMA solution,
+we automatically computed the segmentation using Sarf 
+and compared the result to the segmentation in
+the `after' entries that are manually validated by the LDC.
+
+SAMA had a correct morphological 
+solution for 273,618 words out of 393,201 ATB words.
+Those required later segmentation and manual validation. 
+Our automatically generated segmentation agree with 
+99.991\% with the oracle ATB segmentation. 
+%Our automatically generated segmentation agree with 99.991\% 
+%of 273,618 words out of the total 393,710 ATB words 
+%for which SAMA had a correct morphological solution and that 
+%required later segmentation and manual validation.
+We inspected the 25 entries for which our segmentation 
+disagreed with ATB and found that both segmentations were valid. 
+For example, the entry \utfRL{منّا} is formed of \noTrutfRL{من} 
+\cci{min/PREP} (from) and \noTrutfRL{نا} \cci{nA/PRON\_1P} (us). 
+Our segmentation is \noTrutfRL{من}+\noTrRL{|BBA} 
+while that of ATB is \noTrutfRL{م+نّا}. 
+When the morphemes are concatenated, the two \noTrRL{-n-} consonants 
+can be fused into a single one with a shadda (\noTrRL{|BB}).
+Since it is common to omit the shadda, we are left with a single consonant
+at the boundary, which can correspond to either morpheme.
+
+\begin{table}[!tbp]
+\begin{minipage}{\textwidth}
+\begin{tabular}{lccc} 
+\hline \hline
+Reason & {\bf ATB}  & {\bf TOKAN} & {\bf Frequency} \\ \hline
+Dropping diacritics & \utfRL{اميركياً} & \utfRL{اميركيا} &
+1.456\% \\
+Hamza normalization & \utfRL{أنقرة} & \utfRL{انقرة} &
+2.799\% \\
+Other normalizations & \utfRL{مغادرت+ه} & \utfRL{مغادرة+ه} &
+5.450\% \\
+Removing letters & \utfRL{لكن+ني} & \utfRL{لكن+ي} &
+0.034\% \\
+Adding letters & \utfRL{ل+لتحقيق} & \utfRL{ل+التحقيق} &
+1.318\% \\                                                                                                              
+{\bf Total} & & &{\bf 11.058\%} \\
+\hline \hline
+\end{tabular}
+\end{minipage}
+\caption{ATB-TOKAN segmentation disagreement examples}
+{%\vspace{-0.5cm}
+}
+\label{t:tokan}
+\end{table}
+When we performed the same experiment using TOKAN toolkit of the MADA+TOKAN, 
+we got a total of 88.942\% agreement with ATB. 
+When analyzing the inconsistent instances,
+we noticed that TOKAN disregarded input diacritics. 
+It also performed its segmentation based on the POS tags
+of the morphological solutions in a similar approach 
+to that mentioned in~\citep{LRECMaamouriKB08}. 
+Table~\ref{t:tokan} shows examples of the disagreement instances.
+
+Since Sarf preserves correspondence when performing segmentation,
+it is capable of generating a vocalized tag in the ATB `after' dataset,
+which carries more information in 15.47\% of the time 
+than the counterpart POS derived vocalized entry.
+The vocalized entry in the `after' dataset was dropped 
+because of maintenance and segmentation issues.
+With Sarf that entry can be maintained. 
+
+\subsection{Lexicon consistency}
+\label{s:s:lexicon_consistency}
+We evaluated the presence of the inconsistencies of \cref{t:incBAMA,t:incSAMA} 
+in the ATB v3.2 Part 3.
+The first experiment considered the ATB entries that adopted the SAMA solution.
+The rest of the entries have manually entered solutions.
+The gloss inconsistencies affect 0.76\% of those entries.
+
+\begin{table}[!tbp]
+\begin{minipage}{0.6\textwidth}
+\begin{tabular}{p{3cm}cc} 
+\hline \hline
+Conflict       & $\Delta_{word}$  & $\Delta_{analysis}$ \\ \hline
+POS            & 0.206\%        & 0.016\% \\
+Gloss          & 8.317\%        & 3.226\% \\
+WaFa           & 0.251\%        & 0.022\% \\
+%Question clitic & 0.100\% & 0.033\% \\ 
+{\bf Total } & {\bf 8.774\%} & {\bf 3.264\%}\\
+\hline \hline
+\end{tabular}
+\end{minipage}
+\caption{Effect of lexicon inconsistencies.}
+%\vspace{-1.5cm}
+\label{t:comp:SAMA}
+\end{table}
+The second experiment considered all tokens in the ATB with a SAMA solution. 
+The $\Delta_{word}$ column of Table~\ref{t:comp:SAMA}
+reports the ratio of the affected ATB words, 
+and the $\Delta_{analysis}$ columns reports the ratio 
+of the conflicting morphological analyses.
+One word might have several morphological 
+solutions which explains the difference.
+The rows report the effect of the POS and gloss tags, 
+and that of the wrong prefix entry~\ref{inc:wafa} of Table~\ref{t:incSAMA}.
+In total 8.774\% of the words and 3.264\% of the 
+morphological solutions are affected.
+Sarf automatically solves all these conflicts. 
+%in addition, Sarf also automatically solves 
+%the 7 ATB occurrences of the question clitic.
+%\subsection{Efficiency}
+
+%\vspace{-2cm}
+\subsection{Lexicon size.}~~
+
+\begin{table}[!tbp]
+\begin{minipage}{0.8\textwidth}
+\begin{tabular}{cccp{0.05cm}ccp{0.05cm}cc}
+\hline \hline
+ & $|L_p|$ & $|R_{pp}|$ & & $|L_x|$ & $|R_{xx}|$ & & $\Delta_L^{\noTrutfRL{ء}}$ & $\Delta_R^{\noTrutfRL{ء}}$  \\
+ \hline
+%    \\ \cline{2-3} \cline{5-6} \cline{8-9}
+{\bf BAMA}    & 299 & --& &618 & --  & & 295 & -- \\
+Agglutinative & 70      & 89& &181 & 123 & & 1   & 32 \\
+With fusional &                43  & 89& &146 & 128 & & 1   & 32 \\
+With grouping & 41      & 7     & &146 & 32      & & 1   & 1  \\  \hline
+{\bf SAMA } &    1325 & --      & &945  & -- & & 1,296 & -- \\
+Agglutinative & 107 & 129       & & 221 & 188& & 1     & 38     \\ 
+With fusional & 56      & 129 & & 188   & 194& & 1     & 38 \\ 
+With grouping & 53      & 18 & & 188    & 64 & & 1     & 1  \\  \hline
+{\bf Sarf } &       &         & &    &    & &    &    \\
+Agglutinative &    &          & &    &   & &        &        \\ 
+With fusional &         &    & &      &   & &        &    \\ 
+With grouping &         &    & &       &    & &        &     \\ 
+\hline \hline
+\end{tabular}
+\end{minipage}
+\caption{Lexicon size comparison}
+%\vspace{-2cm}
+\label{t:reduction}
+\end{table}
+
+The $|L_p|$, $|L_x|$, $|R_{pp}|$, and $|R_{xx}|$ 
+entries in Table~\ref{t:reduction} report 
+the sizes of the affix lexicons and
+the number of concatenation rules of BAMA and SAMA.
+The entries also report the effect of using 
+agglutinative affixes and fusional rules on reducing the size. 
+%
+%and grouping of rules with similar patterns using wildcards on the size.
+Sarf only requires 226 and 323 entries to represent the 917 and the 2,270 entries 
+of BAMA and SAMA affixes with inconsistencies corrected, respectively.
+The transition from BAMA to SAMA required the addition of 1,353 entries to 
+the lexicons of BAMA.\todo{R1.15.} 
+Sarf only required the addition of one order of magnitude less entries 
+to accommodate an equivalent change. 
+The 136 entries consisted of 12 more entries in $L_p$, 
+42 in $L_x$, 18 rules in $R_{pp}$, and 64 in $R_{xx}$.
+%We also note that we detect most of the inconsistencies automatically 
+%and only needed to validate our corrections in textbooks and corpora.
+
+{\bf Augmentation.}~~
+The question clitic, denoted by the glottal sign 
+(hamza \utfRL{أ}), is missing in BAMA and SAMA as noted by ~\citep{Attia:06b}.
+The $\Delta_L^{\noTrutfRL{ء}}$ and $\Delta_R^{\noTrutfRL{ء}}$ entries 
+in Table~\ref{t:reduction} show the difference in the number of 
+additional affixes and rules needed to accommodate 
+for the addition of the question clitic.
+Our method only requires the addition of one 
+atomic affix and one fusional concatenation rule.
+Whereas BAMA and SAMA need 295 and 1,296 additional entries to their lexicons, respectively, 
+Moreover, the process requires manual intervention 
+with a possibility of inducing inconsistencies in the process.
+This is evidence that our method is better for 
+the consistency and the maintenance of the lexicons.
+
+\tododone{the table below should include the atomic features that sarf is concerned with. 
+proper names, family connectors, tell-connectors, places, place prepositions, possessive.
+need to recompute the values using sarf.}
+
+\input{exp1Results}
+
+%\input{performanceTable}
+
+%\input{performanceTableNew}
+
+
+%\vspace{-1.2cm}
+\subsection{Performance}
+
+We evaluated the accuracy and runtime efficiency of 
+Sarf and compared that to SAMA and ElixirFM
+with one of the applications~\citep{ZaMaFlairs2012HadithBio}
+that used Sarf as a back-end morphological analyzer. 
+The hadith extraction application~\citep{ZaMaFlairs2012HadithBio} is concerned
+with analyzing a book of traditions
+related to prophet Mohammad through a chain of narrators. 
+%
+Narrators are identified by composite proper person names
+that are connected with family connectors. 
+For example, the chain of narrators \RL{.hdd_tnA qtybT bn s`yd `n ^gryr}, starts with the first narrator 
+\RL{qtybT bn s`yd} where \RL{qtybT} and \RL{s`yd} 
+are {\tt proper person names}.
+The word \RL{bn} (son of) indicates a parental 
+relation that we will refer to as {\tt family-connectors}.
+The name \RL{^gryr} is a proper person name denoting 
+the second narrator, and the words 
+\RL{.hdd_tnA} (told us) and \RL{`n} (from/about) indicate 
+a narration relation and we refer to them as 
+{\tt tell-connectors}. 
+Key to narrator detection are morphological features that point to 
+places such as names and location prepositions. 
+
+%We calculated the execution time of the analyzers and 
+%evaluated the accuracy of the tags in terms of precision and recall.
+
+Table~\ref{tab:exp1Res} reports the results of detecting morphological features 
+that define proper names, tell-connectors, and family connectors and compares the 
+results with SAMA and ElixirFM in terms of accuracy and running time. 
+%
+The table considers 
+three books of hadith selected arbitrarily~\citep*{IbnHanbal,AlKulayni,AlTousi}\footnote{We obtained the digitized books from online sources such as \href{http://www.yasoob.com/}{http://www.yasoob.com/} and \href{http://www.al-eman.com/}{http://www.al-eman.com/}. }. 
+All experiments used a Linux operating system running on a 
+dual core 2.66 Ghz 64-bit processor with 4GB of memory.
+
+
+%For each book, the table reports the accuracy of the extracted 
+%proper names, tell-connectors, and family connectors in terms 
+%of precision and recall for each of the compared analyzers. 
+%The table also reports on the execution time 
+%required by each analyzer for each book.
+
+Sarf scored higher recall for all the features and approximately 
+similar precision across the three books. 
+%The precision and recall measures of the tell-connectors 
+%are very close between the analyzers across the three books. 
+The precision and recall measures of the family connectors 
+in Sarf and SAMA are close, unlike ElixirFM which reports 
+lower accuracy measures. 
+After analyzing the results, it turned out that  ElixirFM
+misses some gloss tags such as the `son' tag associated with the stem `\RL{bn}'.
+%This token is an important and frequent tag in our application 
+%which explains the low accuracy. 
+Sarf produces significantly higher proper name recall measure 
+compared to SAMA and ElixirFM. This mainly due to augmenting the stem lexicon of 
+Sarf with proper names as explained in Section~\ref{sec:overview}.
+
+Sarf outperformed both SAMA and ElixirFM in running time even without the 
+use of the feature priority and the feature selection API. 
+SAMA performed better than ElixirFM. 
+%This result was expected for Sarf as it uses structures 
+%that enables the traversal in an efficient way.
+
+
+%\input{placestable}
+
+%ElixirFM outperformed Buckwalter in terms of accuracy.
+%We think the big difference is due to the sophistication 
+%of the formal functional morphological analysis of ElixirFM 
+%and its reliance on additional annotations extracted from 
+%both ATB~\citep{Maamouri:04} and the 
+%Prague Arabic Dependency Treebank~\citep{Prague04}.
+
+
+\subsection{Sarf API}
+
+\input{apitable}
+
+We evaluated the application customizable Sarf API with several applications that
+used Sarf. 
+\todo{R2.13}
+Table~\ref{t:sarfapi} reports the number of morphological solutions per word 
+and the runtime of Sarf for several applications before and after using the application customizable Sarf API.
+%to refine the analysis and compares that with the same applications 
+%without the use of the Sarf API. 
+The numbers show the utility of the Sarf API at improving the runtime and the efficiency of 
+NLP applications by an order or magnitude across the four applications. 
+
+In what follows, we shortly describe the applications. 
+Detailed results including accuracy 
+measures can be found in the corresponding papers. 
+
+The temporal entity extraction application uses finite state machines driven by
+morphological features that indicate temporal units, intervals, quantities, and
+prepositions as input~\citep{ZaMa2012IJCLATime}.
+The application processed 43 articles arbitrarily selected from local newspapers. 
+The average number of solutions that Sarf reported per word without the use of the API
+was 4.33 solutions per word. 
+%The use of the API indicating that 
+The application specific refinements of the analysis implemented using the
+Sarf API eliminated solutions that the application is not 
+interested in and thus the number of solutions per word that Sarf ended up
+reporting was 1.74 and that in turn resulted in a substantial improvement in runtime. 
+
+
+The hadith segmentation and extraction application extracts 
+chains of narrators from hadith books using finite state machines that take 
+morphological features such as gloss and POS tags that indicate proper names, 
+family relations, tell-connections, places, and possessive nouns as input
+~\citep{ZaMaFlairs2012HadithBio}.
+The application processed a total of 41 books with a total of 196,171 narrations 
+to build a graph where narrators are nodes and their relation to each other are edges. 
+Similarly to above, the number of solutions per word improved from 5.41 to 1.82 
+and the runtime improved by more than half. 
+
+The biography application matches a narrator extracted from the hadith application 
+to corresponding biographies in biography books and extracts entities such as 
+birth and death dates, location, students, professors, and authentication 
+qualifications
+~\citep{ZaMaFlairs2012HadithBio}.
+The biography application uses narrator extraction and temporal extraction, 
+and in addition
+it uses morphological features that indicate qualifying adjectives that relate 
+to authenticity. 
+The application used the graph generated from the hadith application and 
+processed 15 books of biographies with a total of 79,946 biographies 
+to (1) segment the biographies, (2) extract the narrators in the biographies, and 
+(3) annotate the narrator nodes in the graph with qualifiers extracted from the 
+corresponding biographies. 
+The use of the Sarf API improved the solutions per word ratio from 5.61 to 2.12
+and improved the run time by almost a factor of 4. 
+
+The genealogy extraction application extracts a family tree and learns words
+that indicate family relations from biblical texts.
+It uses morphological features that indicate proper names, family relations, places, 
+and professions~\citep{ZaMaHaCicling2012Entity}. 
+The application processed the book of Genesis with fifty verses. 
+21,385 words. 
+The use of Sarf API improved the solutions per word ratio from 4.63 to 2.44 and improved run time substantially. 
+
+
+
+%\input{exp2Results}
+%
+%The concept of having an application customizable analyzer is based 
+%on the hypothesis that many NLP case studies need the 
+%morphological analyzer to answer queries that do not need 
+%high accuracy at the low morphological analysis level.
+%We conducted another experiment to validate this hypothesis.
+%Thus, we extended the first application with several 
+%low-level morphological refinements to Sarf such as disambiguation of 
+%female proper names so that the application can ignore them. 
+%We also added a refinement that detected compound proper names 
+%such as \RL{`bd alr.hmn} as they are common in narrator names. 
+%We inspect the effect of low level refinements on the high 
+%level output and report our results in Table~\ref{tab:exp2Res}.
+%
+%The `narrator name' row reflects the accuracy of 
+%proper names detected within narrator structures. 
+%The `narrator chain' reflects the accuracy of 
+%narrators covered by extracted chains. 
+%The `hadith segmentation' reports on the accuracy of 
+%the hadiths extracted from the book. 
+%The metrics (precision and recall) are computed 
+%manually over a representative sample of each book.
+%
+%In general, we observe that the refinements 
+%slightly improved performance and accuracy at
+%the lowest level of abstraction. 
+%However, the refinements had little to no effect on the high 
+%accuracy measures at higher levels of abstraction.
+%We believe that this is a strong supporting evidence to our hypothesis.
+

@@ -1,0 +1,81 @@
+R3.11 (check SAMA tables)
+---------
+R2.1 (appendix of morphological concepts)
+-------
+check amine related qstns below
+------
+
+R2.9 (embed examples)
+
+
+
+**********
+**********
+adjust R3.9 according to note in R3.1
+----
+R3.6 Clarify sentence
+3.11 check SAMA tables 
+----------------------------------------------------
+R1.14 More features - look into paper of ATB.
+-----
+R2.12  double check that gloss is added everywhere
+-----
+R2.1.  include the morphological concepts in Appendix
+----
+R2.13. double check that the typos were corrected and correct if not.
+----
+R2.14. improper english
+-------
+R2.9 embed examples while proof reading
+----
+R2.16 tables distant: at end do  this
+double check that all gliss are added while proof reading 
+
+
+***
+check updates from Amine: R1.16
+Ameen: can you please do: R1.17, R2.10
+R3.5?
+1.5: check results from Ameen.
+
+
+
+*********************************************************************
+********************************************************************
+***************BELOW REVIEWS ARE ALREADY DONE************************
+Completed: 
+CommentR2.4 Paragraphs dont sometimes connect and lack coherence such as in section 2.2
+Response
+We fixed this by editing and rewriting some of the paragraphs lacking coherence, for example sections 2.2 amd 2.3.
+
+
+CommentR2.11 ‘Solution construction’ section (2.2) is very ambiguous and unclear. Lacks clarity in explaining
+the working of their application. E.g. it lacks clarity as to how the solution is reached from the
+DAG and Trie structure. Paragraph 2 needs rephrasing.
+Response
+We edited this section to make it clearer. Section 2.2 now explains extracting the morpheme sequence from DAG and trie and section 2.3 explains processing the sequence for constructing the morpheme solution.
+
+
+CommentR3.8 2. p. 7, section 2.2. The point about the priority rules is unclear. In either case, with POS as
+the priority or the gloss, you end up with six solutions in Fig.3, don’t you? It’s unclear what
+the utility is of this. This seems to be the same mechanism whereby later it’s explained that the
+API can be modified to augment or filter solutions as desired? Is so, could a reference be made
+to that section later, or the later section refer back to this one, to make that explicit?
+Response
+We further explained the benefit of priority features in section 2.3 . We also added a reference to the API from section 2.3.
+Refer to addressing the priority API.
+Explain why it matters.
+
+
+
+---------------------------------------------------------------
+References related: R3.9, 3.12, 3.18
+---------------------------------------------------------------
+Typos: 3.19
+---------------------------------------------------------------
+
+R2.2  MADAMIR from table
+---------------------------------------------------------------
+
+
+

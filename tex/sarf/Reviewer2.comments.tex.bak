@@ -1,0 +1,177 @@
+\section*{Reviewer 2 comments}
+
+\subsection*{Overview}
+The work is a constructive attempt by the authors to build a tool facilitating the applicability of morphological analysis customizable for applications compared to existing tools which present  less flexible output as solution. 
+
+It identifies some of the shortcomings and discrepancies of existing morphological analyzers. 
+
+The main features advocated by the author about the tool are 
+\begin{itemize}
+\item[-] the characteristic of choice of detail output for a particular analysis resulting in performance gains. 
+\item [-] Concept of  ‘agglutinative’ and ‘fusional’ affixes refining affix combination rules resulting in  reducing lexicon size and speedier analysis.
+This aspect is an inclusion from their earlier work, which is previously published.
+\item[-] Identify numerous `inconsistencies’ in some existing tools due to error in the encoding of the lexicons for affixes.
+\item[-] They introduce certain  other features such as unprecedented analysis of  `Run-­‐on word’; using information from partially diacritized text which have been used by one other tool
+\end{itemize}
+Paper mainly describes the technical aspect and functioning of the Sarf Application to choose appropriate analysis based on user defined choices.  The main novelty  aspect of the techniques for analyzing words based on `agglutinative and fusional’ affixes has been covered by the author in previous publication.
+
+\begin{enumerate}[leftmargin=0mm,label=\bfseries CommentR2.\arabic*]
+\item \label{Review.2.1} 
+(A) Paper doesn't provide conceptually and linguistically  motivated reasoning  behind the application of a certain methods to obtain their solution. \\
+(B) Not much theoretical and descriptive insight about morphological concepts
+
+\textbf{Response}\\
+The paper informally introduces the necessary concepts for morphological analysis. 
+We reorganized the paper and the background and motivation section is now a motivation section. 
+The paper is already at or beyond page limit. 
+If the reviewers see fit, we may include the textbook theoretical morphological concepts in a separate Appendix. 
+$\blacksquare$
+
+\item \label{Review.2.2}
+Whereas on the one hand  they improve upon and combine many of the advantages of existing tools they didn't include a key aspect of morphological analysis which is disambiguation of the analysis provided by some existing analysers such as MADAAMIRA.
+
+\textbf{Response}\\
+%Sarf provides the option to uses existing partial diacritics for disambiguation. It considers
+%the diacritics at morpheme boundaries, to generate only the diacritic matching solutions.
+%\\
+%Maya: what's the difference of this and morphological disambiguation. In literature review we state that we don't do morphological disambiguation. (shadda example)
+%
+MADAMIRA does not support application customization, run-on words, and partial diacritics. 
+Sarf does, but does not support disambiguation. 
+An NLP developer can benefit from the MADAMIRA disambiguation features in the API. 
+In the future, we will work on integrating the disambiguation features from MADAMIRA into Sarf. 
+$\blacksquare$
+
+\item \label{Review.2.3}
+Paper needs to improve upon the overall presentation. 
+It lacks professionalism with a clutter of spontaneous examples, which could be more organized. 
+Also includes some mundane details such as about the architecture of the system, which could be omitted.
+
+\textbf{Response}\\
+We split and renamed the sections to improve the organization of the paper. 
+We also embedded examples in place as suggested in Comment R2.8.
+Regarding details about the system architecture of Sarf, 
+other reviewers requested that we expand on the engineering aspect 
+of Sarf.
+$\blacksquare$
+
+
+\subsection*{Specifics:}
+\item \label{Review.2.4}
+Paragraphs don't sometimes connect and lack coherence such as in section 2.2
+
+\textbf{Response}\\
+We fixed this by editing and rewriting some of the paragraphs in the section.
+$\blacksquare$
+
+\item \label{Review.2.5}
+Poor presentation of the Arabic script and its Romanized form: quite unprofessional.
+
+\textbf{Response}\\
+We are using the ArabTex package for Arabic text editing and transliteration as recommended in the ``Introduction to Arabic Natural Language Processing'' book by Nizar Habash.
+We added a footnote indicating the used package and citing the book recommending it.
+$\blacksquare$
+
+\item \label{Review.2.6}
+Poor formatting of the section heading without variation in font sizes for subsections.
+
+\textbf{Response}\\
+We are using the Natural Language Engineering Latex template. The template defines the used font sizes for the sections/subsections. 
+$\blacksquare$
+
+\item \label{Review.2.7}
+Also poor organization of section heading: Describing the various
+aspects of their tool should be organized under one large section with various
+subsections for each feature described.\\
+\textbf{Response}\\
+We expanded the overview section and we renamed it to be Sarf as suggested. 
+$\blacksquare$
+
+\item \label{Review.2.8}
+Related works section should after introduction rather than towards the end.
+
+\textbf{Response}\\
+We modified this. The Related Works section is now after the Introduction.
+$\blacksquare$
+
+\item \label{Review.2.9}
+Lack of illustrative examples; only refers back to the same table to explain
+their point of view which remains unclear
+
+\textbf{Response}\\
+We embedded the examples in place in most of the cases as suggested. 
+$\blacksquare$
+
+\item \label{Review.2.10}
+Diagrams missing key details and lack illustrative power to explain the
+concept clearly.
+
+\textbf{Response}\\
+We added details to the diagram of Figure~\ref{fig:flowdiagram}. The labels of the diagram components now
+better relate to the text. 
+We also highlighted the traversal path in Figure~\ref{f:example} with shaded nodes. 
+$\blacksquare$
+
+\item \label{Review.2.11}
+`Solution construction' section (2.2) is very ambiguous and unclear. Lacks
+clarity in explaining the working of their application. E.g. it lacks clarity as to
+how the solution is reached from the DAG and Trie structure. Paragraph 2
+needs rephrasing.
+
+\textbf{Response}\\
+We edited Section~\ref{ss:solconstr} to make it clearer. 
+It now explains extracting the morpheme sequence from the DAG and trie structures. 
+It also explains processing the input sequence to construct the morpheme solutions. 
+$\blacksquare$
+
+\item \label{Review.2.12}
+Missing gloss for the Arabic script in the given examples in text makes
+grasping the concept difficult
+
+\textbf{Response}\\
+We added glosses for most of the examples unless redundant in the same paragraph. 
+$\blacksquare$
+
+\item \label{Review.2.13}
+The text has many typos e.g. `the was' instead of `there was' page 9 line 9;
+`Sarfover' missing space in page 20; ``and compares that'' on page 23 Sec 7.5,
+instead of ``and compared that''; to name a few examples.
+
+\textbf{Response}\\
+Thank you. We fixed the typos.
+$\blacksquare$
+
+\item \label{Review.2.14}
+English used is sometimes improper and not of a quality standard. E.g. the
+sentence p 15, para 5, ``It checks that the sequence of non-diacritic letters,
+ignoring the diacritics between them, are equal''
+
+\textbf{Response}\\
+Fixed. 
+$\blacksquare$
+
+\item \label{Review.2.15}
+The purpose of the ``diacritic-aware consistency check is unclear''. No
+procedure is outlined how it is used to discard certain diacritic as invalid.
+
+\textbf{Response}\\
+We added a paragraph at the end of Section~\ref{sec:diac} to explain how the check is used
+to eliminate solutions while parsing. 
+$\blacksquare$
+
+
+\item \label{Review.2.16}
+Tables distant from the referenced text.
+\textbf{Response}\\
+We fixed this for all tables.
+$\blacksquare$
+
+\item \label{Review.2.17}
+Conclusion quite brief: needs more detail and conclusive deductions about the
+work
+
+\textbf{Response}\\
+We added a brief on the results of using Sarf to the conclusion. 
+$\blacksquare$
+
+\end{enumerate}

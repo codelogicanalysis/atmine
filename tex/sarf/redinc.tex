@@ -1,0 +1,110 @@
+\subsection{Redundancy} 
+\label{s:s:redundant}
+
+Consider the partial lexicon of prefixes in Table~\ref{t:affixes}. 
+\todo{R1.9.}The first five rows can be replaced with two atomic affix morphemes ( \RL{f} and \RL{y})  
+and one partial affix morpheme (\RL{s}) in $L_{p}$, 
+and three rules to generate compound morphemes in $R_{pp}$ (r (\RL{f}, \RL{y}), r (\RL{f}, \RL{s}), r (\RL{s}, \RL{y})). 
+Representing prefix \RL{ya} (them/both) required four entries, three of them only differ
+in their dependency on the added \RL{ya}. 
+Representing prefix \RL{w} required the addition of five entries.
+\todo{1.10}
+With Sarf, the equivalent addition of \RL{ya} (them/both) requires only two rules in $R_{pp}$ that relate the categories of \RL{f} and \RL{s} to that of \RL{y}. 
+The addition of \RL{w} requires only one additional entry (\RL{w}) in $L_p$.
+The difference is much larger when we consider the full lexicon as will be shown 
+in Section~\ref{sec:results}.
+
+\subsection{Inconsistencies} 
+\label{s:s:inc}
+
+The entries in Tables~\ref{t:incBAMA} and ~\ref{t:incSAMA} list examples of the 197 and 208 inconsistencies detected in the affix 
+lexicons of BAMA version 1.2 and SAMA version 3.1, respectively.
+We found a small number of these inconsistencies manually and we computed the full list via comparing $L_p$ and $L_x$ with 
+their counterparts computed using our agglutinative affixes. 
+Most of the inconsistencies are direct results of partially redundant entries with erroneous tags. Experiments described later in section \ref{s:s:lexicon_consistency} shows that most of the detected inconsistencies are specifically related to gloss (Table~\ref{t:comp:SAMA}). \todo{3.12}
+We note that SAMA corrected several BAMA inconsistencies, but also introduced 
+several new ones when modifying existing entries to meet new standards and when introducing new entries. 
+
+%%%%%%%%%%%% BAMA inconsistencies table %%%%%%%%%%%%%%%%
+\input{bamainctable}
+
+The following describes the BAMA inconsistencies illustrated in Table~\ref{t:incBAMA}: 
+
+\begin{enumerate}[(a)]
+    %%%%%%%%%%%%%%%%%%% BAMA prefixes
+\item \label{inc:plus}  $L_p$ omits a plus (+) symbol that indicates boundaries in compound prefixes. 
+\item \label{inc:so}    $L_p$ omits the (so) alternative gloss that corresponds to \RL{f-} in several compound prefixes.
+    %%%%%%%%%%%%%%%%%%% BAMA suffixes
+\item \label{inc:num_gender_subject} $L_x$ omits gender and number qualifiers 
+  that appear within within square brackets
+    from several glosses of subject suffixes.
+                % not very precise seems sometimes also uses () for subjects like:
+                %اكن    اكُنَّ  PVSuff-Ah       they (both) <verb> you (women)  +A/PVSUFF_SUBJ:3MD+kun~a/PVSUFF_DO:2FP  
+\item \label{inc:num_gender_object} $L_x$ omits gender and number qualifiers 
+    from several glosses of subject suffixes that appear within parenthesis.
+\item \label{inc:both} $L_x$
+    expresses the dual quantifier as `them (both)' in the majority of the entries, and 
+    as `(both of) them' in several entries.
+\item \label{inc:dot} $L_x$ omits the dot (`.') symbol from the gloss abbreviation of plural.
+\item \label{inc:pos} $L_x$ contains POS tags that are not consistent with the semantics of the vocalized tags for compound affixes.
+\end{enumerate}
+\
+
+%%%%%%%%%%%% SAMA inconsistencies table %%%%%%%%%%%%%%%%
+\input{samainctable}
+
+The following describes the SAMA inconsistencies illustrated in Table~\ref{t:incSAMA}:
+\todo{R3.11 item (\ref{inc:relaxed)} below} 
+
+\arabtrue
+
+\begin{enumerate}[(a)]
+    %%%%%%%%%%%%%%%%%%% SAMA prefixes
+\item \label{inc:relaxed}
+  $L_p$ misses entries for Alef prefixes with omitted hamza or madda due to relaxed
+    writing standards which are common in many documents. 
+    This is resolved in SAMA for standalone Alef prefixes via preprocessing tokens and flipping all forms of Alef into one form. 
+    We report it here since compound prefix entries with Alef are all listed, 
+    e.g. \RL{sA}, 
+    \utfRL{سأ}, \utfRL{سآ}, and 
+    the standalone prefixes are available but commented out.
+Sarf addresses this concern by the separation of prefixes into partial and atomic variants, and by 
+introducing agglutinative and fusional rules. The rules construct compound prefixes from partial and atomic prefixes. 
+This, therefore, enables the introduction of all prefixes that include Alef, with any of its alternative spellings, 
+by only adding the Alef alternatives into the atomic prefix set. 
+\item \label{inc:by} $L_p$ contains an additional erroneous alternative gloss for \RL{wa-} in only one compound prefix~\RL{wa-}; while correctly not included elsewhere.
+\item \label{inc:fa} $L_p$  contains stray spaces in the vocalized tags of one of the \RL{fa-} alternatives.
+\item \label{inc:wafa} $L_p$  contains an entry that supports the concatenation of \RL{wa-} and \RL{fa-} conjunctions. 
+    This entry is erroneous and is illegal in Standard Arabic.
+    %%%%%%%%%%%%%%%%%%% SAMA suffixes
+\item \label{inc:def} $L_x$  omits the definite indicator in the gloss of several suffixes.
+\item \label{inc:num_gender} 
+    $L_x$  omits gender and number qualifiers that appear within square brackets 
+    from the gloss tags of several suffixes.
+\item \label{inc:both:sama} 
+    $L_x$  
+    expresses the dual quantifier as `them (both)' in the majority of the entries, and 
+    as `(both of) them' in several other entries.
+\item \label{inc:num_gender_differences} 
+    $L_x$  
+    contains number indicators in the gloss tags still expressed in BAMA style.% square brackets versus parentheses
+\item \label{inc:jus} 
+    $L_x$  contains entries with an 
+    {\em indicative} gloss mood and a {\em jussive} POS mood.
+\item \label{inc:dot:SAMA} 
+    $L_x$  omits dot (`.') for the abbreviation of plural in several gloss tags.
+\item \label{inc:pos:SAMA} 
+    $L_x$  
+    represents a repeated consonant by a shadda in the POS tag where it should not. 
+    SAMA POS tags should spell out the repeated consonants if each belongs to one.\todo{R3.19}  
+    In SAMA, the repeated consonant (of the shadda) is spelled out
+    whenever the consonants has its separated partial POS tag. 
+\end{enumerate}
+%\vspace{-1em}
+
+In addition, 53 BAMA and 27 SAMA minor differences exist between $L_p$ and $L_x$ of BAMA and SAMA and
+their counterparts computed using our agglutinative affixes. 
+For example, the BAMA gloss tags for prefixes that contain
+`bi/PREP' report `with/by' in some entries and its reverse `by/with' in others. 
+In addition, we detected several entries in $L_p$ of SAMA with no category compatibility 
+rules in $R_{ps}$, $R_{sx}$, and $R_{px}$.

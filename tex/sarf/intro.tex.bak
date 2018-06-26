@@ -1,0 +1,128 @@
+%\itodo{check whether journal is a blind review journal or not.}
+
+{\em Natural language processing} (NLP) applications such as 
+{\em machine translation} (MT) and {\em information extraction} (IE)
+require {\em morphological analysis} to preprocess Arabic text
+due to the rich morphological nature of the Arabic language
+~\citep*{Benajiba:07,Habash:06}. 
+%
+%Given a white space and punctuation delimited Arabic word,
+Arabic morphological analyzers
+return the internal structure of a given Arabic word composed of 
+several {\em morphemes} including {\em affixes} ({\em prefixes} 
+and {\em suffixes}), {\em clitics} ({\em proclitics} and {\em enclitics}), 
+and {\em stems}~\citep*{Sughaiyer:04}. 
+The morphological solution consists also of several {\em morphological features}
+(tags) associated with the word and its constituent morphemes 
+such as {\em part of speech} (POS), transliteration, {\em gloss}, 
+and {\em vocalized morpheme form} (VMF) tags (diacriticized form of the morpheme).
+%
+%The stem is the core of a word. 
+The prefix and suffix attach before and after the stem, respectively. 
+Clitics are special affixes that attach to the stem to form a word, 
+and differ from regular affixes in that 
+they play a syntactic role of another word (often omitted) 
+%while being bound to the word in question
+~\citep*{habash2010introduction}. 
+%
+%However, some lexicons such as Buckwalter~\citep*{Buckwalter:04} use the terms prefix and suffix to refer to  proclitic and enclitic, respectively.
+
+This work presents Sarf, a \todo{R2.13} {\em fast and application 
+customizable morphological analyzer} for Arabic
+that is used in several applications for information extraction 
+from Arabic text~\citep*{JaZaMatar,ZaMaFlairs2012HadithBio,ZaMa2012IJCLATime,ZaMaHaCicling2012Entity}. 
+Sarf provides NLP application developers with an application programming interface (API) 
+to control and refine morphological analysis on the fly. 
+The developer implements the interfaces in the application.
+Sarf calls the interfaces 
+on control points such as prefix, stem, suffix, and full solution matches.
+%We distinguish between the NLP application developer 
+%who uses Sarf to build an NLP application and the end user who provides the text
+%and inspects the solutions.
+The Sarf API allows the application to 
+(1) control and prioritize the analysis, 
+(2) refine the solution features, and
+(3) define developer categories and associate them with existing morphemes.
+
+%Users of the developed application pass Arabic text as input and the application uses 
+%Sarf to perform customizable morphological analysis on the text. 
+
+Sarf is a significant extension of the work in~\citep*{ZaMaColing2012DemosSarf}. 
+It represents Arabic affixes as 
+agglutinative affix morphemes with fusional affix concatenation rules. 
+Simpler agglutinative affix morphemes can be concatenated to form a more complex 
+affix~\citep*{Vajda}. 
+%Fusional models are similar to agglutinative with the difference that 
+%morpehemes which make up the word fuse together several different features meanings~\citep*{Spencer:91}. 
+Fusional affix concatenation rules specify affix pairs and use 
+regular expressions \todo{R2.13 removed in} as substitution rules to 
+compose the resulting orthographic and semantic tags from the 
+tags of the original morphemes~\citep*{Spencer:91}.
+The Sarf substitution rules are in sync with 
+rules and examples on morpheme concatenative properties from
+Arabic morphology textbooks~\citep*{Abd00,Abd001}.
+This representation resolves consistency, maintenance, and segmentation 
+issues of the current approaches in BAMA and SAMA. 
+%Sarf also provides the option to use partial diacritics 
+%in disambiguating the morphological solutions of a partially diacritized word.
+
+\todo{R1.1}
+In this paper, we make several additional contributions including the following. 
+\begin{itemize}
+    \item Sarf provides an application customizable morphological analyzer where the developer can control and refine the analysis. 
+    \item Sarf structures and computations are engineered to reduce computation cost as follows. 
+      \begin{itemize}
+        \item The organization of the lexical structures into root index tries during runtime.
+        \item The traversal structures that allows multiple solutions to be considered at once.
+        \item The computation of the solution features in a tree based structure instead of computing all features and filtering later on
+        \item The manual optimization of the traversal of the lexicon tries to reduce the typical excessive non-determinism exhibited in the finite state machine based solutions.
+      \end{itemize}
+    \item Sarf is a novel Arabic morphological analyzer with agglutinative affixes and fusional affix concatenation rules based on textbook 
+      Arabic morphological rules and on the concatenation rules of existing analyzers. 
+    \item Sarf solves the ``run-on'' words problem and optionally uses partial diacritics for solution disambiguation. 
+    \item Sarf solves inconsistencies in existing affix lexicons of BAMA and SAMA. In this paper we list and discuss the inconsistencies.
+    \item Sarf solves the correspondence between the morphological solution and the morphological segmentation of the original text problem.
+%    \item We evaluate our approach using the ATB data set and report on the effect of our corrections on the annotations.
+    \item Sarf is fully implemented and available online as an open source tool.\footnote{\label{fn:online} \url{http://research-fadi.aub.edu.lb/carla/doku.php?id=sarf} }
+\end{itemize}
+
+
+We evaluated Sarf for segmentation correspondence, lexicon size, lexcion 
+consistency\todo{R3.19}, accuracy, and runtime efficiency. 
+Our results show that Sarf lexicons are smaller than lexicons of existing 
+analyzers 
+and provide coverage for more morphological solutions. 
+Sarf simplifies the lexicon maintenance task, provides better accuracy 
+and improves run time efficiency as compared to existing analyzers.  
+
+\todo{R2.14}We evaluated Sarf also within applications that use its API 
+~\citep{JaZaMatar,ZaMaFlairs2012HadithBio,ZaMa2012IJCLATime,ZaMaHaCicling2012Entity}. 
+The carried case studies show that Sarf performs better than existing Arabic morphological analyzers in terms of running time. 
+They also demonstrate the efficiency and the utility of the Sarf 
+application customizable API. 
+
+\tododone{ we will consistently in this paper refer to tokenization as the 
+  splitting of words in text, and segmentation/alignment as the splitting
+  of morphological solution tags and their alignment to the morphemes 
+  and the textual position in the original word.}
+
+%\itodo{fix section summary at end of introduction when done}
+
+The rest of this paper is structured as follows. 
+\todo{R2.1A} In Section~\ref{sec:motivation}, we motivate Sarf and discuss how it deals with existing morphological analysis challenges. 
+In Section~\ref{sec:related}, we compare Sarf to related work. 
+In Section~\ref{sec:overview}, we present an overview of Sarf. 
+In Section~\ref{sec:api}, we present the interface provided by Sarf for the 
+application developer to control and refine the morphological analysis. 
+In Section~\ref{sec:aggaffix}, we present our method to build 
+agglutinative affix morphemes with fusional affix concatenation rules. 
+%In Section~\ref{sec:motivation}, we discuss existing redundancy 
+%and inconsistencies in the lexicons of existing morphological analyzers.  
+In Section~\ref{sec:diac}, we present our method of using 
+partial diacritics to reduce the morphological ambiguity. 
+\todo{R1.2}In Section~\ref{sec:results}, we discuss the use of Sarf with several NLP tasks and 
+present the results of comparing Sarf to other analyzers
+in terms of speed, accuracy, and consistency.
+Finally, we conclude and discuss future work in Section~\ref{sec:conclusion}.
+
+%\vspace{-1cm}
