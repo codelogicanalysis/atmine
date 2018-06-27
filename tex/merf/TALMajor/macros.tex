@@ -65,7 +65,7 @@
 
 \submitted[15/10/2017]{TAL~58-03}{R}
 
-\title[\framework]{\framework: Morphology-based Entity and Relational Entity Extraction Framework for Arabic}
+\title[\framework]{Morphology-based Entity and Relational Entity Extraction Framework for Arabic}
 
 %\author{Firstname$_1$ Lastname$_1$\fup{*} \andauthor Firstname$_2$ Lastname$_2$\fup{**}  } 
 %\address{%
@@ -73,7 +73,7 @@
 %\fup{**} Second affiliation
 %}
 
-\author{Amin Jaber \andauthor Fadi Zaraket} 
+\author{Amin Jaber \andauthor Fadi A. Zaraket} 
 
 \address{American University of Beirut, Beirut 1107 2020, Lebanon}
 
@@ -85,9 +85,6 @@
 Arabic,
 information extraction,
 natural language processing,
-entity,
-relational entity,
-information visualization,
 tagging.
 }
 
@@ -95,24 +92,30 @@ tagging.
 Arabe,
 extraction d'information,
 traitement du langage naturel,
-entité,
-entité relationnelle,
-visualisation d'information,
 marquage.
 }
 
 \resume{
-Les techniques et outils basés sur des règles pour extraire des entités et des entités relationnelles des documents permettent aux utilisateurs de spécifier les entités souhaitées en utilisant des questions de langage naturel, des automates à états finis, des expressions régulières, des instructions de langage de requête structurées ou des scripts propriétaires.
-Ces techniques et outils nécessitent une expertise en linguistique et en programmation.
-Ils manquent de soutien de l'analyse morphologique arabe qui est la clé de
-traiter le texte arabe.
-Dans ce travail, nous présentons \framework; une entité morphologique et un cadre d'extraction d'entité relationnelle pour le texte arabe.
-\framework fournit une interface conviviale où l'utilisateur, avec une connaissance de base des caractéristiques linguistiques et des expressions régulières, définit les types de balises et les associe de manière interactive aux expressions régulières définies sur des formules booléennes.
-Les formules booléennes couvrent des correspondances d'entités morphologiques arabes et des caractéristiques de synonymie.
-Les utilisateurs définissent des relations avec des tuples de correspondance de sous-expression et peuvent associer des actions de code à des sous-expressions.
-\framework calcule des correspondances de fonctions, des correspondances d'expressions régulières et construit des entités et des entités relationnelles à partir des relations définies par l'utilisateur.
-Nous avons évalué notre travail avec plusieurs études de cas et les avons comparées avec des techniques spécifiques à une application existante.
-Les résultats montrent que \framework nécessite un temps et un effort de développement plus courts par rapport aux techniques existantes et produit des résultats raisonnablement précis dans une surcharge raisonnable en temps d'exécution.
+Les techniques à base de règles pour extraire des entités permettent 
+de spécifier les entités souhaitées en utilisant des questions 
+de langage naturel, des automates à états finis, des expressions régulières, et des 
+instructions d'extraction de données.
+Ils nécessitent des expertises en linguistique et en programmation et
+ne soutiennent pas l'analyse morphologique d'Arabe.
+On présente pour l'Arabe 
+un cadre d'extraction d'entité 
+renforcé par l'analyse morphologique (\framework). 
+Il exige des connaissances be base des 
+caractéristiques linguistiques et des expressions régulières, 
+et fournit la pouvoire de spécifier de façon interactive 
+des fonctionnalités de morphologie et synonymie Arabe,
+des types de tag associés avec des expressions régulières, 
+et des relations et actions de code définies sur les correspondances de sous-expressions.
+\framework construit des entités relationnelles à partir des correspondances
+des spécifications.
+On évalue \framework avec des études de cas.
+Les résultats montrent que \framework nécessite un effort de développement plus courts par rapport aux techniques existantes 
+et produit des résultats raisonnablement précis avec une surcharge raisonnable en temps d'exécution.
 }
 
 \begin{document}
