@@ -30,7 +30,7 @@ of relevant Arabic stems. %; e.g. $s_{l} = \gamma(l)\subset 2^{\ss}$.
   	{\relsize{-2} \input{figures/syn2ex.tex}} }
 \setcode{standard}
 \vspace{-3em}
-\caption{$Syn^2($\RL{mA'}$)$}
+\caption{$Syn^2($\RL{mA'}$)$.}
 \vspace{-2em}
 \label{fig:introsynEx}
 \end{center}
@@ -99,11 +99,11 @@ The entities $n_1$, $n_2$, and $n_3$ are matches of the formula $N$ in the text.
 Similarly, the user specifies formula $P$ to denote ``name of place'' entities. 
 The user specifies formula $R$ to denote ``relative position'' entities, 
 and defines it as a disjunction of terms that check for 
-solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
+solutions matching stems such as \RL{qrb} (``near'') and \RL{fy} (``in'').
 %requires the stem feature of a word to belong to a selected list of stems containing \RL{fy} and \RL{qrb}. a
 Similarly, $U$ denotes numerical terms and is a disjunction of constraints 
 requiring the stem feature to belong to a set of stems such as
-\RL{'wl}(first), \RL{_tAny}(second), \dots \RL{`A^sr}(tenth).
+\RL{'wl}(``first''), \RL{_tAny}(``second''), \dots \RL{`A^sr}(``tenth'').
 
 %Formula $N$ in Figure~\ref{fig:motiv} checks whether a solution has a category feature matching category {\tt Name\_of\_Person}.
 %Formula $R$ is the disjunction of MAT terms that check for solutions matching stems such as \RL{qrb} (near) and \RL{fy} (in).
@@ -138,23 +138,23 @@ $O?$ and $O^\wedge 2$ are used in the expression to allow for flexible matches.
 
 The matching parse trees in Figure~\ref{fig:taskMRE} illustrate two matches of the expression computed by \framework.
 The first tree refers to the text 
-\RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(Khalifa Tower next to the first intersection).
+\RL{brj _hlyfT bAlqrb mn AltqA.t` Al-'wl}(``Khalifa Tower next to the first intersection'').
 The second tree refers to the text 
-\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building).
+\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(``Dubai Mall is located near this building'').
 %The leaf nodes of the trees are entities and the edges and internal nodes are text, 
 %morphology-based, 
 %and word distance based relational entities. 
-The leaf nodes of the trees are matches to formulae and the internal nodes represent roots to sub-expression matches.
-For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the sub-expression $(P|N)+$.
+The leaf nodes of the trees are matches to formulae and the internal nodes represent roots to subexpression matches.
+For instance, \RL{brj _hlyfT} in match 1 tree corresponds to the subexpression $(P|N)+$.
 
-\vspace{-2em}
+\vspace{-1em}
 \subsection{User-defined relations and actions}
 \label{sec:relations-actions}
 
 A relation is defined by the user as a tuple 
 $\langle e_1,e_2,r\rangle$ where 
 $e_1,e_2,$ and $r$ are identifiers associated with 
-sub-expressions of an MRE $f$.
+subexpressions of an MRE $f$.
 Matches of the relation are a set of labeled binary edges
 where matches of $e_1$ and $e_2$ are the source and destination nodes
 and matches of $r$ are the edge labels.
@@ -162,12 +162,12 @@ We denote $\ldbrack \langle e_1,e_2,r\rangle \rdbrack$ to be the set of matches 
 and we refer to them as relational entities.
 
 We are interested in constructing the relational entity graph in Figure~\ref{fig:intromotiv}.
-Let $e_1,o_1,r,o_2,$ and $e_2$ be identifiers to the sub-expressions 
-$(P|N)+$,$O?$,$R$,$O\wedge 2$, and $(P|N|U)+$, respectively.
+Let $e_1$, $o_1$, $r$, $o_2,$, and $e_2$ be identifiers to the subexpressions 
+$(P|N)+$, $O?$, $R$, $O\wedge 2$, and $(P|N|U)+$, respectively.
 %We select $(P|N)+$ to denote an entity as it captures a composite place name such as \cci{Khalifa tower}.
-The matches to $e_1$, $r$, $o_2$, and $e_2$ in match 1 (Fig.~\ref{fig:taskMRE}) are \RL{brj _hlyfT} (Khalifa Tower), \RL{bAlqrb} (next), \RL{mn} (to), and \RL{AltqA.t` Al-'wl} (first intersection).
+The matches to $e_1$, $r$, $o_2$, and $e_2$ in match 1 (Fig.~\ref{fig:taskMRE}) are \RL{brj _hlyfT} (``Khalifa Tower''), \RL{bAlqrb} (``next''), \RL{mn} (``to''), and \RL{AltqA.t` Al-'wl} (``first intersection'').
 Note that there is no match to the optional $O$ formula in match 1.
-Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second matching parse tree are \RL{dby mwl} (Dubai Mall), \RL{`l_A} (is located), \RL{mqrbT} (near), \RL{mn h_dA} (this), and \RL{Almbn_A} (building), respectively.
+Similarly, the matches to $e_1$, $o_1$, $r$, $o_2$, and $e_2$ in the second matching tree are \RL{dby mwl} (``Dubai Mall''), \RL{`l_A} (``is located''), \RL{mqrbT} (``near''), \RL{mn h_dA} (``this''), and \RL{Almbn_A} (``building''), respectively.
 
 We define the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 Relation $\langle e_1,e_2,r\rangle$ creates the 
@@ -184,8 +184,8 @@ nodes in match 2.
 
 
 Moreover, \framework allows advanced users to write C++ code snippets 
-to process matches of sub-expressions.
-Each sub-expression can be associated with two computational 
+to process matches of subexpressions.
+Each subexpression can be associated with two computational 
 actions: \cci{pre-match} and \cci{on-match}.
 %
 \framework provides an API that enriches the actions with detailed access to
@@ -247,7 +247,7 @@ For each MRE,
 \framework generates its equivalent non-deterministic finite automaton (NFA) in the typical manner~\cite{sipser2012introduction}.
 %Each MRE operation has its equivalent representation in an NFA. 
 We support the upto operation ($f$\^{}$x$), which is not directly 
-supported in~\cite{sipser2012introduction}, by 
+supported in~\citename{sipser2012introduction}~\citeyear{sipser2012introduction}, by 
 %it is equivalent to $f?|ff|\dots|\underbrace{f}_{x \text{ times}}$ which has an NFA mapping. 
 %we can expand it into a standard regular expression form, for example
 expanding it into a regular expression form; for example 
@@ -263,7 +263,7 @@ Edges labeled with the empty string $\epsilon$ are non-deterministic.
 
 \framework simulates the generated NFA over the sequence of tag sets matching the MBF formulae.
 %A simulation match $m$ of an expression $f$ is a tree where the root is the MRE expression, the internal nodes are the MRE and MBF operations, and the leaves are matches of the MAT terms of $f$.
-A simulation match $m$ of an expression $f$ is a parse tree where the root spans the expression, the internal nodes are roots to sub-expressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Fig.~\ref{fig:taskMRE}.
+A simulation match $m$ of an expression $f$ is a parse tree where the root spans the expression, the internal nodes are roots to subexpressions of $f$, and the leaves are matches of the MBF formulae of $f$, e.g. Figure~\ref{fig:taskMRE}.
 The sequence of leaf matches forms a vector of tags $\langle r_k,r_{k+1},\dots,r_j\rangle$ 
 corresponding to the text sequence 
 $\langle t_k,t_{k+1},\dots,t_j\rangle$ where $r_{\ell}\in R_{\ell},0\le k\le \ell \le j < n$.
@@ -283,8 +283,8 @@ If we have more than one match for an expression,
 %The $+$, $|$, and $?$ MRE operations are internal nodes.
 
 %\framework maintains a function $\phi\subset Q\times\Phi$, 
-%where $\mathit{Q}$ is the set of states in the NFA and $\Phi$ is the set of sub-expressions in the MRE.
-%So $(q,f)\in \phi$ iff state $q\in Q$ was generated by \framework to correspond to sub-expression $f\in \Phi$. 
+%where $\mathit{Q}$ is the set of states in the NFA and $\Phi$ is the set of subexpressions in the MRE.
+%So $(q,f)\in \phi$ iff state $q\in Q$ was generated by \framework to correspond to subexpression $f\in \Phi$. 
 %\framework uses $\phi$ to compute a match tree with respect to the MRE regular expression. 
 %It also uses $\phi$ and the match sequence to compute the sequence of computational actions of an MRE match. 
 
@@ -329,12 +329,12 @@ Finally, \framework computes the relational entities corresponding to each user 
 $\subseteq \ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$.
 
 \begin{comment} 
-Note that the number of matches for $e_i$ ($\ldbrack e_i \rdbrack$) depends on the corresponding sub-expression.
-For instance, we could have multiple matches if we associate $e_i$ with the sub-expression $P|N$ while we have $(P|N)+$.
+Note that the number of matches for $e_i$ ($\ldbrack e_i \rdbrack$) depends on the corresponding subexpression.
+For instance, we could have multiple matches if we associate $e_i$ with the subexpression $P|N$ while we have $(P|N)+$.
 %to be the elements of $\ldbrack e_1 \rdbrack \times \ldbrack e_2 \rdbrack \times \ldbrack r \rdbrack$
 %with the smallest nonzero positive distance between the source and the destination
 %where the distance is the number of words between the matches. 
-Hence, \framework supports the following configurations for $e_i$ and $e_j$ based on the corresponding matches of sub-expressions:
+Hence, \framework supports the following configurations for $e_i$ and $e_j$ based on the corresponding matches of subexpressions:
 \begin{itemize}
 \item $\left\vert{e_i}\right\vert=1\wedge\left\vert{e_j}\right\vert=1$: Relate $e_i$ match to $e_j$ match with edge labeled by $r$.
 \item $i=j\wedge\left\vert{e_i}\right\vert>1$: Relate sequences of $e_i$ matches with edges labeled by $r$.
@@ -343,7 +343,7 @@ Hence, \framework supports the following configurations for $e_i$ and $e_j$ base
 \end{itemize}
 \end{comment} 
 
-%In Figure~\ref{fig:taskMRE}, \framework names the sub-expressions $(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
+%In Figure~\ref{fig:taskMRE}, \framework names the subexpressions $(P|N)+$, $(P|N|U)+$, $O?$, $O\wedge 2$, and $R$, as $e_1, e_2, o_1, o_2,$ and $r$, respectively. 
 %The user defines the semantic relations $\langle e_1, e_2, r\rangle$, $\langle r, e_1, o_1\rangle$, and $\langle r,e_2,o_2\rangle$.
 
 %The matches of $e_1,~e_2,~o_1,~o_2,$ and $r$ from the second match tree of Figure~\ref{fig:motiv}(b) are \RL{dby mwl}(Dubai Mall), \RL{Almbn_A}(the building), \RL{`l_A}(prep), \RL{mn h_dA}(from this), and \RL{mqrbT}(near), respectively. 

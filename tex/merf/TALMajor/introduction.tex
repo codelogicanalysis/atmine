@@ -48,8 +48,8 @@ However, this tool lacks support for entity and relational entity extraction.
 \input{directionFigure}
 
 Figure~\ref{fig:intromotiv} illustrates the target of \framework using 
-the directions to Dubai Mall example~\footnote{text taken from the Dubai 
-Mall website ~\url{http://www.thedubaimall.com/ar/}}.
+the directions to Dubai Mall example~\footnote{Text taken from the Dubai 
+Mall website ~\url{http://www.thedubaimall.com/ar/}.}.
 The figure also presents a transliteration and an English translation of 
 the Arabic text.
 The framed words in the text are entities referring to names of people 
@@ -91,7 +91,7 @@ For example, the sequence between $p_1$ and $p_2$ matches a regular expression $
 that requires two semantic place categories with a place-preposition POS 
 tag ($r_1$) in between.
 
-An editor allows the user to associate an action with each sub-expression.
+An editor allows the user to associate an action with each subexpression.
 The user specifies the action with C++ code and uses an API to access information 
 related to the matches such as text, position, length, morphological features, 
 and numerical value.
@@ -132,11 +132,11 @@ cross-reference between entities.
 \framework also provides visualization tools to present the matches, 
 and estimate their accuracy with respect to reference tags.
 
-This work significantly extends~\cite{JaZaMatar} 
+This work significantly extends~\citename{JaZaMatar}~\citeyear{JaZaMatar}
 that allows for manual, and morphology annotation.
 \framework enables a user to incrementally create 
 complex annotations for Arabic based on automatic 
-extraction of morphological tags through a user friendly interactive interface. 
+extraction of morphological tags through a user-friendly interactive interface. 
 \framework has the following advantages.
 \begin{itemize}
   \item \framework provides a novel and intuitive visual interface to build formulae over morphological features, 
@@ -149,14 +149,14 @@ In \framework, we make the following contributions.
 \begin{itemize}
   \item \framework enables the user to define relations in a simple manner
     and automatically detects relational entities matching the user defined relations. 
-  \item \framework enables the user to associate sub-expressions
+  \item \framework enables the user to associate subexpressions
     with code actions, and executes the code action 
     when a corresponding match is found.
     It also provides an API to enable access to match 
     features such as text, position, length, numerical value, and morphological features.
   \item \framework enables the user to tag words based on a novel light Arabic WordNet relation that leverages the synonym $Syn^k$ feature.
   \item \framework is open source and available online for the research community 
-    under on (\url{https://github.com/codelogicanalysis/atmine}).
+    under \url{https://github.com/codelogicanalysis/atmine}.
 \end{itemize}
 
 The rest of the paper is structured as follows.

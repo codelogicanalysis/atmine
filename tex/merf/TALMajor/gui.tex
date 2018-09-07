@@ -9,7 +9,6 @@ inter annotation agreement results
 when the tag sets come from two human annotators, 
 or as evaluation results when comparing with reference tag sets.
 
-
 %\framework saves the tags and the tag types in a user friendly format using
 %the JavaScript Object Notation (JSON) format~\cite{nolan2014javascript}.
 %The tag file keeps the paths of the separate text and tag type files. 
@@ -29,7 +28,7 @@ or as evaluation results when comparing with reference tag sets.
 %{\em View} menu enables the user to switch visualization modes of the tags. 
 
 \subsection{Tag type Boolean formula editor}
-The user writes MBF tag types with the tag type editor introduced in~\cite{JaZaMatar}. %shown in Figure~\ref{f:bfe}.
+The user writes MBF tag types with the tag type editor introduced in~\citename{JaZaMatar}~\citeyear{JaZaMatar}. %shown in Figure~\ref{f:bfe}.
 First the user specifies atomic terms by selecting a feature from ${\cal F}$. 
 %The pattern filters the feature values.
 The user can also choose whether to require an exact match using the
@@ -91,18 +90,18 @@ help from the morphological analyzer.
 \end{figure}
 
 \subsection{Tag type regular expression editor}
-\vspace{-1em}
+%\vspace{-1em}
 
 After interacting with the MBF editor, the user moves to 
 specify the regular expressions. 
 The MRE editor of Figure~\ref{f:sfe} allows the 
-definition of an MRE tag type in a user friendly manner. 
+definition of an MRE tag type in a user-friendly manner. 
 The user first adds the required MBF formulae 
 by selecting a label from ${\cal T}$ under MBFs. 
 The Boolean formula of a highlighted tag type is shown in the table on the lower left pane. 
 Each selected MBF is associated with an automatic name. 
 The user can nest the MRE expression using a tree view of the MRE operations. 
-The tree features the name, MBF, and operation for each sub-expression. 
+The tree features the name, MBF, and operation for each subexpression. 
 %Moreover, a defined MRE is directly added to the MBF list enabling substitution and recursion 
 %in formula definition.
 
@@ -112,7 +111,7 @@ The tree features the name, MBF, and operation for each sub-expression.
 %We previously defined this tag type in Section~\ref{sec:framework} and referred to it by $O$ (other).
 
 %The regular expression editor enables the user to apply operations to the selected expressions. 
-To specify a binary operation the user selects two sub-expressions and clicks the corresponding
+To specify a binary operation the user selects two subexpressions and clicks the corresponding
 operation button. 
 %To do so, the user selects one or two expressions then selects an operation from the ones shown 
 %in the lower left of the view. 
@@ -128,7 +127,7 @@ descriptors.
 %Thus we start by adding the MBFs $P$, $N$, $\textit{NONE}$, $R$, $\textit{NONE}$, $P$, $N$, and $U$. 
 %We apply the required operations incrementally to build the final expression. 
 %For example, we apply the disjunction ($|$) operation to the first $P$ and $N$ added, 
-%then we apply the one or more ($+$) operation to the resulting sub-expression.
+%then we apply the one or more ($+$) operation to the resulting subexpression.
 %We proceed as such to build the regular expression shown in Figure~\ref{f:sfe}. 
 %Similar to the MBF tag type editor, the user specifies a set of legend descriptors for each MRE tag type.
 %
@@ -136,7 +135,7 @@ descriptors.
 \vspace{-1em}
 \subsection{MRE match visualization}
 
-While specifying an MRE the user can interact with the visualization and editor views
+While specifying an MRE, the user can interact with the visualization and editor views
 to make sure the MRE expresses the intent. 
 The color-sensitive text view in Figure~\ref{fig:treegraph} shows 
 the highlighted tag matches after the user called the MRE simulator using 
@@ -144,7 +143,7 @@ the {\tt Tagtypes} menu.
 
 The matching parse tree view shows the selected match in a graph view.
 Figure~\ref{fig:treegraph} shows the matching parse tree of the direction task 
-\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(Dubai Mall is located near this building). 
+\RL{dby mwl `l_A mqrbT mn h_dA Almbn_A}(``Dubai Mall is located near this building''). 
 %Leaf nodes show the match text, internal nodes show the operations, and edge labels shows the MBF tag type name.
 
 \begin{figure}[tb]
@@ -169,9 +168,8 @@ The relation editor allows the user to define relations
 by specifying $\langle e_1,e_2,r\rangle$ tuples, 
 where $e_1$ and $e_2$ denote source and destination entities, and $r$ denotes 
 the label.
-The editor shows the MRE tree and allows the user to select the sub 
-expressions and select features 
-of the matches of the sub expressions to define the three components of the relation. 
+The editor shows the MRE tree and allows the user to select the subexpressions and select features 
+of the matches of the subexpressions to define the three components of the relation. 
 
 A snapshot of the GUI in 
 Figure~\ref{fig:treegraph} shows in an interactive graph view
@@ -181,10 +179,10 @@ extracted from the matching parse tree of the MRE.
 In the computational action editor, an advanced user can 
 enter C++ code and use the \framework API to program and process 
 subexpression matches. 
-%RE matches In order to add computational actions to an MRE sub-expression, 
+%RE matches In order to add computational actions to an MRE subexpression, 
 %the user selects to edit the actions in the MRE tag type editor. 
 %The view allows the user to specify the actions in a user friendly manner. 
-%\framework provides the user with an API to access the sub-expression match features easily and define the pre-match actions. 
+%\framework provides the user with an API to access the subexpression match features easily and define the pre-match actions. 
 %The match features include the text, position, length, and numerical value if applicable, and morphological features for MBF matches. 
 %\framework also enables the user to add C++ declarations and library includes.
 

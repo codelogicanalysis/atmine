@@ -28,14 +28,13 @@ and uses an optimizer to generate high performance execution plans for the AQL r
 %\framework introduces the conjunction operation in the MRE to overcome the expressivity limitations of expressing rules with overlapping annotations. 
 
 TEXTMARKER is a semi-automatic rule-based IE system 
-for structured data acquisition\cite{atzmueller2008rule}.
+for structured data acquisition~\cite{atzmueller2008rule}.
 %TEXTMARKER requires user defined rules that consider features of the text 
 %However, constructing the rules requires manual work of a domain specialist. 
 Both TEXTMARKER and \framework provide the user with GUI editor and result visualizer.
 %\framework also differs in that it provides graph visualization for regular expression and user defisemantic relation matches.
 
-The work in~\cite{urbain2012user} presents a user 
-driven relational model and targets entity and relation extraction. 
+The work in~\citename{urbain2012user}~\citeyear{urbain2012user} presents a user-driven relational model and targets entity and relation extraction. 
 The user enters a natural language query, and uses the OpenNLP toolkit to 
 extract tags and relations from the query. 
 %Then, it extends the extracted entities into a query model, 
@@ -66,7 +65,7 @@ Graph visualization & $\checked$ & - & - & - & - \\
 \caption{\label{tab:iecomp}Comparison of \framework with SystemT, 
 TEXTMARKER, 
 Urbain, 
-QARAB}
+QARAB.}
 \end{table}
 
 Table~\ref{tab:iecomp} summarizes the comparison between \framework and
@@ -75,10 +74,10 @@ code actions, user defined relations, and an interactive
 graph visualization of the relational entities. 
 It also differs in that it fully supports Arabic morphological analysis
 while only QARAB supports Arabic linguistic features using a parser, and 
-the work in ~\cite{urbain2012user} uses OpenNLP that currently lacks full
+the work in~\citename{urbain2012user}~\citeyear{urbain2012user} uses OpenNLP that currently lacks full
 support for Arabic morphological features. 
 Similar to TEXTMARKER, \framework has the advantage of providing 
-a user friendly interactive interface to edit the entity and relational 
+a user-friendly interactive interface to edit the entity and relational 
 specifications and visualize the results. 
 
 DUALIST is an annotation system for building classifiers for 
@@ -92,17 +91,15 @@ This interactive environment contributes to the regular expression extraction
 and semantic relation construction which increases the overall accuracy.
 
 Another track in the literature targets specific tasks such as NER using 
-statistical and machine learning techniques such as maximum entropy, 
+statistical and machine-learning techniques such as maximum entropy, 
 optimized feature sets and conditional random fields~\cite{benajiba2007anersys,benajiba2008arabic,ekbal2010named,abdelrahman2010integrated}.
 %The work in~\cite{ekbal2010named} presents a language independent approach for NER extraction using {\em support vector machines}. 
 %The work in~\cite{abdelrahman2010integrated} integrates a semi-supervised bootstrapping pattern recognition technique, and a supervised classifier based on {\em conditional random fields} to solve NER problems.
 Knowledge-based techniques such 
-as~\cite{zaghouani2010adapting,traboulsi2009arabic} propose local grammars with morphological stemming.% to perform NER. 
-%The work in~
-\cite{ZaMaHaCicling2012Entity} present a method for extracting entities and events, and relations among them from Arabic text using a hierarchy of manually built 
-finite state machines driven by morphological features, 
-and graph transformation algorithms. 
-Such techniques require advanced linguistic and programming expertise. 
+as~\citename{zaghouani2010adapting}~\citeyear{zaghouani2010adapting} and~\citename{traboulsi2009arabic}~\citeyear{traboulsi2009arabic} propose local grammars with morphological stemming. % to perform NER. The work in~
+\citename{ZaMaHaCicling2012Entity}~\citeyear{ZaMaHaCicling2012Entity} extract entities and events, and relations among them, from Arabic text using a hierarchy of manually built finite state machines driven by morphological features, 
+and graph transformation algorithms.
+Such techniques require advanced linguistic and programming expertise.
 
 WordNet is a lexical reference system that mimics human lexical memory 
 %inspired by psycholinguistic theories 
@@ -115,7 +112,7 @@ MMAX2 is a manual multi-level linguistic annotation tool with an XML
 based data model~\cite{mmax2}.
 %It enables the user to create, browse, visualize, and query annotations and may be able to resolve coreference tags. 
 BRAT~\cite{brat} and WordFreak~\cite{wordfreak} are manual 
-multi-lingual user friendly web-based annotators that allow the construction 
+multi-lingual user-friendly web-based annotators that allow the construction 
 of entity and relation annotation corpora.
 %They can be extended through plug-ins to enable automatic annotators and customized annotation visualization specifications.
 Knowtator~\cite{ogren2006knowtator} is a general purpose incremental text annotation tool 
@@ -128,22 +125,18 @@ an automatic annotator that allows manual corrections
 and sophisticated tag type and relation specifications over
 Arabic morphological features.
 
-\cite{kholidy2010towards} present an overview of annotation tools 
+\citename{kholidy2010towards}~\citeyear{kholidy2010towards} present an overview of annotation tools 
 %and their Arabic-English word alignment issues 
 and concludes with a set of rules and guidelines needed in an Arabic annotation alignment tool.
-The work in \cite{dukes2011supervised} presents a collaborative effort towards morphological and syntactic annotation of the Quran.
-\cite{dorr2010interlingual} presents a framework for inter-lingual 
-annotation of parallel text corpora with multi-level representations.
-\cite{kulick2010consistent} presents the integration of the 
-Standard Arabic Morphological Analyzer (SAMA) into the workflow of the Arabic Treebank.
+The work in~\citename{dukes2013supervised}~\citeyear{dukes2013supervised} presents a collaborative effort towards morphological and syntactic annotation of the Quran.
+\citename{dorr2010interlingual}~\citeyear{dorr2010interlingual} present a framework for interlingual annotation of parallel text corpora with multi-level representations.
+\citename{kulick2010consistent}~\citeyear{kulick2010consistent} presents the integration of the Standard Arabic Morphological Analyzer (SAMA) into the workflow of the Arabic Treebank.
 
-The work in \cite{smrz2004morphotrees} presents %the extension of TrEd, 
+The work in~\citename{smrz2004morphotrees}~\citeyear{smrz2004morphotrees} presents %the extension of TrEd, 
 a customizable general purpose tree editor, with the Arabic MorphoTrees annotations. 
 The MorphoTrees present the morphological analyses in a hierarchical organization based on common features. 
 
-Task specific annotation tools such as~\cite{alrahabi2006semantic}
-use enunciation semantic maps to automatically annotate 
-directly reported Arabic and French speech.
+Task specific annotation tools such as~\citename{alrahabi2006semantic}~\citeyear{alrahabi2006semantic} use enunciation semantic maps to automatically annotate directly reported Arabic and French speech.
 AraTation is another task specific tool for semantic annotation of 
 Arabic news using web ontology based semantic maps~\cite{saleh2009aratation}.
 We differ in that \framework is general, and not task specific, and it uses 

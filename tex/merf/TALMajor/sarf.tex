@@ -17,9 +17,9 @@ system~\cite{arabicmorph,shahrour2016camelparser,pasha2014madamira}.
 Short vowels, also known as diacritics, are typically omitted in Arabic text
 and inferred by readers~\cite{habash2006arabic}. 
 For example, the word \RL{bn}%
-can be interpreted as \RL{bon} {\tt ``coffee''} with a {\em damma} diacritic on the 
+can be interpreted as \RL{bon} ``coffee'' with a {\em damma} diacritic on the 
 letter \utfrl{بـ} or 
-\vocalize \RL{bin} (son of) with a 
+\vocalize \RL{bin} (``son of'') with a 
 {\em kasra} diacritic on the letter \utfrl{بـ}.
 
 Morphological analysis is required even for tokenization of Arabic text. 
@@ -36,7 +36,7 @@ Consider the sentence
 %\utfrl{ذهب الولدإلى المدرسة} 
 \notrrl{AlmdrsT}\notrrl{_dhb alwald-il_A}
 \arabfalse \RL{_dhb alwald-il_A almdrsT} \arabtrue
-(the kid went to school). 
+(``the kid went to school''). 
 The letters \notrutfrl{د} and \notrutfrl{ى} have 
 non-connecting end of word forms and the words 
 \notrutfrl{الولد},\notrutfrl{الى}, and\notrutfrl{المدرسة} 
@@ -99,16 +99,16 @@ where $p=p_1 \ldots p_{|p|}$, $x=x_1 \ldots x_{|x|}$,
 $P=P_{p_1}\ldots P_{p_{|p|}} P_s P_{x_1}\ldots P_{x_{|x|}}$,
 $G=G_{p_1}\ldots G_{p_{|p|}} G_s G_{x_1}\ldots G_{x_{|x|}}$, and
 $C=C_{p_1} \ldots C_{p_{|p|}} C_s C_{x_1}\ldots C_{x_{|x|}}$. 
-$P_{p_i}, G_{p_i},$ and $C_{p_i},1\le i \le |p|$ are the POS, Gloss and 
+$P_{p_i}, G_{p_i},$ and $C_{p_i},1\le i \le |p|$ are the POS, gloss and 
 category tags of prefix $p_i$. 
-$P_{x_j}, G_{x_j},$ and $C_{x_j},1\le j \le |x|$ are the POS, Gloss and 
+$P_{x_j}, G_{x_j},$ and $C_{x_j},1\le j \le |x|$ are the POS, gloss and 
 category tags of suffix $x_i$. 
-$P_s, G_s,$ and $C_s$ are the POS, Gloss and 
+$P_s, G_s,$ and $C_s$ are the POS, gloss and 
 category tags of stem $s$. 
 %
 Intuitively, 
-$p,x,P,G$ and $C$ are concatenations of prefix, suffix, POS, Gloss and
-Category values, respectively.
+$p,x,P,G$ and $C$ are concatenations of prefix, suffix, POS, gloss and
+category values, respectively.
 
 %\setarab
 \begin{table}[tb]
